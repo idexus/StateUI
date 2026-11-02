@@ -13,11 +13,11 @@ final class WebScrollViewTests: XCTestCase {
         let scroller = WebScrollView()
         defer { scroller.release() }
 
-        scroller.apply(orientation: .horizontal, bars: .automatic, offset: nil)
+        scroller.apply(axes: .horizontal, bars: .automatic, offset: nil)
         XCTAssertEqual(WebPage.style(of: scroller.node, "overscroll-behavior-x"), "contain")
         XCTAssertEqual(WebPage.style(of: scroller.node, "overscroll-behavior-y"), "auto", "down, the page scrolls on")
 
-        scroller.apply(orientation: .vertical, bars: .automatic, offset: nil)
+        scroller.apply(axes: .vertical, bars: .automatic, offset: nil)
         XCTAssertEqual(WebPage.style(of: scroller.node, "overscroll-behavior-x"), "auto")
         XCTAssertEqual(WebPage.style(of: scroller.node, "overscroll-behavior-y"), "contain")
     }

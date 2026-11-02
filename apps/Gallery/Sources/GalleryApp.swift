@@ -34,13 +34,14 @@ import StateUI
 ///
 /// An application is what every scene SHARES - here its styles. The galleries
 /// are one scene, its windows as many as the user opens: see
-/// Gallery/GalleryScene.swift.
-struct GalleryApp: Application {
+/// Gallery/GalleryScene.swift. Every head names it to its host with
+/// `GalleryApp.register()` - Platforms/<Host>.
+public struct GalleryApp: Application {
     /// The application as it runs - where its styles go.
     @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
-    init() {
+    public init() {
         // The styles a control of the gallery asks for by name. A color in a
         // style follows the theme by itself. See Styles/AppStyles.swift.
         application.styles = AppStyles.sheet
@@ -54,18 +55,10 @@ struct GalleryApp: Application {
 
     /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
     /// About window for the whole application, in a scene of its own. See `ScenesSample`.
-    var body: some Scene {
+    public var body: some Scene {
         GalleryScene()
         ScratchpadScene()
         AboutScene()
     }
 }
 // listing: end
-
-/// Names this application to its host: every head calls it before its host
-/// runs - Platforms/<Host>. The library cannot declare it: the dependency runs
-/// app -> library.
-@MainActor
-public func registerApplication() {
-    stateUIUseApp(GalleryApp())
-}

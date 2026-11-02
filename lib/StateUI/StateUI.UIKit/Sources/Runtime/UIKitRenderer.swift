@@ -133,7 +133,7 @@ final class UIKitRenderer {
 
     /// A scene's lifecycle moved: the window standing in it is in front of the user and activated, off the screen
     /// once in the background, and neither between.
-    func scene(_ scene: UIWindowScene, movedTo phase: ApplicationPhase) {
+    func scene(_ scene: UIWindowScene, movedTo phase: SessionPhase) {
         guard let shown = roster.windows.first(where: { $0.1.window?.windowScene === scene })?.0 else { return }
         window(shown, movedTo: Self.standing(in: scene, moved: phase))
     }
@@ -141,7 +141,7 @@ final class UIKitRenderer {
     /// Where a window stands for the user in `scene`, moved to `phase`: iPadOS keeps every window on screen active
     /// and dims those behind the one the user works in, which stand inactive.
     /// Design: docs/design/platforms/uikit/runtime.md#scenes
-    private static func standing(in scene: UIWindowScene, moved phase: ApplicationPhase) -> ApplicationPhase {
+    private static func standing(in scene: UIWindowScene, moved phase: SessionPhase) -> SessionPhase {
         phase == .active && scene.traitCollection.activeAppearance == .inactive ? .inactive : phase
     }
 
@@ -153,7 +153,7 @@ final class UIKitRenderer {
     }
 
     /// `window`'s lifecycle moved: the host layer settles what that means for it, its scene and the application.
-    func window(_ window: MountedElement, movedTo phase: ApplicationPhase) {
+    func window(_ window: MountedElement, movedTo phase: SessionPhase) {
         roster.windows.first { $0.0 === window }?.1.toldPhase = phase
         runtime.windowStateChanged(window, minimized: phase == .background, activated: phase == .active)
     }
@@ -381,60 +381,36 @@ final class UIKitRenderer {
     /// template, drawn in the color of what holds it - or the bytes decoded at a point a pixel. Each is named by its
     /// identity.
     static func image(_ picture: HostPicture) -> UIImage? {
-        let key = UIKitPictureKey(picture, height: nil)
-        if let kept = images.object(forKey: key) { return kept }
-        let image: UIImage? = switch picture {
-        case .file(let name): image(named: name)
-        case .icon(let icon): UIImage(systemName: icon.sfSymbol)
-        case .bytes(let bytes): UIImage(data: Data(bytes), scale: 1)
+        pictures.image(picture) {
+            let image: UIImage? = switch picture {
+            case .file(let name): image(named: name)
+            case .icon(let icon): UIImage(systemName: icon.sfSymbol)
+            case .bytes(let bytes): UIImage(data: Data(bytes), scale: 1)
+            }
+            image?.accessibilityIdentifier = picture.identity
+            return image
         }
-        image?.accessibilityIdentifier = picture.identity
-        if let image { images.setObject(image, forKey: key) }
-        return image
     }
 
-    /// The pictures made, and their glyphs at each height.
-    private static let images = NSCache<UIKitPictureKey, UIImage>()
+    /// The pictures made, and their glyphs at each height: each found again while a view shows it, the latest asked
+    /// for kept within the host layer's budget.
+    static let pictures = PictureCache<UIImage>(pixels: { $0.cgImage.map { $0.width * $0.height } ?? 0 })
 
     /// The picture as a bar or a tab shows it: `height` points tall and as wide as its shape makes it
     /// (`PictureArithmetic.glyph`) - its own pixels, drawn smaller; a symbol as UIKit sizes it there.
     /// Design: docs/design/platforms/uikit/pages.md#pictures-on-the-bars
     static func glyph(_ picture: HostPicture, height: Double) -> UIImage? {
-        let key = UIKitPictureKey(picture, height: height)
-        if let kept = images.object(forKey: key) { return kept }
-        guard let image = image(picture) else { return nil }
-        guard let pixels = image.cgImage, image.size.height > 0 else { return image }
-        let size = PictureArithmetic.glyph(
-            LayoutSize(width: image.size.width, height: image.size.height), height: height)
-        let glyph = UIImage(
-            cgImage: pixels, scale: image.scale * image.size.height / size.height, orientation: image.imageOrientation)
-            .withRenderingMode(image.renderingMode)
-        glyph.accessibilityIdentifier = picture.identity
-        images.setObject(glyph, forKey: key)
-        return glyph
-    }
-}
-
-/// A picture, at a glyph's height where it stands as one, as the key of the pictures made.
-private final class UIKitPictureKey: NSObject {
-    let picture: HostPicture
-    let height: Double?
-
-    init(_ picture: HostPicture, height: Double?) {
-        self.picture = picture
-        self.height = height
-    }
-
-    override var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(picture)
-        hasher.combine(height)
-        return hasher.finalize()
-    }
-
-    override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? UIKitPictureKey else { return false }
-        return other.picture == picture && other.height == height
+        pictures.image(picture, height: height) {
+            guard let image = image(picture) else { return nil }
+            guard let pixels = image.cgImage, image.size.height > 0 else { return image }
+            let size = PictureArithmetic.glyph(
+                LayoutSize(width: image.size.width, height: image.size.height), height: height)
+            let glyph = UIImage(
+                cgImage: pixels, scale: image.scale * image.size.height / size.height, orientation: image.imageOrientation)
+                .withRenderingMode(image.renderingMode)
+            glyph.accessibilityIdentifier = picture.identity
+            return glyph
+        }
     }
 }
 

@@ -5,7 +5,7 @@
 ///
 ///     ClockTime(hour: 9, minute: 30)
 ///
-/// What a `TimePicker` shows and reports, and what `ClockTime.now()` answers.
+/// What a `TimePicker` shows and reports, and what `application.clock.now()` answers.
 /// No date, no zone: `CalendarDate` is the other half.
 ///
 /// Design: docs/design/types/dates-and-time.md#three-integers-each-way
@@ -125,32 +125,6 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     /// Zero-padded by hand, without Foundation.
     private func pad(_ value: Int) -> String {
         value < 10 && value >= 0 ? "0\(value)" : String(value)
-    }
-
-    /// The time of day right now, by the host's clock.
-    ///
-    ///     let time = try await ClockTime.now()
-    ///
-    /// The host answers local time with milliseconds, which lets a clock sleep
-    /// to the next whole second instead of drifting past it:
-    ///
-    ///     try await Task.sleep(for: .milliseconds(1000 - time.millisecond))
-    ///
-    /// Design: docs/design/types/dates-and-time.md#the-clock-is-an-act
-    ///
-    /// - Returns: the host's local time of day.
-    public static func now() async throws -> ClockTime {
-        let numbers = try await stateUICall(ApplicationContract.currentTime)
-
-        guard numbers.count == 4 else {
-            throw StateUIError(
-                message: "the host's reply does not read as a time of day. Usually "
-                    + "a native library and a runtime built from different versions.")
-        }
-
-        return ClockTime(
-            hour: Int(numbers[0]), minute: Int(numbers[1]),
-            second: Int(numbers[2]), millisecond: Int(numbers[3]))
     }
 }
 

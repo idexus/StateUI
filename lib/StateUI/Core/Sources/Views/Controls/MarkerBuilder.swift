@@ -4,9 +4,9 @@
 /// Collects the markers of a map written as consecutive statements.
 ///
 ///     Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 2_000)).markers {
-///         Marker(at: Location(latitude: 52.2479, longitude: 21.0155)).label("Royal Castle")
+///         Marker(at: Location(latitude: 52.2479, longitude: 21.0155)).title("Royal Castle")
 ///
-///         places.map { Marker(at: $0.location).label($0.name) }
+///         places.map { Marker(at: $0.location).title($0.name) }
 ///     }
 ///
 /// An `if`, an `if/else` and an array of markers work in one, and a plain `for`

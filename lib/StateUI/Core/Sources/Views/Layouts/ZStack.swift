@@ -12,7 +12,7 @@
 ///             .verticalAlignment(.end)
 ///
 ///         Text("Right half")
-///             .area(.proportional(0.5, 0, 0.5, 1))
+///             .area(.proportional(Rect(0.5, 0, 0.5, 1)))
 ///     }
 ///     .height(160)
 ///

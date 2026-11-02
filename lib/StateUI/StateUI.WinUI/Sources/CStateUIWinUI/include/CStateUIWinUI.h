@@ -132,15 +132,6 @@ typedef enum {
     StateUIPickerPresentationRadio,
 } StateUIPickerPresentation;
 
-/// The ways a scroller moves its document: down, across, both, neither.
-// Swift: ScrollOrientation
-typedef enum {
-    StateUIScrollOrientationVertical,
-    StateUIScrollOrientationHorizontal,
-    StateUIScrollOrientationBoth,
-    StateUIScrollOrientationNeither,
-} StateUIScrollOrientation;
-
 /// When a scroller shows its bar: as the platform does, always, never.
 // Swift: ScrollIndicatorVisibility
 typedef enum {
@@ -403,9 +394,6 @@ typedef struct {
 
     /// Files dropped on a view from the system: their `count` paths and names, in UTF-8.
     void (*filesDragged)(int64_t view, int32_t count, char const *const *paths, char const *const *names);
-
-    /// A press on a canvas, followed from down to up, at (x, y) DIPs of it.
-    void (*canvasPressed)(int64_t view, StateUIPressPhase phase, double x, double y);
 
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     void (*picked)(int64_t view, int32_t first, int32_t second, int32_t third);
@@ -1006,6 +994,11 @@ StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
 
+/// How wide `utf8` stands on one line in a field's font, and what its text box draws around its words - its padding
+/// and its border across: what StateUI measures the width a field asks for with.
+double stateui_winui_field_words_width(StateUIObjectRef field, char const *utf8);
+double stateui_winui_field_chrome(StateUIObjectRef field);
+
 /// How a field or an editor takes words: read only, spell checked, predicting the next word, and its input scope
 /// (a `StateUIInputScope`), which picks the keyboard a screen offers.
 void stateui_winui_field_set_behavior(StateUIObjectRef field, bool readOnly, bool spellChecked, bool predicted,
@@ -1077,8 +1070,7 @@ void stateui_winui_path_draw(StateUIObjectRef path, StateUIFigureKind figure, do
                              int32_t count, bool evenOdd, double const *placement, double width, double height,
                              double inset);
 
-/// A canvas: a panel its drawing is replayed on, again for each size and scale it is shown at; a press on it is
-/// told through `canvasPressed` for the view `view`.
+/// A canvas: a panel its drawing is replayed on, again for each size and scale it is shown at.
 StateUIObjectRef stateui_winui_canvas_make(int64_t view);
 
 /// The canvas's drawing, as StateUI's `HostDrawing` lays it out: each instruction's kind and whole numbers in
@@ -1097,10 +1089,11 @@ uint32_t stateui_winui_canvas_ground(StateUIObjectRef canvas);
 /// what a test reads of the screen; whether it rendered.
 bool stateui_winui_pixels(StateUIObjectRef element, double const *points, int32_t count, uint32_t *argb);
 
-/// A ScrollView's scroller: a ScrollViewer around `content`, scrolling the ways its `StateUIScrollOrientation` says;
+/// A ScrollView's scroller: a ScrollViewer around `content`, scrolling the ways `axes` says - Swift's `ScrollAxes`
+/// bits, 1 across and 2 down;
 /// each bar shown as its `StateUIScrollIndicatorVisibility` says.
 StateUIObjectRef stateui_winui_scroller_make(int64_t view);
-void stateui_winui_scroller_set(StateUIObjectRef scroller, StateUIObjectRef content, int32_t orientation,
+void stateui_winui_scroller_set(StateUIObjectRef scroller, StateUIObjectRef content, int32_t axes,
                                 int32_t verticalBar, int32_t horizontalBar);
 
 /// Moves the scroller's view to `x`, `y` DIPs at once; the scroller keeps it within what it can reach, and says where
@@ -1414,20 +1407,17 @@ void stateui_winui_automation_facts(StateUIObjectRef element, int32_t *facts);
 /// How many canvases WinUI holds - what a test counts to see every one let go.
 int32_t stateui_winui_canvases(void);
 
-/// The local time of day: hour, minute, second and millisecond, into `time`.
+/// The local day and time of day: year, month, day, hour, minute, second and millisecond, into `time`.
 void stateui_winui_clock(int32_t *time);
-
-/// The IANA identifier of the local time zone, in UTF-8, as far as `capacity` goes; answers its whole length.
-int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
 
 /// How far `zone` - an IANA identifier, the local zone for null - stands from UTC on a day, in minutes; year 0
 /// for now. Answers false for a zone ICU does not know.
 bool stateui_winui_utc_offset(char const *zone, int32_t year, int32_t month, int32_t day, int32_t *minutes);
 
-/// Offers the words and the link - null for one not given - in Windows' share sheet over `window`; `answered` is
+/// Offers the words and the address - null for one not given - in Windows' share sheet over `window`; `answered` is
 /// called once, on the UI thread, with `context`: 1 where the user shared, 0 where they cancelled, -1 where the sheet
 /// could not be offered.
-void stateui_winui_share(StateUIObjectRef window, char const *text, char const *link, void *context,
+void stateui_winui_share(StateUIObjectRef window, char const *text, char const *address, void *context,
                          void (*answered)(void *context, int32_t shared));
 
 /// Says `utf8` to a screen reader, from `element`, cutting off what it was saying.
@@ -1519,6 +1509,9 @@ void stateui_winui_image_draw(StateUIObjectRef image, double width, double heigh
 
 /// How many SVGs the pictures and icons under an element show read by their file's address, and how many not.
 void stateui_winui_svgs_read(StateUIObjectRef element, int32_t *counts);
+
+/// How many SVG sources the relay has made - each a rasterization - what a test counts.
+int32_t stateui_winui_svgs_made(void);
 
 /// What WinUI holds of `element`'s property named `what`, in UTF-8, as far as `capacity` goes - a color as #AARRGGBB,
 /// a number, 0 or 1, words, sides and corners as four numbers - answering its whole length; -1 for a property the

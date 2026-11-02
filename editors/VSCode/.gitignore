@@ -1,0 +1,6 @@
+node_modules/
+out/
+*.vsix
+# Copied in from the repository while packaging.
+LICENSE
+README.md

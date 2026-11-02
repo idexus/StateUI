@@ -144,16 +144,31 @@ terminal:
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
 
+## Pull requests
+
 Open every pull request against `main`. A release is a tag on `main`. A pull
 request runs the core's workflows - `Core macOS`, `Core Windows` and
 `Core Linux` - and each host's - `AppKit`, `UIKit`, `Android`, `WinUI`, `GTK`
 and `Web`.
 
+A pull request that adds a feature targets `main` too. When the feature needs
+more work before it belongs there, a maintainer decides where it is finished:
+
+- on the pull request's own branch, where **Allow edits by maintainers** is
+  ticked - the same pull request is then merged into `main`;
+- on a `feature/<issue>-<short-name>` branch of this repository, where the
+  pull request allows no edits or the feature waits for a later release - the
+  pull request is retargeted to that branch and merged there, its commits kept
+  as they are, and a second pull request takes the finished feature to `main`.
+
+Ticking **Allow edits by maintainers** lets a feature be finished in its own
+pull request.
+
 ## Keep changes reviewable
 
-Every source under `lib/` starts with the project's two SPDX lines, apart from
-the documented `Package.swift` exception. Preserve unrelated worktree changes;
-they belong to their author.
+Every source under `lib/` and `editors/` starts with the project's two SPDX
+lines, apart from the documented `Package.swift` exception. Preserve unrelated
+worktree changes; they belong to their author.
 
 A commit message is a short declarative sentence describing what is now true.
 Do not include generated-by text or authorship trailers.

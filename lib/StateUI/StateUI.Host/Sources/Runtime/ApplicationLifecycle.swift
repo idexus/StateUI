@@ -19,7 +19,7 @@
     /// What one settling moved.
     public struct Moves {
         /// The application's phase, where it changed.
-        public var phase: ApplicationPhase?
+        public var phase: SessionPhase?
 
         /// What the scenes and the windows hear, in order.
         public var told: [Told] = []
@@ -40,7 +40,7 @@
     }
 
     /// The phase the application stands in; nil before a settling told one.
-    public private(set) var phase: ApplicationPhase?
+    public private(set) var phase: SessionPhase?
 
     /// The scene in front: the one whose window was activated last. Only another window's activation moves it.
     public private(set) weak var front: MountedElement?
@@ -98,15 +98,14 @@
     }
 
     /// Where everything stands now that the toolkit told it, `windows` the tree's, in order: the application's phase,
-    /// then what each scene and window hears where it moved - a window that resumes first, then what leaves, then
-    /// what is activated.
+    /// then what each scene and window hears where it moved - what leaves first, then what is activated.
     public func settle(windows: [MountedElement]) -> Moves {
         var moves = Moves()
         guard !windows.isEmpty else { return moves }
 
         reports.removeAll { report in !windows.contains { $0 === report.window } }
         let scenes = Self.scenes(of: windows)
-        let phase: ApplicationPhase = isHidden ? .background
+        let phase: SessionPhase = isHidden ? .background
             : windows.contains(where: isActivated) ? .active
             : windows.allSatisfy(isStopped) ? .background : .inactive
         if phase != self.phase {
@@ -114,7 +113,6 @@
             self.phase = phase
         }
 
-        var resumed: [Told] = []
         var leaving: [Told] = []
         var activated: [Told] = []
         let events = scenes.map { ($0, sceneEvent($0, windows: windows)) } + windows.map { ($0, windowEvent($0)) }
@@ -123,9 +121,6 @@
             let last = heard.firstIndex { $0.element === element }
             guard last.map({ heard[$0].event }) != event else { continue }
 
-            if last.map({ heard[$0].event }) == .stopped, element.type == .window {
-                resumed.append(Told(element: element, event: .resumed))
-            }
             if event == .activated {
                 activated.append(Told(element: element, event: event))
             } else {
@@ -133,7 +128,7 @@
             }
             if let last { heard[last].event = event } else { heard.append(Heard(element: element, event: event)) }
         }
-        moves.told = resumed + leaving + activated
+        moves.told = leaving + activated
 
         moves.standing = front !== settledFront || isInFront != settledInFront
         settledFront = front

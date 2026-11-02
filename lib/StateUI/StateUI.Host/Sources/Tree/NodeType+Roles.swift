@@ -37,6 +37,12 @@
     /// travels stands no narrower than its words need where it is bound (`LayoutValues.words`).
     /// Design: docs/design/host/motion.md#words-on-the-way
     public static let laidOutWords: [NodeType: LaidOutWords] = [.text: .bare, .button: .boxed]
+
+    /// Where an element that says no horizontal alignment stands across its slot (`LayoutValues.horizontal`): a link
+    /// at its words' size at the start - read and clicked on its words, as every platform's link is - any other
+    /// filling it.
+    /// Design: docs/design/host/layout.md#the-layout-arithmetic
+    public static let unsaidHorizontal: [NodeType: Int32] = [.link: 0]
 }
 
 @_spi(Host) extension MountedElement {

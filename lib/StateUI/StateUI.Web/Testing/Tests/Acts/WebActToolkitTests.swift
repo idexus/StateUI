@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWeb
 import XCTest
 
-/// The clock and the zones as the browser has them, which the acts `currentTime`, `currentTimeZone` and `utcOffset`
-/// answer from.
+/// The clock and the zones as the browser has them, which the acts `currentTime` and `utcOffset` answer from.
 @MainActor
 final class WebActToolkitTests: XCTestCase {
     /// A zone's offset is taken at the day's noon, so a day in summer and one in winter differ where the zone keeps
@@ -41,11 +41,11 @@ final class WebActToolkitTests: XCTestCase {
         }
     }
 
-    /// The local time of day stands within its day, and the local zone has a name.
+    /// The local time of day stands within its day, and the day within its year.
     func testTheLocalTimeStandsWithinItsDay() {
         let now = WebRelay.localTime
         XCTAssertTrue((0..<24).contains(now.hour) && (0..<60).contains(now.minute) && (0..<60).contains(now.second))
         XCTAssertTrue((0..<1000).contains(now.millisecond))
-        XCTAssertFalse(WebRelay.localZone.isEmpty)
+        XCTAssertTrue(now.year >= 2026 && (1...12).contains(now.month) && (1...31).contains(now.day))
     }
 }

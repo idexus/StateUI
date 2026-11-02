@@ -72,11 +72,6 @@ struct FilesApp: Application {
     }
 }
 
-@MainActor
-public func registerApplication() {
-    stateUIUseApp(FilesApp())
-}
-
 // AppLanguage.swift
 
 /// The languages Files speaks, in its interface and in its documents.
@@ -490,8 +485,8 @@ its text within half the width on a phone.
 A `Message` is a field like any other. Each language says the whole sentence
 in its own order and grammar, so a translation is never glued from pieces.
 It knows nothing of where it is said: `localization.text(res.fileCount, count)`
-hands it the context - the grammar of `resolvedLanguage` and the formats in
-effect.
+hands it the context, a `MessageContext` - the grammar of `resolvedLanguage`
+and the formats in effect.
 
 `context.plural` picks the form by the language's rule. English takes one and
 other; Polish takes one (1), few (2-4, 22-24, ... but not 12-14) and many (0,
@@ -549,7 +544,7 @@ States' formats.
 
 ## Which language is in effect
 
-Each choice of a `Localization` is `.system` or `.fixed(value)`:
+Each choice of a `Localization` is a `LocaleChoice`, `.system` or `.fixed(value)`:
 
 - `language` - with `.system`, the first of the user's languages the catalog
   speaks: the same tag, then the same language in the same script (the script

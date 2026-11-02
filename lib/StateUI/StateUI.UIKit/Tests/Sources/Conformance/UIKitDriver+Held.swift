@@ -143,6 +143,6 @@ extension UIKitDriver {
         var (red, green, blue, alpha): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         native.resolvedColor(with: UITraitCollection.current).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         func channel(_ value: CGFloat) -> Int { Int((min(max(value, 0), 1) * 255).rounded()) }
-        return Color(red: channel(red), green: channel(green), blue: channel(blue), alpha: channel(alpha))
+        return Color(red: channel(red), green: channel(green), blue: channel(blue), opacity: Double(channel(alpha)) / 255)
     }
 }

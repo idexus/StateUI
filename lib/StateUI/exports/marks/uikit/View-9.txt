@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.margin: ✅
 Button.swipeDirection: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -22,13 +22,13 @@ ColorPicker.frameChanged: ✅
 ColorPicker.horizontalAlignment: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.verticalAlignment: ✅
-DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the drag and drop interactions' handlers called, no drag session
 Ellipse.held: ✓ hold on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.layoutBody: ✅
 Fill.panYChannel: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
@@ -54,13 +54,13 @@ Link.frameChanged: ✅
 Link.horizontalAlignment: ✅
 Link.pinchUpdated: ✓ pinch on Link: the view's listening handed the recognizer's states, no touch sent
 Link.verticalAlignment: ✅
-Map.canDrag: ✓ dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session
 Map.dragEnded: ✓ dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session
 Map.dragStarting: ✓ dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session
 Map.dragText: ✓ dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session
 Map.frameChanged: ✅
 Map.gridColumnSpan: ✅
 Map.gridRowSpan: ✅
+Map.isDraggable: ✓ dragAndDrop on Map: the drag and drop interactions' handlers called, no drag session
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -100,13 +100,13 @@ Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.verticalAlignment: ✅
-Space.canDrag: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
 Space.dragEnded: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
 Space.dragStarting: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
 Space.dragText: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
 Space.frameChanged: ✅
 Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
+Space.isDraggable: ✓ dragAndDrop on Space: the drag and drop interactions' handlers called, no drag session
 Spinner.holdDuration: ✅
 Stepper.held: ✓ hold on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.layoutBody: ✅

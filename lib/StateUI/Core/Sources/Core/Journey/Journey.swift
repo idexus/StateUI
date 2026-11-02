@@ -167,7 +167,7 @@ public struct Journey<Value: Walked> {
     /// Sends the value there under `motion` - now, before the next line runs - and
     /// answers the movement, whose `arrived()` waits for its end.
     ///
-    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut)).arrived()
+    ///     try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut)).arrived()
     ///
     ///     let fading = $fade.journey.move(to: 0)       // both start now, in this order
     ///     let sliding = $offset.journey.move(to: .zero)
@@ -241,7 +241,7 @@ public struct Journey<Value: Walked> {
     /// is, at the speed it has, alone - what a throw reaches, to send it to
     /// the nearest place it may rest at:
     ///
-    ///     $offset.journey.velocity = pan.velocityY
+    ///     $offset.journey.velocity = pan.velocity.y
     ///     let glide = Motion.glide(longest: .milliseconds(800))
     ///     $offset.journey.move(to: rows.nearest(to: $offset.journey.reach(glide)), glide)
     ///

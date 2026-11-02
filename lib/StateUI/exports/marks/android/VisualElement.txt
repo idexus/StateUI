@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Button.accessibilityAdjusted: ✅
@@ -425,7 +425,7 @@ ItemsView.rotationY: ✅
 ItemsView.scale: ✅
 ItemsView.scaleX: ✅
 ItemsView.scaleY: ✅
-ItemsView.style: not realized
+ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✅
 ItemsView.translationY: ✅
@@ -569,7 +569,7 @@ MotionLayout.rotationY: ✅
 MotionLayout.scale: ✅
 MotionLayout.scaleX: ✅
 MotionLayout.scaleY: ✅
-MotionLayout.style: not realized
+MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✅
 MotionLayout.translationY: ✅

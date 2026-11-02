@@ -105,6 +105,13 @@ assignment, or a move without a law - lays the value's own back with its
 destination, so a plain assignment after `move(to: 0,
 .eased(.milliseconds(2000)))` travels on the value's own law.
 
+Each waiter waits under a number of its own. A task cancelled while it waits
+stops waiting with `CancellationError` - its run may be superseded, its element
+gone - and leaves alone: the movement goes on for every other waiter, and
+`stop()` is what ends it. Every resume - the end, a failure, a cancellation -
+is counted as it is made and taken back as the waiter runs again, so a host
+waiting for the queue to go quiet never waits on a failure answered.
+
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
 is true at once, because the engine alone knows when it is done.
@@ -210,15 +217,19 @@ would be freed, and the board would walk every leftover reading every frame.
 `$volume.convert { $0 * 100 }` is a second state the host carries, worked out
 from the first by an engine the differ writes: whenever the source moves, the
 engine runs on the display's frames and settles the derived value where the
-control reads it, and nothing is built. `.convertBack { $0 / 100 }` is the
+control reads it, and nothing is built. `back: { $0 / 100 }` beside it is the
 engine the other way, for a control that reports, so the user's change lands
 on the source in the source's terms. It is woken by the host's reports alone
 (`HostStorage.reports`), never by the forward engine settling the derived
 value: what the application writes goes forward and stays as written - `v =
 0.123` through a slider converting by hundredths stays 0.123, the control
 showing 12 - as the application's writes never come back as the user's.
-`convertBack` is meant as the inverse; where it is not exactly - a rounding, a
-clamp - a report lands on the source as the round trip makes it.
+The way back is meant as the inverse; where it is not exactly - a rounding, a
+clamp - a report lands on the source as the round trip makes it. It is written
+in the same call, `convert(_:back:)`, typed `(Out) -> Value`: a way back
+answering another type does not compile, and one call declares the conversion
+whole - a way back that comes and goes stays one call, `back: editing ? { … } :
+nil`, so the derived state stays the same object.
 
 ```text
   derived state   known to the first source's storage under the element being
@@ -228,7 +239,8 @@ clamp - a report lands on the source as the round trip makes it.
                   renders - the host's tie keeps its number - two views
                   converting one source on one line keep two, and an element
                   that leaves takes its own; made with no element being built,
-                  the source holds it
+                  the source holds it, worked out at once - its arithmetic
+                  reads the source, which would otherwise hold what holds it
   sources         held WEAKLY by the conversion
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result
@@ -251,16 +263,42 @@ visit to a page with a converted text leaving them behind, walked every frame.
 What owns a conversion is the engine the differ arms for it, which hands its
 number back when the element goes, and the binding it was made for.
 
+## A chain of conversions
+
+A conversion of a conversion - `$volume.convert { $0 * 100 }.convert { "\(Int($0))%" }`
+- is worked out from the first sources. Each conversion holds the ones its
+sources are the derived side of (`upstream`), since the middle of a chain has
+no binding of its own once the expression writing it ends; the element wearing
+the last writes the engines of every link, the first sources' first, each
+conversion once, so a write to the first source goes through the chain in one
+cycle. A body reading the last reads every link's sources, and works each link
+out over the one before it. A report goes back the same way: each link's
+way back lands it on its sources and hands it to the link before.
+
+## A conversion declared again
+
+A conversion is one object across renders, and each render declares it again:
+its sources, its arithmetic and its way back are the new declaration's alone.
+A body that wrote `back:` before and does not now leaves no way back -
+the control's reports go back to nobody - and one writing it again takes only
+the reports made from then on, so a report made while there was none never
+lands later (`Conversion.declareAgain`, `declareBack`).
+
 ## Many sources
 
 `.multi($a, $b).convert { a, b in … }` is the same machinery over two to ten
 states. `.multi` is a static member of `Binding`, so the leading dot resolves
 against the type the control takes, and the call reads as the states and then
-the arithmetic. The arities are written out one overload each: a parameter pack
-captured in the escaping closure that reads the sources crashes the compiler,
-and shorthand closure arguments have no arity to bind to over a pack. The
-sources are read off their storage, not through their bindings, so the line
-that wrote the conversion does not become a reader of every source.
+the arithmetic. The arities are written out one overload each, because no
+parameter pack says "two or more" (measured on Swift 6.4): a pack alone reads
+every spelling, `$0` included, but takes `.multi()` - no source, a stop at run
+time - and `.multi($a)`, a second road to `$a.convert`, and nothing refuses
+either; a pack after two named sources leaves its empty tail uninferred, so
+the commonest call, two sources, does not compile. The overloads refuse both
+at compile time. The sources are read off their storage, not through their bindings, so the line
+that wrote the conversion does not become a reader of every source. Two
+states take a way back as one does, `.multi($a, $b).convert(_:back:)`, the way
+back answering both, each in its own type.
 
 ## Motion laws
 

@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -37,11 +37,11 @@ Ellipse.area: ✅
 Ellipse.frameChanged: ✅
 Ellipse.layoutBody: ✅
 Ellipse.panYChannel: ✅
-Fill.canDrag: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.dragEnded: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.dragStarting: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.dragText: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Fill.isDraggable: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Grid.frameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
@@ -70,11 +70,11 @@ Line.area: ✅
 Line.frameChanged: ✅
 Line.layoutBody: ✅
 Line.panYChannel: ✅
-Link.canDrag: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.dragEnded: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.dragStarting: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.dragText: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Link.isDraggable: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Map.frameChanged: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRowSpan: 🧩
@@ -108,12 +108,12 @@ ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.layoutBody: ✅
 ProgressBar.panYChannel: ✅
-Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.frameChanged: ✅
 Rectangle.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.frameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
@@ -146,11 +146,11 @@ Space.gridRow: ✅
 Space.swipeDirection: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
-Spinner.canDrag: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Spinner.dragStarting: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Spinner.dragText: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Spinner.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Spinner.isDraggable: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -172,11 +172,11 @@ TextEditor.area: ✅
 TextEditor.frameChanged: ✅
 TextEditor.layoutBody: ✅
 TextEditor.panYChannel: ✅
-TextField.canDrag: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.dragEnded: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.dragStarting: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.dragText: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+TextField.isDraggable: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅

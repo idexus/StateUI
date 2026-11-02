@@ -119,21 +119,29 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
     }
 
-    /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window hears no
-    /// destroying, and stands again as the browser shows the page.
-    func testAPageTheBrowserKeepsIsHiddenNotGone() throws {
+    /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
+    /// sight, and stands again as the browser shows the page - a window going away would not.
+    func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {
         WebRenderer.shared?.leave()
         let host = WebRenderer.running { WindowPhaseText() }
         host.step()
         let phase = { (try? WebBrowser.evaluate("e.textContent", on: host.views(WebTextView.self).first?.node ?? 0)) ?? "" }
 
-        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))")
-        for _ in 0..<5 { host.step() }
-        XCTAssertNotEqual(phase(), "destroying", "a page kept for coming back heard its end")
+        // A browser hides the page before it tells `pagehide`, and shows it before `pageshow`. What the page tells
+        // settles in a task of the UI thread's, which each step leaves its turn.
+        try WebBrowser.run("""
+            Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+            dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))
+            """)
+        for _ in 0..<5 { host.step(); await Task.yield() }
+        XCTAssertEqual(phase(), "background", "a page kept for coming back is out of sight")
 
-        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))")
-        for _ in 0..<5 { host.step() }
-        XCTAssertNotEqual(phase(), "destroying")
+        try WebBrowser.run("""
+            delete document.visibilityState;
+            dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))
+            """)
+        for _ in 0..<5 { host.step(); await Task.yield() }
+        XCTAssertNotEqual(phase(), "background", "and stands again, as one gone would not")
         host.leave()
     }
 
@@ -214,6 +222,31 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
     }
 
+    /// A page whose bars hold groups, menus, a setting, an overflow and a bar at its foot, pushed and taken off a
+    /// stack again and again, leaves the host holding as many views each time.
+    func testAPageWithAFullBarLeavesNothingAsItGoes() async throws {
+        WebRenderer.shared?.leave()
+        let path = State(wrappedValue: [Int]())
+        let host = WebRenderer.running { FullBarStack(path: path) }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        var kinds: [[String: Int]] = []
+        for _ in 0..<3 {
+            path.wrappedValue = [1]
+            await settle()
+            path.wrappedValue = []
+            await settle()
+            counts.append(WebDOMView.liveCount)
+            kinds.append(WebDriver().liveViewKinds ?? [:])
+        }
+
+        let grown = (kinds.last ?? [:]).filter { $0.value > (kinds.first?[$0.key] ?? 0) }
+        XCTAssertEqual(Set(counts).count, 1, "views left behind each visit: \(counts), grown: \(grown)")
+        host.leave()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()
@@ -224,6 +257,39 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
 
         XCTAssertEqual(WebDOMView.liveCount, before, "a view of the closed window outlived it")
+    }
+}
+
+/// A stack whose pushed page holds a full bar: groups, a split button's menu, a menu its click opens, a setting, an
+/// item in the overflow, a bar at the foot and a menu bar.
+private struct FullBarStack: View {
+    let path: State<[Int]>
+
+    var body: some View {
+        NavigationStack(path.projectedValue) {
+            Text("Root")
+        } destination: { _ in
+            Text("Bars")
+                .toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }
+                        ToolbarButton("Add").onClicked {}
+                    }
+                    ToolbarButton("Sort").menu {
+                        MenuItem("A to Z").onClicked {}
+                        MenuItem("Z to A").onClicked {}
+                    }
+                    ToolbarToggle("Favorite", isOn: false)
+                    ToolbarButton("Clear").onClicked {}.placement(at: .overflow)
+                }
+                .toolbar(.bottom) {
+                    ToolbarLabel("No recent files").placement(at: .start)
+                    ToolbarButton("Save").onClicked {}
+                }
+                .menuBar {
+                    Menu("File") { MenuItem("Save").onClicked {} }
+                }
+        }
     }
 }
 

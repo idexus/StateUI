@@ -134,7 +134,7 @@ final class HandHearingTests: XCTestCase {
         handed = []
         tapped = 0
         dragged = []
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let clock = HandClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -213,7 +213,7 @@ private struct HandPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 
@@ -230,7 +230,7 @@ private struct TappedHandPage: View {
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .onItemTapped { _ in tapped += 1 }
+        .onItemActivated { _ in tapped += 1 }
     }
 }
 
@@ -249,16 +249,16 @@ private struct RightToLeftPage: View {
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
-        .onItemDragged { drag in dragged.append((drag.item, drag.at)) }
+        .onItemDragged { drag in dragged.append((drag.id, drag.at)) }
         .layoutDirection(.rightToLeft)
     }
 }
 
 private struct RightToLeftApplication: Application {
-    let mirrors: Bool
+    var mirrors = false
 
     var body: some Scene { WindowGroup { RightToLeftPage(mirrors: mirrors) } }
 }

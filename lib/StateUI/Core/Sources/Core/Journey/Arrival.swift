@@ -14,8 +14,11 @@ public final class Arrival {
     /// How it ended, once it has.
     private var outcome: Result<Bool, any Error>?
 
-    /// Who waits for the end.
-    private var waiting: [CheckedContinuation<Bool, any Error>] = []
+    /// Who waits for the end, each under a number of its own, so a cancelled one leaves alone.
+    private var waiting: [(number: Int, continuation: CheckedContinuation<Result<Bool, any Error>, Never>)] = []
+
+    /// The number the next waiter waits under.
+    private var nextWaiter = 0
 
     /// How it ended - whether it got there - or nil while it is under way: what a
     /// test asks without waiting.
@@ -32,19 +35,43 @@ public final class Arrival {
     /// Waits for the end, and answers whether the value got there: true when it ran
     /// to the end, false when something else ended it - a newer destination, a
     /// value written over it, or `stop()`. Once ended, answers at once, as often as
-    /// asked.
+    /// asked. A task cancelled while it waits stops waiting, and the movement goes
+    /// on for whoever else waits: `stop()` ends it.
     ///
-    /// - Throws: whatever the host answers when it cannot carry the value at all.
+    /// - Throws: `CancellationError` where the waiting task is cancelled; whatever
+    ///   the host answers when it cannot carry the value at all.
     @discardableResult
     public func arrived() async throws -> Bool {
         if let outcome { return try outcome.get() }
 
-        let end = try await withCheckedThrowingContinuation { waiting.append($0) }
+        let number = nextWaiter
+        nextWaiter += 1
+        let end = await withTaskCancellationHandler {
+            await withCheckedContinuation { (continuation: CheckedContinuation<Result<Bool, any Error>, Never>) in
+                if Task.isCancelled {
+                    Renderer.shared.resumesPending += 1
+                    continuation.resume(returning: .failure(CancellationError()))
+                } else {
+                    waiting.append((number, continuation))
+                }
+            }
+        } onCancel: {
+            libraryTask { self.letGo(number) }
+        }
 
-        // Counted as the host answered, lowered as the waiter runs again.
-        // Design: docs/design/core/acts.md#awaiting-an-answer
+        // Counted as each waiter is resumed, lowered as it runs again - whatever it carries.
+        // Design: docs/design/core/journeys.md#moving-and-waiting
         Renderer.shared.resumesPending -= 1
-        return end
+        return try end.get()
+    }
+
+    /// A waiter whose task was cancelled, let go with its cancellation; one already resumed is gone.
+    private func letGo(_ number: Int) {
+        guard let place = waiting.firstIndex(where: { $0.number == number }) else { return }
+
+        let waiter = waiting.remove(at: place)
+        Renderer.shared.resumesPending += 1
+        waiter.continuation.resume(returning: .failure(CancellationError()))
     }
 
     /// The host's answer: the end, or why it could not carry the value.
@@ -53,7 +80,7 @@ public final class Arrival {
         case .finished(let values):
             outcome = .success(values.first?.bool ?? true)
         case .failed(let message):
-            outcome = .failure(StateUIError(message: message))
+            outcome = .failure(StateUIError.notPerformed(act: "move", reason: message))
         case .cancelled:
             outcome = .failure(CancellationError())
         }
@@ -62,8 +89,8 @@ public final class Arrival {
         waiting.removeAll()
         Renderer.shared.resumesPending += resumed.count
 
-        for continuation in resumed {
-            continuation.resume(with: outcome!)
+        for waiter in resumed {
+            waiter.continuation.resume(returning: outcome!)
         }
     }
 }

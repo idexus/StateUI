@@ -243,11 +243,6 @@ final class GTKDriver: HostDriver {
         }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, perform(act, on: picker) { return }
-        if let canvas = view as? GTKCanvasView, ["pressDown", "drag", "lift"].contains(act.description) {
-            try press(act, on: canvas, element)
-            _ = input(act, on: canvas)
-            return
-        }
         if let view, input(act, on: view) { return }
         if act == .activate, let items = element.enclosing(type: .itemsView), try activateItem(element, in: items) { return }
         switch (act, view) {
@@ -278,16 +273,13 @@ final class GTKDriver: HostDriver {
         case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         case (.scroll(let offset), let scrollView as GTKScrollView): try scroll(scrollView, to: offset, on: element, act)
-        case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
-             (.lift, let canvas as GTKCanvasView):
-            try press(act, on: canvas, element)
         case (.choose(let place), let items as GTKItemsView): try choose(place, in: items, on: element)
         default: throw DriverCannot(act, on: element)
         }
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? GTKElement)?.view as? GTKSingleChildView {
             return page.bottomBarEdge?.propValue
         }
@@ -320,7 +312,7 @@ final class GTKDriver: HostDriver {
                 let channel = { (value: Double) in Int((value * 255).rounded()) }
                 let drawn = Color(
                     red: channel(Double(rgba.red)), green: channel(Double(rgba.green)), blue: channel(Double(rgba.blue)),
-                    alpha: channel(Double(rgba.alpha)))
+                    opacity: Double(rgba.alpha))
                 return StandIns.material(painted: drawn).propValue
             }
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
@@ -392,7 +384,7 @@ final class GTKDriver: HostDriver {
     /// `rgba` as the tree writes a color.
     static func color(_ rgba: GdkRGBA) -> Color {
         let channel = { (value: Float) in Int((value * 255).rounded()) }
-        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), alpha: channel(rgba.alpha))
+        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), opacity: Double(channel(rgba.alpha)) / 255)
     }
 
     /// Where a button's picture stands by its words: across or down the box, first or last.

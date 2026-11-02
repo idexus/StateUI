@@ -62,7 +62,7 @@ extension ControlDictionary {
                 Draw.fillEllipse(x: dot.x - 8, y: dot.y - 8, width: 16, height: 16)
             }
             .height(120)
-            .onPressed { point in dot = point }
+            .onPointerPressed { point in dot = point }
             """#),
 
         (CheckBoxContract.self, #"""
@@ -174,9 +174,7 @@ extension ControlDictionary {
             """#),
 
         (LineContract.self, #"""
-            Line()
-                .x1(0).y1(0)
-                .x2(240).y2(0)
+            Line(from: Point(0, 0), to: Point(240, 0))
                 .stroke(.lightGray)
                 .lineWidth(1)
             """#),
@@ -185,8 +183,8 @@ extension ControlDictionary {
             @State var tapped = "nowhere yet"
 
             Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                .mapType(.hybrid)
-                .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
+                .type(.hybrid)
+                .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
 
         (MenuContract.self, #"""
@@ -341,7 +339,7 @@ extension ControlDictionary {
             Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
                 .markers {
                     Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-                        .label("Royal Castle")
+                        .title("Royal Castle")
                         .subtitle("Plac Zamkowy 4")
                         .onSelected { chosen = "castle" }
                 }
@@ -703,7 +701,7 @@ extension ControlDictionary {
 
         (ShapeContract.self, #"""
             Line()
-                .x2(120)
+                .to(Point(120, 0))
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])
@@ -818,7 +816,7 @@ extension ControlDictionary {
             VStack {
                 Text("Row \(row)")
             }
-            .onKeyPressed(.upArrow, .downArrow) { press in
+            .onKeyPressed([.upArrow, .downArrow]) { press in
                 row += press.key == .upArrow ? -1 : 1
             }
             """#),
@@ -880,7 +878,7 @@ extension ControlDictionary {
             """#),
 
         (LinkContract.self, #"""
-            Link("Terms of use", destination: "https://stateui.dev/terms")
+            Link("Terms of use", address: "https://stateui.dev/terms")
             """#),
 
         (ButtonMenuElementContract.self, #"""

@@ -87,7 +87,7 @@ struct PinchSample: SampleContent, ExampleContent {
         VStack {
             Text("`scale` is how far the fingers have spread since the pinch began, and "
                 + "`angle` how far they have turned, in degrees clockwise, so a view "
-                + "scales the size and turns from the angle it had then. `scaleOrigin` "
+                + "scales the size and turns from the angle it had then. `pivot` "
                 + "says where the pinch is centered, as a fraction of the view; each "
                 + "report's `velocity` how fast it goes. On a desktop, drag with ⌥ (Alt) "
                 + "held for two fingers.")

@@ -123,7 +123,7 @@ final class AppKitItemCell: NSCollectionViewItem {
     }
 }
 
-/// A header or a footer of an ItemsView or of one of its groups.
+/// A header or a footer of an ItemsView or of one of its sections.
 @MainActor
 final class AppKitItemSupplement: NSView, NSCollectionViewElement {
     private(set) lazy var holding = AppKitItemHolding(in: self)

@@ -46,6 +46,9 @@ struct MenuPage: View {
     /// at the bottom.
     @Environment(\.device) private var device
 
+    /// The StateUI release the line at the bottom names.
+    @Environment(\.application) private var application
+
     var body: some View {
         // The rows run under the bars, the first and the last stopping clear
         // of them.
@@ -103,10 +106,12 @@ struct MenuPage: View {
         .padding(horizontal: 10, vertical: 8)
     }
 
-    /// What is underneath: the platform compiled in, the formFactor the host
-    /// answered before the first render, and the StateUI release it is built on.
+    /// What is underneath: the platform and form factor the host answered before the first render, the
+    /// architecture compiled in, and the StateUI release it is built on.
     private var footer: some View {
-        Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
+        Text(
+            "native: \(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)"
+                + "\nStateUI \(application.info.libraryVersion)")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)

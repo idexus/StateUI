@@ -8,15 +8,6 @@
 ///
 /// Design: docs/design/views/motion-layout.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
-    /// Which way the hand moves the parameters.
-    public enum Orientation: Int32, Equatable, Sendable {
-        /// Across: the hand moving sideways, the parameters growing as it moves to the left.
-        case horizontal = 0
-
-        /// Down: the hand moving up and down, the parameters growing as it moves up.
-        case vertical = 1
-    }
-
     /// How far the hand travels for one unit of the parameters.
     public enum Travel: Equatable, Sendable {
         /// So many device units, one at least.
@@ -130,4 +121,3 @@ public struct LayoutInput: Equatable, Sendable {
     }
 }
 
-extension LayoutInput.Orientation: HostRepresentable {}

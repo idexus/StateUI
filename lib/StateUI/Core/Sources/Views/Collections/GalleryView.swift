@@ -12,7 +12,7 @@
 ///     GalleryView(albums, id: \.title) { album in
 ///         AlbumFace(album)
 ///     }
-///     .arrangement(.default)
+///     .arrangement(.wheel)
 ///     .position($shown)
 ///     .onItemActivated { title in open(title) }
 ///
@@ -57,7 +57,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var activated: ValueHandler<ID>?
 
     /// Which shape the cards stand in.
-    private var look = GalleryArrangement.default
+    private var look = GalleryArrangement.wheel
 
     /// How wide a card is, in device units.
     private var cardWidth = 176.0
@@ -247,7 +247,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How each card moves as a body of the gallery's world: a body following its place lags behind it as the
     /// gallery turns, and settles back onto it.
     ///
-    ///     .itemBody(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+    ///     .itemBody(.followsLayout(response: .milliseconds(300), damping: 0.8))
     ///
     /// - Parameter body: the body every card is, as `layoutBody(_:)` gives one view of a motion layout.
     /// - Returns: the gallery, its cards moving so.
@@ -410,25 +410,25 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // The shade sits beside the press: the card that dips wears none.
         if let mask { layout = layout.shade(mask) }
 
-        // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
-        // activation's own work, which usually builds a page.
+        // The activation, answered on the card in front: the press shows, and the card is back at its size, before
+        // the activation's own work, which usually builds a page.
         if let activated {
-            let tapped: ValueEventHandler<Items.Element> = { item in
+            let tapped: ValueEventHandler<ID> = { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
-                guard item[keyPath: path] == front[keyPath: path] else { return }
+                guard id == front[keyPath: path] else { return }
 
-                dips.wrappedValue = item[keyPath: path]
+                dips.wrappedValue = id
 
                 try await Task.sleep(for: .milliseconds(Self.held))
 
                 dips.wrappedValue = nil
 
-                try await activated.run(item[keyPath: path])
+                try await activated.run(id)
             }
             switch activated.gate {
-            case .own(let policy): layout = layout.onItemTapped(policy, tapped)
-            case .shared(let gate): layout = layout.onItemTapped(gate: gate, tapped)
+            case .own(let policy): layout = layout.onItemActivated(policy, tapped)
+            case .shared(let gate): layout = layout.onItemActivated(gate: gate, tapped)
             }
         }
 
@@ -462,7 +462,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var held: Int { 60 }
 
     /// How the press animates, down and back: short, as an answer to a finger.
-    private static var pressing: Motion { .eased(.milliseconds(50), .cubicOut) }
+    private static var pressing: Motion { .eased(.milliseconds(50), curve: .cubicOut) }
 
     /// How far a far card fades unless said: all of it, or a quarter where a
     /// shade does the rest.
@@ -526,7 +526,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         case .deck:
             return deck(step, setOut: setOut, room, fit)
 
-        case .default:
+        case .wheel:
             return wheel(step, room, fit)
         }
     }

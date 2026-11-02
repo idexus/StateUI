@@ -789,8 +789,10 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   color: var(--stateui-text);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-/* A field is as wide as its words or its placeholder, not twenty characters. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field { field-sizing: content; }
+/* A field is as wide as its words or its placeholder, and at least twenty digits beside its padding and border
+   (FieldWidth); a size its layout gives it writes its own least over this one. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field { field-sizing: content; min-width: calc(20ch + 26px); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field[type="search"] { min-width: calc(20ch + 48px); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
 /* An editor given a ground of its own stands in it with no frame, focused or not: the platforms' editors draw none. */

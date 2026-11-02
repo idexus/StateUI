@@ -31,6 +31,8 @@ lib/StateUI/StateUI.GTK/
   test-gtk.sh                runs the host's suite
 apps/<App>/Platforms/GTK/
   main.swift                 the application's GTK head
+  Host/                      what this host answers for the application
+  link-schemes               the schemes of the application's links, one a line, which its desktop entry takes
 ```
 
 ## Requirements
@@ -67,9 +69,9 @@ import GalleryUI
 import StateUIGTK
 import StateUIWebViewGTK
 
-// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
 // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-registerApplication()
+GalleryApp.register()
 // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()
@@ -290,8 +292,10 @@ output in the terminal. Everything a build writes stays in the application's
 named by the application's ID and installed for the user in
 `~/.local/share/icons` and `~/.local/share/applications`. GNOME finds a
 window's icon through that entry. `release` builds the optimized head, `--detach` returns once
-the application has started, and `--build-only` builds it and starts
-nothing. Every `STATEUI_` variable of the shell that runs it -
+the application has started, `--gdb` starts it detached under gdb - the
+stack of every GTK critical and of a crash written to `.build/gtk/gdb.log`,
+the application going on past a critical - and `--build-only` builds it and
+starts nothing. Every `STATEUI_` variable of the shell that runs it -
 `STATEUI_TALLY=1`, `STATEUI_INSPECT=1` - reaches the application.
 
 In VS Code, with **GTK** chosen in the status bar, **StateUI: Debug** builds

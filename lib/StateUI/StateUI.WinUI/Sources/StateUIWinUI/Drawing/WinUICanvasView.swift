@@ -9,11 +9,6 @@ import CStateUIWinUI
 /// Design: docs/design/platforms/winui/drawing.md#a-canvas
 @MainActor
 final class WinUICanvasView: WinUIView {
-    /// What the canvas does as a press goes down on it, moves, and is lifted, at a point in DIPs of it.
-    var onPressed: ((Point) -> Void)?
-    var onDragged: ((Point) -> Void)?
-    var onReleased: ((Point) -> Void)?
-
     init() {
         super.init { number in stateui_winui_canvas_make(number) }
     }
@@ -42,21 +37,5 @@ final class WinUICanvasView: WinUIView {
                 }
             }
         }
-    }
-
-    /// A press on the canvas at `point`, in its phase.
-    func pressed(_ phase: StateUIPressPhase, at point: Point) {
-        switch phase {
-        case .down: onPressed?(point)
-        case .moved: onDragged?(point)
-        case .letGo, .takenAway: onReleased?(point)
-        }
-    }
-
-    override func detach() {
-        super.detach()
-        onPressed = nil
-        onDragged = nil
-        onReleased = nil
     }
 }

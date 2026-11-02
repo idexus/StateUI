@@ -51,7 +51,7 @@ its member says `cleared: false`, and losing it builds the whole element
 again instead:
 
 ```text
-  a gesture's settings           allowsDrop, canDrag, dragText, droppedFileTypes, tapCount,
+  a gesture's settings           allowsDrop, isDraggable, dragText, droppedFileTypes, tapCount,
                                  panTouchCount, swipeDirection, swipeThreshold: they belong to
                                  the recognizer
   a list's items                 a picker's options, which are data

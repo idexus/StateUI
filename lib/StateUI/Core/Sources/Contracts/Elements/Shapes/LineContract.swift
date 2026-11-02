@@ -14,18 +14,12 @@ public enum LineContract: ElementContract {
     /// A line is a shape.
     public static let tiers: [any Contract.Type] = [ShapeContract.self]
 
-    /// Where it starts, across.
-    public static let x1 = ElementProperty<Self, Double>("x1", layer: .stateUI)
+    /// Where it starts.
+    public static let from = ElementProperty<Self, Point>("from", layer: .stateUI)
 
-    /// Where it ends, across.
-    public static let x2 = ElementProperty<Self, Double>("x2", layer: .stateUI)
-
-    /// Where it starts, down.
-    public static let y1 = ElementProperty<Self, Double>("y1", layer: .stateUI)
-
-    /// Where it ends, down.
-    public static let y2 = ElementProperty<Self, Double>("y2", layer: .stateUI)
+    /// Where it ends.
+    public static let to = ElementProperty<Self, Point>("to", layer: .stateUI)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [x1, x2, y1, y2]
+    public static let members: [any ContractMember] = [from, to]
 }

@@ -109,7 +109,7 @@ final class FingersHearingTests: XCTestCase {
 
     private func running(_ application: some Application = FingersApplication()) -> (HostRuntime, FingersClock) {
         handed = []
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let clock = FingersClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -151,7 +151,7 @@ private struct FingersPage: View {
         }
         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 
@@ -177,7 +177,7 @@ private struct TurnedPage: View {
 }
 
 private struct TurnedApplication: Application {
-    let mirrors: Bool
+    var mirrors = false
 
     var body: some Scene { WindowGroup { TurnedPage(mirrors: mirrors) } }
 }

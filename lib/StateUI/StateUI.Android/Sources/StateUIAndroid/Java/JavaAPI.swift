@@ -198,6 +198,7 @@ enum JavaAPI {
     static let shareTaken = Java.staticMethod(share, "takeChosen", "(Landroid/app/Activity;)Z")
     static let clipboardWrite = Java.staticMethod(clipboard, "write", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let clipboardRead = Java.staticMethod(clipboard, "read", "(Landroid/content/Context;)Ljava/lang/String;")
+    static let clipboardReadable = Java.staticMethod(clipboard, "readable", "(Landroid/content/Context;)Z")
     static let alert = Java.staticMethod(
         dialogs, "alert", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let confirm = Java.staticMethod(
@@ -499,7 +500,6 @@ enum JavaAPI {
 
     static let environment = Java.findClass("stateui/android/StateUIEnvironment")
     static let clock = Java.staticMethod(environment, "clock", "()[I")
-    static let zone = Java.staticMethod(environment, "zone", "()Ljava/lang/String;")
     static let utcOffset = Java.staticMethod(environment, "utcOffset", "(Ljava/lang/String;III)I")
     static let hideKeyboard = Java.staticMethod(environment, "hideKeyboard", "(Landroid/view/View;)Z")
     static let useNightMode = Java.staticMethod(environment, "useNightMode", "(Landroid/content/Context;I)V")

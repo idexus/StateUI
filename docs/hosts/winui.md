@@ -90,10 +90,10 @@ import GalleryUI
 import StateUIWebViewWinUI
 import StateUIWinUI
 
-// Register the application module, then say what this host answers for it before it runs: the controls it realizes,
+// Name the application to the host, then say what this host answers for it before it runs: the controls it realizes,
 // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
 // relay in Relay/. Then hand WinUI this thread until the last window closes.
-registerApplication()
+GalleryApp.register()
 // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
 GalleryControls.register()
 GalleryActs.register()

@@ -64,7 +64,7 @@ private final class Walk: HostPresenter {
     fileprivate var halves = 0
 
     init() {
-        stateUIUseApp(GalleryApp())
+        GalleryApp.register()
         runtime = HostRuntime(
             clock: clock, reducesMotion: { false }, makeNative: { [unowned self] _ in WalkedHalf(self) },
             log: { _ in })

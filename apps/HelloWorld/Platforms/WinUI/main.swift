@@ -4,7 +4,7 @@
 import HelloWorldUI
 import StateUIWinUI
 
-// Register the application module, then hand WinUI this thread until the last
+// Name the application to the host, then hand WinUI this thread until the last
 // window closes.
-registerApplication()
+HelloWorldApp.register()
 StateUIWinUI.run()

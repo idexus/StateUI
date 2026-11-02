@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.tapped: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
@@ -9,13 +9,13 @@ Capsule.frameChanged: ✅
 Capsule.horizontalAlignment: ✅
 Capsule.pinchUpdated: ✓ pinch on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.verticalAlignment: ✅
-CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the drag and drop interactions' handlers called, no drag session
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the drag and drop interactions' handlers called, no drag session
 CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the drag and drop interactions' handlers called, no drag session
 CheckBox.dragText: ✓ dragAndDrop on CheckBox: the drag and drop interactions' handlers called, no drag session
 CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
+CheckBox.isDraggable: ✓ dragAndDrop on CheckBox: the drag and drop interactions' handlers called, no drag session
 ColorPicker.held: ✓ hold on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.layoutBody: ✅
 DatePicker.panYChannel: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -45,13 +45,13 @@ Image.pointerReleased: ✓ hover on Image: the view's listening handed the recog
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the drop interaction's handler told the driver's files, no drag session
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the drop interaction's handler told the driver's files, no drag session
 ItemsView.tapped: ✓ pressDown on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Line.canDrag: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragEnded: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragStarting: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragText: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
+Line.isDraggable: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Link.held: ✓ hold on Link: the view's listening handed the recognizer's states, no touch sent
 Link.layoutBody: ✅
 Map.panYChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
@@ -89,13 +89,13 @@ ScrollView.frameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.verticalAlignment: ✅
-SearchField.canDrag: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 SearchField.dragStarting: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 SearchField.dragText: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
+SearchField.isDraggable: ✓ dragAndDrop on SearchField: the drag and drop interactions' handlers called, no drag session
 Separator.area: ✅
 Separator.frameChanged: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: the view's listening handed the recognizer's states, no touch sent

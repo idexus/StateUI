@@ -22,7 +22,7 @@ final class UIKitMotionTests: XCTestCase {
             VStack {
                 Text(long.wrappedValue ? "Text & typing" : "Text").horizontalAlignment(.start).id("caption")
             }
-            .motion(.eased(.milliseconds(200), .linear))
+            .motion(.eased(.milliseconds(200), curve: .linear))
             .width(300)
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
@@ -56,7 +56,7 @@ final class UIKitMotionTests: XCTestCase {
             VStack {
                 Button(enabled.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center).id("button")
             }
-            .motion(.eased(.milliseconds(200), .linear))
+            .motion(.eased(.milliseconds(200), curve: .linear))
             .width(300)
             .verticalAlignment(.start)
         }
@@ -91,7 +91,7 @@ final class UIKitMotionTests: XCTestCase {
             VStack {
                 Button("Details").horizontalAlignment(filling.wrappedValue ? .fill : .center).id("button")
             }
-            .motion(.eased(.milliseconds(200), .linear))
+            .motion(.eased(.milliseconds(200), curve: .linear))
             .width(300)
             .verticalAlignment(.start)
         }
@@ -127,7 +127,7 @@ final class UIKitMotionTests: XCTestCase {
                     .width(wide.wrappedValue ? 300 : 100)
                     .height(60)
                     .horizontalAlignment(.start)
-                    .motion(.eased(.milliseconds(1000), .linear))
+                    .motion(.eased(.milliseconds(1000), curve: .linear))
                     .id("box")
             }
         }
@@ -171,7 +171,7 @@ final class UIKitMotionTests: XCTestCase {
                     .height(40)
                     .id("below")
             }
-            .motion(.eased(.milliseconds(1000), .linear))
+            .motion(.eased(.milliseconds(1000), curve: .linear))
         }
         defer { host.finish() }
         let below = try XCTUnwrap(Self.view(of: "below", in: host))
@@ -218,7 +218,7 @@ final class UIKitMotionTests: XCTestCase {
                     .id("below")
             }
             .spacing(0)
-            .motion(.eased(.milliseconds(1000), .linear))
+            .motion(.eased(.milliseconds(1000), curve: .linear))
         }
         defer { host.finish() }
         let below = try XCTUnwrap(Self.view(of: "below", in: host))

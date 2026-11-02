@@ -23,9 +23,7 @@ struct BatterySample: SampleContent, ExampleContent {
             // builds this closure - and nothing else on the page.
             DebugInfoLabel()
 
-            Text(device.battery.chargeLevel <= 0
-                ? "the host has not said"
-                : "\(Int(device.battery.chargeLevel * 100))%")
+            Text(device.battery.chargeLevel.map { "\(Int($0 * 100))%" } ?? "the host has not said")
                 .fontSize(34)
                 .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
@@ -50,9 +48,9 @@ struct BatterySample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A host that cannot observe a battery leaves the level at -1, "
-                + "read here as \"the host has not said\", and the other "
-                + "values at `.unknown`.")
+            Text("A host that cannot observe a battery leaves the level nil - "
+                + "as a machine with no battery does - read here as \"the host "
+                + "has not said\", and the other values at `.unknown`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

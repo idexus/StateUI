@@ -158,7 +158,7 @@ final class ControlTests: XCTestCase {
                     .showsClearButton(true)
                     .onTextChanged { _ in }
                     .onSubmitted {}
-                    .onKeyPressed(.upArrow) { _ in }),
+                    .onKeyPressed([.upArrow]) { _ in }),
 
             ControlCase("TextEditor", source: "TextEditor.swift",
                 TextEditor("Notes")
@@ -222,7 +222,7 @@ final class ControlTests: XCTestCase {
                     .onColorChanged { _ in }),
 
             ControlCase("Link", source: "Link.swift",
-                Link("Terms", destination: "https://www.swift.org/legal")
+                Link("Terms", address: "https://www.swift.org/legal")
                     .text("Terms of use")
                     .textCase(.uppercase)
                     .textColor(.firebrick)
@@ -309,7 +309,7 @@ final class ControlTests: XCTestCase {
                 ZStack {
                     Rectangle()
                         .fill(.cornflowerBlue)
-                        .area(.proportional(0, 0, 1, 0.5))
+                        .area(.proportional(Rect(0, 0, 1, 0.5)))
 
                     Text("Bottom right")
                         .horizontalAlignment(.end)
@@ -318,13 +318,14 @@ final class ControlTests: XCTestCase {
                 .stroke(.lightGray)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
-                .clipsContent(true)),
+                .clipsContent(true)
+                .bottomBar(scrollEdge: .hard) { Text("At the foot") }),
 
             ControlCase("ScrollView", source: "ScrollView.swift",
                 ScrollView {
                     Text("content")
                 }
-                .orientation(.both)
+                .axes(.all)
                 .verticalScrollIndicator(.never)
                 .horizontalScrollIndicator(.visible)
                 // The offset is ONE POINT - both axes on one state - written
@@ -356,7 +357,7 @@ final class ControlTests: XCTestCase {
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
                 MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
-                        .layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
                 } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
@@ -368,7 +369,7 @@ final class ControlTests: XCTestCase {
                 .motion(.spring(response: .milliseconds(240)))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)
-                .onItemTapped { _ in }
+                .onItemActivated { _ in }
                 .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
                 .onItemDismissed(.up, beyond: 80) { _ in }
@@ -392,23 +393,23 @@ final class ControlTests: XCTestCase {
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
                 Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                    .mapType(.hybrid)
+                    .type(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
                     .showsUserLocation(false)
                     .markers {
                         Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-                            .label("Royal Castle")
+                            .title("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
                             .type(.place)
                             .onSelected {}
                             .onDetailsClicked {}
 
                         Marker(at: Location(latitude: 52.2151, longitude: 21.0355))
-                            .label("Lazienki Park")
+                            .title("Lazienki Park")
                     }
-                    .onMapClicked { _ in }),
+                    .onLocationTapped { _ in }),
 
             // The case's source is the URL form; HTML written in place
             // travels as a list under the same name - the brush rule, one
@@ -435,10 +436,8 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Line", source: "Line.swift",
                 Line()
-                    .x1(0)
-                    .y1(0)
-                    .x2(240)
-                    .y2(40)),
+                    .from(Point(0, 0))
+                    .to(Point(240, 40))),
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
@@ -497,10 +496,7 @@ final class ControlTests: XCTestCase {
                     Draw.rotate(by: 45)
                     Draw.scaleBy(x: 2, y: 2)
                     Draw.restoreState()
-                }
-                .onPressed { _ in }
-                .onDragged { _ in }
-                .onReleased { _ in }),
+                }),
 
             // The protocol tiers, once, on the four controls it takes to reach all
             // of them: a stack for spacing and padding, a label for text, font and
@@ -563,7 +559,7 @@ final class ControlTests: XCTestCase {
                         // The other layout that asks a child where it goes.
                         // Harmless on a view in none: an area means something
                         // only to the layout that asks for it.
-                        .area(.absolute(0, 0, 120, 40))
+                        .area(.absolute(Rect(0, 0, 120, 40)))
                         // A drag written into states rather than reported -
                         // the path that describes nothing.
                         .panX(followed.projectedValue)
@@ -632,7 +628,9 @@ final class ControlTests: XCTestCase {
                 .onPointerMoved { _ in }
                 .onPointerPressed { _ in }
                 .onPointerReleased { _ in }
-                .draggable(text: "Alpha", canDrag: true) {}
+                .dragText("Alpha")
+                .isDraggable(true)
+                .onDragStarting {}
                 .onDragEnded {}
                 .onDrop { _ in }
                 .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
@@ -827,7 +825,7 @@ final class ControlTests: XCTestCase {
             "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",
             "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
-            "mapType", "ignoresSafeArea",
+            "type", "ignoresSafeArea",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -1286,7 +1284,7 @@ final class ControlTests: XCTestCase {
         seen = []
         let pin = renders.render(
             Marker(at: Location(latitude: 52.23, longitude: 21.01))
-                .label("Office")
+                .title("Office")
                 .onSelected { seen.append("first") }
                 .onSelected { seen.append("second") }
                 .node)
@@ -1380,7 +1378,7 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen.count, 1)
         XCTAssertEqual(seen.first?.result, .success)
         XCTAssertEqual(seen.first?.type, .unknown)
-        XCTAssertEqual(seen.first?.url, "https://example.com/")
+        XCTAssertEqual(seen.first?.address, "https://example.com/")
 
         // `.unknown` is what this platform actually reports, and it has a case
         // of its own; the RULE is wider than that one member, so a number

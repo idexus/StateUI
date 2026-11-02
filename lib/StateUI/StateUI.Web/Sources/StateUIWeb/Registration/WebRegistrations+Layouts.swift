@@ -71,14 +71,14 @@ extension WebRegistrations {
         // Design: docs/design/platforms/web/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in WebScrollView() }) { scroll in
             scroll.applies(
-                ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.axes, ScrollViewContract.verticalScrollIndicator,
                 ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
                 PaddingElementContract.padding) { view, values in
-                let orientation = values[ScrollViewContract.orientation] ?? .vertical
-                let bars = orientation == .horizontal
+                let axes = values[ScrollViewContract.axes] ?? .vertical
+                let bars = axes == .horizontal
                     ? values[ScrollViewContract.horizontalScrollIndicator] : values[ScrollViewContract.verticalScrollIndicator]
                 view.apply(
-                    orientation: orientation, bars: bars ?? .automatic,
+                    axes: axes, bars: bars ?? .automatic,
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
                 view.setPadding(values[PaddingElementContract.padding])
             }

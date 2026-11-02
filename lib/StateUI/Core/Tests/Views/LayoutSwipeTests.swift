@@ -61,13 +61,13 @@ final class LayoutSwipeTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-10, 0))
-        bench.hand(renders, built, .ended, speed: Point(-100_000, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-100_000, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "the next, not the last")
 
         for _ in 0..<400 { bench.cycle() }
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-80, 0))
-        bench.hand(renders, built, .ended, speed: Point(2_000, 0))
+        bench.hand(renders, built, .ended, velocity: Point(2_000, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "thrown back from 2.8, to where it took it")
     }
 

@@ -12,7 +12,7 @@ extension ShapeProperties {
     /// shape's own units about its own origin; the stroke follows the
     /// transformed path, and a `skew` draws exactly.
     ///
-    ///     Line().x2(56).y2(0)
+    ///     Line().to(Point(56, 0))
     ///         .geometryTransform(.rotate(15).scaleX(1.2))
     ///
     /// `.transform(_:)` instead moves what was drawn, about the view's center.
@@ -35,7 +35,7 @@ extension ShapeProperties {
     /// The dashes and the gaps between them, in multiples of the stroke
     /// thickness.
     ///
-    ///     Line().x2(240)
+    ///     Line().to(Point(240, 0))
     ///         .stroke(.lightGray)
     ///         .lineWidth(2)
     ///         .dash([4, 2])   // 8 units of dash, 4 of gap

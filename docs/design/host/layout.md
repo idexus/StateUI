@@ -29,7 +29,10 @@ says how a child travels to the place this arithmetic gives it.
 
 A layout's values are read off the element once, by the host layer
 (`MountedElement.layoutValues`), so every host
-reads the same margin, alignment and stated size. The toolkit supplies only
+reads the same margin, alignment and stated size. An element saying no
+horizontal alignment fills its slot across, but a link, which stands at its
+words' size at the slot's start - read and clicked on its words, as every
+platform's own link is (`NodeType.unsaidHorizontal`). The toolkit supplies only
 what it alone knows: whether the child is shown, and how big its view is for a
 width it is offered - a label wraps, an image keeps its ratio. The arithmetic
 is pure, so a host calls it from its own layout pass - `layout()` on AppKit, a
@@ -217,7 +220,11 @@ a test reads its thickness unrounded.
 A grid has as many rows and columns as it defines, or as its children reach,
 whichever is more; an undefined track is a proportional track of one share.
 A child's cell is its row and column, clamped into the grid, spanning its
-spans.
+spans - read once for measuring and placing alike (`GridArithmetic.cell`): a
+row or a column before the first is the first, a span of none is one, and no
+cell reaches past a thousand tracks, so a grid always holds a track for every
+child and no index runs past its tracks; the core says such a cell once as it
+is written.
 
 ## Tracks
 
@@ -306,6 +313,18 @@ space inside a page is its view's own padding. The child is measured only where
 its natural size places it - on an axis it does not fill and states no size
 for - so a child that fills both ways takes the room whatever it would measure.
 A container with no shown child takes no room.
+
+## A field's own width
+
+A one-line field nothing sizes - a `TextField` or a `SearchField` in a row -
+asks for at least the width of twenty digits and of its placeholder, each
+measured in the field's own font with what it draws around its words
+(`FieldWidth`). A platform whose field asks for more keeps its own width -
+one growing with its words grows on. Twenty characters is what GTK's entry
+and the Web's input ask for by themselves; an editable `NSTextField` asks for
+no width, and a field two points wide is never what an author meant. Where
+the layout gives the field a size - a width, a `.fill` column, an area -
+that size stands.
 
 ## A button's picture and words
 
@@ -417,7 +436,7 @@ inside it - a word typed into its field - shows no chrome again; the bar's
 coming and going does.
 
 A bar stands on the page while nothing stands under it, and shows its edge
-(`ScrollEdge`, the bar's `edge`) while its page's rows go on past it - under it
+(`ScrollEdge`, the bar's `scrollEdge`) while its page's rows go on past it - under it
 where they run under the room's foot (`BottomBarPlace.covers`), beyond its top
 where it stands beside the page (`continues`), its scroller short of its end.
 `.automatic` is the platform's: UIKit's own scroll edge effect under the bar
@@ -492,7 +511,10 @@ pictures there at that size, and one at its file's size stands far taller. A
 host drawing an SVG draws it at the size it shows at, in the display's pixels
 - a stretched one at its room's own size, sharp both ways - and again only for
 more pixels, so a size in motion does not draw it every frame
-(`PictureArithmetic.vectorPixels`, `drawsAgain`).
+(`PictureArithmetic.vectorPixels`, `drawsAgain`). A host keeping the pictures
+it made for asking again - beyond the ones shown, which stay found while they
+show - keeps them within one budget of pixels, forty million
+(`PictureArithmetic.keptPixels`), the one asked for longest ago going first.
 
 ## An icon
 

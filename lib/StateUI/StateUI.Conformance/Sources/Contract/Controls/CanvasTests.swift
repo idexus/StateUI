@@ -106,29 +106,6 @@
                 try s.settle { try s.color(of: canvas, at: Point(20, 20)) == nil }
                 s.expect(try s.color(of: canvas, at: Point(20, 20)), nil, "a drawing of nothing leaves nothing drawn")
             },
-            ConformanceCase("aPressIsHeardWhereItWent", proves: [
-                Covered(CanvasContract.pressed), Covered(CanvasContract.dragged), Covered(CanvasContract.released),
-            ]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        Canvas { Draw.fillColor(.red); Draw.fillRectangle(x: 0, y: 0, width: 100, height: 40) }
-                            .onPressed { heard.values.append("pressed \(Int($0.x)),\(Int($0.y))") }
-                            .onDragged { heard.values.append("dragged \(Int($0.x)),\(Int($0.y))") }
-                            .onReleased { heard.values.append("released \(Int($0.x)),\(Int($0.y))") }
-                            .width(100).height(40).id("canvas")
-                    }
-                    .horizontalAlignment(.start)
-                }
-                let canvas = try s.element("canvas")
-
-                try s.perform(.pressDown(at: Point(5, 6)), on: canvas)
-                try s.perform(.drag(to: Point(7, 8)), on: canvas)
-                try s.perform(.lift(at: Point(9, 10)), on: canvas)
-                s.settle { heard.values.count == 3 }
-
-                s.expect(heard.values, ["pressed 5,6", "dragged 7,8", "released 9,10"])
-            },
         ]
     }
 }

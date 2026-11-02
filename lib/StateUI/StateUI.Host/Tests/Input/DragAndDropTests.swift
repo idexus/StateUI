@@ -22,8 +22,11 @@ final class DragAndDropTests: XCTestCase {
         XCTAssertFalse(target.left(), "a toolkit telling a leave a drop ended is heard by nobody")
     }
 
+    /// A view offers its words where it carries them and does not say it may not be dragged; one held back, or
+    /// carrying none, offers nothing.
     func testAViewSaysWhatItOffersAndTakes() throws {
         let runtime = running()
+        XCTAssertEqual(try element("held", in: runtime).dragAndDrop, .none, "isDraggable(false) holds the drag back")
 
         XCTAssertEqual(try element("source", in: runtime).dragAndDrop, DragAndDrop(words: "Alpha", takesWords: false))
         XCTAssertEqual(try element("basket", in: runtime).dragAndDrop, DragAndDrop(words: nil, takesWords: true))
@@ -73,7 +76,7 @@ final class DragAndDropTests: XCTestCase {
 
     private func running() -> HostRuntime {
         said = []
-        stateUIUseApp(BasketApplication())
+        BasketApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -92,7 +95,8 @@ private struct BasketPage: View {
     var body: some View {
         VStack {
             Text("Alpha")
-                .draggable(text: "Alpha", onDragStarting: { @MainActor in said.append("starting") })
+                .dragText("Alpha")
+                .onDragStarting { @MainActor in said.append("starting") }
                 .onDragEnded { @MainActor in said.append("ended") }
                 .id("source")
             Text("Basket")
@@ -101,6 +105,7 @@ private struct BasketPage: View {
                 .onDragLeave { @MainActor in said.append("left") }
                 .id("basket")
             Text("Still").id("still")
+            Text("Held").dragText("Held").isDraggable(false).id("held")
             Text("Shelf")
                 .onDrop(files: [FileType("Text", extensions: ["txt"])]) { @MainActor files in
                     said.append("files " + files.map(\.name).joined(separator: " "))

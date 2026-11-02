@@ -185,7 +185,7 @@ final class GTKButtonViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Button("Quiet")
-                        .background(Color(red: 0, green: 0, blue: 0, alpha: 0))
+                        .background(Color(red: 0, green: 0, blue: 0, opacity: 0))
                         .stroke(Color(hex: 0xFFFFFF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(8))

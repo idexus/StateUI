@@ -6,7 +6,11 @@ properties it must apply; it does not run a second style cascade.
 
 ## Style sheets
 
-A `StyleSheet` contains typed styles. An unkeyed style applies implicitly to
+A `StyleSheet` contains typed styles, collected by a `StyleBuilder` - so `if`,
+`else` and `for` work in it - each forgetting its target as an `AnyStyle`.
+`Style<Target>` is `Styling` in its whole scope, `StyleScope.Whole`; a visual
+state's setters stand in `StyleScope.VisualState`, where a state cannot hold
+another. An unkeyed style applies implicitly to
 every control of its target type. A keyed style is selected with `.style(...)`
 and its key: a `StyleKey` typed by the control it is for and declared once, so
 a key misspelled, or asked of another kind of control, does not compile. A
@@ -171,7 +175,7 @@ driven bindings are not style values.
 let surface = Color(light: .white, dark: Color(hex: 0x18181B))
 let accent = Color(hex: 0x5B5BD6)
 let translucent = Color(hex: 0x5B5BD6, opacity: 0.5)
-let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
+let sameTranslucent = Color(red: 91, green: 91, blue: 214, opacity: 0.5)
 ```
 
 A hex number has six digits, `0xRRGGBB`, and `opacity:` says how opaque the
@@ -185,8 +189,8 @@ let brand = Color(parsing: "#5B5BD6") ?? .accent
 ```
 
 Named colors are static members checked by the compiler.
-`Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a color
+`Color(red:green:blue:opacity:)` takes whole-number channels from 0 through 255
+and the same opacity, 1 unless it is given. `opacity(_:)` lets a color
 through - its alpha scaled, in both halves of a pair:
 
 ```swift
@@ -347,7 +351,7 @@ hears every state the control declares, normal included:
 
 Button("Hold")
     .scale($scale)
-    .onVisualStateChanged(.pressed, .normal) { state in
+    .onVisualStateChanged([.pressed, .normal]) { state in
         $scale.journey.move(to: state == .pressed ? 0.96 : 1, .eased(.milliseconds(90)))
     }
 ```
@@ -393,7 +397,7 @@ Shape controls are retained native drawing surfaces with a shared shape
 vocabulary:
 
 - `Rectangle`, `Capsule` and `Ellipse`;
-- `Line`;
+- `Line` from one `Point` to another, `Line(from:to:)`;
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
@@ -491,8 +495,9 @@ Commands execute in order. The color commands, `lineWidth`, `fontSize`,
 `scaleBy`) change the state used by later drawing commands. `saveState` and
 `restoreState` bound temporary transform or paint changes.
 
-The interaction handlers report points in the canvas's own coordinate space:
-`onPressed`, `onDragged`, and `onReleased`. A state change that alters the
+A canvas hears a press as every view does, in its own points - the ones its
+drawing uses: `onPointerPressed`, the pan's `at` as the press moves
+(`onPanUpdated`), and `onPointerReleased`. A state change that alters the
 command list describes the drawing again, and the host replays the new list
 whole; nothing in a drawing animates.
 

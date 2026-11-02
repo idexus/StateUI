@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.holdDuration: ✅
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
@@ -23,13 +23,13 @@ DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.verticalAlignment: ✅
-Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Ellipse.frameChanged: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the drag and drop interactions' handlers called, no drag session
 Fill.held: ✓ hold on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.layoutBody: ✅
 Grid.panYChannel: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -90,13 +90,13 @@ ScrollView.pointerReleased: ✓ hover on ScrollView: the view's listening handed
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the drop interaction's handler told the driver's files, no drag session
 SearchField.tapped: ✓ pressDown on SearchField: the view's listening handed the recognizer's states, no touch sent
-Separator.canDrag: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.dragStarting: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.dragText: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Separator.frameChanged: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRowSpan: ✅
+Separator.isDraggable: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
 Slider.panTouchCount: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panUpdated: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panXChannel: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
@@ -110,13 +110,13 @@ Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' 
 Spinner.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.tapCount: ✓ tap on Spinner: the view's listening handed the recognizer's states, no touch sent
 Spinner.tapped: ✓ tap on Spinner: the view's listening handed the recognizer's states, no touch sent
-Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragText: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
+Stepper.isDraggable: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Switch.held: ✓ hold on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.layoutBody: ✅
 Text.frameChanged: ✅

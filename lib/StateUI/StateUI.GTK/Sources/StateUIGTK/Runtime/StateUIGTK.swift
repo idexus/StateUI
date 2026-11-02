@@ -14,7 +14,7 @@ import StateUIFoundation
 ///     import HelloWorldUI
 ///     import StateUIGTK
 ///
-///     registerApplication()
+///     HelloWorldApp.register()
 ///     StateUIGTK.run(applicationID: "com.stateui.helloworld")
 ///
 /// `.scripts/GTK/run-app.sh` builds the head and starts it. A control this

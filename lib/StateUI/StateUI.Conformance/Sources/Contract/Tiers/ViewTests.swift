@@ -172,7 +172,7 @@
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
-            let body = LayoutBody.followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
+            let body = LayoutBody.followsLayout(response: .milliseconds(400), damping: 0.5)
             s.start(clock: clock) {
                 VStack {
                     MotionLayout([0], parameters: phase.projectedValue) { _ in
@@ -277,11 +277,12 @@
     }
 
     /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
+    /// It fills its place across, whatever it does unsaid - a link stands at its words.
     @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let shared = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {
@@ -289,7 +290,8 @@
                     ZStack {
                         reporting(element, frames, [
                             Write(ViewContract.area, shared.wrappedValue
-                                  ? Area.proportional(0.5, 0.5, 0.5, 0.5) : Area.absolute(10, 20, 30, 40)),
+                                  ? Area.proportional(Rect(0.5, 0.5, 0.5, 0.5)) : Area.absolute(Rect(10, 20, 30, 40))),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
                         ])
                     }
                     .width(200).height(200)
@@ -307,18 +309,21 @@
         }
     }
 
-    /// A view in a grid stands in the cell its column and row name.
+    /// A view in a grid stands in the cell its column and row name, filling it across whatever it does unsaid.
     @MainActor
     static func inCell(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsCell", proves: [
             Covered(ViewContract.gridColumn, on: element), Covered(ViewContract.gridRow, on: element),
             Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
                     Grid {
-                        reporting(element, frames, [Write(ViewContract.gridColumn, 1), Write(ViewContract.gridRow, 1)])
+                        reporting(element, frames, [
+                            Write(ViewContract.gridColumn, 1), Write(ViewContract.gridRow, 1),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
+                        ])
                     }
                     .columns(.fixed(40), .fixed(60))
                     .rows(.fixed(30), .fixed(50))
@@ -332,18 +337,21 @@
         }
     }
 
-    /// A view in a grid spanning columns and rows stands across them.
+    /// A view in a grid spanning columns and rows stands across them, filling them across whatever it does unsaid.
     @MainActor
     static func acrossCells(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAcrossTheCellsItSpans", proves: [
             Covered(ViewContract.gridColumnSpan, on: element), Covered(ViewContract.gridRowSpan, on: element),
             Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
                     Grid {
-                        reporting(element, frames, [Write(ViewContract.gridColumnSpan, 2), Write(ViewContract.gridRowSpan, 2)])
+                        reporting(element, frames, [
+                            Write(ViewContract.gridColumnSpan, 2), Write(ViewContract.gridRowSpan, 2),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
+                        ])
                     }
                     .columns(.fixed(40), .fixed(60))
                     .rows(.fixed(30), .fixed(50))
@@ -485,13 +493,15 @@
             let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
             let lifted = Received<Point>()
-            s.start {
+            let began = Received<Point>()
+            s.start(clock: TestClock()) {
                 VStack {
                     Opened.pannedAcross(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
                         Write(ViewContract.panTouchCount, 1),
-                        HearThree(ViewContract.panUpdated) { phase, total, velocity in
+                        HearFour(ViewContract.panUpdated) { phase, total, velocity, at in
                             heard.values.append("\(phase) \(Int(total.x)) \(Int(total.y))")
+                            began.values.append(Point(at.x - total.x, at.y - total.y))
                             if phase == .ended { lifted.values.append(velocity) }
                         },
                     ]), carrying: x.projectedValue)
@@ -504,8 +514,13 @@
             s.expect(heard.values.first, "began 0 0", "heard as it begins")
             s.expect(heard.values.contains("changed -60 20"), true, "changed, with how far it went")
             s.expect(heard.values.last, "ended -60 20", "and as it ends, where it reached")
-            // How fast is the driver's pace; which way is the hand's.
+            // How fast is the case's clock's - every step at one time, read over a frame; which way is the hand's.
             s.expect(lifted.values.last.map { $0.x < 0 && $0.y > 0 }, true, "lifted going left and down")
+            // Where the press is, less how far it came, is where it began - one place, on the view.
+            let start = began.values.first ?? Point(-1, -1)
+            s.expect(began.values.allSatisfy { abs($0.x - start.x) < 1 && abs($0.y - start.y) < 1 }, true,
+                     "where the press is moves with it: \(began.values)")
+            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true, "it began on the view: \(start)")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }
@@ -515,7 +530,7 @@
     static func pannedDown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanCarriesItsStateDown", proves: [Covered(ViewContract.panYChannel, on: element)]) { s in
             let y = State(wrappedValue: 5.0)
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Opened.pannedDown(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -538,7 +553,7 @@
             Covered(ViewContract.swipeThreshold, on: element),
         ]) { s in
             let heard = Received<SwipeDirection>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -567,12 +582,12 @@
             Covered(ViewContract.pinchUpdated, on: element),
         ]) { s in
             let heard = Received<String>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        HearFour(ViewContract.pinchUpdated) { _, scale, origin, _ in
-                            heard.values.append("\(scale) at \(origin.x),\(origin.y)")
+                        HearFour(ViewContract.pinchUpdated) { _, scale, pivot, _ in
+                            heard.values.append("\(scale) at \(pivot.x),\(pivot.y)")
                         },
                     ])
                 }
@@ -593,7 +608,7 @@
         ]) { s in
             let heard = Received<String>()
             let lifted = Received<Double>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -653,7 +668,7 @@
     @MainActor
     static func dragged(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
-            Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),
+            Covered(ViewContract.isDraggable, on: element), Covered(ViewContract.dragText, on: element),
             Covered(ViewContract.dragStarting, on: element), Covered(ViewContract.dragEnded, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -661,7 +676,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.canDrag, true), Write(ViewContract.dragText, "words"),
+                        Write(ViewContract.isDraggable, true), Write(ViewContract.dragText, "words"),
                         HearDone(ViewContract.dragStarting) { heard.values.append("starting") },
                         HearDone(ViewContract.dragEnded) { heard.values.append("completed") },
                     ])
@@ -695,7 +710,6 @@
                         .fill(.red)
                         .width(80)
                         .height(40)
-                        .setValue(ViewContract.canDrag, true)
                         .setValue(ViewContract.dragText, "words").id("source")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),

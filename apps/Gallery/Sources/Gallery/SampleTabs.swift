@@ -96,7 +96,7 @@ struct SampleTabPage: View {
                     }
                     .spacing(24)
                 }
-                .orientation(.vertical)
+                .axes(.vertical)
                 .gridRow(1)
             }
         }

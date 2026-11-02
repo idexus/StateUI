@@ -54,10 +54,10 @@ final class GTKZStackViewTests: XCTestCase {
                 ZStack {
                     Rectangle()
                         .fill(.red)
-                        .area(.absolute(10, 20, 30, 40))
+                        .area(.absolute(Rect(10, 20, 30, 40)))
                     Rectangle()
                         .fill(.blue)
-                        .area(.proportional(0.5, 0.5, 0.5, 0.5))
+                        .area(.proportional(Rect(0.5, 0.5, 0.5, 0.5)))
                 }
             }
             let room = try XCTUnwrap(host.views(GTKZStackView.self).first).frame
@@ -142,7 +142,7 @@ final class GTKZStackViewTests: XCTestCase {
                         .fill(.red)
                     Rectangle()
                         .fill(.blue)
-                        .area(.absolute(10, 20, 30, 40))
+                        .area(.absolute(Rect(10, 20, 30, 40)))
                 }
                 .padding(start: 10, top: 5, end: 20, bottom: 15)
             }

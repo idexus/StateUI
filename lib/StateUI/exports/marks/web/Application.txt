@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 14.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✅
@@ -6,11 +6,10 @@ Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
-Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
+Application.launchAddress: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
 Application.launchFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
-Application.launchLink: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
 Application.openFiles: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
 Application.persistSceneValue: ✅
 Application.persistValue: ✅

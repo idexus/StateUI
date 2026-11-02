@@ -107,7 +107,7 @@ extension WebDriver {
         case (.scrollOffset, is WebScrollView):
             let offset = try numbers("[e.scrollLeft, e.scrollTop]", on: e)
             return offset.count == 2 ? Point(x: offset[0], y: offset[1]).propValue : nil
-        case (.edge, _):
+        case (.scrollEdge, _):
             let edge = try WebBrowser.evaluate("e.closest('.stateui-bottom-bar')?.dataset.edge ?? ''", on: e)
             return (edge == "none" ? ScrollEdge.none : edge == "hard" ? .hard : .automatic).propValue
         default: break
@@ -236,7 +236,7 @@ extension WebDriver {
             guard channels.count == 4 else { return nil }
             let color = Color(
                 red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]),
-                alpha: Int((channels[3] * 255).rounded()))
+                opacity: channels[3])
             return (color, place / 100)
         }
         guard stops.count == parts.count else { return nil }
@@ -599,7 +599,7 @@ extension WebDriver {
     func color(_ script: String, on e: Int32, unlessClear: Bool = false) throws -> Color? {
         let channels = try numbers("stateui.channels(\(script))", on: e, separator: ",")
         guard channels.count == 4, !(unlessClear && channels[3] == 0) else { return nil }
-        return Color(red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]), alpha: Int(channels[3]))
+        return Color(red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]), opacity: Double(Int(channels[3])) / 255)
     }
 
     /// `script`'s list of numbers on `e`.
@@ -623,7 +623,7 @@ extension WebDriver {
             + " const x = new XMLHttpRequest(); x.open('GET', a, false); x.send(); return 'html ' + x.responseText; })"
             + "(e.querySelector('iframe'))"
         guard let said = try WebBrowser.evaluate(script, on: frame.node) else { return nil }
-        if said.hasPrefix("url ") { return WebViewSource.url(String(said.dropFirst(4))).propValue }
+        if said.hasPrefix("url ") { return WebViewSource.address(String(said.dropFirst(4))).propValue }
         var document = Substring(said.dropFirst(5))
         var base: String?
         if document.hasPrefix("<base href=\""), let end = document.firstIndex(of: ">") {
@@ -631,7 +631,7 @@ extension WebDriver {
             base = String(written).replacingAll("&quot;", with: "\"")
             document = document[document.index(after: end)...]
         }
-        return WebViewSource.html(String(document), baseURL: base).propValue
+        return WebViewSource.html(String(document), baseAddress: base).propValue
     }
 
     /// The shortcut the element of `node` names to assistive technology (`aria-keyshortcuts`); nil for none.

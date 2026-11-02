@@ -76,6 +76,6 @@ absent: the third argument of an act and the second value of a list are
 found by counting, so "no destructive button" or "no zone named" needs a
 value that says so. `.nothing` is that value, and an optional crosses as its
 value or as `.nothing`. An empty string, a -1 or an empty list would each be
-indistinguishable from something someone meant. `TimeZoneInfo.utcOffset`
+indistinguishable from something someone meant. `application.clock.utcOffset`
 sends its zone and its day this way: nothing for the local zone, and nothing
 for now.

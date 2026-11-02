@@ -57,7 +57,7 @@ struct WebPress {
         pressed[id] = point
         guard pressed.count == 1 else { return pinchBegins(at: middle(origin, size)) }
         drag = DragRecognition(distance: Self.distance(for: kind))
-        drag.pressed(at: point)
+        drag.pressed(at: point, inView: Point(x: point.x - origin.x, y: point.y - origin.y))
         dragging = id
         return []
     }

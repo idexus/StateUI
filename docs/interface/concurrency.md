@@ -12,7 +12,9 @@ event loop.
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
 function; an event, change or host-event handler that does names a policy,
-which says what happens when its event comes again while it is still running:
+which says what happens when its event comes again while it is still running.
+Such a handler is an `EventHandler`, or a `ValueEventHandler` where its event
+carries values, one parameter each:
 
 ```swift
 @State var status = "Idle"
@@ -366,7 +368,7 @@ The final tick clears `isRunning` before invoking `onTick`, so that closure may
 start the next run. Consequently, `isRunning == false` means that no later tick
 is scheduled; it does not promise that the current closure has returned.
 
-Use a host clock such as `ClockTime.now()` when the value represents civil time.
+Use the host's clock, `application.clock.now()`, when the value represents civil time.
 A wall clock should ask what time it is rather than infer time by counting
 ticks.
 
@@ -377,7 +379,8 @@ may use Foundation for networking, serialization, and domain models. At the UI
 boundary use StateUI's portable values and execution primitives:
 
 - `CalendarDate` and `ClockTime` for picker state;
-- `LocaleInfo` and `TimeZoneInfo` for host-normalized locale and zone facts;
+- `LocaleInfo` for host-normalized locale and zone facts, and `application.clock`
+  for the time;
 - `Task.sleep` and `Ticker` for timing;
 - `MainActor` for UI isolation.
 

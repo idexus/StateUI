@@ -596,16 +596,16 @@ final class SceneTests: XCTestCase {
         let window = try XCTUnwrap(renders.render(tree()).children.first?.children.first)
         let session = try scene("1").windowSession("window 1")
 
-        XCTAssertEqual(session.phase, .created)
+        XCTAssertEqual(session.phase, .background, "before the platform made it")
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.activated])))
-        XCTAssertEqual(session.phase, .activated)
+        XCTAssertEqual(session.phase, .active)
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.stopped])))
-        XCTAssertEqual(session.phase, .stopped)
+        XCTAssertEqual(session.phase, .background)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.resumed])))
-        XCTAssertEqual(session.phase, .resumed)
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.activated])))
+        XCTAssertEqual(session.phase, .active, "back: active again, no phase of its own")
     }
 
     /// A window's session closes the window it is, and a second close says it is not open.
@@ -835,7 +835,8 @@ final class SceneTests: XCTestCase {
 
     /// A platform window comes in as its kind: the first, with no kind, is the window launch opened; one more with
     /// no kind is another of the unnamed group; a kept one of a kind opens in the scene declaring it, a scene
-    /// opening first where none stands; one of a kind no scene declares, or a value that does not read, is refused.
+    /// opening first where none stands; one of a kind no scene declares, a value that does not read, or none for a
+    /// kind of a value, is refused - so a window for a value never stands without one.
     func testAPlatformWindowComesInAsItsKind() {
         XCTAssertEqual(HostBoundary.connectWindow(), "1")
         XCTAssertEqual(HostBoundary.connectWindow(), "1")
@@ -844,6 +845,7 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(HostBoundary.connectWindow(kind: "about"), "2")
         XCTAssertNil(HostBoundary.connectWindow(kind: "palette"))
         XCTAssertNil(HostBoundary.connectWindow(kind: "document", value: "not a number"))
+        XCTAssertNil(HostBoundary.connectWindow(kind: "document"))
 
         let patch = Renders().render(tree())
 
@@ -976,7 +978,7 @@ final class SceneTests: XCTestCase {
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
         let (studio, fonts, about) = (ElementID.manual("window 1"), ElementID.manual("fonts 2"), ElementID.manual("about 1"))
         let sceneEvents = ["activated", "deactivated", "stopped", "windowClosed"]
-        let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
+        let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
 
         XCTAssertEqual(opened.patch.arrangement, [.manual("1"), .manual("2")])
         XCTAssertEqual(opened.patch.at(.manual("1"))?.arrangement, [studio, fonts])

@@ -147,5 +147,5 @@ and the relay stops at a record that runs past the lists' ends, drawing what
 stands before it; a path's arcs and an arc of an ellipse come as the curves
 they run along, so a whole turn fills the whole oval. Text wraps within its
 rectangle, stands across and down it as the instruction says, and is cut at
-its edges. A finger's press, drag and release come back in points; the canvas
-asks for no room of its own.
+its edges. A press on it is a view's, heard as every view hears one, in its
+own points; the canvas asks for no room of its own.

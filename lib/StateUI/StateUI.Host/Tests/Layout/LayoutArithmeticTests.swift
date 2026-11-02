@@ -149,16 +149,49 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.x }, [80, 50])
     }
 
+    /// A cell no grid has - a row or a column before the first, a span of none, an index or a span past any grid -
+    /// stands in the nearest one there is: measured and placed alike, the grid holding a track for every child.
+    @MainActor
+    func testACellNoGridHasStandsInTheNearestThereIs() {
+        var above = Child(width: 10, height: 10)
+        above.values.row = -1
+        var before = Child(width: 10, height: 10)
+        before.values.column = -3
+        before.values.rowSpan = -2
+        var far = Child(width: 10, height: 10)
+        far.values.row = Int.max
+        far.values.column = Int.max - 1
+        far.values.rowSpan = Int.max
+        far.values.columnSpan = Int.max
+
+        for children in [[above], [before], [far], [above, before, far]] {
+            let size = GridArithmetic.size(
+                of: children, rows: [], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                width: 100)
+            let places = GridArithmetic.places(
+                of: children, rows: [], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                in: Rect(0, 0, 100, 100), direction: .leftToRight)
+            XCTAssertTrue(size.width.isFinite && size.height.isFinite)
+            XCTAssertEqual(places.count, children.count)
+            XCTAssertTrue(places.allSatisfy { $0 != nil }, "every child stands somewhere")
+        }
+
+        let places = GridArithmetic.places(
+            of: [above], rows: [.fixed(30)], columns: [.fixed(40)], rowSpacing: 0, columnSpacing: 0,
+            padding: Insets(0), in: Rect(0, 0, 100, 100), direction: .leftToRight)
+        XCTAssertEqual(places.first??.y, 0, "a row before the first is the first")
+    }
+
     /// Right to left, a ZStack's areas count from the right edge, and a child at its area's start stands at
     /// the area's right.
     @MainActor
     func testAZStackRightToLeftCountsItsAreasFromTheRight() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(0, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
 
         let places = ZStackArithmetic.places(
             of: [badge, half], in: Rect(0, 0, 100, 50), padding: Insets(0), direction: .rightToLeft)
@@ -462,11 +495,11 @@ final class LayoutArithmeticTests: XCTestCase {
         corner.values.horizontal = 2
         corner.values.vertical = 2
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(0.5, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0.5, 0, 0.5, 1))
         let items = [Child(width: 20, height: 10), corner, badge, half, Child(width: 20, height: 10, shown: false)]
 
         let places = ZStackArithmetic.places(
@@ -486,9 +519,9 @@ final class LayoutArithmeticTests: XCTestCase {
         var margined = Child(width: 30, height: 10)
         margined.values.margin = Insets(start: 5, top: 0, end: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         var half = Child(width: 30, height: 20)
-        half.values.area = .proportional(0.5, 0, 0.5, 0.5)
+        half.values.area = .proportional(Rect(0.5, 0, 0.5, 0.5))
 
         XCTAssertEqual(ZStackArithmetic.size(of: [margined], padding: Insets(2), width: nil), LayoutSize(width: 44, height: 14))
         XCTAssertEqual(ZStackArithmetic.size(of: [badge], padding: Insets(0), width: nil), LayoutSize(width: 50, height: 35))
@@ -502,7 +535,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAMotionLayoutHasNoSizeOfItsOwn() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         let views = [Child(width: 30, height: 20), badge]
 
         XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, motionLayout: true), LayoutSize(width: 0, height: 0))
@@ -530,7 +563,7 @@ final class LayoutArithmeticTests: XCTestCase {
         child.values.horizontal = 0
         child.offers = offers
         var half = child
-        half.values.area = .proportional(0, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
         let room = Rect(0, 0, 100, 100)
 
         func offered(_ layout: () -> Void) -> [Double?] {
@@ -558,7 +591,7 @@ final class LayoutArithmeticTests: XCTestCase {
                 in: room, direction: .leftToRight)
         }, [84, 84], "a grid's row and its place")
         XCTAssertEqual(offered {
-            _ = ScrollArithmetic.contentSize(of: child, padding: Insets(0), orientation: .vertical, width: 100)
+            _ = ScrollArithmetic.contentSize(of: child, padding: Insets(0), axes: .vertical, width: 100)
         }, [84], "a scroller's document")
     }
 
@@ -573,10 +606,10 @@ final class LayoutArithmeticTests: XCTestCase {
         let viewport = LayoutSize(width: 100, height: 50)
 
         XCTAssertEqual(ScrollArithmetic.arrange(
-            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .rightToLeft).place,
+            child, padding: Insets(0), axes: .vertical, in: viewport, direction: .rightToLeft).place,
             Rect(x: 75, y: 0, width: 20, height: 10))
         XCTAssertEqual(ScrollArithmetic.arrange(
-            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .leftToRight).place,
+            child, padding: Insets(0), axes: .vertical, in: viewport, direction: .leftToRight).place,
             Rect(x: 5, y: 0, width: 20, height: 10))
     }
 

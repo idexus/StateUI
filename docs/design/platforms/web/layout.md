@@ -22,8 +22,10 @@ arithmetic does ([a row that wraps](../../host/layout.md#a-row-that-wraps)),
 its lines the row's line spacing apart (`row-gap`) - the spacing along a row
 being `column-gap`, so the two never overwrite each other - and standing from
 its top (`align-content: flex-start`) rather than stretched over a taller
-room. A label wider than its line stands alone on it and shrinks to it, and a
-space grows into what its line leaves, as elsewhere.
+room. Each line stands across the row as the row's line alignment says
+(`justify-content`: `center`, `flex-end`), and a growing child fills its line
+all the same. A label wider than its line stands alone on it and shrinks to it,
+and a space grows into what its line leaves, as elsewhere.
 
 ## A child's place
 

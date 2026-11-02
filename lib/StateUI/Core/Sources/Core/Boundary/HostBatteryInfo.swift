@@ -3,8 +3,8 @@
 
 /// Battery facts supplied by a native host, whenever the platform reports a change.
 @_spi(Host) public struct HostBatteryInfo: Equatable, Sendable {
-    /// How full the battery is, 0 to 1.
-    public let chargeLevel: Double
+    /// How full the battery is, 0 to 1; nil where no battery stands or the platform does not say.
+    public let chargeLevel: Double?
 
     /// Charging, discharging, full, or another settled battery state.
     public let state: BatteryState
@@ -17,7 +17,7 @@
 
     /// A complete battery report.
     public init(
-        chargeLevel: Double,
+        chargeLevel: Double?,
         state: BatteryState,
         powerSource: BatteryPowerSource,
         energySaverStatus: EnergySaverStatus

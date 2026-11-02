@@ -66,7 +66,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 // high or fast, it flies off and the app closes - the others
                 // close up, the card in front staying in front.
                 .itemDrag(begins: .perpendicular)
-                .onItemDismissed(.up, beyond: 120) { app in close(app) }
+                .onItemDismissed(.up, beyond: 120) { name in close(name) }
             }
             .gridRow(0)
             .clipsContent(true)
@@ -82,11 +82,11 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
         .rowSpacing(10)
     }
 
-    /// `app` closed: the others close up; one before the card in front keeps
+    /// The app `name` closed: the others close up; one before the card in front keeps
     /// that card in front, and where the last closes, the parameters travel
     /// to the one before.
-    private func close(_ app: RunningApp) {
-        guard let leaving = apps.firstIndex(of: app) else { return }
+    private func close(_ name: String) {
+        guard let leaving = apps.firstIndex(where: { $0.name == name }) else { return }
         let front = min(max(Int(turn.rounded()), 0), apps.count - 1)
         apps.remove(at: leaving)
         if leaving < front {

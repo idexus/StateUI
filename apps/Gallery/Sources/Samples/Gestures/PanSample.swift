@@ -56,21 +56,21 @@ struct PanSample: SampleContent, ExampleContent {
                     .onPanUpdated { update in
                         switch update.phase {
                         case .changed:
-                            follow(panX + update.totalX, panY + update.totalY)
+                            follow(panX + update.total.x, panY + update.total.y)
                         case .ended where letting == "Springs home":
                             // The hand's speed is the box's as it lets go: it
                             // goes on that way, and the spring brings it home.
                             (panX, panY) = (0, 0)
-                            $liveX.journey.velocity = update.velocityX
-                            $liveY.journey.velocity = update.velocityY
+                            $liveX.journey.velocity = update.velocity.x
+                            $liveY.journey.velocity = update.velocity.y
                             $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                         case .ended where letting == "Glides on":
                             // It glides on from the hand's speed to where that
                             // throw carries it, kept inside the box.
                             let glide = Motion.glide(longest: .milliseconds(900))
-                            $liveX.journey.velocity = update.velocityX
-                            $liveY.journey.velocity = update.velocityY
+                            $liveX.journey.velocity = update.velocity.x
+                            $liveY.journey.velocity = update.velocity.y
                             panX = min(max($liveX.journey.reach(glide), -140), 140)
                             panY = min(max($liveY.journey.reach(glide), -60), 60)
                             $liveX.journey.move(to: panX, glide)
@@ -152,7 +152,7 @@ struct PanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Each report says how fast the hand goes, `velocityX` and `velocityY`, "
+            Text("Each report says how fast the hand goes, `velocity`, "
                 + "a second - at the end, as fast as it lifted. `Springs home` and `Glides "
                 + "on` hand that to the box's journey as it lets go: a spring brings it "
                 + "back, or a glide carries it to where `journey.reach(_:)` says the throw "

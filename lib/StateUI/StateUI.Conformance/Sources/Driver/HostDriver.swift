@@ -119,7 +119,7 @@
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
-    /// What the share sheet over the window of `element` offers now - its words, then its link on a line of its
+    /// What the share sheet over the window of `element` offers now - its words, then its address on a line of its
     /// own; nil where none shows.
     func shared(over element: MountedElement) throws -> String?
 

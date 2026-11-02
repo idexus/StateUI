@@ -118,21 +118,22 @@ public struct Color: Hashable, Sendable, HostRepresentable {
     ///     Text("Saved").textColor(.accent.opacity(0.7))
     public static let accent = Color(accentAlpha: 255)
 
-    /// A color from its channels: red, green and blue, each 0-255, and an
-    /// alpha from 0, invisible, to 255, opaque - the default.
+    /// A color from its channels: red, green and blue, each 0-255, and how
+    /// opaque it is, from 0, invisible, to 1, opaque - the default - as
+    /// `Color(hex:opacity:)` and `opacity(_:)` say it.
     ///
     ///     Color(red: 81, green: 43, blue: 212)
-    ///     Color(red: 81, green: 43, blue: 212, alpha: 128)
+    ///     Color(red: 81, green: 43, blue: 212, opacity: 0.5)
     ///
-    /// Whole numbers, as a channel holds them, so a fraction is refused where
-    /// it is written. A value outside 0-255 is held to the range rather than
-    /// refused.
-    public init(red: Int, green: Int, blue: Int, alpha: Int = 255) {
+    /// The channels are whole numbers, as a channel holds them, so a fraction
+    /// is refused where it is written. A channel outside 0-255, or an opacity
+    /// outside 0-1, is held to the range rather than refused.
+    public init(red: Int, green: Int, blue: Int, opacity: Double = 1) {
         self.init(Rgba(
             red: Color.channel(red),
             green: Color.channel(green),
             blue: Color.channel(blue),
-            alpha: Color.channel(alpha)))
+            alpha: Color.alpha(of: opacity)))
     }
 
     /// The color let through: its alpha scaled by `fraction`, from 0,

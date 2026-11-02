@@ -281,10 +281,22 @@ extension WebDriver {
         let middle = Point(x: box.width / 2, y: box.height / 2)
         mouse("mousePressed", at: middle, in: box)
         for share in [0.25, 0.5, 0.75, 1.0] {
+            paced()
             mouse("mouseMoved", at: Point(x: middle.x + offset.x * share, y: middle.y + offset.y * share), in: box,
                   held: true)
         }
+        paced()
         mouse("mouseReleased", at: Point(x: middle.x + offset.x, y: middle.y + offset.y), in: box)
+    }
+
+    /// The page's milliseconds that pass before each step of a gesture after its first: none, but where a test takes
+    /// the steps as slowly as a busy machine does.
+    static var pace = 0.0
+
+    /// Lets `pace` pass on the page, its frames going on.
+    private func paced() {
+        let start = WebRelay.now
+        while WebRelay.now - start < Self.pace { WebBrowser.pause() }
     }
 
     /// Two fingers spread or closed over the element `e` by `scale`, about a point given as a share of its size, and
@@ -309,7 +321,11 @@ extension WebDriver {
             return [Point(x: middle.x - across, y: middle.y - down), Point(x: middle.x + across, y: middle.y + down)]
         }
         touch("touchStart", fingers(0))
-        for step in 1...4 { touch("touchMove", fingers(degrees * Double(step) / 4)) }
+        for step in 1...4 {
+            paced()
+            touch("touchMove", fingers(degrees * Double(step) / 4))
+        }
+        paced()
         touch("touchEnd", [])
     }
 

@@ -233,8 +233,14 @@
     /// What a control a host composes says of its own parts, in the system's language.
     public var controlWords: ControlWords { HostBoundary.controlWords }
 
+    /// What a menu bar a host keeps says of its own menus and entries, in the system's language.
+    public var menuWords: MenuWords { HostBoundary.menuWords }
+
+    /// What a question says on its own buttons, in the system's language.
+    public var questionWords: QuestionWords { HostBoundary.questionWords }
+
     /// Reports the application's lifecycle phase.
-    public func setApplicationPhase(_ phase: ApplicationPhase) {
+    public func setApplicationPhase(_ phase: SessionPhase) {
         HostBoundary.setApplicationPhase(phase)
     }
 

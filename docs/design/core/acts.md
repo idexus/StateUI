@@ -29,7 +29,7 @@ its elements' - whose documentation says what the host does for it. A host
 takes it as its name and the values it declares. An act of an element is aimed
 through an
 `@Aim`; an act of the application aims at nothing and is called with
-`stateUICall` or `stateUISend`. Arguments and answers are the values the
+`application.call` or `application.tell`. Arguments and answers are the values the
 member declares, checked on the way back: an answer of another shape throws.
 
 ## The act queue
@@ -66,7 +66,7 @@ rebuilt.
 handlers awaiting them do: they run, and resume, on the UI thread, between the
 host's turns, never beside a render the host is running. The reply
 crosses as tagged values, so nothing is parsed: `focus` reads one bool, the
-clock its numbers, and a failure throws `StateUIError` with the host's reason.
+clock its numbers, and a failure throws `StateUIError.notPerformed` with the host's reason.
 
 A resume is counted the moment the continuation is resumed and uncounted by the
 handler as the first thing after its `await`. The job a resume produces does not
@@ -99,7 +99,7 @@ awaits the first queues the second only once the answer is in.
 
 A host takes typed calls and answers each by its id: `HostBoundary.reply` with
 the values the act came to, or `HostBoundary.fail` with the reason it could not
-perform it, which the awaiting `stateUICall` throws. There is no timeout: an
+perform it, which the awaiting `application.call` throws. There is no timeout: an
 act may wait without bound - a dialog waits for the user - so a failure is
 causal, told by the side that failed. An id answered twice resumes nobody
 twice, `dispatch` answering false for a completion already gone.
@@ -229,14 +229,15 @@ platform has them.
 
 ## Sharing
 
-What the user shares - words, a link, or both - is offered from a window, as a
+What the user shares - words, an address, or both - is offered from a window, as a
 dialog is, and awaited: the platform's share sheet over it, the user choosing
 where it goes. The answer is whether the user shared it, false where they
 cancelled; a platform with no share sheet fails the act with that reason.
-Three overloads take the words, the link or both, so nothing is ever offered
-empty - the compiler refuses a share of nothing. The words and the link cross
-apart, as a platform carrying both - a message and its address - keeps them
-apart; one carrying a single text puts the link on a line after the words.
+Three overloads take the words, the address or both, so nothing is ever
+offered empty - the compiler refuses a share of nothing. The words and the
+address cross apart, as a platform carrying both - a message and its address -
+keeps them apart; one carrying a single text puts the address on a line after
+the words.
 
 ## Launching
 

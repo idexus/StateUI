@@ -44,7 +44,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.contains("ScrollView"))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "ScrollView", owner: "ScrollView", member: "orientation")))
+            HostRealizedMember(element: "ScrollView", owner: "ScrollView", member: "axes")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "ScrollView", owner: "ScrollView", member: "scrollOffset")))
         XCTAssertTrue(realization.members.contains(
@@ -69,17 +69,17 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         renderer.applyForTesting(tree(bare))
 
         let resting = try XCTUnwrap(renderer.viewForTesting(id: .manual("bare")) as? AppKitScrollView)
-        XCTAssertEqual(resting.orientation, .vertical, "the contract scrolls vertically unless told otherwise")
+        XCTAssertEqual(resting.axes, .vertical, "the contract scrolls vertically unless told otherwise")
         XCTAssertTrue(resting.hasVerticalScroller, "which is a vertical scroller, described or not")
 
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
-        scroll.properties[.orientation] = .enumeration(ScrollOrientation.horizontal.rawValue)
+        scroll.properties[.axes] = .enumeration(ScrollAxes.horizontal.rawValue)
         scroll.properties[.padding] = .numbers([4, 8, 12, 16])
         scroll.properties[.verticalScrollIndicator] = .enumeration(ScrollIndicatorVisibility.never.rawValue)
         renderer.applyForTesting(tree(scroll))
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
-        XCTAssertEqual(native.orientation, .horizontal)
+        XCTAssertEqual(native.axes, .horizontal)
         XCTAssertEqual(native.padding.start, 4)
         XCTAssertEqual(native.padding.top, 8)
         XCTAssertEqual(native.padding.end, 12)

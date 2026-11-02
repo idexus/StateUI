@@ -4,7 +4,7 @@
 import HelloWorldUI
 import StateUIWeb
 
-// Register the application module, then show it in the page; the browser
+// Name the application to the host, then show it in the page; the browser
 // calls it from then on.
-registerApplication()
+HelloWorldApp.register()
 StateUIWeb.run(name: "HelloWorld")

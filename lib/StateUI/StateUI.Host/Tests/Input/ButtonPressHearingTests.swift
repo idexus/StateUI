@@ -87,7 +87,7 @@ final class ButtonPressHearingTests: XCTestCase {
 
     private func running(_ application: some Application = RowApplication()) throws -> (HostRuntime, MountedElement) {
         (taps, held, states) = (0, 0, [])
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

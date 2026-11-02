@@ -94,9 +94,9 @@
     /// registered so has no view of its own. `properties` and `events` are what the view realizes of each child -
     /// members of the child's contract or of a tier it wears; any other is left out, and said once.
     ///
-    ///     registration.children(MarkerContract.self, properties: MarkerContract.label, events: MarkerContract.selected) {
+    ///     registration.children(MarkerContract.self, properties: MarkerContract.title, events: MarkerContract.selected) {
     ///         map, markers in
-    ///         map.show(markers.map { ($0, $0.value(MarkerContract.label) ?? "") })
+    ///         map.show(markers.map { ($0, $0.value(MarkerContract.title) ?? "") })
     ///     }
     ///
     /// - Parameters:

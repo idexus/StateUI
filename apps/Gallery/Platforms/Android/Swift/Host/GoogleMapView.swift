@@ -100,7 +100,7 @@ final class GoogleMapView: AndroidControl {
             case .searchResult: "searchResult"
             }
             return [String(number), String(location.latitude), String(location.longitude), kind,
-                    Self.line(child.value(MarkerContract.label)), Self.line(child.value(MarkerContract.subtitle))]
+                    Self.line(child.value(MarkerContract.title)), Self.line(child.value(MarkerContract.subtitle))]
                 .joined(separator: "\t")
         }
         numbers = kept
@@ -108,8 +108,8 @@ final class GoogleMapView: AndroidControl {
     }
 
     /// The view says its user tapped the map at a place.
-    func clicked(latitude: Double, longitude: Double) {
-        reports.raise(MapContract.mapClicked, Location(latitude: latitude, longitude: longitude))
+    func tapped(latitude: Double, longitude: Double) {
+        reports.raise(MapContract.locationTapped, Location(latitude: latitude, longitude: longitude))
     }
 
     /// The view says its user chose the marker of `number`.
@@ -136,15 +136,15 @@ extension GoogleMapView {
         // listing: android.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

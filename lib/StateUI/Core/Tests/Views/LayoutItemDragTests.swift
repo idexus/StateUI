@@ -64,13 +64,13 @@ final class LayoutItemDragTests: XCTestCase {
         _ = bench.laid(renders, tree)
 
         bench.item(renders, tree, .began, at: Point(75, 50))
-        XCTAssertEqual(told.drags.last?.item, "B", "B over A")
+        XCTAssertEqual(told.drags.last?.id, "B", "B over A")
         bench.item(renders, tree, .ended, at: Point(75, 50))
         for _ in 0..<20 { bench.cycle() }
 
         // An eighth of a turn stands C's corner ten points above its square: a point there is C's.
         bench.item(renders, tree, .began, at: Point(225, -8))
-        XCTAssertEqual(told.drags.last?.item, "C", "turned as it is drawn")
+        XCTAssertEqual(told.drags.last?.id, "C", "turned as it is drawn")
         XCTAssertEqual(told.drags.last?.at, Point(225, -8))
         XCTAssertEqual(told.drags.last?.room, Rect(0, 0, 300, 200))
     }
@@ -232,14 +232,14 @@ final class LayoutItemDragTests: XCTestCase {
         _ = bench.laid(renders, tree)
 
         bench.item(renders, tree, .began, at: Point(25, 50))
-        bench.item(renders, tree, .changed, at: Point(125, 50), speed: Point(300, 0))
-        bench.item(renders, tree, .changed, at: Point(225, 25), speed: Point(200, -50))
+        bench.item(renders, tree, .changed, at: Point(125, 50), velocity: Point(300, 0))
+        bench.item(renders, tree, .changed, at: Point(225, 25), velocity: Point(200, -50))
         bench.item(renders, tree, .changed, at: Point(400, 300))
-        bench.item(renders, tree, .ended, at: Point(400, 300), speed: Point(-500, 0))
+        bench.item(renders, tree, .ended, at: Point(400, 300), velocity: Point(-500, 0))
 
-        XCTAssertEqual(told.drags.map(\.item), ["A", "A", "A", "A", "A"])
+        XCTAssertEqual(told.drags.map(\.id), ["A", "A", "A", "A", "A"])
         XCTAssertEqual(told.drags.map(\.over), [nil, "B", "C", nil, nil], "B over A's place, C turned, then none")
-        XCTAssertEqual(told.drags.map(\.speed), [
+        XCTAssertEqual(told.drags.map(\.velocity), [
             Point(0, 0), Point(300, 0), Point(200, -50), Point(0, 0), Point(-500, 0),
         ])
     }
@@ -258,10 +258,10 @@ final class LayoutItemDragTests: XCTestCase {
             .itemDrag(begins: .longPress)
             .onItemDragged { drag in
                 told.drags.append(drag)
-                guard let over = drag.over, let from = order.wrappedValue.firstIndex(of: drag.item),
+                guard let over = drag.over, let from = order.wrappedValue.firstIndex(of: drag.id),
                       let to = order.wrappedValue.firstIndex(of: over) else { return }
                 order.wrappedValue.remove(at: from)
-                order.wrappedValue.insert(drag.item, at: to)
+                order.wrappedValue.insert(drag.id, at: to)
             }
             .dynamics(.spring(response: .milliseconds(400)))
             .node

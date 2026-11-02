@@ -151,7 +151,7 @@ in front of the user, neither, off the screen - which settles into the phases
 of the application, its scene and its window by the host layer's rule ([the
 application's phase](../../host/runtime.md#the-applications-phase)): each
 rendered before the next is heard, and a window shown again after it stopped
-resumed on its way to active. The window hears it was made as the host layer
+is active or inactive again. The window hears it was made as the host layer
 shows it, once; and it is going, and its scene that it closed, only when the
 activity finishes, not when Android makes the activity again for a new
 configuration. Nor does it hear the pause and the stop the activity goes
@@ -206,8 +206,8 @@ where it holds no clip.
 
 ## Sharing
 
-What the user shares is Android's chooser: the words, then the link on a line
-of its own, sent as plain text. The chooser tells which target the user picked
+What the user shares is Android's chooser: the words, then the address on a
+line of its own, sent as plain text. The chooser tells which target the user picked
 and nothing of a cancel, so the answer comes once the activity is back in
 front: shared where a target was picked, else not.
 
@@ -267,3 +267,13 @@ Android restores no windows, so the application's scenes are kept beside the
 values, under a key of the host's own, by the host layer's rule ([kept
 scenes](../../host/runtime.md#kept-scenes)), and come back at the next
 start.
+
+## The clipboard
+
+Android hands the clipboard to the window holding input focus alone, from
+Android 10: any other gets nothing from `getPrimaryClip()`, as an empty
+clipboard does. The host asks whether the activity's window has the focus
+before it reads, and where it has not the read fails with that reason -
+`clipboard.read()` throws - rather than saying the clipboard is empty, which
+would be a lie an application acts on. A read from a handler of the user's
+press stands in the window the user pressed, which has the focus.

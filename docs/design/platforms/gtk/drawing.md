@@ -98,8 +98,8 @@ host layer reads the instructions and keeps the pen
 snapshot's own, and an arc is the host layer's curves. Outlines and fills are
 GSK's paths - a rectangle, a rounded one and an ellipse as GSK's rounded
 rectangles - and words are a Pango layout of the pen's size, placed across and
-down their room and cut to it. A press, its drag and its release reach the
-application through GTK's drag gesture, each where it is in the canvas.
+down their room and cut to it. A press on it is a view's, heard as every view
+hears one, where it is in the canvas.
 
 A rectangle and an ellipse take their transform the same way, drawn under it
 on the snapshot; a line, a path, a polygon and a polyline are placed with it

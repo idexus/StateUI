@@ -32,7 +32,7 @@ final class NativeProjectTests: XCTestCase {
                 contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"),
                 encoding: .utf8)
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
-            XCTAssertTrue(entry.contains("registerApplication()"))
+            XCTAssertTrue(entry.contains("\(name)App.register()"))
             XCTAssertTrue(entry.contains("StateUIAppKit.run("))
 
             // Every head names the application to its host in Swift: the module exports no C function to be named.
@@ -40,8 +40,8 @@ final class NativeProjectTests: XCTestCase {
                 contentsOf: app.appendingPathComponent("Sources/\(name)App.swift"),
                 encoding: .utf8)
             XCTAssertTrue(
-                registration.contains("public func registerApplication()"),
-                "\(name)'s module does not name the application to its heads")
+                registration.contains("public struct \(name)App: Application"),
+                "\(name)'s module does not show its application to its heads")
             XCTAssertFalse(registration.contains("@_cdecl("), "\(name)'s module exports a C function")
         }
     }
@@ -429,7 +429,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no WinUI head in Platforms/WinUI")
 
             let entry = try text("Platforms/WinUI/main.swift")
-            for shape in ["import StateUIWinUI", "registerApplication()", "StateUIWinUI.run()"] {
+            for shape in ["import StateUIWinUI", "\(name)App.register()", "StateUIWinUI.run()"] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s WinUI head does not say \(shape)")
             }
         }
@@ -556,7 +556,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
-            for shape in ["import StateUIGTK", "registerApplication()", "StateUIGTK.run(applicationID: \"com.stateui."] {
+            for shape in ["import StateUIGTK", "\(name)App.register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
             }
         }
@@ -598,7 +598,7 @@ final class NativeProjectTests: XCTestCase {
             XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
 
             let entry = try text("Platforms/Android/Swift/\(name)Android.swift")
-            for shape in ["@_cdecl(\"JNI_OnLoad\")", "registerApplication()", "StateUIAndroid.load("] {
+            for shape in ["@_cdecl(\"JNI_OnLoad\")", "\(name)App.register()", "StateUIAndroid.load("] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s Android head does not say \(shape)")
             }
 

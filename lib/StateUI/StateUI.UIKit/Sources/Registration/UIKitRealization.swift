@@ -26,7 +26,7 @@ enum UIKitRealization {
 
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackground),
         .complete(BarElementContract.barScrollEdge),
@@ -108,9 +108,6 @@ enum UIKitRealization {
         .complete(MotionLayoutContract.pans),
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .partial(MenuContract.isEnabled, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
         .partial(LayoutContract.ignoresSafeArea, missing: "The safe area holds no keyboard: a page stands under it "
             + "whatever edges it ignores."),
@@ -203,7 +200,6 @@ enum UIKitRealization {
             reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
         .partial(WindowContract.background,
             missing: "iPadOS draws an application's window opaque: a blur or glass shows its color."),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),

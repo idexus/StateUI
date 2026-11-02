@@ -63,8 +63,7 @@ There is no default. Each event modifier comes as a step, `() throws ->
 Void`, which Swift picks for a closure with no `await`, and the same with a
 policy or a `gate:`, for a handler that awaits; an awaiting closure with
 neither meets only the step, and does not compile. `.onCreated` and `.onDestroying` take no
-gate, as each comes once, and `.draggable(text:canDrag:onDragStarting:)` takes
-a step alone. The compiler asks the question where there is one, and only
+gate, as each comes once. The compiler asks the question where there is one, and only
 there.
 
 `RunSlot.underWay` counts the runs of every slot from the moment a slot takes

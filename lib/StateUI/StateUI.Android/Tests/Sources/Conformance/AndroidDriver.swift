@@ -208,7 +208,7 @@ final class AndroidDriver: HostDriver {
         }
     }
 
-    /// The night mode the activity's configuration stands in: the application's where it holds one.
+    /// A phone's status bar and gesture bar over the window, told the host as Android reports a window's insets.
     func standUnderSystemBars(top: Double, bottom: Double) {
         guard let renderer else { return }
         let density = renderer.density
@@ -217,11 +217,12 @@ final class AndroidDriver: HostDriver {
             keyboard: 0)
     }
 
+    /// The night mode the activity's configuration stands in: the application's where it holds one.
     func theme() throws -> ColorScheme {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
     }
 
-    /// What the chooser the host holds offers: its words, then its link on a line of its own.
+    /// What the chooser the host holds offers: its words, then its address on a line of its own.
     func shared(over element: MountedElement) throws -> String? {
         renderer?.actToolkit.sharing?.shared.together
     }

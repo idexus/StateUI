@@ -30,7 +30,7 @@ and it reads a marker's kind back by that color.
 
 ## A tap on the map
 
-A tap on the map itself is the map's `mapClicked`; one on a marker, or on what
+A tap on the map itself is the map's `locationTapped`; one on a marker, or on what
 a marker opened, is the marker's. A double tap is the map's own zoom, no two
 taps on it: the tap waits for a double tap to fail. The host hears the map's taps with a recognizer
 of its own, beside the engine's, and what decides whether a tap is the

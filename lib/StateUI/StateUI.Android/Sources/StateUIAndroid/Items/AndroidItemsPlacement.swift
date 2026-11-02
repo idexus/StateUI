@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// How an ItemsView's entries stand in AndroidX's recycler, as the host layer places them in a collection without
-/// groups (`ItemsPlacement`), in the relay's numbers: its shape, each entry's kind and columns, and its room in pixels.
+/// sections (`ItemsPlacement`), in the relay's numbers: its shape, each entry's kind and columns, and its room in pixels.
 /// Design: docs/design/platforms/android/items.md#the-layout
 struct AndroidItemsPlacement: Equatable {
     /// The relay's shape: down, across, or in columns (`AndroidItemsShape`).

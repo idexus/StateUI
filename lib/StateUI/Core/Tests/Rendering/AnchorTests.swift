@@ -140,17 +140,54 @@ final class AnchorTests: XCTestCase {
         XCTAssertEqual(shown.children.map(\.type), [.sheet])
     }
 
-    /// Written on a view with an anchor, its look stands on the view its body builds, its identity on the anchor.
-    func testTheLookStandsOnTheViewShownAndTheIdentityOnTheAnchor() throws {
+    /// Written on a view with an anchor, its look and its identity stand on the view its body builds; the anchor
+    /// stands under an identity of its own, made from the view's.
+    func testTheLookAndTheIdentityStandOnTheViewShown() throws {
         let built = VStack {
             branches(false).opacity(0.5).onChanged(1) {}.id("anchored")
         }.node.built
         let anchor = try XCTUnwrap(built.children.first)
 
         XCTAssertEqual(anchor.type, .anchor)
-        XCTAssertEqual(anchor.identity, ElementIdentity("anchored"))
+        XCTAssertEqual(anchor.children.first?.identity, ElementIdentity("anchored"))
+        XCTAssertNotNil(anchor.identity, "the anchor is matched by the view's identity")
+        XCTAssertNotEqual(anchor.identity, ElementIdentity("anchored"))
         XCTAssertNil(anchor.props[.opacity])
         XCTAssertNotNil(anchor.children.first?.props[.opacity])
+    }
+
+    /// An id written on a list stays with the list whether its lifetime is written before it or after: the list is
+    /// what the id finds, the anchor standing over it under an identity of its own.
+    func testAnIdStaysWithTheViewItIsWrittenOn() throws {
+        for list in [
+            ItemsView([1, 2, 3]) { Text("\($0)") }.id("list").onCreated {},
+            ItemsView([1, 2, 3]) { Text("\($0)") }.onCreated {}.id("list"),
+        ] {
+            let anchor = try XCTUnwrap(VStack { list }.node.built.children.first)
+
+            XCTAssertEqual(anchor.type, .anchor)
+            XCTAssertEqual(anchor.children.first?.type, .itemsView)
+            XCTAssertEqual(anchor.children.first?.identity, ElementIdentity("list"))
+            XCTAssertNotNil(anchor.identity)
+            XCTAssertNotEqual(anchor.identity, ElementIdentity("list"))
+        }
+    }
+
+    /// Two anchored views written in one order and then the other keep their elements: each anchor is matched by
+    /// the identity it makes from its view's.
+    func testAnchoredViewsReorderedKeepTheirElements() throws {
+        let renders = Renders()
+        let first = renders.render(VStack {
+            branches(false).onChanged(1) {}.id("a")
+            branches(false).onChanged(1) {}.id("b")
+        }.node)
+        let swapped = renders.render(VStack {
+            branches(false).onChanged(1) {}.id("b")
+            branches(false).onChanged(1) {}.id("a")
+        }.node)
+
+        XCTAssertEqual(swapped.children.map(\.id), first.children.reversed().map(\.id))
+        XCTAssertEqual(swapped.children.map(\.replace), [false, false])
     }
 
     /// The branch flipping replaces the view the anchor holds, and the anchor stands.
@@ -201,16 +238,17 @@ final class AnchorTests: XCTestCase {
         XCTAssertEqual(flipped.subtree.first { $0.type == .anchor }?.children.first?.type, .hStack)
     }
 
-    /// The identity written on a composed view before what made its anchor is the anchor's.
-    func testTheIdentityWrittenBeforeTheAnchorIsTheAnchors() throws {
+    /// The identity written on a composed view before what made its anchor stays with the view; the anchor stands
+    /// under one made from it.
+    func testTheIdentityWrittenBeforeTheAnchorStaysWithTheView() throws {
         let built = VStack {
             branches(false).id("held").onChanged(1) {}
         }.node.built
         let anchor = try XCTUnwrap(built.children.first)
 
         XCTAssertEqual(anchor.type, .anchor)
-        XCTAssertEqual(anchor.identity, ElementIdentity("held"))
-        XCTAssertNil(anchor.children.first?.identity)
+        XCTAssertEqual(anchor.children.first?.identity, ElementIdentity("held"))
+        XCTAssertEqual(anchor.identity, ElementIdentity(AnyHashable(AnchorIdentity(held: ElementIdentity("held")))))
     }
 
     /// `.onCreated` and `.onDestroying` written on a composed view are the view's: its branch flipping runs

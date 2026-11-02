@@ -123,7 +123,7 @@ final class MountedTreeTests: XCTestCase {
     /// the elements walked, made and kept, and each scene's part by its place in the application.
     @MainActor
     func testAMessageAppliedTellsTheInspectorWhatItCost() throws {
-        stateUIUseApp(TwoScenes())
+        TwoScenes.register()
         HostBoundary.connectWindow()
         HostBoundary.connectWindow(kind: "tree.second")
         Inspection.start()
@@ -564,18 +564,34 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.children.map(\.layoutValues.grows), [false, true, false])
     }
 
+    /// A link says no alignment and stands at its words' size at the start, as words are read and clicked; any other
+    /// view fills its slot, and a link told otherwise stands as it was told.
+    @MainActor
+    func testALinkStandsAtItsWordsUnlessTold() {
+        let (tree, _) = Self.tree()
+        var centered = HostPatch(id: .manual("centered"), type: .link)
+        centered.properties[.horizontalAlignment] = .enumeration(Alignment.center.rawValue)
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.children = .arranged([
+            HostPatch(id: .manual("link"), type: .link), centered, HostPatch(id: .manual("words"), type: .text),
+        ])
+        tree.apply(column, complete: true)
+
+        XCTAssertEqual(tree.root?.children.map(\.layoutValues.horizontal), [0, 1, 3])
+    }
+
     /// The area a child names reaches its ZStack's arithmetic as it was written, and a child naming none
     /// has none.
     @MainActor
     func testAChildsAreaReachesItsLayout() {
         let (tree, _) = Self.tree()
         var half = HostPatch(id: .manual("half"), type: .text)
-        half.properties[.area] = Area.proportional(0.5, 0, 0.5, 1).propValue
+        half.properties[.area] = Area.proportional(Rect(0.5, 0, 0.5, 1)).propValue
         var layers = HostPatch(id: .manual("layers"), type: .zStack)
         layers.children = .arranged([half, HostPatch(id: .manual("whole"), type: .text)])
         tree.apply(layers, complete: true)
 
-        XCTAssertEqual(tree.root?.children.first?.layoutValues.area, .proportional(0.5, 0, 0.5, 1))
+        XCTAssertEqual(tree.root?.children.first?.layoutValues.area, .proportional(Rect(0.5, 0, 0.5, 1)))
         XCTAssertNil(tree.root?.children.last?.layoutValues.area)
     }
 
@@ -910,7 +926,7 @@ final class MountedTreeTests: XCTestCase {
             makeNative: { ReadingNative($0) })
         defer { Renderer.shared.clearStates() }
 
-        let law = Motion.eased(.milliseconds(400), .linear)
+        let law = Motion.eased(.milliseconds(400), curve: .linear)
         let states = [State(wrappedValue: 0.0, motion: law), State(wrappedValue: 0.0, motion: law)]
         let images = try states.map { try XCTUnwrap($0.projectedValue.journeyImage) }
         for image in images {

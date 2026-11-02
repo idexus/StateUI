@@ -409,7 +409,7 @@ public API keeps to these rules:
 
 - **One road.** A concept has one spelling and one way in: a property its
   member's modifier, several states read together `.multi`, a scroller's
-  offset `.scrollOffset($offset)`, the application `registerApplication()`. A
+  offset `.scrollOffset($offset)`, the application `NotesApp.register()`. A
   second road to the same place - an alias, a shortcut, an event repeating a
   state - is removed, not kept beside the first.
 - **Through the contract.** A property, an event and an act are written with
@@ -434,6 +434,19 @@ public API keeps to these rules:
   closed road is proved by a listing that must not compile beside the open
   one; where only the sources can tell, a guard reads them. A rule nothing
   checks is not yet a rule.
+- **Two surfaces, both named.** What an application writes and what an
+  author adding an element, a value or the application's own acts writes are
+  two surfaces, recorded apart and frozen alike; the second is the one the
+  library's own controls are written with, so an application's control stands
+  beside them as an equal, and its words - `setValue`, `onEvent`, a contract
+  - appear on every view ([Extending StateUI](../interface/extending.md)).
+- **What the platform does, and no more.** An act the library offers is what
+  every platform does for an application and an application cannot do as
+  well alone: `application.send` hands one HTTP request to the platform's own
+  networking, which keeps its certificates, proxy, cookies and network
+  rules, and answers the server's response. Retries, caching, encoding a
+  model and a socket kept open are an application's own code over it, or a
+  library of its own.
 
 **Deliberately rejected:** an old spelling kept beside a new one, a
 convenience overload that reaches a member a second way, and a public

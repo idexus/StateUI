@@ -15,22 +15,22 @@ extension MapKitView {
     ) {
         registry.add(MapContract.self, create: { reports in
             let map = make()
-            map.onClicked = { reports.raise(MapContract.mapClicked, $0) }
+            map.onLocationTapped = { reports.raise(MapContract.locationTapped, $0) }
             return map
         }, members: { map in
             map.property(MapContract.region) { view, region in
                 if let region { view.show(region, sliding: false) }
             }
-            map.applies(MapContract.mapType, MapContract.showsTraffic) { view, values in
-                view.style(values[MapContract.mapType] ?? .standard, traffic: values[MapContract.showsTraffic] ?? false)
+            map.applies(MapContract.type, MapContract.showsTraffic) { view, values in
+                view.style(values[MapContract.type] ?? .standard, traffic: values[MapContract.showsTraffic] ?? false)
             }
             map.property(MapContract.isScrollEnabled) { view, on in view.isScrollEnabled = on ?? true }
             map.property(MapContract.isZoomEnabled) { view, on in view.isZoomEnabled = on ?? true }
             map.property(MapContract.showsUserLocation) { view, on in view.showUser(on ?? false) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.type, MarkerContract.location,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.type, MarkerContract.location,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { view, pins in
                 view.show(pins)

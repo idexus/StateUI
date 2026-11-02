@@ -17,22 +17,18 @@ final class AndroidActTests: XCTestCase {
         ]
     }
 
-    /// `ClockTime.now()` and `TimeZoneInfo.local()` are acts the host answers from the platform's clock and zone.
+    /// The clock's day and time of day are acts the host answers from the platform's clock, and the locale names the
+    /// user's zone.
     func testTheClockAndTheZoneAnswerFromThePlatform() {
         onMainActor {
             let said = State(wrappedValue: "")
-            let host = AndroidRenderer.running {
-                Text(said.wrappedValue).onCreated {
-                    let time = try await ClockTime.now()
-                    let zone = try await TimeZoneInfo.local()
-                    said.wrappedValue = "\(time.hour) \(time.minute) \(zone)"
-                }
-            }
+            let host = AndroidRenderer.running { ClockReading(said: said) }
             host.settle { !said.wrappedValue.isEmpty }
 
             let parts = said.wrappedValue.split(separator: " ")
             XCTAssertEqual(parts.count, 3, said.wrappedValue)
             XCTAssertTrue((0..<24).contains(Int(parts.first ?? "") ?? -1), said.wrappedValue)
+            XCTAssertTrue((parts.count > 1 ? Int(parts[1]) ?? 0 : 0) >= 2026, said.wrappedValue)
             XCTAssertFalse(parts.last?.isEmpty ?? true)
         }
     }
@@ -122,6 +118,20 @@ private struct FocusPage: View {
         return VStack {
             TextField("").aim(field)
             Button("Focus").onClicked(.ignoreWhileRunning) { answers.values.append(try await field.focus()) }
+        }
+    }
+}
+
+/// The clock's time and day and the locale's zone, written into `said` once the page stands.
+private struct ClockReading: View {
+    @Environment(\.application) private var application
+    @Environment(\.locale) private var locale
+    let said: State<String>
+
+    var body: some View {
+        Text(said.wrappedValue).onCreated {
+            let (time, today) = (try await application.clock.now(), try await application.clock.today())
+            said.wrappedValue = "\(time.hour) \(today.year) \(locale.timeZone?.identifier ?? "")"
         }
     }
 }

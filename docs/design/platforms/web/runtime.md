@@ -121,8 +121,11 @@ where the browser says it (Sunday where not), and the writing's direction.
 The browser says nothing of measures: they are metric but in the three
 countries of none - the United States, Liberia and Myanmar. The relay hands
 over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
-the locale again as the user's languages change. So the library's words - a
-chrome's own buttons, a dialog's answers - stand in the user's language.
+the locale again as the user's languages change, and as the page comes back
+to the front, since the browser tells no change of the zone ([facts read again
+at the front](../../host/runtime.md#facts-read-again-at-the-front)). So the
+library's words - a chrome's own buttons, a dialog's answers - stand in the
+user's language.
 
 What the user asked of motion and contrast is the browser's media queries,
 `prefers-reduced-motion` and `prefers-contrast: more`, told again as either
@@ -192,7 +195,7 @@ served over plain http has no clipboard, and its read fails with that reason.
 ## Sharing
 
 What the user shares is the browser's share sheet, where it has one: the words
-as the shared text and the link as its address. Sent on, it answers shared; a
+as the shared text and the address as its URL. Sent on, it answers shared; a
 user's cancel answers not shared; a browser with none fails the act with that
 reason.
 
@@ -201,15 +204,15 @@ reason.
 A file dialog is the browser's own, waiting its turn among the questions
 ([files](../../host/runtime.md#files)). One that opens is a file input of
 every kind's extensions, clicked while the user's press lets the page ask -
-its `change` answers the files, its `cancel` none. A save takes its
-contents first: where the browser has a save dialog (`showSaveFilePicker`)
-it offers each kind under its caption with the act's name, writes the
-contents where the user said and answers the file - none where they
-cancelled; elsewhere the browser downloads the file under the act's name,
-which no dialog answers, and the act answers the file at once. A chosen
-file is kept by the relay under a number of its own - a `File`, or the
-handle of the one saved - which is its address; the page holds it while it
-runs, and reads it as the browser hands it.
+its `change` answers the files, its `cancel` none. A save takes its contents
+first: where the browser has a save dialog (`showSaveFilePicker`) it offers
+each kind under its caption with the act's name, writes the contents where the
+user said and answers the file - none where they cancelled, and a write that
+fails fails the act with its reason, never as a cancel; elsewhere the browser
+downloads the file under the act's name, which no dialog answers, and the act
+answers the file at once. A chosen file is kept by the relay under a number of
+its own - a `File`, or the handle of the one saved - which is its address; the
+page holds it while it runs, and reads it as the browser hands it.
 
 A file or an address is launched in a window of the browser's own, opened at
 once while the user's press lets the page open one - a file's sent there as

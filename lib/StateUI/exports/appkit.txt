@@ -24,9 +24,6 @@ Button
   released()
 Canvas
   drawing
-  dragged()
-  pressed()
-  released()
 Capsule
   contentMode
   dash
@@ -98,16 +95,14 @@ Line
   contentMode
   dash
   dashPhase
+  from
   geometryTransform
   lineCap
   lineWidth
   stroke
-  x1
-  x2
-  y1
-  y2
+  to
 Link
-  destination
+  address
   text
   textCase
   textColor
@@ -115,15 +110,15 @@ Link
 Map
   isScrollEnabled
   isZoomEnabled
-  mapType
   region
   showsTraffic
   showsUserLocation
-  mapClicked()
+  type
+  locationTapped()
 Marker
-  label
   location
   subtitle
+  title
   type
   detailsClicked()
   selected()
@@ -196,9 +191,9 @@ Rectangle
   miterLimit
   stroke
 ScrollView
+  axes
   horizontalScrollIndicator
   lineWidth
-  orientation
   padding
   scrollOffset
   shape
@@ -334,7 +329,6 @@ WebView
   accessibilityValue
   allowsDrop
   area
-  canDrag
   dragText
   droppedFileTypes
   frame
@@ -348,6 +342,7 @@ WebView
   horizontalAlignment
   ignoresInput
   isAccessibilityHidden
+  isDraggable
   isEnabled
   isVisible
   keysTaken
@@ -407,15 +402,14 @@ WebView
   chooseAction()
   confirm()
   currentTime()
-  currentTimeZone()
   evaluateJavaScript()
   focus()
   goBack()
   goForward()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchAddress()
   launchFile()
-  launchLink()
   moveToRegion()
   openFiles()
   persistSceneValue()

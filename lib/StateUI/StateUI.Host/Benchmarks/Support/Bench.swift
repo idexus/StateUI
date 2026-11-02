@@ -23,7 +23,7 @@ final class Bench {
     /// Runs `application` in `room`: its window, the first render, and a second of frames for its arrival.
     init<Declared: Application>(_ application: @autoclosure @escaping () -> Declared, room: Rect = Rect(0, 0, 390, 700)) {
         self.room = room
-        stateUIUseApp(application())
+        Renderer.shared.setApplication(application())
         runtime = HostRuntime(
             clock: clock, reducesMotion: { false },
             makeNative: { [unowned self] element in CountedView(element, in: self) }, log: { _ in })

@@ -329,7 +329,7 @@ enum WebRelay {
     @discardableResult
     static func showInFrame(_ element: Int32, _ source: WebViewSource) -> String? {
         switch source {
-        case .url(let address):
+        case .address(let address):
             utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
         case .html(let words, let base):
@@ -537,14 +537,13 @@ enum WebRelay {
         }
     }
 
-    /// The local time of day.
-    static var localTime: (hour: Int, minute: Int, second: Int, millisecond: Int) {
-        let read = numbers(4) { stateui_web_local_time($0) }
-        return (Int(read[0]), Int(read[1]), Int(read[2]), Int(read[3]))
+    /// The local day and time of day.
+    static var localTime: LocalTime {
+        let read = numbers(7) { stateui_web_local_time($0) }.map { Int($0) }
+        return LocalTime(
+            year: read[0], month: read[1], day: read[2], hour: read[3], minute: read[4], second: read[5],
+            millisecond: read[6])
     }
-
-    /// The local time zone's name.
-    static var localZone: String { copyRead(length: stateui_web_local_zone()) }
 
     /// How far `zone` - the local one where nil - is from UTC at noon on `day` - now where nil - in minutes; nil
     /// for a zone the browser does not know.
@@ -560,12 +559,12 @@ enum WebRelay {
         utf8(words) { stateui_web_announce($0, $1) }
     }
 
-    /// Offers `text` and `link` - each where given - to the browser's share sheet, `listener` told once it answers:
+    /// Offers `text` and `address` - each where given - to the browser's share sheet, `listener` told once it answers:
     /// event 1 and "1" shared or "0" cancelled, or 0 and why not, read by `file_words`.
-    static func share(text: String?, link: String?, _ listener: Int32) {
+    static func share(text: String?, address: String?, _ listener: Int32) {
         utf8(text ?? "") { words, wordsLength in
-            utf8(link ?? "") { address, addressLength in
-                stateui_web_share(words, text == nil ? -1 : wordsLength, address, link == nil ? -1 : addressLength, listener)
+            utf8(address ?? "") { shared, sharedLength in
+                stateui_web_share(words, text == nil ? -1 : wordsLength, shared, address == nil ? -1 : sharedLength, listener)
             }
         }
     }

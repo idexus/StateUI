@@ -20,10 +20,10 @@
 ///
 /// A style takes the modifiers of its target's properties and nothing else:
 /// an event, a gesture, an `.id()` or another control's property does not
-/// compile. Write it as `Style<Button>`; `Context` keeps a visual state from
+/// compile. Write it as `Style<Button>`; its `Scope` keeps a visual state from
 /// holding another.
 @MainActor
-public struct StyleBag<Target: StyleTarget, Context> {
+public struct Styling<Target: StyleTarget, Scope> {
     /// The setters written so far, on a node of the target's type.
     public var node: Node
 
@@ -43,29 +43,31 @@ public struct StyleBag<Target: StyleTarget, Context> {
     var states: [DeclaredState] = []
 
     init(key: String?) {
-        node = Node(type: Target().node.type)
+        node = Node(type: Target.nodeType)
         self.key = key
     }
 }
 
-/// The context of the style itself, where `visualState` and `basedOn` may be
-/// written. See `StyleBag`.
-public enum StyleBase {}
+/// Where a style's setters stand - the scope a `Styling` is written in.
+public enum StyleScope {
+    /// The style itself, where `visualState` and `basedOn` may be written.
+    public enum Whole {}
 
-/// The context inside a `visualState` closure: the same property surface,
-/// minus what only the style itself can carry - a state cannot hold a state.
-public enum StyleState {}
-
-/// A style, `Style<Button>()`: a `StyleBag` with its context filled in.
-public typealias Style<Target: StyleTarget> = StyleBag<Target, StyleBase>
-
-extension StyleBag: PropertyContainer {
-    /// A style's modifiers give back the style, so the chain goes on offering
-    /// what the target can carry.
-    public typealias Modified = StyleBag<Target, Context>
+    /// Inside a `visualState` closure: the same property surface, minus what only the style itself can carry - a
+    /// state cannot hold a state.
+    public enum VisualState {}
 }
 
-extension StyleBag where Context == StyleBase {
+/// A style, `Style<Button>()`: the styling of every control of a type, in the scope of the whole style.
+public typealias Style<Target: StyleTarget> = Styling<Target, StyleScope.Whole>
+
+extension Styling: PropertyContainer {
+    /// A style's modifiers give back the style, so the chain goes on offering
+    /// what the target can carry.
+    public typealias Modified = Styling<Target, Scope>
+}
+
+extension Styling where Scope == StyleScope.Whole {
     /// A style every control of the type gets.
     public init() {
         self.init(key: nil)
@@ -77,7 +79,7 @@ extension StyleBag where Context == StyleBase {
     }
 }
 
-extension StyleBag where Context == StyleBase, Target == Button {
+extension Styling where Scope == StyleScope.Whole, Target == Button {
     /// A style every button of `role` gets, standing over the one every button gets: it says only what the role
     /// changes. A button asking for a style by its key, or for the platform's own look, wears none of it.
     ///
@@ -89,7 +91,7 @@ extension StyleBag where Context == StyleBase, Target == Button {
     }
 }
 
-extension StyleBag where Context == StyleBase, Target == Picker {
+extension Styling where Scope == StyleScope.Whole, Target == Picker {
     /// A style every picker of `presentation` gets - one saying none is a menu - standing over the one every picker
     /// gets: it says only what the presentation changes. A picker asking for a style by its key, or for the
     /// platform's own look, wears none of it.
@@ -102,7 +104,7 @@ extension StyleBag where Context == StyleBase, Target == Picker {
     }
 }
 
-extension StyleBag where Context == StyleBase {
+extension Styling where Scope == StyleScope.Whole {
     /// The style this one starts from, named by the key that style was given.
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
@@ -127,10 +129,10 @@ extension StyleBag where Context == StyleBase {
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Target>,
-        _ setters: (StyleBag<Target, StyleState>) -> StyleBag<Target, StyleState>
+        _ setters: (Styling<Target, StyleScope.VisualState>) -> Styling<Target, StyleScope.VisualState>
     ) -> Self {
         var copy = self
-        let values = setters(StyleBag<Target, StyleState>(key: nil)).node.props
+        let values = setters(Styling<Target, StyleScope.VisualState>(key: nil)).node.props
         copy.states = written(copy.states, adding: DeclaredState(key: state.key, setters: values))
         return copy
     }
@@ -149,7 +151,7 @@ extension StyleBag where Context == StyleBase {
     }
 }
 
-extension StyleBag where Context == StyleBase {
+extension Styling where Scope == StyleScope.Whole {
     /// The style with its target forgotten, for a `StyleSheet`: the target's
     /// node type, its values and its states.
     var erased: AnyStyle {

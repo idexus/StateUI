@@ -9,11 +9,11 @@ public enum MarkerContract: ElementContract {
     /// An optional provider supplies it; no base host has to.
     public static let layer: ElementLayer = .provider
 
-    /// The line under the label in the callout.
+    /// The line under the title in the callout.
     public static let subtitle = ElementProperty<Self, String>("subtitle", layer: .provider)
 
     /// The callout's first line, in bold.
-    public static let label = ElementProperty<Self, String>("label", layer: .provider)
+    public static let title = ElementProperty<Self, String>("title", layer: .provider)
 
     /// Where it stands.
     public static let location = ElementProperty<Self, Location>("location", layer: .provider, travels: false)
@@ -30,6 +30,6 @@ public enum MarkerContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        detailsClicked, label, location, selected, subtitle, type,
+        detailsClicked, location, selected, subtitle, title, type,
     ]
 }

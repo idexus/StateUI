@@ -44,16 +44,11 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `WindowSession.confirm`.
     public static let confirm = ElementAct<Self, (Name, Name, String, String, String, String), Bool>("confirm")
 
-    /// The host's local time of day, as four numbers: hour, minute, second,
+    /// The host's local date and time of day, as seven numbers: year, month, day, hour, minute, second,
     /// millisecond.
     ///
-    /// See `ClockTime.now()`.
+    /// See `WallClock.now()` and `WallClock.today()`.
     public static let currentTime = ElementAct<Self, Void, [Double]>("currentTime")
-
-    /// The IANA identifier of the host's local time zone.
-    ///
-    /// See `TimeZoneInfo.local()`.
-    public static let currentTimeZone = ElementAct<Self, Void, String>("currentTimeZone")
 
     /// A handler's escaped error, reported to the host.
     public static let handlerFailed = ElementAct<Self, String, Void>("handlerFailed")
@@ -74,7 +69,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// a mail address - answering whether one took it.
     ///
     /// See `ApplicationSession.launch(_:)`.
-    public static let launchLink = ElementAct<Self, String, Bool>("launchLink")
+    public static let launchAddress = ElementAct<Self, String, Bool>("launchAddress")
 
     /// Shows the whole application in a theme - light, dark, or the system's,
     /// which follows the user's setting again.
@@ -114,7 +109,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
 
     /// The words on the system's clipboard; nothing where it holds none.
     ///
-    /// See `Clipboard.text()`.
+    /// See `Clipboard.read()`.
     public static let readClipboard = ElementAct<Self, Void, String?>("readClipboard")
 
     /// Reads a file the user chose: whole where nothing more is said, else at
@@ -139,29 +134,29 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let sendRequest = ElementAct<Self, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>(
         "sendRequest")
 
-    /// Offers words, a link or both to the platform's share sheet over a window -
-    /// the window, the words, the link - answering whether the user shared
-    /// them.
+    /// Offers words, an address or both to the platform's share sheet over a
+    /// window - the window, the words, the address - answering whether the user
+    /// shared them.
     ///
-    /// See `WindowSession.share(text:link:)`.
+    /// See `WindowSession.share(text:address:)`.
     public static let share = ElementAct<Self, (Name, Name, String?, String?), Bool>("share")
 
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,
     /// the local one where there is none, and the day, now where there is
     /// none.
     ///
-    /// See `TimeZoneInfo.utcOffset`.
+    /// See `WallClock.utcOffset(of:on:)`.
     public static let utcOffset = ElementAct<Self, (String?, CalendarDate?), Int>("utcOffset")
 
     /// Puts words on the system's clipboard, in place of whatever it held.
     ///
-    /// See `Clipboard.write(text:)`.
+    /// See `Clipboard.write(_:)`.
     public static let writeClipboard = ElementAct<Self, String, Void>("writeClipboard")
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        alert, announce, cancelCall, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
-        hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
+        alert, announce, cancelCall, chooseAction, confirm, currentTime, handlerFailed,
+        hideOnScreenKeyboard, launchAddress, launchFile, openFiles, persistSceneValue, persistValue, prompt,
         readClipboard, readFile, saveFile, sendRequest, share, useAccentColor, useColorScheme, utcOffset,
         writeClipboard,
     ]

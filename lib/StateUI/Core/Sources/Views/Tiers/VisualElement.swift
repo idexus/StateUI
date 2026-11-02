@@ -117,12 +117,12 @@ extension VisualElement {
     /// - Parameters:
     ///   - source: the value the host is animating, `$x` of a `@State`.
     ///   - target: the state to read it into, `$y`.
-    ///   - asks: how often, at most.
+    ///   - cadence: how often, at most.
     /// - Returns: the element, with that reading asked for.
     public func samples<Value: Walked>(
         _ source: Binding<Value>,
         into target: Binding<Value>,
-        _ asks: Asks
+        _ cadence: Cadence
     ) -> Modified {
         modified {
             let from = source.storage, into = target.storage
@@ -132,7 +132,7 @@ extension VisualElement {
                 return
             }
 
-            $0.samples.append((image: image, into: ObjectIdentifier(into), asks: asks, take: {
+            $0.samples.append((image: image, into: ObjectIdentifier(into), cadence: cadence, take: {
                 // Off the lanes, not the journey's own read, so the element being
                 // built does not become a reader of the value.
                 guard let now = from.journeyLanes?.value else { return }

@@ -20,7 +20,7 @@ extension WinUIDriver {
         if property == .barScrollEdge {
             return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUISingleChildView)?.topEdge.propValue
         }
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
             return page.edge.propValue
         }
@@ -83,7 +83,7 @@ extension WinUIDriver {
             var argb: UInt32 = 0
             let painted = stateui_winui_window_background(window.handle, &argb)
                 ? Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
-                        alpha: Int(argb >> 24 & 255))
+                        opacity: Double(argb >> 24 & 255) / 255)
                 : nil
             if acrylic {
                 guard let thickness = Blur.Thickness.allCases.first(where: {
@@ -429,11 +429,11 @@ extension WinUIDriver {
             return Self.bar(try read(scroll.scroller, "verticalBar")).propValue
         case ("horizontalScrollIndicator", let scroll as WinUIScrollView):
             return Self.bar(try read(scroll.scroller, "horizontalBar")).propValue
-        case ("orientation", let scroll as WinUIScrollView):
-            let down = try read(scroll.scroller, "verticalMode") != "0"
-            let across = try read(scroll.scroller, "horizontalMode") != "0"
-            let orientation: ScrollOrientation = down && across ? .both : across ? .horizontal : down ? .vertical : .neither
-            return orientation.propValue
+        case ("axes", let scroll as WinUIScrollView):
+            var axes: ScrollAxes = []
+            if try read(scroll.scroller, "horizontalMode") != "0" { axes.insert(.horizontal) }
+            if try read(scroll.scroller, "verticalMode") != "0" { axes.insert(.vertical) }
+            return axes.propValue
         default: return nil
         }
     }
@@ -737,7 +737,7 @@ extension WinUIDriver {
 
     /// A color held as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {
-        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
+        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), opacity: Double(argb >> 24) / 255)
     }
 
     /// Four sides the reader writes as numbers apart by commas - left first, the start, which WinUI turns with a

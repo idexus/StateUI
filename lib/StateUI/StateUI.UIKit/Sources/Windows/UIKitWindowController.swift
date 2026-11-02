@@ -21,7 +21,7 @@ final class UIKitWindowController {
     private(set) var session: UISceneSession?
 
     /// The phase the window was last told; nil until it was told one.
-    var toldPhase: ApplicationPhase?
+    var toldPhase: SessionPhase?
 
     /// The record its session keeps, for iOS to hand back as it restores the scene.
     private(set) var record: WindowRecord?

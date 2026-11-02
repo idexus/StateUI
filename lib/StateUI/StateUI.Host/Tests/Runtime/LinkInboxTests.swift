@@ -50,7 +50,7 @@ final class LinkInboxTests: XCTestCase {
     /// the scene's state; one opened after, at once.
     func testALinkOpenedBeforeTheFirstWindowReachesIt() async throws {
         heard = []
-        stateUIUseApp(LinkedApplication())
+        LinkedApplication.register()
         let runtime = HostRuntime.still()
         runtime.openLink("notes://note/7")
         XCTAssertEqual(heard, [], "no window yet")

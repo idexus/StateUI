@@ -18,14 +18,13 @@ extension Node {
             var node = Node(contract: WindowContract.self, children: [page()] + (overlay.map { [$0] } ?? []))
             node.props = session.props
 
-            // One handler per lifecycle report, never iterated from a collection.
+            // One handler per lifecycle report, each moving the session's phase.
             // Design: docs/design/views/pages.md#lifecycle-reports-one-by-one
-            node.addHandler(WindowContract.created.token) { session.phase = .created }
-            node.addHandler(WindowContract.activated.token) { session.phase = .activated }
-            node.addHandler(WindowContract.deactivated.token) { session.phase = .deactivated }
-            node.addHandler(WindowContract.stopped.token) { session.phase = .stopped }
-            node.addHandler(WindowContract.resumed.token) { session.phase = .resumed }
-            node.addHandler(WindowContract.destroying.token) { session.phase = .destroying }
+            node.addHandler(WindowContract.created.token) { session.phase = .inactive }
+            node.addHandler(WindowContract.activated.token) { session.phase = .active }
+            node.addHandler(WindowContract.deactivated.token) { session.phase = .inactive }
+            node.addHandler(WindowContract.stopped.token) { session.phase = .background }
+            node.addHandler(WindowContract.destroying.token) { session.phase = .background }
 
             return node
         }

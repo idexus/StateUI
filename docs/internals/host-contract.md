@@ -248,7 +248,7 @@ adapters are `NSCollectionView`, `UICollectionView`, Android `RecyclerView`,
 WinUI `ItemsView`, and GTK 4 `GtkListView` or `GtkGridView`.
 
 Nothing new crosses the boundary for it. Every identity the list shows, in
-order and in groups, is one property, `ItemsViewContract.items`. The
+order and in sections, is one property, `ItemsViewContract.items`. The
 identities within reach of those the host holds in its cells - as many
 before and after each cell as the cells hold, eight at least - come back as
 an event, `realizedChanged`, and the element's children are those entries

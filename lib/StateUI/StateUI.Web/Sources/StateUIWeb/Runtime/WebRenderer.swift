@@ -213,6 +213,14 @@ final class WebRenderer {
 }
 
 extension WebRenderer: HostPresenter {
+    /// The zone a browser tells no change of, read again as the page comes back to the front; the languages it
+    /// tells (`languagechange`).
+    /// Design: docs/design/host/runtime.md#facts-read-again-at-the-front
+    func readEnvironmentAgain() {
+        let core = runtime.core
+        runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
+    }
+
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { showWindows() } else { roster.controllers.first?.adaptSidebar() }
         // What a render wrote may move a view without resizing it, which no observer of the page tells.

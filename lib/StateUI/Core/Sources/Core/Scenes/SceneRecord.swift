@@ -116,7 +116,11 @@ final class SceneRecord {
             return standing
         }
 
-        let made = State(wrappedValue: opened.value?.base as! Value)
+        // A window for a value opens only with one of its type, and is restored only with one that reads.
+        guard let value = opened.value?.base as? Value else {
+            preconditionFailure("a window for a value of \(Value.self) stands without one")
+        }
+        let made = State(wrappedValue: value)
         let serial = opened.serial
         made.storage.keep = { [weak self] in self?.retarget(serial, to: $0) }
         session.value = made

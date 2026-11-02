@@ -13,7 +13,7 @@ import MapKit
 @_spi(Host) @MainActor
 open class MapKitView: MKMapView, MKMapViewDelegate {
     /// What the view does when the user clicks or taps the map itself, not a marker, at a place.
-    public var onClicked: ((Location) -> Void)?
+    public var onLocationTapped: ((Location) -> Void)?
 
     /// The markers shown, each kept by its child for as long as it lives.
     private var pins: [ChildElement<MarkerContract>: MapKitMarker] = [:]
@@ -124,10 +124,10 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
 
     // MARK: - What the user does
 
-    /// A click or tap on the map at `point` of the view, heard as the place it fell on.
-    public func clicked(at point: CGPoint) {
+    /// A tap or click on the map at `point` of the view, heard as the place it fell on.
+    public func tapped(at point: CGPoint) {
         let place = convert(point, toCoordinateFrom: self)
-        onClicked?(Location(latitude: place.latitude, longitude: place.longitude))
+        onLocationTapped?(Location(latitude: place.latitude, longitude: place.longitude))
     }
 
     /// The view MapKit shows for a marker: its callout, dressed as its kind says.

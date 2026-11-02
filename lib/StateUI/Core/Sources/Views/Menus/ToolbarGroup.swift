@@ -20,7 +20,7 @@ public struct ToolbarGroup: BarItemElement, BorderElement, PaddingElement, Toolb
     public var node: Node
 
     /// A group of `items`, in reading order.
-    public init(@ToolbarGroupBuilder _ items: () -> ToolbarGroupContent) {
+    public init(@ToolbarGroupBuilder items: () -> ToolbarGroupContent) {
         node = Node(contract: ToolbarGroupContract.self, children: items().items)
     }
 

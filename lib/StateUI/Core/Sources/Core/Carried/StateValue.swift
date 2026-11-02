@@ -5,10 +5,12 @@
 // own values lie on the image.
 // Design: docs/design/core/state.md#carried-state
 
-/// A value that can ride a state - how it lies on the image, and back. This
-/// library's own. A type of the application's own joins by saying the same: a
-/// `Rect` is four lanes in the order it names its fields, a `String` its bytes.
-/// A value that lies as lanes is a `LaneValue`.
+/// A value that can ride a state - how it lies on the image, and back: a
+/// `Rect` four lanes in the order it names its fields, a `String` its bytes.
+///
+/// A type of the application's own conforms to `LaneValue` - or `Walked`, to
+/// move by a journey - rather than to this protocol alone: text is `String`'s.
+/// Design: docs/design/core/state.md#three-protocols-three-capabilities
 public protocol StateValue: Equatable, Sendable {
     /// The value, as the image holds it.
     var carried: StateCarried { get }

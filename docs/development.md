@@ -22,7 +22,6 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling, the host's tests and deploys
 .scripts/UIKit/                    UIKit bundles, runs on a simulator or a device, tests and deploys
 .scripts/Android/                  Android Views builds, runs, devices, tests and deploys
@@ -32,6 +31,7 @@ lib/StateUI.VSCode/                the editor extension
 .scripts/Marks/                    the revision a conformance family's verdicts stand at
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
+.scripts/rasterize-images.swift    an application's SVGs drawn as PNGs for a head whose toolkit draws none
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head
@@ -48,6 +48,7 @@ apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
 apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
 apps/HelloWorld/Platforms/Web/     HelloWorld Web head
+editors/VSCode/                    the VS Code extension: new application, build, run, debug and test for every head
 ```
 
 The core and the host layer never import Foundation or a platform UI
@@ -75,10 +76,9 @@ resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
 `.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build. The editor gets it from the StateUI extension (`lib/StateUI.VSCode`):
-choosing AppKit in its status bar sets the variable for the Swift language
-server and restarts it, which then resolves `Platforms/AppKit` and completes the
-code inside `#if APPKIT`, with no window reload. A
+for a build. The editor gets it from the StateUI extension: the host chosen in
+its status bar sets the variable for the Swift language server
+([StateUI for VS Code](editors/VSCode/README.md#the-host)). A
 `swift.swiftEnvironmentVariables` setting naming the variable would override
 that choice, so `.vscode/settings.json` sets none.
 
@@ -171,10 +171,9 @@ STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
   --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
-In VS Code, the StateUI extension (`lib/StateUI.VSCode`) runs either
-application: "StateUI: Debug" and "StateUI: Release" build and start the one
-chosen in its status bar, on the host chosen there; installing it is under
-[Working in VS Code](getting-started.md#working-in-vs-code). The Gallery's
+In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
+application chosen in the StateUI extension's status bar, on the host chosen
+there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
 build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
 The UIKit host builds on macOS with the same Xcode and its iOS 26 or newer
@@ -447,18 +446,26 @@ copyable application examples as plain `swift` so API drift fails visibly.
 The core's suite also guards the project itself, in
 `lib/StateUI/Core/Tests/Project/`:
 
+- `APISurfaceTests` - the public API stands as its two records say, what an
+  application writes and what an extension writes;
 - `AppsTests` - every path an application's manifest names resolves, and the
   scaffolder makes a new application from `apps/HelloWorld`;
 - `ConformanceCaseTests` - a conformance case sees that nothing happened only
   after a turn of the pump, and waits on the clock only for another process;
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
+- `DocumentNamesTests` - every page under `docs/` is named in lowercase words
+  joined by `-`, a folder's own page `README.md`, and a page of the control
+  dictionary as its contract's type;
 - `ReleaseTests` - every place that names the release names the one
-  `lib/StateUI.VSCode/package.json` states ([Distribution
+  `editors/VSCode/package.json` states ([Distribution
   boundary](#distribution-boundary));
-- `LicenseTests` - every source under `lib/` starts with the two SPDX lines;
+- `LicenseTests` - every source under `lib/` and `editors/` starts with the two
+  SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
+- `FoundationSurfaceTests` - `StateUIFoundation` offers the platform's C
+  library and nothing of its own;
 - `HeldByNumberTests` - every number a host hands out is the process's one
   count's, and what a host holds by number stands in the shared tables;
 - `DesignNotesTests` - every `Design:` reference in a source names a note and
@@ -475,6 +482,7 @@ The core's suite also guards the project itself, in
   NDK and the oldest system names the same one;
 - `VsCodeTests` - every name the VS Code configurations point at, in another
   file or a script, exists;
+- `WaitTests` - a wait asks its condition once a step and stops as it holds;
 - `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
   holds the application's names and what its `Page` folder adds.
 
@@ -530,9 +538,9 @@ library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.
 
 A release has one version, stated in the editor extension's
-`lib/StateUI.VSCode/package.json`. Every other place that names it - the
+`editors/VSCode/package.json`. Every other place that names it - the
 published-package line in the root `Package.swift`, the library's own
-`stateUIVersion()`, each application's Android
+`application.info.libraryVersion`, each application's Android
 head's version and the Android host's test head's, the Gallery's AppKit
 bundle, every UIKit bundle (`.scripts/UIKit/tools.sh`), the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

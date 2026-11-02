@@ -156,7 +156,8 @@ final class AndroidTextFieldView: AndroidTextualView {
     /// Design: docs/design/platforms/android/controls.md#an-editor-a-line-tall
     override func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
         let measured = super.measure(width: width, height: height)
-        guard kind == .editor, !grows, ViewConstants.mode(height) != ViewConstants.exactly else { return measured }
+        guard kind == .editor else { return (leastWidth(own: measured.width, width), measured.height) }
+        guard !grows, ViewConstants.mode(height) != ViewConstants.exactly else { return measured }
 
         let line = Java.frame { () -> Int32 in
             guard let paint = Java.callObject(reference, JavaAPI.getPaint),
@@ -194,8 +195,32 @@ final class AndroidTextFieldView: AndroidTextualView {
         onTextChanged?(kept)
     }
 
+    /// How wide a one-line field asks to be where nothing sizes it - its placeholder, or twenty digits, in its
+    /// paint, with its padding - where Android's own asks for less; within what `width` allows.
+    /// Design: docs/design/host/layout.md#a-fields-own-width
+    private func leastWidth(own: Int32, _ width: Int32) -> Int32 {
+        guard ViewConstants.mode(width) != ViewConstants.exactly else { return own }
+        let (measured, chrome) = Java.frame { () -> ([Double], Double) in
+            guard let paint = Java.callObject(reference, JavaAPI.getPaint) else { return ([], 0) }
+            let measured = FieldWidth.leastWords(placeholder: placeholder).map { words -> Double in
+                let string = Java.string(words)
+                defer { Java.release(local: string) }
+                return Double(Java.callFloat(paint, JavaAPI.measureText, .object(string))).rounded(.up)
+            }
+            let padding = Java.callInt(reference, JavaAPI.getCompoundPaddingLeft)
+                + Java.callInt(reference, JavaAPI.getCompoundPaddingRight)
+            return (measured, Double(padding))
+        }
+        let least = Int32(FieldWidth.width(own: Double(own), measured: measured, chrome: chrome).rounded(.up))
+        return ViewConstants.mode(width) == ViewConstants.atMost ? min(least, ViewConstants.size(width)) : least
+    }
+
+    /// The words shown while there are none - which a field nothing sizes is at least as wide as.
+    private var placeholder: String?
+
     /// The words shown while there are none.
     func setPlaceholder(_ placeholder: String?) {
+        self.placeholder = placeholder
         let hint = placeholder.flatMap(Java.string)
         Java.call(reference, JavaAPI.setHint, .object(hint))
         Java.release(local: hint)

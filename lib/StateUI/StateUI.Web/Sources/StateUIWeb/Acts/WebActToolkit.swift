@@ -19,12 +19,8 @@ final class WebActToolkit: ActToolkit {
 
     let host = "Web"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
+    func localTime() -> LocalTime {
         WebRelay.localTime
-    }
-
-    func localZone() -> String {
-        WebRelay.localZone
     }
 
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
@@ -70,7 +66,7 @@ final class WebActToolkit: ActToolkit {
             let words = WebRelay.fileWords
             answered(WebRelay.fileKept ? .success(words == "1") : .failure(ActFailure(words)))
         }
-        WebRelay.share(text: shared.text, link: shared.link, listener)
+        WebRelay.share(text: shared.text, address: shared.address, listener)
         return window
     }
 

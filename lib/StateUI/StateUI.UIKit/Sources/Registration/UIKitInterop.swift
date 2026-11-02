@@ -11,7 +11,7 @@ import UIKit
 ///
 /// An application says these once, before `StateUIUIKit.run(resourceDirectory:)`,
 /// from its own host file. Nothing new reaches the core: an act arrives as the
-/// call the application already made through `stateUICall` or an `Aim`, and an
+/// call the application already made through `application.call` or an `Aim`, and an
 /// event leaves as the raise every `HostEvents.on` already hears.
 ///
 /// The performers live here rather than on the performer itself because an
@@ -24,14 +24,14 @@ enum UIKitInterop {
 }
 
 /// The acts an application performs on this host - what its own calls,
-/// `stateUICall` and an `Aim`, reach.
+/// `application.call` and an `Aim`, reach.
 ///
 /// Said once, from the application's UIKit head, before
 /// `StateUIUIKit.run(resourceDirectory:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind -
-    /// when the application calls it with `stateUICall`.
+    /// when the application calls it with `application.call`.
     ///
     /// The values are the act's own, as its contract declares them, so a
     /// performer of another shape does not compile and a call carrying

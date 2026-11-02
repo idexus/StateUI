@@ -106,8 +106,8 @@ extension Differ {
 
         // The readings asked for here, keyed by their target and held by this element
         // (Sampling.swift).
-        for (image, into, asks, take) in node.samples {
-            pass.readings.append(image.sample(into: into, every: asks.window, take: take))
+        for (image, into, cadence, take) in node.samples {
+            pass.readings.append(image.sample(into: into, every: cadence.window, take: take))
         }
 
         // What `.environment()` provided here joins the scope before anything below
@@ -371,8 +371,8 @@ extension Differ {
         }
 
         // The same for a reading written on that root.
-        for (image, into, asks, take) in node.samples {
-            pass.readings.append(image.sample(into: into, every: asks.window, take: take))
+        for (image, into, cadence, take) in node.samples {
+            pass.readings.append(image.sample(into: into, every: cadence.window, take: take))
         }
 
         // What the element reads of a state it was handed - a picker's place, a tab, a stack's pages - read here, so
@@ -424,10 +424,13 @@ extension Differ {
         }
 
         // The engines this element runs, under numbers it keeps; a conversion's engines
-        // come first, in property order.
+        // come first, in property order, each chain from its first sources, each conversion once.
         // Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
+        var convertedOnce = Set<ObjectIdentifier>()
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
+            .flatMap(\.chain)
+            .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
             .flatMap { $0.declarations() }
 
         // Properties described last render and not now are named for the host to clear.

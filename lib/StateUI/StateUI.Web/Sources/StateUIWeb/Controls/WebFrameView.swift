@@ -42,7 +42,7 @@ final class WebFrameView: WebDOMView {
     func show(_ source: WebViewSource?) {
         guard let source else { return }
         given = switch source {
-        case .url(let address): address
+        case .address(let address): address
         case .html(let document, _): WebDocument.address(of: document)
         }
         onNavigating(cause.begin(told: .newPage), given)

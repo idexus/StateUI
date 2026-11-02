@@ -92,7 +92,7 @@ final class JourneyTests: XCTestCase {
         let glided = journey.reach(.glide(longest: .milliseconds(900)))
         XCTAssertEqual(glided.x, 100 + 600 * 0.9 / 3, accuracy: 0.1, "a glide sets out as cubicOut does")
         XCTAssertEqual(glided.y, 20 - 300 * 0.9 / 3, accuracy: 0.1)
-        XCTAssertEqual(journey.reach(.eased(.milliseconds(400), .linear)).x, 100 + 600 * 0.4, accuracy: 0.1)
+        XCTAssertEqual(journey.reach(.eased(.milliseconds(400), curve: .linear)).x, 100 + 600 * 0.4, accuracy: 0.1)
         XCTAssertEqual(journey.reach(.none), Point(100, 20), "no motion carries it")
 
         journey.velocity = Point(0, 0)
@@ -226,8 +226,8 @@ final class JourneyTests: XCTestCase {
         stated.wrappedValue = 10
         XCTAssertEqual(stated.projectedValue.journey.motion, .spring(), "and sending it kept the law")
 
-        plain.projectedValue.journey.motion = .eased(.milliseconds(90), .linear)
-        XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), .linear), "written later, it is the value's too")
+        plain.projectedValue.journey.motion = .eased(.milliseconds(90), curve: .linear)
+        XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), curve: .linear), "written later, it is the value's too")
     }
 
     /// A law given to a move of a state nobody wears goes with the move, which arrives at once: the value's own law
@@ -235,7 +235,7 @@ final class JourneyTests: XCTestCase {
     func testALawGivenToAMoveOfAStateNobodyWearsGoesWithIt() {
         let fade = State(wrappedValue: 1.0)
 
-        let arrival = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), .cubicIn))
+        let arrival = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), curve: .cubicIn))
 
         XCTAssertEqual(arrival.ended, true)
         XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own law")
@@ -268,10 +268,10 @@ final class JourneyTests: XCTestCase {
 
         for image in [asked, stated] {
             image.door = .property
-            image.inherited = .eased(.milliseconds(200), .cubicOut)
+            image.inherited = .eased(.milliseconds(200), curve: .cubicOut)
         }
 
-        XCTAssertEqual(law(crossing: asked), .eased(.milliseconds(200), .cubicOut),
+        XCTAssertEqual(law(crossing: asked), .eased(.milliseconds(200), curve: .cubicOut),
                        "`.inherited` is answered by the element's law")
         XCTAssertEqual(law(crossing: stated), .spring(),
                        "a law the value states is left alone")
@@ -289,10 +289,10 @@ final class JourneyTests: XCTestCase {
 
         for image in images {
             image.door = .property
-            image.inherited = .eased(.milliseconds(200), .cubicOut)
+            image.inherited = .eased(.milliseconds(200), curve: .cubicOut)
         }
 
-        XCTAssertEqual(law(crossing: images[0]), .eased(.milliseconds(200), .cubicOut),
+        XCTAssertEqual(law(crossing: images[0]), .eased(.milliseconds(200), curve: .cubicOut),
                        "leaving it out means the element's")
         XCTAssertEqual(law(crossing: images[1]), .spring(),
                        "and a stated law is read before any cycle has run")

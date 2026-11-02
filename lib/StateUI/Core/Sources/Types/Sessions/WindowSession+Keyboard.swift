@@ -20,6 +20,6 @@ extension WindowSession {
     @discardableResult
     public func hideOnScreenKeyboard() async throws -> Bool {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.hideOnScreenKeyboard, scene, window)
+        return try await callAct(ApplicationContract.hideOnScreenKeyboard, scene, window)
     }
 }

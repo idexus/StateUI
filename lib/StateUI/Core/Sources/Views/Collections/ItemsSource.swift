@@ -8,7 +8,7 @@ protocol ItemsViews: AnyObject {
     func view(for identity: String) -> (any View)?
 }
 
-/// What one build of an ItemsView holds: its groups, every identity they show
+/// What one build of an ItemsView holds: its sections, every identity they show
 /// in order, and how each entry is made. A new one for every build its parent
 /// makes; the same one while only the host's cells change, so an entry built
 /// from it is carried whole.
@@ -19,13 +19,13 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private enum Place {
         case header
         case footer
-        case groupHeader(Int)
-        case groupFooter(Int)
+        case sectionHeader(Int)
+        case sectionFooter(Int)
         case item(Int, Int)
     }
 
-    private let groups: [Section<ID>]
-    private let grouped: Bool
+    private let sections: [Section<ID>]
+    private let sectioned: Bool
     private var header: (any View)?
     private var footer: (any View)?
     private var finished = false
@@ -38,57 +38,83 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private var ordered: [String] = []
     private var identities: [ID: [String]] = [:]
 
-    /// The source of `groups`; a list with no groups is one group standing for none.
-    init(groups: [Section<ID>], grouped: Bool) {
-        self.groups = groups
-        self.grouped = grouped
+    /// The source of `sections`; a list with no sections is one section standing for none.
+    init(sections: [Section<ID>], sectioned: Bool) {
+        self.sections = sections
+        self.sectioned = sectioned
     }
 
     /// Takes the list's own header and footer and names every entry - once for
-    /// the source, however often the view is built from it.
+    /// the source, however often the view is built from it: an item by its
+    /// value, under the identity `book` says it stood under while it stays on
+    /// the list, a new one under its words, told apart from any other's.
     /// Design: docs/design/views/items.md#identities-in-order
-    func finish(header: (any View)?, footer: (any View)?) {
+    func finish(header: (any View)?, footer: (any View)?, book: ItemsBook<ID>) {
         guard !finished else { return }
         finished = true
         self.header = header
         self.footer = footer
 
-        var sections: [ItemsEntries.Section] = []
         var names: Set<String> = []
-        for (number, group) in groups.enumerated() {
-            let name = uniqueName(group.name ?? String(number), among: &names)
+        let titled = sections.enumerated().map { number, section in
+            (number, section, uniqueName(section.name ?? String(number), among: &names))
+        }
+        // What every value standing again stood under, kept for it before any new value is named.
+        var kept: [ItemsBook<ID>.Key: String] = [:]
+        for (_, section, name) in titled {
+            for place in 0..<section.count {
+                let key = ItemsBook<ID>.Key(section: name, id: section.identify(place))
+                if kept[key] == nil, let earlier = book.identities[key] { kept[key] = earlier }
+            }
+        }
+        let reserved = Set(kept.values)
+
+        var built: [ItemsEntries.Section] = []
+        var stood: [ItemsBook<ID>.Key: String] = [:]
+        for (number, section, name) in titled {
             var items: [String] = []
-            for place in 0..<group.count {
-                let id = group.identify(place)
-                let written = grouped ? name + "\u{1F}" + String(describing: id) : String(describing: id)
-                Renderer.shared.texts += 1
-                let identity = unique(written)
+            for place in 0..<section.count {
+                let id = section.identify(place)
+                let key = ItemsBook<ID>.Key(section: name, id: id)
+                let identity: String
+                if stood[key] == nil, let earlier = kept[key] {
+                    identity = earlier
+                } else {
+                    let written = sectioned ? name + "\u{1F}" + String(describing: id) : String(describing: id)
+                    Renderer.shared.texts += 1
+                    if stood[key] != nil {
+                        complain("an ItemsView holds the same item twice, \"\(written)\"; give each its own identity")
+                    }
+                    identity = free(written, avoiding: reserved)
+                }
+                stood[key] = stood[key] ?? identity
                 places[identity] = .item(number, place)
                 identities[id, default: []].append(identity)
                 items.append(identity)
             }
-            sections.append(ItemsEntries.Section(
+            built.append(ItemsEntries.Section(
                 name,
-                header: group.header.map { _ in named(name + "\u{1E}header", .groupHeader(number)) },
-                footer: group.footer.map { _ in named(name + "\u{1E}footer", .groupFooter(number)) },
+                header: section.header.map { _ in named(name + "\u{1E}header", .sectionHeader(number)) },
+                footer: section.footer.map { _ in named(name + "\u{1E}footer", .sectionFooter(number)) },
                 items: items))
         }
         entries = ItemsEntries(
             header: header.map { _ in named("\u{1E}header", .header) },
             footer: footer.map { _ in named("\u{1E}footer", .footer) },
-            sections: sections)
+            sections: built)
 
         ordered = entries.identities
         for (position, identity) in ordered.enumerated() {
             order[identity] = position
         }
+        book.identities = stood
     }
 
-    /// A group's `name`, told apart from one `names` holds already, and held.
+    /// A section's `name`, told apart from one `names` holds already, and held.
     private func uniqueName(_ name: String, among names: inout Set<String>) -> String {
         var told = name
         if names.contains(name) {
-            complain("two groups of an ItemsView are named \"\(name)\"; give each its own name")
+            complain("two sections of an ItemsView are named \"\(name)\"; give each its own name")
             var variant = 1
             while names.contains("\(name)\u{0}\(variant)") { variant += 1 }
             told = "\(name)\u{0}\(variant)"
@@ -97,20 +123,20 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         return told
     }
 
-    /// `identity`, told apart from an equal one before it the way a repeated
-    /// `.id()` is.
-    private func unique(_ identity: String) -> String {
-        guard places[identity] != nil else { return identity }
-        complain("two items of an ItemsView describe as \"\(identity)\"; give each its own identity")
+    /// `identity`, or the first of its variants no entry stands under and no value standing again keeps.
+    private func free(_ identity: String, avoiding reserved: Set<String> = []) -> String {
+        guard places[identity] != nil || reserved.contains(identity) else { return identity }
         var variant = 1
-        while places["\(identity)\u{0}\(variant)"] != nil { variant += 1 }
+        while places["\(identity)\u{0}\(variant)"] != nil || reserved.contains("\(identity)\u{0}\(variant)") {
+            variant += 1
+        }
         return "\(identity)\u{0}\(variant)"
     }
 
     /// `identity` standing at `place`.
     private func named(_ identity: String, _ place: Place) -> String {
         Renderer.shared.texts += 1
-        let identity = unique(identity)
+        let identity = free(identity)
         places[identity] = place
         return identity
     }
@@ -119,17 +145,17 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         switch places[identity] {
         case .header: header
         case .footer: footer
-        case .groupHeader(let group): groups[group].header
-        case .groupFooter(let group): groups[group].footer
-        case .item(let group, let place): groups[group].content(place)
+        case .sectionHeader(let section): sections[section].header
+        case .sectionFooter(let section): sections[section].footer
+        case .item(let section, let place): sections[section].content(place)
         case nil: nil
         }
     }
 
     /// The item an identity names; nil for a header, a footer or none.
     func id(for identity: String) -> ID? {
-        guard case .item(let group, let place) = places[identity] else { return nil }
-        return groups[group].identify(place)
+        guard case .item(let section, let place) = places[identity] else { return nil }
+        return sections[section].identify(place)
     }
 
     /// Every identity holding one of `ids`, in the order they show.
@@ -174,4 +200,18 @@ struct ItemsEntry: View, @MainActor Equatable {
         // Chosen by identity, so held as `any View` and handed on as its node.
         AnyView(node: (source.view(for: identity) ?? VStack {}).node)
     }
+}
+
+/// What a list knows of its items across its builds: the identity each value stood under, kept while the value stays
+/// on the list - so a value keeps its identity as the order changes, whatever its words.
+/// Design: docs/design/views/items.md#identities-in-order
+final class ItemsBook<ID: Hashable> {
+    /// A value in the section it stands in.
+    struct Key: Hashable {
+        let section: String
+        let id: ID
+    }
+
+    /// The identity each value stood under in the last build.
+    var identities: [Key: String] = [:]
 }

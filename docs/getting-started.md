@@ -10,7 +10,8 @@ Web - each Swift, in the application's own process. The supported setup is a
 StateUI checkout: each host is a sibling Swift package whose manifest uses a
 local dependency on the repository root. No host has a published package route
 yet, so an application outside the checkout sits in a
-[project group](#a-project-group) that builds with a checkout on disk.
+[project group](editors/VSCode/README.md#a-project-group) that builds with a
+checkout on disk.
 
 ## Requirements
 
@@ -25,7 +26,7 @@ WinUI host needs on Windows, [GTK host](hosts/gtk.md#requirements) what
 the GTK host needs on Linux, and [Web host](hosts/web.md#requirements) what the
 Web host needs on macOS and Linux.
 
-With the extension installed ([Installing the extension](#installing-the-extension)),
+With the extension installed ([Installing](editors/VSCode/README.md#installing)),
 **StateUI: Check Toolchain** in the Command Palette looks on this machine for
 what these pages list for its platform's hosts, and says what to install for
 whatever is missing. [Tested setups](tested-setups.md) names the versions and
@@ -33,86 +34,11 @@ devices StateUI's suites pass on.
 
 ## Working in VS Code
 
-VS Code is where StateUI applications are built, run, debugged, and tested. The
-StateUI extension in `lib/StateUI.VSCode` chooses the host and the application
-once, and everything after that - the editor's completion, the launches, and
-the suites - works as that host.
-
-### Installing the extension
-
-The extension is built from the checkout. From the repository root:
-
-```bash
-cd lib/StateUI.VSCode
-npm ci
-npm run package
-code --install-extension ../../artifacts/stateui-*.vsix
-```
-
-`npm run package` writes `stateui-<version>.vsix` into `artifacts/` at the repository root.
-Without the `code` command on the path, use **Extensions: Install from VSIX…**
-in the Command Palette and pick that file. Build and install it again after
-pulling changes to the extension.
-
-The extension installs the **Swift** extension (swiftlang) with it. Install
-**LLDB DAP** for the Swift debugger.
-
-### Running an application
-
-Open the repository folder. The status bar shows two StateUI items:
-
-- **the host** - AppKit, UIKit or Android on macOS, WinUI on Windows, GTK on
-  Linux, and the Web on macOS and Linux; UIKit, Android and the Web only for
-  an application with that head. The editor
-  works as that host: code under `#if APPKIT` is completed only while AppKit
-  is chosen, as UIKit the language server compiles for the iOS simulator, and
-  as Android for Android with the Swift SDK for Android. Switching restarts
-  the Swift language server without reloading the window.
-- **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
-  remembered for the workspace.
-
-While the host is UIKit, Android or the Web a third item shows the device: an
-iPhone, an iPad or a simulator for UIKit; an attached phone or an emulator,
-started when it is picked, for Android; the browser the page opens in, for
-the Web.
-
-Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
-and Debug. The application's head is built, installed where the host needs
-it, and started under `lldb-dap`, a breakpoint holding from the first line -
-on Android `lldb-dap` attaches once the application has started, and a
-breakpoint holds from then on; on UIKit and Android its terminal follows the
-application's log. On UIKit, Android and the Web a Release launch runs
-without a debugger; on AppKit, WinUI and GTK `lldb-dap` starts the optimized
-build. A Web head is built, its page served and opened in the chosen browser;
-StateUI: Debug in Chrome, Edge or another of Chromium's browsers opens it
-under VS Code's own JavaScript debugger, the page's console in the Debug
-Console.
-
-`.vscode/launch.json` holds only those two launches. The extension resolves
-each one into the chosen host's own debugger.
-
-### Commands
-
-The Command Palette offers the rest under **StateUI:**
-
-| Command | What it does |
-| --- | --- |
-| Select Host | the host the editor and the launches work as, as the status bar item does |
-| Select UIKit Device | the iPhone, iPad or simulator a UIKit head runs on |
-| Select Android Device | the device or emulator an Android head runs on |
-| Select Browser | the browser a Web head's page opens in |
-| Select Application | the application F5 runs |
-| Run Tests | the workspace's suites, run as the chosen host |
-| Deploy | the chosen application built for release and laid, with what it runs with, in `artifacts/<application>/<platform>` - on WinUI per architecture - beside its `apps/` |
-| Conformance - Rebuild all / changed | the chosen host's marks run again - every family, or the stale ones - and the documents rendered |
-| New Application in apps/ | a new application in a checkout's or a project group's `apps/`, made by `.scripts/new-app.sh` (`.scripts/new-app.ps1` on Windows) |
-| New Project Group | a folder of applications outside the checkout - see [A project group](#a-project-group) |
-| Clean Index | removes the language server's index and builds it again |
-| Check Toolchain | what this machine has of what its hosts need, and what to install for the rest |
-| Reinstall VS Code Extension | packs the extension from the checkout and installs it again |
-
-The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
-them in detail.
+VS Code is where StateUI applications are built, run, debugged, and tested,
+through the StateUI extension. [StateUI for VS Code](editors/VSCode/README.md)
+installs it and covers everything it does: the host and the application
+chosen once in the status bar, the launches, the suites, deploying, and a
+project group for applications outside the checkout.
 
 ### From the command line
 
@@ -169,27 +95,6 @@ which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 ```bash
 .scripts/new-app.sh Notes
 ```
-
-### A project group
-
-An application outside the checkout lives in a project group, a folder of its
-own that **StateUI: New Project Group** makes. Its applications build with a
-StateUI release cloned into the group's `StateUI/`, or with a local checkout.
-Each names that StateUI by path in its `Package.swift`, and that StateUI's
-`.scripts/` build and run its heads:
-
-```text
-MyApps/
-  .gitignore
-  .vscode/            StateUI: Debug and StateUI: Release
-  StateUI/            the release, left out of git; absent with a local checkout
-  apps/
-    Notes/            HelloWorld renamed; its Package.swift names ../../StateUI
-```
-
-**StateUI: New Application in apps/** makes the next application there. The
-extension's README, `lib/StateUI.VSCode/README.md`, describes the choices and
-the settings that save them.
 
 ## Application shape
 
@@ -266,14 +171,18 @@ state and styles            starts the AppKit host
 no toolkit imports          contains no application UI
 ```
 
-The UI module exports one stable registration function. Registration names the
-application type to the host; it does not build native controls itself. It
-runs on the UI thread, where every head calls it before the host starts - it is
-`@MainActor`, as everything that touches the interface is.
+The UI module exports its application type, which every head registers:
+`RegisteredApp.register()` names the application to the host, which makes it
+at its first need - so an application has an `init()` taking nothing. It does
+not build native controls itself. It runs on the UI thread, where every head
+calls it before the host starts - it is `@MainActor`, as everything that
+touches the interface is.
 
 ```swift
-struct RegisteredApp: Application {
-    var body: some Scene {
+public struct RegisteredApp: Application {
+    public init() {}
+
+    public var body: some Scene {
         WindowGroup { RegisteredPage() }
     }
 }
@@ -281,14 +190,9 @@ struct RegisteredApp: Application {
 struct RegisteredPage: View {
     var body: some View { Text("Hello, StateUI") }
 }
-
-@MainActor
-public func registerApplication() {
-    stateUIUseApp(RegisteredApp())
-}
 ```
 
-The AppKit executable registers the module and starts the host - the
+The AppKit executable registers the application and starts the host - the
 starter's `Platforms/AppKit/main.swift` does that and finds its artwork; the
 Gallery's head, which also registers its own controls, reads:
 
@@ -297,7 +201,7 @@ Gallery's head, which also registers its own controls, reads:
 import GalleryUI
 import StateUIAppKit
 
-registerApplication()
+GalleryApp.register()
 
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -319,19 +223,20 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit, WinUI, GTK and Web heads call the same `registerApplication()`
+The UIKit, WinUI, GTK and Web heads call the same `register()`
 before their host's `run`, and the Android head when Android loads its
 library; each host's page describes its head: [UIKit](hosts/uikit.md),
 [Android Views](hosts/android.md), [WinUI](hosts/winui.md),
 [GTK](hosts/gtk.md), [Web](hosts/web.md).
 
-Between `registerApplication()` and `run`, a head registers what this host
+Between `register()` and `run`, a head registers what this host
 answers for the application beyond the library:
 
 - the application's own controls, acts and event sources, through the host's
   `StateUIControls`, `StateUIActs` and `StateUIEvents` - each host's page
   shows them under *Controls, acts, and events registered in Swift*
-  ([GTK](hosts/gtk.md#controls-acts-and-events-registered-in-swift));
+  ([GTK](hosts/gtk.md#controls-acts-and-events-registered-in-swift)), and
+  [Extending StateUI](interface/extending.md) writes their Swift half;
 - the backends it shows a library element through. A backend is a package of
   its own, `lib/Backends/<Element>.<Host>`, for an element whose engine is a
   library the platform does not ship: the web view on GTK
@@ -346,9 +251,9 @@ import GalleryUI
 import StateUIGTK
 import StateUIWebViewGTK
 
-// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
 // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-registerApplication()
+GalleryApp.register()
 // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()

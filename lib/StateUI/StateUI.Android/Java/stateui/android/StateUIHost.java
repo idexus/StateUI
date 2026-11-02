@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 /** The Swift host: every method is registered by the head's JNI_OnLoad. */
 final class StateUIHost {
     /** The application's phases, as StateUI numbers them. */
-    // Swift: ApplicationPhase
+    // Swift: SessionPhase
     static final int ACTIVE = 0, INACTIVE = 1, BACKGROUND = 2;
 
     private StateUIHost() {}
@@ -204,9 +204,6 @@ final class StateUIHost {
 
     /** How far an item of an ItemsView moves, in pixels, to stand where an anchor says in the room given. */
     static native int itemsDistance(long view, int anchor, int start, int end, int boxStart, int boxEnd);
-
-    /** A finger went down on a canvas - 0 - moved on it - 1 - or was lifted - 2 - at a point in points. */
-    static native void canvasTouched(long view, int phase, float x, float y);
 
     /** The window's views were laid out or scrolled: what stands where may have moved. */
     static native void laidOut();

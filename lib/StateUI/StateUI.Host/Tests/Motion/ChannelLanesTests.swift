@@ -83,7 +83,7 @@ final class ChannelLanesTests: XCTestCase {
     // MARK: - The bench
 
     /// The law every journey here travels under: 200 ms, straight.
-    private static let law = Motion.eased(.milliseconds(200), .linear)
+    private static let law = Motion.eased(.milliseconds(200), curve: .linear)
 
     /// The dirty bit of a lane of a two-lane journey: its value, its destination, its waiter.
     private static func value(_ lane: Int) -> UInt64 { 1 << UInt64(lane) }

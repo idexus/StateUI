@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A binding converted on its way to a control: a second state the host carries,
-// worked out by an engine the differ writes, with `convertBack` for a control
-// that reports.
+// worked out by an engine the differ writes, with a way back for a control that
+// reports.
 // Design: docs/design/core/journeys.md#conversions
 
 /// What the differ writes engines for: the sources, the arithmetic each way, and
@@ -24,12 +24,34 @@ final class Conversion {
     /// The same, as what the forward engine follows.
     var follows: [any FollowedState] { sources }
 
+    /// The conversions this one's sources are the derived side of, held here: the middle of a chain has no binding
+    /// of its own once the expression writing it ends, and the chain is worked out from its first sources.
+    /// Design: docs/design/core/journeys.md#a-chain-of-conversions
+    var upstream: [Conversion] = []
+
+    /// This conversion and every one it is worked out from, the first sources' first, each once.
+    var chain: [Conversion] {
+        var seen = Set<ObjectIdentifier>()
+        var ordered: [Conversion] = []
+        func add(_ conversion: Conversion) {
+            guard seen.insert(ObjectIdentifier(conversion)).inserted else { return }
+            conversion.upstream.forEach(add)
+            ordered.append(conversion)
+        }
+        add(self)
+        return ordered
+    }
+
     /// Works the derived value out and settles it, asking its readers where `asking`
     /// says - the engine does, a read at build does not.
     var forward: (_ asking: Bool) -> Void = { _ in }
 
-    /// Works the sources out from the derived value, where a control reports into it.
-    var back: (() -> Void)?
+    /// Works the sources out from the derived value, where a control reports into it - the current declaration's
+    /// alone (`declareAgain`, `declareBack`).
+    private(set) var back: (() -> Void)?
+
+    /// Whether the declaration before this one wrote a way back.
+    private var backBefore = false
 
     /// How many of the derived state's reports the way back has taken: a write of the derived state that is no
     /// report - the forward way's, settling what the application wrote - goes back to nobody.
@@ -37,6 +59,20 @@ final class Conversion {
 
     /// The derived state, for the back engine to follow.
     var derived: () -> (any FollowedState)? = { nil }
+
+    /// Starts a declaration of this conversion: the way back is what the new one writes, none unless it does.
+    /// Design: docs/design/core/journeys.md#a-conversion-declared-again
+    func declareAgain() {
+        backBefore = back != nil
+        back = nil
+    }
+
+    /// Says the way back this declaration writes. Written anew after a declaration with none, it takes only the
+    /// reports made from now on.
+    func declareBack(_ back: @escaping () -> Void) {
+        if !backBefore, let reports = derived()?.reports { reportsTaken = reports }
+        self.back = back
+    }
 
     /// The engines for this conversion, ahead of every author's: the back one first,
     /// since a report is the newer word.
@@ -78,6 +114,9 @@ protocol AnyStateStorage: FollowedState {
     /// Whether any build has ever read this state.
     var readAtBuild: Bool { get set }
 
+    /// The conversion this state is the derived side of, if it is one.
+    var conversion: Conversion? { get }
+
     /// The derived state a conversion written at `key` keeps on this source.
     func derived<Out>(_: Out.Type, at key: PathNumber, make: @escaping () -> Out) -> State<Out>.Storage
 }
@@ -117,7 +156,9 @@ extension Journey {
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(journey) }
         let conversion = derived.conversion ?? Conversion()
 
+        conversion.declareAgain()
         conversion.sources = [source]
+        conversion.upstream = source.conversion.map { [$0] } ?? []
         conversion.forward = { [weak derived] (asking: Bool) in
             guard let derived else { return }
 
@@ -141,15 +182,19 @@ extension Binding where Value: StateValue {
     ///
     ///     @State private var volume = 0.2                       // 0…1
     ///
-    ///     Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+    ///     Text($volume.convert { "\(Int($0 * 100))%" })        // shown, never reported
+    ///     Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
     ///         .maximum(100)                                     // the thumb in percent
     ///
-    /// Handed to a control that reports, `convertBack` says how a report lands
-    /// on the source; without it the control's reports go nowhere. A body that
-    /// reads the result reads the source too, and is rebuilt when it moves.
+    /// Handed to a control that reports, `back` says how a report lands on the
+    /// source, in the source's own type; without it the control's reports go
+    /// nowhere. A body that reads the result reads the source too, and is
+    /// rebuilt when it moves.
     ///
     /// - Parameters:
     ///   - transform: the derived value, from this state's.
+    ///   - back: the source's value, from a reported derived one; nil where
+    ///     nothing reports back.
     ///   - file: where the conversion is written - which, with the line, is
     ///     what keeps the derived state one object across renders.
     ///   - line: the same.
@@ -157,6 +202,7 @@ extension Binding where Value: StateValue {
     /// - Returns: the derived state, to hand on.
     public func convert<Out: StateValue>(
         _ transform: @escaping (Value) -> Out,
+        back: ((Out) -> Value)? = nil,
         file: StaticString = #fileID,
         line: UInt = #line,
         column: UInt = #column
@@ -166,7 +212,9 @@ extension Binding where Value: StateValue {
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
+        conversion.declareAgain()
         conversion.sources = [source]
+        conversion.upstream = source.conversion.map { [$0] } ?? []
         conversion.forward = { [weak source, weak derived] asking in
             guard let source, let derived else { return }
 
@@ -175,69 +223,16 @@ extension Binding where Value: StateValue {
         conversion.derived = { [weak derived] in derived }
         derived.conversion = conversion
 
+        if let back {
+            conversion.declareBack { [weak source, weak derived] in
+                guard let source, let derived else { return }
+
+                source.settle(back(derived.value), asking: true)
+                // A source that is a link of a chain carries the report on to its own sources.
+                source.conversion?.back?()
+            }
+        }
+
         return Binding<Out>(over: derived)
-    }
-
-    /// How a report into a converted state lands on its source: the engine the
-    /// other way, run whenever the derived state moves. This library's own.
-    ///
-    ///     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
-    ///
-    /// Written after `convert(_:)` and nowhere else: on a binding that is not a
-    /// conversion, or with the wrong type for the source, it says so and
-    /// writes nothing back.
-    ///
-    /// - Parameter transform: the source's value, from the derived one.
-    /// - Returns: the same derived state, now reporting back.
-    public func convertBack<Source: StateValue>(_ transform: @escaping (Value) -> Source) -> Binding<Value> {
-        let derived = storage
-        guard let conversion = derived.conversion,
-              conversion.sources.count == 1,
-              let source = conversion.sources[0] as? State<Source>.Storage
-        else {
-            complain("`convertBack` was written on a binding that is not a conversion of "
-                + "one whole state, or with a type its source is not. Nothing is written "
-                + "back.")
-            return self
-        }
-
-        conversion.back = { [weak source, weak derived] in
-            guard let source, let derived else { return }
-
-            source.settle(transform(derived.value), asking: true)
-        }
-
-        return self
-    }
-
-    /// The same for a conversion of two states: a report lands on both.
-    ///
-    /// - Parameter transform: both sources' values, from the derived one.
-    /// - Returns: the same derived state, now reporting back.
-    public func convertBack<First: StateValue, Second: StateValue>(
-        _ transform: @escaping (Value) -> (First, Second)
-    ) -> Binding<Value> {
-        let derived = storage
-        guard let conversion = derived.conversion,
-              conversion.sources.count == 2,
-              let first = conversion.sources[0] as? State<First>.Storage,
-              let second = conversion.sources[1] as? State<Second>.Storage
-        else {
-            complain("`convertBack` was written on a binding that is not a conversion of "
-                + "two whole states, or with types its sources are not. Nothing is "
-                + "written back.")
-            return self
-        }
-
-        conversion.back = { [weak first, weak second, weak derived] in
-            guard let first, let second, let derived else { return }
-
-            let (one, two) = transform(derived.value)
-
-            first.settle(one, asking: true)
-            second.settle(two, asking: true)
-        }
-
-        return self
     }
 }

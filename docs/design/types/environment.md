@@ -10,15 +10,17 @@ every view the way an object an ancestor provides is, and read by its name.
 
 ```text
   \.device        Device
-                     info          formFactor, platform, model, manufacturer, name, versionString, isVirtual
+                     info          formFactor, platform, architecture, model, manufacturer, name, versionString,
+                                   isVirtual
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles
                      accessibility reducesMotion, prefersHigherContrast, isScreenReaderOn, textScale
-  \.locale        LocaleInfo      language, region, name, languages, timeZone, uses24HourClock, firstDayOfWeek,
-                                  isMetric, layoutDirection
+  \.locale        LocaleInfo      language (a tag: its region too), languages, timeZone, uses24HourClock,
+                                  firstDayOfWeek, isMetric, layoutDirection
   \.application   ApplicationSession
-                     info          name, packageName, versionString, buildString, colorScheme, accentColor
+                     info          name, packageName, versionString, buildString, libraryVersion, colorScheme,
+                                   accentColor
                      phase, scenes, and what the application writes: color scheme, styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
 ```
@@ -88,4 +90,4 @@ UI thread, which is why the instances are `MainActor`'s.
 `device.info.platform` is text, not a vocabulary: the set of platforms is
 open, and a host may name one this release does not know. `FormFactor`
 tells apart devices that share an operating system, such as a phone and a
-tablet, which `stateUIPlatform()`, compiled in, never can.
+tablet, which `device.info.platform` alone never can.

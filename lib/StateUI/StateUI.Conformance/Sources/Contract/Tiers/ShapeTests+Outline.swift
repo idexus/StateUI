@@ -95,8 +95,8 @@ extension ShapeTests {
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
         return switch element {
         case "Line": [
-            Write(LineContract.x1, 0), Write(LineContract.y1, 20),
-            Write(LineContract.x2, 40), Write(LineContract.y2, 20),
+            Write(LineContract.from, Point(0, 20)),
+            Write(LineContract.to, Point(40, 20)),
         ]
         case "Polygon": [Write(PolygonContract.points, square), atItsSize]
         case "Polyline": [Write(PolylineContract.points, square + [Point(8, 8)]), atItsSize]

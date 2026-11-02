@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `LineContract` on a host: a line is drawn from its start to its end, nowhere past them, and anew where the tree
-/// moves an end - drawn at its own size in the middle of its room, where its numbers stand as written.
+/// moves its ends - drawn at its own size in the middle of its room, where its numbers stand as written.
 @_spi(Host) public enum LineTests: ConformanceFamily {
     public static let name = "Line"
 
@@ -13,12 +13,11 @@
         [
             Aspects.standsAlone("Line"),
             ConformanceCase("aLineIsDrawnFromItsStartToItsEnd", proves: [
-                Covered(LineContract.x1), Covered(LineContract.y1), Covered(LineContract.x2),
-                Covered(LineContract.y2),
+                Covered(LineContract.from), Covered(LineContract.to),
             ]) { s in
                 s.start {
                     VStack {
-                        Line().x1(10).y1(20).x2(90).y2(20).stroke(.red).lineWidth(4).contentMode(.center)
+                        Line(from: Point(10, 20), to: Point(90, 20)).stroke(.red).lineWidth(4).contentMode(.center)
                             .width(100).height(40).id("shape")
                     }
                     .horizontalAlignment(.start)
@@ -32,13 +31,13 @@
                 s.expect(try s.color(of: shape, at: Point(95, 20)), nil, "nothing past its end")
                 s.expect(try s.color(of: shape, at: Point(50, 30)), nil, "nothing beside it")
             },
-            ConformanceCase("anEndTheTreeMovesDrawsTheLineAnew", proves: [
-                Covered(LineContract.x2), Covered(LineContract.y2),
+            ConformanceCase("endsTheTreeMovesDrawTheLineAnew", proves: [
+                Covered(LineContract.from), Covered(LineContract.to),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let down = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Line().x1(10).y1(down.wrappedValue ? 2 : 20).x2(90).y2(down.wrappedValue ? 38 : 20)
+                        Line(from: Point(10, down.wrappedValue ? 2 : 20), to: Point(90, down.wrappedValue ? 38 : 20))
                             .stroke(.red).lineWidth(4).contentMode(.center).width(100).height(40).id("shape")
                         Button("Down").onClicked { down.wrappedValue = true }.id("change")
                     }

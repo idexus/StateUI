@@ -92,16 +92,20 @@
     /// What an Edit menu says of the entries a host keeps in it, in the system's language.
     public static var editWords: EditWords { LibraryWords.inSystemLanguage.edit }
 
+    /// What a menu bar a host keeps says of its own menus and entries - File, Edit, Window - in the system's language.
+    public static var menuWords: MenuWords { LibraryWords.inSystemLanguage.menu }
+
+    /// What a question says on its own buttons - accepting and cancelling - in the system's language.
+    public static var questionWords: QuestionWords { LibraryWords.inSystemLanguage.question }
+
     /// What a control a host composes says of its own parts - a stepper's step down and up - in the system's language.
     public static var controlWords: ControlWords { LibraryWords.inSystemLanguage.control }
 
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
-        update(locale, \.language, info.language)
-        update(locale, \.region, info.region)
-        update(locale, \.name, info.name)
-        update(locale, \.timeZone, info.timeZone)
+        update(locale, \.language, info.tag)
+        update(locale, \.timeZone, info.timeZone.isEmpty ? nil : TimeZoneName(info.timeZone))
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
@@ -132,7 +136,7 @@
     }
 
     /// Updates the process-wide application session from native lifecycle.
-    public static func setApplicationPhase(_ phase: ApplicationPhase) {
+    public static func setApplicationPhase(_ phase: SessionPhase) {
         update(StandardEnvironment.application, \.phase, phase)
     }
 
@@ -435,7 +439,7 @@
 
     /// Answers a performed act call with the values it came to.
     ///
-    /// The awaiting `stateUICall` resumes with exactly these values - none
+    /// The awaiting `application.call` resumes with exactly these values - none
     /// for an act that returns nothing.
     ///
     /// - Parameters:
@@ -451,7 +455,7 @@
 
     /// Fails an act call the host could not perform.
     ///
-    /// The awaiting `stateUICall` throws `StateUIError` carrying `reason`.
+    /// The awaiting `application.call` throws `StateUIError` carrying `reason`.
     ///
     /// - Parameters:
     ///   - completion: The negative id the act call carried.

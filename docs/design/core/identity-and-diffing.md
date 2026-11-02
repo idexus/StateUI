@@ -313,8 +313,11 @@ writing any of:
 The anchor holds the view - its placeholder, or the branch it chose - as its
 first child, the sheet and the popover beside it, and a flip replaces that
 child alone. It takes the environments provided on the view, so what it
-presents sees them, and the identity written on a composed view; a branch's
-own identity stays the branch's. Every modifier written after it lands
+presents sees them. An identity written on the view - before the anchor was
+made or after - stays with the view it is written on, so `.id("list")` finds
+the list and not its anchor, and the anchor stands under an identity made from
+it (`AnchorIdentity`), which matches it among its siblings as they reorder; a
+branch's own identity stays the branch's. Every modifier written after it lands
 through it (`Node.writing`): what outlives a branch on the anchor, the rest -
 values, handlers, motion, engines, aims, readings, a context menu, what the
 view says of its page - on what it holds, so a look never waits on an element
@@ -491,14 +494,17 @@ under an element that left.
 ## Engines on an element
 
 An element's engines are registered under numbers it keeps, so a render hands
-the newest closure - this render's captures - to the engine that already has
-a number. A different count is a different set of engines and starts over, as
+the newest closure - this render's captures - to the engine that already has a
+number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
-own, ahead of them, in property order. A board that has forgotten an element's
-engines, as after a session claimed afresh, gets them again under fresh
-numbers, which the element keeps from then on. A replaced element arms its engines
-only after the old one is let go, under fresh numbers: armed first, they
-would be the very numbers the old element's release disarms.
+own, ahead of them, in property order: every conversion of its chain, the one
+nearest the sources first, each once however many properties share it ([a
+chain of conversions](journeys.md#a-chain-of-conversions)). A board that has
+forgotten an element's engines, as after a session claimed afresh, gets them
+again under fresh numbers, which the element keeps from then on. A replaced
+element arms its engines only after the old one is let go, under fresh
+numbers: armed first, they would be the very numbers the old element's release
+disarms.
 
 ## Driven properties
 

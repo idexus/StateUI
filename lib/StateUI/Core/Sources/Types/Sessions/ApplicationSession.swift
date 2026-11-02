@@ -23,7 +23,7 @@ public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
     /// lifecycle.
-    @State public internal(set) var phase: ApplicationPhase = .active
+    @State public internal(set) var phase: SessionPhase = .active
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
     /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.
@@ -67,7 +67,7 @@ public final class ApplicationSession {
     /// Hands the host the accent the application holds, its half in force where it is a pair: again as the theme
     /// turns.
     func sendAccentColor() {
-        stateUISend(ApplicationContract.useAccentColor, sentAccentColor.flatMap { Color(propValue: $0.propValue.resolvingTheme()) })
+        tellAct(ApplicationContract.useAccentColor, sentAccentColor.flatMap { Color(propValue: $0.propValue.resolvingTheme()) })
     }
 
     /// The theme in force turned: an accent of two halves is handed on again.
@@ -106,7 +106,7 @@ public final class ApplicationSession {
         _colorScheme.storage.keep = { [unowned self] scheme in
             guard scheme != sentColorScheme else { return }
             sentColorScheme = scheme
-            stateUISend(ApplicationContract.useColorScheme, scheme)
+            tellAct(ApplicationContract.useColorScheme, scheme)
         }
         _accentColor.storage.keep = { [unowned self] accent in
             guard accent != sentAccentColor else { return }

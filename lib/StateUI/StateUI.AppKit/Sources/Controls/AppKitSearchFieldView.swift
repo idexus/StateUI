@@ -110,6 +110,7 @@ final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
 
     override var intrinsicContentSize: NSSize {
         var own = super.intrinsicContentSize
+        own.width = leastWidth(own: own.width)
         if fill != nil { own.height += AppKitSearchFieldCell.inset.height * 2 }
         return own
     }

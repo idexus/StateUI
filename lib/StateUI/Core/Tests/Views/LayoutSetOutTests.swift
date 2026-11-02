@@ -146,7 +146,7 @@ final class LayoutSetOutTests: XCTestCase {
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
-        bench.hand(renders, built, .ended, speed: Point(-1_500, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-1_500, 0))
         bench.cycle()
         XCTAssertGreaterThan(handed.phases.last ?? 0, 0, "thrown")
         XCTAssertEqual(handed.froms.last, 0, "from where the hand took it")

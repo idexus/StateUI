@@ -144,6 +144,7 @@ enum Listings {
         """#,
         "AnalogClockSample": #"""
         // Sources/Samples/Animation/AnalogClockSample.swift
+        @Environment(\.application) private var application
         @State private var ticking = false
 
         /// Whether the first reading of this visit has SET the clock. Traveling
@@ -232,7 +233,7 @@ enum Listings {
 
                 while ticking && visit == mine {
                     let lap = ContinuousClock.now
-                    let time = try await ClockTime.now()
+                    let time = try await application.clock.now()
 
                     // Where each hand should POINT, within one turn.
                     let second = Double(time.second) * 6
@@ -259,9 +260,9 @@ enum Listings {
                         let toMinute = atMinute + (minute - atMinute).forwardTurn
                         let toHour = atHour + (hour - atHour).forwardTurn
 
-                        let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), .backOut))
-                        let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), .cubicOut))
-                        let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), .cubicOut))
+                        let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), curve: .backOut))
+                        let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), curve: .cubicOut))
+                        let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), curve: .cubicOut))
                         try await s.arrived()
                         try await m.arrived()
                         try await h.arrived()
@@ -389,7 +390,7 @@ enum Listings {
 
                     button("Send the bottom one") {
                         try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                                   .eased(.milliseconds(900), .cubicInOut)).arrived()
+                                                   .eased(.milliseconds(900), curve: .cubicInOut)).arrived()
                     }
                 }
 
@@ -406,7 +407,7 @@ enum Listings {
                         .horizontalAlignment(.start)
 
                     button("Send the stepper to 12") {
-                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), .cubicOut)).arrived()
+                        try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).arrived()
                     }
                 }
             }
@@ -464,7 +465,7 @@ enum Listings {
                     button("Size") {
                         wide.toggle()
                         try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                         .eased(.milliseconds(400), .cubicInOut)).arrived()
+                                                         .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
                     }
 
                     button("Padding") {
@@ -476,8 +477,8 @@ enum Listings {
 
                 HStack {
                     button("Text size") {
-                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), .cubicOut)).arrived()
-                        try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), .cubicIn)).arrived()
+                        try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).arrived()
+                        try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).arrived()
                     }
 
                     button("Back") {
@@ -488,7 +489,7 @@ enum Listings {
                         // of Size would ask for the value it already has.
                         wide = false
 
-                        try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), .cubicInOut)).arrived()
+                        try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
                         try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).arrived()
                         try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).arrived()
                     }
@@ -549,8 +550,8 @@ enum Listings {
                     // whatever happened instead, which is what lets Stop leave the
                     // card where it stood.
                     button("Fade") {
-                        let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve)).arrived()
-                        if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
+                        let landed = try await $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: curve)).arrived()
+                        if landed { try await $fade.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
                     }
 
                     // ONE movement, because the card only ever moves sideways. A
@@ -558,13 +559,13 @@ enum Listings {
                     // beside this one before either is awaited, so the two land
                     // together.
                     button("Move") {
-                        let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve)).arrived()
-                        if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve)).arrived() }
+                        let landed = try await $shift.journey.move(to: 60, .eased(.milliseconds(400), curve: curve)).arrived()
+                        if landed { try await $shift.journey.move(to: 0, .eased(.milliseconds(400), curve: curve)).arrived() }
                     }
 
                     button("Scale") {
-                        let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve)).arrived()
-                        if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve)).arrived() }
+                        let landed = try await $scale.journey.move(to: 1.4, .eased(.milliseconds(400), curve: curve)).arrived()
+                        if landed { try await $scale.journey.move(to: 1, .eased(.milliseconds(400), curve: curve)).arrived() }
                     }
 
                     // A movement goes TO a value, never BY one, so a full turn is
@@ -572,7 +573,7 @@ enum Listings {
                     // headed, which is what makes the next press carry on from
                     // there rather than start over.
                     button("Spin") {
-                        try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve)).arrived()
+                        try await $angle.journey.move(to: angle + 360, .eased(.milliseconds(700), curve: curve)).arrived()
                     }
                 }
                 .horizontalAlignment(.center)
@@ -760,7 +761,7 @@ enum Listings {
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
                     .itemDrag(begins: .perpendicular)
-                    .onItemDismissed(.up, beyond: 120) { app in close(app) }
+                    .onItemDismissed(.up, beyond: 120) { name in close(name) }
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -775,11 +776,11 @@ enum Listings {
             .rows(.fill, .auto)
         }
 
-        /// `app` closed: the others close up; one before the card in front keeps
+        /// The app `name` closed: the others close up; one before the card in front keeps
         /// that card in front, and where the last closes, the parameters travel
         /// to the one before.
-        private func close(_ app: RunningApp) {
-            guard let leaving = apps.firstIndex(of: app) else { return }
+        private func close(_ name: String) {
+            guard let leaving = apps.firstIndex(where: { $0.name == name }) else { return }
             let front = min(max(Int(turn.rounded()), 0), apps.count - 1)
             apps.remove(at: leaving)
             if leaving < front {
@@ -1101,7 +1102,7 @@ enum Listings {
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
                     Fill(Color(hex: 0x1E88E5))
-                        .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
+                        .area(proportional ? .proportional(Rect(0.5, 0, 0.5, 1)) : .absolute(Rect(16, 16, 120, 60)))
 
                     // Its natural size, where its alignments put it.
                     Badge(text: "start", color: Color(hex: 0xE53935))
@@ -1210,9 +1211,7 @@ enum Listings {
                 // builds this closure - and nothing else on the page.
                 DebugInfoLabel()
 
-                Text(device.battery.chargeLevel <= 0
-                    ? "the host has not said"
-                    : "\(Int(device.battery.chargeLevel * 100))%")
+                Text(device.battery.chargeLevel.map { "\(Int($0 * 100))%" } ?? "the host has not said")
                     .fontWeight(.bold)
 
                 Text("state · \(device.battery.state)")
@@ -1249,7 +1248,7 @@ enum Listings {
             var body: some View {
                 VStack {
                     Slider($level)
-                        .motion(.eased(.milliseconds(600), .cubicOut))
+                        .motion(.eased(.milliseconds(600), curve: .cubicOut))
 
                     HStack {
                         Button("Full")
@@ -1365,7 +1364,7 @@ enum Listings {
                 .galleryPage("Conversation")
                 // The field grows with its lines, and the bar with it; the rows
                 // pass under the bar, and under the field's glass.
-                .bottomBar(edge: edge) {
+                .bottomBar(scrollEdge: edge) {
                     Grid {
                         ZStack {
                             TextEditor($draft)
@@ -1886,7 +1885,7 @@ enum Listings {
 
                     // THE FRONT CARD LEAVES: at once, the others closing up, and
                     // the card behind it comes to the front.
-                    Button("Remove").onClicked { remove(cards[front]) }
+                    Button("Remove").onClicked { remove(cards[front].name) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -1913,11 +1912,11 @@ enum Listings {
             min(max(Int(turn.rounded()), 0), cards.count - 1)
         }
 
-        /// `card` leaves the deck, the others closing up: one before the front
+        /// The card `name` leaves the deck, the others closing up: one before the front
         /// card keeps that card in front; the front card's place goes to the one
         /// behind it - where it was the last, the parameters travel to the one before.
-        private func remove(_ card: Card) {
-            guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+        private func remove(_ name: String) {
+            guard cards.count > 1, let leaving = cards.firstIndex(where: { $0.name == name }) else { return }
             let shown = front
             cards.remove(at: leaving)
             if leaving < shown {
@@ -1946,11 +1945,11 @@ enum Listings {
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
-            .onItemDismissed(.up, beyond: 120) { card in remove(card) }
+            .onItemDismissed(.up, beyond: 120) { name in remove(name) }
             // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
-            .motion(.eased(.milliseconds(400), .cubicOut))
+            .motion(.eased(.milliseconds(400), curve: .cubicOut))
             .dynamics(.spring(response: .milliseconds(300), damping: 1))
         }
 
@@ -2073,14 +2072,14 @@ enum Listings {
 
                 Button("Copy")
                     .onClicked(.ignoreWhileRunning) {
-                        try await application.clipboard.write(text: words)
+                        try await application.clipboard.write(words)
                         answer = "copied"
                     }
 
                 // What another application copied pastes here too; nil is an empty clipboard.
                 Button("Paste")
                     .onClicked(.ignoreWhileRunning) {
-                        guard let pasted = try await application.clipboard.text() else { return answer = "the clipboard is empty" }
+                        guard let pasted = try await application.clipboard.read() else { return answer = "the clipboard is empty" }
                         words = pasted
                         answer = "pasted"
                     }
@@ -2267,9 +2266,9 @@ enum Listings {
             // state, and the host carries all three on the same frames.
             let washing = $wash.journey.move(to:
                 n.isMultiple(of: 2) ? Palette.brand : Palette.accent,
-                .eased(.milliseconds(1200), .cubicInOut))
+                .eased(.milliseconds(1200), curve: .cubicInOut))
 
-            let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
+            let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), curve: .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
             // stage exactly once per color. A hop that did not run to the end is
@@ -2278,10 +2277,10 @@ enum Listings {
             var hopped = true
 
             for bar in bars where hopped {
-                hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), .cubicOut)).arrived()
+                hopped = try await bar.journey.move(to: -26, .eased(.milliseconds(150), curve: .cubicOut)).arrived()
 
                 if hopped {
-                    hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), .cubicIn)).arrived()
+                    hopped = try await bar.journey.move(to: 0, .eased(.milliseconds(150), curve: .cubicIn)).arrived()
                 }
             }
 
@@ -2290,7 +2289,7 @@ enum Listings {
             let washed = try await washing.arrived()
             let breathed = try await breathing.arrived()
 
-            try await $breath.journey.move(to: 1, .eased(.milliseconds(300), .cubicInOut)).arrived()
+            try await $breath.journey.move(to: 1, .eased(.milliseconds(300), curve: .cubicInOut)).arrived()
 
             return hopped && washed && breathed
         }
@@ -2493,8 +2492,8 @@ enum Listings {
                 row("2 · the same state in percent") {
                     // THE SAME STATE IN PERCENT: a second state the host carries,
                     // worked out by an engine following `volume` - and a drag comes
-                    // back through `convertBack`, in the source's own terms.
-                    Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+                    // back through `back`, in the source's own terms and type.
+                    Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
                         .minimum(0)
                         .maximum(100)
                     DebugInfoLabel()
@@ -2523,7 +2522,7 @@ enum Listings {
                             .text($celsius.convert { "\(Int($0)) °C" })
                     }
                     HStack {
-                        Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                        Stepper($celsius.convert { $0 * 9 / 5 + 32 } back: { ($0 - 32) * 5 / 9 })
                             .step(9)
                             .minimum(-4)
                             .maximum(140)
@@ -2759,20 +2758,17 @@ enum Listings {
                 // builds this closure.
                 DebugInfoLabel()
 
-                Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
+                Text("\(Int(device.display.width ?? 0)) × \(Int(device.display.height ?? 0)) px")
                     .fontWeight(.bold)
 
-                Text(device.display.density > 0
-                    ? "\(Int(device.display.width / device.display.density)) × "
-                        + "\(Int(device.display.height / device.display.density)) pt at "
-                        + "\(device.display.density)x"
-                    : "density not said")
+                Text(device.display.density.map { density in
+                    "\(Int((device.display.width ?? 0) / density)) × "
+                        + "\(Int((device.display.height ?? 0) / density)) pt at \(density)x"
+                } ?? "density not said")
 
                 Text("orientation · \(device.display.orientation)")
                 Text("rotation · \(device.display.rotation)")
-                Text(device.display.refreshRate > 0
-                    ? "refresh · \(Int(device.display.refreshRate)) Hz"
-                    : "refresh · not said")
+                Text(device.display.refreshRate.map { "refresh · \(Int($0)) Hz" } ?? "refresh · not said")
             }
         }
         """#,
@@ -2898,7 +2894,7 @@ enum Listings {
                         .lineWidth(1)
                         // What travels is decided before the drag starts: a
                         // native drag session needs its payload at once.
-                        .draggable(text: item)
+                        .dragText(item)
                         // The view that was DRAGGED hears when its own drag ends,
                         // wherever it ended.
                         .onDragEnded { finished = "\(item): drop finished" }
@@ -2990,12 +2986,12 @@ enum Listings {
                 HStack {
                     Button("Grow")
                         .onClicked {
-                            $width.journey.move(to: 300, .eased(.milliseconds(1600), .cubicOut))
+                            $width.journey.move(to: 300, .eased(.milliseconds(1600), curve: .cubicOut))
                         }
 
                     Button("Shrink")
                         .onClicked {
-                            $width.journey.move(to: 60, .eased(.milliseconds(1600), .cubicIn))
+                            $width.journey.move(to: 60, .eased(.milliseconds(1600), curve: .cubicIn))
                         }
 
                     // Stopping leaves the value where it stands, and the
@@ -3080,7 +3076,7 @@ enum Listings {
 
         /// One place to be sent to, under whichever law the switch asks for.
         private func go(to place: Double) {
-            let law: Motion = slowly ? .eased(.milliseconds(1600), .cubicInOut) : .eased(.milliseconds(350), .cubicOut)
+            let law: Motion = slowly ? .eased(.milliseconds(1600), curve: .cubicInOut) : .eased(.milliseconds(350), curve: .cubicOut)
 
             $offset.journey.motion = law
             offset = Self.run * place
@@ -3420,8 +3416,9 @@ enum Listings {
         // Sources/Samples/Shapes/CanvasSample.swift
         @State private var trail: [Point] = []
 
-        // Where a finger went, drawn where it went: the canvas reports in
-        // its own coordinates, which is what the instructions use.
+        // Where a finger went, drawn where it went: the canvas hears it as
+        // every view does - pressed, then the pan's `at` - in its own
+        // coordinates, which is what the instructions use.
         var body: some View {
             VStack {
                 // The trail is read by the drawing, so every report the
@@ -3443,9 +3440,8 @@ enum Listings {
                 .width(300)
                 .height(120)
                 .horizontalAlignment(.center)
-                .onPressed { trail = [$0] }
-                .onDragged { trail = Array((trail + [$0]).suffix(120)) }
-                .onReleased { _ in }
+                .onPointerPressed { trail = [$0] }
+                .onPanUpdated { pan in trail = Array((trail + [pan.at]).suffix(120)) }
 
                 Button("Clear")
                     .horizontalAlignment(.center)
@@ -3496,6 +3492,8 @@ enum Listings {
         import Android
         #endif
 
+        @Environment(\.locale) private var locale
+        @Environment(\.application) private var application
         @State private var rows: [(String, String)] = []
 
         var body: some View {
@@ -3513,7 +3511,7 @@ enum Listings {
                 }
             }
             .onCreated {
-                let hostZone = try await TimeZoneInfo.local()
+                let hostZone = locale.timeZone?.identifier ?? ""
 
                 #if canImport(Android)
                 // Android's tz database is packed in a format Foundation cannot
@@ -3525,7 +3523,7 @@ enum Listings {
                 #endif
 
                 var found: [(String, String)] = []
-                found.append(("Host TimeZoneInfo.local()", hostZone))
+                found.append(("Host locale.timeZone", hostZone))
 
                 let now = Date()
                 let zone = TimeZone.current
@@ -3540,8 +3538,8 @@ enum Listings {
                     "\(parts.year ?? 0)-\(pad(parts.month))-\(pad(parts.day)) "
                     + "\(pad(parts.hour)):\(pad(parts.minute)):\(pad(parts.second))"))
 
-                let host = try await ClockTime.now()
-                found.append(("Host ClockTime.now()", host.text))
+                let host = try await application.clock.now()
+                found.append(("Host application.clock.now()", host.text))
 
                 found.append(("ISO8601Format", now.ISO8601Format()))
 
@@ -4094,13 +4092,14 @@ enum Listings {
         ///
         /// An application is what every scene SHARES - here its styles. The galleries
         /// are one scene, its windows as many as the user opens: see
-        /// Gallery/GalleryScene.swift.
-        struct GalleryApp: Application {
+        /// Gallery/GalleryScene.swift. Every head names it to its host with
+        /// `GalleryApp.register()` - Platforms/<Host>.
+        public struct GalleryApp: Application {
             /// The application as it runs - where its styles go.
             @Environment(\.application) private var application
 
             /// What every gallery shares, written as the application is made.
-            init() {
+            public init() {
                 // The styles a control of the gallery asks for by name. A color in a
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
@@ -4114,7 +4113,7 @@ enum Listings {
 
             /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
             /// About window for the whole application, in a scene of its own. See `ScenesSample`.
-            var body: some Scene {
+            public var body: some Scene {
                 GalleryScene()
                 ScratchpadScene()
                 AboutScene()
@@ -4252,7 +4251,7 @@ enum Listings {
 
             var arrangement: GalleryArrangement {
                 switch self {
-                case .wheel: .default
+                case .wheel: .wheel
                 case .fan: .fan
                 case .row: .row
                 case .deck: .deck
@@ -4652,9 +4651,9 @@ enum Listings {
                 SwitchRow("Counts", $counts)
                     .gridRow(0)
 
-                // A group per shelf, named so two shelves may hold the same item.
-                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
-                    let group = Section(shelf.items) { item in
+                // A section per shelf, named so two shelves may hold the same item.
+                ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
+                    let section = Section(shelf.items) { item in
                         Text(item)
                     }
                     .id(shelf.name)
@@ -4662,8 +4661,8 @@ enum Listings {
                         .fontWeight(.bold))
 
                     return counts
-                        ? group.footer(Text("\(shelf.items.count) items"))
-                        : group
+                        ? section.footer(Text("\(shelf.items.count) items"))
+                        : section
                 })
                 .gridRow(1)
 
@@ -4715,8 +4714,8 @@ enum Listings {
                             let temperature = Self.number("temperature_2m", in: response.text)
                             let wind = Self.number("wind_speed_10m", in: response.text)
                             said = "\(temperature) °C, wind \(wind) km/h"
-                        } catch let failure as StateUIError {
-                            said = "No answer: \(failure.message)"
+                        } catch StateUIError.notPerformed(_, let reason) {
+                            said = "No answer: \(reason)"
                         }
                     }
                     .horizontalAlignment(.center)
@@ -4876,12 +4875,12 @@ enum Listings {
                     .onItemDragged { drag in
                         switch drag.phase {
                         case .began:
-                            lifted = drag.item.name
+                            lifted = drag.id
                         case .ended, .cancelled:
                             lifted = nil
                         default:
                             // The icon under the hand gives the held one its place.
-                            if let over = drag.over, let place = icons.firstIndex(of: over) { move(drag.item, to: place) }
+                            if let over = drag.over, let place = icons.firstIndex(where: { $0.name == over }) { move(drag.id, to: place) }
                             // At an edge, standing there or pushed against it fast, the board turns.
                             if drag.still >= .milliseconds(500) || Self.pushes(drag) {
                                 turn(at: drag.at, in: drag.room, of: boards)
@@ -4923,18 +4922,17 @@ enum Listings {
             if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
         }
 
-        /// `icon` taken out of its place and put at `slot`: a new order, which
+        /// The icon `name` taken out of its place and put at `slot`: a new order, which
         /// the others travel to.
-        private func move(_ icon: HomeIcon, to slot: Int) {
-            guard let from = icons.firstIndex(of: icon), from != slot else { return }
-            icons.remove(at: from)
-            icons.insert(icon, at: slot)
+        private func move(_ name: String, to slot: Int) {
+            guard let from = icons.firstIndex(where: { $0.name == name }), from != slot else { return }
+            icons.insert(icons.remove(at: from), at: slot)
         }
 
         /// Whether the hand reached the edge it stands at going that way faster
         /// than 600 points a second.
-        private static func pushes(_ drag: ItemDrag<HomeIcon>) -> Bool {
-            drag.at.x > drag.room.width - 24 && drag.speed.x > 600 || drag.at.x < 24 && drag.speed.x < -600
+        private static func pushes(_ drag: ItemDrag<String>) -> Bool {
+            drag.at.x > drag.room.width - 24 && drag.velocity.x > 600 || drag.at.x < 24 && drag.velocity.x < -600
         }
 
         /// The board on the side of the room `point` stands at the edge of, if
@@ -5018,7 +5016,9 @@ enum Listings {
         """#,
         "HostTimeSample": #"""
         // Sources/Samples/DateTime/HostTimeSample.swift
-        @State private var zone = ""
+        @Environment(\.application) private var application
+        @Environment(\.locale) private var locale
+        @State private var today = ""
         @State private var clocks: [(String, String)] = []
         @State private var season = ""
 
@@ -5035,7 +5035,7 @@ enum Listings {
                 // closure again.
                 DebugInfoLabel()
 
-                Text("Here: \(zone.isEmpty ? "…" : zone)")
+                Text("Here: \(locale.timeZone?.identifier ?? "…") \(today)")
                     .fontWeight(.bold)
 
                 Text(season)
@@ -5057,20 +5057,21 @@ enum Listings {
             .onCreated { try await read() }
         }
 
-        /// One reading: the zone, the host's clock, and each city seen from it.
+        /// One reading: the host's clock, and each city seen from the user's zone.
         private func read() async throws {
-            zone = try await TimeZoneInfo.local()
+            let clock = application.clock
+            today = try await clock.today().text
 
-            let now = try await ClockTime.now()
-            let here = try await TimeZoneInfo.utcOffset()
-            let winter = try await TimeZoneInfo.utcOffset(
+            let now = try await clock.now()
+            let here = try await clock.utcOffset()
+            let winter = try await clock.utcOffset(
                 on: CalendarDate(year: 2026, month: 1, day: 15))
 
             season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
 
             var found: [(String, String)] = []
             for city in Self.cities {
-                let there = try await TimeZoneInfo.utcOffset(of: city)
+                let there = try await clock.utcOffset(of: TimeZoneName(city))
                 found.append((city, "\(shifted(now, by: there - here).text)  \(offsetText(there))"))
             }
 
@@ -5376,6 +5377,7 @@ enum Listings {
         """#,
         "InteropActsSample": #"""
         // Sources/Samples/Interop/InteropActsSample.swift
+        @Environment(\.application) private var application
         @State private var line = "Hello from StateUI"
         @State private var status = "nothing asked yet"
         @State private var tenStars = false
@@ -5389,13 +5391,13 @@ enum Listings {
 
                 Button("Write it to the system's log")
                     .onClicked(.ignoreWhileRunning) {
-                        try await stateUICall(GalleryContract.log, line)
+                        try await application.call(GalleryContract.log, line)
                         status = "logged"
                     }
 
                 Button("Ask about the battery")
                     .onClicked(.ignoreWhileRunning) {
-                        let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
+                        let (level, charging) = try await application.call(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
                         // above zero counts.
@@ -5407,7 +5409,7 @@ enum Listings {
                 Button("Call something nobody registered")
                     .onClicked(.ignoreWhileRunning) {
                         do {
-                            try await stateUICall(GalleryContract.nobody)
+                            try await application.call(GalleryContract.nobody)
                             status = "that should have thrown"
                         } catch {
                             status = "thrown: \(error)"
@@ -5496,7 +5498,7 @@ enum Listings {
                 }
                 // The stack holds the field, so these keys are its while the field holds the keyboard. Page Up and
                 // Page Down go to the ends; Tab goes down a row, and back up with Shift held.
-                .onKeyPressed(.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape) { press in
+                .onKeyPressed([.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape]) { press in
                     switch press.key {
                     case .escape: query = ""
                     case .pageUp: row = 0
@@ -5993,7 +5995,7 @@ enum Listings {
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-            .motion(.eased(.milliseconds(700), .cubicInOut))
+            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
         }
 
         /// How large a card is in every layout - the size the grid's cells allow -
@@ -6144,7 +6146,7 @@ enum Listings {
             .axis(
                 \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
                 range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-            .motion(.eased(.milliseconds(600), .cubicOut))
+            .motion(.eased(.milliseconds(600), curve: .cubicOut))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6407,17 +6409,17 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Link("Swift's home page", destination: "https://www.swift.org")
+                Link("Swift's home page", address: "https://www.swift.org")
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
-                Link("Write to us", destination: "mailto:hello@example.com")
+                Link("Write to us", address: "mailto:hello@example.com")
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
                 // The address is carried from the state: choosing another page
                 // changes where the link leads, with no render of this view.
-                Link("The page chosen below", destination: $page)
+                Link("The page chosen below", address: $page)
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
@@ -6442,7 +6444,7 @@ enum Listings {
             return VStack {
                 DebugInfoLabel()
 
-                Link("Open the Tap sample", destination: GalleryLink.sample("tap"))
+                Link("Open the Tap sample", address: GalleryLink.sample("tap"))
                     .horizontalAlignment(.center)
 
                 SectionTitle("Given to this window")
@@ -6590,12 +6592,12 @@ enum Listings {
                 // closure.
                 DebugInfoLabel()
 
-                Text(locale.name.isEmpty ? "the host has not said" : locale.name)
+                Text(locale.language?.identifier ?? "the host has not said")
                     .fontWeight(.bold)
 
-                Text("language · \(locale.language)")
-                Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
-                Text("zone · \(locale.timeZone)")
+                Text("language · \(locale.language?.language ?? "not said")")
+                Text("region · \(locale.language?.region ?? "none")")
+                Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")
                 Text(locale.isMetric ? "metric" : "not metric")
@@ -7114,7 +7116,7 @@ enum Listings {
                 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     .aim(map)
                     // What the map draws, and whether the user may move it.
-                    .mapType(kind)
+                    .type(kind)
                     .showsTraffic(traffic)
                     .showsUserLocation(showsMe)
                     .isZoomEnabled(!locked)
@@ -7125,7 +7127,7 @@ enum Listings {
                         Self.places.map { place in
                             Marker(at: Location(latitude: place.latitude, longitude: place.longitude))
                                 .id(place.name)
-                                .label(place.name)
+                                .title(place.name)
                                 .subtitle(place.address)
                                 // What the marker stands for, which is what decides
                                 // the icon the platform draws for it.
@@ -7134,7 +7136,7 @@ enum Listings {
                                 .onDetailsClicked { said = "details: \(place.name)" }
                         }
                     }
-                    .onMapClicked { location in
+                    .onLocationTapped { location in
                         said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
                     }
                     .height(300)
@@ -7356,6 +7358,9 @@ enum Listings {
             /// at the bottom.
             @Environment(\.device) private var device
 
+            /// The StateUI release the line at the bottom names.
+            @Environment(\.application) private var application
+
             var body: some View {
                 // The rows run under the bars, the first and the last stopping clear
                 // of them.
@@ -7412,10 +7417,12 @@ enum Listings {
                 // Clear of the pane's edges, so the chosen row's fill stands inside it.
             }
 
-            /// What is underneath: the platform compiled in, the formFactor the host
-            /// answered before the first render, and the StateUI release it is built on.
+            /// What is underneath: the platform and form factor the host answered before the first render, the
+            /// architecture compiled in, and the StateUI release it is built on.
             private var footer: some View {
-                Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
+                Text(
+                    "native: \(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)"
+                        + "\nStateUI \(application.info.libraryVersion)")
                     #if UIKIT
                     // Above the home indicator's strip, which stands under it: none
                     // of its own beneath.
@@ -7577,11 +7584,11 @@ enum Listings {
 
             var motion: Motion {
                 switch self {
-                case .easeOut: .eased(.milliseconds(400), .cubicOut)
-                case .glide: .eased(.milliseconds(300), .sineOut)
+                case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
+                case .glide: .eased(.milliseconds(300), curve: .sineOut)
                 case .spring: .spring(response: .milliseconds(400), damping: 0.8)
-                case .bounce: .eased(.milliseconds(600), .backOut)
-                case .short: .eased(.milliseconds(200), .cubicOut)
+                case .bounce: .eased(.milliseconds(600), curve: .backOut)
+                case .short: .eased(.milliseconds(200), curve: .cubicOut)
                 }
             }
 
@@ -7694,7 +7701,7 @@ enum Listings {
                     // settles back onto its place.
                     if swaying {
                         face(Self.cards[index])
-                            .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
+                            .followsLayout(response: .milliseconds(420), damping: 0.55)
                     } else {
                         face(Self.cards[index])
                     }
@@ -7724,7 +7731,7 @@ enum Listings {
             .shade(
                 Rectangle()
                     .fill(Color(hex: 0x000000)))
-            .motion(.eased(.milliseconds(300), .cubicOut))
+            .motion(.eased(.milliseconds(300), curve: .cubicOut))
             // AT REST - the ring and every card still - it says where, once.
             .onSettled { turned in
                 let count = Self.cards.count
@@ -7874,7 +7881,7 @@ enum Listings {
         static func law(_ index: Int) -> Motion {
             switch index {
             case 1: .spring(response: .milliseconds(320))
-            case 2: .eased(.milliseconds(900), .sineInOut)
+            case 2: .eased(.milliseconds(900), curve: .sineInOut)
             case 3: .none
             default: .standard
             }
@@ -7927,7 +7934,7 @@ enum Listings {
                 HStack {
                     // The law given here is this move's alone...
                     Button("Slow move").onClicked {
-                        $reach.journey.move(to: 300, .eased(.milliseconds(2000), .sineInOut))
+                        $reach.journey.move(to: 300, .eased(.milliseconds(2000), curve: .sineInOut))
                     }
                     // ...and a plain write travels on the value's own spring.
                     Button("Back").onClicked { reach = 120 }
@@ -8410,7 +8417,7 @@ enum Listings {
         /// - Parameter y: how far down each strip is sent.
         private func move(to y: Double) async throws {
             for strip in [$described, $paced, $driven] {
-                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), .cubicOut)).arrived()
+                try await strip.journey.move(to: Point(0, y), .eased(.milliseconds(300), curve: .cubicOut)).arrived()
             }
         }
         """#,
@@ -8621,10 +8628,10 @@ enum Listings {
 
                 HStack {
                     Button("Fade")
-                        .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), curve: .cubicOut)) }
 
                     Button("Back")
-                        .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), .cubicOut)) }
+                        .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), curve: .cubicOut)) }
                 }
                 .horizontalAlignment(.center)
             }
@@ -8690,21 +8697,21 @@ enum Listings {
                         .onPanUpdated { update in
                             switch update.phase {
                             case .changed:
-                                follow(panX + update.totalX, panY + update.totalY)
+                                follow(panX + update.total.x, panY + update.total.y)
                             case .ended where letting == "Springs home":
                                 // The hand's speed is the box's as it lets go: it
                                 // goes on that way, and the spring brings it home.
                                 (panX, panY) = (0, 0)
-                                $liveX.journey.velocity = update.velocityX
-                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.velocity = update.velocity.x
+                                $liveY.journey.velocity = update.velocity.y
                                 $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                                 $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             case .ended where letting == "Glides on":
                                 // It glides on from the hand's speed to where that
                                 // throw carries it, kept inside the box.
                                 let glide = Motion.glide(longest: .milliseconds(900))
-                                $liveX.journey.velocity = update.velocityX
-                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.velocity = update.velocity.x
+                                $liveY.journey.velocity = update.velocity.y
                                 panX = min(max($liveX.journey.reach(glide), -140), 140)
                                 panY = min(max($liveY.journey.reach(glide), -60), 60)
                                 $liveX.journey.move(to: panX, glide)
@@ -9794,7 +9801,7 @@ enum Listings {
                     }
                 }
             }
-            .orientation(.horizontal)
+            .axes(.horizontal)
             .horizontalScrollIndicator(.never)
         }
 
@@ -10463,18 +10470,14 @@ enum Listings {
                 // Two rows of three: six shapes side by side stand wider than a phone.
                 VStack {
                     HStack {
-                        Line()
-                            .x1(0).y1(0)
-                            .x2(56).y2(56)
+                        Line(from: Point(0, 0), to: Point(56, 56))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .lineCap(.round)
                             .width(56)
                             .height(56)
 
-                        Line()
-                            .x1(0).y1(28)
-                            .x2(56).y2(28)
+                        Line(from: Point(0, 28), to: Point(56, 28))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .dash([3, 2])
@@ -10525,9 +10528,7 @@ enum Listings {
                 // The same dashes twice, half a pattern apart: the offset, like
                 // the pattern itself, is counted in stroke widths.
                 VStack {
-                    Line()
-                        .x1(0).y1(4)
-                        .x2(200).y2(4)
+                    Line(from: Point(0, 4), to: Point(200, 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
@@ -10535,9 +10536,7 @@ enum Listings {
                         .width(200)
                         .height(8)
 
-                    Line()
-                        .x1(0).y1(4)
-                        .x2(200).y2(4)
+                    Line(from: Point(0, 4), to: Point(200, 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
@@ -10634,19 +10633,19 @@ enum Listings {
         // Sources/Samples/Navigation/ShareSample.swift
         @Environment(\.window) private var window
         @State private var words = "The language I mentioned"
-        @State private var link = "https://www.swift.org"
+        @State private var address = "https://www.swift.org"
         @State private var answer = "nothing shared yet"
 
         var body: some View {
             VStack {
                 TextField($words)
-                TextField($link)
+                TextField($address)
 
                 // False is a cancel; a platform with no share sheet throws why.
                 Button("Share")
                     .onClicked(.ignoreWhileRunning) {
                         do {
-                            let shared = try await window.share(text: words, link: link)
+                            let shared = try await window.share(text: words, address: address)
                             answer = shared ? "shared" : "cancelled"
                         } catch {
                             answer = "\(error)"
@@ -10824,11 +10823,11 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The flag is read here, so starting and stopping builds this
-                // closure - the spinner itself costs nothing to keep running.
+                // The flag is handed over, `$loading`, so starting and stopping
+                // builds nothing: the host turns the spinner on and off.
                 DebugInfoLabel()
 
-                Spinner(loading)
+                Spinner($loading)
                     .height(48)
 
                 Switch($loading)
@@ -12787,10 +12786,10 @@ enum Listings {
                     .canGoBack($hasBack)
                     .canGoForward($hasForward)
                     .onNavigating { report in
-                        status = "fetching \(report.url)"
+                        status = "fetching \(report.address)"
                     }
                     .onNavigated { report in
-                        status = "\(report.result): \(report.url)"
+                        status = "\(report.result): \(report.address)"
                     }
                     // The platform killed the web content process and left the
                     // view blank. Nothing else reports it.
@@ -12870,10 +12869,10 @@ enum Listings {
         /// it.
         ///
         /// The log's first line is `created`, which `MainPage` writes as the window
-        /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
-        /// activated/deactivated pair follows the host's own window activation, and
-        /// where the application stands is `application.phase`, which the Phases
-        /// sample shows.
+        /// is made: `.onChanged` hears a CHANGE. The phase moves from there - active
+        /// and inactive as the host activates the window and puts it behind another,
+        /// background as it is minimized or goes away - and where the application
+        /// stands is `application.phase`, which the Phases sample shows.
         struct WindowPhaseLog: View {
             /// Where the moments are written.
             let log: WindowLog
@@ -12954,7 +12953,7 @@ enum Listings {
 
                 PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
                 PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
-                PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
+                PhaseRow(name: "this window", value: "\(window.phase)")   // active, inactive or background
 
                 Text(verdict)
             }
@@ -13123,6 +13122,49 @@ enum Listings {
                 .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
         }
         """#,
+        "extending.md.properties": #"""
+        // Sources/Samples/Interop/RatingBar.swift
+        /// The RatingBar's own properties. The control wears them and so does its
+        /// style, so each setter is written once.
+        public protocol RatingBarProperties: PropertyContainer {}
+
+        extension RatingBarProperties {
+            /// How many stars are filled, 0 through the bar's stars.
+            public func rating(_ value: Double) -> Modified {
+                setValue(RatingBarContract.rating, value)
+            }
+
+            /// How many stars the bar has - five unless said.
+            public func maximum(_ value: Double) -> Modified {
+                setValue(RatingBarContract.maximum, value)
+            }
+        }
+
+        /// A style can target the bar: a style target names the node type a style
+        /// resolves by - the bar's contract's.
+        extension RatingBar: StyleTarget {
+            public static var nodeType: NodeType { RatingBarContract.nodeType }
+        }
+
+        /// A style of the bar offers the bar's own setters.
+        extension Styling: RatingBarProperties where Target == RatingBar {}
+        """#,
+        "extending.md.state": #"""
+        // Sources/Samples/Interop/RatingBar.swift
+        /// How many stars are filled, walked by the host from a state.
+        ///
+        ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
+        ///
+        /// `.inOut`, because the host reports where the walk has got to, which is
+        /// what `$stars.journey.value` reads. A tap does not arrive this way;
+        /// `.onRatingChanged(_:)` hears it.
+        ///
+        /// On the control and not on `RatingBarProperties`: a style wears that
+        /// protocol, and a style has no state to follow.
+        public func rating(_ state: Binding<Double>) -> Modified {
+            setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+        }
+        """#,
     ]
 }
 
@@ -13264,7 +13306,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -14389,7 +14431,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                registerApplication()
+                GalleryApp.register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -14550,9 +14592,9 @@ extension Listings {
                 }
 
         // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -14855,7 +14897,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -15539,7 +15581,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -15686,9 +15728,9 @@ extension Listings {
         }
 
         // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -15914,15 +15956,15 @@ extension Listings {
         // Platforms/Android/Swift/Host/GoogleMapView.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)
@@ -15981,7 +16023,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                registerApplication()
+                GalleryApp.register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -16103,7 +16145,7 @@ extension Listings {
         import GalleryUI
         import StateUIAppKit
 
-        registerApplication()
+        GalleryApp.register()
 
         // What this host answers for the application, said before it runs: the
         // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -16211,9 +16253,9 @@ extension Listings {
         import StateUIGTK
         import StateUIWebViewGTK
 
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -16322,7 +16364,7 @@ extension Listings {
         import GalleryUI
         import StateUIUIKit
 
-        registerApplication()
+        GalleryApp.register()
 
         // What this host answers for the application, said before it runs: the
         // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -16369,15 +16411,15 @@ extension Listings {
         // Platforms/Web/Host/GoogleMapElement.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)
@@ -16430,11 +16472,11 @@ extension Listings {
         import GalleryUI
         import StateUIWeb
 
-        // Register the application module, then say what this host answers for it
+        // Name the application to the host, then say what this host answers for it
         // before it runs - the controls it realizes, the acts it performs and the
         // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
         // and show it in the page; the browser calls it from then on.
-        registerApplication()
+        GalleryApp.register()
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.start()
@@ -16529,10 +16571,10 @@ extension Listings {
         import StateUIWebViewWinUI
         import StateUIWinUI
 
-        // Register the application module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the application to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
         // relay in Relay/. Then hand WinUI this thread until the last window closes.
-        registerApplication()
+        GalleryApp.register()
         // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()

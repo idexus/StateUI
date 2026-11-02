@@ -70,11 +70,11 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
 
         var motion: Motion {
             switch self {
-            case .easeOut: .eased(.milliseconds(400), .cubicOut)
-            case .glide: .eased(.milliseconds(300), .sineOut)
+            case .easeOut: .eased(.milliseconds(400), curve: .cubicOut)
+            case .glide: .eased(.milliseconds(300), curve: .sineOut)
             case .spring: .spring(response: .milliseconds(400), damping: 0.8)
-            case .bounce: .eased(.milliseconds(600), .backOut)
-            case .short: .eased(.milliseconds(200), .cubicOut)
+            case .bounce: .eased(.milliseconds(600), curve: .backOut)
+            case .short: .eased(.milliseconds(200), curve: .cubicOut)
             }
         }
 
@@ -207,7 +207,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 // settles back onto its place.
                 if swaying {
                     face(Self.cards[index])
-                        .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
+                        .followsLayout(response: .milliseconds(420), damping: 0.55)
                 } else {
                     face(Self.cards[index])
                 }
@@ -239,7 +239,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             Rectangle()
                 .fill(Color(hex: 0x000000))
                 .cornerRadius(16))
-        .motion(.eased(.milliseconds(300), .cubicOut))
+        .motion(.eased(.milliseconds(300), curve: .cubicOut))
         // AT REST - the ring and every card still - it says where, once.
         .onSettled { turned in
             let count = Self.cards.count

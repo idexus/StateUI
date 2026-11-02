@@ -73,17 +73,22 @@ extension Material: LaneValue {
             guard let has = next(), let color = color() else { return nil }
             return has != 0 ? color : .nothing
         }
+        // A number standing for a whole one: nil for one that is none, or past what the type holds.
+        func whole(_ lane: Double?) -> Int32? {
+            lane.flatMap { Int32(exactly: $0.rounded()) }
+        }
 
-        switch next().map({ Int($0.rounded()) }) {
+        switch whole(next()) {
         case 0:
             return .nothing
         case 1:
             return color()
         case 2:
-            guard let brush = next(), let count = next().map({ Int($0.rounded()) }), count >= 0,
-                  at + count <= lanes.count
+            guard let brush = whole(next()), let counted = whole(next()), counted >= 0,
+                  Int(counted) <= lanes.count - at
             else { return nil }
-            var values: [PropValue] = [.enumeration(Int32(brush.rounded())), .numbers(Array(lanes[at..<at + count]))]
+            let count = Int(counted)
+            var values: [PropValue] = [.enumeration(brush), .numbers(Array(lanes[at..<at + count]))]
             at += count
             while at < lanes.count {
                 guard let offset = next(), let color = color() else { return nil }
@@ -91,12 +96,12 @@ extension Material: LaneValue {
             }
             return .values(values)
         case 3:
-            guard let raw = next(), let thickness = Blur.Thickness(rawValue: Int32(raw.rounded())),
+            guard let raw = whole(next()), let thickness = Blur.Thickness(rawValue: raw),
                   let tint = tint(), let standIn = color()
             else { return nil }
             return .values([.enumeration(4), thickness.propValue, tint, standIn])
         case 4:
-            guard let raw = next(), let clarity = Glass.Clarity(rawValue: Int32(raw.rounded())),
+            guard let raw = whole(next()), let clarity = Glass.Clarity(rawValue: raw),
                   let interactive = next(), let tint = tint(), let standIn = color()
             else { return nil }
             let fallback = Glass(clarity: clarity, tint: nil, isInteractive: false).fallback

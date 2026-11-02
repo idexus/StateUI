@@ -721,7 +721,7 @@
         if let sides = value(.margin)?.numbers, sides.count >= 4 {
             values.margin = insets(.margin)
         }
-        values.horizontal = value(.horizontalAlignment)?.enumeration ?? 3
+        values.horizontal = value(.horizontalAlignment)?.enumeration ?? NodeType.unsaidHorizontal[type] ?? 3
         values.vertical = value(.verticalAlignment)?.enumeration ?? 3
         values.width = stated(.width)
         values.height = stated(.height)
@@ -811,8 +811,10 @@
             return .number(0)
         case .lineWidth:
             return .number(1)
-        case .dashPhase, .x1, .y1, .x2, .y2:
+        case .dashPhase:
             return .number(0)
+        case .from, .to:
+            return .numbers([0, 0])
         case .miterLimit:
             return .number(10)
         case .cornerRadius:

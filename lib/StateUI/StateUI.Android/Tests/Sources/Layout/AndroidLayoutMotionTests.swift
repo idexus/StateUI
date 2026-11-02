@@ -19,7 +19,7 @@ private struct SaidPage: View {
             .horizontalAlignment(.start)
             .id("stack")
         }
-        .motion(.eased(.milliseconds(400), .linear))
+        .motion(.eased(.milliseconds(400), curve: .linear))
         .verticalAlignment(.start)
     }
 }
@@ -42,12 +42,12 @@ final class AndroidLayoutMotionTests: XCTestCase {
     /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+        stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         stack.children = .arranged(order.map { name in
             var row = HostPatch(id: .manual(name), type: .text)
             row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
             row.properties[.isVisible] = .bool(!hidden.contains(name))
-            row.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), .linear), lanes: .all)
+            row.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), curve: .linear), lanes: .all)
             return row
         })
         return stack
@@ -59,7 +59,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
         try onMainActor {
             func caption(_ text: String) -> HostPatch {
                 var stack = HostPatch(id: .manual("stack"), type: .vStack)
-                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
                 var label = HostPatch(id: .manual("caption"), type: .text)
                 label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
                 stack.children = .arranged([label])
@@ -92,7 +92,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
         try onMainActor {
             func row(_ words: String) -> HostPatch {
                 var stack = HostPatch(id: .manual("stack"), type: .vStack)
-                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
                 var button = HostPatch(id: .manual("toggle"), type: .button)
                 button.properties = [
                     .text: .string(words), .horizontalAlignment: .enumeration(Alignment.center.rawValue),

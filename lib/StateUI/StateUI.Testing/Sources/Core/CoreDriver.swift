@@ -21,7 +21,7 @@ final class CoreDriver: HostDriver {
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
-        stateUIUseApp(OneWindowApplication(page: page))
+        Renderer.shared.setApplication(OneWindowApplication(page: page))
         let runtime = HostRuntime(
             clock: self.clock, reducesMotion: { reducesMotion }, makeNative: { _ in CoreView() }, log: { _ in })
         runtime.presenter = self

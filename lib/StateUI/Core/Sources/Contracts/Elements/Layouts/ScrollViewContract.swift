@@ -19,8 +19,8 @@ public enum ScrollViewContract: ElementContract {
     public static let horizontalScrollIndicator = ElementProperty<Self, ScrollIndicatorVisibility>(
         "horizontalScrollIndicator", layer: .adaptive)
 
-    /// Which way it scrolls.
-    public static let orientation = ElementProperty<Self, ScrollOrientation>("orientation", layer: .native)
+    /// Which ways it scrolls; down where it says none.
+    public static let axes = ElementProperty<Self, ScrollAxes>("axes", layer: .native)
 
     /// Where the scroller stands, in device units from the content's top-left
     /// corner: one point, so a diagonal scroll arrives on both axes together.
@@ -36,6 +36,6 @@ public enum ScrollViewContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        horizontalScrollIndicator, orientation, scrollOffset, scrollStopped, verticalScrollIndicator,
+        axes, horizontalScrollIndicator, scrollOffset, scrollStopped, verticalScrollIndicator,
     ]
 }

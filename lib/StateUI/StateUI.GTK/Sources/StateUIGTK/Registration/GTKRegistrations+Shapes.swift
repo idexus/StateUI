@@ -27,12 +27,10 @@ extension GTKRegistrations {
             }
         }
         registry.add(LineContract.self, create: { _ in GTKShapeView() }) { shape in
-            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
-                view, values in
+            shape.applies(ShapeMembers.members, LineContract.from, LineContract.to) { view, values in
                 paint(view, values)
-                let from = [values[LineContract.x1] ?? 0, values[LineContract.y1] ?? 0]
-                let to = [values[LineContract.x2] ?? 0, values[LineContract.y2] ?? 0]
-                view.draw(authored([0] + from + [1] + to, evenOdd: false, values))
+                let from = values[LineContract.from] ?? .zero, to = values[LineContract.to] ?? .zero
+                view.draw(authored([0, from.x, from.y, 1, to.x, to.y], evenOdd: false, values))
             }
         }
         registry.add(PathContract.self, create: { _ in GTKShapeView() }) { shape in

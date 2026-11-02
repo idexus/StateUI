@@ -167,9 +167,9 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
             for content in AppKitItemsLayout.sections(of: entries) {
                 switch content {
                 case .listHeader(let identity), .listFooter(let identity): snapshot.appendSections([identity])
-                case .group(let group):
-                    snapshot.appendSections([entries.sections[group].identity])
-                    snapshot.appendItems(entries.sections[group].items, toSection: entries.sections[group].identity)
+                case .listSection(let index):
+                    snapshot.appendSections([entries.sections[index].identity])
+                    snapshot.appendItems(entries.sections[index].items, toSection: entries.sections[index].identity)
                 }
             }
             source.apply(snapshot, animatingDifferences: changes?.isEmpty == false && !reducesMotion())
@@ -273,8 +273,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         switch (kind, contents[indexPath.section]) {
         case (AppKitItemsLayout.listHeader, .listHeader(let identity)): return identity
         case (AppKitItemsLayout.listFooter, .listFooter(let identity)): return identity
-        case (AppKitItemsLayout.header, .group(let group)): return entries.sections[group].header
-        case (AppKitItemsLayout.footer, .group(let group)): return entries.sections[group].footer
+        case (AppKitItemsLayout.header, .listSection(let index)): return entries.sections[index].header
+        case (AppKitItemsLayout.footer, .listSection(let index)): return entries.sections[index].footer
         default: return nil
         }
     }
@@ -413,10 +413,10 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         let (start, length, side, now) = across
             ? (item.minX, item.width, visible.width, visible.minX)
             : (item.minY, item.height, visible.height, visible.minY)
-        let room = side - before - after
-        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return nil }
         let content = across ? size.width : size.height
-        let offset = min(max(-before, place - before), max(-before, content + after - side))
+        guard let offset = anchor.offset(
+            of: start, length: length, side: side, content: content, before: before, after: after, at: now)
+        else { return nil }
         return across ? NSPoint(x: offset, y: visible.minY) : NSPoint(x: visible.minX, y: offset)
     }
 
@@ -460,8 +460,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         let size = collection.frame.size
         let visible = scroller.contentView.bounds.size
         scroller.contentView.scroll(to: NSPoint(
-            x: min(max(0, target.x), max(0, size.width - visible.width)),
-            y: min(max(0, target.y), max(0, size.height - visible.height))))
+            x: ValueArithmetic.clamped(target.x, lower: 0, upper: max(0, size.width - visible.width)),
+            y: ValueArithmetic.clamped(target.y, lower: 0, upper: max(0, size.height - visible.height))))
         scroller.reflectScrolledClipView(scroller.contentView)
         layoutSubtreeIfNeeded()
         scrolled()

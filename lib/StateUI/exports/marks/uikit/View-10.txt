@@ -1,15 +1,15 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.pinchUpdated: ✓ pinch on Button: the view's listening handed the recognizer's states, no touch sent
 Button.verticalAlignment: ✅
-Canvas.canDrag: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Canvas.dragText: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
+Canvas.isDraggable: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Capsule.held: ✓ hold on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.layoutBody: ✅
 CheckBox.panYChannel: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
@@ -81,13 +81,13 @@ ProgressBar.frameChanged: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.verticalAlignment: ✅
-Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.held: ✓ hold on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.layoutBody: ✅
 SearchField.panYChannel: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
@@ -110,13 +110,13 @@ Switch.margin: ✅
 Switch.swipeDirection: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swipeThreshold: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swiped: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
-Text.canDrag: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session
 Text.dragEnded: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session
 Text.dragStarting: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session
 Text.dragText: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session
 Text.frameChanged: ✅
 Text.gridColumnSpan: ✅
 Text.gridRowSpan: ✅
+Text.isDraggable: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
@@ -135,12 +135,12 @@ VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.verticalAlignment: ✅
-WebView.canDrag: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 WebView.dragStarting: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 WebView.dragText: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 WebView.frameChanged: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
+WebView.isDraggable: ✓ dragAndDrop on WebView: the drag and drop interactions' handlers called, no drag session
 ZStack.held: ✓ hold on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutBody: ✅

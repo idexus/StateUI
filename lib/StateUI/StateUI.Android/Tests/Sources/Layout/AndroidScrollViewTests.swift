@@ -55,7 +55,7 @@ final class AndroidScrollViewTests: XCTestCase {
                 ScrollView {
                     Text("wide").width(1000).height(40)
                 }
-                .orientation(.horizontal)
+                .axes(.horizontal)
                 .height(100)
             }
             host.layOut()
@@ -193,8 +193,8 @@ final class AndroidScrollViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    ScrollView { Text("code") }.orientation(.horizontal).layoutDirection(.leftToRight)
-                    ScrollView { Text("words") }.orientation(.horizontal)
+                    ScrollView { Text("code") }.axes(.horizontal).layoutDirection(.leftToRight)
+                    ScrollView { Text("words") }.axes(.horizontal)
                 }
                 .layoutDirection(.rightToLeft)
             }

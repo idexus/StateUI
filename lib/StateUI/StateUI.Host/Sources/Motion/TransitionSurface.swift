@@ -153,7 +153,7 @@
         .geometryTransform,
     ]
 
-    private static let lineProperties: Set<Prop> = [.x1, .y1, .x2, .y2]
+    private static let lineProperties: Set<Prop> = [.from, .to]
 
     private static let windowProperties: Set<Prop> = [.x, .y, .width, .height]
 }

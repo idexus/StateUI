@@ -276,18 +276,14 @@ final class StateUIEnvironment {
         return (configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    /** The local time of day: hour, minute, second and millisecond. */
+    /** The local day and time of day: year, month, day, hour, minute, second and millisecond. */
     static int[] clock() {
         Calendar now = Calendar.getInstance();
         return new int[] {
+            now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH),
             now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND),
             now.get(Calendar.MILLISECOND),
         };
-    }
-
-    /** The IANA identifier of the local time zone. */
-    static String zone() {
-        return TimeZone.getDefault().getID();
     }
 
     /**

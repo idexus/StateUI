@@ -19,7 +19,7 @@ import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaun
 import { parseDevices } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { parseDevices as parseUIKitDevices, parseSimulators, simulatorForSuites } from "../Sources/uiKitDevices";
-import { buildingCommand, otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { givesWay } from "../Sources/tasks";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
@@ -94,6 +94,25 @@ export async function run(): Promise<void> {
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
+
+        // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time and left
+        //    stopped - is asked once more, which starts it; a second rejection is the caller's.
+        {
+            let asked = 0;
+            const recovered = await restartServer(async () => {
+                asked += 1;
+                if (asked === 1) {
+                    throw new Error("Stopping the server timed out");
+                }
+            }).then(() => true, () => false);
+            let refused = 0;
+            const failed = await restartServer(async () => {
+                refused += 1;
+                throw new Error("refused");
+            }).then(() => false, () => true);
+            check("a restart the Swift extension rejects, its server left stopped, is asked once more, which starts it",
+                recovered && asked === 2 && failed && refused === 2);
+        }
 
         // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {
@@ -628,7 +647,7 @@ export async function run(): Promise<void> {
                 made.command === "bash" && made.args[0].split(path.sep).join("/").endsWith("/.scripts/new-app.sh")
                 && made.args.slice(1).join(" ") === `Notes ${apps}`
                 && windows.command === "powershell" && windows.args.slice(-5).join(" ").endsWith(`new-app.ps1 -Name Notes -AppsDir ${apps}`));
-            const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"));
+            const manifest = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"));
             const setting = manifest.contributes.configuration.properties;
             check("the palette has New Project Group; New Application in apps/ shows where a folder keeps apps/; "
                 + "stateui.checkout is this machine's, stateui.minimumRelease 0.5.0",
@@ -761,7 +780,7 @@ export async function run(): Promise<void> {
             }
 
             // A release is offered from minimumRelease on - the first whose scripts build as this extension does.
-            const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8"))
+            const minimum: string = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8"))
                 .contributes.configuration.properties["stateui.minimumRelease"].default;
             const every = await listReleases("https://github.com/idexus/StateUI.git", "0.0.0");
             const offered = await listReleases("https://github.com/idexus/StateUI.git", minimum);
@@ -790,12 +809,12 @@ export async function run(): Promise<void> {
         }
         // 7b. The extension reinstalls itself from the checkout: packed by npm, installed by the editor's command line.
         {
-            const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "lib", "StateUI.VSCode", "package.json"), "utf8")).version;
+            const version = JSON.parse(fs.readFileSync(path.join(root.uri.fsPath, "editors", "VSCode", "package.json"), "utf8")).version;
             const steps = reinstallSteps(root.uri.fsPath, "/Editor/bin/code", "linux");
-            check("Reinstall VS Code Extension packs it with npm in lib/StateUI.VSCode, then installs artifacts/stateui-<version>.vsix with --force",
+            check("Reinstall VS Code Extension packs it with npm in editors/VSCode, then installs artifacts/stateui-<version>.vsix with --force",
                 commands.includes("stateui.reinstallExtension") && steps.length === 2
                 && `${steps[0].command} ${steps[0].args.join(" ")}` === "npm run package"
-                && steps[0].cwd === path.join(root.uri.fsPath, "lib", "StateUI.VSCode")
+                && steps[0].cwd === path.join(root.uri.fsPath, "editors", "VSCode")
                 && steps[1].command === "/Editor/bin/code"
                 && steps[1].args.join(" ") === `--install-extension ${path.join(root.uri.fsPath, "artifacts", `stateui-${version}.vsix`)} --force`);
             check("on Windows it packs with npm.cmd, which a terminal whose policy refuses scripts (npm.ps1) still runs",
@@ -810,7 +829,7 @@ export async function run(): Promise<void> {
             const all = rebuildSteps(checkout, "winui", "all");
             const changed = rebuildSteps(checkout, "winui", "changed");
             const appKit = rebuildSteps(checkout, "appkit", "changed");
-            const manifest = JSON.parse(fs.readFileSync(path.join(checkout, "lib", "StateUI.VSCode", "package.json"), "utf8"));
+            const manifest = JSON.parse(fs.readFileSync(path.join(checkout, "editors", "VSCode", "package.json"), "utf8"));
             const hidden = (command: string): boolean => manifest.contributes.menus.commandPalette
                 .some((each: { command: string; when?: string }) => each.command === command && each.when === "stateui.hasCheckout");
             check("Conformance - Rebuild all and Rebuild changed run the host's families writing their verdicts, then render the documents",
@@ -881,7 +900,7 @@ export async function run(): Promise<void> {
         // 8. The package holds what the sources build today and nothing an
         //    older build left in out/.
         {
-            const extension = path.join(root.uri.fsPath, "lib", "StateUI.VSCode");
+            const extension = path.join(root.uri.fsPath, "editors", "VSCode");
             const vsce = path.join(extension, "node_modules", ".bin", process.platform === "win32" ? "vsce.cmd" : "vsce");
             const packed = execSync(`"${vsce}" ls`, { cwd: extension }).toString().split(/\r?\n/).filter((line) => line.length > 0);
             // A compiled file whose source is gone is left in out/ by tsc, and would be packed.

@@ -13,5 +13,10 @@ public struct OneWindowApplication: Application, Sendable {
         self.page = page
     }
 
+    /// An application whose one window shows nothing.
+    public init() {
+        self.init { VStack {} }
+    }
+
     public var body: some Scene { WindowGroup { AnyView(page()) } }
 }

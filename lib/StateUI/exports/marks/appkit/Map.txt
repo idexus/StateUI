@@ -1,10 +1,10 @@
-# revision 2.1
+# revision 3.1
 Map: ✅
 Map.isScrollEnabled: ✅
 Map.isZoomEnabled: ✅
-Map.mapClicked: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
-Map.mapType: ✅
+Map.locationTapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.moveToRegion: ✅
 Map.region: ✅
 Map.showsTraffic: ✅
 Map.showsUserLocation: ✅
+Map.type: ✅

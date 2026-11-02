@@ -74,18 +74,19 @@ final class AppsTests: XCTestCase {
                     "\(name): Package.swift names \(path), and \(wanted.path) does not exist.")
             }
 
-            // Every head names the application to its host by this one function, in Swift, before the host runs;
-            // the manifest compiles Sources/ whole, so the file declaring it may sit anywhere under it.
+            // Every head names the application to its host by its one public type, in Swift, before the host runs;
+            // the manifest compiles Sources/ whole, so the file declaring it may sit anywhere under it - and the
+            // listings cut from the code quote it.
             let sources = app.appendingPathComponent("Sources")
             let registering = try SourceTree.files(under: sources)
-                .filter { $0.hasSuffix(".swift") }
+                .filter { $0.hasSuffix(".swift") && !$0.hasSuffix("Listings.swift") }
                 .map { try String(contentsOf: sources.appendingPathComponent($0), encoding: .utf8) }
-                .filter { $0.contains("public func registerApplication()") }
+                .filter { $0.contains("public struct \(name)App: Application") }
 
             XCTAssertEqual(
                 registering.count, 1,
-                "\(name): Sources/ declares registerApplication() \(registering.count) times - its heads name "
-                    + "the application to their host by it")
+                "\(name): Sources/ declares \(name)App \(registering.count) times - its heads name "
+                    + "the application to their host by \(name)App.register()")
             XCTAssertFalse(
                 registering.contains { $0.contains("@_cdecl(") },
                 "\(name): the file naming the application exports a C function - a head calls it in Swift")
@@ -244,11 +245,11 @@ final class AppsTests: XCTestCase {
             gradle.contains("applicationId = \"com.stateui.probe\""),
             "the application identifier is not the new name in lower case.")
 
-        let application = try String(
-            contentsOf: app.appendingPathComponent("Sources/ProbeApp.swift"), encoding: .utf8)
+        let head = try String(
+            contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"), encoding: .utf8)
         XCTAssertTrue(
-            application.contains("stateUIUseApp(ProbeApp())"),
-            "the new module does not register its own application.")
+            head.contains("ProbeApp.register()"),
+            "the new application's head does not register its own application.")
     }
 
     /// The names new-app.sh refuses, each for the reason it cannot build: no

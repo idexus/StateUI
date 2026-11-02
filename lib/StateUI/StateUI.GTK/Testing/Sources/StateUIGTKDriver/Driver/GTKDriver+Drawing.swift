@@ -20,18 +20,6 @@ extension GTKDriver {
         guard let pixel = view.pixels(at: [(point.x, point.y)]).first, pixel >> 24 != 0 else { return nil }
         let alpha = Int(pixel >> 24)
         let channel = { (shift: UInt32) in min(255, Int((pixel >> shift) & 0xFF) * 255 / alpha) }
-        return Color(red: channel(16), green: channel(8), blue: channel(0), alpha: alpha)
-    }
-
-    /// A press, its drag and its release on a canvas, as its gesture tells them: a drag and a release by how far
-    /// they are from the press.
-    func press(_ act: UserAct, on canvas: GTKCanvasView, _ element: MountedElement) throws {
-        let from = canvas.pressedAt
-        switch act {
-        case .pressDown(let at): GTKTestHost.emit(canvas.drag, "drag-begin", [at.x, at.y])
-        case .drag(let to): GTKTestHost.emit(canvas.drag, "drag-update", [to.x - from.x, to.y - from.y])
-        case .lift(let at): GTKTestHost.emit(canvas.drag, "drag-end", [at.x - from.x, at.y - from.y])
-        default: throw DriverCannot(act, on: element)
-        }
+        return Color(red: channel(16), green: channel(8), blue: channel(0), opacity: Double(alpha) / 255)
     }
 }

@@ -47,13 +47,13 @@ extern "C" StateUIObjectRef stateui_winui_scroller_make(int64_t view) {
 }
 
 extern "C" void stateui_winui_scroller_set(
-    StateUIObjectRef handle, StateUIObjectRef content, int32_t orientation, int32_t verticalBar, int32_t horizontalBar
+    StateUIObjectRef handle, StateUIObjectRef content, int32_t axes, int32_t verticalBar, int32_t horizontalBar
 ) {
     try {
         auto scroller = borrow<controls::ScrollViewer>(handle);
-        auto ways = static_cast<StateUIScrollOrientation>(orientation);
-        auto down = ways == StateUIScrollOrientationVertical || ways == StateUIScrollOrientationBoth;
-        auto across = ways == StateUIScrollOrientationHorizontal || ways == StateUIScrollOrientationBoth;
+        // Swift's ScrollAxes bits: 1 across, 2 down.
+        auto across = (axes & 1) != 0;
+        auto down = (axes & 2) != 0;
         scroller.VerticalScrollMode(down ? controls::ScrollMode::Enabled : controls::ScrollMode::Disabled);
         scroller.HorizontalScrollMode(across ? controls::ScrollMode::Enabled : controls::ScrollMode::Disabled);
         scroller.VerticalScrollBarVisibility(visibility(down, verticalBar));

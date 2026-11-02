@@ -22,7 +22,7 @@ ToolbarGroup 9
 TitleView 3
 MenuBar 3
 MenuItem 4
-Window 9
+Window 10
 Scene 3
 Overlay 5
 BarElement 15
@@ -45,15 +45,15 @@ Picker 4
 Image 3
 Page 9
 PageElement 4
-View 19
-VisualElement 22
+View 21
+VisualElement 24
 Shape 5
 BorderElement 14
-TextInput 7
-Application 12
+TextInput 8
+Application 14
 TextSpan 4
 Separator 4
-Canvas 3
+Canvas 4
 Rectangle 3
 Stepper 5
 KeyboardElement 6
@@ -66,16 +66,16 @@ ContextMenu 3
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
-TextField 3
-SearchField 3
+TextField 5
+SearchField 5
 Polyline 3
 FilledShape 3
 AutomationElement 8
 Layout 3
 PaddingElement 3
-MotionLayout 15
+MotionLayout 16
 FocusElement 5
-ScrollView 4
+ScrollView 5
 Slider 3
 Switch 3
 Spinner 2
@@ -85,8 +85,8 @@ Ellipse 2
 Grid 2
 HStack 5
 ItemsView 5
-Line 2
-Map 2
+Line 3
+Map 3
 Path 2
 Polygon 2
 ProgressBar 3

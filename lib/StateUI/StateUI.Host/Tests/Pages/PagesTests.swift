@@ -281,7 +281,7 @@ final class PagesTests: XCTestCase {
     /// The user took a stack's top pages away through the toolkit - its back button, a swipe - leaving `staying`
     /// pages: its path is told how long it is now, by the rule every host shares.
     func testAStackThePlatformPoppedShortensItsPath() throws {
-        stateUIUseApp(PoppedPathApplication())
+        PoppedPathApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -298,7 +298,7 @@ final class PagesTests: XCTestCase {
     /// as it leaves, then that it is destroyed, as one the program takes away does.
     func testAPageTheUserPopsHearsItDisappears() throws {
         PhaseLog.said = []
-        stateUIUseApp(PhaseLogApplication())
+        PhaseLogApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -401,7 +401,7 @@ final class PagesTests: XCTestCase {
     /// Choosing a setting's entry turns it in one transaction of the user's: its state and its own handler's write
     /// show in one render.
     func testChoosingACheckedEntryRendersOnce() throws {
-        stateUIUseApp(CheckedApplication())
+        CheckedApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

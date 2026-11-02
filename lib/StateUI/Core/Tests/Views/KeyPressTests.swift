@@ -17,7 +17,7 @@ final class KeyPressTests: XCTestCase {
     func testAViewHearsTheKeyAndWhatWasHeldWithIt() throws {
         let heard = Heard()
         let renders = Renders()
-        let patch = renders.render(TextField("").onKeyPressed(.tab, .pageDown) { heard.presses.append($0) }.node)
+        let patch = renders.render(TextField("").onKeyPressed([.tab, .pageDown]) { heard.presses.append($0) }.node)
         let pressed = try XCTUnwrap(patch.events?["keyPressed"])
 
         renders.fire(pressed, with: [Key.tab.propValue, KeyModifiers.shift.propValue])

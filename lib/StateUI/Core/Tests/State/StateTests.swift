@@ -138,10 +138,10 @@ final class StateTests: XCTestCase {
         fresh.adopt(from: old)
 
         old.wrappedValue = 5
-        XCTAssertEqual(fresh.get(), 5, "a write through last render's box reaches this render")
+        XCTAssertEqual(fresh.wrappedValue, 5, "a write through last render's box reaches this render")
 
         fresh.wrappedValue = 7
-        XCTAssertEqual(old.get(), 7, "and a handler holding the old box reads the new value")
+        XCTAssertEqual(old.wrappedValue, 7, "and a handler holding the old box reads the new value")
     }
 
     func testABindingReachesOnePropertyOfAValue() {
@@ -408,7 +408,7 @@ final class StateTests: XCTestCase {
         let first = renders.render(Borrowing(counter: counter.projectedValue).node)
         renders.fire(first.events?["clicked"] ?? -1)
 
-        XCTAssertEqual(counter.get(), 11, "the write went to the owner, not a copy")
+        XCTAssertEqual(counter.wrappedValue, 11, "the write went to the owner, not a copy")
 
         let second = renders.render(
             Borrowing(counter: counter.projectedValue).node, changed: Renderer.shared.pendingChanges)
@@ -436,7 +436,7 @@ final class StateTests: XCTestCase {
 
     func testAWriteAsksForARender() {
         let state = State(0)
-        let reader = reading { _ = state.get() }
+        let reader = reading { _ = state.wrappedValue }
         Renderer.shared.clearInvalidation()
 
         state.wrappedValue = 1
@@ -467,10 +467,10 @@ final class StateTests: XCTestCase {
 
         binding.post { $0 * 2 }
         binding.post { $0 + 1 }
-        XCTAssertEqual(state.get(), 5, "nothing changes before the job")
+        XCTAssertEqual(state.wrappedValue, 5, "nothing changes before the job")
 
         await settle()
-        XCTAssertEqual(state.get(), 11, "doubled, then one more")
+        XCTAssertEqual(state.wrappedValue, 11, "doubled, then one more")
     }
 
     /// POSTS TO TWO ELEMENTS' PROPERTIES of one state land each in its own
@@ -483,7 +483,7 @@ final class StateTests: XCTestCase {
         binding[1].title.post("B")
         await settle()
 
-        XCTAssertEqual(rows.get().map(\.title), ["A", "B"], "the second row's post landed in the first")
+        XCTAssertEqual(rows.wrappedValue.map(\.title), ["A", "B"], "the second row's post landed in the first")
     }
 
     /// A POST TO AN ELEMENT GONE lands nowhere: the list shrank under a binding
@@ -497,7 +497,23 @@ final class StateTests: XCTestCase {
         third.post { $0 + 1 }
         await settle()
 
-        XCTAssertEqual(items.get(), [1], "the post wrote past the end")
+        XCTAssertEqual(items.wrappedValue, [1], "the post wrote past the end")
+    }
+
+    /// A READ THROUGH A PART OF AN ELEMENT GONE answers the element as it stood
+    /// the last time the part reached it, said once - as a write is dropped, said
+    /// once - its property's part too; the list shrinking traps nothing.
+    func testAReadOfAnElementGoneAnswersItAsItStoodLast() {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let second = rows.projectedValue[1]
+        let secondTitle = rows.projectedValue[1].title
+        XCTAssertEqual(second.wrappedValue.title, "b")
+
+        rows.wrappedValue = [PostedRow(title: "a")]
+
+        XCTAssertEqual(second.wrappedValue.title, "b", "the element as it stood last")
+        XCTAssertEqual(secondTitle.wrappedValue, "b", "its property, through it")
+        XCTAssertTrue(hasComplained("A read through a part of a state of an element its collection no longer has"))
     }
 
     /// A WRITE THROUGH A BINDING TO AN ELEMENT GONE is dropped, said once - its
@@ -511,7 +527,7 @@ final class StateTests: XCTestCase {
         second.wrappedValue = PostedRow(title: "x")
         secondTitle.wrappedValue = "y"
 
-        XCTAssertEqual(rows.get().map(\.title), ["a"], "the write landed past the end")
+        XCTAssertEqual(rows.wrappedValue.map(\.title), ["a"], "the write landed past the end")
     }
 
     /// POSTS TO A PART AND TO THE WHOLE land in the order posted - the last one
@@ -525,12 +541,12 @@ final class StateTests: XCTestCase {
         binding.post(PostedRow(title: "W"))
         binding.title.post("2")
         await settle()
-        XCTAssertEqual(row.get().title, "2", "the part posted last was overwritten by the whole posted before it")
+        XCTAssertEqual(row.wrappedValue.title, "2", "the part posted last was overwritten by the whole posted before it")
 
         binding.title.post("3")
         binding.post(PostedRow(title: "V"))
         await settle()
-        XCTAssertEqual(row.get().title, "V", "the whole posted last did not replace the part before it")
+        XCTAssertEqual(row.wrappedValue.title, "V", "the whole posted last did not replace the part before it")
     }
 
     /// A POST HOLDS NOTHING ALIVE once its job ran: a state posted to is freed
@@ -543,7 +559,7 @@ final class StateTests: XCTestCase {
             storage = state.storage
             state.projectedValue.post(1)
             await settle()
-            XCTAssertEqual(state.get(), 1, "the job wrote it")
+            XCTAssertEqual(state.wrappedValue, 1, "the job wrote it")
         }
 
         XCTAssertNil(storage, "the post's slot holds the state it wrote, and the state holds the slot")
@@ -560,7 +576,7 @@ final class StateTests: XCTestCase {
         binding.post { $0 + 1 }
 
         await settle()
-        XCTAssertEqual(state.get(), 11)
+        XCTAssertEqual(state.wrappedValue, 11)
     }
 }
 
@@ -572,7 +588,7 @@ extension StateTests {
     func testPostsFromManyTasksAtOnceCountEveryOne() async {
         let counter = State(0)
         let binding = counter.projectedValue
-        let reader = reading { _ = counter.get() }
+        let reader = reading { _ = counter.wrappedValue }
 
         await withTaskGroup(of: Void.self) { group in
             for _ in 0 ..< 100 {
@@ -585,7 +601,7 @@ extension StateTests {
         }
 
         await settle()
-        XCTAssertEqual(counter.get(), 10_000)
+        XCTAssertEqual(counter.wrappedValue, 10_000)
         XCTAssertTrue(Renderer.shared.needsRender, "and the job asked for a render")
         _ = reader
     }
@@ -681,7 +697,7 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { destination.count += 1; _ = fade.get() }.node,
+            Shown { destination.count += 1; _ = fade.wrappedValue }.node,
             Shown { journey.count += 1; _ = fade.projectedValue.journey.value }.node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
@@ -718,17 +734,17 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { readers.count += 1; _ = fade.get() }.node,
+            Shown { readers.count += 1; _ = fade.wrappedValue }.node,
         ], id: "root"))
         _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertEqual(readers.count, 1)
 
-        fade.projectedValue.journey.move(to: 0.2, .eased(.milliseconds(400), .linear))
+        fade.projectedValue.journey.move(to: 0.2, .eased(.milliseconds(400), curve: .linear))
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
-        XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
-        XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
+        XCTAssertEqual(fade.wrappedValue, 0.2, "and it reads where the value is going")
+        XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), curve: .linear), "on the move's own law")
         XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own standing")
         XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
     }
@@ -747,7 +763,7 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { _ = shown.get() }
+            Shown { _ = shown.wrappedValue }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
@@ -755,7 +771,7 @@ extension StateTests {
         // The host says: going to 0, and got as far as 0.75 so far.
         moved(fade.number, to: [0.75, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
-        XCTAssertEqual(shown.get(), 0.75, """
+        XCTAssertEqual(shown.wrappedValue, 0.75, """
             The reading took the DESTINATION rather than where the value has \
             got to - which is the same number for the whole of a walk, so \
             nothing would ever appear to move.
@@ -772,7 +788,7 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { _ = shown.get() }
+            Shown { _ = shown.wrappedValue }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(0)))
                 .node,
         ], id: "root"))
@@ -799,18 +815,18 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { _ = shown.get() }
+            Shown { _ = shown.wrappedValue }
                 .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(30)))
                 .node,
         ], id: "root"))
 
         moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
-        XCTAssertEqual(shown.get(), 0.5, "the first frame is read at once")
+        XCTAssertEqual(shown.wrappedValue, 0.5, "the first frame is read at once")
 
         moved(fade.number, to: [0.25, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
         XCTAssertTrue(
-            drain(until: { shown.get() == 0.25 }),
+            drain(until: { shown.wrappedValue == 0.25 }),
             "the frame inside the window was dropped, so the sample ends short")
     }
 
@@ -832,7 +848,7 @@ extension StateTests {
             let renders = Renders()
 
             renders.render(stack([
-                Shown { _ = shown.get() }
+                Shown { _ = shown.wrappedValue }
                     .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))
@@ -864,7 +880,7 @@ extension StateTests {
         func tree() -> Node {
             stack([
                 Text("walked").opacity(fade.projectedValue).node,
-                Shown { _ = shown.get() }
+                Shown { _ = shown.wrappedValue }
                     .samples(fade.projectedValue, into: shown.projectedValue, .every(.seconds(100)))
                     .node,
             ], id: "root")
@@ -873,7 +889,7 @@ extension StateTests {
         renders.render(tree())
 
         moved(fade.number, to: [0.75, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
-        XCTAssertEqual(shown.get(), 0.75, "the first frame is read at once")
+        XCTAssertEqual(shown.wrappedValue, 0.75, "the first frame is read at once")
 
         // What that write asked for: the body reads `shown`, so the view that
         // carries the reading is described again.
@@ -881,7 +897,7 @@ extension StateTests {
 
         moved(fade.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
-        XCTAssertEqual(shown.get(), 0.75, """
+        XCTAssertEqual(shown.wrappedValue, 0.75, """
             The window was thrown away by the render the reading's own write \
             asked for, so the next frame counted as a first frame.
             """)
@@ -898,10 +914,10 @@ extension StateTests {
 
         renders.render(stack([
             Text("walked").opacity(fade.projectedValue).node,
-            Shown { _ = quick.get() }
+            Shown { _ = quick.wrappedValue }
                 .samples(fade.projectedValue, into: quick.projectedValue, .every(.milliseconds(0)))
                 .node,
-            Shown { _ = slow.get() }
+            Shown { _ = slow.wrappedValue }
                 .samples(fade.projectedValue, into: slow.projectedValue, .every(.seconds(100)))
                 .node,
         ], id: "root"))
@@ -909,8 +925,8 @@ extension StateTests {
         moved(fade.number, to: [0.5, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
         moved(fade.number, to: [0.25, 0, 0, 0, 0, 0, 0, 0], mask: 0b1)
 
-        XCTAssertEqual(quick.get(), 0.25, "the reading with no window took both frames")
-        XCTAssertEqual(slow.get(), 0.5, "the one with a long window took the first alone")
+        XCTAssertEqual(quick.wrappedValue, 0.25, "the reading with no window took both frames")
+        XCTAssertEqual(slow.wrappedValue, 0.5, "the one with a long window took the first alone")
     }
 
     /// A WRITE MADE ON THIS SIDE ASKS AT ONCE, whatever anybody is sampling:
@@ -918,7 +934,7 @@ extension StateTests {
     /// writes a value means it now.
     func testAWriteOnThisSideAsksAtOnce() {
         let shown = State(1.0)
-        let reader = reading { _ = shown.get() }
+        let reader = reading { _ = shown.wrappedValue }
 
         _ = Renderer.shared.renderHost(baseline: 0)
         XCTAssertFalse(Renderer.shared.needsRender)

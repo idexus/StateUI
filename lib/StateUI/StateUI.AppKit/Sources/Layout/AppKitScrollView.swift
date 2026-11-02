@@ -20,7 +20,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     /// to say, and it says it only on a frame - see `frame(now:)`.
     var onFramesWanted: (() -> Void)?
 
-    private(set) var orientation = ScrollOrientation.vertical
+    private(set) var axes = ScrollAxes.vertical
     private(set) var padding = Insets(0)
     private var verticalBarVisibility: Int32 = 0
     private var horizontalBarVisibility: Int32 = 0
@@ -108,7 +108,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         // contract says a scroller scrolls vertically. Applied through the
         // same path, so the two can never drift apart.
         apply(
-            orientation: ScrollOrientation.vertical.rawValue,
+            axes: ScrollAxes.vertical.rawValue,
             padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
@@ -152,27 +152,27 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     func apply(
-        orientation: Int32,
+        axes: Int32,
         padding: Insets,
         verticalBarVisibility: Int32,
         horizontalBarVisibility: Int32,
         offset: NSPoint?
     ) {
-        self.orientation = ScrollOrientation(rawValue: orientation) ?? .vertical
+        self.axes = ScrollAxes(rawValue: axes)
         self.padding = padding
         self.verticalBarVisibility = verticalBarVisibility
         self.horizontalBarVisibility = horizontalBarVisibility
         documentSurface.padding = padding
-        documentSurface.orientation = self.orientation
+        documentSurface.axes = self.axes
 
-        let allowsHorizontal = self.orientation == .horizontal || self.orientation == .both
-        let allowsVertical = self.orientation == .vertical || self.orientation == .both
+        let allowsHorizontal = self.axes.contains(.horizontal)
+        let allowsVertical = self.axes.contains(.vertical)
         hasHorizontalScroller = allowsHorizontal && horizontalBarVisibility != 2
         hasVerticalScroller = allowsVertical && verticalBarVisibility != 2
         autohidesScrollers = verticalBarVisibility != 1 && horizontalBarVisibility != 1
 
         // Design: docs/design/host/layout.md#an-offset-the-tree-writes
-        if let target = scrollerOffset.written(offset.map { Point($0) }, orientation: self.orientation) {
+        if let target = scrollerOffset.written(offset.map { Point($0) }, axes: self.axes) {
             move(to: NSPoint(x: target.x, y: target.y))
         }
     }
@@ -307,17 +307,17 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     private func scroller(followingDirectionOf event: NSEvent) -> WheelScroller? {
-        if orientation == .neither { return .enclosing }
+        if axes.isEmpty { return .enclosing }
         let horizontal = abs(event.scrollingDeltaX)
         let vertical = abs(event.scrollingDeltaY)
         guard max(horizontal, vertical) > 0.000_001 else { return nil }
 
-        let handsOver = switch orientation {
+        let handsOver = switch axes {
         case .horizontal:
             !event.modifierFlags.contains(.shift) && vertical > horizontal
         case .vertical:
             horizontal > vertical
-        case .both, .neither:
+        default:
             false
         }
         return handsOver ? .enclosing : .own
@@ -389,12 +389,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     private func normalized(_ point: NSPoint) -> NSPoint {
-        switch orientation {
-        case .horizontal: return NSPoint(x: point.x, y: 0)
-        case .vertical: return NSPoint(x: 0, y: point.y)
-        case .both: return point
-        case .neither: return .zero
-        }
+        return NSPoint(x: axes.contains(.horizontal) ? point.x : 0, y: axes.contains(.vertical) ? point.y : 0)
     }
 
     private func reachable(_ point: NSPoint) -> NSPoint {
@@ -443,8 +438,8 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
     var padding = Insets(0) {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
-    var orientation = ScrollOrientation.vertical {
-        didSet { if orientation != oldValue { invalidateMeasurements() } }
+    var axes = ScrollAxes.vertical {
+        didSet { if axes != oldValue { invalidateMeasurements() } }
     }
     var direction = LayoutDirection.leftToRight
 
@@ -458,7 +453,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         NSSize(ScrollArithmetic.contentSize(
-            of: item, padding: padding, orientation: orientation,
+            of: item, padding: padding, axes: axes,
             width: availableWidth.map(Double.init)))
     }
 
@@ -469,7 +464,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
         }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation, in: LayoutSize(viewport), direction: direction)
+            item, padding: padding, axes: axes, in: LayoutSize(viewport), direction: direction)
         frame = NSRect(origin: .zero, size: NSSize(arranged.document))
         item.view.frame = NSRect(placed: arranged.place)
         item.view.needsLayout = true

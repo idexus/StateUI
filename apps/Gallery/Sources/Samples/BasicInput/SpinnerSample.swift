@@ -13,11 +13,11 @@ struct SpinnerSample: SampleContent, ExampleContent {
     // listing: SpinnerSample
     var body: some View {
         VStack {
-            // The flag is read here, so starting and stopping builds this
-            // closure - the spinner itself costs nothing to keep running.
+            // The flag is handed over, `$loading`, so starting and stopping
+            // builds nothing: the host turns the spinner on and off.
             DebugInfoLabel()
 
-            Spinner(loading)
+            Spinner($loading)
                 .tint(Palette.accent)
                 .height(48)
 
@@ -35,7 +35,7 @@ struct SpinnerSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("A still spinner is also an INVISIBLE one on most platforms, which is why "
-                + "`Spinner(loading)` is usually the whole of it - there is "
+                + "`Spinner($loading)` is usually the whole of it - there is "
                 + "nothing to hide by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -179,7 +179,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let counter = State(0)
 
-            renders.render(stack([Held { _ = counter.get() }.node], id: "root"))
+            renders.render(stack([Held { _ = counter.wrappedValue }.node], id: "root"))
             return counter.storage
         })
     }
@@ -220,7 +220,7 @@ final class ElementReleaseTests: XCTestCase {
             let shown = State(1.0)
 
             renders.render(stack([
-                Held { _ = shown.get() }
+                Held { _ = shown.wrappedValue }
                     .samples(fade.projectedValue, into: shown.projectedValue, .every(.milliseconds(100)))
                     .node,
             ], id: "root"))

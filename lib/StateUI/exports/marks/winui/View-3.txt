@@ -1,9 +1,9 @@
-# revision 19.1
-Button.canDrag: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
+# revision 21.1
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Button.isDraggable: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
@@ -42,11 +42,11 @@ Fill.area: ✅
 Fill.frameChanged: ✅
 Fill.layoutBody: ✅
 Fill.panYChannel: ✅
-Grid.canDrag: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragEnded: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragText: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Grid.isDraggable: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
@@ -72,11 +72,11 @@ Link.area: ✅
 Link.frameChanged: ✅
 Link.layoutBody: ✅
 Link.panYChannel: ✅
-Map.canDrag: 🧩
 Map.dragEnded: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
 Map.held: 🧩
+Map.isDraggable: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -118,11 +118,11 @@ Rectangle.area: ✅
 Rectangle.frameChanged: ✅
 Rectangle.layoutBody: ✅
 Rectangle.panYChannel: ✅
-ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragText: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.frameChanged: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRowSpan: ✅
@@ -176,11 +176,11 @@ TextField.area: ✅
 TextField.frameChanged: ✅
 TextField.layoutBody: ✅
 TextField.panYChannel: ✅
-TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 VStack.frameChanged: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅

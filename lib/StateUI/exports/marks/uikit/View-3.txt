@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -29,13 +29,13 @@ Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.verticalAlignment: ✅
-Fill.canDrag: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
 Fill.dragEnded: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
 Fill.dragStarting: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
 Fill.dragText: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
 Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRowSpan: ✅
+Fill.isDraggable: ✓ dragAndDrop on Fill: the drag and drop interactions' handlers called, no drag session
 Grid.held: ✓ hold on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.layoutBody: ✅
 HStack.panYChannel: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
@@ -67,13 +67,13 @@ MotionLayout.margin: ✅
 MotionLayout.swipeDirection: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-Path.canDrag: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragEnded: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragText: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
+Path.isDraggable: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Picker.held: ✓ hold on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.layoutBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
@@ -117,13 +117,13 @@ Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.verticalAlignment: ✅
-Switch.canDrag: ✓ dragAndDrop on Switch: the drag and drop interactions' handlers called, no drag session
 Switch.dragEnded: ✓ dragAndDrop on Switch: the drag and drop interactions' handlers called, no drag session
 Switch.dragStarting: ✓ dragAndDrop on Switch: the drag and drop interactions' handlers called, no drag session
 Switch.dragText: ✓ dragAndDrop on Switch: the drag and drop interactions' handlers called, no drag session
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
+Switch.isDraggable: ✓ dragAndDrop on Switch: the drag and drop interactions' handlers called, no drag session
 Text.holdDuration: ✅
 Text.verticalAlignment: ✅
 TextEditor.held: ✓ hold on TextEditor: the view's listening handed the recognizer's states, no touch sent

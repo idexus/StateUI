@@ -5,8 +5,8 @@ import Foundation
 import HelloWorldUI
 import StateUIAppKit
 
-// Register the application module before the native host requests its root.
-registerApplication()
+// Name the application to the host before the native host requests its root.
+HelloWorldApp.register()
 
 // The application's artwork: beside the head, where a deployed copy carries
 // it (.scripts/AppKit/deploy.sh), else where the application keeps it, found

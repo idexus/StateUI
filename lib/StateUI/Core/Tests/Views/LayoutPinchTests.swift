@@ -39,7 +39,7 @@ final class LayoutPinchTests: XCTestCase {
         }
         .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
         .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
-        .motion(.eased(.milliseconds(160), .linear))
+        .motion(.eased(.milliseconds(160), curve: .linear))
         if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }
@@ -139,7 +139,7 @@ final class LayoutPinchTests: XCTestCase {
         bench.pinch(renders, built, .began)
         bench.pinch(renders, built, .changed, degrees: 18)
         // 360 degrees a second is four units: a light friction carries it some half a unit on, past halfway.
-        bench.pinch(renders, built, .ended, speed: Point(0, 360))
+        bench.pinch(renders, built, .ended, velocity: Point(0, 360))
         frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1, "flicked on")
 

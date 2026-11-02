@@ -17,6 +17,12 @@
         step.isFinite && step > 0 ? step : 1
     }
 
+    /// `value` held inside `lower` and `upper`: past an end it stands at that end, and a value that is no number
+    /// at `lower`.
+    public static func clamped(_ value: Double, lower: Double, upper: Double) -> Double {
+        value.isNaN ? lower : Swift.min(Swift.max(value, lower), upper)
+    }
+
     /// A share of work done, 0 to 1: a share past an end stands at that end, one that is no number at 0.
     public static func share(_ progress: Double) -> Double {
         progress.isFinite ? Swift.min(Swift.max(progress, 0), 1) : 0

@@ -41,7 +41,7 @@ final class AppKitGridView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuri
     /// Applies a placed layout's shade to its guaranteed second child.
     func setShadeOpacity(_ opacity: Double) {
         guard items.count > 1 else { return }
-        items[1].view.alphaValue = min(max(opacity, 0), 1)
+        items[1].view.alphaValue = ValueArithmetic.clamped(opacity, lower: 0, upper: 1)
     }
 
     override var intrinsicContentSize: NSSize {

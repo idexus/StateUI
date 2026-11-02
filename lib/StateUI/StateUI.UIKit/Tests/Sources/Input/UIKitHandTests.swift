@@ -30,7 +30,7 @@ final class UIKitHandTests: XCTestCase {
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .longPress)
-            .onItemDragged { told.items.append($0.item) }
+            .onItemDragged { told.items.append($0.id) }
             .width(300)
             .height(100)
         }

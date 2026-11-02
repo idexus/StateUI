@@ -14,9 +14,9 @@ extension KeyboardElement {
     /// or Alt is a shortcut's, never a view's.
     ///
     ///     VStack { … }
-    ///         .onKeyPressed(.upArrow, .downArrow) { press in move(press.key == .upArrow ? -1 : 1) }
+    ///         .onKeyPressed([.upArrow, .downArrow]) { press in move(press.key == .upArrow ? -1 : 1) }
     public func onKeyPressed(
-        _ keys: Key..., perform handler: @escaping @MainActor (KeyPress) throws -> Void
+        _ keys: [Key], _ handler: @escaping @MainActor (KeyPress) throws -> Void
     ) -> Modified {
         taking(keys, ValueHandler(step: handler))
     }
@@ -24,14 +24,14 @@ extension KeyboardElement {
     /// The same, with a handler that awaits: its `policy` says what a key does when it comes again while a run is
     /// under way.
     ///
-    ///     VStack { … }.onKeyPressed(.escape, policy: .ignoreWhileRunning) { _ in try await close() }
-    public func onKeyPressed(_ keys: Key..., policy: GatePolicy, perform handler: @escaping ValueEventHandler<KeyPress>)
+    ///     VStack { … }.onKeyPressed([.escape], policy: .ignoreWhileRunning) { _ in try await close() }
+    public func onKeyPressed(_ keys: [Key], policy: GatePolicy, _ handler: @escaping ValueEventHandler<KeyPress>)
         -> Modified {
         taking(keys, ValueHandler(run: handler, gate: .own(policy)))
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onKeyPressed(_ keys: Key..., gate: Gate, perform handler: @escaping ValueEventHandler<KeyPress>)
+    public func onKeyPressed(_ keys: [Key], gate: Gate, _ handler: @escaping ValueEventHandler<KeyPress>)
         -> Modified {
         taking(keys, ValueHandler(run: handler, gate: .shared(gate)))
     }

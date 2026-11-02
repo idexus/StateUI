@@ -79,7 +79,7 @@ private final class Heard {
 }
 
 private struct LinkedApplication: Application {
-    let heard: Heard
+    var heard = Heard()
 
     var body: some Scene {
         let heard = self.heard

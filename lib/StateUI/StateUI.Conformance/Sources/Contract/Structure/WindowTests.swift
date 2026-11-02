@@ -16,52 +16,53 @@
             ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
                 Covered(WindowContract.self), Covered(WindowContract.created), Covered(WindowContract.activated),
             ]) { s in
-                let log = Received<WindowPhase>()
+                let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
 
-                s.settle { log.values.last == .activated }
-                s.expect(log.values.first, .created, "made first")
-                s.expect(log.values.last, .activated, "then in front")
+                s.settle { log.values.last == .active }
+                // Made, it stands showing and not yet in use; before the platform made it, out of sight.
+                s.expect(log.values.firstIndex(of: .inactive).map { $0 < log.values.count - 1 }, true, "made first")
+                s.expect(log.values.last, .active, "then in front")
             },
             ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", proves: [
                 Covered(WindowContract.deactivated), Covered(WindowContract.activated),
             ]) { s in
-                let log = Received<WindowPhase>()
+                let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
                 let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .activated }
+                s.settle { log.values.last == .active }
 
                 try s.perform(.switchAway, on: window)
-                s.settle { log.values.last == .deactivated }
-                s.expect(log.values.last, .deactivated, "behind another application")
+                s.settle { log.values.last == .inactive }
+                s.expect(log.values.last, .inactive, "behind another application")
                 try s.perform(.switchBack, on: window)
-                s.settle { log.values.last == .activated }
-                s.expect(log.values.last, .activated, "in front again")
+                s.settle { log.values.last == .active }
+                s.expect(log.values.last, .active, "in front again")
             },
-            ConformanceCase("aWindowPutAwayStopsAndResumesWhenBroughtBack", proves: [
-                Covered(WindowContract.stopped), Covered(WindowContract.resumed),
-            ]) { s in
-                let log = Received<WindowPhase>()
+            ConformanceCase("aWindowPutAwayIsOutOfSightUntilBroughtBack", proves: [
+                Covered(WindowContract.stopped),
+            ], needs: [Covered(WindowContract.activated)]) { s in
+                let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
                 let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .activated }
+                s.settle { log.values.last == .active }
 
                 try s.perform(.minimize, on: window)
-                s.settle { log.values.last == .stopped }
-                s.expect(log.values.last, .stopped, "put away")
+                s.settle { log.values.last == .background }
+                s.expect(log.values.last, .background, "put away")
                 try s.perform(.restore, on: window)
-                s.settle { log.values.contains(.resumed) && log.values.last == .activated }
-                s.expect(log.values.suffix(2).map { $0 }, [.resumed, .activated], "brought back on its way to the front")
+                s.settle { log.values.last == .active }
+                s.expect(log.values.last, .active, "brought back to the front")
             },
             ConformanceCase("aClosedWindowHearsItIsGoing", proves: [Covered(WindowContract.destroying)]) { s in
-                let log = Received<WindowPhase>()
+                let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
                 let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .activated }
+                s.settle { log.values.last == .active }
 
                 try s.perform(.close, on: window)
-                s.settle { log.values.last == .destroying }
-                s.expect(log.values.last, .destroying)
+                s.settle { log.values.last == .background }
+                s.expect(log.values.last, .background, "going away: out of sight, the place to save")
             },
             holds(WindowContract.title, "Notes", then: "Drafts") { $0.title = $1 },
             holds(WindowContract.width, 640, then: 800) { $0.width = $1 },
@@ -229,7 +230,7 @@
 
 /// A page saying each phase its window goes through.
 struct WindowPhasePage: View {
-    let log: Received<WindowPhase>
+    let log: Received<SessionPhase>
 
     @Environment(\.window) private var window
 

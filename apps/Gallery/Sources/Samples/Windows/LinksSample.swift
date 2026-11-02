@@ -27,7 +27,7 @@ struct LinksSample: SampleContent, ExampleContent {
         return VStack {
             DebugInfoLabel()
 
-            Link("Open the Tap sample", destination: GalleryLink.sample("tap"))
+            Link("Open the Tap sample", address: GalleryLink.sample("tap"))
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("links.tap")
 

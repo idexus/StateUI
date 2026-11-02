@@ -51,7 +51,7 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, the StateUI release it runs on, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
 | `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
@@ -294,8 +294,8 @@ Both default to `false` and are independent.
 Changing either policy updates windows that are already open. In particular,
 turning `hidesWhenInactive` off while a window is hidden by its scene makes that window
 visible again. Window lifecycle reports follow effective visibility: overlapping
-scene and application hiding produces one `stopped`, and `resumed` arrives only
-after neither cause keeps the window hidden.
+scene and application hiding produces one `stopped`, and the window is active
+again only after neither cause keeps it hidden.
 
 Both policies are adaptive: a host implements them with its native window
 relationships when that platform exposes the capability. A declaration is not
@@ -303,22 +303,24 @@ evidence that a particular host implements the policy; the
 [platform matrix](../platform-contract.md#contract-members) is the
 support authority.
 
-## Application and scene phases
+## Application, scene and window phases
 
-`ApplicationSession.phase` and `SceneSession.phase` use the same three words
-at different ownership scopes:
+`ApplicationSession.phase`, `SceneSession.phase` and `WindowSession.phase` are
+one `SessionPhase` at three ownership scopes:
 
-| Phase | Application | Scene |
-| --- | --- | --- |
-| `.active` | one of the application's windows is in use | one of this scene's windows is in use |
-| `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front |
-| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden |
+| Phase | Application | Scene | Window |
+| --- | --- | --- | --- |
+| `.active` | one of the application's windows is in use | one of this scene's windows is in use | the window is in use |
+| `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front | the window shows behind another |
+| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden | the window is minimized, hidden or going away |
 
 A multi-window application can therefore be `.active` while one of its scenes
-is `.inactive`. `SceneSession.phase` starts at `.active` when a new scene is
-being brought up and then follows reports for that scene. Neither value
-replaces `WindowSession.phase`, which records the more detailed lifecycle of
-one particular window.
+is `.inactive`, and a scene `.active` while one of its windows is `.inactive`.
+`SceneSession.phase` starts at `.active` when a new scene is being brought up
+and then follows reports for that scene. A window starts in `.background`,
+before the platform has made it, and is `.inactive` once made until it is the
+one in use. Coming back from out of sight is no phase of its own: the window
+is active again.
 
 The scene node has four host reports. `activated`, `deactivated`, and
 `stopped` move `SceneSession.phase`. `windowClosed` - the user closed one of
@@ -328,7 +330,7 @@ tree already owns that decision.
 
 Lifecycle is an effective state, not a count of native callbacks. If a scene's
 only window is minimized and the application is then hidden, showing the
-application again does not resume either the window or its scene. They
+application again makes neither the window nor its scene active. They
 advance only after the remaining minimized cause ends. The same rule prevents
 duplicate phase changes when callbacks overlap.
 
@@ -575,16 +577,14 @@ sheet, and a sidebar sliding over the detail where its split view says no
 `sidebarOverlayBackground` - each laid over the platform's own sheet or drawer, so
 their words keep an opaque surface under them.
 
-The host reports `WindowPhase` through the same session:
+The host reports the window's `phase` through the same session - a
+`SessionPhase`, the one the scene's and the application's phases are too:
 
 | Phase | Meaning |
 | --- | --- |
-| `.created` | the initial state; the native window now exists |
-| `.activated` | the window is in front and receiving input |
-| `.deactivated` | it remains visible but another window or application is in use |
-| `.stopped` | it cannot be seen because it is minimized, hidden with its scene, or its application is hidden; save work here |
-| `.resumed` | it has returned from `.stopped` and is moving toward activation |
-| `.destroying` | the final notification before the window goes away |
+| `.active` | the window is in front and receiving input |
+| `.inactive` | it is showing, and another window or application is in use - as it is once the platform has made it |
+| `.background` | it cannot be seen - minimized, hidden with its scene or its application, or going away, and before the platform has made it; save work here |
 
 The exact path is platform-adaptive: a host reports only transitions that
 occur in its lifecycle. Each phase it reports is rendered before its next
@@ -598,7 +598,7 @@ func saveDraft() async throws {}
 
 VStack { … }
     .onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
-        if newPhase == .stopped {
+        if newPhase == .background {
             try await saveDraft()
         }
     }

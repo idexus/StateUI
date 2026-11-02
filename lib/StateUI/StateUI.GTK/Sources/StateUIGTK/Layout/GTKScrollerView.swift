@@ -55,15 +55,15 @@ final class GTKScrollerView: GTKView {
     /// The document it moves, the ways it scrolls, and its bars: the viewport gives the document its natural size
     /// along the ways it scrolls and the viewport's size across.
     func set(
-        content: GTKView, orientation: ScrollOrientation, verticalBar: ScrollIndicatorVisibility,
+        content: GTKView, axes: ScrollAxes, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility
     ) {
         if content !== self.content {
             self.content = content
             gtk_scrolled_window_set_child(scrolled, content.widget)
         }
-        let across = orientation == .horizontal || orientation == .both
-        let down = orientation == .vertical || orientation == .both
+        let across = axes.contains(.horizontal)
+        let down = axes.contains(.vertical)
         gtk_scrolled_window_set_policy(
             scrolled, Self.policy(scrolls: across, horizontalBar), Self.policy(scrolls: down, verticalBar))
         if let viewport = gtk_scrolled_window_get_child(scrolled), viewport != content.widget {

@@ -126,11 +126,11 @@ final class PersistenceTests: XCTestCase {
     func testAnEnumIsKeptAsItsRawValue() {
         XCTAssertEqual(Appearance.persistentKind, .text)
         XCTAssertEqual(Appearance.dark.persistentValue, .string("dark"))
-        XCTAssertEqual(Appearance(persisted: .string("light")), .light)
+        XCTAssertEqual(Appearance(persistentValue: .string("light")), .light)
 
         // A case removed since the value was written - the ordinary way an
         // application's vocabulary changes between releases.
-        XCTAssertNil(Appearance(persisted: .string("sepia")))
+        XCTAssertNil(Appearance(persistentValue: .string("sepia")))
     }
 
     /// The claim can come FIRST: an application's own keyed state is built as

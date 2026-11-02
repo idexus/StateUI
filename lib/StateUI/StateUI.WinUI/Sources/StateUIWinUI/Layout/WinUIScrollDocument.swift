@@ -14,12 +14,12 @@ final class WinUIScrollDocument: WinUILayoutView {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    var orientation = ScrollOrientation.vertical {
-        didSet { if orientation != oldValue { invalidateMeasurements() } }
+    var axes = ScrollAxes.vertical {
+        didSet { if axes != oldValue { invalidateMeasurements() } }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ScrollArithmetic.contentSize(of: items.first, padding: padding, orientation: orientation, width: width)
+        ScrollArithmetic.contentSize(of: items.first, padding: padding, axes: axes, width: width)
     }
 
     /// Its own size is the document's: never smaller than the viewport, which the scroller sees to.
@@ -27,7 +27,7 @@ final class WinUIScrollDocument: WinUILayoutView {
         guard let item = items.first, item.isShown else { return }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation,
+            item, padding: padding, axes: axes,
             in: LayoutSize(width: bounds.width, height: bounds.height), direction: direction)
         item.view.layout(arranged.place)
     }

@@ -83,10 +83,10 @@ final class AppKitGestureTests: XCTestCase {
             VStack {
                 Rectangle()
                     .fill(.red)
-                    .onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
+                    .onPanUpdated(touchCount: 1) { totals.values.append($0.total.x) }
                 Rectangle()
                     .fill(.blue)
-                    .onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
+                    .onPanUpdated(touchCount: 2) { totals.values.append($0.total.x) }
             }
         }
         defer { renderer.closeForTesting() }
@@ -99,7 +99,7 @@ final class AppKitGestureTests: XCTestCase {
         XCTAssertEqual(onePointer.count, 1)
         XCTAssertTrue(twoPointers.isEmpty)
 
-        onePointer.first?.dragged(.changed, x: 8, y: 5)
+        onePointer.first?.dragged(.changed, x: 8, y: 5, from: Point(x: 10, y: 10))
 
         XCTAssertEqual(totals.values, [8])
     }

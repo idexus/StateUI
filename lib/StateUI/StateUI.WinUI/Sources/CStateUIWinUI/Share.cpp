@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What the user shares, in Windows' own share sheet over a window: its words and its link handed over as the sheet
+// What the user shares, in Windows' own share sheet over a window: its words and its address handed over as the sheet
 // asks for them, and the answer - shared, cancelled - told once, on the UI thread.
 // Design: docs/design/platforms/winui/runtime.md#sharing
 
@@ -20,7 +20,7 @@ using namespace stateui;
 namespace transfer = winrt::Windows::ApplicationModel::DataTransfer;
 
 extern "C" void stateui_winui_share(
-    StateUIObjectRef handle, char const *text, char const *link, void *context, void (*answered)(void *, int32_t)) {
+    StateUIObjectRef handle, char const *text, char const *shared, void *context, void (*answered)(void *, int32_t)) {
     // Told once, whichever of the sheet's ends comes first.
     auto told = std::make_shared<bool>(false);
     auto tell = [told, context, answered](int32_t shared) {
@@ -37,7 +37,7 @@ extern "C" void stateui_winui_share(
         winrt::check_hresult(interop->GetForWindow(
             window, winrt::guid_of<transfer::DataTransferManager>(), winrt::put_abi(manager)));
         std::optional<std::string> words = text ? std::optional(std::string(text)) : std::nullopt;
-        std::optional<std::string> address = link ? std::optional(std::string(link)) : std::nullopt;
+        std::optional<std::string> address = shared ? std::optional(std::string(shared)) : std::nullopt;
         auto requested = std::make_shared<winrt::event_token>();
         *requested = manager.DataRequested(guarded("handling DataRequested",
             [requested, words, address, tell](transfer::DataTransferManager const &sender,

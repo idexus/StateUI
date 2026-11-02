@@ -31,47 +31,60 @@ extension ActCall {
     }
 }
 
-/// Something the host could not do.
+/// Something StateUI or the host could not do - each case a reason an application tells apart, its `description`
+/// the words to show or to log.
 ///
-/// Carries the message the host reported, which is usually why the platform
-/// refused - a view that has gone, a page that is not there.
-public struct StateUIError: Error, CustomStringConvertible, Equatable {
-    /// What went wrong, as the host described it.
-    public let message: String
+///     do {
+///         try await application.call(NotesContract.export, text)
+///     } catch StateUIError.notPerformed(_, let reason) {
+///         said = reason
+///     }
+///
+/// A `switch` over it keeps a `default`: a later version may name another reason.
+public enum StateUIError: Error, CustomStringConvertible, Equatable {
+    /// The host could not perform `act`, for the `reason` it gave - a view that has gone, no window to ask the user
+    /// in, a page that is not there.
+    case notPerformed(act: String, reason: String)
 
-    /// A failure with a message.
-    public init(message: String) {
-        self.message = message
+    /// The host answered `act` with `answered`, where its contract declares `declared` - usually a native library
+    /// and a runtime built from different versions.
+    case unreadableAnswer(act: String, answered: String, declared: String)
+
+    /// An aim on no view: `.aim(_:)` written on none, or an act called before the view rendered.
+    case aimOnNoView
+
+    /// An aim on two views; an aim names one.
+    case aimOnTwoViews
+
+    /// A list asked to scroll to an item it does not hold.
+    case noItem(String)
+
+    /// Views wrote state while being built, render after render; the pending change was dropped to stop the loop.
+    case writesWhileBuilding
+
+    /// The reason, in words.
+    public var description: String {
+        switch self {
+        case .notPerformed(_, let reason):
+            reason
+        case .unreadableAnswer(let act, let answered, let declared):
+            "`\(act)` answered \(answered), and its contract declares \(declared)"
+        case .aimOnNoView:
+            "this aim is on no view - write .aim(...) on the view, and act after it has rendered"
+        case .aimOnTwoViews:
+            "this aim is on two views - an aim names ONE; declare one for each view"
+        case .noItem(let item):
+            "the list holds no item \(item) to scroll to"
+        case .writesWhileBuilding:
+            "A view writes state while it is being built - render after render ended with the tree dirty again. "
+                + "A body reads state; a handler writes it. The pending change was dropped to stop the render loop."
+        }
     }
-
-    /// The message, so `print(error)` says something useful.
-    public var description: String { message }
 }
 
-/// Performs an act of the application's - one with no control behind it -
-/// handing it the arguments its contract declares and answering with the values
-/// it declares.
-///
-///     let level = try await stateUICall(NotesContract.batteryLevel)
-///     try await stateUICall(NotesContract.log, "note")
-///
-/// Throws `StateUIError` when the host could not perform it - including when no
-/// host answers its name - and when the answer is not what the contract
-/// declares. In a run a later event, its task's cancellation or its element
-/// leaving superseded, it throws `CancellationError` and the act never leaves.
-/// It resumes where it was called, and may be called from a handler, a
-/// child task or a detached task. Acts queued without an `await` between them
-/// start in order and finish in whatever order the host's work does. An act of
-/// an element is called through its aim: `Aim.call`.
-///
-/// - Parameters:
-///   - act: the member, written with its contract.
-///   - arguments: its arguments, in the order the contract declares them.
-/// - Returns: the answer, as the contract declares it.
-@discardableResult
-public func stateUICall<
-    Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
->(
+/// Performs an act of the application's and answers as its contract declares: `ApplicationSession.call(_:_:)`, which
+/// the library's own acts call too.
+func callAct<Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable>(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
     _ arguments: repeat each Argument
 ) async throws -> (repeat each Answer) {
@@ -79,22 +92,9 @@ public func stateUICall<
     return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
 }
 
-/// Asks the host to perform an act of the application's without waiting for
-/// it - for an act whose outcome nothing depends on. What it answers, and
-/// whether it failed, reaches nothing here.
-///
-///     stateUISend(NotesContract.logEvent, "opened the sample")
-///
-/// It returns at once, and the host performs the act on its next drain. A
-/// name the host has no case for is logged there and never told here - the
-/// difference from `stateUICall`, and the reason to reach for that one
-/// instead.
-///
-/// - Parameters:
-///   - act: the member, written with its contract.
-///   - arguments: its arguments, in the order the contract declares them.
+/// Asks the host to perform an act of the application's without waiting for it: `ApplicationSession.tell(_:_:)`.
 @MainActor
-public func stateUISend<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
+func tellAct<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
     _ act: ElementAct<Owner, (repeat each Argument), Answer>,
     _ arguments: repeat each Argument
 ) {

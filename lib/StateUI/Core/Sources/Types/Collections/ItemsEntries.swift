@@ -3,27 +3,27 @@
 
 /// Everything an `ItemsView` shows, in order, each named by its identity: the
 /// list's header and footer, and each section's header, footer and items. A
-/// list with no groups is one section with neither.
+/// list with no sections is one section with neither.
 ///
 /// The ItemsView writes it; a host holds each identity in a cell of its own
 /// and asks for the subtree of the ones it holds.
 /// Design: docs/design/views/items.md#identities-in-order
 public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
-    /// One group of items, with the header and the footer it has.
+    /// One section of items, with the header and the footer it has.
     public struct Section: Equatable, Sendable {
-        /// The group's name: what `.id` named it, else its place - which a host knows the group by.
+        /// The section's name: what `.id` named it, else its place - which a host knows the section by.
         public let identity: String
 
-        /// The header's identity, where the group has one.
+        /// The header's identity, where the section has one.
         public let header: String?
 
-        /// The footer's identity, where the group has one.
+        /// The footer's identity, where the section has one.
         public let footer: String?
 
         /// Its items' identities, in order.
         public let items: [String]
 
-        /// The group named `identity`, of `items`, with a header and a footer where they are named.
+        /// The section named `identity`, of `items`, with a header and a footer where they are named.
         public init(_ identity: String, header: String? = nil, footer: String? = nil, items: [String]) {
             self.identity = identity
             self.header = header
@@ -38,7 +38,7 @@ public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
     /// The list's own footer's identity, where it has one.
     public let footer: String?
 
-    /// The groups, in order.
+    /// The sections, in order.
     public let sections: [Section]
 
     /// A list of `sections` under a header and over a footer where they are

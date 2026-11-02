@@ -134,7 +134,7 @@ final class GeometryReaderTests: XCTestCase {
     func testTheHandlerMayWriteState() {
         let renders = Renders()
         let width = State(0.0)
-        let reader = reading { _ = width.get() }
+        let reader = reading { _ = width.wrappedValue }
         defer { _ = reader }
 
         let patch = renders.render(

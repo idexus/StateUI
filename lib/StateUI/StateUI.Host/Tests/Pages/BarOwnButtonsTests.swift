@@ -11,7 +11,7 @@ final class BarOwnButtonsTests: XCTestCase {
     /// The style every toolbar button wears is the own buttons' too, its pointer-over state as the pointer comes,
     /// over the box the style every group wears gives them.
     func testTheOwnButtonsWearTheToolbarButtonsStyle() throws {
-        stateUIUseApp(StyledBarApplication())
+        StyledBarApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

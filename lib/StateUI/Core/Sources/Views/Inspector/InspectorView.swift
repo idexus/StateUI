@@ -149,7 +149,7 @@ struct InspectorView: View {
             }
             .spacing(6)
         }
-        .orientation(.horizontal)
+        .axes(.horizontal)
         .horizontalScrollIndicator(.never)
 
         // ALONG THE BOTTOM THE LAST TWO ARE PICTURES AT THE END OF THE ROW -

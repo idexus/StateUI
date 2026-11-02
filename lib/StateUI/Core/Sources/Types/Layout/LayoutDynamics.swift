@@ -31,7 +31,6 @@ public struct LayoutDynamics: Equatable, Sendable {
     ///   - damping: how much it is held back; a damping that is no number is 1.
     /// - Returns: the world.
     public static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutDynamics {
-        LayoutDynamics(spring: LayoutBodies.Spring(
-            response: Double(Motion.milliseconds(of: response)), damping: damping.isFinite ? max(damping, 0.01) : 1))
+        LayoutDynamics(spring: LayoutBodies.Spring(response: response, damping: damping))
     }
 }

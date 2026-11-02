@@ -21,7 +21,7 @@ list shows the tree's choice again; opening one is heard by nobody.
 A list is a vertical `StackLayout`, a row a horizontal one, `spacing` apart,
 and a grid a `UniformGridLayout` of items at least the narrowest width,
 `spacing` apart both ways, stretched to share the width. WinUI's lists know
-no groups: a header or a footer stands among the items, in a grid in a cell
+no sections: a header or a footer stands among the items, in a grid in a cell
 of its own, and a uniform grid gives every item the first one's height.
 
 The choice is WinUI's own - none, one or many - told back in the list's

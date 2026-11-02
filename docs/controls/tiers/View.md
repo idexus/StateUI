@@ -25,10 +25,9 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `allowsDrop` | property | `Bool` | native |
 | `area` | property | `Area` | structure |
-| `canDrag` | property | `Bool` | native |
 | `onDragLeave` (`dragLeave`) | event |  | native |
 | `onDragOver` (`dragOver`) | event |  | native |
-| `dragStarting` | event |  | native |
+| `onDragStarting` (`dragStarting`) | event |  | native |
 | `dragText` | property | `String` | native |
 | `onDrop` (`drop`) | event | `String` | native |
 | `droppedFileTypes` | property | `[FileType]` | native |
@@ -42,9 +41,10 @@ How each of them realizes these members is on its own page.
 | `onHeld` (`held`) | event |  | native |
 | `holdDuration` | property | `Double` | structure |
 | `horizontalAlignment` | property | `Alignment` | native |
+| `isDraggable` | property | `Bool` | native |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point)` | native |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point, Point)` | native |
 | `panXChannel` | property | `Int` | structure |
 | `panYChannel` | property | `Int` | structure |
 | `layoutBody` | property | `LayoutBody` | stateUI |

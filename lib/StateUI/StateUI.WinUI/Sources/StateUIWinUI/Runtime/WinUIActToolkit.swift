@@ -31,14 +31,13 @@ final class WinUIActToolkit: ActToolkit {
 
     let host = "WinUI"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
-        var time: [Int32] = [0, 0, 0, 0]
+    func localTime() -> LocalTime {
+        var time = [Int32](repeating: 0, count: 7)
         stateui_winui_clock(&time)
-        return (Int(time[0]), Int(time[1]), Int(time[2]), Int(time[3]))
-    }
-
-    func localZone() -> String {
-        WinUIStrings.read { stateui_winui_time_zone($0, $1) }
+        let read = time.map(Int.init)
+        return LocalTime(
+            year: read[0], month: read[1], day: read[2], hour: read[3], minute: read[4], second: read[5],
+            millisecond: read[6])
     }
 
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
@@ -138,7 +137,7 @@ final class WinUIActToolkit: ActToolkit {
             return element
         }
         let waiting = Unmanaged.passRetained(WinUIShareWaiting(answered)).toOpaque()
-        stateui_winui_share(shown.handle, shared.text, shared.link, waiting) { context, shared in
+        stateui_winui_share(shown.handle, shared.text, shared.address, waiting) { context, shared in
             let waiting = Unmanaged<WinUIShareWaiting>.fromOpaque(context!).takeRetainedValue()
             MainActor.assumeIsolated {
                 waiting.answered(shared < 0 ? .failure(ActFailure("Windows offered no share sheet")) : .success(shared == 1))

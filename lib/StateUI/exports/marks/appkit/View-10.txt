@@ -1,15 +1,15 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.pinchUpdated: ✓ pinch on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.verticalAlignment: ✅
-Canvas.canDrag: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.dragText: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
+Canvas.isDraggable: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Capsule.held: ✓ hold on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.layoutBody: ✅
 CheckBox.panYChannel: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -81,13 +81,13 @@ ProgressBar.frameChanged: ✅
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.verticalAlignment: ✅
-Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.held: ✓ hold on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.layoutBody: ✅
 SearchField.panYChannel: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
@@ -110,13 +110,13 @@ Switch.margin: ✅
 Switch.swipeDirection: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swipeThreshold: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swiped: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Text.canDrag: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session
 Text.dragEnded: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session
 Text.dragStarting: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session
 Text.dragText: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session
 Text.frameChanged: ✅
 Text.gridColumnSpan: ✅
 Text.gridRowSpan: ✅
+Text.isDraggable: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
@@ -135,12 +135,12 @@ VStack.frameChanged: ✅
 VStack.horizontalAlignment: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.verticalAlignment: ✅
-WebView.canDrag: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.dragStarting: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.dragText: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.frameChanged: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
+WebView.isDraggable: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 ZStack.held: ✓ hold on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutBody: ✅

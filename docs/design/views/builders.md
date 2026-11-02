@@ -9,6 +9,15 @@ a menu bar's menus, menu entries, toolbar items, text runs, markers, styles
 and a canvas's drawing. The view builder also gives every view it collects a
 key, but for a view written as a lone statement.
 
+## A builder's label names what it builds
+
+An initializer taking a builder names it by what the closure builds -
+`content:` for views (`HStack`, `Group`, `GeometryReader`), `items:` for a
+menu's or a toolbar group's entries, `drawing:` for a canvas, `styles:` for a
+style sheet - one shape for the API record and the handbook, though a trailing
+closure hides it. A modifier takes its builder unnamed, after its own
+arguments: `.toolbar(.bottom) { … }`, `.contextMenu { … }`.
+
 ## The result says what was written
 
 The view builder keeps the type of what it was given. One statement stays what

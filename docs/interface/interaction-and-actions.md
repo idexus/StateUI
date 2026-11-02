@@ -84,7 +84,7 @@ recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an
-automation script activates the row without a pointer. Give such a view a
+automation script activates the row without a pointer. Give such a view an
 `accessibilityLabel` so the button has a name.
 
 ### Hold
@@ -140,7 +140,7 @@ Rectangle()
     .scale(scale)
     .rotation(angle)
     .onPanUpdated { update in
-        if update.phase == .changed { x = update.totalX }
+        if update.phase == .changed { x = update.total.x }
     }
     .onPinchUpdated { update in
         if update.phase == .began { scaled = scale }
@@ -152,8 +152,8 @@ Rectangle()
     }
 ```
 
-Each report also says how fast the gesture goes, a second - `velocityX` and
-`velocityY` for a pan, `velocity` for a pinch's scale and a rotation's angle -
+Each report also says how fast the gesture goes, a second - `velocity`, a
+`Point`, for a pan, and for a pinch's scale and a rotation's angle a number -
 nought as it begins and, at its end, as fast as it lifted, beside where it
 reached. Handing that to a state's journey lets the value go on at the hand's
 speed:
@@ -167,9 +167,9 @@ Rectangle()
     .onPanUpdated { update in
         switch update.phase {
         case .changed:
-            $x.journey.snap(to: update.totalX)
+            $x.journey.snap(to: update.total.x)
         case .ended:
-            $x.journey.velocity = update.velocityX
+            $x.journey.velocity = update.velocity.x
             $x.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
         default:
             break
@@ -203,7 +203,7 @@ let item = Item(id: "note-1", title: "Shopping")
 func receive(_ text: String) {}
 
 Text(item.title)
-    .draggable(text: item.id)
+    .dragText(item.id)
     .onDragEnded { dragging = nil }
 
 ZStack { Text("Drop here") }
@@ -296,8 +296,11 @@ Button("Delete").onClicked(.ignoreWhileRunning) {
 StateUI also provides a one-button `alert`, a `chooseAction` that returns the
 action chosen - one of the values it offers, or `nil` for its cancel - and a
 prompt that returns typed text or `nil` on cancellation. An accepted empty
-prompt is `""`, distinct from cancellation. A cancel left unnamed says the
-system's own word, in the user's language:
+prompt is `""`, distinct from cancellation. Every question takes the same
+words: a title, a `message` under it where one is given, and its buttons'
+captions. A caption left unnamed says the system's own word, in the user's
+language - "OK", "Cancel" - and a button that does something reads best named
+for what it does, as `accept: "Delete"` above:
 
 ```swift
 enum Share: CaseIterable {
@@ -399,8 +402,8 @@ struct NotePage: View {
 
 ## The clipboard
 
-The system's clipboard is the application's `clipboard`: `write(text:)` puts
-words on it in place of what it held, and `text()` reads the words it holds,
+The system's clipboard is the application's `clipboard`, a `Clipboard`: `write(_:)` puts
+words on it in place of what it held, and `read()` reads the words it holds,
 `nil` where it holds none.
 
 ```swift
@@ -412,7 +415,7 @@ struct LinkRow: View {
         HStack {
             Text(link)
             Button("Copy").onClicked(.ignoreWhileRunning) {
-                try await application.clipboard.write(text: link)
+                try await application.clipboard.write(link)
             }
         }
     }
@@ -421,12 +424,13 @@ struct LinkRow: View {
 
 A platform may ask the user before the application reads what another
 application put there - iOS and a browser do. A browser's read throws where
-the user refuses, and a page served over plain http has no clipboard.
+the user refuses, and a page served over plain http has no clipboard. Android
+lets only the window in focus read it: a read from elsewhere throws.
 
 ## Sharing
 
 A window offers what the user shares to the platform's share sheet:
-`share(text:)`, `share(link:)`, or both together with `share(text:link:)`. The
+`share(text:)`, `share(address:)`, or both together with `share(text:address:)`. The
 call answers whether the user shared it, `false` where they cancelled.
 
 ```swift
@@ -436,7 +440,7 @@ struct TalkPage: View {
 
     var body: some View {
         Button("Share the talk").onClicked(.ignoreWhileRunning) {
-            try await window.share(text: "The talk I mentioned", link: talk)
+            try await window.share(text: "The talk I mentioned", address: talk)
         }
     }
 }
@@ -472,8 +476,9 @@ struct WeatherPage: View {
 
 Any status is an answer - a 404 is the server's word; what throws is no
 answer at all: no connection, no server, an address the platform cannot
-read. A request carries a method, headers and a body
-(`HTTPRequest(address, method: .post, headers:, body:)`), and a header's
+read. A request carries a method - an `HTTPMethod`, `.get` unless said -
+headers and a body (`HTTPRequest(address, method: .post, headers:, body:)`),
+and a header's
 name is read in any case (`response.header("Content-Type")`). The platform
 keeps the cookies a server sets, as a browser does, so a session a server
 opens holds for the requests after it. A request ends with the run that sent
@@ -502,16 +507,20 @@ enum NotesContract: ApplicationTier {
     static let members: [any ContractMember] = [exportDocument]
 }
 
+@Environment(\.application) var application
 @State var location = ""
 
 Button("Export").onClicked(.ignoreWhileRunning) {
-    location = try await stateUICall(NotesContract.exportDocument, "draft-7")
+    location = try await application.call(NotesContract.exportDocument, "draft-7")
 }
 ```
 
-`stateUICall` hands the act the arguments its contract declares, waits for the
-answer it declares, and throws `StateUIError` on a host failure or an answer
-of another shape. `stateUISend` is fire-and-forget and therefore has no error
+`application.call` hands the act the arguments its contract declares, waits for the
+answer it declares, and throws `StateUIError` - `.notPerformed(act:reason:)` on
+a host failure, `.unreadableAnswer(act:answered:declared:)` on an answer of
+another shape. Each reason is a case to tell apart in a `catch` or a `switch`,
+which keeps a `default`: a later version may name another. `application.tell` is
+fire-and-forget and therefore has no error
 result; use it only when no later decision depends on success.
 
 A batch of actions is not a transaction. Use ordinary Swift control flow and
@@ -748,7 +757,7 @@ struct Search: View {
             TextField($query)
             Text("Row \(row)")
         }
-        .onKeyPressed(.upArrow, .downArrow, .tab, .escape) { press in
+        .onKeyPressed([.upArrow, .downArrow, .tab, .escape]) { press in
             switch press.key {
             case .escape: query = ""
             case .tab: row += press.modifiers.contains(.shift) ? -1 : 1
@@ -768,7 +777,7 @@ and the keys held with it (`KeyPress`): Shift, where it was - Tab and
 Shift-Tab are one key told apart by it. A key held with the platform's own key
 or Alt belongs to shortcuts. Besides letters, digits, Return, Escape, Delete,
 the arrows and F1 to F12, a view takes Tab, Space, Home, End, Page Up and Page
-Down. `.onKeyPressed(.escape, policy:
+Down. `.onKeyPressed([.escape], policy:
 .ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
 
 ## Tooltips

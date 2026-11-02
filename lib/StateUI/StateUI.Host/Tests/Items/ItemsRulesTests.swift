@@ -69,6 +69,18 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(ScrollAnchor.nearest.place(of: 100, length: 40, in: 300, at: 400), 100, "above: to the start")
     }
 
+    /// A scroller's offset for an item is the anchor's place, past the bar over it and held within its reach: no
+    /// further back than the bar, no further on than its content's end and the bar under it.
+    func testAScrollerTakesTheAnchorsPlaceWithinItsReach() {
+        let offset = { (anchor: ScrollAnchor, start: Double) in
+            anchor.offset(of: start, length: 40, side: 300, content: 1_000, before: 20, after: 10, at: 0)
+        }
+        XCTAssertEqual(offset(.start, 500), 480, "the place, less the bar before it")
+        XCTAssertEqual(offset(.start, 0), -20, "never before the bar")
+        XCTAssertEqual(offset(.start, 980), 710, "never past the content's end and the bar after it")
+        XCTAssertNil(offset(.nearest, 100), "wholly in view")
+    }
+
     /// In a list the items of a group stand `spacing` apart, a header or a footer keeps no room, and a row spaces
     /// its items across.
     func testAListSpacesTheItemsOfAGroup() {

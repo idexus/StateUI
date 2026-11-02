@@ -136,7 +136,8 @@ three names solve different problems and do not replace one another.
 
 ## Builders and conditional identity
 
-`ViewBuilder` records the statement and branch that produced each child. A
+`ViewBuilder` records the statement and branch that produced each child, and
+several statements are `Statements`, each keyed by its number. A
 view after an optional branch therefore keeps its identity when that branch
 appears or disappears:
 
@@ -335,7 +336,9 @@ margin, an opacity, a handler of the view's own events - stands on the view
 shown, branch by branch. Such a view stands on an anchor: an element with no
 view and no layout of its own, which a layout places as what it holds. It is
 made only where the view may build one root or another, as its type tells - a
-view whose body is a `VStack` keeps one root and needs none.
+view whose body is a `VStack` keeps one root and needs none. An `.id` written
+on the view stays the view's, before `.onCreated` or after it: a test finds
+the list by it, not the element around it.
 
 ## Build diagnostics
 
@@ -392,7 +395,10 @@ diagnostic text from the first pass. Use this for automated runs or a problem
 that happens before the inspector can be opened. `STATEUI_TALLY=1` writes the
 running totals instead: messages applied, controls made and kept, renders, the
 elements alive, the runs under way or waiting and the host's native views alive -
-the numbers that tell a page left in memory from one let go. Both go to the
+the numbers that tell a page left in memory from one let go. A line prints as
+a render is applied, and a platform may let a page's views go as its
+transition ends, after that: read what a page let go on a render that follows
+its leaving. Both go to the
 standard error, which an Android application sends to logcat;
 `.scripts/Android/run-app.sh` hands every `STATEUI_` variable of the shell
 that runs it to the application:

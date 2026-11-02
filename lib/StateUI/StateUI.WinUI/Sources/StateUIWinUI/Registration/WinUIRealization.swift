@@ -39,7 +39,7 @@ enum WinUIRealization {
         + "ScrollView it does not pull."
 
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),
@@ -148,9 +148,6 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.ignoresInput, on: SpinnerContract.self, why: hitOnlyWherePainted),
         .partial(DatePickerContract.format,
             missing: "WinUI writes the long and the short day in the user's own way, and the medium as the short."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .complete(MotionLayoutContract.translationOrientation),
         .complete(MotionLayoutContract.translationUpdated),
         .notPlanned(MotionLayoutContract.wheelStepped,
@@ -265,7 +262,6 @@ enum WinUIRealization {
         .complete(WindowContract.maximumWidth),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .complete(WindowContract.width),

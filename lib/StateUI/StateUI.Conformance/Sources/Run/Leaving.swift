@@ -59,7 +59,7 @@
         let gestures: [any Worn] = [
             HearDone(ViewContract.tapped) {}, HearDone(ViewContract.pointerEntered) {},
             Hear(ViewContract.pointerPressed) { _ in }, Hear(ViewContract.swiped) { _ in },
-            HearThree(ViewContract.panUpdated) { _, _, _ in },
+            HearFour(ViewContract.panUpdated) { _, _, _, _ in },
         ]
         let border: [any Worn] = [
             Write(BorderElementContract.stroke, Brush.solidColor(.red)), Write(BorderElementContract.lineWidth, 2),

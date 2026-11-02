@@ -11,7 +11,7 @@
 ///     device.info.formFactor == .desktop ? wideLayout : phoneLayout
 ///
 /// It tells a phone from a tablet where the platform alone cannot:
-/// `stateUIPlatform()` is iOS on both. `\(formFactor)` prints the case name.
+/// `device.info.platform` is iOS on both. `\(formFactor)` prints the case name.
 public enum FormFactor: Int32, Sendable {
     /// The host has not said - a headless test, or a platform that could not
     /// tell.

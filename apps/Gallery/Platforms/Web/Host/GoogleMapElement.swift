@@ -28,7 +28,7 @@ final class GoogleMapElement: WebControl {
         element.listen("mapclick", words: { [weak self] words in
             let place = words.split(separator: " ").compactMap { Double($0) }
             guard let self, place.count == 2 else { return }
-            self.reports.raise(MapContract.mapClicked, Location(latitude: place[0], longitude: place[1]))
+            self.reports.raise(MapContract.locationTapped, Location(latitude: place[0], longitude: place[1]))
         })
         element.listen("markerselect", words: { [weak self] number in
             self?.marker(number)?.reports.raise(MarkerContract.selected)
@@ -82,7 +82,7 @@ final class GoogleMapElement: WebControl {
             case .searchResult: "searchResult"
             }
             return [String(number), String(location.latitude), String(location.longitude), kind,
-                    Self.line(child.value(MarkerContract.label)), Self.line(child.value(MarkerContract.subtitle))]
+                    Self.line(child.value(MarkerContract.title)), Self.line(child.value(MarkerContract.subtitle))]
                 .joined(separator: "\t")
         }
         numbers = kept
@@ -112,15 +112,15 @@ extension GoogleMapElement {
         // listing: web.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

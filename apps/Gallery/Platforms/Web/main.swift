@@ -5,11 +5,11 @@
 import GalleryUI
 import StateUIWeb
 
-// Register the application module, then say what this host answers for it
+// Name the application to the host, then say what this host answers for it
 // before it runs - the controls it realizes, the acts it performs and the
 // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
 // and show it in the page; the browser calls it from then on.
-registerApplication()
+GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 // listing: InteropEventsSample.Web.swift

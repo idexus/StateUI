@@ -5,7 +5,7 @@
 import GalleryUI
 import StateUIUIKit
 
-registerApplication()
+GalleryApp.register()
 // listing: end
 
 // listing: InteropActsSample.UIKit.swift, InteropEventsSample.UIKit.swift, uikit.md.head

@@ -95,7 +95,7 @@ then moves it right in parent coordinates, while
 | `rotate(degrees)` | turns clockwise in the screen plane |
 | `scale(factor)` | scales both axes about the center |
 | `scaleX(factor)`, `scaleY(factor)` | scales one axis |
-| `turn(degrees)`, `tilt(degrees)` | draws a deterministic flat view of a vertical or horizontal turn |
+| `turn(degrees)`, `tilt(degrees)` | draws a deterministic flat view of a vertical or horizontal turn - not `.rotationY`/`.rotationX`, the platform's own three-dimensional turn |
 | `skew(x, y)` | adds an ordered shear to the transform matrix |
 
 The core composes the matrix before it reaches a host. A native view surface is
@@ -270,7 +270,8 @@ Grid {
 
 Rows or columns alike are written once, with their count:
 `.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
-`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`.
+`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`,
+and each is a `GridTracks`: a run of tracks as long as one `GridLength` says.
 
 A grid's own width, where its room does not decide it, is the least at which
 every child fits its cell - a child spanning several tracks asks its room of
@@ -302,15 +303,15 @@ ZStack {
 
     Rectangle()
         .fill(.orange)
-        .area(.proportional(0.5, 0, 0.5, 1))
+        .area(.proportional(Rect(0.5, 0, 0.5, 1)))
 }
 .height(240)
 ```
 
-`.absolute(x, y, width, height)` names an area in device-independent units
+`.absolute(_:)` names an area by a `Rect` in device-independent units
 from the top left of the room inside the stack's padding;
-`.proportional(x, y, width, height)` names one in fractions of that room, so
-`.proportional(0.5, 0, 0.5, 1)` is its right half whatever the stack's size
+`.proportional(_:)` names one by a `Rect` in fractions of that room, so
+`.proportional(Rect(0.5, 0, 0.5, 1))` is its right half whatever the stack's size
 (left to right; a right-to-left stack mirrors the area, so there it is the
 left half). A child fills its area unless its size or alignment says otherwise. A later
 child is drawn over an earlier one, and `zIndex` reorders them without moving
@@ -359,7 +360,7 @@ author's own:
 let cards = Text("Cards")
 
 ScrollView { cards }
-    .orientation(.horizontal)
+    .axes(.horizontal)
     .scrollOffset($offset)
     .onScrollStopped {
         let card = ($offset.journey.value.x / 320).rounded()
@@ -497,7 +498,9 @@ because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
 
 `GeometryReader` owns the measured rectangle as its own state and rebuilds only
-its content from that value. Its closure runs once the first native frame report
+its content from that value. A `CoordinateSpace` says what the rectangle is
+measured against - `.parent`, `.safeArea` or `.global` - as `.onFrameChanged(in:)`
+takes it too. Its closure runs once the first native frame report
 supplies the measured rectangle; until then the reader holds nothing:
 
 ```swift
@@ -619,7 +622,8 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.default` (a wheel), `.fan`, `.row` or
+way it faces is the arrangement's, a `GalleryArrangement` - `.wheel`, the one it stands in unless
+said otherwise, `.fan`, `.row` or
 `.deck`, a pile swiped a card at a time, the card in front going out the way
 the hand goes and under the next - and changing it animates every card to the
 new shape. `.position($shown)` is
@@ -631,8 +635,8 @@ the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwMotion(_:)` says how one let go with speed goes on, as a
 [motion layout's](#a-motion-layout) does. `.itemBody(_:)` makes every card a
 body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
-layout - `.itemBody(.followsLayout(.spring(response: .milliseconds(300),
-damping: 0.8)))` and each card lags a breath behind the turn and settles back
+layout - `.itemBody(.followsLayout(response: .milliseconds(300),
+damping: 0.8))` and each card lags a breath behind the turn and settles back
 onto its place - and `.itemSize(width:height:)`, `.isSwipeEnabled`,
 `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
@@ -716,8 +720,9 @@ cutting across it. `turn` is the snap the run rests on: written by the
 program, the run travels there under `.motion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
-a hand taking the run on its way stops the journey. A tap reaches the view
-drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
+a hand taking the run on its way stops the journey. A tap activates the view
+drawn on top, and `.onItemActivated` is handed its item's identity, as a
+list's and a gallery's activation is; `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
 
 Laid out right to left, a motion layout keeps the shape its arithmetic writes:
@@ -729,7 +734,7 @@ carousel above, so marked, brings the next name in from the left in Arabic.
 
 An axis's range is how far the hand moves it: past an end, less and less,
 and let go there, it comes back onto the end. Its snaps are where it may rest
-beside the range's ends, which it always may: `[1, 2]` lists them,
+beside the range's ends, which it always may - its `AxisValues`: `[1, 2]` lists them,
 `.every(1)` puts one every unit from the lower end, `.at(stops)` takes a list
 worked out, and `.endpoints` leaves the ends alone - a drawer is open or closed,
 nothing between. Given no snaps, the axis rests wherever the hand leaves it
@@ -779,7 +784,7 @@ joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
-go. `.dynamics(_:)` says how: each view on a spring to its place,
+go. `.dynamics(_:)` says how, a `LayoutDynamics`: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
 views standing at their places at once - the parameters still travel; `.motion(_:)`
 is the parameters' law alone, moving between the views' rests, and `.dynamics`
@@ -817,8 +822,8 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.motion(_:)`.
 
-A view can be a body of its own: `.followsLayout(_:)` on it - short for
-`.layoutBody(.followsLayout(_:))` - makes it follow its place on the spring it names - carried by the run, it
+A view can be a body of its own: `.followsLayout(response:damping:)` on it - short for
+`.layoutBody(.followsLayout(response:damping:))` - makes it follow its place on a spring of its own - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
@@ -834,7 +839,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
+                .followsLayout(response: .milliseconds(420), damping: 0.55)
         } placements: { room, turn in
             (0..<4).map { index in
                 Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))
@@ -946,9 +951,10 @@ lifted off a board - and `.itemDrag(begins: .perpendicular)` the view under a pr
 whose first move runs across the layout's axis - a card pulled up out of a
 deck that scrolls sideways; a hand that begins any other way moves the run
 as before. The held view follows the hand over the others, and
-`.onItemDragged` is told whether the hand takes it, moves it or lets it go,
-the item, where the hand is in the room, how long it has stood still, how
-fast the hand goes, and the item whose view it is over (`drag.over`) - each
+`.onItemDragged` is told, as an `ItemDrag`, whether the hand takes it, moves it or lets it go,
+the identity of its item (`drag.id`), where the hand is in the room, how long
+it has stood still, how fast the hand goes (`drag.velocity`), and the
+identity of the item whose view it is over (`drag.over`) - each
 time the hand moves it, and again each long press it stands. Lift the
 view as the hand takes it - `.scale(lifted == item ? 1.18 : 1)` with a
 `.motion(_:_:)` of its own on `.transform` - so the hand knows it has it. Changing the order there makes room: the others travel to
@@ -971,22 +977,22 @@ struct Board: View {
         .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             // Over another name, the held one takes its place, the others make room.
-            guard let over = drag.over, let from = names.firstIndex(of: drag.item),
+            guard let over = drag.over, let from = names.firstIndex(of: drag.id),
                   let to = names.firstIndex(of: over) else { return }
             names.remove(at: from)
-            names.insert(drag.item, at: to)
+            names.insert(drag.id, at: to)
         }
         .height(80)
     }
 }
 ```
 
-`.onItemDismissed(.up, beyond: 120) { card in … }` lets a view go for good:
+`.onItemDismissed(.up, beyond: 120) { id in … }` lets a view go for good:
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
-removes the item. Short of it, the view goes back. A handler that awaits takes
-a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, policy:
-.ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
+removes the item it names. Short of it, the view goes back. A handler that
+awaits takes a policy, as an event's does - `.onItemDismissed(.up, beyond: 120,
+policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
 ends with the layout.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range
@@ -1167,9 +1173,10 @@ struct Contacts: View {
 
 Given keyframes, an axis has its arithmetic asked only there - at them, at
 its range's ends and at its snaps - and every view goes from its pose at one
-keyframe to its pose at the next along `.interpolation(_:)`: straight unless
-said, `.catmullRom` a smooth curve through them, `.monotone` one that never
-swings past them. So quite different layouts, one at each keyframe, are one
+keyframe to its pose at the next along `.interpolation(_:)`, a
+`LayoutInterpolation` - the library's are each a `LayoutCurve`: straight
+unless said, `.catmullRom` a smooth curve through them, `.monotone` one that
+never swings past them. So quite different layouts, one at each keyframe, are one
 the hand moves through - here a row, a column and a pile:
 
 ```swift
@@ -1232,7 +1239,7 @@ struct Rearranged: View {
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
-            .motion(.eased(.milliseconds(700), .cubicInOut))
+            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
             .height(300)
 
             HStack {

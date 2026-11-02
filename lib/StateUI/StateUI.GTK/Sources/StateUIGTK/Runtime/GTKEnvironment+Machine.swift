@@ -10,13 +10,21 @@ import Glibc
 /// the C library's locale, UPower and the power profiles, GIO's network monitor and NetworkManager.
 /// Design: docs/design/platforms/gtk/runtime.md#the-environment
 extension GTKEnvironment {
+    /// The local zone as it stands now - the one `TZ` names, else the machine's - which the locale, the clock and a
+    /// local offset all read: GLib's own local zone is kept from its first reading. The caller lets it go.
+    /// Design: docs/design/platforms/gtk/runtime.md#the-environment
+    static func localZone() -> OpaquePointer {
+        let named = g_getenv("TZ").map { String(cString: $0) }.flatMap { $0.isEmpty ? nil : g_time_zone_new_identifier($0) }
+        return named ?? g_time_zone_new_identifier(nil) ?? g_time_zone_new_local()!
+    }
+
     /// The user's locale: the language and region GLib reads from the environment, the local zone, and the clock,
     /// the week and the measures of the C library's locale.
     static var locale: HostLocaleInfo {
         let name = g_get_language_names()?.pointee.map { String(cString: $0) } ?? "C"
         let tag = name.split(whereSeparator: { $0 == "." || $0 == "@" }).first.map(String.init) ?? name
         let parts = tag.split(separator: "_").map(String.init)
-        let zone = g_time_zone_new_local()!
+        let zone = localZone()
         defer { g_time_zone_unref(zone) }
         let time = String(cString: nl_langinfo(nl_item(T_FMT)))
         return HostLocaleInfo(

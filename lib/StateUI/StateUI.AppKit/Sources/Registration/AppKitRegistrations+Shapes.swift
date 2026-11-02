@@ -32,14 +32,10 @@ extension AppKitRegistrations {
         }
 
         registry.add(LineContract.self, create: { _ in AppKitShapeView(kind: .line) }) { shape in
-            shape.applies(
-                ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2,
-                LineContract.y2) { view, values in
+            shape.applies(ShapeMembers.members, LineContract.from, LineContract.to) { view, values in
+                let from = values[LineContract.from] ?? .zero, to = values[LineContract.to] ?? .zero
                 Self.draw(view, values, .line(
-                    x1: CGFloat(values[LineContract.x1] ?? 0),
-                    y1: CGFloat(values[LineContract.y1] ?? 0),
-                    x2: CGFloat(values[LineContract.x2] ?? 0),
-                    y2: CGFloat(values[LineContract.y2] ?? 0)))
+                    x1: CGFloat(from.x), y1: CGFloat(from.y), x2: CGFloat(to.x), y2: CGFloat(to.y)))
             }
         }
 

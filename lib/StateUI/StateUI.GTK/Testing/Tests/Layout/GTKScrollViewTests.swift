@@ -52,7 +52,7 @@ final class GTKScrollViewTests: XCTestCase {
                 ScrollView {
                     Text("wide").width(3000).height(40)
                 }
-                .orientation(.horizontal)
+                .axes(.horizontal)
                 .height(100)
             }
 

@@ -46,7 +46,7 @@ public struct Binding<Value> {
     /// A binding to state somebody else owns. `$counter` is the ordinary way to
     /// get one.
     public init(_ state: State<Value>) {
-        read = { state.get() }
+        read = { state.wrappedValue }
         write = { state.wrappedValue = $0 }
         storage = state.storage
         mailroom = state.storage.mailroom
@@ -59,12 +59,13 @@ public struct Binding<Value> {
         let conversion = storage.conversion
 
         read = {
-            if let conversion = conversion {
-                for source in conversion.sources where Renderer.shared.stateRead(source) {
+            // A chain is read from its first sources, each conversion worked out over the one before it.
+            for link in conversion?.chain ?? [] {
+                for source in link.sources where Renderer.shared.stateRead(source) {
                     source.readAtBuild = true
                 }
 
-                conversion.forward(false)
+                link.forward(false)
             }
 
             if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }

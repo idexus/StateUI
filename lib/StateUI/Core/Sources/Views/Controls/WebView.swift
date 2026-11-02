@@ -14,9 +14,9 @@ extension WebViewProperties {
         setValue(WebViewContract.userAgent, value)
     }
 
-    /// The page it shows, by URL.
-    public func source(_ url: String) -> Modified {
-        setValue(WebViewContract.source, .url(url))
+    /// The page it shows, by its address.
+    public func source(_ address: String) -> Modified {
+        setValue(WebViewContract.source, .address(address))
     }
 
     /// The page it shows, written here rather than fetched.
@@ -24,14 +24,14 @@ extension WebViewProperties {
     ///     WebView().source(html: "<h1>Offline</h1>")
     ///
     /// - Parameter html: The document itself, not a path to one.
-    /// - Parameter baseURL: What relative links in it resolve against, when
+    /// - Parameter baseAddress: What relative links in it resolve against, when
     ///   there are any.
-    public func source(html: String, baseURL: String? = nil) -> Modified {
-        setValue(WebViewContract.source, .html(html, baseURL: baseURL))
+    public func source(html: String, baseAddress: String? = nil) -> Modified {
+        setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
     }
 }
 
-/// A view showing web content - a page fetched by URL, or HTML written here.
+/// A view showing web content - a page fetched from its address, or HTML written here.
 ///
 ///     WebView("https://example.com")
 ///
@@ -54,10 +54,10 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         node = Node(contract: WebViewContract.self)
     }
 
-    /// A view on the page at `url`.
-    public init(_ url: String) {
+    /// A view on the page at `address`.
+    public init(_ address: String) {
         self.init()
-        self = setValue(WebViewContract.source, .url(url))
+        self = setValue(WebViewContract.source, .address(address))
     }
 
     // MARK: What the platform reports
@@ -83,44 +83,44 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigating) { type, url in try handler(WebNavigation(type: type, url: url)) }
+        onEvent(WebViewContract.navigating) { type, address in try handler(WebNavigation(type: type, address: address)) }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, policy: policy) { type, url in
-            try await handler(WebNavigation(type: type, url: url))
+        onEvent(WebViewContract.navigating, policy: policy) { type, address in
+            try await handler(WebNavigation(type: type, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigating(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, gate: gate) { type, url in
-            try await handler(WebNavigation(type: type, url: url))
+        onEvent(WebViewContract.navigating, gate: gate) { type, address in
+            try await handler(WebNavigation(type: type, address: address))
         }
     }
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigated) { result, type, url in
-            try handler(WebNavigated(result: result, type: type, url: url))
+        onEvent(WebViewContract.navigated) { result, type, address in
+            try handler(WebNavigated(result: result, type: type, address: address))
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, policy: policy) { result, type, url in
-            try await handler(WebNavigated(result: result, type: type, url: url))
+        onEvent(WebViewContract.navigated, policy: policy) { result, type, address in
+            try await handler(WebNavigated(result: result, type: type, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, gate: gate) { result, type, url in
-            try await handler(WebNavigated(result: result, type: type, url: url))
+        onEvent(WebViewContract.navigated, gate: gate) { result, type, address in
+            try await handler(WebNavigated(result: result, type: type, address: address))
         }
     }
 
@@ -205,7 +205,7 @@ public struct WebNavigation: Equatable, Sendable {
     public var type: WebNavigationType
 
     /// Where it is going.
-    public var url: String
+    public var address: String
 }
 
 /// One navigation, as it ends.
@@ -217,7 +217,7 @@ public struct WebNavigated: Equatable, Sendable {
     public var type: WebNavigationType
 
     /// Where it went.
-    public var url: String
+    public var address: String
 }
 
 // MARK: - What it shows
@@ -229,27 +229,27 @@ public struct WebNavigated: Equatable, Sendable {
 ///     WebView().source(html: "<h1>Offline</h1>")
 public enum WebViewSource: Equatable, Sendable, HostRepresentable {
     /// A page fetched from an address.
-    case url(String)
+    case address(String)
 
     /// A document written into the description itself, and the address its
     /// relative links resolve against, where there is one.
-    case html(String, baseURL: String?)
+    case html(String, baseAddress: String?)
 
     /// Which of the two a source is, as the number that crosses.
     private enum Kind: Int32 {
-        case url = 0
+        case address = 0
         case html = 1
     }
 
     /// The kind, then what it is made of.
     public var propValue: PropValue {
         switch self {
-        case .url(let address):
-            .values([.enumeration(Kind.url.rawValue), .string(address)])
-        case .html(let document, let baseURL):
+        case .address(let address):
+            .values([.enumeration(Kind.address.rawValue), .string(address)])
+        case .html(let document, let baseAddress):
             .values([
                 .enumeration(Kind.html.rawValue), .string(document),
-                baseURL.map { PropValue.string($0) } ?? .nothing,
+                baseAddress.map { PropValue.string($0) } ?? .nothing,
             ])
         }
     }
@@ -262,15 +262,15 @@ public enum WebViewSource: Equatable, Sendable, HostRepresentable {
         else { return nil }
 
         switch (kind, parts.count) {
-        case (.url, 2):
+        case (.address, 2):
             guard case .string(let address) = parts[1] else { return nil }
-            self = .url(address)
+            self = .address(address)
         case (.html, 3):
             guard case .string(let document) = parts[1] else { return nil }
 
             switch parts[2] {
-            case .string(let baseURL): self = .html(document, baseURL: baseURL)
-            case .nothing: self = .html(document, baseURL: nil)
+            case .string(let base): self = .html(document, baseAddress: base)
+            case .nothing: self = .html(document, baseAddress: nil)
             default: return nil
             }
         default:

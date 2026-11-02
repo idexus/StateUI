@@ -30,11 +30,9 @@ extension UIKitRegistrations {
             }
         }
         registry.add(LineContract.self, create: { _ in UIKitShapeView() }) { shape in
-            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
-                view, values in
+            shape.applies(ShapeMembers.members, LineContract.from, LineContract.to) { view, values in
                 paint(view, values)
-                let from = Point(x: values[LineContract.x1] ?? 0, y: values[LineContract.y1] ?? 0)
-                let to = Point(x: values[LineContract.x2] ?? 0, y: values[LineContract.y2] ?? 0)
+                let from = values[LineContract.from] ?? .zero, to = values[LineContract.to] ?? .zero
                 view.draw(authored([.move(from), .line(to)], evenOdd: false, values))
             }
         }
@@ -64,19 +62,10 @@ extension UIKitRegistrations {
         }
     }
 
-    /// A Canvas: its drawing, and a finger on it as it goes down, moves and lifts.
+    /// A Canvas: its drawing; a finger on it is a view's, heard as every view hears one.
     static func canvas(_ registry: Registry<UIView>) {
-        registry.add(CanvasContract.self, create: { reports in
-            let canvas = UIKitCanvasView()
-            canvas.onPressed = { point in reports.raise(CanvasContract.pressed, Point(x: point.x, y: point.y)) }
-            canvas.onDragged = { point in reports.raise(CanvasContract.dragged, Point(x: point.x, y: point.y)) }
-            canvas.onReleased = { point in reports.raise(CanvasContract.released, Point(x: point.x, y: point.y)) }
-            return canvas
-        }, members: { canvas in
+        registry.add(CanvasContract.self, create: { _ in UIKitCanvasView() }, members: { canvas in
             canvas.property(CanvasContract.drawing) { view, drawing in view.apply(drawing) }
-            canvas.raises(CanvasContract.pressed)
-            canvas.raises(CanvasContract.dragged)
-            canvas.raises(CanvasContract.released)
         })
     }
 

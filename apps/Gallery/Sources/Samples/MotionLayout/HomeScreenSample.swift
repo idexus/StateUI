@@ -126,12 +126,12 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 .onItemDragged { drag in
                     switch drag.phase {
                     case .began:
-                        lifted = drag.item.name
+                        lifted = drag.id
                     case .ended, .cancelled:
                         lifted = nil
                     default:
                         // The icon under the hand gives the held one its place.
-                        if let over = drag.over, let place = icons.firstIndex(of: over) { move(drag.item, to: place) }
+                        if let over = drag.over, let place = icons.firstIndex(where: { $0.name == over }) { move(drag.id, to: place) }
                         // At an edge, standing there or pushed against it fast, the board turns.
                         if drag.still >= .milliseconds(500) || Self.pushes(drag) {
                             turn(at: drag.at, in: drag.room, of: boards)
@@ -175,18 +175,17 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
     }
 
-    /// `icon` taken out of its place and put at `slot`: a new order, which
+    /// The icon `name` taken out of its place and put at `slot`: a new order, which
     /// the others travel to.
-    private func move(_ icon: HomeIcon, to slot: Int) {
-        guard let from = icons.firstIndex(of: icon), from != slot else { return }
-        icons.remove(at: from)
-        icons.insert(icon, at: slot)
+    private func move(_ name: String, to slot: Int) {
+        guard let from = icons.firstIndex(where: { $0.name == name }), from != slot else { return }
+        icons.insert(icons.remove(at: from), at: slot)
     }
 
     /// Whether the hand reached the edge it stands at going that way faster
     /// than 600 points a second.
-    private static func pushes(_ drag: ItemDrag<HomeIcon>) -> Bool {
-        drag.at.x > drag.room.width - 24 && drag.speed.x > 600 || drag.at.x < 24 && drag.speed.x < -600
+    private static func pushes(_ drag: ItemDrag<String>) -> Bool {
+        drag.at.x > drag.room.width - 24 && drag.velocity.x > 600 || drag.at.x < 24 && drag.velocity.x < -600
     }
 
     /// The board on the side of the room `point` stands at the edge of, if

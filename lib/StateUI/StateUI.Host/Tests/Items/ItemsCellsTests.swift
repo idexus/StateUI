@@ -93,7 +93,7 @@ final class ItemsCellsTests: XCTestCase {
         Heard.chosen = []
         Heard.ends = 0
         Heard.opened = []
-        stateUIUseApp(ListApplication())
+        ListApplication.register()
         runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -293,7 +293,7 @@ final class ItemsCellsTests: XCTestCase {
     /// The item stood is let go of as the list's entries change: an item come or gone moves what stands where.
     func testAnItemStoodIsLetGoAsTheEntriesChange() throws {
         Shrinking.count = 10
-        stateUIUseApp(ShrinkingApplication())
+        ShrinkingApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -326,7 +326,7 @@ final class ItemsCellsTests: XCTestCase {
     /// An entry the list no longer has is let go of by the cell holding it: the cells keep nothing of what went.
     func testACellOfAnEntryThatWentLetsItGo() throws {
         Shrinking.count = 10
-        stateUIUseApp(ShrinkingApplication())
+        ShrinkingApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -347,7 +347,7 @@ final class ItemsCellsTests: XCTestCase {
     /// An item's actions as a swipe shows them are its context menu's items the user can choose, in order - a line,
     /// a submenu and an item turned off left out, a destructive one marked; an item with no menu offers none.
     func testAnItemsActionsAreTheItemsOfItsContextMenuASwipeShows() throws {
-        stateUIUseApp(ActionsApplication())
+        ActionsApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -437,7 +437,7 @@ final class ItemsCellsTests: XCTestCase {
     /// A list's view moving moves its items in the window though nothing is laid out: whoever reads a frame says it
     /// on the display's next frame, whatever the list hears.
     func testAListsViewMovingSaysWhereItsItemsStand() throws {
-        stateUIUseApp(PlainListApplication())
+        PlainListApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

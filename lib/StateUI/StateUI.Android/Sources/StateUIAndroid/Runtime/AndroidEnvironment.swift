@@ -76,7 +76,7 @@ enum AndroidEnvironment {
     private static func batteryInfo(_ facts: [Float]) -> HostBatteryInfo {
         let saver: EnergySaverStatus = facts[3] == 1 ? .on : .off
         guard facts[0] >= 0 else {
-            return HostBatteryInfo(chargeLevel: 1, state: .notPresent, powerSource: .ac, energySaverStatus: saver)
+            return HostBatteryInfo(chargeLevel: nil, state: .notPresent, powerSource: .ac, energySaverStatus: saver)
         }
 
         let state: BatteryState = switch Int(facts[1]) {

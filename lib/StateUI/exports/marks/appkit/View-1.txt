@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -17,13 +17,13 @@ CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.verticalAlignment: ✅
-ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumnSpan: ✅
 ColorPicker.gridRowSpan: ✅
+ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.held: ✓ hold on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.layoutBody: ✅
 Ellipse.panYChannel: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -54,13 +54,13 @@ Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.pinchUpdated: ✓ pinch on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.verticalAlignment: ✅
-Link.canDrag: ✓ dragAndDrop on Link: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragEnded: ✓ dragAndDrop on Link: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragStarting: ✓ dragAndDrop on Link: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragText: ✓ dragAndDrop on Link: the drag source and the window's drop routing told by the driver, no dragging session
 Link.frameChanged: ✅
 Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
+Link.isDraggable: ✓ dragAndDrop on Link: the drag source and the window's drop routing told by the driver, no dragging session
 Map.held: ✓ hold on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.layoutBody: ✅
 MotionLayout.panTouchCount: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -101,13 +101,13 @@ SearchField.horizontalAlignment: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.verticalAlignment: ✅
 Separator.panYChannel: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
-Slider.canDrag: ✓ dragAndDrop on Slider: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragStarting: ✓ dragAndDrop on Slider: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragText: ✓ dragAndDrop on Slider: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
+Slider.isDraggable: ✓ dragAndDrop on Slider: the drag source and the window's drop routing told by the driver, no dragging session
 Space.held: ✓ hold on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.layoutBody: ✅
 Spinner.frameChanged: ✅

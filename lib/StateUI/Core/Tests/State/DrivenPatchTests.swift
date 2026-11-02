@@ -76,7 +76,7 @@ final class DrivenPatchTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
         let springing = Rectangle().opacity(fade.projectedValue).motion(.spring())
-        let easing = Rectangle().opacity(fade.projectedValue).motion(.eased(.milliseconds(300), .linear))
+        let easing = Rectangle().opacity(fade.projectedValue).motion(.eased(.milliseconds(300), curve: .linear))
 
         renders.render(stack([springing.id("a").node], id: "root"))
         renders.render(stack([easing.id("b").node], id: "root"))
@@ -515,6 +515,10 @@ final class DrivenPatchTests: XCTestCase {
              Switch().isOn(flag.projectedValue).node, "Switch.isOn")
         same(CheckBox(flag.projectedValue).node,
              CheckBox().isOn(flag.projectedValue).node, "CheckBox.isOn")
+        same(ProgressBar(number.projectedValue).node,
+             ProgressBar().progress(number.projectedValue).node, "ProgressBar.progress")
+        same(Spinner(flag.projectedValue).node,
+             Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
     }
 
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what

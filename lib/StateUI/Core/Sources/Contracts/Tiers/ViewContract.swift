@@ -16,9 +16,6 @@ public enum ViewContract: Contract {
     /// The part of the enclosing ZStack's room the view stands in.
     public static let area = ElementProperty<Self, Area>("area", layer: .structure, travels: false)
 
-    /// Whether the view can be dragged.
-    public static let canDrag = ElementProperty<Self, Bool>("canDrag", layer: .native, cleared: false)
-
     /// A drag left the view without being let go.
     public static let dragLeave = ElementEvent<Self, Void>("dragLeave", layer: .native)
 
@@ -28,7 +25,10 @@ public enum ViewContract: Contract {
     /// A drag of the view is starting.
     public static let dragStarting = ElementEvent<Self, Void>("dragStarting", layer: .native)
 
-    /// The text a drag of the view carries.
+    /// Whether the view carrying `dragText` can be dragged now - true unless said.
+    public static let isDraggable = ElementProperty<Self, Bool>("isDraggable", layer: .native, cleared: false)
+
+    /// The text a drag of the view carries; a view carrying none is not dragged.
     public static let dragText = ElementProperty<Self, String>("dragText", layer: .native, cleared: false)
 
     /// Something was dropped on the view, with the text it carried.
@@ -84,8 +84,9 @@ public enum ViewContract: Contract {
         "panTouchCount", layer: .structure, travels: false, cleared: false)
 
     /// The view is being dragged: the phase, how far across and down since the
-    /// pan began, and how fast, a second.
-    public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point)>(
+    /// pan began, how fast, a second, and where the press is now, in the view's
+    /// own points.
+    public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Point)>(
         "panUpdated", layer: .native)
 
     /// The number of the state a drag's distance across is written into.
@@ -146,9 +147,9 @@ public enum ViewContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        allowsDrop, area, canDrag, dragLeave,
+        allowsDrop, area, dragLeave,
         dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
-        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, margin, panTouchCount,
+        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,

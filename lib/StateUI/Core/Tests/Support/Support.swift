@@ -50,7 +50,7 @@ extension HostPatch {
     static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
 
     /// The six reports every window hears, by name.
-    static let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
+    static let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
 }
 
 extension HostDrivenUpdate {
@@ -112,7 +112,7 @@ private struct Reading: View {
 /// Renders a view that reads through `read`, and answers the renderer holding
 /// the tree it stands in - keep it for as long as the reader must count.
 ///
-///     let reader = reading { _ = counter.get() }
+///     let reader = reading { _ = counter.wrappedValue }
 ///     counter.wrappedValue = 1
 ///     XCTAssertTrue(Renderer.shared.needsRender)
 ///     _ = reader
@@ -837,7 +837,7 @@ enum SourceTree {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
             "Application.swift", "Node+Page.swift", "Node+Window.swift", "ViewBuilder.swift",
-            "Style.swift", "StyleBag+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
+            "Style.swift", "Styling+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",
             "NavigationStack.swift", "TabView.swift", "SplitView.swift",

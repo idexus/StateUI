@@ -6,7 +6,7 @@
 public enum GalleryArrangement: Sendable, Equatable {
     /// The cards stand on a wheel: the one in the middle faces the user and
     /// the rest turn away, shrink and fade behind it.
-    case `default`
+    case wheel
 
     /// A hand of cards: the middle one stands tallest and its neighbors lean
     /// out and sink.

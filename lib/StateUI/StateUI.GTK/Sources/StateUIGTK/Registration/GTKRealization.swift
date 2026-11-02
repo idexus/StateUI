@@ -39,7 +39,7 @@ enum GTKRealization {
         + "command - a header bar button, Ctrl+R."
 
     static let records: [HostRecord] = [
-        .partial(BottomBarContract.edge, missing: "No edge: GNOME's flat bottom bar shows its shadow while the "
+        .partial(BottomBarContract.scrollEdge, missing: "No edge: GNOME's flat bottom bar shows its shadow while the "
             + "content scrolls, whatever the edge says."),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
@@ -137,9 +137,6 @@ enum GTKRealization {
             missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .partial(DatePickerContract.minimumDate,
             missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .notPlanned(MenuItemElementContract.icon, on: MenuItemContract.self,
             reason: "GNOME's menus show words alone, no picture beside them."),
         .notPlanned(MenuItemElementContract.icon, on: MenuToggleContract.self,
@@ -245,8 +242,6 @@ enum GTKRealization {
         .notPlanned(WindowContract.maximumWidth, reason: "GTK 4 bounds no window from above."),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .partial(WindowContract.resumed,
-            missing: "A Wayland desktop tells no window it was minimized, nor brought back."),
         .partial(WindowContract.stopped,
             missing: "A Wayland desktop tells no window it was minimized, nor brought back."),
         .complete(WindowContract.title),

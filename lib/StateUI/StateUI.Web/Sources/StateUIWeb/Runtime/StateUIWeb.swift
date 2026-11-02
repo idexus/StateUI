@@ -10,7 +10,7 @@
 ///     import HelloWorldUI
 ///     import StateUIWeb
 ///
-///     registerApplication()
+///     HelloWorldApp.register()
 ///     StateUIWeb.run(name: "HelloWorld")
 ///
 /// `.scripts/Web/run-app.sh` builds the head, lays the page out beside it

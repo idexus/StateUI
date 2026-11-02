@@ -6,6 +6,7 @@ import StateUI
 /// failure.
 struct InteropActsSample: SampleContent, ExampleContent {
     // listing: InteropActsSample
+    @Environment(\.application) private var application
     @State private var line = "Hello from StateUI"
     @State private var status = "nothing asked yet"
     @State private var tenStars = false
@@ -46,13 +47,13 @@ struct InteropActsSample: SampleContent, ExampleContent {
 
             Button("Write it to the system's log")
                 .onClicked(.ignoreWhileRunning) {
-                    try await stateUICall(GalleryContract.log, line)
+                    try await application.call(GalleryContract.log, line)
                     status = "logged"
                 }
 
             Button("Ask about the battery")
                 .onClicked(.ignoreWhileRunning) {
-                    let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
+                    let (level, charging) = try await application.call(GalleryContract.batteryLevel)
 
                     // A desktop without a battery answers 0, so only a level
                     // above zero counts.
@@ -64,7 +65,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
             Button("Call something nobody registered")
                 .onClicked(.ignoreWhileRunning) {
                     do {
-                        try await stateUICall(GalleryContract.nobody)
+                        try await application.call(GalleryContract.nobody)
                         status = "that should have thrown"
                     } catch {
                         status = "thrown: \(error)"
@@ -97,7 +98,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
         VStack {
             Text("`StateUIActs.add` registers a function under an act the "
                 + "application's contract declares, with what it takes and answers. "
-                + "`stateUICall` calls it from any handler: typed arguments in, typed "
+                + "`application.call` calls it from any handler: typed arguments in, typed "
                 + "values back, and the compiler refuses a performer of another shape." + InteropHost.awaiting)
                 .fontSize(12)
                 .textColor(Palette.subtle)

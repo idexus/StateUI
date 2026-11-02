@@ -12,7 +12,7 @@ final class SidebarPlaceTests: XCTestCase {
     /// the same place again, as it stands the split again, writes nothing.
     func testASplitViewSaysWhereItsSidebarStands() throws {
         seen = []
-        stateUIUseApp(PlaceApplication())
+        PlaceApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

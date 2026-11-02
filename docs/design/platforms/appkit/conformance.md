@@ -92,7 +92,7 @@ not read.
 
 A window the driver never orders in takes no synthetic event, so the driver
 hands some acts to the host's own entry: the gestures and the pointer to the
-host's recognizers, a button's press and a canvas's to their handlers, a
+host's recognizers, a button's press to its handlers, a
 picker's menu, choice, date and time to the host's own change, a scroll to the
 host's movement, an ItemsView's choice and opening to its collection's
 delegate, a question's answer and a file dialog's, a drag between views and

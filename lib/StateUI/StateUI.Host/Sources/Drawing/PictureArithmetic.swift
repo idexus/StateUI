@@ -7,6 +7,10 @@
 /// host.
 /// Design: docs/design/host/layout.md#a-picture
 @_spi(Host) public enum PictureArithmetic {
+    /// The most pixels the pictures a host keeps for asking again hold together - beyond the ones shown, which stay
+    /// found while they show: forty million, 160 MB at four bytes a pixel.
+    public static let keptPixels = 40_000_000
+
     /// The files a picture's name may stand for, in the order a host looks for them: the name, then - for a PNG -
     /// an SVG of the same name, which a host drawing vector pictures reads in its place.
     public static func files(for name: String) -> [String] {

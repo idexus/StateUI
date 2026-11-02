@@ -13,36 +13,36 @@ struct LayoutDismissal<Item> {
 }
 
 extension MotionLayout.Run {
-    /// The hand holding one view by itself at the parameters, at `point` in the room, letting go at `speed` points a
+    /// The hand holding one view by itself at the parameters, at `point` in the room, letting go at `velocity` points a
     /// second, having stood still `still` milliseconds: taken where it presses, told as it moves and stands, let go
     /// back or dismissed.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func item(_ gesture: GesturePhase, at point: Point, speed: Point, still: Double) throws {
+    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) throws {
         switch gesture {
         case .began:
-            guard states.item.wrappedValue?.speed != nil || states.item.wrappedValue == nil,
+            guard states.item.wrappedValue?.velocity != nil || states.item.wrappedValue == nil,
                   let (identity, placement) = view(at: point)
             else { return }
 
             let hand = LayoutItemHand(identity: identity, taken: placement, from: point, at: point)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, speed: Point(x: 0, y: 0))
+            try tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
 
         case .changed:
-            guard var hand = states.item.wrappedValue, hand.speed == nil else { return }
+            guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
 
             hand.at = point
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, speed: speed)
+            try tell(hand, gesture, still: still, velocity: velocity)
 
         case .ended, .cancelled:
-            guard var hand = states.item.wrappedValue, hand.speed == nil else { return }
+            guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
 
             hand.at = point
-            hand.speed = gesture == .ended ? speed : Point(x: 0, y: 0)
+            hand.velocity = gesture == .ended ? velocity : Point(x: 0, y: 0)
             hand.dismissed = gesture == .ended && dismisses(hand)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: 0, speed: hand.speed ?? Point(x: 0, y: 0))
+            try tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
         }
     }
 
@@ -83,16 +83,16 @@ extension MotionLayout.Run {
     /// going at `speed` - and the item whose place stands under it: where a view rests, not where it is drawn on its
     /// way, so a view travelling off from under the hand after it made room answers no second time.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, speed: Point) throws {
+    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) throws {
         guard let dragged, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
         let room = states.room.wrappedValue
         let over = view(at: hand.at, among: places(), passing: hand.identity).flatMap { under in
-            slots.first { $0.identity == under.0 }?.item
+            slots.first { $0.identity == under.0 }?.item[keyPath: path]
         }
         try dragged(ItemDrag(
-            phase: gesture, item: slot.item, at: hand.at, room: Rect(0, 0, room.width, room.height),
-            still: .milliseconds(still), speed: speed, over: over))
+            phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(0, 0, room.width, room.height),
+            still: .milliseconds(still), velocity: velocity, over: over))
     }
 
     /// Where each view rests by this description, at the parameters the run last showed: the arithmetic asked again, so
@@ -108,10 +108,10 @@ extension MotionLayout.Run {
     /// Whether letting `hand` go dismisses its view: where the hand took it, and where a throw at its speed would
     /// carry it, stands past the dismissal one of its ways.
     func dismisses(_ hand: LayoutItemHand) -> Bool {
-        guard let dismissal, let speed = hand.speed else { return false }
+        guard let dismissal, let velocity = hand.velocity else { return false }
 
-        let across = hand.at.x - hand.from.x + Self.carried(speed.x, by: throwing)
-        let down = hand.at.y - hand.from.y + Self.carried(speed.y, by: throwing)
+        let across = hand.at.x - hand.from.x + Self.carried(velocity.x, by: throwing)
+        let down = hand.at.y - hand.from.y + Self.carried(velocity.y, by: throwing)
         let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
         return ways.contains { dismissal.directions.contains($0.0) && $0.1 > dismissal.beyond }
     }
@@ -129,11 +129,11 @@ extension MotionLayout.Run {
         }
 
         var placement = hand.held(shown[index], over: shown)
-        if let speed = hand.speed, !hand.dismissed {
+        if let thrown = hand.velocity, !hand.dismissed {
             let lanes = LayoutShift(from: placement, to: poses[index]).lanes
             var velocity = LayoutShift.none.lanes
-            velocity[LayoutShift.x] = speed.x
-            velocity[LayoutShift.y] = speed.y
+            velocity[LayoutShift.x] = thrown.x
+            velocity[LayoutShift.y] = thrown.y
             bodies.set(hand.identity, lanes: lanes, velocity: velocity, spring: spring(of: index), at: now)
             shown[index] = LayoutShift(lanes: lanes).applied(to: poses[index])
             states.item.wrappedValue = nil
@@ -141,9 +141,9 @@ extension MotionLayout.Run {
         }
         if hand.dismissed {
             let flew = hand.flew ?? now
-            let speed = flight(of: hand, in: room)
-            placement.bounds.x += speed.x * (now - flew) / 1_000
-            placement.bounds.y += speed.y * (now - flew) / 1_000
+            let flying = flight(of: hand, in: room)
+            placement.bounds.x += flying.x * (now - flew) / 1_000
+            placement.bounds.y += flying.y * (now - flew) / 1_000
             hand.flew = flew
             if !hand.gone, Self.outside(placement, room) {
                 hand.gone = true
@@ -158,15 +158,15 @@ extension MotionLayout.Run {
     /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's
     /// length a response of the world's spring.
     func flight(of hand: LayoutItemHand, in room: Rect) -> Point {
-        var speed = hand.speed ?? Point(x: 0, y: 0)
+        var velocity = hand.velocity ?? Point(x: 0, y: 0)
         let length = max(world.spring?.response ?? 0, 1) / 1_000
         let across = hand.at.x - hand.from.x, down = hand.at.y - hand.from.y
         if abs(down) >= abs(across) {
-            speed.y = down < 0 ? min(speed.y, -room.height / length) : max(speed.y, room.height / length)
+            velocity.y = down < 0 ? min(velocity.y, -room.height / length) : max(velocity.y, room.height / length)
         } else {
-            speed.x = across < 0 ? min(speed.x, -room.width / length) : max(speed.x, room.width / length)
+            velocity.x = across < 0 ? min(velocity.x, -room.width / length) : max(velocity.x, room.width / length)
         }
-        return speed
+        return velocity
     }
 
     /// Whether `placement` stands wholly outside `room`.
@@ -180,10 +180,10 @@ extension MotionLayout.Run {
     func dismissed(_ identity: Int) {
         guard let dismissal, let slot = slots.first(where: { $0.identity == identity }) else { return }
 
-        let (handler, item, runs) = (dismissal.handler, slot.item, states.dismissals)
+        let (handler, id, runs) = (dismissal.handler, slot.item[keyPath: path], states.dismissals)
         libraryTask {
             handler.gate.runs(for: runs).start(
-                { try await handler.run(item) }, handler.gate.policy, payload: nil, owner: runs)
+                { try await handler.run(id) }, handler.gate.policy, payload: nil, owner: runs)
         }
     }
 }

@@ -61,11 +61,7 @@
     public func perform(_ call: HostActCall) {
         switch call.act {
         case .currentTime:
-            let now = toolkit.localTime()
-            reply(call, HostActs.currentTime(
-                hour: now.hour, minute: now.minute, second: now.second, millisecond: now.millisecond))
-        case .currentTimeZone:
-            reply(call, [.string(toolkit.localZone())])
+            reply(call, HostActs.currentTime(toolkit.localTime()))
         case .utcOffset:
             let (zone, day) = HostActs.utcOffsetQuestion(call)
             guard let minutes = toolkit.utcOffset(of: zone, on: day) else {
@@ -78,7 +74,7 @@
         case .share:
             guard let shared = HostShare(call) else { return fail(call, "the act offers nothing to share") }
             ask(call, .share(shared), in: AskedWindow(call))
-        case .openFiles, .saveFile, .readFile, .launchFile, .launchLink:
+        case .openFiles, .saveFile, .readFile, .launchFile, .launchAddress:
             guard let files else { return fail(call, notPerformed(call)) }
             perform(call, files: files)
         case .sendRequest:

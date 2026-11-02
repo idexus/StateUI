@@ -36,7 +36,7 @@ final class GestureTests: XCTestCase {
 
         renders.fire(events["swiped"] ?? -1, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(events["panUpdated"] ?? -1, with: [
-            .enumeration(GesturePhase.changed.rawValue), .numbers([12.5, -3]), .numbers([400, -80]),
+            .enumeration(GesturePhase.changed.rawValue), .numbers([12.5, -3]), .numbers([400, -80]), .numbers([62.5, 47]),
         ])
         renders.fire(events["pinchUpdated"] ?? -1, with: [
             .enumeration(GesturePhase.ended.rawValue), .number(1.25), .numbers([0.5, 0.75]), .number(2),
@@ -49,14 +49,13 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(swipes, [.left])
 
         XCTAssertEqual(pans.first?.phase, .changed)
-        XCTAssertEqual(pans.first?.totalX, 12.5)
-        XCTAssertEqual(pans.first?.totalY, -3)
-        XCTAssertEqual(pans.first?.velocityX, 400)
-        XCTAssertEqual(pans.first?.velocityY, -80)
+        XCTAssertEqual(pans.first?.total, Point(x: 12.5, y: -3))
+        XCTAssertEqual(pans.first?.velocity, Point(x: 400, y: -80))
+        XCTAssertEqual(pans.first?.at, Point(x: 62.5, y: 47))
 
         XCTAssertEqual(pinches.first?.phase, .ended)
         XCTAssertEqual(pinches.first?.scale, 1.25)
-        XCTAssertEqual(pinches.first?.scaleOrigin, Point(x: 0.5, y: 0.75))
+        XCTAssertEqual(pinches.first?.pivot, Point(x: 0.5, y: 0.75))
         XCTAssertEqual(pinches.first?.velocity, 2)
 
         XCTAssertEqual(turns.first?.phase, .changed)
@@ -83,14 +82,15 @@ final class GestureTests: XCTestCase {
 
         renders.fire(id, with: [.enumeration(GesturePhase.changed.rawValue), .numbers([12.5, 0])])
         renders.fire(id, with: [
-            .number(Double(GesturePhase.changed.rawValue)), .numbers([1, 2]), .numbers([0, 0]),
+            .number(Double(GesturePhase.changed.rawValue)), .numbers([1, 2]), .numbers([0, 0]), .numbers([1, 2]),
         ])
+        renders.fire(id, with: [.enumeration(GesturePhase.began.rawValue), .numbers([0, 0]), .numbers([0, 0])])
         renders.fire(id, with: [])
 
         XCTAssertEqual(pans, 0)
 
         renders.fire(id, with: [
-            .enumeration(GesturePhase.began.rawValue), .numbers([0, 0]), .numbers([0, 0]),
+            .enumeration(GesturePhase.began.rawValue), .numbers([0, 0]), .numbers([0, 0]), .numbers([10, 20]),
         ])
         XCTAssertEqual(pans, 1)
     }
@@ -311,7 +311,7 @@ final class GestureTests: XCTestCase {
         let patch = renders.render(
             VStack {
                 Text("Alpha")
-                    .draggable(text: "Alpha")
+                    .dragText("Alpha")
                     .id("source")
 
                 ZStack {
@@ -324,7 +324,7 @@ final class GestureTests: XCTestCase {
 
         let source = patch.child("source")
         XCTAssertEqual(source?.props["dragText"], .string("Alpha"))
-        XCTAssertEqual(source?.props["canDrag"], .bool(true))
+        XCTAssertNil(source?.props["isDraggable"], "a view carrying text is draggable unless it says otherwise")
 
         let target = patch.child("target")
         XCTAssertEqual(target?.props["allowsDrop"], .bool(true),

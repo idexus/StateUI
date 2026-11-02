@@ -29,7 +29,7 @@
 
                 s.settle(for: Self.pageSeconds) { heard.values.contains { $0.hasPrefix("navigated") } }
                 s.expect(heard.values.last, "navigated success")
-                s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseURL: nil))
+                s.expect(try s.held(WebViewContract.source, on: s.element("web")), .html(Self.page("First"), baseAddress: nil))
             },
             ConformanceCase("aScriptsAnswerComesBack", proves: [
                 Covered(WebViewContract.evaluateJavaScript),

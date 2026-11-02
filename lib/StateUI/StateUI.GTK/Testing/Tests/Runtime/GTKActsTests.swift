@@ -8,7 +8,7 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
-/// A page that asks the host the time of day, its zone, and zones' distances from UTC on a winter's and a summer's
+/// A page that asks the host the day and the time of day, and zones' distances from UTC on a winter's and a summer's
 /// day; then a zone nobody knows; then a word to a screen reader.
 private struct AskingPage: View {
     @Environment(\.application) private var application
@@ -18,19 +18,19 @@ private struct AskingPage: View {
         VStack {
             Text(said)
             Button("Time").onClicked(.ignoreWhileRunning) {
-                let time = try await ClockTime.now()
-                let zone = try await TimeZoneInfo.local()
-                let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
-                let winter = try await TimeZoneInfo.utcOffset(
+                let time = try await application.clock.now()
+                let today = try await application.clock.today()
+                let tokyo = try await application.clock.utcOffset(of: "Asia/Tokyo")
+                let winter = try await application.clock.utcOffset(
                     of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
-                let summer = try await TimeZoneInfo.utcOffset(
+                let summer = try await application.clock.utcOffset(
                     of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 7, day: 15))
-                said = "\((0..<24).contains(time.hour)) \(zone.contains("/")) \(tokyo.components.seconds / 60) "
+                said = "\((0..<24).contains(time.hour)) \(today.year >= 2026) \(tokyo.components.seconds / 60) "
                     + "\(winter.components.seconds / 60) \(summer.components.seconds / 60)"
             }
             Button("Nowhere").onClicked(.ignoreWhileRunning) {
                 do {
-                    _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
+                    _ = try await application.clock.utcOffset(of: "Nowhere/Else")
                     said = "answered"
                 } catch {
                     said = "refused"
@@ -155,16 +155,18 @@ final class GTKActsTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running { QuestionsPage() }
 
-            try host.press("Confirm")
-            try host.answer(.cancel)
-            try host.press("Choose")
-            try host.answer(.cancel)
-            try host.press("Prompt")
-            try host.answer(.cancel)
-            try host.press("Choose")
-            try host.dismiss()
-            let expected = "confirmed false; chose nothing; typed nothing; chose nothing; "
-            host.settle { host.said == expected }
+            // Each answer lands before the next press, as a user's does: a press while the button's run still waits
+            // for its answer is ignored, as `.ignoreWhileRunning` says.
+            var expected = ""
+            for (button, answers, said) in [
+                ("Confirm", true, "confirmed false; "), ("Choose", true, "chose nothing; "),
+                ("Prompt", true, "typed nothing; "), ("Choose", false, "chose nothing; "),
+            ] {
+                try host.press(button)
+                if answers { try host.answer(.cancel) } else { try host.dismiss() }
+                expected += said
+                host.settle { host.said == expected }
+            }
 
             XCTAssertEqual(host.said, expected)
         }

@@ -36,6 +36,6 @@ enum GTKBackends {
     /// `data:` address holding it.
     @MainActor private static func shown(by web: GTKWebView) -> WebViewSource? {
         guard let address = web.address else { return nil }
-        return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
+        return WebDocument.document(at: address).map { .html($0, baseAddress: nil) } ?? .address(address)
     }
 }

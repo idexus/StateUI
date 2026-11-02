@@ -419,7 +419,9 @@ WinUI draws an SVG into pixels and takes those pixels for DIPs. The host has
 it drawn at the size it shows at in its room, in its own proportions, at the
 display's scale - again only for more pixels, so a size in motion does not
 draw it every frame - and WinUI's `Stretch` fits it, fills with it, or
-centers it. A centered SVG gives the image its declared size, in the middle
+centers it. An SVG declaring its size is drawn once as it opens, when its
+layout places it, and not at WinUI's own size first: each drawing is a
+rasterization the picture stands blank through. A centered SVG gives the image its declared size, in the middle
 of the room. A stretched picture keeps no proportions and is drawn at its
 room's size: WinUI fits an SVG into its pixels in the SVG's own proportions,
 leaving bands, so the relay reads a copy of it that has given them up - and

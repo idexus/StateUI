@@ -62,7 +62,7 @@ final class WinUIWebView: WinUIControl {
         guard let source else { return }
         loaded = source
         switch source {
-        case .url(let address): go((address, nil))
+        case .address(let address): go((address, nil))
         case .html(let document, let base?): go((Self.asAsked(base), document))
         case .html(let document, nil):
             written += 1
@@ -136,7 +136,7 @@ final class WinUIWebView: WinUIControl {
     /// it, else the address it stands at.
     var shownSource: WebViewSource {
         if case .html(let document, _)? = loaded, let loaded, read("document") == document { return loaded }
-        return .url(read("address"))
+        return .address(read("address"))
     }
 
     /// Ends the processes drawing its pages, as the system ends a web process; whether any was ended.

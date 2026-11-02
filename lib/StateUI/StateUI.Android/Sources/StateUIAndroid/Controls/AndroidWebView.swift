@@ -48,7 +48,7 @@ final class AndroidWebView: AndroidView {
         Java.frame {
             let agent = agent.flatMap(Java.string)
             switch source {
-            case .url(let address)?:
+            case .address(let address)?:
                 Java.call(reference, JavaAPI.loadWeb, .object(agent), .object(Java.string(address)))
             case .html(let document, nil)?:
                 Java.call(

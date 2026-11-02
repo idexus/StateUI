@@ -52,7 +52,7 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
     public func show(_ source: WebViewSource?, userAgent agent: String?) {
         customUserAgent = agent
         switch source {
-        case .url(let address)?:
+        case .address(let address)?:
             guard let url = URL(string: address) else { return }
             shown = URLRequest(url: url)
             load(URLRequest(url: url))

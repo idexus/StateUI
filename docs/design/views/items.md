@@ -10,16 +10,25 @@ virtualization stands inside the platform's.
 
 Every entry the list shows has an identity, and the element carries all of
 them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
-the list's header and footer, and each group by its name with its header,
-items and footer - the name `.id` gave it, else its place, two groups of one
-name told apart as two items are, since a host knows a group by its name. A
-list with no groups is one section with neither. An item's identity is
-`String(describing:)` of its id, and in a list of groups the group's name, a
-unit separator, and that - so two groups may hold equal items. A header or a
-footer is named after its group with a record separator (`\u{1E}header`),
-which no author writes. Two items that describe alike are told apart as two
-repeated `.id()`s are, and a complaint says so: a platform's collection
-refuses two cells of one identity.
+the list's header and footer, and each section by its name with its header,
+items and footer - the name `.id` gave it, else its place, two sections of one
+name told apart as two items are, since a host knows a section by its name. A
+list with no sections is one section with neither. An item's identity is
+`String(describing:)` of its id, and in a list of sections the section's name,
+a unit separator, and that - so two sections may hold equal items. A header or
+a footer is named after its section with a record separator (`\u{1E}header`),
+which no author writes.
+
+An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
+and its words only name it. The list keeps, from one build to the next, the
+identity each value stood under (`ItemsBook`), and a value still on the list
+stands under it again, wherever it now is, before any new value is named. Two
+values that describe alike are two items, the second named with a variant of
+the words, and each keeps its own across a reorder: were the identities
+handed out by words in order, two such items swapping places would leave every
+identity where it was, and the host would move nothing. The same value twice
+is a repeated identity, told apart as two repeated `.id()`s are, and a
+complaint says so: a platform's collection refuses two cells of one identity.
 
 The entries cross in the patch as any property does, so they are compared,
 sent only when they change, and printed by the inspector. What a host needs
@@ -51,7 +60,7 @@ reaches the host as any child's does.
 
 ## A source a build
 
-What one build of the ItemsView holds - its groups, the identities worked
+What one build of the ItemsView holds - its sections, the identities worked
 out from them, and how each entry is made - is one object, `ItemsSource`, made
 by the view's initializer and so new each time the parent builds the list
 again. An entry's inputs are its identity and that object: while only the

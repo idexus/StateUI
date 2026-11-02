@@ -15,17 +15,19 @@ import XCTest
 /// the refusal mean something: the two listings differ in that one spelling, so
 /// a failure is the spelling's and never a typo's.
 ///
-/// Compiled as an application compiles - a plain `import StateUI` - with the
+/// Compiled as an application compiles - a plain `import StateUI`, and Observation - with the
 /// compiler and the module the handbook's examples are checked against; a
 /// road a host takes, as its registrations do, with `@_spi(Host)`.
 @MainActor
 final class ContractRoadsTests: XCTestCase {
-    /// A road the API closes, and the road it offers to the same place.
+    /// A road the API closes, and the road it offers to the same place. A road the language lets the library
+    /// only warn of is `warned`: both listings are compiled with warnings as errors.
     private struct Road {
         let name: String
         let closed: String
         let open: String
         var host = false
+        var warned = false
     }
 
     /// An application's own control, acts and event - what every listing leans
@@ -54,6 +56,14 @@ final class ContractRoadsTests: XCTestCase {
             static let changed = ElementEvent<Self, Bool>("Notes.Changed")
 
             static let members: [any ContractMember] = [export, log, changed]
+        }
+
+        @Observable final class ObservedProfile {
+            var name = ""
+        }
+
+        final class Profile {
+            @State var name = ""
         }
         """
 
@@ -89,12 +99,12 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
-            closed: #"_ = try await stateUICall(Act("Notes.Export"), [.string("draft")])"#,
-            open: #"_ = try await stateUICall(NotesContract.export, "draft")"#),
+            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.Export"), [.string("draft")])"#,
+            open: #"_ = try await Environment(\.application).wrappedValue.call(NotesContract.export, "draft")"#),
         Road(
             name: "an act sent by its token",
-            closed: #"stateUISend(Act("Notes.Log"), [.string("opened")])"#,
-            open: #"stateUISend(NotesContract.log, "opened")"#),
+            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.Log"), [.string("opened")])"#,
+            open: #"Environment(\.application).wrappedValue.tell(NotesContract.log, "opened")"#),
         Road(
             name: "an application's event heard by its token",
             closed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,
@@ -104,9 +114,18 @@ final class ContractRoadsTests: XCTestCase {
             closed: "_ = try Aim(TextField.self).target",
             open: "try await Aim(TextField.self).call(FocusElementContract.unfocus)"),
         Road(
+            name: "a conversion's way back answering another type than its source's",
+            closed: #"let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { String($0) })"#,
+            open: "let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })"),
+        Road(
             name: "a list scrolled to an identity of another type",
             closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
             open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),
+        Road(
+            name: "an @Observable model held in a state, whose writes would redraw nothing",
+            closed: "let held = State(wrappedValue: ObservedProfile()); _ = held",
+            open: "let held = State(wrappedValue: Profile()); _ = held",
+            warned: true),
         Road(
             name: "a fact of the host's written by the application",
             closed: "Device().battery.chargeLevel = 1",
@@ -223,8 +242,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Menu("File") { MenuItem("New") }"#),
         Road(
             name: "keys taken by a view that never holds the keyboard",
-            closed: #"_ = Text("Row").onKeyPressed(.upArrow) { _ in }"#,
-            open: #"_ = VStack { Text("Row") }.onKeyPressed(.upArrow) { _ in }"#),
+            closed: #"_ = Text("Row").onKeyPressed([.upArrow]) { _ in }"#,
+            open: #"_ = VStack { Text("Row") }.onKeyPressed([.upArrow]) { _ in }"#),
         Road(
             name: "the keyboard heard on a view that never takes it",
             closed: """
@@ -241,7 +260,7 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = try await Aim(TextField.self).focus()"),
         Road(
             name: "a fill inside a line",
-            closed: "_ = Line().x2(40).fill(.red)",
+            closed: "_ = Line().to(Point(40, 0)).fill(.red)",
             open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
         Road(
             name: "a corner's join on an ellipse",
@@ -481,8 +500,8 @@ final class ContractRoadsTests: XCTestCase {
 
         // Every listing in a file of its own, a road's two side by side.
         let listings = Self.roads.flatMap { road in
-            [(road: road.name, compiles: false, source: road.closed, host: road.host),
-             (road: road.name, compiles: true, source: road.open, host: road.host)]
+            [(road: road.name, compiles: false, source: road.closed, host: road.host, warned: road.warned),
+             (road: road.name, compiles: true, source: road.open, host: road.host, warned: road.warned)]
         }
         let files = try listings.enumerated().map { index, listing in
             let file = scratch.appendingPathComponent("road_\(index).swift")
@@ -492,7 +511,8 @@ final class ContractRoadsTests: XCTestCase {
 
         let outputs = CompilerOutputs(count: files.count)
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
-            outputs.set(index, DocumentationExamplesTests.compile(files[index], module: module, sdk: sdk))
+            outputs.set(index, DocumentationExamplesTests.compile(
+                files[index], module: module, sdk: sdk, warningsAsErrors: listings[index].warned))
         }
 
         for (index, listing) in listings.enumerated() {
@@ -515,6 +535,6 @@ final class ContractRoadsTests: XCTestCase {
             .joined(separator: "\n")
 
         let library = host ? "@_spi(Host) import StateUI" : "import StateUI"
-        return "\(library)\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
+        return "\(library)\nimport Observation\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
     }
 }

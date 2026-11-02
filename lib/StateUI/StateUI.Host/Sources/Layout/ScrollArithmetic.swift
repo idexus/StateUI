@@ -9,13 +9,13 @@
     /// The content's natural size for the width offered; a scroller along its width offers none.
     @MainActor
     public static func contentSize<Child: LayoutChild>(
-        of item: Child?, padding: Insets, orientation: ScrollOrientation, width offered: Double?
+        of item: Child?, padding: Insets, axes: ScrollAxes, width offered: Double?
     ) -> LayoutSize {
         guard let item else { return .zero }
 
         let values = item.values
         let (across, down) = insets(values.margin, padding)
-        let constrained = fitsWidth(orientation) ? offered.map { max(0, $0 - across) } : nil
+        let constrained = fitsWidth(axes) ? offered.map { max(0, $0 - across) } : nil
         let natural = item.size(offered: constrained)
         let width = values.horizontal == 3 && values.width == nil ? (constrained ?? natural.width) : natural.width
 
@@ -26,17 +26,17 @@
     /// `direction`.
     @MainActor
     public static func arrange<Child: LayoutChild>(
-        _ item: Child, padding: Insets, orientation: ScrollOrientation, in viewport: LayoutSize,
+        _ item: Child, padding: Insets, axes: ScrollAxes, in viewport: LayoutSize,
         direction: LayoutDirection
     ) -> (document: LayoutSize, place: Rect) {
         let values = item.values
         let margin = values.margin
         let (across, down) = insets(margin, padding)
-        let natural = item.size(offered: fitsWidth(orientation) ? max(0, viewport.width - across) : nil)
+        let natural = item.size(offered: fitsWidth(axes) ? max(0, viewport.width - across) : nil)
         let document = LayoutSize(
-            width: orientation == .horizontal || orientation == .both
+            width: axes.contains(.horizontal)
                 ? max(viewport.width, natural.width + across) : viewport.width,
-            height: orientation == .vertical || orientation == .both
+            height: axes.contains(.vertical)
                 ? max(viewport.height, natural.height + down) : viewport.height)
         let room = Rect(
             x: padding.start + margin.start,
@@ -59,8 +59,8 @@
     }
 
     /// Whether the content is held to the scroller's width: it scrolls only down, or not at all.
-    private static func fitsWidth(_ orientation: ScrollOrientation) -> Bool {
-        orientation == .vertical || orientation == .neither
+    private static func fitsWidth(_ axes: ScrollAxes) -> Bool {
+        !axes.contains(.horizontal)
     }
 
     /// The room the padding and the child's margin take, across and down.

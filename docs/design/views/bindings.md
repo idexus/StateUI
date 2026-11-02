@@ -73,7 +73,7 @@ part handed to one does not compile (core/state.md#parts-of-a-state).
 The twins sit on the element-side tiers - `VisualElement`, `View`, `Layout`,
 `Stack`, `Shape`, `TextInput`, and the control itself where the property is
 one control's own - and never on the `…Properties` protocols the value forms
-sit on. A `StyleBag` wears every property protocol there is, so a twin written
+sit on. A `Styling` wears every property protocol there is, so a twin written
 there would appear inside `Style<Text>`, where it would compile and mean
 nothing: a style is driven by nothing. The mixins have no element half, so
 their twins are written `where Self: VisualElement`.

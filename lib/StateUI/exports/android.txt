@@ -25,9 +25,6 @@ Button
   released()
 Canvas
   drawing
-  dragged()
-  pressed()
-  released()
 Capsule
   contentMode
   dash
@@ -118,16 +115,14 @@ Line
   contentMode
   dash
   dashPhase
+  from
   geometryTransform
   lineCap
   lineWidth
   stroke
-  x1
-  x2
-  y1
-  y2
+  to
 Link
-  destination
+  address
   text
   textCase
   textColor
@@ -210,11 +205,11 @@ Rectangle
   miterLimit
   stroke
 ScrollView
+  axes
   horizontalScrollIndicator
   isRefreshEnabled
   isRefreshing
   lineWidth
-  orientation
   padding
   scrollOffset
   shape
@@ -395,7 +390,6 @@ ZStack
   allowsDrop
   area
   background
-  canDrag
   dragText
   droppedFileTypes
   frame
@@ -408,6 +402,7 @@ ZStack
   holdDuration
   horizontalAlignment
   isAccessibilityHidden
+  isDraggable
   isEnabled
   isVisible
   keysTaken
@@ -466,15 +461,14 @@ ZStack
   chooseAction()
   confirm()
   currentTime()
-  currentTimeZone()
   evaluateJavaScript()
   focus()
   goBack()
   goForward()
   handlerFailed()
   hideOnScreenKeyboard()
+  launchAddress()
   launchFile()
-  launchLink()
   openFiles()
   persistSceneValue()
   persistValue()

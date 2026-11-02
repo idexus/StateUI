@@ -13,7 +13,7 @@ import UIKit
 ///     import NotesUI
 ///     import StateUIUIKit
 ///
-///     registerApplication()
+///     NotesApp.register()
 ///     StateUIUIKit.run()
 @MainActor
 public enum StateUIUIKit {

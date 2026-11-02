@@ -116,16 +116,24 @@ extension StatePart where Value: MutableCollection, Value.Index: Hashable & Send
     ///
     /// - Parameter index: which element, in the collection's own index space.
     public subscript(index: Value.Index) -> StatePart<Value.Element> {
-        let stand = stand
+        let (stand, reach) = (stand, reach)
+        let reaches = { reach() && stand().indices.contains(index) }
+        // A read once the collection no longer has the element answers it as it stood last, said once.
+        // Design: docs/design/core/state.md#an-element-gone
+        let last = LastElement(reaches() ? stand()[index] : nil)
         return StatePart<Value.Element>(
-            read: { wrappedValue[index] },
+            read: {
+                guard reaches() else { return last.answered() }
+                last.element = wrappedValue[index]
+                return last.element!
+            },
             write: { newValue in
                 var whole = stand()
                 whole[index] = newValue
                 wrappedValue = whole
             },
-            standing: { stand()[index] },
-            reaches: { [reach] in reach() && stand().indices.contains(index) },
+            standing: { reaches() ? stand()[index] : last.answered() },
+            reaches: reaches,
             lender: lender,
             lent: .step(index, from: lent),
             mailroom: mailroom)
@@ -143,6 +151,27 @@ extension StatePart {
 }
 
 extension StatePart: PostTarget {}
+
+/// The element a part of a collection reached last, which answers a read once the collection no longer has it.
+@MainActor
+final class LastElement<Element> {
+    var element: Element?
+
+    init(_ element: Element?) {
+        self.element = element
+    }
+
+    /// The element as it stood last, said once; a part that never reached its element has none to answer.
+    func answered() -> Element {
+        guard let element else {
+            preconditionFailure("A read through a part of a state of an element its collection does not have. "
+                + "Hand the element's identity rather than its index.")
+        }
+        complain("A read through a part of a state of an element its collection no longer has - the list shrank "
+            + "under it - answered the element as it stood last. Hand the element's identity rather than its index.")
+        return element
+    }
+}
 
 extension StatePart: BorrowedState {
     var lends: (lender: AnyObject, lent: AnyHashable?) { (lender, lent.map { AnyHashable($0) }) }

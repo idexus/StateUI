@@ -136,6 +136,18 @@ by its element (invalidation.md, an element reads what it was handed). There is 
 no wrapper for a part, and no part made of closures: a value the library does
 not own reaches a control through a class of `@State` fields that follows it.
 
+## An element gone
+
+A part of a collection's element - `$rows[2]`, `$rows[2].title` - may outlive
+the element: a handler keeps it while the list shrinks under it. Every road
+through it answers alike, said once: a write and a post are dropped, and a
+read answers the element as it stood the last time the part reached it - at
+its making or at its last read - so the caller carries on, as with any value
+the library could not use. A part made for an index the collection never had
+has nothing to answer: its read stops the program, naming the part. Handing
+an element's identity rather than its index is what keeps a part from going
+stale.
+
 ## Reading without recording
 
 `Binding.standing` and `StatePart.standing` read the value without
@@ -206,6 +218,20 @@ Text is no `LaneValue`: it has no lanes, and it goes through the text door
 alone. `plain` and the lane form of `setValue(_:on:mode:kind:)` refuse it by
 type; its own form takes the mode alone.
 
+## Three protocols, three capabilities
+
+A value's protocols are what the API refuses it by, each a capability the
+compiler checks: `StateValue` rides a state - lanes or text, what
+`Binding.convert` makes; `LaneValue` lies as lanes - what a lane property and
+a twin take, so text cannot reach the lane door; `Walked` has a half way -
+what a journey, `samples` and `@State(motion:)` take, so a `Bool` asked for
+its journey does not compile. Folding the first two into one protocol with a
+text kind would leave a generic caller to choose the door at run time, by a
+value a type decides now. An application's own value conforms to `LaneValue`,
+or `Walked` to move by a journey; text is `String`'s alone. Every conversion
+reads alike: `carried` and `init?(carried:)`, `propValue` and
+`init?(propValue:)`, `persistentValue` and `init?(persistentValue:)`.
+
 ## What the host writes back
 
 A host write is a write: it ends where this side's do, and the storage decides
@@ -256,6 +282,9 @@ wearing the theme (`ThemeWearing`): the storage keeps it whole and the
 element handing it on reads the theme, as for a color pair above. A material
 is shown as it stands, never walked: `.background($material)` is a plain
 channel, while `.background($color)` stays a journey the host animates.
+Lanes that are no material - a kind, a count or a choice that is no whole
+number, or none a material has, or more than the lanes hold - read as nil, so
+a host shows nothing of them rather than trapping.
 
 ## A write that lands
 
@@ -368,9 +397,11 @@ thing and are not. Both report writes, to different listeners. A `@State` calls
 the renderer; `@Observable` notifies whoever armed an observation scope around
 the read, and nothing here arms one. A write to such a model would leave the
 interface showing the old value with nothing failing anywhere. Holding one in a
-`@State` is therefore deprecated with a message naming the line - a warning, not
-a refusal, because the model still works as an object and an application that
-arms the tracking itself may hold one. A model declared elsewhere is bridged
+`@State` is therefore deprecated with a message naming the line - a warning,
+because no refusal can be written: an overload marked unavailable is passed over
+for the general `init(wrappedValue:)`, which fits every value, and the line
+compiles silently. `ContractRoadsTests` holds the warning, compiling that line
+with warnings as errors. A model declared elsewhere is bridged
 in the application by an adapter whose properties are `@State`: it copies the
 model's values inside `withObservationTracking` and again from its change
 handler, which arms the tracking anew - one way to tell a change, a write to a

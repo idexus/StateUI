@@ -27,7 +27,7 @@ final class HostRenderTests: XCTestCase {
         patch.motion = HostLayoutMotion(
             motion: .spring(response: .milliseconds(240), damping: 0.8),
             lanes: [.x, .height])
-        patch.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(120), .linear))
+        patch.transitions[.opacity] = HostTransition(motion: .eased(.milliseconds(120), curve: .linear))
         patch.driven = .replace([
             .opacity: HostStateBinding(state: 17, mode: .inOut, kind: .property, laneKind: .number),
         ])
@@ -115,7 +115,7 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertEqual(HostBoundary.value(for: binding), .text("Ada"))
         XCTAssertTrue(HostBoundary.report(.text("Grace"), through: binding))
-        XCTAssertEqual(name.get(), "Grace")
+        XCTAssertEqual(name.wrappedValue, "Grace")
     }
 
     func testANativeHostRefusesAReportThroughAnOutOnlyAttachment() throws {
@@ -131,7 +131,7 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertEqual(binding.mode, .out)
         XCTAssertFalse(HostBoundary.report(.text("Changed"), through: binding))
-        XCTAssertEqual(caption.get(), "Waiting")
+        XCTAssertEqual(caption.wrappedValue, "Waiting")
     }
 
     func testANativeHostCyclePublishesAnApplicationStateWrite() throws {
@@ -180,8 +180,8 @@ final class HostRenderTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(early.get(), "dark")
-        XCTAssertEqual(State(wrappedValue: 0, persistentKey: PersistentKey<Int>("host.count")).get(), 4)
+        XCTAssertEqual(early.wrappedValue, "dark")
+        XCTAssertEqual(State(wrappedValue: 0, persistentKey: PersistentKey<Int>("host.count")).wrappedValue, 4)
     }
 
     func testANativeHostDecodesAndEncodesAJourneyWithoutItsLaneLayout() throws {
@@ -214,7 +214,7 @@ final class HostRenderTests: XCTestCase {
     }
 
     func testANativeHostReportsOnlyTheJourneyGroupsItWalked() throws {
-        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), .linear))
+        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), curve: .linear))
         let renders = Renders()
         let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
 
@@ -250,7 +250,7 @@ final class HostRenderTests: XCTestCase {
     /// stands, and crosses on the next cycle. A snap's value stands against a
     /// frame the same way.
     func testAJourneyReportLeavesWhatTheProgramWroteSinceTheHostRead() throws {
-        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), .linear))
+        let fade = State(wrappedValue: 0.0, motion: .eased(.milliseconds(400), curve: .linear))
         let renders = Renders()
         let patch = renders.render(Text("moving").opacity(fade.projectedValue).node)
 

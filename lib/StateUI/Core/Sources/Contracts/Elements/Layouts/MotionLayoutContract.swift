@@ -21,7 +21,7 @@ public enum MotionLayoutContract: ElementContract {
     /// The orientation the hand moves the parameters in, horizontal or vertical, where a hand does: the host hears a
     /// finger, a pointer, a trackpad and a wheel moving that way over the element, and leaves the other to whatever
     /// holds it.
-    public static let translationOrientation = ElementProperty<Self, LayoutInput.Orientation>(
+    public static let translationOrientation = ElementProperty<Self, Orientation>(
         "translationOrientation", layer: .structure, travels: false)
 
     /// The hand moving over the element: its phase, how far it moved across and down since the last report, and -

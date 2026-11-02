@@ -27,7 +27,7 @@ enum AppKitRealization {
         + "menu item, a toolbar button, ⌘R."
 
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
@@ -109,9 +109,6 @@ enum AppKitRealization {
             + "hands the keyboard on all the same."),
         .notPlanned(TextFieldContract.showsClearButton,
             reason: "AppKit's text field has no button of its own that empties it."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .partial(ImageElementContract.contentMode, on: ButtonContract.self,
             missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
@@ -231,7 +228,6 @@ enum AppKitRealization {
         .complete(WindowContract.maximumWidth),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .complete(WindowContract.width),

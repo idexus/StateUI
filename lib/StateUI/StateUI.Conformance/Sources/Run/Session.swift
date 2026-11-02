@@ -15,6 +15,7 @@
     private let named: String
     private let report: (Failure) -> Void
     private var tree: MountedTree?
+    private var clock: TestClock?
 
     /// How many of the case's expectations did not hold.
     public private(set) var failures = 0
@@ -69,6 +70,7 @@
     ) {
         if tree == nil { driver.forgetWhatIsKept() }
         tree = driver.start(clock: clock, reducesMotion: reducesMotion, page)
+        self.clock = clock
     }
 
     /// The element the page gave the id `id`.
@@ -99,6 +101,7 @@
     public func start(clock: TestClock? = nil, application: @escaping @MainActor () -> any Application) throws {
         if tree == nil { driver.forgetWhatIsKept() }
         tree = try driver.start(clock: clock, application: application)
+        self.clock = clock
     }
 
     /// The specimen of `element` a page of `Specimens.page(_:_:)` holds: the one of the id "specimen", or the one
@@ -123,6 +126,10 @@
 
     /// Does `act` to `element` as the user does.
     public func perform(_ act: UserAct, on element: MountedElement) throws {
+        if act.goesAtTheClocksPace, clock == nil {
+            fail("\(act) goes as fast as the clock says: its case starts on a TestClock, "
+                + "not at the machine's pace")
+        }
         if element.parent?.type == .itemsView {
             note("\(act) on an item of ItemsView", element: NodeType.itemsView.name)
         } else if case .dragAndDrop = act {
@@ -257,7 +264,7 @@
         return try driven { try driver.fileDialog(over: root) }
     }
 
-    /// What the share sheet over the window offers now - its words, then its link on a line of its own; nil where
+    /// What the share sheet over the window offers now - its words, then its address on a line of its own; nil where
     /// none shows.
     public func shared() throws -> String? {
         guard let root = tree?.root else { return nil }

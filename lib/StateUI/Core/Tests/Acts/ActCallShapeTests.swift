@@ -140,7 +140,8 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// The captions a dialog says by itself speak the system's language, as the platform's own buttons do.
+    /// The captions a dialog says by itself speak the system's language, as the platform's own buttons do - every
+    /// question's buttons alike, its sentence empty where none is given.
     func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
@@ -154,6 +155,14 @@ final class ActCallShapeTests: XCTestCase {
         }
         try await check("alert", Self.usersWindow + [.string("Zapisano"), .string("Szkic jest bezpieczny"), .string("OK")]) {
             try await WindowSession().alert("Zapisano", message: "Szkic jest bezpieczny")
+        }
+        try await check("alert", Self.usersWindow + [.string("Zapisano"), .string(""), .string("OK")]) {
+            try await WindowSession().alert("Zapisano")
+        }
+        try await check("confirm", Self.usersWindow + [
+            .string("Usunąć szkic?"), .string(""), .string("OK"), .string("Anuluj"),
+        ]) {
+            _ = try await WindowSession().confirm("Usunąć szkic?")
         }
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
@@ -213,23 +222,23 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// A list scrolls to an identity - a group's name before an item's where the
-    /// list has groups - and says where it stands, after the view.
+    /// A list scrolls to an identity - a section's name before an item's where the
+    /// list has sections - and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
         try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
             try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
         }
         try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
-            try await named("list", ItemsView<String>.self).scrollTo("Pear", inGroup: "Fruit")
+            try await named("list", ItemsView<String>.self).scrollTo("Pear", inSection: "Fruit")
         }
     }
 
-    /// A list of groups scrolls to an item by the identity its own source wrote for it - its group's name before it
-    /// - without being told the group.
-    func testScrollingAGroupedListFindsTheItemsGroup() async throws {
+    /// A list of sections scrolls to an item by the identity its own source wrote for it - its section's name before
+    /// it - without being told the section.
+    func testScrollingASectionedListFindsTheItemsSection() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
-        Renders().render(stack([ItemsView(groups: [fruit]).aim(list).node], id: "root"))
+        Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
         drain()
 
         let task = Self.begin { try await list.scrollTo("Pear") }
@@ -252,19 +261,19 @@ final class ActCallShapeTests: XCTestCase {
 
     func testAskingTheTimeCrossesWithItsArgumentsInPlace() async throws {
         try await check("currentTime", []) {
-            _ = try? await ClockTime.now()
+            _ = try? await StandardEnvironment.application.clock.now()
         }
     }
 
-    func testAskingTheZoneCrossesWithItsArgumentsInPlace() async throws {
-        try await check("currentTimeZone", []) {
-            _ = try? await TimeZoneInfo.local()
+    func testAskingTheDayCrossesAsTheTimeDoes() async throws {
+        try await check("currentTime", []) {
+            _ = try? await StandardEnvironment.application.clock.today()
         }
     }
 
     func testAskingForAnOffsetCrossesWithItsArgumentsInPlace() async throws {
         try await check("utcOffset", [.string("Europe/Warsaw"), .numbers([2026, 1, 15])]) {
-            _ = try? await TimeZoneInfo.utcOffset(
+            _ = try? await StandardEnvironment.application.clock.utcOffset(
                 of: "Europe/Warsaw",
                 on: CalendarDate(year: 2026, month: 1, day: 15))
         }
@@ -276,7 +285,7 @@ final class ActCallShapeTests: XCTestCase {
     /// loud, and this is the test that says it.
     func testAskingForAnOffsetWithNoDayCrossesWithItsArgumentsInPlace() async throws {
         try await check("utcOffset", [.string("Europe/Warsaw"), .nothing]) {
-            _ = try? await TimeZoneInfo.utcOffset(of: "Europe/Warsaw")
+            _ = try? await StandardEnvironment.application.clock.utcOffset(of: "Europe/Warsaw")
         }
     }
 
@@ -330,7 +339,7 @@ final class ActCallShapeTests: XCTestCase {
 
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
         drain()
-        Renderer.shared.report(StateUIError(message: "boom"))
+        Renderer.shared.report(StateUIError.notPerformed(act: "export", reason: "boom"))
 
         taken(drain(), "handlerFailed", [.string("boom")], awaited: false)
     }
@@ -346,14 +355,14 @@ final class ActCallShapeTests: XCTestCase {
     /// Words for the clipboard, and a handler waiting until they are on it.
     func testWordsForTheClipboardCrossWithTheirArgumentsInPlace() async throws {
         try await check("writeClipboard", [.string("Copied")]) {
-            try await StandardEnvironment.application.clipboard.write(text: "Copied")
+            try await StandardEnvironment.application.clipboard.write("Copied")
         }
     }
 
     /// The clipboard read, asked with no arguments, a handler waiting for its words.
     func testReadingTheClipboardCrossesWithItsArgumentsInPlace() async throws {
         try await check("readClipboard", []) {
-            _ = try? await StandardEnvironment.application.clipboard.text()
+            _ = try? await StandardEnvironment.application.clipboard.read()
         }
     }
 
@@ -392,10 +401,10 @@ final class ActCallShapeTests: XCTestCase {
     /// The window, then the words and the link - absent ones as nothing, in place.
     func testWhatIsSharedCrossesWithItsArgumentsInPlace() async throws {
         try await check("share", Self.usersWindow + [.string("Notes"), .string("https://www.swift.org")]) {
-            _ = try await WindowSession().share(text: "Notes", link: "https://www.swift.org")
+            _ = try await WindowSession().share(text: "Notes", address: "https://www.swift.org")
         }
         try await check("share", Self.usersWindow + [.nothing, .string("https://www.swift.org")]) {
-            _ = try await WindowSession().share(link: "https://www.swift.org")
+            _ = try await WindowSession().share(address: "https://www.swift.org")
         }
     }
 
@@ -470,7 +479,7 @@ final class ActCallShapeTests: XCTestCase {
 
     /// An address launched crosses as written.
     func testALinkCrossesAsWritten() async throws {
-        try await check("launchLink", [.string("https://www.swift.org")]) {
+        try await check("launchAddress", [.string("https://www.swift.org")]) {
             _ = try await StandardEnvironment.application.launch("https://www.swift.org")
         }
     }

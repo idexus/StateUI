@@ -1,4 +1,4 @@
-# revision 19.1
+# revision 21.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -19,11 +19,11 @@ CheckBox.area: ✅
 CheckBox.frameChanged: ✅
 CheckBox.layoutBody: ✅
 CheckBox.panYChannel: ✅
-ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
@@ -93,11 +93,11 @@ Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.layoutBody: ✅
 Picker.panYChannel: ✅
-Polygon.canDrag: ✓ dragAndDrop on Polygon: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.dragStarting: ✓ dragAndDrop on Polygon: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.dragText: ✓ dragAndDrop on Polygon: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Polygon.isDraggable: ✓ dragAndDrop on Polygon: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
@@ -149,20 +149,20 @@ Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
 Spinner.tapped: ✅
-Stepper.canDrag: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragText: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Stepper.isDraggable: ✓ dragAndDrop on Stepper: the relay's drag reports told by the driver, no drag WinUI began
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the relay's report of the manipulation handed to the host, no touch sent
-Text.canDrag: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.dragEnded: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.dragStarting: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.dragText: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Text.isDraggable: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the relay's drop report told the driver's files, no drag WinUI began
 TextEditor.frameChanged: ✅

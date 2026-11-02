@@ -33,7 +33,7 @@ value written out as text.
 
 ## Flag sets carry bits
 
-`FontAttributes`, `TextDecorations`, `SwipeDirection` and `SafeAreaEdges` are option sets, so `.underline` and
+`FontAttributes`, `TextDecorations`, `SwipeDirection`, `SafeAreaEdges`, `ScrollAxes` and `KeyModifiers` are option sets, so `.underline` and
 `[.underline, .strikethrough]` both work. Their bits are StateUI's own by the same rule, each written out
 and rising in declaration order - not always from `1 << 0`: `FontAttributes.italic` is `1 << 1` - and a
 composite such as `.all` is the OR of its parts. A

@@ -225,8 +225,8 @@ tooltip is not what a screen reader is sure to read.
 
 Gestures belong to every view, so a stack holding a whole row, an Image or a
 Text can answer one; a list row can be a view with a tap recognizer rather
-than a button disguised as a container. Tap, hold, swipe, pan, pinch,
-pointer, drag and drop are described.
+than a button disguised as a container. Tap, hold, swipe, pan, pinch, two
+fingers turning, pointer, drag and drop are described.
 
 A recognizer is added to the native view when the tree first carries a handler
 for it and kept for as long as it does, as a control's own events are

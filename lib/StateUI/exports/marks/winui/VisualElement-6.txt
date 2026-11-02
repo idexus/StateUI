@@ -1,4 +1,4 @@
-# revision 22.2
+# revision 24.2
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
 Button.zIndex: ✅
 Canvas.accessibilityHint: ✅

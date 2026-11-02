@@ -59,9 +59,6 @@ public enum WindowContract: ElementContract {
     public static let minimumWidth = ElementProperty<Self, Double>(
         "minimumWidth", layer: .native, moves: .width)
 
-    /// The window came back from out of sight.
-    public static let resumed = ElementEvent<Self, Void>("resumed", layer: .adaptive)
-
     /// The window went out of sight.
     public static let stopped = ElementEvent<Self, Void>("stopped", layer: .adaptive)
 
@@ -88,6 +85,6 @@ public enum WindowContract: ElementContract {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         activated, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
-        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, resumed, stopped, title, width, windowType, windowValue, x, y,
+        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, stopped, title, width, windowType, windowValue, x, y,
     ]
 }

@@ -239,7 +239,7 @@ extension View {
     ///         .fill(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
-    ///             if pan.phase == .changed { offsetX = pan.totalX }
+    ///             if pan.phase == .changed { offsetX = pan.total.x }
     ///         }
     ///
     /// The totals are measured from where the pan began.
@@ -255,8 +255,8 @@ extension View {
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated) { phase, total, velocity in
-                try handler(PanUpdate(phase: phase, total: total, velocity: velocity))
+            $0.addHandler(ViewContract.panUpdated) { phase, total, velocity, at in
+                try handler(PanUpdate(phase: phase, total: total, velocity: velocity, at: at))
             }
         }
     }
@@ -300,23 +300,23 @@ extension View {
     /// handler scales what it held when the pinch began; `velocity` is how
     /// fast the scale changes.
     public func onPinchUpdated(_ handler: @escaping @MainActor (PinchUpdate) throws -> Void) -> Modified {
-        onEvent(ViewContract.pinchUpdated) { phase, scale, origin, velocity in
-            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        onEvent(ViewContract.pinchUpdated) { phase, scale, pivot, velocity in
+            try handler(PinchUpdate(phase: phase, scale: scale, pivot: pivot, velocity: velocity))
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, origin, velocity in
-            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, pivot, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, pivot: pivot, velocity: velocity))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPinchUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin, velocity in
-            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, pivot, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, pivot: pivot, velocity: velocity))
         }
     }
 
@@ -482,27 +482,47 @@ extension View {
 
     // MARK: Drag and drop
 
-    /// Makes the view draggable, carrying `text` with it.
+    /// The text a drag of the view carries: a view carrying text can be dragged.
     ///
     ///     Text(item)
-    ///         .draggable(text: item)
+    ///         .dragText(item)
     ///
-    /// Text is the portable drag payload. `onDragStarting` runs when the drag
-    /// starts, too late to decide what is carried: a native drag needs its
-    /// payload at once.
-    public func draggable(
-        text: String,
-        canDrag: Bool = true,
-        onDragStarting: (@MainActor () throws -> Void)? = nil
-    ) -> Modified {
-        modified {
-            $0.write(ViewContract.dragText, text)
-            $0.write(ViewContract.canDrag, canDrag)
+    /// Text is the portable drag payload, said before any drag starts: a native drag needs its payload at once.
+    public func dragText(_ value: String) -> Modified {
+        setValue(ViewContract.dragText, value)
+    }
 
-            if let onDragStarting = onDragStarting {
-                $0.addHandler(ViewContract.dragStarting.token, onDragStarting)
-            }
-        }
+    /// `dragText` from a state, `$x`: the host writes each new text, and no view is rebuilt for it.
+    public func dragText(_ state: Binding<String>) -> Modified {
+        words(ViewContract.dragText, by: state)
+    }
+
+    /// Whether the view carrying `dragText` can be dragged now - true unless said.
+    ///
+    ///     Text(item).dragText(item).isDraggable(!editing)
+    public func isDraggable(_ value: Bool) -> Modified {
+        setValue(ViewContract.isDraggable, value)
+    }
+
+    /// `isDraggable` from a state, `$x`: the host sets each new value as it stands, and no view is rebuilt for it.
+    public func isDraggable(_ state: Binding<Bool>) -> Modified {
+        twin(ViewContract.isDraggable, by: state)
+    }
+
+    /// Runs as a drag of the view starts - too late to change what it carries.
+    public func onDragStarting(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(ViewContract.dragStarting, handler)
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragStarting, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragStarting, gate: gate, handler)
     }
 
     /// Runs when a drag that started here ends, wherever it ended.
@@ -732,8 +752,8 @@ private func swiped(
 /// What an awaiting pan's handler runs: `handler`, given where the pan stands.
 private func panned(
     _ handler: @escaping ValueEventHandler<PanUpdate>
-) -> ValueEventHandler<GesturePhase, Point, Point> {
-    { phase, total, velocity in try await handler(PanUpdate(phase: phase, total: total, velocity: velocity)) }
+) -> ValueEventHandler<GesturePhase, Point, Point, Point> {
+    { phase, total, velocity, at in try await handler(PanUpdate(phase: phase, total: total, velocity: velocity, at: at)) }
 }
 
 /// What an awaiting drop's handler runs: `handler`, given the dropped files of `types`, where there are any.

@@ -21,18 +21,18 @@
     /// A scroller at its origin, not laid out yet.
     public init() {}
 
-    /// The tree wrote `offset` for a scroller along `orientation`: where to move it now; nil where it asks nothing,
+    /// The tree wrote `offset` for a scroller along `axes`: where to move it now; nil where it asks nothing,
     /// or waits for the first layout.
-    public mutating func written(_ offset: Point?, orientation: ScrollOrientation) -> Point? {
+    public mutating func written(_ offset: Point?, axes: ScrollAxes) -> Point? {
         // Before the first layout the last offset written waits, one back where the scroller stands as nothing.
-        if !laidOut, orientation != .neither, let offset, offset.x.isFinite, offset.y.isFinite {
+        if !laidOut, !axes.isEmpty, let offset, offset.x.isFinite, offset.y.isFinite {
             waiting = ScrollArithmetic.differs(offset, standing) ? offset : nil
             return nil
         }
-        guard let target = ScrollArithmetic.offsetWritten(offset, standing: standing, orientation: orientation) else {
+        guard let target = ScrollArithmetic.offsetWritten(offset, standing: standing, axes: axes) else {
             return nil
         }
-        guard laidOut || orientation == .neither else {
+        guard laidOut || axes.isEmpty else {
             waiting = target
             return nil
         }

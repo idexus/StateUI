@@ -235,6 +235,12 @@ final class GTKRenderer {
 }
 
 extension GTKRenderer: HostPresenter {
+    /// The zone the desktop tells no change of, read again as the application comes back to the front.
+    /// Design: docs/design/host/runtime.md#facts-read-again-at-the-front
+    func readEnvironmentAgain() {
+        environmentChanged()
+    }
+
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { showWindows() } else { reportDisplayOnceRealized() }
         for popover in runtime.tree.takeWaitingPopovers() { popover.gtk.configurePopover() }

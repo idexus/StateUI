@@ -12,7 +12,6 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
-import android.view.MotionEvent;
 import android.view.View;
 import java.util.ArrayDeque;
 
@@ -20,7 +19,7 @@ import java.util.ArrayDeque;
  * A canvas: StateUI's drawing instructions replayed in the order they were written, inside the view's own
  * bounds, in points. The Swift host sends the whole drawing in one call - each instruction's kind and colors,
  * a text's alignments and index and a path's count of curves as ints, its numbers as floats, its text as
- * strings, an arc as the curves it runs along - and a finger's press, drag and release come back in points.
+ * strings, an arc as the curves it runs along. A press on it is a view's, heard as every view hears one.
  */
 final class StateUICanvasView extends View {
     /** The instructions' kinds, as StateUI numbers them. */
@@ -32,10 +31,6 @@ final class StateUICanvasView extends View {
             RESTORE_STATE = 22;
 
     /** A path command's kinds, as the Swift host numbers them, each followed by its points. */
-    /** A finger's touch on the canvas, as the Swift host numbers it. */
-    // Swift: AndroidCanvasTouch
-    private static final int PRESSED = 0, DRAGGED = 1, RELEASED = 2;
-
     // Swift: HostCurveCommand.Kind
     private static final int MOVE = 0, LINE = 1, CUBIC = 2, QUADRATIC = 3, CLOSE = 4;
 
@@ -238,20 +233,5 @@ final class StateUICanvasView extends View {
         canvas.translate(box.left, top);
         lines.draw(canvas);
         canvas.restore();
-    }
-
-    /** A finger's press, drag and release, reported in points. */
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX() / density;
-        float y = event.getY() / density;
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: StateUIHost.canvasTouched(view, PRESSED, x, y); return true;
-            case MotionEvent.ACTION_MOVE: StateUIHost.canvasTouched(view, DRAGGED, x, y); return true;
-            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_CANCEL:
-                StateUIHost.canvasTouched(view, RELEASED, x, y);
-                return true;
-            default: return super.onTouchEvent(event);
-        }
     }
 }

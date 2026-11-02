@@ -128,6 +128,7 @@ Text()
     }
 ```
 
+A label's runs are written as statements, which a `TextSpanBuilder` collects.
 `TextSpan` is structural text content, not a `View`: it stands among a label's
 runs and nowhere else. It can carry text, font, decoration, line-height,
 foreground, and run background properties, but it has no independent frame,
@@ -265,6 +266,11 @@ SearchField($query)
         if query.isEmpty { query = "All notes" }
     }
 ```
+
+A one-line field nothing sizes - a `TextField` or a `SearchField` in a row -
+stands at least as wide as twenty digits and as its placeholder, in its own
+font, on every platform; a width, a `.fill` column or an area given to it
+stands instead.
 
 `cursorPosition` and `selectionLength` place the native caret and selection;
 the host does not report them back. The host remains responsible for valid
@@ -432,7 +438,7 @@ says how far along measurable work is:
 @State var done = 3.0
 
 VStack {
-    Spinner(loading)
+    Spinner($loading)
         .height(48)
 
     Switch($loading)
@@ -449,13 +455,13 @@ VStack {
 ```
 
 `isAnimating`, the spinner's one property, says whether it turns. A still
-spinner is invisible on most platforms, so `Spinner(loading)` shows it only
+spinner is invisible on most platforms, so `Spinner($loading)` shows it only
 while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
 same property as the modifier: `ProgressBar().progress(0.4)` sets what
-`ProgressBar(0.4)` sets, `.progress($done)` carries a state the host animates
-to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
+`ProgressBar(0.4)` sets, `ProgressBar($done)` carries a state the host animates
+to each new value, and `Spinner($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
 anything back.
 
@@ -581,7 +587,7 @@ VStack {
 StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
-`dotShape(.square)` draws squares. Given items,
+`dotShape(.square)` draws squares - a `DotShape`, `.circle` unless said. Given items,
 `PositionDots(items) { … }` shows each item's own mark, the current one
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
@@ -595,9 +601,9 @@ application the system gives it, as `application.launch` does:
 @State var help = "https://www.swift.org"
 
 VStack {
-    Link("Terms of use", destination: "https://www.swift.org/legal")
-    Link("Write to us", destination: "mailto:hello@example.com")
-    Link("Help", destination: $help)
+    Link("Terms of use", address: "https://www.swift.org/legal")
+    Link("Write to us", address: "mailto:hello@example.com")
+    Link("Help", address: $help)
         .onClicked { print("Help opened") }
 }
 ```
@@ -609,7 +615,10 @@ platform's accessibility has the role - Android's has none. StateUI
 opens the address as the user chooses the link, before its `onClicked`
 handlers run, so a handler only does what else the click means; an address
 the platform will not open opens nothing. Given a binding, the link takes the
-address from the state as it changes, with no render.
+address from the state as it changes, with no render. A link stands at its
+words' size at the start of its slot - read and clicked on its words, as
+every platform's own link is - where another view fills it; it fills or
+centers as any view does when told, `.horizontalAlignment(.center)`.
 
 ## Web content
 
@@ -661,16 +670,16 @@ Grid {
 
 A script answers what it evaluated to as text: words as they are, a number as
 it is written, anything else as JSON, and an empty string for no value. A
-navigation is heard as it starts, with why - a new page, back, forward, the
-page again - and as it ends, with how; the web process ending under the view
+navigation is heard as it starts, a `WebNavigation` with why - a new page, back, forward, the
+page again - and as it ends, a `WebNavigated` with how; the web process ending under the view
 is heard too, and `reload()` brings the page back:
 
 ```swift
 @State var status = "nothing has loaded yet"
 
 WebView("https://example.com")
-    .onNavigating { navigation in status = "going to \(navigation.url)" }
-    .onNavigated { navigated in status = "\(navigated.result): \(navigated.url)" }
+    .onNavigating { navigation in status = "going to \(navigation.address)" }
+    .onNavigated { navigated in status = "\(navigated.result): \(navigated.address)" }
     .onProcessTerminated { status = "the page's process ended" }
 ```
 
@@ -718,19 +727,20 @@ or on a marker's details:
 @State var said = "tap the map or a marker"
 
 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
-    .mapType(.hybrid)
+    .type(.hybrid)
     .markers {
         Marker(at: Location(latitude: 50.0540, longitude: 19.9354))
-            .label("Wawel Castle")
+            .title("Wawel Castle")
             .subtitle("Wawel 5")
             .type(.place)
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }
-    .onMapClicked { place in said = "\(place.latitude), \(place.longitude)" }
+    .onLocationTapped { place in said = "\(place.latitude), \(place.longitude)" }
     .height(300)
 ```
 
+A map's markers are written as statements, which a `MarkerBuilder` collects.
 Markers drawn from data are each given an id - `places.map { Marker(at: $0.location).id($0.name) }`
 - so a marker put before them leaves the others themselves, each pin and its
 open callout where it stood; without one a marker is matched by its position.
@@ -798,8 +808,9 @@ struct ContactsPage: View {
 }
 ```
 
-An item names itself by its identity described as text, so two items must
-describe differently. Each item is a view of its own: a state it reads
+An item is known by its value, which the list names by its words; each value
+stands once in a list, and two values that describe alike are still two
+items. Each item is a view of its own: a state it reads
 builds that item alone, and a state it declares lives while the item stays
 near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
@@ -817,8 +828,8 @@ An item is as tall as it asks in a list and as wide as it asks in a row; a
 size written on its view is kept. A list has no height of its own: give it
 one, or a row of a grid that fills.
 
-`ItemsView(groups:)` takes `Section`s, each named with `.id` - so two
-groups may hold equal items - and each with a `.header` and a `.footer`;
+`ItemsView(sections:)` takes `Section`s, each named with `.id` - so two
+sections may hold equal items - and each with a `.header` and a `.footer`;
 `.header` and `.footer` on the list stand before and after everything.
 `.onEndReached(within:)` hears the user come within so many items of the
 end - once, until they scroll away or the number of items changes - and

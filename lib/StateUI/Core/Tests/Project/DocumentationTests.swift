@@ -206,7 +206,7 @@ final class DocumentationTests: XCTestCase {
     func testAnExampleAwaitingAMovementAwaitsItsArrival() throws {
         var unawaited: [String] = []
         var read = 0
-        let roots = ["lib", "docs", "apps"].map { SourceTree.repository.appendingPathComponent($0) }
+        let roots = ["lib", "editors", "docs", "apps"].map { SourceTree.repository.appendingPathComponent($0) }
         var files = [SourceTree.repository.appendingPathComponent("README.md")]
 
         for root in roots {

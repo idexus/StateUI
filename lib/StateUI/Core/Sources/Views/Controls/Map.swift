@@ -6,8 +6,8 @@ public protocol MapProperties: PropertyContainer {}
 
 extension MapProperties {
     /// How the world is drawn - streets, satellite photography, or both.
-    public func mapType(_ value: MapType) -> Modified {
-        setValue(MapContract.mapType, value)
+    public func type(_ value: MapType) -> Modified {
+        setValue(MapContract.type, value)
     }
 
     /// Whether a drag pans it.
@@ -40,7 +40,7 @@ extension MapProperties {
 ///     Map()
 ///         .markers {
 ///             Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-///                 .label("Royal Castle")
+///                 .title("Royal Castle")
 ///                 .subtitle("Plac Zamkowy 4")
 ///                 .onSelected { chosen = "castle" }
 ///         }
@@ -97,30 +97,32 @@ public struct Map: ElementView, MapProperties {
 
     // MARK: Events
 
-    /// Fires when the map itself is tapped - not a marker - with where.
-    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
-        onEvent(MapContract.mapClicked, handler)
+    /// Runs when the user taps the map itself - not a marker - with the place under the tap.
+    ///
+    ///     Map(region: city).onLocationTapped { place in pinned = place }
+    public func onLocationTapped(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
+        onEvent(MapContract.locationTapped, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
-        onEvent(MapContract.mapClicked, policy: policy, handler)
+    public func onLocationTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.locationTapped, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onMapClicked(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
-        onEvent(MapContract.mapClicked, gate: gate, handler)
+    public func onLocationTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.locationTapped, gate: gate, handler)
     }
 }
 
 /// A marker on the map, where it stands.
 ///
 ///     Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-///         .label("Royal Castle")
+///         .title("Royal Castle")
 ///         .subtitle("Plac Zamkowy 4")
 ///
-/// Tapping the marker shows its label and address in the platform's own
+/// Tapping the marker shows its title and subtitle in the platform's own
 /// callout; `.onSelected` is the tap on the marker, `.onDetailsClicked`
 /// the tap on that callout - its details.
 public struct Marker: Element {
@@ -148,13 +150,13 @@ public struct Marker: Element {
     }
 
     /// The callout's first line, in bold.
-    public func label(_ value: String) -> Self {
+    public func title(_ value: String) -> Self {
         var copy = self
-        copy.node.write(MarkerContract.label, value)
+        copy.node.write(MarkerContract.title, value)
         return copy
     }
 
-    /// The line under the label in the callout.
+    /// The line under the title in the callout.
     public func subtitle(_ value: String) -> Self {
         var copy = self
         copy.node.write(MarkerContract.subtitle, value)

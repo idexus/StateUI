@@ -15,6 +15,10 @@ final class WinUITextFieldView: WinUITextInputView {
         super.init { number in stateui_winui_field_make(number) }
     }
 
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        measuredOnOneLine(width: width, height: height)
+    }
+
     /// Stands a `PasswordBox`, or a `TextBox` again, in the field's place, holding its words.
     func setPassword(_ password: Bool) {
         guard password != isPassword else { return }

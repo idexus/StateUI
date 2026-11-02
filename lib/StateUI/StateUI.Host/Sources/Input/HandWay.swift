@@ -16,7 +16,7 @@
     case everyWay
 
     /// The way of a hand moving in `orientation`.
-    public init(_ orientation: LayoutInput.Orientation) {
+    public init(_ orientation: Orientation) {
         self = orientation == .horizontal ? .horizontal : .vertical
     }
 }

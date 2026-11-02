@@ -44,12 +44,12 @@
                 let shown = try s.held(MapContract.region, on: s.element("map"))
                 s.expect(Self.shows(shown, krakow), true, "shows \(String(describing: shown))")
             },
-            ConformanceCase("aClickOnTheMapIsHeardWhereItFell", proves: [Covered(MapContract.mapClicked)]) { s in
+            ConformanceCase("aTapOnTheMapIsHeardWhereItFell", proves: [Covered(MapContract.locationTapped)]) { s in
                 let heard = Received<Location>()
                 s.start {
                     VStack {
                         Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000))
-                            .onMapClicked { heard.values.append($0) }.height(300).id("map")
+                            .onLocationTapped { heard.values.append($0) }.height(300).id("map")
                     }
                 }
 
@@ -57,7 +57,7 @@
                 s.settle { !heard.values.isEmpty }
                 s.expect(heard.values.count, 1, "heard once")
             },
-            Aspects.holds(MapContract.mapType, on: "Map", .standard, then: .satellite),
+            Aspects.holds(MapContract.type, on: "Map", .standard, then: .satellite),
             Aspects.holds(MapContract.isScrollEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.isZoomEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.showsTraffic, on: "Map", false, then: true),

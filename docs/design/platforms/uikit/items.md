@@ -1,8 +1,8 @@
 # Items
 
 An ItemsView is UIKit's collection view: a diffable data source over the
-list's identities, one section a group known by its name - a group added
-before the others is a new section, its header its own - and a compositional
+list's identities, one of its sections for each of the list's, known by its
+name - a section added before the others is a new one, its header its own - and a compositional
 layout. The host
 makes the view itself, since each cell asks the tree for what it holds
 through the host layer's `ItemsCells` ([items](../../host/items.md)).
@@ -29,10 +29,10 @@ A list is one full-width item under another, a row one item beside another
 as tall as the list, scrolling across, and a grid a group of as many
 columns as the width holds (`ItemsGrid`) sharing it, `spacing` apart both
 ways. Every item's size along the list is estimated and then asked of the
-entry. A group's header and footer are the section's supplementary views,
+entry. A section's header and footer are its supplementary views,
 and the list's own header and footer are the layout's; UIKit fixes the
 layout's own when it makes the layout, so the layout is made again when the
-list gains or loses one. A group gaining or losing a header or a footer
+list gains or loses one. A section gaining or losing a header or a footer
 changes the layout's shape, which the snapshot does not say when its items
 stay, so the layout is invalidated then - and only then: an invalidation
 drops every size the layout measured, and the items a change moves would

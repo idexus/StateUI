@@ -16,7 +16,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// otherwise, in `order`.
     private func stack(
         _ order: [String],
-        motion: Motion? = .eased(.milliseconds(200), .linear),
+        motion: Motion? = .eased(.milliseconds(200), curve: .linear),
         heights: [String: Double] = [:],
         watched: String? = nil
     ) -> HostPatch {
@@ -47,7 +47,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         func caption(_ text: String) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
-            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
             var label = HostPatch(id: .manual("caption"), type: .text)
             label.properties = [.text: .string(text), .horizontalAlignment: .enumeration(Alignment.start.rawValue)]
             stack.children = .arranged([label])
@@ -88,7 +88,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         func row(filling: Bool) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
-            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
             var button = HostPatch(id: .manual("details"), type: .button)
             let alignment = filling ? Alignment.fill : Alignment.center
             button.properties = [.text: .string("Details"), .horizontalAlignment: .enumeration(alignment.rawValue)]
@@ -130,7 +130,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         func row(_ words: String) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
-            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
             var button = HostPatch(id: .manual("toggle"), type: .button)
             button.properties = [.text: .string(words), .horizontalAlignment: .enumeration(Alignment.center.rawValue)]
             stack.children = .arranged([button])
@@ -173,7 +173,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         func caption(_ text: String) -> HostPatch {
             var outer = HostPatch(id: .manual("outer"), type: .vStack)
-            outer.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            outer.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
             stack.properties = [.horizontalAlignment: .enumeration(Alignment.start.rawValue)]
             var label = HostPatch(id: .manual("caption"), type: .text)
@@ -251,7 +251,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        layout.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+        layout.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.properties[.width] = .number(50)
         box.properties[.height] = .number(50)

@@ -4,7 +4,7 @@ import StateUI
 struct WebViewSample: SampleContent {
     static let id = "webView"
     static let title = "WebView"
-    static let summary = "A page of the web in the tree - fetched by URL, or HTML written in place."
+    static let summary = "A page of the web in the tree - fetched from its address, or HTML written in place."
 
     /// Held still: the web content scrolls ITSELF, and a page scroller above it
     /// would claim every drag - the rule every gesture sample follows.
@@ -66,10 +66,10 @@ private struct WebBrowserPart: ExampleContent {
                 .canGoBack($hasBack)
                 .canGoForward($hasForward)
                 .onNavigating { report in
-                    status = "fetching \(report.url)"
+                    status = "fetching \(report.address)"
                 }
                 .onNavigated { report in
-                    status = "\(report.result): \(report.url)"
+                    status = "\(report.result): \(report.address)"
                 }
                 // The platform killed the web content process and left the
                 // view blank. Nothing else reports it.

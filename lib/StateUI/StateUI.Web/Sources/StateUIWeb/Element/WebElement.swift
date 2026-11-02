@@ -105,6 +105,8 @@ final class WebElement: NativeElement {
 
     func leave() {
         host?.placements.beforeChange(along: layoutsUp)
+        bottomBar?.release()
+        bottomBar = nil
         view?.release()
     }
 

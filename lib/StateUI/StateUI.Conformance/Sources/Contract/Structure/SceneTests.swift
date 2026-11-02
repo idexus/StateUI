@@ -20,7 +20,7 @@
             ConformanceCase("aSceneHearsWhereItStands", proves: [
                 Covered(SceneContract.activated), Covered(SceneContract.deactivated), Covered(SceneContract.stopped),
             ]) { s in
-                let log = Received<ScenePhase>()
+                let log = Received<SessionPhase>()
                 s.start { ScenePhasePage(log: log) }
                 let window = try s.element(ofType: WindowContract.nodeType)
                 s.settle { log.values.last == .active }
@@ -88,7 +88,7 @@
 
 /// A page saying each phase its scene goes through.
 struct ScenePhasePage: View {
-    let log: Received<ScenePhase>
+    let log: Received<SessionPhase>
 
     @Environment(\.scene) private var scene
 
@@ -118,7 +118,7 @@ struct AskingApplication: Application {
     /// The kind of the draft's window.
     static let draft = WindowType<Void>("conformance.draft")
 
-    let said: Received<Bool>
+    var said = Received<Bool>()
 
     var body: some Scene {
         AskingScene(said: said)

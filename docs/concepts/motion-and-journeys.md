@@ -15,7 +15,7 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 `Motion` has three destination-seeking laws:
 
-- `.eased(length, curve)` takes the stated `Duration` - `.milliseconds(300)` -
+- `.eased(length, curve: curve)` takes the stated `Duration` - `.milliseconds(300)` -
   and lands on the destination exactly;
 - `.spring(response:damping:)` keeps standing velocity when retargeted and
   settles on the destination rather than at an unrelated resting point;
@@ -134,14 +134,15 @@ to walk; move the complete state instead.
 A move is a write of the destination, under a law of its choosing: the state
 reads the new value at once and every body that read it is built again, as
 after an assignment, while the host walks the value there on the move's law.
-It returns at once; its `arrived()` awaits the outcome:
+It returns at once, answering an `Arrival`, whose `arrived()` awaits the
+outcome:
 
 ```swift
 @State private var opacity = 1.0
 
 let arrived = try await $opacity.journey.move(
     to: 0.2,
-    .eased(.milliseconds(400), .cubicOut)).arrived()
+    .eased(.milliseconds(400), curve: .cubicOut)).arrived()
 
 if !arrived {
     // A newer destination, another write, or stop() ended this animation.
@@ -221,10 +222,10 @@ struct Strip: View {
             .onPanUpdated { pan in
                 switch pan.phase {
                 case .changed:
-                    $offset.journey.snap(to: pan.totalX)
+                    $offset.journey.snap(to: pan.total.x)
                 case .ended:
                     let glide = Motion.glide(longest: .milliseconds(800))
-                    $offset.journey.velocity = pan.velocityX
+                    $offset.journey.velocity = pan.velocity.x
                     // The nearest stop of every hundred points to where the throw would land.
                     let stop = ($offset.journey.reach(glide) / 100).rounded() * 100
                     $offset.journey.move(to: stop, glide)

@@ -91,8 +91,8 @@ declares their types, and the payload is read as exactly those or refused.
   CalendarDate(propValue:)  ->  the handler's parameter
 ```
 
-An act's answer takes the same road: `ClockTime.now()` reads four numbers
-back as the types `ApplicationContract.currentTime` declares.
+An act's answer takes the same road: `application.clock.now()` reads its
+numbers back as the types `ApplicationContract.currentTime` declares.
 
 ## The kinds of PropValue
 

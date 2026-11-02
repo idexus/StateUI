@@ -38,6 +38,10 @@ public final class DeviceInfo {
     /// Whether this is an emulator, a simulator or a virtual machine; nil where the host has not said.
     @State public internal(set) var isVirtual: Bool?
 
+    /// The processor architecture the application was compiled for and runs as - "arm64", "x86_64", "wasm32" -
+    /// compiled in, never from a host.
+    public let architecture = DeviceInfo.compiledArchitecture
+
     /// A device as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(
         formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "",
@@ -50,5 +54,24 @@ public final class DeviceInfo {
         self.name = name
         self.versionString = versionString
         self.isVirtual = isVirtual
+    }
+}
+
+extension DeviceInfo {
+    /// The architecture this build of the library was compiled for.
+    nonisolated static var compiledArchitecture: String {
+        #if arch(arm64)
+            "arm64"
+        #elseif arch(x86_64)
+            "x86_64"
+        #elseif arch(arm)
+            "arm"
+        #elseif arch(i386)
+            "i386"
+        #elseif arch(wasm32)
+            "wasm32"
+        #else
+            "unknown"
+        #endif
     }
 }

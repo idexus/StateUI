@@ -212,17 +212,17 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(ends.values, [true])
     }
 
-    /// Groups name their items apart - two groups may hold equal items - and
+    /// Sections name their items apart - two sections may hold equal items - and
     /// each header and footer is an entry of its own.
-    func testGroupsNameTheirItemsApart() throws {
+    func testSectionsNameTheirItemsApart() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(groups: [
+        let list = try list(in: renders.render(ItemsView(sections: [
             Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
             Section(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each group by its name")
+        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each section by its name")
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
         XCTAssertEqual(entries.sections.map(\.footer), [nil, "Cider\u{1E}footer"])
         XCTAssertEqual(entries.sections.map(\.items), [
@@ -234,20 +234,39 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(held.child("Cider\u{1F}Apple")?.props[.text], .string("Apple"))
     }
 
-    /// Two items that describe alike are told apart, as two repeated `.id()`s are.
-    func testTwoItemsThatDescribeAlikeAreToldApart() throws {
+    /// The same item twice is told apart, as two repeated `.id()`s are, and said.
+    func testTheSameItemTwiceIsToldApartAndSaid() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(["a", "b", "a"], id: \.self) { Text($0) }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
+        XCTAssertTrue(hasComplained("the same item twice, \"a\""))
     }
 
-    /// Two groups of one name are told apart - a group named as another's place too - so a host knowing each group
-    /// by its name finds two.
-    func testTwoGroupsOfOneNameAreToldApart() throws {
+    /// Two items that describe alike but are not equal keep their own identities across a reorder - an item is known
+    /// by its value, as ForEach and MotionLayout know theirs - and nothing is said of them.
+    func testTwoValuesThatDescribeAlikeKeepTheirIdentitiesAcrossAReorder() throws {
+        let order = State(wrappedValue: [Alike(raw: 1), Alike(raw: 2)])
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(groups: [
+        let first = try XCTUnwrap(try list(in: renders.render(AlikeList(order: order).node))
+            .props[.items].flatMap(ItemsEntries.init(propValue:))).sections[0].items
+
+        order.wrappedValue = [Alike(raw: 2), Alike(raw: 1)]
+        let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
+        let second = try XCTUnwrap(try list(in: patch).props[.items].flatMap(ItemsEntries.init(propValue:)))
+            .sections[0].items
+
+        XCTAssertEqual(Set(first).count, 2, "two values, two identities")
+        XCTAssertEqual(second, [first[1], first[0]], "each value kept its identity as the order changed")
+        XCTAssertFalse(hasComplained("the same item twice, \"item\""), "two values are no repeated item")
+    }
+
+    /// Two sections of one name are told apart - a section named as another's place too - so a host knowing each section
+    /// by its name finds two.
+    func testTwoSectionsOfOneNameAreToldApart() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(sections: [
             Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }.id("0"), Section(["c"]) { Text($0) }.id("0"),
         ]).node))
 
@@ -281,5 +300,20 @@ final class ItemsViewTests: XCTestCase {
         for layout: ItemsLayout in [.list(), .list(spacing: 4), .row(spacing: 8), .grid(minimumItemWidth: 120, spacing: 6)] {
             XCTAssertEqual(ItemsLayout(propValue: layout.propValue), layout)
         }
+    }
+}
+
+/// A value whose words are the same for every value - told apart by itself alone.
+private struct Alike: Hashable, CustomStringConvertible {
+    let raw: Int
+    var description: String { "item" }
+}
+
+/// A list of `order`, built again as the order changes.
+private struct AlikeList: View {
+    let order: State<[Alike]>
+
+    var body: some View {
+        ItemsView(order.wrappedValue) { Text("\($0.raw)") }
     }
 }

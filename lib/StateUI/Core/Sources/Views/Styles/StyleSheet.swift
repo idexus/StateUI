@@ -36,8 +36,8 @@ public struct StyleSheet {
     ///
     /// Two styles under one key, or two implicit ones for one target, are one:
     /// the LAST wins, as a second assignment to one dictionary key does.
-    public init(@StyleBuilder _ content: () -> [AnyStyle]) {
-        written = content()
+    public init(@StyleBuilder styles: () -> [AnyStyle]) {
+        written = styles()
 
         for (index, style) in written.enumerated() {
             if let key = style.key {

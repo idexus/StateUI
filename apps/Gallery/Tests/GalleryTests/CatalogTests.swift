@@ -148,7 +148,7 @@ private func verticalScrollers(in node: Node) -> Int {
         let node = node.built
 
         if node.type == "ScrollView",
-           node.props["orientation"] != .enumeration(ScrollOrientation.horizontal.rawValue) {
+           node.props["axes"] != .enumeration(ScrollAxes.horizontal.rawValue) {
             count += 1
         }
 
@@ -793,8 +793,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(scrollers.count, 1)
         XCTAssertEqual(
-            scrollers.first?.props["orientation"],
-            .enumeration(ScrollOrientation.horizontal.rawValue))
+            scrollers.first?.props["axes"],
+            .enumeration(ScrollAxes.horizontal.rawValue))
         XCTAssertEqual(
             scrollers.first?.props["verticalScrollIndicator"],
             .enumeration(ScrollIndicatorVisibility.never.rawValue))
@@ -1951,7 +1951,11 @@ private func occurrences(of needle: String, in text: String) -> Int {
 /// An application of one window - what a test registers to have the renderer's
 /// own first message about that window.
 private struct OneWindow: Application {
-    let page: MainPage
+    var page: MainPage?
 
-    var body: some Scene { WindowGroup { page } }
+    var body: some Scene {
+        WindowGroup {
+            if let page { page } else { VStack {} }
+        }
+    }
 }

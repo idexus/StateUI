@@ -16,9 +16,9 @@ final class UIKitLinkViewTests: XCTestCase {
         let host = UIKitRenderer.running {
             ScrollView {
                 VStack {
-                    Link("Swift's home page", destination: "https://www.swift.org")
-                    Link("Write to us", destination: "mailto:hello@example.com")
-                    Link("The page chosen below", destination: page.projectedValue)
+                    Link("Swift's home page", address: "https://www.swift.org")
+                    Link("Write to us", address: "mailto:hello@example.com")
+                    Link("The page chosen below", address: page.projectedValue)
                     Picker(["https://www.swift.org", "https://developer.apple.com"], selection: page.projectedValue) { $0 }
                     Text("Opened 0 times")
                 }
@@ -43,7 +43,7 @@ final class UIKitLinkViewTests: XCTestCase {
     func testALinkThatCannotBeChosenIsGrayed() throws {
         let enabled = State(wrappedValue: true)
         let host = UIKitRenderer.running {
-            VStack { Link("Swift's home page", destination: "https://www.swift.org").isEnabled(enabled.wrappedValue) }
+            VStack { Link("Swift's home page", address: "https://www.swift.org").isEnabled(enabled.wrappedValue) }
         }
         defer { host.finish() }
         host.layOut()

@@ -31,6 +31,7 @@ private enum InteropTestContract: ApplicationTier {
 /// A page that calls the acts and listens for the event, writing whatever
 /// came back where a test can read it.
 private struct Calling: View {
+    @Environment(\.application) private var application
     @State private var answer = "-"
     @State private var heard: [HostEventSubscription] = []
 
@@ -39,7 +40,7 @@ private struct Calling: View {
             Button("Ask")
                 .onClicked(.ignoreWhileRunning) {
                     do {
-                        let doubled = try await stateUICall(InteropTestContract.doubled, 21)
+                        let doubled = try await application.call(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
                     } catch {
                         answer = "thrown: \(error)"
@@ -49,7 +50,7 @@ private struct Calling: View {
             Button("Ask nobody")
                 .onClicked(.ignoreWhileRunning) {
                     do {
-                        try await stateUICall(InteropTestContract.unregistered)
+                        try await application.call(InteropTestContract.unregistered)
                         answer = "that should have thrown"
                     } catch {
                         answer = "thrown: \(error)"

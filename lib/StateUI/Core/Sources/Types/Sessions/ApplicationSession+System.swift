@@ -16,7 +16,7 @@ extension ApplicationSession {
     /// - Returns: whether an application took it; false where none opens its scheme.
     @discardableResult
     public func launch(_ address: String) async throws -> Bool {
-        try await stateUICall(ApplicationContract.launchLink, address)
+        try await callAct(ApplicationContract.launchAddress, address)
     }
 
     /// Says something to the user through the platform's screen reader now, whatever they were on.
@@ -30,6 +30,6 @@ extension ApplicationSession {
     ///
     /// - Parameter text: what to say, in the user's own language.
     public func announce(_ text: String) async throws {
-        try await stateUICall(ApplicationContract.announce, text)
+        try await callAct(ApplicationContract.announce, text)
     }
 }

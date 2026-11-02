@@ -42,7 +42,7 @@ the Gallery's:
 import GalleryUI
 import StateUIAppKit
 
-registerApplication()
+GalleryApp.register()
 
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -240,7 +240,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
 A view may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the view realizes, and hands
 it every such child, in the tree's order, whenever the element's children
-change: one added, moved, taken away, or given another value. A child is a
+change: one added, moved, taken away, or given another value. A child is an
 `AppKitChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
@@ -295,7 +295,7 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 - **Its values.** The arguments and the answer are the act's own types. A call
   carrying anything else fails with the reason rather than running on a guess.
 - **Failure.** A thrown error fails the act: the awaiting Swift handler throws
-  `StateUIError` with the reason. An aim at nothing, or at an element no longer
+  `StateUIError.notPerformed` with the reason. An aim at nothing, or at an element no longer
   on screen, fails the same way.
 - **Scope.** An act nobody registered fails with that reason, named.
 

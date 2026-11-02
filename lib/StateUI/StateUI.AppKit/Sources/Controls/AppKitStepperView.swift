@@ -35,7 +35,7 @@ final class AppKitStepperView: NSStepper {
         (minValue, maxValue) = ValueArithmetic.range(minimum, maximum)
         increment = ValueArithmetic.step(step)
         isEnabled = enabled
-        doubleValue = min(max(value, minValue), maxValue)
+        doubleValue = ValueArithmetic.clamped(value, lower: minValue, upper: maxValue)
         shown = doubleValue
     }
 

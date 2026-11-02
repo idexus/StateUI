@@ -42,8 +42,10 @@ lib/StateUI/StateUI.Web/
   deploy.sh                  builds it for release and lays the page in a folder of its own
   test-web.sh                runs the host's suite, or what of it needs a browser
   swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release
+  size-budgets.sh            builds each application's release module and holds it within its budget
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
+  Host/                      what this host answers for the application
   Page/                      what the application adds to its page: its scripts, and head.html
 ```
 
@@ -72,11 +74,11 @@ the user acts and as the display draws. The Gallery's head:
 import GalleryUI
 import StateUIWeb
 
-// Register the application module, then say what this host answers for it
+// Name the application to the host, then say what this host answers for it
 // before it runs - the controls it realizes, the acts it performs and the
 // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
 // and show it in the page; the browser calls it from then on.
-registerApplication()
+GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
@@ -239,15 +241,15 @@ element of its own on the page.
 // Platforms/Web/Host/GoogleMapElement.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.mapType) { control, type in control.show(type) }
+    map.property(MapContract.type) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
     map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-    map.raises(MapContract.mapClicked)
+    map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)

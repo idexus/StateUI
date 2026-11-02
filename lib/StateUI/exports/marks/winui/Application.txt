@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 14.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the relay's own list of what it handed UI Automation to announce
@@ -6,11 +6,10 @@ Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
-Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
+Application.launchAddress: ✓ read what was launched: the host's own record of what it handed Windows, which a test holds back from launching
 Application.launchFile: ✓ read what was launched: the host's own record of what it handed Windows, which a test holds back from launching
-Application.launchLink: ✓ read what was launched: the host's own record of what it handed Windows, which a test holds back from launching
 Application.openFiles: ✅
 Application.persistSceneValue: ✅
 Application.persistValue: ✅

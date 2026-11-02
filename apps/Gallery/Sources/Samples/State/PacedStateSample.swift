@@ -67,12 +67,12 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 Button("Fade")
                     .accessibilityIdentifier("paced.fade")
                     .accessibilityLabel("Fade the box out")
-                    .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 0.1, .eased(.milliseconds(2000), curve: .cubicOut)) }
 
                 Button("Back")
                     .accessibilityIdentifier("paced.back")
                     .accessibilityLabel("Bring the box back")
-                    .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), .cubicOut)) }
+                    .onClicked { $fade.journey.move(to: 1, .eased(.milliseconds(2000), curve: .cubicOut)) }
             }
             .spacing(12)
             .horizontalAlignment(.center)

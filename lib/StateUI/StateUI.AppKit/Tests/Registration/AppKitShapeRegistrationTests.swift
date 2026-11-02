@@ -28,7 +28,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Rectangle", owner: "Rectangle", member: "cornerRadius")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Line", owner: "Line", member: "x1")))
+            HostRealizedMember(element: "Line", owner: "Line", member: "from")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Path", owner: "Path", member: "data")))
         XCTAssertTrue(realization.members.contains(

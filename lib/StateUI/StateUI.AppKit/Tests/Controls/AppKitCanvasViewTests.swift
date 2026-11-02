@@ -87,25 +87,7 @@ final class AppKitCanvasViewTests: XCTestCase {
     }
 
     @MainActor
-    func testPointerPhasesReportCanvasCoordinatesExactlyOnce() {
-        let view = AppKitCanvasView()
-        var reports: [(Int, NSPoint)] = []
-        view.onPressed = { reports.append((0, $0)) }
-        view.onDragged = { reports.append((1, $0)) }
-        view.onReleased = { reports.append((2, $0)) }
-
-        view.pressForTesting(at: NSPoint(x: 2, y: 3))
-        view.dragForTesting(at: NSPoint(x: 5, y: 7))
-        view.releaseForTesting(at: NSPoint(x: 11, y: 13))
-
-        XCTAssertEqual(reports.map(\.0), [0, 1, 2])
-        XCTAssertEqual(reports.map(\.1), [
-            NSPoint(x: 2, y: 3), NSPoint(x: 5, y: 7), NSPoint(x: 11, y: 13),
-        ])
-    }
-
-    @MainActor
-    func testHostPatchMapsDrawingAndInteractionEvents() throws {
+    func testHostPatchMapsTheDrawing() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -116,19 +98,10 @@ final class AppKitCanvasViewTests: XCTestCase {
         }
         var canvas = HostPatch(id: .manual("canvas"), type: .canvas)
         canvas.properties[.drawing] = try XCTUnwrap(element.node.props[.drawing])
-        canvas.events = .replace([
-            .pressed: 10,
-            .dragged: 11,
-            .released: 12,
-        ])
 
         renderer.applyForTesting(tree(canvas))
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("canvas")) as? AppKitCanvasView)
-        native.pressForTesting(at: NSPoint(x: 3, y: 4))
-        native.dragForTesting(at: NSPoint(x: 5, y: 6))
-        native.releaseForTesting(at: NSPoint(x: 7, y: 8))
-
         XCTAssertEqual(native.instructionsForTesting.count, 2)
         XCTAssertEqual(native.instructionsForTesting.last, .fillEllipse(Rect(x: 0, y: 0, width: 20, height: 20)))
     }

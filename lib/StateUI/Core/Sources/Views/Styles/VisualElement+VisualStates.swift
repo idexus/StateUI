@@ -19,9 +19,9 @@ extension StyleTarget {
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Self>,
-        _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>
+        _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>
     ) -> Modified {
-        let values = setters(StyleBag<Self, StyleState>(key: nil)).node.props
+        let values = setters(Styling<Self, StyleScope.VisualState>(key: nil)).node.props
         return declare(DeclaredState(key: state.key, setters: values))
     }
 
@@ -44,8 +44,8 @@ extension StyleTarget {
     ///
     ///     ZStack { Text("Open") }
     ///         .scale($lift)
-    ///         .onVisualStateChanged(.pointerOver, .normal) { state in
-    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120), .cubicOut))
+    ///         .onVisualStateChanged([.pointerOver, .normal]) { state in
+    ///             $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(.milliseconds(120), curve: .cubicOut))
     ///         }
     ///
     /// It runs after the render in which the control entered the state, never
@@ -55,10 +55,10 @@ extension StyleTarget {
     ///
     /// - Parameters:
     ///   - states: the states to hear; none hears every state.
-    ///   - perform: what to run, given the state entered.
+    ///   - handler: what to run, given the state entered.
     public func onVisualStateChanged(
-        _ states: VisualState<Self>...,
-        perform handler: @escaping @MainActor (VisualState<Self>) throws -> Void
+        _ states: [VisualState<Self>] = [],
+        _ handler: @escaping @MainActor (VisualState<Self>) throws -> Void
     ) -> Modified {
         listening(states, ValueHandler(step: { try handler(VisualState<Self>($0)) }))
     }
@@ -69,20 +69,20 @@ extension StyleTarget {
     /// - Parameters:
     ///   - states: the states to hear; none hears every state.
     ///   - policy: what the handler passes through: what entering a state does while a run is under way.
-    ///   - perform: what to run, given the state entered.
+    ///   - handler: what to run, given the state entered.
     public func onVisualStateChanged(
-        _ states: VisualState<Self>...,
+        _ states: [VisualState<Self>] = [],
         policy: GatePolicy,
-        perform handler: @escaping ValueEventHandler<VisualState<Self>>
+        _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
         listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: .own(policy)))
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onVisualStateChanged(
-        _ states: VisualState<Self>...,
+        _ states: [VisualState<Self>] = [],
         gate: Gate,
-        perform handler: @escaping ValueEventHandler<VisualState<Self>>
+        _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {
         listening(states, ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: .shared(gate)))
     }

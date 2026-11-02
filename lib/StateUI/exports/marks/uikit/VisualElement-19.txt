@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.isVisible: ✅
 Canvas.rotation: ✓ read rotation of Canvas: the host's own transform, checked against the layer it composed itself
@@ -20,7 +20,7 @@ Line.hidesChildrenFromAccessibility: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
-MotionLayout.style: not realized
+MotionLayout.style: ✅
 MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.accessibilityLabel: ✅
 Picker.opacity: ✅

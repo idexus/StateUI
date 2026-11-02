@@ -15,7 +15,7 @@ final class SheetsTests: XCTestCase {
         Sheets.picking = State(wrappedValue: true)
         Sheets.note = State(wrappedValue: "Inbox")
         Sheets.stackPath = State(wrappedValue: [])
-        stateUIUseApp(SheetsApplication())
+        SheetsApplication.register()
     }
 
     /// The runtime of `SheetsApplication`, its window made and rendered.
@@ -137,7 +137,7 @@ final class SheetsTests: XCTestCase {
     /// A sheet presented later from a view of a group shows on through the renders after.
     func testASheetPresentedLaterShowsOn() throws {
         Sheets.editing = State(wrappedValue: false)
-        stateUIUseApp(GroupSheetApplication())
+        GroupSheetApplication.register()
         let runtime = runtime()
         XCTAssertEqual(try shown(runtime).count, 0)
 
@@ -154,7 +154,7 @@ final class SheetsTests: XCTestCase {
     /// Back in a window takes the top sheet's own stack first, then the top sheet.
     func testTheWayBackTakesTheTopSheetsStackThenTheSheet() throws {
         Sheets.stackPath.wrappedValue = [1]
-        stateUIUseApp(StackSheetApplication())
+        StackSheetApplication.register()
         let runtime = runtime()
         let presentation = WindowPresentation()
         let window = try window(runtime)

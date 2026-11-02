@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A value a journey can be made of - one the host can animate lane by lane. This
-/// library's own.
+/// A value a journey can be made of - a `LaneValue` the host can animate lane by
+/// lane, which says nothing more than that it has a half way:
+///
+///     extension Temperature: Walked {}
 ///
 /// `$x.journey` exists on a binding to one, `@State(motion:)` is declared over
 /// one, and a driven property animates one. Text, whole numbers and truth values

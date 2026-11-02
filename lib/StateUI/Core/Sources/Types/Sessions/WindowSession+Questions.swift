@@ -18,14 +18,14 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: what the alert is about, in bold.
-    ///   - message: the sentence under it.
+    ///   - message: the sentence under it; none where empty.
     ///   - accept: the one button's caption; nil says "OK" in the system's language, as the platform's own
     ///     buttons do.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
-    public func alert(_ title: String, message: String, accept: String? = nil) async throws {
+    public func alert(_ title: String, message: String = "", accept: String? = nil) async throws {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        try await stateUICall(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
+        try await callAct(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
     }
 
     /// Asks the user a yes-or-no question over this window.
@@ -36,18 +36,19 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: the question, in bold.
-    ///   - message: the sentence under it.
-    ///   - accept: the caption of the button that answers yes.
+    ///   - message: the sentence under it; none where empty.
+    ///   - accept: the caption of the button that answers yes - best the act it does, `"Delete"`; nil says "OK"
+    ///     in the system's language.
     ///   - cancel: the caption of the button that answers no; nil says "Cancel" in the system's language.
     /// - Returns: true when `accept` was pressed.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
     public func confirm(
-        _ title: String, message: String, accept: String, cancel: String? = nil
+        _ title: String, message: String = "", accept: String? = nil, cancel: String? = nil
     ) async throws -> Bool {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        return try await stateUICall(
-            ApplicationContract.confirm, scene, window, title, message, accept, cancel ?? words.cancel)
+        return try await callAct(
+            ApplicationContract.confirm, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel)
     }
 
     /// Offers the user a list of things to do, over this window, and answers the one they chose - here `Share`, an
@@ -80,12 +81,14 @@ extension WindowSession {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
         let dangerous = destructive.flatMap { choices.firstIndex(of: $0) }
-        let chosen = try await stateUICall(
+        let chosen = try await callAct(
             ApplicationContract.chooseAction, scene, window, title, choices.map(caption), dangerous,
             cancel ?? words.cancel)
         guard let chosen else { return nil }
         guard choices.indices.contains(chosen) else {
-            throw StateUIError(message: "the host answered action \(chosen) of \(choices.count) offered")
+            throw StateUIError.unreadableAnswer(
+                act: ApplicationContract.chooseAction.name, answered: "action \(chosen)",
+                declared: "one of the \(choices.count) offered")
         }
         return choices[chosen]
     }
@@ -99,7 +102,7 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: what is being asked for, in bold.
-    ///   - message: the sentence under it.
+    ///   - message: the sentence under it; none where empty.
     ///   - accept: the confirming button's caption; nil says "OK" in the system's language.
     ///   - cancel: the dismissing button's caption; nil says "Cancel" in the system's language.
     ///   - placeholder: what the field says while it is empty. Nil for nothing.
@@ -118,7 +121,7 @@ extension WindowSession {
     ) async throws -> String? {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        return try await stateUICall(
+        return try await callAct(
             ApplicationContract.prompt, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel,
             placeholder, maximumLength, inputPurpose, initialValue)
     }

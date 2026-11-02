@@ -77,7 +77,7 @@ extension MountedElement {
     /// What the element's view offers and takes of a drag, as its properties say.
     public var dragAndDrop: DragAndDrop {
         DragAndDrop(
-            words: value(.canDrag)?.bool == true ? value(.dragText)?.string ?? "" : nil,
+            words: value(.isDraggable)?.bool == false ? nil : value(.dragText)?.string,
             takesWords: value(.allowsDrop)?.bool == true,
             fileTypes: value(.droppedFileTypes).flatMap([FileType].init(propValue:)))
     }

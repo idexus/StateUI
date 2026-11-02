@@ -8,13 +8,14 @@
 ///     let fake = Device(battery: Battery(chargeLevel: 0.07))
 ///     ChildView().environment(fake)
 ///
-/// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the
+/// A host that cannot observe a battery leaves `chargeLevel` nil and the
 /// remaining values at `.unknown`. A test provides a fake, as above.
 @MainActor
 public final class Battery {
-    /// How full the battery is, 0 to 1 - and -1 until the host has said,
-    /// which a host without battery information may never do.
-    @State public internal(set) var chargeLevel: Double = -1
+    /// How full the battery is, 0 to 1; nil until the host has said - which a
+    /// host without battery information may never do - and where no battery
+    /// stands.
+    @State public internal(set) var chargeLevel: Double?
 
     /// Charging, discharging, full, or another settled battery state.
     @State public internal(set) var state: BatteryState = .unknown
@@ -29,7 +30,7 @@ public final class Battery {
     /// A battery as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts
     /// as a headless host's does.
     public init(
-        chargeLevel: Double = -1, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown,
+        chargeLevel: Double? = nil, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown,
         energySaverStatus: EnergySaverStatus = .unknown
     ) {
         self.chargeLevel = chargeLevel

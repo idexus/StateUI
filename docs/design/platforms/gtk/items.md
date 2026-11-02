@@ -25,9 +25,9 @@ may take back, or many - told back in the list's order; what the host
 selects is told nobody. An item is activated by a double click or by Enter,
 as in GNOME's applications.
 
-GTK's list views know no groups and a grid view shares its width equally
+GTK's list views know no sections and a grid view shares its width equally
 among its columns, so the host layer places every entry without spanning
-([a collection without groups](../../host/items.md#a-collection-without-groups)):
+([a collection without sections](../../host/items.md#a-collection-without-sections)):
 a header or a footer takes a cell of a grid as an item does, and each
 cell's margins are its entry's room. A grid's columns follow the width the
 list is given.

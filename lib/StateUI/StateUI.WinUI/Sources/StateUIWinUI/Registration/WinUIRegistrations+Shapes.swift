@@ -28,11 +28,9 @@ extension WinUIRegistrations {
             }
         }
         registry.add(LineContract.self, create: { _ in WinUIPathView() }) { shape in
-            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
-                view, values in
+            shape.applies(ShapeMembers.members, LineContract.from, LineContract.to) { view, values in
                 paint(view, values)
-                let from = Point(x: values[LineContract.x1] ?? 0, y: values[LineContract.y1] ?? 0)
-                let to = Point(x: values[LineContract.x2] ?? 0, y: values[LineContract.y2] ?? 0)
+                let from = values[LineContract.from] ?? .zero, to = values[LineContract.to] ?? .zero
                 view.draw(authored(HostCurveCommand.move(from).numbers + HostCurveCommand.line(to).numbers, evenOdd: false, values))
             }
         }

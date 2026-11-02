@@ -32,7 +32,7 @@ final class AppKitMapView: MapKitView {
     }
 
     @objc private func clicked(_ recognizer: NSClickGestureRecognizer) {
-        clicked(at: recognizer.location(in: self))
+        tapped(at: recognizer.location(in: self))
     }
 
     override func dressCallout(_ marker: MKMarkerAnnotationView, of pin: MapKitMarker) {

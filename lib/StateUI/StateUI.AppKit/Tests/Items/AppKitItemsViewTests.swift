@@ -8,6 +8,27 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+/// Two chores in a grid's row, chosen and refreshed by a pull, as the record-editing sample lists them.
+private struct ChoresPage: View {
+    @State private var chosen: Int? = 1
+    @State private var refreshing = false
+
+    var body: some View {
+        Grid {
+            VStack { Text("A value and its event") }.gridRow(0)
+            ItemsView(["Dishes", "Laundry ✓"].indices, id: \.self) { index in
+                Text(["Dishes", "Laundry ✓"][index]).padding(horizontal: 14, vertical: 10)
+            }
+            .selection($chosen)
+            .isRefreshing($refreshing)
+            .onRefreshRequested { refreshing = false }
+            .gridRow(1)
+        }
+        .rows(.auto, .fixed(300))
+        .width(300)
+    }
+}
+
 /// Three items, the first chosen.
 private struct ChoosingPage: View {
     @State private var chosen: Int? = 0
@@ -42,14 +63,45 @@ final class AppKitItemsViewTests: XCTestCase {
         XCTAssertEqual(cells.first?.fill, NSColor.controlAccentColor.withAlphaComponent(0.2), "the choice in the accent")
         XCTAssertEqual(cells.dropFirst().map(\.fill), [nil, nil], "an item at rest lays a color")
     }
-    /// A group added before the others brings its own header, and every other group keeps its own: a group is known
-    /// by its name, not its place.
+    /// Every row's words stand in the list's accessibility tree, below the list - what VoiceOver reads of a row, and
+    /// what a row is pressed by its name with - and no row stands there twice.
+    /// Design: docs/design/platforms/appkit/items.md#a-row-to-accessibility
     @MainActor
-    func testAGroupAddedOnTopBringsItsOwnHeader() throws {
+    func testEveryRowsWordsStandInTheListsAccessibility() throws {
+        let renderer = autoreleasepool { AppKitRenderer.running { ChoresPage() } }
+        defer { renderer.closeForTesting() }
+        let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
+        for _ in 0..<100 {
+            guard items.collection.visibleItems().isEmpty else { break }
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            renderer.runtime.pump.turn()
+            renderer.windowsForTesting.first?.window?.layoutIfNeeded()
+        }
+
+        var said: [String] = []
+        // AppKit's own elements - a section of the collection - answer accessibility by its methods, not by type.
+        func words(_ element: AnyObject) -> String? {
+            (element as? NSObject)?.value(forKey: "accessibilityValue") as? String
+        }
+        func read(_ element: AnyObject, depth: Int) {
+            guard depth < 12 else { return }
+            let role = element.accessibilityRole?()
+            if role == .staticText, let words = words(element) { said.append(words) }
+            for child in element.accessibilityChildren?() ?? [] { read(child as AnyObject, depth: depth + 1) }
+        }
+        read(items.collection, depth: 0)
+
+        XCTAssertEqual(said.sorted(), ["Dishes", "Laundry ✓"])
+    }
+
+    /// A section added before the others brings its own header, and every other section keeps its own: a section is
+    /// known by its name, not its place.
+    @MainActor
+    func testASectionAddedOnTopBringsItsOwnHeader() throws {
         let days = State(wrappedValue: ["Yesterday"])
         let renderer = autoreleasepool {
             AppKitRenderer.running {
-                ItemsView(groups: days.wrappedValue.map { day in
+                ItemsView(sections: days.wrappedValue.map { day in
                     Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
                 })
                 .width(300).height(400)

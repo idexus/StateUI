@@ -123,14 +123,14 @@ contract:
 
 | Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
-| `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
+| `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; the level is nil until reported and where no battery stands, enums are `.unknown` until reported |
 | `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
-| `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
-| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |
-| `locale` - `LocaleInfo` | `language`, `region`, `name`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, the user's languages in order (`LocaleTag`), IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the list empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
-| `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
+| `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numbers are nil and enums `.unknown` until reported, the rate nil where the platform does not say |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
+| `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written; the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported, the release compiled in |
+| `application.phase` - `SessionPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
@@ -158,7 +158,7 @@ The closed vocabulary used by these fields is:
 | `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
 | `ColorScheme` | `system`, `light`, `dark` |
-| `ApplicationPhase` | `active`, `inactive`, `background` |
+| `SessionPhase` | `active`, `inactive`, `background` |
 
 No conformance case gives a verdict for the standard facts: each host's page
 says which it supplies. A public provider describes the StateUI schema; it
@@ -176,24 +176,24 @@ struct RuntimeSummary: View {
     var body: some View {
         VStack {
             Text("\(app.info.name) \(app.info.versionString)")
-            Text("StateUI \(stateUIVersion()) for \(stateUIPlatform())")
-            Text("\(device.info.platform) · \(device.info.formFactor)")
-            Text("\(Int(device.display.width / max(device.display.density, 1))) points wide")
-            Text("\(locale.language)-\(locale.region) · \(locale.timeZone)")
+            Text("StateUI \(app.info.libraryVersion)")
+            Text("\(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)")
+            Text("\(Int((device.display.width ?? 0) / (device.display.density ?? 1))) points wide")
+            Text("\(locale.language?.identifier ?? "no language said") · \(locale.timeZone?.identifier ?? "no zone said")")
         }
     }
 }
 ```
 
-What this library is comes compiled in, never from a host: `stateUIVersion()`
-names the StateUI release, `stateUIPlatform()` the platform and architecture it
-was compiled for.
+Two facts come compiled in, never from a host: `app.info.libraryVersion` names
+the StateUI release, and `device.info.architecture` the processor architecture
+the application was compiled for.
 
 Use `device.info.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
 room a view is given - `.onFrameChanged` and `GeometryReader`
 ([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
-screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
+screen itself, whose numbers are nil before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
 ### What the platform honors
@@ -294,40 +294,46 @@ not validate whether the components form a real calendar day or normalized
 time. Validate authored or external data before handing it to a native picker.
 
 A `ClockTime` carried through a picker uses hour, minute, and second. The
-millisecond is retained by direct values such as `ClockTime.now()`, but a picker
+millisecond is retained by direct values such as `application.clock.now()`, but a picker
 does not display or report it.
 
 ## Host clock and time zones
 
-Portable local-time questions are host acts because the host owns the active
-clock, locale, and zone database:
+The zone the user is in is a fact of the locale, `locale.timeZone` - an IANA
+name the host keeps, nil until it has said. The clock is the application's,
+`application.clock`: its acts ask the host, which owns the clock and the zone
+database, so the answer is the same on every platform:
 
 ```swift
-let zone = try await TimeZoneInfo.local()
-let now = try await ClockTime.now()
-let localOffset = try await TimeZoneInfo.utcOffset()
-let winterOffset = try await TimeZoneInfo.utcOffset(
-    of: zone,
-    on: CalendarDate(year: 2027, month: 1, day: 15))
+struct WorldClock: View {
+    @Environment(\.application) private var application
+    @Environment(\.locale) private var locale
+    @State private var said = ""
 
-Text("\(zone) · \(now.text) · \(localOffset.components.seconds) seconds from UTC")
-Text("Winter: \(winterOffset.components.seconds) seconds from UTC")
+    var body: some View {
+        Text(said).onCreated {
+            let today = try await application.clock.today()
+            let now = try await application.clock.now()
+            let here = try await application.clock.utcOffset()
+            let winter = try await application.clock.utcOffset(
+                of: locale.timeZone, on: CalendarDate(year: 2027, month: 1, day: 15))
+            said = "\(today.text) \(now.text) · \(here.components.seconds) seconds from UTC, "
+                + "\(winter.components.seconds) in winter"
+        }
+    }
+}
 ```
 
-`TimeZoneInfo.local()` returns an IANA identifier. `utcOffset(of:on:)`
-returns a Swift `Duration`, negative west of UTC; omit the zone for the local
-zone and omit the date for the offset in effect now. Supplying a date makes
-daylight-saving differences explicit. Offset transport uses signed minutes, so
-half-hour and quarter-hour zones need no special representation.
+`utcOffset(of:on:)` returns a Swift `Duration`, negative west of UTC; omit the
+zone for the user's own and omit the day for the offset in effect now.
+Supplying a day makes daylight-saving differences explicit. Offset transport
+uses signed minutes, so half-hour and quarter-hour zones need no special
+representation.
 
 These calls throw when the host does not implement the act or returns a value
 of the wrong shape. Treat the active host's checked support as part of the
 platform contract rather than replacing a failed clock answer with guessed
 locale data.
-
-`LocaleInfo.timeZone` is the host's last reported zone and is useful for
-reactive display or branching. `TimeZoneInfo.local()` is an explicit fresh
-question for work that already runs asynchronously.
 
 ## Foundation boundary
 
@@ -348,8 +354,7 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
   and IANA zone;
 - use `Localization` for words, messages and formats in the user's language
   ([Localization](localization.md)), written in Swift on every platform;
-- use `ClockTime.now()` and `TimeZoneInfo` for portable local-clock and offset
-  questions;
+- use `application.clock` for portable local-clock and offset questions;
 - use `CalendarDate` and `ClockTime` at control and state boundaries;
 - use `Task.sleep` or `Ticker` for application timing, not Foundation
   `Timer` or `RunLoop`;

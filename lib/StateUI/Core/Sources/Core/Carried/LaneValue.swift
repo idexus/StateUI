@@ -2,7 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A value a state carries as numbers, one lane each - every `StateValue` but
-/// text. This library's own.
+/// text, and what an application's own value conforms to:
+///
+///     struct Temperature: LaneValue {
+///         var degrees: Double
+///         var carried: StateCarried { .lanes([degrees]) }
+///         init(degrees: Double) { self.degrees = degrees }
+///         init?(carried: StateCarried) {
+///             guard case .lanes(let lanes) = carried, lanes.count == 1 else { return nil }
+///             degrees = lanes[0]
+///         }
+///         static var lanes: Int { 1 }
+///     }
 ///
 /// The type says what a host reads its lanes as, so a value said from a state
 /// reaches the control as the same value said directly. Numbers unless said:

@@ -151,25 +151,26 @@ final class UIKitEnvironmentTests: XCTestCase {
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(
-            language: locale.language, region: locale.region, name: locale.name, timeZone: locale.timeZone,
+            language: locale.language?.language ?? "", region: locale.language?.region ?? "",
+            name: locale.language?.identifier ?? "", timeZone: locale.timeZone?.identifier ?? "",
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
             isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
         defer { HostBoundary.setLocaleInfo(before) }
-        locale.name = ""
+        locale.language = nil
         locale.layoutDirection = .rightToLeft
 
         UIKitEnvironment(core: CoreLink()).reportLocale()
 
-        XCTAssertEqual(locale.name, Locale.current.identifier(.bcp47))
-        XCTAssertEqual(locale.language, Locale.current.language.languageCode?.identifier ?? "")
-        XCTAssertEqual(locale.timeZone, TimeZone.current.identifier)
+        XCTAssertEqual(locale.language, LocaleTag(Locale.current.identifier(.bcp47)))
+        XCTAssertEqual(locale.language?.language, Locale.current.language.languageCode?.identifier)
+        XCTAssertEqual(locale.timeZone?.identifier, TimeZone.current.identifier)
         XCTAssertEqual(
             locale.layoutDirection,
             Locale.current.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
     }
 
-    /// The battery report says something settled: a level from 0 to 1 and a state, `notPresent` where UIKit knows
-    /// none, as on the simulator.
+    /// The battery report says something settled: a state, `notPresent` where UIKit knows none, as on the
+    /// simulator, and a level from 0 to 1 - none where no battery stands.
     @MainActor
     func testTheBatteryReportedIsSettled() {
         let battery = StandardEnvironment.device.battery
@@ -183,7 +184,11 @@ final class UIKitEnvironmentTests: XCTestCase {
 
         XCTAssertNotEqual(battery.state, .unknown)
         XCTAssertNotEqual(battery.energySaverStatus, .unknown)
-        XCTAssertTrue((0...1).contains(battery.chargeLevel))
+        if battery.state == .notPresent {
+            XCTAssertNil(battery.chargeLevel)
+        } else {
+            XCTAssertTrue((0...1).contains(battery.chargeLevel ?? -1), "\(String(describing: battery.chargeLevel))")
+        }
     }
 
     /// The accessibility settings reported are the device's own: less motion, darker colors and VoiceOver as UIKit

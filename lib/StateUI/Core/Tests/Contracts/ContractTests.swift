@@ -132,10 +132,10 @@ final class ContractTests: XCTestCase {
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
         XCTAssertEqual(
-            WebViewSource.url("https://example.com").propValue,
+            WebViewSource.address("https://example.com").propValue,
             .values([.enumeration(0), .string("https://example.com")]))
         XCTAssertEqual(
-            WebViewSource.html("<p>Hi</p>", baseURL: nil).propValue,
+            WebViewSource.html("<p>Hi</p>", baseAddress: nil).propValue,
             .values([.enumeration(1), .string("<p>Hi</p>"), .nothing]))
         XCTAssertEqual(
             [Draw.fillColor(.gold)].propValue,
@@ -190,8 +190,8 @@ final class ContractTests: XCTestCase {
             ViewTransform.rotate(15).scaleX(1.2),
             SafeAreaEdges.all, SafeAreaEdges([.start, .bottom]),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
-            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
-            WebViewSource.html("<p/>", baseURL: "https://example.com"),
+            WebViewSource.address("https://example.com"), WebViewSource.html("<p/>", baseAddress: nil),
+            WebViewSource.html("<p/>", baseAddress: "https://example.com"),
             MapRegion(center: Location(latitude: 52.25, longitude: 21.01), radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
@@ -203,9 +203,9 @@ final class ContractTests: XCTestCase {
             ButtonMenuKind.held, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
-            Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,
+            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirection.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
-            InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
+            InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollAxes.horizontal,
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
@@ -213,11 +213,11 @@ final class ContractTests: XCTestCase {
             SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
             [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
-            LayoutInput.Orientation.vertical,
+            Orientation.vertical,
             ItemDragStart.longPress,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
-            LayoutBody.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)),
+            LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.6),
             ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],
@@ -313,7 +313,7 @@ final class ContractTests: XCTestCase {
     func testAnApplicationActIsCalledAndAnsweredAsItsDeclaredValues() async throws {
         _ = drainedActs()
 
-        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestDevice.battery) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Battery")
         XCTAssertEqual(acts.first?.arguments, [])
@@ -323,7 +323,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(level, 0.5)
         XCTAssertTrue(charging)
 
-        let copied = Self.begin { try await stateUICall(TestDevice.copy, "note") }
+        let copied = Self.begin { try await StandardEnvironment.application.call(TestDevice.copy, "note") }
         let copy = drainedActs()
         XCTAssertEqual(copy.first?.name, "Test.Copy")
         XCTAssertEqual(copy.first?.arguments, [.string("note")])
@@ -337,15 +337,15 @@ final class ContractTests: XCTestCase {
     func testAnAnswerOfAnotherShapeThrowsNamingTheAct() async throws {
         _ = drainedActs()
 
-        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestDevice.battery) }
         await report(try completionId(in: drainedActs()), .finished([.string("full")]))
 
         do {
             _ = try await asked.value
             XCTFail("an answer of another shape was taken")
-        } catch let error as StateUIError {
-            XCTAssertTrue(error.message.contains("Test.Battery"), error.message)
-            XCTAssertTrue(error.message.contains("(Double, Bool)"), error.message)
+        } catch StateUIError.unreadableAnswer(let act, _, let declared) {
+            XCTAssertEqual(act, "Test.Battery")
+            XCTAssertEqual(declared, "(Double, Bool)")
         }
     }
 

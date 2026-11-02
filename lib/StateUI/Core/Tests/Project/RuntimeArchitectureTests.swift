@@ -4,6 +4,21 @@
 import Foundation
 import XCTest
 
+    /// GTK's local zone is read in one place, as it stands: GLib keeps its own from its first reading, so the
+    /// locale, the clock and a local offset would part after the user changes the zone.
+    /// Design: docs/design/platforms/gtk/runtime.md#the-environment
+    func testGTKReadsItsLocalZoneInOnePlace() throws {
+        var read = 0
+        for (path, text) in try SourceTree.runtimeSources() where path.contains("StateUI.GTK/") {
+            read += 1
+            XCTAssertFalse(text.contains("g_date_time_new_now_local"), "\(path) reads GLib's kept local zone")
+            if !path.hasSuffix("/GTKEnvironment+Machine.swift") {
+                XCTAssertFalse(text.contains("g_time_zone_new_local"), "\(path) reads a local zone of its own")
+            }
+        }
+        XCTAssertGreaterThan(read, 10, "the scan read almost nothing of GTK's sources")
+    }
+
 /// Every Swift runtime keeps one architecture: the host layer holds
 /// the elements every toolkit shares, each host holds only what its toolkit
 /// makes it write, and no host does again what an element of the layer does.
@@ -93,6 +108,20 @@ final class RuntimeArchitectureTests: XCTestCase {
         }
 
         XCTAssertEqual(found, [], "a program's write is marked by ProgramWrite alone")
+    }
+
+    /// A value in a range is held there by the host layer's arithmetic alone: no stepper, slider, grid or list of a
+    /// host holds a number between two ends by its own `min(max(...))`, so every host clamps alike.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    func testOnlyTheHostLayerHoldsAValueInItsRange() throws {
+        let ranged = try NSRegularExpression(pattern: #"(Stepper|Slider|Grid|Items)View\.swift$"#)
+        let found = try SourceTree.runtimeSources()
+            .filter { !$0.path.hasPrefix("StateUI.Host/") }
+            .filter { ranged.firstMatch(in: $0.path, range: NSRange($0.path.startIndex..., in: $0.path)) != nil }
+            .filter { $0.text.contains("min(max(") }
+            .map(\.path)
+
+        XCTAssertEqual(found, [], "ValueArithmetic.clamped holds a value in its range")
     }
 
     /// A scroller rests on the frame clock's time alone: no timer and no second clock in any runtime's scrolling

@@ -6,7 +6,7 @@ import Foundation
 import GalleryUI
 import StateUIAppKit
 
-registerApplication()
+GalleryApp.register()
 // listing: end
 
 // listing: InteropActsSample.AppKit.swift, InteropEventsSample.AppKit.swift, appkit.md.head

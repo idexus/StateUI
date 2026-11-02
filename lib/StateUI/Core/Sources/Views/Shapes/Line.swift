@@ -4,16 +4,14 @@
 /// A straight line between two points, in device units from the top left of the
 /// space the line is given.
 ///
-///     Line()
-///         .x1(0).y1(0)
-///         .x2(240).y2(0)
+///     Line(from: Point(0, 0), to: Point(240, 0))
 ///         .stroke(.lightGray)
 ///         .lineWidth(1)
 ///
 /// A line is drawn by its stroke alone: it encloses nothing to fill.
 ///
-/// Each coordinate left unsaid is zero, so `.x2(240)` on its own runs from the
-/// top left corner across.
+/// A point left unsaid is the top left corner, so `Line().to(Point(240, 0))`
+/// runs from it across.
 public struct Line: Shape, LineProperties {
     /// The node this control describes.
     public var node: Node
@@ -22,47 +20,36 @@ public struct Line: Shape, LineProperties {
     public init() {
         node = Node(contract: LineContract.self)
     }
+
+    /// A line from `start` to `end`.
+    public init(from start: Point, to end: Point) {
+        node = Node(contract: LineContract.self)
+        node.write(LineContract.from, start)
+        node.write(LineContract.to, end)
+    }
 }
 
 /// `Line`'s own properties, shared by the control and its `Style<Line>`.
 public protocol LineProperties: PropertyContainer {}
 
 extension LineProperties {
-    /// Where it starts, across.
-    public func x1(_ value: Double) -> Modified { setValue(LineContract.x1, value) }
+    /// Where it starts.
+    public func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
 
-    /// Where it starts, down.
-    public func y1(_ value: Double) -> Modified { setValue(LineContract.y1, value) }
-
-    /// Where it ends, across.
-    public func x2(_ value: Double) -> Modified { setValue(LineContract.x2, value) }
-
-    /// Where it ends, down.
-    public func y2(_ value: Double) -> Modified { setValue(LineContract.y2, value) }
+    /// Where it ends.
+    public func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
 }
 
 extension Line {
-    /// `x1` from a state, `$x`: the host animates the property to each new
-    /// value, and no view is rebuilt for it.
-    public func x1(_ state: Binding<Double>) -> Modified {
-        twin(LineContract.x1, by: state)
+    /// `from` from a state, `$start`: the host animates the start to each new
+    /// point, and no view is rebuilt for it.
+    public func from(_ state: Binding<Point>) -> Modified {
+        twin(LineContract.from, by: state)
     }
 
-    /// `x2` from a state, `$x`: the host animates the property to each new
-    /// value, and no view is rebuilt for it.
-    public func x2(_ state: Binding<Double>) -> Modified {
-        twin(LineContract.x2, by: state)
-    }
-
-    /// `y1` from a state, `$x`: the host animates the property to each new
-    /// value, and no view is rebuilt for it.
-    public func y1(_ state: Binding<Double>) -> Modified {
-        twin(LineContract.y1, by: state)
-    }
-
-    /// `y2` from a state, `$x`: the host animates the property to each new
-    /// value, and no view is rebuilt for it.
-    public func y2(_ state: Binding<Double>) -> Modified {
-        twin(LineContract.y2, by: state)
+    /// `to` from a state, `$end`: the host animates the end to each new point,
+    /// and no view is rebuilt for it.
+    public func to(_ state: Binding<Point>) -> Modified {
+        twin(LineContract.to, by: state)
     }
 }

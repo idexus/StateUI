@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIGTK
+import Glibc
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
@@ -216,11 +217,11 @@ extension GTKRendererTests {
             host.windowStateChanged(number: controller.window.number)
 
             host.runtime.windowStateChanged(element, minimized: false, activated: false)
-            host.settle { phase() == "\(ScenePhase.inactive)" }
+            host.settle { phase() == "\(SessionPhase.inactive)" }
             host.windowStateChanged(number: controller.window.number)
             host.settle { false }
 
-            XCTAssertEqual(phase(), "\(ScenePhase.inactive)")
+            XCTAssertEqual(phase(), "\(SessionPhase.inactive)")
         }
     }
 
@@ -238,6 +239,22 @@ extension GTKRendererTests {
             XCTAssertFalse(said[1].isEmpty, "a time zone")
             XCTAssertNotEqual(said[2], "\(BatteryState.unknown)", "the power")
             XCTAssertNotEqual(said[3], "\(NetworkAccess.unknown)", "the network")
+        }
+    }
+
+    /// A zone the machine changed while the application stood behind - which the desktop tells no change of - is read
+    /// again as it comes back to the front.
+    func testAZoneChangedMeanwhileIsReadAgainAtTheFront() {
+        onUIThread {
+            let was = getenv("TZ").map { String(cString: $0) }
+            defer { if let was { setenv("TZ", was, 1) } else { unsetenv("TZ") } }
+            setenv("TZ", "Europe/Warsaw", 1)
+            let host = GTKRenderer.running { Text("Zone") }
+            XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
+
+            setenv("TZ", "Asia/Tokyo", 1)
+            host.readEnvironmentAgain()
+            XCTAssertEqual(StandardEnvironment.locale.timeZone, "Asia/Tokyo")
         }
     }
 
@@ -260,13 +277,13 @@ extension GTKRendererTests {
     }
 }
 
-/// A page saying the locale's name and zone, the battery's state and the network's access.
+/// A page saying the locale's tag and zone, the battery's state and the network's access.
 private struct MachinePage: View {
     @Environment(\.locale) private var locale
     @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(locale.name) \(locale.timeZone) \(device.battery.state) \(device.connectivity.networkAccess)")
+        Text("\(locale.language?.identifier ?? "") \(locale.timeZone?.identifier ?? "") \(device.battery.state) \(device.connectivity.networkAccess)")
     }
 }
 
@@ -282,7 +299,7 @@ private struct PhasePage: View {
 
 /// An application whose window says when it is going.
 private struct GoingApplication: Application {
-    let gone: Received<String>
+    var gone = Received<String>()
 
     var body: some Scene { GoingScene(gone: gone) }
 }
@@ -306,7 +323,7 @@ private struct GoingPage: View {
         let gone = self.gone
         let window = self.window
         return Text("going")
-            .onChanged(window.phase) { if window.phase == .destroying { gone.values.append("window") } }
+            .onChanged(window.phase) { if window.phase == .background { gone.values.append("window") } }
     }
 }
 

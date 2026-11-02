@@ -24,7 +24,7 @@ final class WinUIStepperView: WinUIValueView {
         let (low, high) = ValueArithmetic.range(minimum, maximum)
         let step = ValueArithmetic.step(step)
         self.step = step
-        shown = min(max(value, low), high)
+        shown = ValueArithmetic.clamped(value, lower: low, upper: high)
         stateui_winui_stepper_set(
             handle, value, low, high, step, Int32(ValueArithmetic.decimals(of: [step, low, high, value])))
     }

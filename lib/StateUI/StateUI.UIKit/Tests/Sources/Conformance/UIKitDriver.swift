@@ -247,7 +247,7 @@ final class UIKitDriver: HostDriver {
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
-            map.clicked(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
+            map.tapped(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.activate, _) where element.parent?.type == .itemsView:
             guard let items = (element.parent?.native as? UIKitElement)?.view as? UIKitItemsView,
                   case .manual(let identity) = element.id
@@ -432,7 +432,7 @@ final class UIKitDriver: HostDriver {
     /// `data:` address holding it.
     private static func shown(by web: WebKitView) -> WebViewSource? {
         guard let address = web.url?.absoluteString else { return nil }
-        return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
+        return WebDocument.document(at: address).map { .html($0, baseAddress: nil) } ?? .address(address)
     }
 
     /// Where the element's view stands in its window once UIKit has laid it out, as the display's next pass shows it.
@@ -542,12 +542,12 @@ final class UIKitDriver: HostDriver {
             return (pulled.refresh.scroller?.refreshControl != nil).propValue
         case (.isRefreshing, let pulled as any UIKitRefreshing):
             return (pulled.refresh.scroller?.refreshControl?.isRefreshing ?? false).propValue
-        case (.edge, let shown?):
+        case (.scrollEdge, let shown?):
             let bar = sequence(first: shown, next: \.superview).lazy.compactMap { $0 as? UIKitBottomBarView }.first
             return bar?.shownEdge?.propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
             return scroll.toolkitStanding.propValue
-        case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
+        case (.axes, let scroll as UIKitScrollView): return scroll.axes.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue
         case (.source, let web as WebKitView): return Self.shown(by: web)?.propValue

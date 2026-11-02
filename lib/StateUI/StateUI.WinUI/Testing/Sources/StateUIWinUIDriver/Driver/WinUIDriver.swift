@@ -189,7 +189,6 @@ final class WinUIDriver: HostDriver {
                 phase: Int32(StateUIPressPhase.letGo.rawValue), pointer: 1, at: point, inView: point, time: nil)
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
-        case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)
         case (.drag(let point), let view?) where view.hearing.contains(.taps) || view.hearing.contains(.pointer):
             if view.hearing.contains(.taps) { view.heardButtonPress(.changed, at: point, byFinger: false) }
             if view.hearing.contains(.pointer) { view.heard(.pointer(.pointerMoved, point)) }
@@ -348,8 +347,8 @@ final class WinUIDriver: HostDriver {
         throw DriverCannot(.activate, on: element)
     }
 
-    /// A pointer pressed down or let go: a button held, a canvas pressed, a slider's thumb taken, and a view that hears
-    /// the pointer told.
+    /// A pointer pressed down or let go: a button held, a slider's thumb taken, and a view that hears the pointer
+    /// told.
     private func press(_ view: WinUIView, down: Bool, at point: Point, _ element: MountedElement) throws {
         var done = false
         if view.hearing.contains(.taps) {
@@ -363,9 +362,6 @@ final class WinUIDriver: HostDriver {
         switch view {
         case let button as WinUIButtonView:
             WinUICallbacks.table.held(button.number, down)
-            done = true
-        case let canvas as WinUICanvasView:
-            canvas.pressed(down ? .down : .letGo, at: point)
             done = true
         case let slider as WinUISliderView:
             WinUICallbacks.table.held(slider.number, down)

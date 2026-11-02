@@ -10,11 +10,8 @@
     /// The host's name, as a failure names it.
     var host: String { get }
 
-    /// The local time of day.
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int)
-
-    /// The name of the local time zone.
-    func localZone() -> String
+    /// The local day and time of day.
+    func localTime() -> LocalTime
 
     /// How far `zone` - the local one where nil - is from UTC at `day`'s noon - now where nil - in minutes; nil for a
     /// zone the platform does not know.

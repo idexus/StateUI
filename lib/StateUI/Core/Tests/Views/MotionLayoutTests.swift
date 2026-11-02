@@ -110,7 +110,7 @@ final class MotionLayoutTests: XCTestCase {
         let layout = try XCTUnwrap(patch.first(.motionLayout))
 
         XCTAssertNotNil(layout.events?[.translationUpdated])
-        XCTAssertEqual(layout.props[.translationOrientation], LayoutInput.Orientation.vertical.propValue)
+        XCTAssertEqual(layout.props[.translationOrientation], Orientation.vertical.propValue)
         XCTAssertNil(patch.first(.scrollView), "nothing scrolls under the hand")
     }
 
@@ -137,6 +137,21 @@ final class MotionLayoutTests: XCTestCase {
 
         XCTAssertEqual(run.prefix(3).map(\.bounds), [Rect(5, 5, 10, 10), .zero, .zero])
         XCTAssertTrue(hasComplained("placements answered 1 placements for 3 views"))
+    }
+
+    /// A NUMBER THAT IS NOT FINITE IS SAID AND STANDS NEUTRAL: an answer the arithmetic got wrong - a division by
+    /// nothing, an infinity - reaches no host; each such number is the one a placement at the top left holds.
+    func testANumberThatIsNotFiniteIsSaidAndStandsNeutral() {
+        var turned = Placement(Rect(5, .nan, .infinity, 10))
+        turned.opacity = .nan
+        let placed = turned
+        let (_, run) = bench.laid(Renders(), {
+            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [placed] }.node
+        })
+
+        XCTAssertEqual(run.first?.bounds, Rect(5, 0, 0, 10))
+        XCTAssertEqual(run.first?.opacity, 1)
+        XCTAssertTrue(hasComplained("A MotionLayout's placements answered a number that is not finite"))
     }
 
     // MARK: - The phase
@@ -260,7 +275,7 @@ final class MotionLayoutTests: XCTestCase {
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-80, 0))
-        bench.hand(renders, tree, .ended, speed: Point(-2_000, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-2_000, 0))
 
         XCTAssertEqual(phase.wrappedValue, 0, "no card named, none thrown to")
     }
@@ -323,7 +338,7 @@ final class MotionLayoutTests: XCTestCase {
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-10, 0))
         // 1500 points a second to the left is 15 units a second, which the throw carries 2 units on.
-        bench.hand(renders, tree, .ended, speed: Point(-1_500, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-1_500, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "0.1 and 2 on is nearest 2, named at once")
 
         let start = handed.phases.count
@@ -338,14 +353,14 @@ final class MotionLayoutTests: XCTestCase {
                       "never faster than the hand let go")
 
         bench.hand(renders, tree, .began)
-        bench.hand(renders, tree, .ended, speed: Point(-100_000, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-100_000, 0))
         XCTAssertEqual(phase.wrappedValue, 6, "the last target, however hard the throw")
     }
 
     /// HOW A THROW GOES ON IS THE INPUT'S, a motion as any other: eased, it carries the hand's speed for its
     /// length over how steeply its curve sets out; a spring, for a third of its response.
     func testHowAThrowGoesOnIsTheInputs() throws {
-        for throwing in [Motion.eased(.seconds(3), .cubicOut), .spring(response: .seconds(3))] {
+        for throwing in [Motion.eased(.seconds(3), curve: .cubicOut), .spring(response: .seconds(3))] {
             Renderer.shared.clearStates()
             let phase = State(wrappedValue: 0.0)
             let renders = Renders()
@@ -359,7 +374,7 @@ final class MotionLayoutTests: XCTestCase {
             _ = bench.laid(renders, tree)
             bench.hand(renders, tree, .began)
             bench.hand(renders, tree, .changed, moved: Point(-10, 0))
-            bench.hand(renders, tree, .ended, speed: Point(-300, 0))
+            bench.hand(renders, tree, .ended, velocity: Point(-300, 0))
 
             XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.kind)")
         }
@@ -379,7 +394,7 @@ final class MotionLayoutTests: XCTestCase {
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-105, 0))
         // 120 points a second carries the run 0.16 on: from 1.05 to 1.21, still nearest 1, behind the hand.
-        bench.hand(renders, tree, .ended, speed: Point(-120, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-120, 0))
         XCTAssertEqual(phase.wrappedValue, 1, "the nearest")
 
         let start = handed.phases.count
@@ -536,7 +551,7 @@ final class MotionLayoutTests: XCTestCase {
         let patch = renders.render(
             MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
-                .onItemTapped { heard.append($0) }
+                .onItemActivated { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))
         let tap = try XCTUnwrap(layout.children[1].events?[.tapped])

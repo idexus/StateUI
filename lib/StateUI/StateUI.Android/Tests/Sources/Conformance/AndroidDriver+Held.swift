@@ -27,7 +27,7 @@ extension AndroidDriver {
         if property == .barScrollEdge {
             return ((element.visiblePage?.native as? AndroidElement)?.view as? AndroidPageView)?.topEdge.propValue
         }
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? AndroidElement)?.view as? AndroidPageView {
             return page.edge.propValue
         }
@@ -245,7 +245,7 @@ extension AndroidDriver {
         let packed = UInt32(truncatingIfNeeded: argb)
         return StandIns.material(painted: Color(
             red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
-            alpha: Int(packed >> 24 & 255))).propValue
+            opacity: Double(packed >> 24 & 255) / 255)).propValue
     }
 
     /// The color `argb` as a material.
@@ -253,7 +253,7 @@ extension AndroidDriver {
         let packed = UInt32(truncatingIfNeeded: argb)
         return Material.color(Color(
             red: Int(packed >> 16 & 255), green: Int(packed >> 8 & 255), blue: Int(packed & 255),
-            alpha: Int(packed >> 24 & 255))).propValue
+            opacity: Double(packed >> 24 & 255) / 255)).propValue
     }
 
     static let sidebarColor = Java.staticMethod(JavaAPI.views, "sidebarColor", "(Landroid/view/View;)J")
@@ -312,7 +312,7 @@ extension AndroidDriver {
 
     /// A color Android holds as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {
-        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
+        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), opacity: Double(argb >> 24) / 255)
     }
 
     static let testPixels = Java.findClass("stateui/android/test/TestPixels")

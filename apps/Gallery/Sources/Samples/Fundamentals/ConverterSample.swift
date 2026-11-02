@@ -23,7 +23,7 @@ struct ConverterSample: SampleContent, ExampleContent {
 
     static let id = "converters"
     static let title = "Converters"
-    static let summary = "`convert` and `convertBack`: one state in two units, a caption from it, and no render."
+    static let summary = "`convert` and its way back: one state in two units, a caption from it, and no render."
 
     // listing: ConverterSample
     var body: some View {
@@ -45,8 +45,8 @@ struct ConverterSample: SampleContent, ExampleContent {
             row("2 · the same state in percent") {
                 // THE SAME STATE IN PERCENT: a second state the host carries,
                 // worked out by an engine following `volume` - and a drag comes
-                // back through `convertBack`, in the source's own terms.
-                Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+                // back through `back`, in the source's own terms and type.
+                Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
                     .accessibilityIdentifier("converters.volume.percent")
                     .accessibilityLabel("Volume, in percent")
                     .minimum(0)
@@ -83,7 +83,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 }
                 .spacing(10)
                 HStack {
-                    Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                    Stepper($celsius.convert { $0 * 9 / 5 + 32 } back: { ($0 - 32) * 5 / 9 })
                         .accessibilityIdentifier("converters.fahrenheit")
                         .accessibilityLabel("Fahrenheit")
                         .step(9)
@@ -152,8 +152,8 @@ struct ConverterSample: SampleContent, ExampleContent {
         VStack {
             Text("`$volume.convert { $0 * 100 }` is a second state the host carries, worked "
                 + "out from the first by an engine the differ writes for you: drag either "
-                + "slider and the other follows, because `convertBack` is the engine the "
-                + "other way, landing a report on the source in the source's own terms. "
+                + "slider and the other follows, because `back` is the engine the other "
+                + "way, landing a report on the source in the source's own terms. "
                 + "The caption under them is words converted from the same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -182,7 +182,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`convertBack` is meant to be the inverse of `convert`; where it is "
+            Text("`back` is meant to be the inverse of the conversion; where it is "
                 + "not exactly, the source settles once on the value the round trip "
                 + "lands on.")
                 .fontSize(12)

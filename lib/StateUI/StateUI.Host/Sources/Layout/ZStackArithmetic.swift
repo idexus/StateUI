@@ -47,12 +47,13 @@
     /// The rectangle an area names in `content`; the whole of it where the child names none.
     private static func rectangle(of area: Area?, in content: Rect) -> Rect {
         switch area {
-        case let .absolute(x, y, width, height)?:
-            return Rect(x: content.x + x, y: content.y + y, width: max(0, width), height: max(0, height))
-        case let .proportional(x, y, width, height)?:
+        case .absolute(let area)?:
             return Rect(
-                x: content.x + x * content.width, y: content.y + y * content.height,
-                width: max(0, width * content.width), height: max(0, height * content.height))
+                x: content.x + area.x, y: content.y + area.y, width: max(0, area.width), height: max(0, area.height))
+        case .proportional(let area)?:
+            return Rect(
+                x: content.x + area.x * content.width, y: content.y + area.y * content.height,
+                width: max(0, area.width * content.width), height: max(0, area.height * content.height))
         case nil:
             return content
         }
@@ -64,9 +65,10 @@
     private static func room<Child: LayoutChild>(for item: Child, width offered: Double?) -> LayoutSize {
         let margin = item.values.margin
         switch item.values.area {
-        case let .absolute(x, y, width, height)?:
-            return LayoutSize(width: max(0, x + width), height: max(0, y + height))
-        case let .proportional(_, _, width, height)?:
+        case .absolute(let area)?:
+            return LayoutSize(width: max(0, area.x + area.width), height: max(0, area.y + area.height))
+        case .proportional(let area)?:
+            let (width, height) = (area.width, area.height)
             let natural = item.size(offered: offered.map { max(0, $0 * width - margin.start - margin.end) })
             return LayoutSize(
                 width: width > 0 ? (natural.width + margin.start + margin.end) / width : 0,

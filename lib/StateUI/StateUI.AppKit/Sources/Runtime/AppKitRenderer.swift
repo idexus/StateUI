@@ -18,11 +18,9 @@ final class AppKitRenderer {
     let resourceDirectory: URL?
     let presentsWindows: Bool
     let preferences: UserDefaults
-    /// Pictures made lately, which the system may let go of under memory pressure.
-    let images = NSCache<AppKitPictureKey, NSImage>()
-
-    /// Every picture made that something still holds - a view showing it: asked for again, it is the same picture.
-    private let held = NSMapTable<AppKitPictureKey, NSImage>.strongToWeakObjects()
+    /// The pictures made: each found again while a view shows it, the latest asked for kept within the host layer's
+    /// budget.
+    let pictures = PictureCache<NSImage>(pixels: { $0.pixels })
     let frameClock: AppKitFrameClock
     let reducesMotion: () -> Bool
 
@@ -198,23 +196,19 @@ final class AppKitRenderer {
     /// The native image for a picture, made once for this renderer: a file of the application's, the SF Symbol for
     /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the color of what holds it.
     /// Reapplying an unchanged picture hands a native view the image it already shows, so nothing reads the file
-    /// again, no measurement is forgotten and a bar or a tab row finds nothing changed.
+    /// again, no measurement is forgotten and a bar or a tab row finds nothing changed. A drawing keeps no pixels of
+    /// the sizes it is drawn at: each image view holds its own.
+    /// Design: docs/design/platforms/appkit/views.md#pictures
     func image(_ picture: HostPicture) -> NSImage? {
-        let key = AppKitPictureKey(picture)
-        if let kept = images.object(forKey: key) ?? held.object(forKey: key) {
-            images.setObject(kept, forKey: key)
-            return kept
+        pictures.image(picture) {
+            let made: NSImage? = switch picture {
+            case .file(let name): loadImage(named: name)
+            case .icon(let icon): NSImage(systemSymbolName: icon.sfSymbol, accessibilityDescription: nil)
+            case .bytes(let bytes): NSImage(data: Data(bytes))
+            }
+            if let made, made.isDrawing { made.cacheMode = .never }
+            return made
         }
-        let made: NSImage? = switch picture {
-        case .file(let name): loadImage(named: name)
-        case .icon(let icon): NSImage(systemSymbolName: icon.sfSymbol, accessibilityDescription: nil)
-        case .bytes(let bytes): NSImage(data: Data(bytes))
-        }
-        if let made {
-            images.setObject(made, forKey: key)
-            held.setObject(made, forKey: key)
-        }
-        return made
     }
 
     /// The picture `name` stands for: the file of the name, else its drawing, by the host layer's rule.
@@ -246,21 +240,6 @@ extension AppKitElement: PlacedView {
     var heldWords: LayoutSize? {
         get { (view as? AppKitButtonView)?.heldWords }
         set { (view as? AppKitButtonView)?.heldWords = newValue }
-    }
-}
-
-/// A picture as the key of a renderer's images.
-final class AppKitPictureKey: NSObject {
-    let picture: HostPicture
-
-    init(_ picture: HostPicture) {
-        self.picture = picture
-    }
-
-    override var hash: Int { picture.hashValue }
-
-    override func isEqual(_ object: Any?) -> Bool {
-        (object as? AppKitPictureKey)?.picture == picture
     }
 }
 

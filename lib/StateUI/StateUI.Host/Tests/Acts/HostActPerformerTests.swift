@@ -30,8 +30,9 @@ private final class Toolkit: ActToolkit {
     var registered: Set<Act> = []
     var logged: [String] = []
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) { (9, 30, 5, 250) }
-    func localZone() -> String { "Europe/Warsaw" }
+    func localTime() -> LocalTime {
+        LocalTime(year: 2026, month: 11, day: 1, hour: 9, minute: 30, second: 5, millisecond: 250)
+    }
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? { zones[zone ?? "Europe/Warsaw"] }
 
     func show(
@@ -224,12 +225,10 @@ final class HostActPerformerTests: XCTestCase {
         let acts = performer(toolkit, answers)
 
         acts.perform(HostActCall(act: .currentTime, arguments: [], completion: 1))
-        acts.perform(HostActCall(act: .currentTimeZone, arguments: [], completion: 2))
         acts.perform(HostActCall(act: .utcOffset, arguments: [.string("Europe/Warsaw")], completion: 3))
         acts.perform(HostActCall(act: .utcOffset, arguments: [.string("Nowhere/Else")], completion: 4))
 
-        XCTAssertEqual(answers.replies[1], HostActs.currentTime(hour: 9, minute: 30, second: 5, millisecond: 250))
-        XCTAssertEqual(answers.replies[2], [.string("Europe/Warsaw")])
+        XCTAssertEqual(answers.replies[1], [.numbers([2026, 11, 1, 9, 30, 5, 250])])
         XCTAssertEqual(answers.replies[3], [.number(120)])
         XCTAssertEqual(answers.failures[4], "no time zone 'Nowhere/Else' is known")
     }
@@ -465,7 +464,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[3], "the act offers nothing to share")
 
         toolkit.shown[0].answered(.success(.init(accepted: true)))
-        XCTAssertEqual(toolkit.shares.map(\.shared), [HostShare(text: "Notes", link: "https://example.com")])
+        XCTAssertEqual(toolkit.shares.map(\.shared), [HostShare(text: "Notes", address: "https://example.com")])
         XCTAssertEqual(toolkit.shares[0].shared.together, "Notes\nhttps://example.com")
         toolkit.shares[0].answered(.success(true))
         XCTAssertEqual(answers.replies[2], [.bool(true)])
@@ -558,7 +557,7 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(
             act: .readFile, arguments: [ChosenFile(address: "gone", name: "gone").propValue], completion: 2))
         acts.perform(HostActCall(act: .launchFile, arguments: [report.propValue], completion: 3))
-        acts.perform(HostActCall(act: .launchLink, arguments: [.string("https://www.swift.org")], completion: 4))
+        acts.perform(HostActCall(act: .launchAddress, arguments: [.string("https://www.swift.org")], completion: 4))
         acts.perform(HostActCall(act: .readFile, arguments: [], completion: 5))
 
         XCTAssertEqual(answers.replies[1], [.bytes([60, 104, 49, 62])])
@@ -591,7 +590,7 @@ final class HostActPerformerTests: XCTestCase {
         let answers = Answers()
         let acts = performer(Toolkit(), answers)
 
-        for (completion, act) in [Act.openFiles, .saveFile, .readFile, .launchFile, .launchLink].enumerated() {
+        for (completion, act) in [Act.openFiles, .saveFile, .readFile, .launchFile, .launchAddress].enumerated() {
             acts.perform(HostActCall(act: act, arguments: [], completion: completion))
             XCTAssertEqual(answers.failures[completion], "the Test host does not perform the act '\(act.name)'")
         }

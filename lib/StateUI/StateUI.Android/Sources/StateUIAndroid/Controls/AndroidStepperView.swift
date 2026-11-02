@@ -52,7 +52,7 @@ final class AndroidStepperView: AndroidView {
         (lowest, highest) = ValueArithmetic.range(minimum, maximum)
         self.step = step
         self.enabled = enabled
-        self.value = min(max(value, lowest), highest)
+        self.value = ValueArithmetic.clamped(value, lower: lowest, upper: highest)
         setEnabled(enabled)
         showEnds()
     }

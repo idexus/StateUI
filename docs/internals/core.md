@@ -61,6 +61,7 @@ lib/StateUI/Core/Sources/
   Types/         the values an application passes, and how each crosses
     Geometry/ Layout/ Color/ Drawing/ Text/ Time/ Keyboard/ Localization/
     Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
+    Network/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
     Tiers/ Mixins/                  members several elements share
@@ -126,8 +127,8 @@ turns the nodes into the patch.
   `WindowGroup`, `Window`, `Windows`, `WindowType` and
   `WindowError` are a scene's windows, and `Node.page` and `Node.window`,
   internal, the page a view stands on and the window around it.
-  `stateUIUseApp` names the application
-  to the host from the application's own registration function.
+  `Application.register()` names the application
+  to the host from each of its heads.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
 - **`NavigationStack`**, **`TabView`** and **`SplitView`** (`Navigation/`)
@@ -164,7 +165,7 @@ turns the nodes into the patch.
   `WebView` and the rest), `Text/` (`Text`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
   `ZStack`, `ScrollView`), `Shapes/` (`Rectangle`, `Path`, `Canvas` and
-  their kin) and `Collections/` (`ItemsView`, whose groups are `Section`s) -
+  their kin) and `Collections/` (`ItemsView` and its `Section`s) -
   are each a node written through its contract, most with a `…Properties`
   protocol of its own; `VStack`, `HStack`, `ZStack`, `Ellipse`, `TextSpan`,
   `ItemsView` and `Marker` have none. *Application.*
@@ -205,14 +206,15 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Color/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [color and theme](../design/types/color-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
-| `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
+| `Time/` | `CalendarDate`, `ClockTime`, `WallClock`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
-| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
+| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `RotationUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `ApplicationInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
-| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Controls/` | the vocabularies one control takes: `ScrollAxes`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 | `Collections/` | what an `ItemsView` takes: `ItemsEntries`, `ItemsLayout`, `ScrollAnchor`, `SelectionMode` | [items](../design/views/items.md), [closed vocabularies](../design/types/vocabularies.md) |
 | `Files/` | `ChosenFile`, `FileType`: the files the dialogs open and save | [files](../design/core/acts.md#files) |
+| `Network/` | `HTTPRequest`, `HTTPMethod`, `HTTPResponse`: a request the platform's networking sends, and its answer | [requests](../design/core/acts.md#requests) |
 
 ## Contracts
 
@@ -304,7 +306,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Application.* ([The journey lanes](../design/core/journeys.md#the-journey-lanes);
   [journey is part of state](../concepts/motion-and-journeys.md#journey-is-part-of-state))
 - **Conversions and readings** - `convert`, `.multi` (`MultiBinding`) and
-  `.samples(_:into:_:)` at the pace `Asks` gives. A conversion runs as engines
+  `.samples(_:into:_:)` at the pace its `Cadence` gives. A conversion runs as engines
   the differ writes (`Conversion`, internal); a reading (`Sampling`,
   internal) is no engine, but held by the element that asked for it.
   *Application.*
@@ -341,7 +343,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   readers, the generation, the act queue and the completions, and takes one
   of three roads - the clean walk, a build, or the complete tree. It is host
   SPI (`@_spi(Host)`): an application reaches `setApplication` through
-  `stateUIUseApp` and tells every change by writing a state; a host reaches
+  `Application.register()` and tells every change by writing a state; a host reaches
   the rest through `HostBoundary`.
   ([Three roads](../design/core/render.md#three-roads),
   [generations and baseline](../design/core/render.md#generations-and-baseline))
@@ -384,8 +386,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Acts
 
-- **`stateUICall`**, **`stateUISend`** and **`StateUIError`** call an act of
-  the application's - one with no control behind it - awaited or sent, and
+- **`ApplicationSession.call`**, **`tell`** and **`StateUIError`** call an act of
+  the application's - one with no control behind it - awaited or not, and
   throw what a host could not do. *Application.*
   ([An act is a member](../design/core/acts.md#an-act-is-a-member);
   [host-extension actions](../interface/interaction-and-actions.md#host-extension-actions))
@@ -620,12 +622,19 @@ never against a stored copy
 | `Acts/` | act calls and their shape, aims, host events |
 | `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position dots (`PositionDotsTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
 | `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
+| `Localization/` | language tags, messages and their plural forms, the formats each language writes, a localization's choices |
+| `Realization/` | what a host's registration reads of an element's values (`ControlValues`) |
+| `Types/` | a motion layout's curves between keyframes and the shift of a layout's run |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
 
 - **The project guards** read the repository as files: `DesignNotesTests`
   resolves every `Design:` reference and holds the golden rule of comments;
   `DocumentationTests` refuses an undocumented public declaration;
+  `APISurfaceTests` holds the public API to its two records, what an
+  application writes and what an extension writes;
+  `FoundationSurfaceTests` keeps `StateUIFoundation` the platform's C library
+  and nothing of its own;
   `DocumentLinksTests` follows every document's links; `WebPageTests` holds
   the page a Web head lays out; `LicenseTests` holds the SPDX lines;
   `NativeProjectTests` keeps each host a sibling package named only under its
@@ -635,7 +644,8 @@ never against a stored copy
   `HeldByNumberTests` holds every number a host hands out to the one count;
   `RelayVocabularyTests` holds every vocabulary a relay numbers by hand to
   the Swift it mirrors; `ConformanceCaseTests` holds the conformance cases to
-  the session's rules;
+  the session's rules; `WaitTests` refuses a wait that goes on asking once
+  it holds;
   `ToolchainTests`, `ReleaseTests`, `AppsTests` and `VsCodeTests` keep one
   Swift release, one version, the applications and the editor.
 - **The host layer's suite**, `swift test --package-path lib/StateUI/StateUI.Host`,

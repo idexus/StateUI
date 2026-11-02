@@ -33,6 +33,7 @@ lib/StateUI/StateUI.Host/Sources/
   Input/         the user's changes, gestures, scrolling, typed words, ranges
   Motion/        the animator, the state channels, described and layout motion
   Acts/          answering acts, questions for the user, the application's acts
+  Network/       a request sent through the platform's own networking
   Items/         what a platform's collection holds of an ItemsView, and tells back
   Web/           the web view's rules: its history, a script's answer, a document's address
   Maps/          how a map frames a region, and reads back the one it shows
@@ -203,7 +204,9 @@ named for an engine or a channel
   its windows, a turn later, so one window deactivated as another is
   activated is one move. It keeps the scene in front, which hides the windows
   that hide while another scene is, and says whether a floating window floats
-  now. The host tells `HostRuntime.windowStateChanged`.
+  now. The host tells `HostRuntime.windowStateChanged`. As the application
+  comes back to the front, the host's presenter reads the machine again
+  (`HostPresenter.readEnvironmentAgain`).
   ([The application's phase](../design/host/runtime.md#the-applications-phase))
 
 ## The tree and the native half
@@ -387,6 +390,11 @@ measures only its native views.
   geometry in its room (`placement`), and gives its points as flat commands,
   its stroke's width and its dashes.
   ([A shape's own geometry](../design/host/layout.md#a-shapes-own-geometry))
+- **`FieldWidth`** gives a one-line field nothing sizes its least width: the
+  words it measures (`leastWords`) - twenty digits and its placeholder - and
+  the widest of them with what the field draws around its words, or the
+  platform's own where it asks for more (`width`).
+  ([A field's own width](../design/host/layout.md#a-fields-own-width))
 - **`LayoutMembers`** is what a layout takes of its own box (`boxMembers`) and
   what a stack takes for its spacing (`stackMembers`), each a `PropertyList`
   every host's registration names whole.
@@ -543,8 +551,8 @@ on every host.
   reason, so no caller waits on an act nobody performs; an act aimed at a view
   names it by its first argument. ([Acts](../design/host/runtime.md#acts))
 - **`HostActs`** lists the acts every host performs itself (`performed`): the
-  focus, the questions for the user, a word to a screen reader, the time and
-  the zones, the on-screen keyboard, a kept value, a handler's failure and the
+  focus, the questions for the user, a word to a screen reader, the day, the
+  time and the zones' offsets, the on-screen keyboard, a kept value, a handler's failure and the
   theme the application holds; and it reads and answers `currentTime` and
   `utcOffset`.
 - **`HostQuestion`** and **`QuestionQueue`** read a question for the user
@@ -555,6 +563,10 @@ on every host.
   dialog from its act and answer it, and are what a host performing files
   hands its performer; a file dialog waits its turn among the questions.
   ([Files](../design/host/runtime.md#files))
+- **`NetworkToolkit`** (`Network/`) is what a host sending the application's
+  requests hands its performer: the platform's own networking, its
+  certificates, proxy and cookies, answering on the UI thread.
+  ([Requests](../design/core/acts.md#requests))
 - **`InteropActs`** performs the acts an application registers on its host,
   each handed the values its contract declares, an aimed one also the control
   of the element it names.

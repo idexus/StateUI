@@ -55,7 +55,7 @@ final class DisplayCycleTests: XCTestCase {
         let presenter = CountingPresenter()
         runtime.displayCycle.presenter = presenter
         runtime.tree.receiveProperty(
-            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear))
+            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), curve: .linear))
         XCTAssertTrue(runtime.clock.held)
 
         runtime.displayCycle.advanceAnimations(now: 300, reducesMotion: false)
@@ -75,7 +75,7 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertFalse(runtime.clock.held, "nothing moves")
 
         runtime.tree.receiveProperty(
-            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), .linear))
+            mount: 1, property: .opacity, standing: .number(0), target: .number(1), motion: .eased(.milliseconds(200), curve: .linear))
         XCTAssertTrue(runtime.clock.held, "a property's animation holds it as it starts")
         runtime.displayCycle.frame(now: 100)
         XCTAssertTrue(runtime.clock.held, "and while it runs")
@@ -83,7 +83,7 @@ final class DisplayCycleTests: XCTestCase {
         XCTAssertFalse(runtime.clock.held, "and lets go on the frame it lands")
 
         let child = Placed()
-        let travels = Arrangement(law: .eased(.milliseconds(200), .linear), lanes: .all)
+        let travels = Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         runtime.layoutMotion.place(
             child, mount: 2, at: Rect(x: 0, y: 0, width: 10, height: 10), stated: [], words: .none, natural: { .zero },
             fadeIn: nil, in: travels)
@@ -122,7 +122,7 @@ final class DisplayCycleTests: XCTestCase {
     /// page again in the same pass, and its report step it on again, until the slide rests within one frame.
     @MainActor
     func testWhatALayoutPassSaysTakesNoTime() throws {
-        stateUIUseApp(ReadTravelApplication())
+        ReadTravelApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -153,7 +153,7 @@ final class DisplayCycleTests: XCTestCase {
     /// walks it and tells the core every frame - a motion layout's phase, which no view draws, included.
     @MainActor
     func testAWornStateOpensItsChannelThoughNoViewReadsIt() throws {
-        stateUIUseApp(WornApplication())
+        WornApplication.register()
         let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
         runtime.pump.turn()
@@ -175,7 +175,7 @@ final class DisplayCycleTests: XCTestCase {
     /// reports the destination before the write, which stands and crosses in the same frame.
     @MainActor
     func testAWriteInTheTurnATravelLandsSendsItOn() throws {
-        stateUIUseApp(TravelApplication())
+        TravelApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -219,7 +219,7 @@ private struct TravelApplication: Application {
 }
 
 private struct TravelPage: View {
-    @State(motion: .eased(.milliseconds(200), .linear)) private var level = 0.0
+    @State(motion: .eased(.milliseconds(200), curve: .linear)) private var level = 0.0
 
     var body: some View {
         VStack {
@@ -238,7 +238,7 @@ private struct ReadTravelApplication: Application {
 }
 
 private struct ReadTravelPage: View {
-    @State(motion: .eased(.milliseconds(200), .linear)) private var level = 0.0
+    @State(motion: .eased(.milliseconds(200), curve: .linear)) private var level = 0.0
     @State private var room = Rect(0, 0, 0, 0)
 
     var body: some View {

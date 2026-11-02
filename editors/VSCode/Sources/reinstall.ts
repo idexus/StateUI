@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The extension built again from a checkout's lib/StateUI.VSCode and installed over itself: compiled and packed into
+// The extension built again from a checkout's editors/VSCode and installed over itself: compiled and packed into
 // artifacts/stateui-<version>.vsix by `npm run package`, then installed with --force by the command line of the
 // VS Code that runs it.
 
@@ -17,7 +17,7 @@ export interface Step {
 
 /** The extension's own sources in a checkout. */
 export function extensionSources(checkout: string): string {
-    return path.join(checkout, "lib", "StateUI.VSCode");
+    return path.join(checkout, "editors", "VSCode");
 }
 
 /** Whether `checkout` holds the extension's sources. */

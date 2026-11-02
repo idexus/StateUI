@@ -105,7 +105,7 @@ lifetime can use the box directly, on the UI thread's actor:
 
 @MainActor func countLaunch() -> Int {
     launchCount.wrappedValue += 1
-    return launchCount.get()
+    return launchCount.wrappedValue
 }
 ```
 
@@ -501,8 +501,7 @@ forward closure runs on host cycles when its source changes:
 @State var height = 80.0
 
 VStack {
-    Slider($volume.convert { $0 * 100 }
-        .convertBack { $0 / 100 })
+    Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
         .maximum(100)
 
     Text($volume.convert { "\(Int($0 * 100))%" })
@@ -513,9 +512,10 @@ VStack {
 }
 ```
 
-`convertBack` is needed when a reporting control edits the derived value. It
-maps that report back into the source's units. Without it, reports into the
-derived binding have no source-side destination. Only the user's change comes
+`back` is needed when a reporting control edits the derived value. It maps
+that report back into the source's units, and in the source's own type: a way
+back that answers anything else does not compile. Without it, reports into
+the derived binding have no source-side destination. Only the user's change comes
 back: a value the application writes goes forward as written, however the
 conversion rounds it on the way.
 
@@ -597,7 +597,7 @@ struct SampledProgress: View {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
-                $progress.journey.move(to: 1, .eased(.seconds(1), .cubicOut))
+                $progress.journey.move(to: 1, .eased(.seconds(1), curve: .cubicOut))
             }
         }
         .samples($progress, into: $shown, .every(.milliseconds(100)))

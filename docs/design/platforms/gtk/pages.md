@@ -87,7 +87,7 @@ its bottom bars in the order they came, so the holder and the action bar are
 made together, the holder first, each shown only while it holds anything.
 Its leading groups stand at its start and the rest at its end, as the header
 bar's buttons, and a More menu button of those placed behind it ends it; the
-bottom bars' edge is the view bar's (`showBottomEdge`). Words on a bar
+bottom bars' edge is the view bar's (`GTKPageFrame.showEdges`). Words on a bar
 (`ToolbarLabel`), on either bar, are a label GNOME dims as a secondary one
 (`dim-label`), its picture before it; behind a More they are a flat button
 nobody can choose.

@@ -78,7 +78,7 @@ final class GoogleMapView extends LinearLayout {
         map.getMapAsync(ready -> {
             google = ready;
             google.getUiSettings().setMapToolbarEnabled(false);
-            google.setOnMapClickListener(at -> GalleryNatives.mapClicked(this.control, at.latitude, at.longitude));
+            google.setOnMapClickListener(at -> GalleryNatives.locationTapped(this.control, at.latitude, at.longitude));
             google.setOnMarkerClickListener(marker -> {
                 String number = numbers.get(marker);
                 if (number != null) GalleryNatives.markerSelected(this.control, Long.parseLong(number));

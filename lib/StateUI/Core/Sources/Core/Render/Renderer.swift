@@ -7,7 +7,7 @@
 
 /// The one renderer: it holds the application and renders what changed for
 /// the host, which calls in from the thread it draws on. A host's; an application
-/// reaches it only through `stateUIUseApp` and its states.
+/// reaches it only through `Application.register()` and its states.
 @_spi(Host) @MainActor
 public final class Renderer {
     // The UI thread's actor's: the host enters it from that thread, synchronously.
@@ -124,7 +124,7 @@ public final class Renderer {
 
     private init() {}
 
-    /// Registers the application. Called through `stateUIUseApp`.
+    /// Registers the application: `Application.register()`, or a test's harness with an application it makes.
     ///
     /// - Parameter application: the application, made at its first need, once
     ///   what an earlier registration wrote into the application's session is
@@ -354,12 +354,7 @@ public final class Renderer {
             if selfDirtied >= Renderer.selfDirtyLimit {
                 clearInvalidation()
                 selfDirtied = 0
-                report(StateUIError(message: """
-                    A view writes state while it is being built - every one of \
-                    \(Renderer.selfDirtyLimit) consecutive renders ended with the \
-                    tree dirty again. A body reads state; a handler writes it. \
-                    The pending change was dropped to stop the render loop.
-                    """))
+                report(StateUIError.writesWhileBuilding)
             }
         } else {
             selfDirtied = 0

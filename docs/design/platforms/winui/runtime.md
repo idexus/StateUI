@@ -192,7 +192,10 @@ the screen with it, and renders what it changed. The accessibility settings
 are Windows's - animations off for less motion, high contrast, a screen
 reader running, and the text scale - told again as animations, the contrast
 or the text scale change; Windows tells no change of the screen reader, which
-is read again with any other.
+is read again with any other. Nor does it tell one of the zone or the user's
+languages: both are read again as the application comes back to the front
+([facts read again at the
+front](../../host/runtime.md#facts-read-again-at-the-front)).
 
 ## Acts
 
@@ -237,7 +240,7 @@ reads and writes.
 
 What the user shares is Windows' own share sheet over the window
 (`DataTransferManager`, reached for a window through its interop): the words
-as text, the link as a web link, handed over as the sheet asks for them; the
+as text, the address as a web link, handed over as the sheet asks for them; the
 answer is the sheet's, shared or cancelled, told once on the UI thread.
 
 ## Questions for the user

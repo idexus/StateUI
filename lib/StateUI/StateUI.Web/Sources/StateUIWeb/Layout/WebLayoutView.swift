@@ -285,16 +285,16 @@ class WebLayoutView: WebDOMView {
         view.style("position", "absolute")
         view.style("grid-area", nil)
         switch area {
-        case .absolute(let x, let y, let width, let height):
-            view.style("left", "calc(\(left) + \(WebCSS.pixels(x)!))")
-            view.style("top", "calc(\(top) + \(WebCSS.pixels(y)!))")
-            view.style("width", WebCSS.pixels(width))
-            view.style("height", WebCSS.pixels(height))
-        case .proportional(let x, let y, let width, let height):
-            view.style("left", "calc(\(left) + \(room) * \(WebCSS.number(x)))")
-            view.style("top", "calc(\(top) + \(tall) * \(WebCSS.number(y)))")
-            view.style("width", "calc(\(room) * \(WebCSS.number(width)))")
-            view.style("height", "calc(\(tall) * \(WebCSS.number(height)))")
+        case .absolute(let area):
+            view.style("left", "calc(\(left) + \(WebCSS.pixels(area.x)!))")
+            view.style("top", "calc(\(top) + \(WebCSS.pixels(area.y)!))")
+            view.style("width", WebCSS.pixels(area.width))
+            view.style("height", WebCSS.pixels(area.height))
+        case .proportional(let area):
+            view.style("left", "calc(\(left) + \(room) * \(WebCSS.number(area.x)))")
+            view.style("top", "calc(\(top) + \(tall) * \(WebCSS.number(area.y)))")
+            view.style("width", "calc(\(room) * \(WebCSS.number(area.width)))")
+            view.style("height", "calc(\(tall) * \(WebCSS.number(area.height)))")
         }
     }
 

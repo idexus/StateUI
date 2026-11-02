@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.style: ✅
 Button.translationY: ✓ read translationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.pivotX: ✓ read pivotX of Canvas: the host's own transform, checked against the layer it composed itself

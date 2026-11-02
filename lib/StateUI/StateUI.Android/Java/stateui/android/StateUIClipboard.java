@@ -3,6 +3,7 @@
 
 package stateui.android;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -15,6 +16,11 @@ final class StateUIClipboard {
     static void write(Context context, String words) {
         ClipboardManager clipboard = context.getSystemService(ClipboardManager.class);
         if (clipboard != null) clipboard.setPrimaryClip(ClipData.newPlainText("", words));
+    }
+
+    /** Whether the clipboard reads for `context`: Android hands it to the window in focus alone. */
+    static boolean readable(Context context) {
+        return !(context instanceof Activity) || ((Activity) context).hasWindowFocus();
     }
 
     /** The words on the clipboard; null where it holds none. */

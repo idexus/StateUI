@@ -35,7 +35,7 @@ final class UIKitGridView: UIKitLayoutView {
     /// Design: docs/design/platforms/uikit/drawing.md#a-placed-child
     func setShadeOpacity(_ opacity: Double) {
         guard items.count > 1 else { return }
-        items[1].drawing?.placedOpacity = min(max(opacity, 0), 1)
+        items[1].drawing?.placedOpacity = ValueArithmetic.clamped(opacity, lower: 0, upper: 1)
     }
 
     private func invalidate() {

@@ -56,9 +56,9 @@ value that gives it its purpose - goes in the initializer and has no default.
 Everything a caller may leave out is a modifier returning `Self`: one copy, one
 assignment into a `private` field, which also keeps the memberwise initializer
 from being a second way in. An optional purpose value is a second initializer
-delegating to the first, never a defaulted parameter. Every control also has
-an initializer that sets nothing, which is what a `Style` of it is written
-against.
+delegating to the first, never a defaulted parameter. A `Style` of a control
+is written against its node type, which the control names
+(`StyleTarget.nodeType`).
 
 ## Container content runs when the differ reaches it
 
@@ -104,7 +104,7 @@ its own beside it.
 The differ finds a composed view's `@State` by walking its stored properties,
 into structs, enums and collections, since a view may keep another view - and
 that view's state - in a stored property. The walk stops at any class. A
-composed view that holds data - a layout's items, a list's groups, a gallery's
+composed view that holds data - a layout's items, a list's sections, a gallery's
 cards and their face closure - keeps it behind a class (`Source`, a list's
 `ItemsSource`), so
 the walk does not visit every field of every item on every render to find

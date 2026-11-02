@@ -26,6 +26,16 @@ final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
         outline.draw(on: self, ownRadius: 0)
     }
 
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        let fitted = super.sizeThatFits(size)
+        return CGSize(width: leastWidth(own: fitted.width), height: fitted.height)
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let own = super.intrinsicContentSize
+        return CGSize(width: leastWidth(own: own.width), height: own.height)
+    }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("UIKitSearchFieldView is made in code")

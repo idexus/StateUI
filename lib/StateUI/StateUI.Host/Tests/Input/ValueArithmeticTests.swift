@@ -38,6 +38,12 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual([0.5, 1.5, -1, .nan].map(ValueArithmetic.share), [0.5, 1, 0, 0])
     }
 
+    /// A value is held inside its range: one past an end stands at that end, one that is no number at the lower.
+    func testAValueIsHeldInsideItsRange() {
+        XCTAssertEqual([5.0, 15, -1, .nan, .infinity].map { ValueArithmetic.clamped($0, lower: 0, upper: 10) },
+                       [5, 10, 0, 0, 10])
+    }
+
     /// A slider's key moves a hundredth of its range, a page a tenth.
     func testASlidersStepsAreShareOfItsRange() {
         XCTAssertTrue(ValueArithmetic.sliderSteps(lower: 0, upper: 200) == (2, 20))

@@ -39,14 +39,12 @@ final class AndroidActToolkit: ActToolkit {
 
     let host = "Android Views"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
+    func localTime() -> LocalTime {
         let clock = (Java.frame { Java.callStaticObject(JavaAPI.environment, JavaAPI.clock).map(Java.intsOf) } ?? [])
-            .map(Int.init) + [0, 0, 0, 0]
-        return (clock[0], clock[1], clock[2], clock[3])
-    }
-
-    func localZone() -> String {
-        Java.frame { Java.text(Java.callStaticObject(JavaAPI.environment, JavaAPI.zone)) }
+            .map(Int.init) + Array(repeating: 0, count: 7)
+        return LocalTime(
+            year: clock[0], month: clock[1], day: clock[2],
+            hour: clock[3], minute: clock[4], second: clock[5], millisecond: clock[6])
     }
 
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {
@@ -141,7 +139,7 @@ final class AndroidActToolkit: ActToolkit {
     /// The activity's phase turned: a chooser it left for is over once it comes back - shared where the user picked
     /// a target, as Android tells nothing of a cancel.
     /// Design: docs/design/platforms/android/runtime.md#sharing
-    func phaseTurned(_ phase: ApplicationPhase) {
+    func phaseTurned(_ phase: SessionPhase) {
         guard var waiting = sharing else { return }
         guard phase == .active else {
             waiting.left = true
@@ -164,7 +162,13 @@ final class AndroidActToolkit: ActToolkit {
         Java.frame { Java.callStatic(JavaAPI.clipboard, JavaAPI.clipboardWrite, .object(context), .object(Java.string(words))) }
     }
 
+    /// The clipboard's words - or, where the activity's window is not in focus, why not: Android hands that window
+    /// nothing, and an empty clipboard would be a lie.
+    /// Design: docs/design/platforms/android/runtime.md#the-clipboard
     func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        guard Java.frame({ Java.callStaticBool(JavaAPI.clipboard, JavaAPI.clipboardReadable, .object(context)) }) else {
+            return answered(.failure(ActFailure("Android lets only the window in focus read the clipboard")))
+        }
         let words: String? = Java.frame {
             Java.callStaticObject(JavaAPI.clipboard, JavaAPI.clipboardRead, .object(context)).map { Java.text($0) }
         }

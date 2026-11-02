@@ -23,7 +23,7 @@ enum WebRealization {
         + "reloads the whole page: a page refreshes by a command."
 
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
@@ -56,9 +56,6 @@ enum WebRealization {
         .partial(FilledShapeContract.fill, missing: "A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background,
             missing: "A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
@@ -137,7 +134,6 @@ enum WebRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .notPlanned(WindowContract.floatsOnTop,
             reason: "A page keeps no browser window above the others: the system stacks them."),

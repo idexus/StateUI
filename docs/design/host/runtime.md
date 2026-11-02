@@ -280,6 +280,20 @@ pull ends stays only where something will end it - a state carrying
 once where nothing would. A value of `isRefreshing` the application writes
 shows or ends the spinner and reports nothing back.
 
+## Facts read again at the front
+
+Some of the environment's facts change with no notice a host can hear: the
+time zone on GTK, WinUI and the Web, and the languages on WinUI. As the
+application comes back to the front from behind another or out of sight, the
+host layer asks its presenter to read the environment again
+(`HostPresenter.readEnvironmentAgain`), so a zone the user changed meanwhile
+stands before they look; its first activation reads nothing, the host having
+reported every fact as it started. A host whose platform tells each change -
+AppKit, UIKit and Android watch the zone and the locale, the Web hears
+`languagechange` - reports it as it comes, and the presenter's default reads
+nothing. The core writes only what differs, so a fact read again unchanged
+renders nothing.
+
 ## The runtime's parts
 
 `HostRuntime` builds the parts every host holds alike and wires them once: the
@@ -498,8 +512,11 @@ takes a radius of its own - four points for a mouse or a pen, ten for a
 finger ([its input](../platforms/web/input.md#a-press-dragged-and-a-pinch)).
 It starts there, at nothing, and then each move is the drag's, measured from
 where the press went down, until the press lets go and it completes, or the
-platform takes the press away and it is cancelled. A press that never became
-a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
+platform takes the press away and it is cancelled. Where it went down, the
+drag's `from`, is in the view's own points: a host measuring the moves in a
+window's, which a view the drag moves does not move, hands the view's point
+beside them (`pressed(at:inView:)`). A press that never became a drag ends
+with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
@@ -676,8 +693,8 @@ along the other axis: the dominant way decides, never a second one.
 
 ## A drag between views
 
-A view offers a drag where `canDrag` holds, carrying its `dragText` - empty
-where it gives none - and takes one where `allowsDrop` holds
+A view offers a drag where it carries `dragText` and `isDraggable` does not
+say false, and takes one where `allowsDrop` holds
 (`DragAndDrop`): what travels is fixed before the drag starts, as a native
 drag needs its payload at once. A toolkit tells a drag over a view in its
 own way - again and again while it moves, a leave after a drop on some, a
@@ -766,7 +783,7 @@ and the two are one move, in which the application stays in use.
   else deactivated.
 - A window is stopped while it is off the screen - minimized, hidden with
   the application, or hidden by its scene - else activated or deactivated.
-  One that stands again hears first that it resumed.
+  One that stands again is activated or deactivated: coming back is no phase.
 - A window that hides while another scene is in front
   (`hidesWhenInactive`) stands hidden while one is, and none hides before a
   scene first came to the front. A window that floats (`floatsOnTop`)
@@ -821,9 +838,10 @@ the control it hands an aimed act.
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
 message, the accepting caption, the cancelling one - every question but an
-alert offers one; the core sends the library's own words in the system's
-language where the application names none, so "OK" and "Cancel" here stand
-only for an act that came without them - a choice's actions and the place of
+alert offers one; where the application names none they are the library's
+own words in the system's language - sent by the core with the act, or for an
+act that came without them read by the layer (`HostBoundary.questionWords`) -
+a choice's actions and the place of
 its dangerous one, a prompt's placeholder, bound, purpose and starting words.
 Its buttons are the host layer's too (`HostQuestion.buttons`), each a caption
 and what pressing it answers (`QuestionButton`: accept, cancel, an action's
@@ -859,7 +877,7 @@ a time, over the window it is offered from: answered whether the user shared,
 and answered as not shared where its window went while it waited
 (`HostShare`). A toolkit with no share sheet answers the act's failure at
 once. A host's test holds the sheet unshown and answers it as the user would,
-so its driver proves the words and the link offered, never a sheet's look.
+so its driver proves the words and the address offered, never a sheet's look.
 
 ## Files
 
@@ -1019,9 +1037,12 @@ take the keys and the checking alone.
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
 bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
-ends stand in order whichever the tree gave first; a step that does not move
-is 1; a share of work past an end stands at that end, one that is no number
-at the start; a slider's key moves a hundredth of its range and a page a
+ends stand in order whichever the tree gave first; a value past an end stands
+at that end, one that is no number at the lower (`ValueArithmetic.clamped`,
+which a host's stepper, slider, grid shade and list offset take rather than
+their own `min(max(...))` - `RuntimeArchitectureTests` reads their sources);
+a step that does not move is 1; a share of work past an end stands at that
+end, one that is no number at the start; a slider's key moves a hundredth of its range and a page a
 tenth; a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six;
 and a stepper's step moves only away from the range's end it stands at

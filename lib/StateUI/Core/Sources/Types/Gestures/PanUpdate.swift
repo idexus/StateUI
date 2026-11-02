@@ -10,47 +10,42 @@
 ///         .fill(.cornflowerBlue)
 ///         .translationX(offsetX)
 ///         .onPanUpdated { pan in
-///             if pan.phase == .changed { offsetX = pan.totalX }
+///             if pan.phase == .changed { offsetX = pan.total.x }
 ///         }
 ///
 /// One of these arrives per movement, each carrying `phase`, how far the
-/// finger has come since the pan began, and how fast it goes - what a
-/// journey goes on at once the finger lifts:
+/// press has come since the pan began, how fast it goes - what a journey goes
+/// on at once the finger lifts - and where it is now:
 ///
 ///     .onPanUpdated { pan in
-///         if pan.phase == .ended { $offsetX.journey.velocity = pan.velocityX }
+///         if pan.phase == .ended { $offsetX.journey.velocity = pan.velocity.x }
 ///     }
 public struct PanUpdate: Equatable, Sendable {
     /// How far along the pan is.
     public var phase: GesturePhase
 
-    /// How far the pointer has moved sideways since the pan began, in device
-    /// units.
-    public var totalX: Double
-
-    /// The same, vertically.
+    /// How far the press has moved since the pan began, across and down, in device units.
     ///
-    /// Both totals are measured from where the pan began, on every platform,
-    /// so assigning them to a translation moves the view with the finger.
+    /// Measured from where the pan began, on every platform, so assigning it to a translation moves the view with
+    /// the finger.
     ///
     /// Design: docs/design/types/gestures.md#a-pan-is-measured-from-its-start
-    public var totalY: Double
+    public var total: Point
 
-    /// How fast the pointer moves sideways, in device units a second - at an
-    /// end, as fast as it lifted; nought as the pan begins.
+    /// How fast the press moves, across and down, in device units a second - at an end, as fast as it lifted;
+    /// nought as the pan begins.
     ///
     /// Design: docs/design/types/gestures.md#a-gestures-speed
-    public var velocityX: Double
+    public var velocity: Point
 
-    /// The same, vertically.
-    public var velocityY: Double
+    /// Where the press is now, in the view's own points from its top left - where a drawing puts its next stroke.
+    public var at: Point
 
-    /// One report, from the three values a pan carries: its phase, how far it came and how fast it goes.
-    init(phase: GesturePhase, total: Point, velocity: Point) {
+    /// One report, from the four values a pan carries: its phase, how far it came, how fast it goes and where it is.
+    init(phase: GesturePhase, total: Point, velocity: Point, at: Point) {
         self.phase = phase
-        totalX = total.x
-        totalY = total.y
-        velocityX = velocity.x
-        velocityY = velocity.y
+        self.total = total
+        self.velocity = velocity
+        self.at = at
     }
 }

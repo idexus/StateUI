@@ -23,9 +23,10 @@ public struct PinchUpdate: Equatable, Sendable {
     /// twice as far apart - as a pan reports its totals.
     public var scale: Double
 
-    /// Where the pinch is centered, as a fraction of the view: (0,0) is the top
-    /// left and (1,1) the bottom right.
-    public var scaleOrigin: Point
+    /// Where the pinch is centered, as a fraction of the view - (0,0) its top
+    /// left, (1,1) its bottom right - the pivot a view scales about to follow
+    /// the fingers: `.pivotX(pinch.pivot.x)`.
+    public var pivot: Point
 
     /// How fast the scale changes, a second - at an end, as fast as the
     /// fingers lifted; nought as the pinch begins.
@@ -34,11 +35,11 @@ public struct PinchUpdate: Equatable, Sendable {
     public var velocity: Double
 
     /// One report, from the four values a pinch carries: phase, scale, the
-    /// origin and the speed.
-    init(phase: GesturePhase, scale: Double, scaleOrigin: Point, velocity: Double) {
+    /// pivot and the speed.
+    init(phase: GesturePhase, scale: Double, pivot: Point, velocity: Double) {
         self.phase = phase
         self.scale = scale
-        self.scaleOrigin = scaleOrigin
+        self.pivot = pivot
         self.velocity = velocity
     }
 }

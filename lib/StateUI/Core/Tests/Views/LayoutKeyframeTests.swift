@@ -48,7 +48,7 @@ final class LayoutKeyframeTests: XCTestCase {
                 asked.phases.append(at)
                 return Self.poses(at, gap: gap?.wrappedValue ?? 10)
             }
-            .motion(.eased(.milliseconds(160), .linear))
+            .motion(.eased(.milliseconds(160), curve: .linear))
             return declared(gap.map { layout.following($0.projectedValue) } ?? layout).node
         }
     }

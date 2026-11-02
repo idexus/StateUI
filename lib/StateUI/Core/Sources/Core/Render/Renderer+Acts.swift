@@ -66,13 +66,13 @@ extension Renderer {
     }
 
     /// Queues an act and suspends until the host answers, running and resuming on
-    /// the UI thread. Throws `StateUIError` with the host's reason.
+    /// the UI thread. Throws `StateUIError.notPerformed` with the host's reason.
     /// Design: docs/design/core/acts.md#awaiting-an-answer
     func call(
         _ act: Act,
         _ arguments: [PropValue] = []
     ) async throws -> [PropValue] {
-        try await answered { self.send(act, arguments, completion: $0) }
+        try await answered(act.name) { self.send(act, arguments, completion: $0) }
     }
 
     /// The suspension itself: queues through `send`, waits for the reply, and
@@ -80,6 +80,7 @@ extension Renderer {
     /// gone - stops waiting at once, and the host stops the call (`abandon`).
     /// Design: docs/design/core/acts.md#a-call-ends-with-its-run
     func answered(
+        _ act: String,
         _ send: (@escaping (Reply) -> Void) -> Int?
     ) async throws -> [PropValue] {
         // A superseded run's act never leaves: it fails as the run's cancellation.
@@ -106,7 +107,7 @@ extension Renderer {
         case .finished(let values):
             return values
         case .failed(let message):
-            throw StateUIError(message: message)
+            throw StateUIError.notPerformed(act: act, reason: message)
         case .cancelled:
             throw CancellationError()
         }

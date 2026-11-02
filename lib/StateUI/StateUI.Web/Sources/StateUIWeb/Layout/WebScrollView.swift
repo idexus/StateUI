@@ -34,14 +34,14 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         }
         listen("pointerup") { [weak self] in self?.movement.holdEnded(rests: false) }
         listen("pointercancel") { [weak self] in self?.movement.holdEnded(rests: false) }
-        apply(orientation: .vertical, bars: .automatic, offset: nil)
+        apply(axes: .vertical, bars: .automatic, offset: nil)
     }
 
     /// The ways the document scrolls, whether its bars show, and an offset the tree writes - down, with its bars, as
     /// it is made, before the tree says.
-    func apply(orientation: ScrollOrientation, bars: ScrollIndicatorVisibility, offset: Point?) {
-        let across = orientation != .vertical
-        let down = orientation != .horizontal
+    func apply(axes: ScrollAxes, bars: ScrollIndicatorVisibility, offset: Point?) {
+        let across = axes.contains(.horizontal)
+        let down = axes.contains(.vertical)
         scrolls = (across, down)
         // Bars always shown stand whether or not there is anything to scroll to.
         let scrolls = bars == .visible ? "scroll" : "auto"
@@ -54,7 +54,7 @@ final class WebScrollView: WebLayoutView, FramedScroller {
         style("grid-template-columns", across ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         style("grid-template-rows", down ? "minmax(max-content, 1fr)" : "minmax(0, 1fr)")
         attribute("data-bars", bars == .never ? "never" : nil)
-        if let target = scrollerOffset.written(offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, axes: axes) {
             move(to: target)
         }
     }

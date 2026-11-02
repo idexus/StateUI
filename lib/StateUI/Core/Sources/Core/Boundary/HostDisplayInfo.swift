@@ -18,8 +18,8 @@
     /// Rotation from the display's natural orientation.
     public let rotation: DisplayRotation
 
-    /// Frames per second, or zero when the platform does not expose it.
-    public let refreshRate: Double
+    /// Frames per second; nil where the platform does not say.
+    public let refreshRate: Double?
 
     /// A complete main-display report.
     public init(
@@ -28,7 +28,7 @@
         density: Double,
         orientation: DisplayOrientation,
         rotation: DisplayRotation,
-        refreshRate: Double
+        refreshRate: Double?
     ) {
         self.width = width
         self.height = height

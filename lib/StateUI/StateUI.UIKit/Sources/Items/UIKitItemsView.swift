@@ -372,9 +372,9 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
         let (start, length, side, content, now) = across
             ? (item.minX, item.width, bounds.width, size.width, standing.x)
             : (item.minY, item.height, bounds.height, size.height, standing.y)
-        let room = side - before - after
-        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return false }
-        let offset = min(max(-before, place - before), max(-before, content + after - side))
+        guard let offset = anchor.offset(
+            of: start, length: length, side: side, content: content, before: before, after: after, at: now)
+        else { return false }
         var point = collection.contentOffset
         if across { point.x = offset } else { point.y = offset }
         guard point != collection.contentOffset else { return false }
@@ -448,8 +448,8 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
         let size = collection.contentSize
         let bounds = collection.bounds.size
         collection.setContentOffset(CGPoint(
-            x: min(max(0, target.x), max(0, size.width - bounds.width)),
-            y: min(max(0, target.y), max(0, size.height - bounds.height))), animated: false)
+            x: ValueArithmetic.clamped(target.x, lower: 0, upper: max(0, size.width - bounds.width)),
+            y: ValueArithmetic.clamped(target.y, lower: 0, upper: max(0, size.height - bounds.height))), animated: false)
         collection.layoutIfNeeded()
     }
 }

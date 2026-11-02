@@ -55,14 +55,14 @@ final class CompleteContractTests: XCTestCase {
     /// on it a member's. Two are built by type, each for its reason: the
     /// differ's placeholder for a composed view not built yet, which never
     /// crosses and so has no contract, and a style's node, which takes the type
-    /// its target's node already has.
+    /// its target names.
     ///
     /// Read across lines: a construction wrapped after `Node(` is the same
     /// construction, and a scan reading line by line walks past it.
     func testEveryNodeIsBuiltThroughItsContract() throws {
         let allowed: [(path: String, construction: String)] = [
             ("Stateful.swift", "Node(type: .composed)"),
-            ("Style.swift", "Node(type: Target().node.type)"),
+            ("Style.swift", "Node(type: Target.nodeType)"),
         ]
         var byType: [String] = []
 

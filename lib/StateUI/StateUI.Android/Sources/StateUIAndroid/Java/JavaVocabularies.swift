@@ -61,11 +61,6 @@ enum AndroidItemsShape: Int32 {
     case list = 0, row = 1, grid = 2
 }
 
-/// A touch on a canvas (`StateUICanvasView`).
-enum AndroidCanvasTouch: Int32 {
-    case pressed = 0, dragged = 1, released = 2
-}
-
 /// A menu's entry, in its lowest bits (`StateUIMenus`).
 enum AndroidMenuEntry: Int32 {
     case item = 0, menu = 1, end = 2, separator = 3

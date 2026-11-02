@@ -104,7 +104,11 @@ commands - undo, redo, cut, copy, paste, delete, select all - each sent down
 the responder chain, where the field holding the keyboard answers it: AppKit
 routes ⌘C, ⌘V and ⌘Z through the menu bar's key equivalents, so a field in an
 application with no Edit menu copies and pastes nothing. File, Edit and
-Window carry their `StandardMenu` identity as their item's identifier.
+Window carry their `StandardMenu` identity as their item's identifier. Their
+titles and entries are the library's own words in the system's language
+(`CoreLink.menuWords`, Edit's `editWords`), as AppKit translates no title
+set in code: the host tells the core the user's locale before it builds the
+bar, and a page's menus join by identity, never by title.
 
 The menus the key window's visible page composes (`chromeMenus`) join the bar
 as it shows and leave it as it goes: one whose identity is a standard menu
@@ -232,7 +236,7 @@ pasteboard of the driver's own name, so it never writes over the user's.
 ## Sharing
 
 What the user shares is offered in AppKit's sharing picker, shown from the
-middle of the window's content: the words and the link as the picker's items.
+middle of the window's content: the words and the address as the picker's items.
 The answer is the service's: shared where the service the user chose says it
 shared them, not where they chose none or it failed.
 

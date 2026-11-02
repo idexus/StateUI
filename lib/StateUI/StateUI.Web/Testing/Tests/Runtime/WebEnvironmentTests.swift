@@ -20,9 +20,8 @@ final class WebEnvironmentTests: XCTestCase {
         defer { WebBrowser.ask([("languages", .words(""))]) }
 
         let polish = try locale(languages: "pl-PL,en-US", zone: "Europe/Warsaw")
-        XCTAssertEqual(polish.language, "pl")
-        XCTAssertEqual(polish.region, "PL")
-        XCTAssertEqual(polish.name, "pl-PL")
+        XCTAssertEqual(polish.language, "pl-PL")
+        XCTAssertEqual(polish.language?.region, "PL")
         XCTAssertEqual(polish.timeZone, "Europe/Warsaw")
         XCTAssertTrue(polish.uses24HourClock)
         XCTAssertEqual(polish.firstDayOfWeek, .monday)
@@ -30,12 +29,28 @@ final class WebEnvironmentTests: XCTestCase {
         XCTAssertEqual(polish.languages.map(\.identifier), ["pl-PL", "en-US"])
 
         let american = try locale(languages: "en-US", zone: "America/New_York")
-        XCTAssertEqual(american.language, "en")
-        XCTAssertEqual(american.region, "US")
+        XCTAssertEqual(american.language, "en-US")
         XCTAssertEqual(american.timeZone, "America/New_York")
         XCTAssertFalse(american.uses24HourClock)
         XCTAssertEqual(american.firstDayOfWeek, .sunday)
         XCTAssertFalse(american.isMetric)
+    }
+
+    /// A zone the user changed while the page stood behind - which the browser tells no change of - is read again as
+    /// the page comes back to the front.
+    func testAZoneChangedMeanwhileIsReadAgainAtTheFront() throws {
+        defer { WebBrowser.ask([("languages", .words(""))]) }
+        _ = try locale(languages: "pl-PL", zone: "Europe/Warsaw")
+        let host = WebRenderer.running { Text("Zone") }
+        defer { host.leave() }
+        host.step()
+        XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
+
+        WebBrowser.ask([("languages", .words("pl-PL")), ("zone", .words("Asia/Tokyo"))])
+        host.step()
+        XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw", "nothing told the page")
+        host.readEnvironmentAgain()
+        XCTAssertEqual(StandardEnvironment.locale.timeZone, "Asia/Tokyo")
     }
 
     /// What the user asked of motion and contrast is the browser's: its media queries; a page is told of no screen

@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its color.
@@ -14,7 +14,6 @@ Window.maximumHeight: – Android bounds an activity's window itself: an activit
 Window.maximumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
-Window.resumed: ✓ minimize on Window: the host told the activity's phase, no activity moved
 Window.stopped: ✓ minimize on Window: the host told the activity's phase, no activity moved
 Window.title: ✅
 Window.width: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.

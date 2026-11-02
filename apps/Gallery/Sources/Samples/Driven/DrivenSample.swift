@@ -139,7 +139,7 @@ struct DrivenSample: SampleContent, ExampleContent {
     // listing: DrivenSample
     /// One place to be sent to, under whichever law the switch asks for.
     private func go(to place: Double) {
-        let law: Motion = slowly ? .eased(.milliseconds(1600), .cubicInOut) : .eased(.milliseconds(350), .cubicOut)
+        let law: Motion = slowly ? .eased(.milliseconds(1600), curve: .cubicInOut) : .eased(.milliseconds(350), curve: .cubicOut)
 
         $offset.journey.motion = law
         offset = Self.run * place

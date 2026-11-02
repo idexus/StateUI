@@ -1,4 +1,4 @@
-# revision 9.1
+# revision 10.1
 Window: ✅
 Window.activated: ✅
 Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.
@@ -14,7 +14,6 @@ Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.resumed: ✅
 Window.stopped: ✅
 Window.title: ✅
 Window.width: ✅

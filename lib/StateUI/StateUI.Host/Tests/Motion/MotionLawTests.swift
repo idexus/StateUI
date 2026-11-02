@@ -12,9 +12,9 @@ import XCTest
 final class MotionLawTests: XCTestCase {
     func testAnEasedAnimationIsAFunctionOfElapsedTime() {
         let halfway = HostMotionLaw.sample(
-            .eased(.milliseconds(200), .cubicOut), elapsed: 100, from: [0], destination: [1], velocity: [0])
+            .eased(.milliseconds(200), curve: .cubicOut), elapsed: 100, from: [0], destination: [1], velocity: [0])
         let landed = HostMotionLaw.sample(
-            .eased(.milliseconds(200), .cubicOut), elapsed: 200, from: [0], destination: [1], velocity: [0])
+            .eased(.milliseconds(200), curve: .cubicOut), elapsed: 200, from: [0], destination: [1], velocity: [0])
 
         XCTAssertEqual(halfway.value[0], 0.875, accuracy: 0.000_001)
         XCTAssertFalse(halfway.rested)
@@ -22,7 +22,7 @@ final class MotionLawTests: XCTestCase {
     }
 
     func testAnAnimationThatBeganMovingStartsAtItsSpeedAndLandsStill() {
-        let motion = Motion.eased(.milliseconds(300), .cubicOut)
+        let motion = Motion.eased(.milliseconds(300), curve: .cubicOut)
         let start = HostMotionLaw.sample(
             motion, elapsed: 0, from: [20], destination: [80], velocity: [300])
         let late = HostMotionLaw.sample(
@@ -39,7 +39,7 @@ final class MotionLawTests: XCTestCase {
     /// AN EASED ANIMATION ALREADY MOVING KEEPS ITS CURVE: begun at the curve's own starting speed it follows the curve
     /// exactly - overshoot and all - and begun at any other it sets out at that speed and lands where the curve does.
     func testAnEasedAnimationAlreadyMovingKeepsItsCurve() {
-        let motion = Motion.eased(.milliseconds(400), .backOut)
+        let motion = Motion.eased(.milliseconds(400), curve: .backOut)
         let sample = { (elapsed: Double, speed: Double) in
             HostMotionLaw.sample(motion, elapsed: elapsed, from: [0], destination: [100], velocity: [speed])
         }
@@ -214,7 +214,7 @@ final class MotionLawTests: XCTestCase {
         var raw: Int32 = 0
         while let curve = Easing(rawValue: raw) {
             animations.append(Animation(
-                motion: .eased(.milliseconds(400), curve),
+                motion: .eased(.milliseconds(400), curve: curve),
                 from: [0, 20], destination: [1, -40], velocity: [0, 0],
                 instants: [0, 40, 100, 200, 300, 360, 399, 400, 480]))
             raw += 1
@@ -223,11 +223,11 @@ final class MotionLawTests: XCTestCase {
         // An animation that began moving: the Hermite on a lane with speed, the
         // curve on a lane without.
         animations.append(Animation(
-            motion: .eased(.milliseconds(300), .cubicOut),
+            motion: .eased(.milliseconds(300), curve: .cubicOut),
             from: [20, -4], destination: [80, 10], velocity: [300, 0],
             instants: [0, 30, 75, 150, 225, 290, 300]))
         animations.append(Animation(
-            motion: .eased(.milliseconds(250), .sineInOut),
+            motion: .eased(.milliseconds(250), curve: .sineInOut),
             from: [1], destination: [0], velocity: [-4],
             instants: [0, 25, 125, 249, 250]))
 

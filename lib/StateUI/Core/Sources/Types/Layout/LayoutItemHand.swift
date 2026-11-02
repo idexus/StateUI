@@ -9,7 +9,7 @@ struct LayoutItemHand: Equatable {
     let taken: Placement
     let from: Point
     var at: Point
-    var speed: Point?
+    var velocity: Point?
     var dismissed = false
     var flew: Double?
     var gone = false

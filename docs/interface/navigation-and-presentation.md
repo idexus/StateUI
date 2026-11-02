@@ -550,7 +550,10 @@ there that declares none of its own; the innermost declaration wins.
 ## Toolbars
 
 A page's actions are declared where the state they follow lives, with
-`.toolbar { }` on the page's view:
+`.toolbar { }` on the page's view. Each `ToolbarItem` - a `ToolbarButton` or a
+`ToolbarToggle` - stands alone or in a `ToolbarGroup`; a `ToolbarBuilder`
+collects the bar's `ToolbarContent`, and a `ToolbarGroupBuilder` a group's
+`ToolbarGroupContent`, items only, so a group holds no group:
 
 ```swift
 @State private var hasChanges = false
@@ -893,7 +896,7 @@ bar grows or the keyboard rises, so the last message stays in sight; one
 elsewhere stays where it is.
 
 The bar stands on the page while nothing passes under it. While the rows go on
-past it, its `edge` says how they show there: `.automatic`, what it is unsaid,
+past it, its `scrollEdge` says how they show there: `.automatic`, what it is unsaid,
 is the platform's own edge, `.hard` cuts them off at the bar on a blur with a
 line along it, and `.none` shows them as they are:
 
@@ -907,7 +910,7 @@ struct Composer: View {
 let messages = Text("Messages")
 
 ScrollView { messages }
-    .bottomBar(edge: .hard) {
+    .bottomBar(scrollEdge: .hard) {
         Composer(draft: $draft)
     }
 ```
@@ -937,7 +940,10 @@ NavigationStack($path) {
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the
-page's view, and stand on the desktop menu bar while the page is shown:
+page's view, and stand on the desktop menu bar while the page is shown. A
+`MenuBarBuilder` collects the bar's menus and a `MenuBuilder` each menu's
+entries, its `MenuEntries` - what a menu, a context menu and a button's menu
+hold:
 
 ```swift
 struct RecentFile: Identifiable {

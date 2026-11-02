@@ -12,8 +12,8 @@ member of a closed vocabulary as StateUI's number for it.
 
 ```text
   swiped          the direction, as the one number its bits are
-  panUpdated      phase, totalX, totalY
-  pinchUpdated    phase, scale, then the origin as one pair
+  panUpdated      phase, then how far it came, how fast and where it is now, each as one pair
+  pinchUpdated    phase, scale, then the pivot as one pair, and how fast
   pointerMoved    the position as one pair, or nothing where the platform does not say
 ```
 
@@ -37,7 +37,10 @@ answer to "which way did it go?" and is not read as a swipe.
 
 A `Point`'s units belong to the property that reads it: device units for a
 pointer's position or a polygon's corner, fractions of the view for a
-gradient's start and end or a pinch's origin. A list of points crosses as one
+gradient's start and end or a pinch's pivot. A pan's `at` is where the press
+is now in the view's points: the host layer adds how far it came to where it
+began, which a host tells it with every drag (`HeardInput.drag(_:x:y:from:)`),
+so a drawing follows the press without a canvas's own events. A list of points crosses as one
 flat run of numbers, x then y for each point, so a long outline is neither
 formatted nor parsed.
 
@@ -68,7 +71,7 @@ second; a pinch its scale and how fast the scale changes, a second; two
 fingers turning their angle, in degrees clockwise, and how fast it changes, in
 degrees a second. The speed is nought as a gesture begins and, at its end, as
 fast as it lifted, beside the totals it reached - so a handler hands a
-journey both on one line, `$offset.journey.velocity = pan.velocityX`, and the
+journey both on one line, `$offset.journey.velocity = pan.velocity.x`, and the
 state goes on from where the hand left it at the hand's speed. The host layer
 reads every speed by one rule, the speed a hand over a layout lifts at
 ([its reading](../host/runtime.md#a-gestures-speed)); a platform's own

@@ -54,7 +54,7 @@ the packages, what crosses between them, and where each part of the work runs.
   lib/StateUI/StateUI.Conformance         the conformance families every host's tests run
   lib/StateUI.Head                        StateUIHead: what every head is built with - the
                                           host STATEUI_HOST names, re-exported
-  lib/StateUI.VSCode                      the editor extension: new application,
+  editors/VSCode                          the editor extension: new application,
                                           build, run and debug for every head
 ```
 
@@ -117,22 +117,52 @@ another queueing a job.
 ## The public surface
 
 What an application can name of the library is recorded:
-`lib/StateUI/exports/api/StateUI.txt` holds every public declaration of the
+`lib/StateUI/exports/api/` holds every public declaration of the
 `StateUI` module, a line each - its kind, its path and its declaration as the
-compiler prints it - sorted, read from the symbol graph the toolchain extracts
+compiler prints it - and every conformance of its types, sorted, read from the symbol graph the toolchain extracts
 from the module the core's tests just built. `APISurfaceTests` compares the
 module with the record, so a change to the public API stands in its commit's
 diff as lines added and taken away, and passes only once
 `STATEUI_UPDATE_EXPORTS=1` has written it. `@_spi(Host)` declarations are the
 hosts' and stay out; documentation changes nothing there.
 
+The record holds StateUI's declarations and each type's conformances. A
+member another module's protocol lends a StateUI type - `!=` from `Equatable`,
+`hashValue`, a set's `union(_:)`, an integer's `init(bigEndian:)` once StateUI
+extends `Int` - is that module's: the record leaves it out and says the
+conformance that brings it, `swift.conformance Icon: Swift.Hashable`. What the
+standard library lends changes with the toolchain - Windows' extractor alone
+loads the regex parser, whose members reach every describable type - while a
+conformance is StateUI's word. Every type is `Copyable` and `Escapable` unless
+it says otherwise, so those stay out, and an extended type of another module
+lists only the StateUI protocols it takes.
+
 The record is the same on every system. The extractor is the one of the
 toolchain that built the module - beside `swift` on PATH, else Xcode's, whose
 `swift` on PATH is a shim. It reads the standard library from the SDK -
-Xcode's on macOS, the one `SDKROOT` names on Windows -
-and a member the standard library's own regex parser lends every describable
-type or integer (`halfWidthCornerQuoted`, `init(asserting:)`) stays out: only
-Windows' extractor loads that module, and none of its members is StateUI's.
+Xcode's on macOS, the one `SDKROOT` names on Windows.
+
+## Two surfaces
+
+The record stands in two files, one per surface. `StateUI.txt` is what an
+application writes: its views and their modifiers, its states, sessions and
+values. `StateUI.extending.txt` is what an author adding to StateUI writes - an
+element of the application's own, a value a state carries, the application's
+own acts and events: a contract and its members, a node and what is written
+on it by member (`setValue`, `onEvent`, `onHostEvent`, `modified`, `node`), the
+values a host is handed, a value's conversions, `application.call` and
+`HostEvents`. A protocol a control and its style wear - a control's
+`…Properties`, a tier's `…Element` - stands there as a declaration and as each
+conformance to it, while its members, the modifiers, are the application's.
+`APISurfaceTests` keeps the two lists, `extendingTypes` and `extendingMembers`,
+and every line goes to exactly one file. Both are frozen alike at 1.0: an
+application's own control is an extension of the protocol every library
+control wears, so the plumbing stays on the views and the second file names
+it. The handbook's [Extending StateUI](../interface/extending.md) teaches it.
+Every public type of either file is named on a handbook page - README and
+`docs/`, the design notes left out, the control dictionary in -
+which `APISurfaceTests` holds: what 1.0 freezes is what the handbook
+promised.
 
 ## Where to read next
 

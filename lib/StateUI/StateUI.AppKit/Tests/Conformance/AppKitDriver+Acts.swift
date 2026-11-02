@@ -27,7 +27,7 @@ extension AppKitDriver {
         case (.tap(let count), let map as AppKitMapView):
             // A click on a map is the map's, and the view's where it hears taps too.
             tap(native, map, count: count)
-            map.clicked(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
+            map.tapped(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.endContent, let web as WebKitView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)
@@ -73,7 +73,6 @@ extension AppKitDriver {
         case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
-        case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))
         case (.drag(let point), _) where native?.pressRecognizer != nil || native?.pointerRecognizer != nil:
             native?.pressRecognizer?.press(.changed, at: point)
             native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
@@ -86,9 +85,12 @@ extension AppKitDriver {
         case (.hold, _) where native?.holdRecognizer != nil:
             native?.holdRecognizer?.held()
         case (.pan(let offset), _) where native?.panRecognizer != nil:
-            native?.panRecognizer?.dragged(.began, x: 0, y: 0)
-            native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
-            native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y)
+            // Pressed in the view's middle, as a hand does.
+            let size = native?.view?.bounds.size ?? .zero
+            let middle = Point(x: Double(size.width) / 2, y: Double(size.height) / 2)
+            native?.panRecognizer?.dragged(.began, x: 0, y: 0, from: middle)
+            native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y, from: middle)
+            native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y, from: middle)
         case (.sweep(let offset, let speed), _) where native?.handReader != nil:
             native?.handReader?.hand(.began, moved: .zero)
             native?.handReader?.hand(.changed, moved: offset)
@@ -214,8 +216,6 @@ extension AppKitDriver {
         }
     }
 
-    /// A pointer pressed down or let go: a button held, a slider's thumb taken, a canvas pressed, and a view that
-    /// hears the pointer told.
     /// A quick run of clicks on the view's middle: each a press, then told with its place in the run, as AppKit's
     /// click recognizer tells it.
     private func tap(_ native: AppKitElement?, _ view: NSView, count: Int) {
@@ -227,6 +227,8 @@ extension AppKitDriver {
         }
     }
 
+    /// A pointer pressed down or let go: a view that hears a press or the pointer told, a button held, a slider's
+    /// thumb taken.
     private func press(
         _ view: NSView, _ native: AppKitElement?, down: Bool, at point: Point, _ element: MountedElement
     ) throws {
@@ -245,9 +247,6 @@ extension AppKitDriver {
             done = true
         case let slider as AppKitSliderView:
             down ? slider.beginDrag() : slider.endDrag()
-            done = true
-        case let canvas as AppKitCanvasView:
-            down ? canvas.pressForTesting(at: NSPoint(point)) : canvas.releaseForTesting(at: NSPoint(point))
             done = true
         default: break
         }

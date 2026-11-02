@@ -29,13 +29,13 @@ final class GestureSpeedTests: XCTestCase {
                                                        (40, .ended, 0)]
         for (at, phase, x) in steps {
             clock.time = at
-            box.hear(.drag(phase, x: x, y: 0), in: runtime)
+            box.hear(.drag(phase, x: x, y: 0, from: Point(x: 0, y: 0)), in: runtime)
         }
         runtime.pump.turn()
 
         XCTAssertEqual(pans.map(\.phase), [.began, .changed, .changed, .ended])
-        XCTAssertEqual(pans.map(\.totalX), [0, 10, 30, 30])
-        XCTAssertEqual(pans.map(\.velocityX), [0, 625, 1_875, 1_250])
+        XCTAssertEqual(pans.map(\.total.x), [0, 10, 30, 30])
+        XCTAssertEqual(pans.map(\.velocity.x), [0, 625, 1_875, 1_250])
     }
 
     /// A PINCH TELLS HOW FAST ITS SCALE CHANGES: the spread's steps read as a pan's moves are.
@@ -72,7 +72,7 @@ final class GestureSpeedTests: XCTestCase {
     /// A runtime of the page, its box, and the clock a test winds.
     private func running() throws -> (HostRuntime, MountedElement, WoundClock) {
         (pans, pinches, turns) = ([], [], [])
-        stateUIUseApp(TurnedApplication())
+        TurnedApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()

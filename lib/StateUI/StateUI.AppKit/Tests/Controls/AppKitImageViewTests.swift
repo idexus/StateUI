@@ -6,6 +6,7 @@ import AppKit
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIAppKit
+@_spi(Host) import StateUIApple
 import XCTest
 
 @MainActor
@@ -140,9 +141,33 @@ final class AppKitImageViewTests: XCTestCase {
         defer { renderer.closeForTesting() }
         let shown = try XCTUnwrap(renderer.image(.icon(.add)))
 
-        renderer.images.removeAllObjects()
+        renderer.pictures.letGoOfKept()
 
         XCTAssertTrue(renderer.image(.icon(.add)) === shown, "made again while shown")
+    }
+
+    /// Of the pictures nothing shows, the latest asked for are kept while their pixels stay within the budget; the
+    /// one asked for longest ago goes first, and is made again when asked for.
+    @MainActor
+    func testPicturesNothingShowsAreKeptWithinTheBudget() throws {
+        let cache = PictureCache<NSImage>(budget: 4, pixels: { $0.pixels })
+        var made: [String] = []
+        func ask(_ name: String) {
+            _ = cache.image(.file(name)) {
+                made.append(name)
+                let pixels = NSBitmapImageRep(
+                    bitmapDataPlanes: nil, pixelsWide: 2, pixelsHigh: 1, bitsPerSample: 8, samplesPerPixel: 4,
+                    hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+                let image = NSImage(size: NSSize(width: 2, height: 1))
+                pixels.map(image.addRepresentation)
+                return image
+            }
+        }
+
+        autoreleasepool { for name in ["a", "b", "c"] { ask(name) } }
+        autoreleasepool { for name in ["c", "b", "a"] { ask(name) } }
+
+        XCTAssertEqual(made, ["a", "b", "c", "a"], "six pixels asked for, four kept: a went first")
     }
 
     @MainActor
@@ -199,7 +224,7 @@ final class AppKitImageViewTests: XCTestCase {
     /// megabytes.
     @MainActor
     func testASecondWindowShowingSVGsCostsLittle() async throws {
-        stateUIUseApp(PicturesApplication())
+        PicturesApplication.register()
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -217,6 +242,26 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertEqual(pictures.count, 34)
         XCTAssertTrue(pictures.allSatisfy { $0.image?.size == NSSize(width: 40, height: 20) }, "the SVG, not a stand-in")
         XCTAssertLessThan(grown, 200 << 20, "the second window took \(grown >> 20) MB")
+    }
+
+    /// A drawing keeps no pixels of the sizes it was drawn at: the picture stays found while anything shows it, and
+    /// each image view holds its own pixels of the size it shows.
+    @MainActor
+    func testADrawingKeepsNoPixelsOfTheSizesItWasDrawnAt() throws {
+        let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let drawing = try XCTUnwrap(renderer.image(named: "test_wide.svg"))
+        let before = Self.footprint()
+
+        autoreleasepool {
+            for side in stride(from: 1000, through: 1700, by: 100) {
+                var room = NSRect(x: 0, y: 0, width: side, height: side)
+                _ = drawing.cgImage(forProposedRect: &room, context: nil, hints: nil)
+            }
+        }
+
+        let kept = Self.footprint() - before
+        XCTAssertLessThan(kept, 64 << 20, "the drawing kept \(kept >> 20) MB")
     }
 
     /// Every window laid out and drawn, as the display draws it.

@@ -40,7 +40,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     .shape(.roundedRectangle(8))
                     // What travels is decided before the drag starts: a
                     // native drag session needs its payload at once.
-                    .draggable(text: item)
+                    .dragText(item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
                     .onDragEnded { finished = "\(item): drop finished" }
@@ -102,7 +102,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("What travels is a STRING, decided before the drag starts: a native "
-                + "drag session needs its payload at once, so `draggable(text:)` says it "
+                + "drag session needs its payload at once, so `dragText(_:)` says it "
                 + "up front.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -119,7 +119,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("`onDragEnded` is the other end: it belongs to the view that was "
-                + "dragged, beside its `draggable(text:)`, and runs when that drag ends "
+                + "dragged, beside its `dragText(_:)`, and runs when that drag ends "
                 + "wherever it ended - over the basket, or over nothing at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

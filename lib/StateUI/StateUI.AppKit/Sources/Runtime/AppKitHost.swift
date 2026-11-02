@@ -7,6 +7,7 @@ import Foundation
 import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+@_spi(Host) import StateUIApple
 
 /// Runs a StateUI application as native AppKit controls in the current process.
 ///
@@ -16,7 +17,7 @@ import QuartzCore
 @MainActor
 public enum StateUIAppKit {
     /// Starts `NSApplication`, displays the application already registered
-    /// with `stateUIUseApp(_:)`, and ends the process as the application ends.
+    /// with `Application.register()`, and ends the process as the application ends.
     ///
     /// - Parameters:
     ///   - resourceDirectory: where the application's pictures are; nil shows the `Images` the program carries -
@@ -36,6 +37,8 @@ public enum StateUIAppKit {
             application.applicationIconImage = icon
         }
         application.delegate = delegate
+        // The menu bar speaks the user's language, so the core hears it first.
+        CoreLink().setLocaleInfo(SystemFacts.locale)
         configureMainMenu(application: application, delegate: delegate)
         application.run()
 
@@ -53,43 +56,45 @@ public enum StateUIAppKit {
     }
 
     /// The menu bar every StateUI application stands with: the application's own, File with a new window for
-    /// `newWindow`, Edit with the text commands a field answers through the responder chain, and Window. A page's
-    /// menus join it as it shows.
+    /// `newWindow`, Edit with the text commands a field answers through the responder chain, and Window - in the
+    /// system's language, as the library's own words. A page's menus join it as it shows.
     /// Design: docs/design/platforms/appkit/runtime.md#the-menu-bar
     static func mainMenu(newWindow: AnyObject?) -> NSMenu {
         let main = AppKitMainMenu()
         let name = ProcessInfo.processInfo.processName
+        let core = CoreLink()
+        let (words, edit) = (core.menuWords, core.editWords)
 
         let applicationMenu = NSMenu()
         applicationMenu.addItem(
-            withTitle: "Quit \(name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+            withTitle: "\(words.quit) \(name)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         main.addItem(submenu: applicationMenu, titled: name)
 
-        let fileMenu = NSMenu(title: "File")
+        let fileMenu = NSMenu(title: words.file)
         let newWindowItem = NSMenuItem(
-            title: "New Window", action: #selector(AppDelegate.newWindow(_:)), keyEquivalent: "n")
+            title: words.newWindow, action: #selector(AppDelegate.newWindow(_:)), keyEquivalent: "n")
         newWindowItem.target = newWindow
         fileMenu.addItem(newWindowItem)
-        main.addItem(submenu: fileMenu, titled: "File", standard: .file)
+        main.addItem(submenu: fileMenu, titled: words.file, standard: .file)
 
-        let editMenu = NSMenu(title: "Edit")
-        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
-        let redo = editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "z")
+        let editMenu = NSMenu(title: words.edit)
+        editMenu.addItem(withTitle: edit.undo, action: Selector(("undo:")), keyEquivalent: "z")
+        let redo = editMenu.addItem(withTitle: edit.redo, action: Selector(("redo:")), keyEquivalent: "z")
         redo.keyEquivalentModifierMask = [.command, .shift]
         editMenu.addItem(.separator())
-        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        editMenu.addItem(withTitle: "Delete", action: #selector(NSText.delete(_:)), keyEquivalent: "")
-        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
-        main.addItem(submenu: editMenu, titled: "Edit", standard: .edit)
+        editMenu.addItem(withTitle: edit.cut, action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        editMenu.addItem(withTitle: edit.copy, action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        editMenu.addItem(withTitle: edit.paste, action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(withTitle: edit.delete, action: #selector(NSText.delete(_:)), keyEquivalent: "")
+        editMenu.addItem(withTitle: edit.selectAll, action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        main.addItem(submenu: editMenu, titled: words.edit, standard: .edit)
 
-        let windowMenu = NSMenu(title: "Window")
+        let windowMenu = NSMenu(title: words.window)
         windowMenu.addItem(
-            withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+            withTitle: words.minimize, action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
         windowMenu.addItem(
-            withTitle: "Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
-        main.addItem(submenu: windowMenu, titled: "Window", standard: .window)
+            withTitle: words.bringAllToFront, action: #selector(NSApplication.arrangeInFront(_:)), keyEquivalent: "")
+        main.addItem(submenu: windowMenu, titled: words.window, standard: .window)
         return main
     }
 }

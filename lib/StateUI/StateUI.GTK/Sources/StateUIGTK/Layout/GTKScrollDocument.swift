@@ -14,19 +14,19 @@ final class GTKScrollDocument: GTKLayoutView {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    var orientation = ScrollOrientation.vertical {
-        didSet { if orientation != oldValue { invalidateMeasurements() } }
+    var axes = ScrollAxes.vertical {
+        didSet { if axes != oldValue { invalidateMeasurements() } }
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ScrollArithmetic.contentSize(of: items.first, padding: padding, orientation: orientation, width: width)
+        ScrollArithmetic.contentSize(of: items.first, padding: padding, axes: axes, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation,
+            item, padding: padding, axes: axes,
             in: LayoutSize(width: bounds.width, height: bounds.height), direction: direction)
         item.view.layout(arranged.place)
     }

@@ -4,12 +4,44 @@
 #if os(macOS)
 import AppKit
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIAppKit
 import XCTest
 
 /// The menu bar an AppKit application stands with.
 @MainActor
 final class AppKitMenuBarTests: XCTestCase {
+    /// The bar is read in English - whatever language the machine running the tests speaks - but where a test says
+    /// another.
+    override func setUp() async throws {
+        Self.speak("en")
+    }
+
+    override func tearDown() async throws {
+        Self.speak("")
+    }
+
+    /// The locale the core hears: `language`, or none.
+    private static func speak(_ language: String) {
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: language, region: "", name: language, timeZone: "", uses24HourClock: true,
+            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+    }
+
+    /// The bar's own menus and entries say the library's words in the system's language, as AppKit translates no
+    /// title set in code: a Polish system's bar is Plik, Edycja, Okno.
+    @MainActor
+    func testTheMenuBarSpeaksTheSystemsLanguage() throws {
+        Self.speak("pl")
+        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        XCTAssertEqual(main.items.map(\.title).dropFirst(), ["Plik", "Edycja", "Okno"])
+        XCTAssertEqual(main.item(withTitle: "Plik")?.submenu?.items.map(\.title), ["Nowe okno"])
+        XCTAssertEqual(
+            main.item(withTitle: "Edycja")?.submenu?.items.filter { !$0.isSeparatorItem }.map(\.title),
+            ["Cofnij", "Ponów", "Wytnij", "Kopiuj", "Wklej", "Usuń", "Zaznacz wszystko"])
+        XCTAssertEqual(main.item(withTitle: "Okno")?.submenu?.items.map(\.title), ["Minimalizuj", "Wszystko na wierzch"])
+        XCTAssertTrue(main.items.first?.submenu?.items.first?.title.hasPrefix("Zakończ ") == true)
+    }
     /// The keys a keyboard sends read as the keys they are: Delete sends DEL and the keypad's Enter ETX, not the
     /// characters a key equivalent names them by.
     @MainActor

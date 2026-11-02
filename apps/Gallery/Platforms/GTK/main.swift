@@ -7,9 +7,9 @@ import StateUIGTK
 import StateUIWebViewGTK
 
 // listing: InteropActsSample.GTK.swift, InteropEventsSample.GTK.swift
-// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
 // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-registerApplication()
+GalleryApp.register()
 // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()

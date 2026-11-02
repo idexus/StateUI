@@ -37,9 +37,9 @@ final class NumberDecodingTests: XCTestCase {
 
     func testAKeptWholeNumberNoIntHoldsComesBackAsNothing() {
         for number in unheld {
-            XCTAssertNil(Int(persisted: .number(number)), "\(number) kept on disk")
+            XCTAssertNil(Int(persistentValue: .number(number)), "\(number) kept on disk")
         }
-        XCTAssertEqual(Int(persisted: .number(42)), 42)
+        XCTAssertEqual(Int(persistentValue: .number(42)), 42)
     }
 
     func testACarriedWholeNumberNoIntHoldsComesBackAsNothing() {

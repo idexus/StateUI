@@ -65,13 +65,13 @@ public enum StateUIControls {
     }
 }
 
-/// The acts an application performs on this host - what its own calls, `stateUICall` and an `Aim`, reach.
+/// The acts an application performs on this host - what its own calls, `application.call` and an `Aim`, reach.
 ///
 /// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
-    /// `stateUICall`.
+    /// `application.call`.
     ///
     ///     StateUIActs.add(GalleryContract.log) { line in
     ///         line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }

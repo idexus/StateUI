@@ -28,7 +28,7 @@ enum AndroidRealization {
 
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .partial(FilledShapeContract.fill, missing: "Android blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(VisualElementContract.background,
@@ -80,9 +80,6 @@ enum AndroidRealization {
             missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .notPlanned(VisualElementContract.zIndex, on: ButtonContract.self,
             reason: "Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .complete(MenuContract.isEnabled),
         .complete(MenuContract.text),
         .complete(MenuBarContract.order),
@@ -181,7 +178,6 @@ enum AndroidRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .notPlanned(WindowContract.floatsOnTop,

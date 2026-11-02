@@ -36,8 +36,8 @@ extension Node {
             || children.contains { NodeType.presented.contains($0.type) }
     }
 
-    /// An anchor holding this node, taking what of it outlives a branch, the environments it provides, and the
-    /// identity written on a composed view.
+    /// An anchor holding this node, taking what of it outlives a branch and the environments it provides; the node
+    /// keeps its identity, and the anchor stands under one made from it.
     private func anchored() -> Node {
         var held = self
         var anchor = Node(contract: AnchorContract.self)
@@ -46,15 +46,26 @@ extension Node {
         swap(&anchor.destroying, &held.destroying)
         swap(&anchor.hostEvents, &held.hostEvents)
         swap(&anchor.environments, &held.environments)
-        if held.stateful != nil { swap(&anchor.identity, &held.identity) }
         anchor.children = [held] + held.children.filter { NodeType.presented.contains($0.type) }
         anchor.children[0].children.removeAll { NodeType.presented.contains($0.type) }
+        if let identity = held.identity { anchor.identifyHeld(identity) }
         return anchor
     }
 
-    /// This anchor keeping what outlives a branch, its environments and identity; the rest written on it lands on
-    /// what it holds.
+    /// Gives `identity` - an identity written on the view, or an anchor's made from one - to the view this anchor
+    /// holds, and stands the anchor under one made from it: an id finds the view it is written on, and the anchor
+    /// is matched among its siblings by it.
+    /// Design: docs/design/core/identity-and-diffing.md#a-views-anchor
+    mutating func identifyHeld(_ identity: ElementIdentity) {
+        let held = (identity.value.base as? AnchorIdentity)?.held ?? identity
+        children[0].identity = held
+        self.identity = ElementIdentity(AnyHashable(AnchorIdentity(held: held)))
+    }
+
+    /// This anchor keeping what outlives a branch and its environments; the rest written on it - an identity
+    /// included - lands on what it holds.
     private mutating func settle() {
+        if let identity { identifyHeld(identity) }
         var written = Node(contract: AnchorContract.self)
         swap(&written.props, &props)
         swap(&written.driven, &driven)
@@ -117,4 +128,12 @@ extension ModifiedContent: Flipping {
 /// A view of any type cannot tell.
 extension AnyView: Flipping {
     static var flips: Bool { true }
+}
+
+/// The identity an anchor stands under, made from the identity of the view it holds. The NUL keeps it apart from any
+/// identity an author writes as text.
+struct AnchorIdentity: Hashable, CustomStringConvertible {
+    let held: ElementIdentity
+
+    var description: String { "\(String(describing: held.value.base))\u{0}anchor" }
 }

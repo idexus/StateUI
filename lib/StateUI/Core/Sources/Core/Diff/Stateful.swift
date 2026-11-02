@@ -179,7 +179,11 @@ extension Node {
             var node = build()
             node.branch = node.branch ?? (node.identity == nil ? node.key : nil)
             node.land(written)
-            node.identity = written.identity ?? node.identity
+            if node.type == .anchor, let identity = written.identity {
+                node.identifyHeld(identity)
+            } else {
+                node.identity = written.identity ?? node.identity
+            }
             node.key = written.key ?? node.key
             return node
         }

@@ -65,7 +65,7 @@ import StateUIAndroid
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
     MainActor.assumeIsolated {
-        registerApplication()
+        GalleryApp.register()
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.register()
@@ -192,7 +192,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
 A control may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
-change: one added, moved, taken away, or given another value. A child is a
+change: one added, moved, taken away, or given another value. A child is an
 `AndroidChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
@@ -202,15 +202,15 @@ view of its own. The Gallery's Google map draws its markers so:
 // Platforms/Android/Swift/Host/GoogleMapView.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.mapType) { control, type in control.show(type) }
+    map.property(MapContract.type) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
     map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-    map.raises(MapContract.mapClicked)
+    map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)

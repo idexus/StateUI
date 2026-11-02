@@ -135,7 +135,12 @@ UPower stands nowhere; and the network - GIO's monitor, and the kind of
 connection NetworkManager calls the primary one; and the accessibility
 settings - less motion where GTK's animations are off, libadwaita's high
 contrast, GNOME's screen reader where the desktop keeps that setting (none
-elsewhere), and GTK's text scale - each watched. Once the window stands it
+elsewhere), and GTK's text scale - each watched. The local zone has no notice
+GTK hears: it is the one `TZ` names, else the machine's as it stands - one
+reader for the locale, the clock and a local offset (`GTKEnvironment.localZone`),
+GLib keeping its own local zone from its first reading - read again as the
+application comes back to the front ([facts read again at the
+front](../../host/runtime.md#facts-read-again-at-the-front)). Once the window stands it
 tells the screen it stands on: its size in pixels, its scale and its refresh
 rate.
 

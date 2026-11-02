@@ -1,4 +1,4 @@
-# revision 7.1
+# revision 8.1
 SearchField.cursorPosition: – WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.
 SearchField.inputPurpose: ☑️ Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a name, a password and a code get their keys and checking all the same.
 SearchField.isReadOnly: ✅

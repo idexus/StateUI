@@ -167,7 +167,7 @@ final class AppKitContainerTests: XCTestCase {
         var outerStack = HostPatch(id: .manual("outer"), type: .vStack)
         outerStack.children = .arranged([frame])
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
-        scroll.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
+        scroll.properties[.axes] = .enumeration(ScrollAxes.vertical.rawValue)
         scroll.children = .arranged([outerStack])
         renderer.applyForTesting(scroll)
 
@@ -652,8 +652,8 @@ final class AppKitContainerTests: XCTestCase {
     func testAZStackStandsChildrenInTheirAreas() throws {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.children = .arranged([
-            box("fixed", [.area: Area.absolute(10, 20, 30, 40).propValue]),
-            box("proportional", [.area: Area.proportional(0.375, 0.5, 0.25, 0.5).propValue]),
+            box("fixed", [.area: Area.absolute(Rect(10, 20, 30, 40)).propValue]),
+            box("proportional", [.area: Area.proportional(Rect(0.375, 0.5, 0.25, 0.5)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
         defer { renderer.closeForTesting() }
@@ -674,7 +674,7 @@ final class AppKitContainerTests: XCTestCase {
         layout.properties = [.padding: .numbers([10, 5, 20, 15])]
         layout.children = .arranged([
             box("whole", [:]),
-            box("fixed", [.area: Area.absolute(10, 20, 30, 40).propValue]),
+            box("fixed", [.area: Area.absolute(Rect(10, 20, 30, 40)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
         defer { renderer.closeForTesting() }
@@ -775,7 +775,7 @@ final class AppKitContainerTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 ScrollView { Text("code") }
-                    .orientation(.horizontal)
+                    .axes(.horizontal)
                     .background(Color(hex: 0x00FF00))
                     .stroke(Color(hex: 0xFF0000))
                     .lineWidth(2)
@@ -835,7 +835,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAScrollViewKeepsItsPaddingAroundWhatItHolds() throws {
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
-            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+            .axes: .enumeration(ScrollAxes.horizontal.rawValue),
             .padding: .numbers([5, 3, 11, 7]),
         ]
         scroll.children = .arranged([box("wide", [.width: .number(500), .height: .number(36)])])

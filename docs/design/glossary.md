@@ -16,7 +16,7 @@ and this table maps the two.
 | member | property, event or method | a property, an event or an act an element declares |
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
-| `Text` (the element) | label | words shown and not edited; in a comment "a label" is a `Text`, while a member named `label` - `accessibilityLabel`, `Marker.label` - is a caption naming something else |
+| `Text` (the element) | label | words shown and not edited; in a comment "a label" is a `Text`, while `accessibilityLabel` is a caption naming something else |
 | slot | named placeholder | a structural child that holds authored content in a known place: `TitleView` |
 | slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu |
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
@@ -26,6 +26,7 @@ and this table maps the two.
 | arrangement | page container | a page that arranges other pages: a stack, tabs, a split view |
 | arrangement (navigation) | navigation container | `NavigationStack`, `TabView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene or a window holds |
+| phase (`SessionPhase`) | lifecycle state | where a session stands: `.active` in front and in use, `.inactive` shown but not in use, `.background` out of sight - one vocabulary for the application, a scene and a window |
 
 ## State and reactivity
 
@@ -103,6 +104,7 @@ and this table maps the two.
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
 | travel, traveling layout | layout animation | a layout's children animating to their new places |
+| turn, tilt (`ViewTransform`) | foreshortening | a view turned away about its vertical or horizontal axis drawn flat - as narrow or as short as the angle leaves it, the same picture on every platform; `rotationX` and `rotationY` are the platform's own three-dimensional turn, which each projects its own way |
 | state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
 | described motion | property animation | the animation a patch describes for a property |
 
@@ -139,4 +141,8 @@ and this table maps the two.
 | layout parameters (`LayoutParameters`) | animatable layout parameters | the state a motion layout is worked out from: one number an axis, each axis one degree of freedom, moved by the user's hand or the program |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
+| section (`Section`) | list section, group | a run of a list's items under its own header and footer: `ItemsView(sections:)`, `scrollTo(_:inSection:)` |
+| fill (`Alignment.fill`) | stretch | a child taking its whole slot across or down, where it would stand at its own size |
+| fill (`.fill(_:)` on a shape) | fill paint | the brush a shape's inside is painted with, beside its outline's `stroke` |
+| fill (`GridLength.fill`, `.fill(count:)`) | star sizing, fractional track | a grid track taking an equal share of the room the fixed and automatic ones leave |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |

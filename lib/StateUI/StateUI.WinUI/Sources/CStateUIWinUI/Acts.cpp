@@ -84,21 +84,15 @@ extern "C" void stateui_winui_clock(int32_t *time) {
     try {
         SYSTEMTIME now;
         GetLocalTime(&now);
-        time[0] = now.wHour;
-        time[1] = now.wMinute;
-        time[2] = now.wSecond;
-        time[3] = now.wMilliseconds;
+        time[0] = now.wYear;
+        time[1] = now.wMonth;
+        time[2] = now.wDay;
+        time[3] = now.wHour;
+        time[4] = now.wMinute;
+        time[5] = now.wSecond;
+        time[6] = now.wMilliseconds;
     } catch (...) {
         report("reading the clock");
-    }
-}
-
-extern "C" int32_t stateui_winui_time_zone(char *utf8, int32_t capacity) {
-    try {
-        return hand(winrt::to_string(winrt::Windows::Globalization::Calendar().GetTimeZone()), utf8, capacity);
-    } catch (...) {
-        report("reading the time zone");
-        return hand({}, utf8, capacity);
     }
 }
 

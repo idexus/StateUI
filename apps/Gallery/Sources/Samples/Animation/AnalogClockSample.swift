@@ -4,6 +4,7 @@ import StateUI
 @MainActor
 struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
+    @Environment(\.application) private var application
     @State private var ticking = false
 
     /// Whether the first reading of this visit has SET the clock. Traveling
@@ -104,7 +105,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             while ticking && visit == mine {
                 let lap = ContinuousClock.now
-                let time = try await ClockTime.now()
+                let time = try await application.clock.now()
 
                 // Where each hand should POINT, within one turn.
                 let second = Double(time.second) * 6
@@ -131,9 +132,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                     let toMinute = atMinute + (minute - atMinute).forwardTurn
                     let toHour = atHour + (hour - atHour).forwardTurn
 
-                    let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), .backOut))
-                    let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), .cubicOut))
-                    let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), .cubicOut))
+                    let s = $sAngle.journey.move(to: toSecond, .eased(.milliseconds(260), curve: .backOut))
+                    let m = $mAngle.journey.move(to: toMinute, .eased(.milliseconds(300), curve: .cubicOut))
+                    let h = $hAngle.journey.move(to: toHour, .eased(.milliseconds(300), curve: .cubicOut))
                     try await s.arrived()
                     try await m.arrived()
                     try await h.arrived()
@@ -165,7 +166,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The time comes from the platform - `ClockTime.now()` - and the wait is "
+            Text("The time comes from the platform - `application.clock.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
                 + "sleeps to the NEXT whole second rather than for a fixed while - the "
                 + "reading carries milliseconds, so each tick lands just past a "

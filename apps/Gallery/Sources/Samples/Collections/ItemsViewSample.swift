@@ -164,7 +164,7 @@ private struct GridList: ExampleContent {
     }
 }
 
-/// Items under headings of their own, with a count under each group.
+/// Items under headings of their own, with a count under each section.
 private struct GroupedList: ExampleContent {
     // listing: GroupedList
     @State private var counts = true
@@ -188,9 +188,9 @@ private struct GroupedList: ExampleContent {
             SwitchRow("Counts", $counts)
                 .gridRow(0)
 
-            // A group per shelf, named so two shelves may hold the same item.
-            ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
-                let group = Section(shelf.items) { item in
+            // A section per shelf, named so two shelves may hold the same item.
+            ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
+                let section = Section(shelf.items) { item in
                     Text(item)
                         .fontSize(14)
                         .padding(horizontal: 14, vertical: 10)
@@ -204,11 +204,11 @@ private struct GroupedList: ExampleContent {
                     .background(Palette.raised))
 
                 return counts
-                    ? group.footer(Text("\(shelf.items.count) items")
+                    ? section.footer(Text("\(shelf.items.count) items")
                         .fontSize(12)
                         .textColor(Palette.subtle)
                         .padding(horizontal: 14, vertical: 6))
-                    : group
+                    : section
             })
             .gridRow(1)
 
@@ -222,7 +222,7 @@ private struct GroupedList: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Turn Counts off: the groups close up where their footers stood.")
+        Text("Turn Counts off: the sections close up where their footers stood.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
