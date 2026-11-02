@@ -3,6 +3,131 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.1 - 2026-11-02
+
+### Breaking changes
+
+- **The clock is the application's.** `ClockTime.now()` is `application.clock.now()`, the day
+  `application.clock.today()`, and `TimeZoneInfo.utcOffset(of:on:)` is `application.clock.utcOffset(of:on:)`, its zone
+  a `TimeZoneName`. The user's zone is `locale.timeZone`, a `TimeZoneName?`, nil until the host has said;
+  `TimeZoneInfo` is gone. Host authors: `ApplicationContract.currentTimeZone` is gone, and `currentTime` answers year,
+  month, day, hour, minute, second and millisecond; `ActToolkit.localTime()` answers a `LocalTime`.
+- **An application registers itself.** Each head names its application with `NotesApp.register()` - the type is
+  public, with a `public init()` the protocol now asks for; `registerApplication()` is gone. An act of the
+  application's is `application.call(_:_:)`, awaited, or `application.tell(_:_:)`, not awaited; `stateUICall` and
+  `stateUISend` are gone. `stateUIVersion()` is `application.info.libraryVersion`, and `stateUIPlatform()` is
+  `device.info.platform` with `device.info.architecture`.
+- **Every session stands in one phase.** `SessionPhase` - `.active`, `.inactive`, `.background` - is the
+  application's, a scene's and a window's; `ApplicationPhase`, `ScenePhase` and `WindowPhase` are gone. A window's
+  `.created`, `.activated`, `.deactivated`, `.stopped`, `.resumed` and `.destroying` read as `.inactive`, `.active`,
+  `.inactive` and `.background`: save on `.background`. Host authors: `WindowContract.resumed` is gone.
+- **A tap is a tap.** `Map.onMapClicked { }` is `Map.onLocationTapped { location in }`;
+  `MotionLayout.onItemTapped { item in }` is `onItemActivated { id in }`, and `onItemDragged` and `onItemDismissed`
+  hand the item's identity as a list's and a gallery's events do - `ItemDrag<ID>`'s `id` and `over`, its `speed` now
+  `velocity`. Host authors: `MapContract.mapClicked` is `locationTapped`.
+- **A gesture tells points.** `PanUpdate`'s `totalX` and `totalY`, `velocityX` and `velocityY` are `total` and
+  `velocity`, each a `Point`, and `at` says where the press is now; `PinchUpdate.scaleOrigin` is `pivot`. A canvas
+  hears a press as every view does: `Canvas.onPressed`, `.onDragged` and `.onReleased` are gone - `.onPointerPressed`,
+  `.onPanUpdated`'s `at` and `.onPointerReleased` tell it, in the canvas's own points. Host authors:
+  `CanvasContract.pressed`, `.dragged` and `.released` are gone; `ViewContract.panUpdated` carries where the press
+  is, and `HeardInput.drag` takes `from:`, where the press began.
+- **A conversion is written with its way back, in the source's type.** `$x.convert { … }.convertBack { … }` is
+  `$x.convert { … } back: { … }`, or `convert(_:back:)`; `back` is `(Out) -> Value`, so a way back answering another
+  type no longer compiles, and a way back that comes and goes is one call, `back: editing ? { … } : nil`.
+  `.multi($a, $b).convert { … }.convertBack { … }` is `.multi($a, $b).convert(_:back:)`.
+- **A scroller names its axes as a set.** `.orientation(.horizontal)` is `.axes(.horizontal)`, `.both` is `.all`
+  and `.neither` is `[]` (`ScrollAxes`); `LayoutInput.Orientation` is `Orientation`. Host authors:
+  `ScrollViewContract.orientation` is `axes`, its value bits.
+- **One word names an address.** `WebView(_ address:)`, `.source(_ address:)` and `.source(html:baseAddress:)`, a
+  navigation's `address`, `Link(_:address:)`, `share(address:)` and `share(text:address:)`. Host authors:
+  `LinkContract.destination` is `address`, `WebViewSource.url` is `.address`, and `ApplicationContract.launchLink` is
+  `launchAddress`.
+- **A library error names its reason as a case:** `StateUIError` is `.notPerformed(act:reason:)`,
+  `.unreadableAnswer(act:answered:declared:)`, `.aimOnNoView`, `.aimOnTwoViews`, `.noItem` or
+  `.writesWhileBuilding`, and its `description` says the words; `StateUIError.message` and `StateUIError(message:)`
+  are gone.
+- **What the host has not said is nil.** `device.battery.chargeLevel` - also where no battery stands - and
+  `device.display.width`, `height`, `density` and `refreshRate` are optional: no `-1` or `0` stands for a fact.
+- **The user's language is a tag.** `locale.language` is a `LocaleTag?` - `locale.language?.region` is the region,
+  `.identifier` the whole tag; `LocaleInfo.region` and `LocaleInfo.name` are gone.
+- A list's parts are sections: `ItemsView(groups:)` is `ItemsView(sections:)`, and `scrollTo(_:inGroup:)` is
+  `scrollTo(_:inSection:)`.
+- `.bottomBar(edge:)` is `.bottomBar(scrollEdge:)`. Host authors: `BottomBarContract.edge` is `scrollEdge`.
+- An event's handler takes no label: `accessibilityAction("Clear") { }`, `.onKeyPressed([.escape]) { }` - a list of
+  keys - and `.onVisualStateChanged([.pressed]) { }`, a list of states; none hears every state.
+- `.eased(length, curve)` is `.eased(length, curve: curve)`; `.followsLayout(.spring(response:damping:))` is
+  `.followsLayout(response:damping:)`, on a view and on `LayoutBody`; `clipboard.text()` and `write(text:)` are
+  `read()` and `write(_:)`; `Asks` is `Cadence`; `GalleryArrangement.default` is `.wheel`; `confirm`'s `accept:` and
+  every question's `message:` may be left out. `State.get()` is gone - read `wrappedValue`.
+- A marker's `.label(_:)` is `.title(_:)`, and a map's `.mapType(_:)` is `.type(_:)`, as a marker's is. Host authors:
+  `MarkerContract.label` is `title`, and `MapContract.mapType` is `type`.
+- A line is drawn between two points, `Line(from: Point(0, 0), to: Point(240, 0))`: `.x1`, `.y1`, `.x2` and `.y2`
+  are `.from(_:)` and `.to(_:)`, each a `Point` or its state. Host authors: `LineContract.x1` to `y2` are `from` and
+  `to`.
+- An area is a rectangle: `.area(.absolute(Rect(16, 16, 120, 40)))`, `.proportional(Rect(0.5, 0, 0.5, 1))`.
+- `Color(red:green:blue:alpha:)` is `Color(red:green:blue:opacity:)`, its opacity from 0 to 1 as everywhere else.
+- `ProgressBar($done)` and `Spinner($loading)` take a state, as `Slider($v)` does.
+- `.draggable(text:canDrag:onDragStarting:)` is `.dragText(_:)`, `.isDraggable(_:)` and `.onDragStarting { }`. Host
+  authors: `ViewContract.canDrag` is `isDraggable`.
+- An initializer names what its builder builds - `Group(content:)`, `GeometryReader(content:)`,
+  `Canvas(drawing:)`, `StyleSheet(styles:)`, `ToolbarGroup(items:)`; a trailing closure reads as before.
+- On Android `clipboard.read()` throws where the window is not in focus - the platform hands it nothing - in place
+  of answering nil.
+- Extension authors: `StyleBag` is `Styling`, and `StyleBase` and `StyleState` are `StyleScope.Whole` and
+  `StyleScope.VisualState` - `extension Styling: MyControlProperties where Target == MyControl {}`. `StyleTarget`
+  requires `static var nodeType: NodeType` in place of `init()`: an application's own control writes
+  `extension RatingBar: StyleTarget { public static var nodeType: NodeType { RatingBarContract.nodeType } }`.
+  `PersistentValue.init?(persisted:)` is `init?(persistentValue:)` - a kept value converts as `carried` and
+  `init?(carried:)`, `propValue` and `init?(propValue:)` do.
+
+### New
+
+- [Extending StateUI](docs/interface/extending.md) adds an element, a value and the application's own acts and
+  events - the second public surface, which the library's own controls are written with; the handbook names every
+  public type.
+- `ItemsView` and `MotionLayout` are style targets: `Style<ItemsView<String>>()`.
+- A question's own buttons and the Mac's menu bar speak the user's language where the application names no words.
+- [StateUI for VS Code](docs/editors/VSCode/README.md) is the extension's handbook page, and the extension carries
+  it as its readme.
+
+### Fixed
+
+- A chain of conversions follows its first source, a way back no longer written goes, and a conversion nobody read
+  lets its source go.
+- Two items of an `ItemsView` that describe alike are two items, each keeping its identity as the order changes;
+  only the same value twice is said.
+- An id stays with the view it is written on, a list's included, whether its lifetime is written before it or
+  after.
+- A `TextField` or `SearchField` nothing sizes is at least twenty digits wide, its placeholder too, on every host.
+- GTK, WinUI and the Web read the time zone again as the application comes back to the front, and WinUI the
+  languages.
+- A cell no grid has - a row or a column before the first, a span of none, an index past the grid - stands in the
+  nearest one there is, said once.
+- A task cancelled while it waits for a movement's `arrived()` stops waiting alone; the others hear the end.
+- A motion layout hands no host a number that is not finite; a read through a part of an element gone answers the
+  element as it last stood.
+- A window for a value never stands without one; a link stands at its words' size.
+- Pictures cost less memory on Apple's platforms: macOS keeps no bitmap of every size an SVG or a PDF was drawn at
+  (the Gallery's footprint after its heaviest samples: 475 MB -> 178 MB), pictures nothing shows are kept within one
+  budget of forty million pixels on macOS and iOS, and a picture still shown on iOS is not decoded again after
+  memory pressure.
+- A WinUI picture opens drawn once, at the size it shows at; a Web page's bar at its foot leaves with its page, and
+  the Web relay answers every request once.
+
+### Tooling
+
+- The VS Code extension stands in `editors/VSCode`, `editors/` holding each editor's extension: it is built from a
+  checkout by `cd editors/VSCode`, `npm ci` and `npm run package`. An extension installed before this release looks
+  for its sources in `lib/StateUI.VSCode`, so it is built and installed once by hand. It restarts the Swift language
+  server once more where the Swift extension's restart is refused while the server loads its packages - the first
+  activation in a fresh clone failed so.
+- The public API stands recorded in two files, `lib/StateUI/exports/api/StateUI.txt` - what an application writes -
+  and `StateUI.extending.txt`, what an extension writes.
+- A conformance case that pans, pinches or turns two fingers reads the gesture's speed off a still clock, the same on
+  every machine; CI runs every Web conformance family.
+- CONTRIBUTING says where a feature's pull request is finished: on its own branch where it allows edits by
+  maintainers, else on a `feature/<issue>-<short-name>` branch.
+
 ## 0.8.0 - 2026-10-31
 
 ### Breaking changes
