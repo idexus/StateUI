@@ -24,7 +24,9 @@ gallery's position - keeps an `EventRegistration` of its own in a state, so
 each of its handlers given a policy alone has a gate of its own too, as an
 element's do: one held under `.ignoreWhileRunning` keeps no other from
 running. A dismissal starts only the handlers whose way the view passed, each
-through its own.
+through its own. Every render keeps the registration to the handlers written
+(`keep`), so one no longer written ends its runs then, with no event to come,
+and the view leaving ends them all, however many it wrote last.
 
 ## A gate
 

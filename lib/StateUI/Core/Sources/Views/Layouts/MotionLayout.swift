@@ -569,6 +569,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     public var body: some View {
         let run = self.run
         let mirrors = self.mirrors
+        // A handler no longer written ends its runs now, as an element's does.
+        dismissalRuns.keep(dismissals.count)
+        settledRuns.keep(settled.count)
 
         if Parameters.axes.isEmpty {
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
@@ -583,8 +586,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.translationOrientation, run.ways.count == 1 ? run.ways.first : nil)
             element.describe(MotionLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
-            if !run.dismissals.isEmpty { element.destroying.append { run.states.dismissals.orphan() } }
-            if !run.settled.isEmpty { element.destroying.append { run.states.settles.orphan() } }
+            element.destroying.append { run.states.dismissals.orphan() }
+            element.destroying.append { run.states.settles.orphan() }
             if run.moves {
                 element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
                     run.translationUpdated(gesture, moved: moved, velocity: velocity)

@@ -346,6 +346,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     public var body: some View {
         let items = source.items
         let count = items.count
+        // A handler no longer written ends its runs now, as an element's does.
+        positionRuns.keep(moved.count)
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {

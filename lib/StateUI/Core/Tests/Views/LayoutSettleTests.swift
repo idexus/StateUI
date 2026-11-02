@@ -66,6 +66,38 @@ final class LayoutSettleTests: XCTestCase {
         _ = await settle()
     }
 
+    /// A HANDLER OF THE REST NO LONGER WRITTEN ENDS ITS RUN as the layout is built without it, as an element's does.
+    func testAHandlerOfTheRestNoLongerWrittenEndsItsRun() async {
+        let (phase, hears, renders) = (State(wrappedValue: 0.0), State(true), Renders())
+        let gate = Gate(.ignoreWhileRunning)
+        func built() -> Node {
+            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            }
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .motion(.eased(.milliseconds(160)))
+            return (hears.wrappedValue
+                ? layout.onSettled(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                : layout).node
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(-100, 0))
+        bench.hand(renders, built, .ended)
+        for _ in 0..<80 { bench.cycle() }
+        _ = await settle()
+        XCTAssertTrue(gate.isBusy, "the handler runs")
+
+        hears.wrappedValue = false
+        _ = renders.render(built())
+        await gate.waitWhileBusy()
+        XCTAssertFalse(gate.isBusy, "its run ended with it")
+
+        _ = renders.render(VStack {}.node)
+        await gate.endEveryRun()
+    }
+
     /// EVERY HANDLER OF THE REST RUNS, in the order written.
     func testEveryHandlerOfTheRestRunsInWritingOrder() async {
         let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())

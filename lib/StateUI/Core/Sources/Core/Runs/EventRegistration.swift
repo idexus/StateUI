@@ -16,10 +16,17 @@ final class EventRegistration {
 
     /// Takes the handlers a new render wrote; a handler no longer written has its runs superseded.
     func replace(_ written: [Handler]) {
-        for owner in owners.dropFirst(written.count) { owner.orphan() }
-        owners = Array(owners.prefix(written.count))
-            + (owners.count..<max(written.count, owners.count)).map { _ in RunOwner() }
+        keep(written.count)
         handlers = written
+    }
+
+    /// Keeps the runs of the first `count` handlers, each by its place: what a composed view's render writes of an
+    /// event it starts itself, before the event hands the handlers their values. A handler no longer written has its
+    /// runs superseded then, with no event to come.
+    func keep(_ count: Int) {
+        for owner in owners.dropFirst(count) { owner.orphan() }
+        owners = Array(owners.prefix(count)) + (owners.count..<max(count, owners.count)).map { _ in RunOwner() }
+        handlers = Array(handlers.prefix(count))
     }
 
     /// Starts every handler for an event carrying `payload`, each through its gate - or those `chosen` picks by

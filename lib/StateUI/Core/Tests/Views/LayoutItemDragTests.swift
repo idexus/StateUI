@@ -220,6 +220,38 @@ final class LayoutItemDragTests: XCTestCase {
         _ = await settle()
     }
 
+    /// A DISMISSAL NO LONGER WRITTEN ENDS ITS RUN as the layout is built without it, as an element's handler does.
+    func testADismissalNoLongerWrittenEndsItsRun() async {
+        let renders = Renders()
+        let hears = State(true)
+        let gate = Gate(.ignoreWhileRunning)
+        func tree() -> Node {
+            let layout = MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+            }
+            .itemDrag(begins: .longPress)
+            return (hears.wrappedValue
+                ? layout.onItemDismissed(.up, beyond: 50, gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                : layout).node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .changed, at: Point(75, -10))
+        bench.item(renders, tree, .ended, at: Point(75, -10))
+        for _ in 0..<40 { bench.cycle() }
+        _ = await settle()
+        XCTAssertTrue(gate.isBusy, "the handler runs")
+
+        hears.wrappedValue = false
+        _ = renders.render(tree())
+        await gate.waitWhileBusy()
+        XCTAssertFalse(gate.isBusy, "its run ended with it")
+
+        _ = renders.render(VStack {}.node)
+        await gate.endEveryRun()
+    }
+
     /// A DISMISSAL THAT AWAITS GOES THROUGH ITS GATE: while the first runs, a second view dismissed under
     /// `.ignoreWhileRunning` flies out and its item is not told.
     func testADismissalThatAwaitsGoesThroughItsGate() async {

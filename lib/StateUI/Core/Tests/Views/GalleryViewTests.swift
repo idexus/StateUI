@@ -776,6 +776,33 @@ final class GalleryViewTests: XCTestCase {
         _ = await settle()
     }
 
+    /// A HANDLER OF THE POSITION NO LONGER WRITTEN ENDS ITS RUN as the gallery is built without it, with no other
+    /// position coming, as an element's handler does.
+    func testAHandlerOfThePositionNoLongerWrittenEndsItsRun() async {
+        let renders = Renders()
+        let (position, hears) = (State(0), State(true))
+        let gate = Gate(.ignoreWhileRunning)
+        func tree() -> Node {
+            let gallery = GalleryView(0..<3) { Text("\($0)") }.position(position.projectedValue)
+            return (hears.wrappedValue
+                ? gallery.onPositionChanged(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                : gallery).node
+        }
+        _ = renders.render(tree())
+        position.wrappedValue = 1
+        _ = renders.render(tree())
+        _ = await settle()
+        XCTAssertTrue(gate.isBusy, "the handler runs")
+
+        hears.wrappedValue = false
+        _ = renders.render(tree())
+        await gate.waitWhileBusy()
+        XCTAssertFalse(gate.isBusy, "its run ended with it")
+
+        _ = renders.render(VStack {}.node)
+        await gate.endEveryRun()
+    }
+
     /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.
