@@ -41,8 +41,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// walks - a position written travels there through it.
     @State private var turn = 0.0
 
-    /// Who starts the runs of what `onPositionChanged` asked for, ended with the gallery.
-    @State private var positionRuns = RunOwner()
+    /// The runs of what `onPositionChanged` asked for, each handler's its own, ended with the gallery.
+    @State private var positionRuns = EventRegistration([])
 
     /// The items and their card face, behind a class so the state walk stops.
     private let source: Source
@@ -440,10 +440,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             Watcher(at: asked) { position in
                 if turns.wrappedValue != Double(position) { turns.wrappedValue = Double(position) }
 
-                for moved in moved {
-                    moved.gate.runs(for: positionRuns).start(
-                        { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
-                }
+                positionRuns.replace(moved.map { $0.given(position) })
+                positionRuns.start(payload: nil)
             }
         }
         // The run starts where the position stands, with no journey to it.

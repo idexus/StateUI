@@ -191,6 +191,35 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(told.dismissed, ["up B", "up again B"])
     }
 
+    /// EACH DISMISSAL GOES THROUGH A GATE OF ITS OWN: one held under `.ignoreWhileRunning` keeps no other from running.
+    func testEachDismissalHasAGateOfItsOwn() async {
+        var heard: [Int] = []
+        let renders = Renders()
+        func tree() -> Node {
+            MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+            }
+            .itemDrag(begins: .longPress)
+            .onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { _ in
+                heard.append(1)
+                try await Task.sleep(for: .seconds(60))
+            }
+            .onItemDismissed(.up, beyond: 20, policy: .ignoreWhileRunning) { _ in heard.append(2) }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .changed, at: Point(75, -10))
+        bench.item(renders, tree, .ended, at: Point(75, -10))
+        for _ in 0..<40 { bench.cycle() }
+        _ = await settle()
+
+        XCTAssertEqual(heard, [1, 2])
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
+    }
+
     /// A DISMISSAL THAT AWAITS GOES THROUGH ITS GATE: while the first runs, a second view dismissed under
     /// `.ignoreWhileRunning` flies out and its item is not told.
     func testADismissalThatAwaitsGoesThroughItsGate() async {

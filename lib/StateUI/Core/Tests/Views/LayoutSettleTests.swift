@@ -35,6 +35,37 @@ final class LayoutSettleTests: XCTestCase {
         .node
     }
 
+    /// EACH HANDLER OF THE REST GOES THROUGH A GATE OF ITS OWN: one held under `.ignoreWhileRunning` keeps no other
+    /// from running.
+    func testEachHandlerOfTheRestHasAGateOfItsOwn() async {
+        let (phase, renders) = (State(wrappedValue: 0.0), Renders())
+        var heard: [Int] = []
+        func built() -> Node {
+            MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            }
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .motion(.eased(.milliseconds(160)))
+            .onSettled(.ignoreWhileRunning) { _ in
+                heard.append(1)
+                try await Task.sleep(for: .seconds(60))
+            }
+            .onSettled(.ignoreWhileRunning) { _ in heard.append(2) }
+            .node
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(-100, 0))
+        bench.hand(renders, built, .ended)
+        for _ in 0..<80 { bench.cycle() }
+        _ = await settle()
+
+        XCTAssertEqual(heard, [1, 2])
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
+    }
+
     /// EVERY HANDLER OF THE REST RUNS, in the order written.
     func testEveryHandlerOfTheRestRunsInWritingOrder() async {
         let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())

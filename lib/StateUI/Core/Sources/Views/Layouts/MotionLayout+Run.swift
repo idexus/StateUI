@@ -274,12 +274,10 @@ extension MotionLayout {
             states.shown.wrappedValue.resting = rests
             guard rests, !settled.isEmpty else { return }
 
-            let (runs, settled) = (states.settles, settled)
+            let (runs, handlers) = (states.settles, settled.map { $0.given(parameters) })
             libraryTask {
-                for settled in settled {
-                    settled.gate.runs(for: runs).start(
-                        { try await settled.run(parameters) }, settled.gate.policy, payload: nil, owner: runs)
-                }
+                runs.replace(handlers)
+                runs.start(payload: nil)
             }
         }
 

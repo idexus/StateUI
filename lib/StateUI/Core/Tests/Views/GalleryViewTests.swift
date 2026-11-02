@@ -750,6 +750,32 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(heard.suffix(2), ["at 2 first", "at 2 second"])
     }
 
+    /// EACH HANDLER OF THE POSITION GOES THROUGH A GATE OF ITS OWN: one held under `.ignoreWhileRunning` keeps no
+    /// other from running.
+    func testEachHandlerOfThePositionHasAGateOfItsOwn() async {
+        let renders = Renders()
+        let position = State(0)
+        var heard: [Int] = []
+        func tree() -> Node {
+            GalleryView(0..<3) { Text("\($0)") }
+                .position(position.projectedValue)
+                .onPositionChanged(.ignoreWhileRunning) { _ in
+                    heard.append(1)
+                    try await Task.sleep(for: .seconds(60))
+                }
+                .onPositionChanged(.ignoreWhileRunning) { _ in heard.append(2) }
+                .node
+        }
+        _ = renders.render(tree())
+        position.wrappedValue = 1
+        _ = renders.render(tree())
+        _ = await settle()
+
+        XCTAssertEqual(heard, [1, 2])
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
+    }
+
     /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.

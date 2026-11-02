@@ -111,17 +111,17 @@ extension MotionLayout.Run {
         !passed(by: hand).isEmpty
     }
 
-    /// The dismissals `hand`'s view passes, in the order written: where the hand took it, and where a throw at its
-    /// speed would carry it, stands past the dismissal one of its ways.
-    private func passed(by hand: LayoutItemHand) -> [LayoutDismissal<ID>] {
+    /// The places, in the order written, of the dismissals `hand`'s view passes: where the hand took it, and where
+    /// a throw at its speed would carry it, stands past the dismissal one of its ways.
+    private func passed(by hand: LayoutItemHand) -> Set<Int> {
         guard let velocity = hand.velocity else { return [] }
 
         let across = hand.at.x - hand.from.x + Self.carried(velocity.x, by: throwing)
         let down = hand.at.y - hand.from.y + Self.carried(velocity.y, by: throwing)
         let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
-        return dismissals.filter { dismissal in
-            ways.contains { dismissal.directions.contains($0.0) && $0.1 > dismissal.beyond }
-        }
+        return Set(dismissals.indices.filter { place in
+            ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].beyond }
+        })
     }
 
     /// The held view in `shown`, as the hand holds it - `poses` worked out at `now` in `room` - and the bodies of
@@ -184,18 +184,16 @@ extension MotionLayout.Run {
             || bounds.x >= room.width || bounds.y >= room.height
     }
 
-    /// Tells the application, through every dismissal `hand`'s view passed, that its item has been dismissed, after
-    /// the frame.
+    /// Tells the application, through every dismissal `hand`'s view passed - each through its own gate - that its
+    /// item has been dismissed, after the frame.
     func dismissed(_ hand: LayoutItemHand) {
-        let handlers = passed(by: hand).map(\.handler)
-        guard !handlers.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
+        let passed = passed(by: hand)
+        guard !passed.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
-        let (id, runs) = (slot.item[keyPath: path], states.dismissals)
+        let (runs, handlers) = (states.dismissals, dismissals.map { $0.handler.given(slot.item[keyPath: path]) })
         libraryTask {
-            for handler in handlers {
-                handler.gate.runs(for: runs).start(
-                    { try await handler.run(id) }, handler.gate.policy, payload: nil, owner: runs)
-            }
+            runs.replace(handlers)
+            runs.start(payload: nil) { passed.contains($0) }
         }
     }
 }

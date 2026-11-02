@@ -22,9 +22,12 @@ final class EventRegistration {
         handlers = written
     }
 
-    /// Starts every handler for an event carrying `payload`, each through its gate.
-    func start(payload: [PropValue]?) {
-        for (handler, owner) in zip(handlers, owners) {
+    /// Starts every handler for an event carrying `payload`, each through its gate - or those `chosen` picks by
+    /// their place alone, each still through its own.
+    func start(payload: [PropValue]?, chosen: (Int) -> Bool = { _ in true }) {
+        for (place, (handler, owner)) in zip(handlers, owners).enumerated() {
+            guard chosen(place) else { continue }
+
             handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: payload, owner: owner)
         }
     }

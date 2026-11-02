@@ -61,11 +61,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The layout's own number for each item's identity, which its frames key the views by.
     @State private var numbers = LayoutSlotNumbers()
 
-    /// Who starts the runs of what `onItemDismissed` asked for, ended with the layout.
-    @State private var dismissalRuns = RunOwner()
+    /// The runs of what `onItemDismissed` asked for, each handler's its own, ended with the layout.
+    @State private var dismissalRuns = EventRegistration([])
 
-    /// The runs of the handler told the run came to rest.
-    @State private var settledRuns = RunOwner()
+    /// The runs of the handlers told the run came to rest, each its own.
+    @State private var settledRuns = EventRegistration([])
 
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
@@ -747,8 +747,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let from: State<Parameters?>
         let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
-        let dismissals: RunOwner
-        let settles: RunOwner
+        let dismissals: EventRegistration
+        let settles: EventRegistration
     }
 }
 

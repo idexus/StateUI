@@ -19,6 +19,13 @@ the policy, what an event that comes while one is under way does.
 slot for its turn, or is let go - so a run that never starts still ends and
 nothing keeps its handler.
 
+A composed view's own event - a motion layout's rest and dismissal, a
+gallery's position - keeps an `EventRegistration` of its own in a state, so
+each of its handlers given a policy alone has a gate of its own too, as an
+element's do: one held under `.ignoreWhileRunning` keeps no other from
+running. A dismissal starts only the handlers whose way the view passed, each
+through its own.
+
 ## A gate
 
 An awaiting handler passes through a gate, whose policy says what an event
