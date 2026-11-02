@@ -86,7 +86,9 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
             at += 1
             return spelled.last
         }
-        for _ in 0..<3 where take({ $0.count == 3 && $0.allSatisfy(\.isLetter) }) != nil {}
+        for _ in 0..<3 {
+            guard take({ $0.count == 3 && $0.allSatisfy(\.isLetter) }) != nil else { break }
+        }
         let script = take({ $0.count == 4 && $0.allSatisfy(\.isLetter) }) { $0.prefix(1).uppercased() + $0.dropFirst() }
         let region = take(isRegion) { $0.uppercased() }
         while take({ $0.count >= 5 || ($0.count == 4 && $0.first?.isNumber == true) }) != nil {}
