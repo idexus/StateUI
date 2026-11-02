@@ -98,6 +98,9 @@ final class ValueTextTests: XCTestCase {
         XCTAssertNil(ValueText.read(Float.self, from: "1e100"), "past what a Float holds")
         XCTAssertNil(ValueText.read(String.self, from: "\"a\nb\""), "a raw line feed")
         XCTAssertNil(ValueText.read(String.self, from: "\"a\u{01}b\""), "a raw control")
+        XCTAssertNil(ValueText.read(String.self, from: #""\u+041""#), "four hex digits after a \\u")
+        XCTAssertNil(ValueText.read(String.self, from: #""\u-041""#))
+        XCTAssertEqual(ValueText.read(String.self, from: #""\u0041""#), "A")
     }
 }
 

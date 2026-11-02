@@ -170,9 +170,9 @@ extension ValueText {
             return nil
         }
 
-        /// Four hex digits, as a number.
+        /// Four hex digits, as a number - digits alone, no sign.
         private mutating func hex() -> UInt32? {
-            guard at + 4 <= bytes.count,
+            guard at + 4 <= bytes.count, bytes[at..<at + 4].allSatisfy({ Character(Unicode.Scalar($0)).isHexDigit }),
                 let value = UInt32(String(decoding: bytes[at..<at + 4], as: UTF8.self), radix: 16)
             else { return nil }
 
