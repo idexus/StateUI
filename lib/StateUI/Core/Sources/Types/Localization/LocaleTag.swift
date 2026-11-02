@@ -11,7 +11,8 @@
 /// Written with `-` or `_` and in any case, it is kept in the standard spelling: the language in lower case, the
 /// script capitalized, the region in capitals. It is read as BCP 47 writes it, in ASCII letters and digits: a
 /// language of two or three letters and its extended languages, then a script, a region, variants, extensions and a
-/// private use, each where it stands. Text that is no tag is kept as written, and `isValid` says so.
+/// private use, each where it stands, a variant and a singleton once. Text that is no tag is kept as written, and
+/// `isValid` says so.
 ///
 /// Design: docs/design/types/localization.md#a-language-is-a-tag
 public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
@@ -71,8 +72,10 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
     private static func read(
         _ parts: [String]
     ) -> (language: String, script: String?, region: String?, spelled: [String])? {
+        // ASCII as written: a letter outside it may lower into it (the Kelvin sign into `k`).
+        guard parts.allSatisfy(isPart) else { return nil }
         let parts = parts.map { $0.lowercased() }
-        guard let first = parts.first, parts.allSatisfy(isPart) else { return nil }
+        guard let first = parts.first else { return nil }
 
         // A private use alone names no language.
         if first == "x" { return parts.count > 1 ? ("", nil, nil, parts) : nil }
@@ -91,10 +94,14 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
         }
         let script = take({ $0.count == 4 && $0.allSatisfy(\.isLetter) }) { $0.prefix(1).uppercased() + $0.dropFirst() }
         let region = take(isRegion) { $0.uppercased() }
-        while take({ $0.count >= 5 || ($0.count == 4 && $0.first?.isNumber == true) }) != nil {}
+        // A variant and an extension's singleton each stand once; a private use's parts as often as written.
+        var said: Set<String> = []
+        while let variant = take({ $0.count >= 5 || ($0.count == 4 && $0.first?.isNumber == true) }) {
+            guard said.insert(variant).inserted else { return nil }
+        }
         // An extension's singleton, then a private use's `x`, each with a part at least after it.
-        while take({ $0.count == 1 && $0 != "x" }) != nil {
-            guard take({ $0.count >= 2 }) != nil else { return nil }
+        while let singleton = take({ $0.count == 1 && $0 != "x" }) {
+            guard said.insert(singleton).inserted, take({ $0.count >= 2 }) != nil else { return nil }
             while take({ $0.count >= 2 }) != nil {}
         }
         if take({ $0 == "x" }) != nil {

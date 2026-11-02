@@ -24,7 +24,10 @@ reads as its language and region. A tag is read as BCP 47 (RFC 5646) writes it,
 in ASCII letters and digits, each part where it stands: a language of two or
 three letters and up to three extended languages (`zh-cmn-Hant-TW` keeps its
 script and region), a script, a region, variants, extensions - a singleton and
-a part at least - and a private use (`x-…`), which alone names no language.
+a part at least - and a private use (`x-…`), which alone names no language. A
+variant and a singleton stand once; a private use's parts as often as written.
+ASCII is checked as written, before any case changes: the Kelvin sign lowers
+into an ASCII `k`.
 Text that is no tag is kept as written and says so with `isValid`; a match
 never takes it.
 

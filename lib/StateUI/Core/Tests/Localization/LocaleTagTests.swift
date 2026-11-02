@@ -45,6 +45,15 @@ final class LocaleTagTests: XCTestCase {
         XCTAssertEqual(LocaleTag("sl-rozaj-biske-x-mine").identifier, "sl-rozaj-biske-x-mine")
     }
 
+    /// A variant or an extension's singleton stands once in a tag, a private use's parts as often as written; and the
+    /// text is ASCII as written, before any case is changed - the Kelvin sign lowers to an ASCII `k`.
+    func testATagSaysEachVariantAndSingletonOnceInASCII() {
+        XCTAssertFalse(LocaleTag("de-DE-1901-1901").isValid, "a variant twice")
+        XCTAssertFalse(LocaleTag("en-a-bbb-a-ccc").isValid, "a singleton twice")
+        XCTAssertTrue(LocaleTag("en-a-bbb-b-ccc-x-a-a").isValid, "a private use's parts repeat")
+        XCTAssertFalse(LocaleTag("\u{212A}K-PL").isValid, "the Kelvin sign")
+    }
+
     /// An extended language stands between the language and its script and region, and leaves both read.
     func testAnExtendedLanguageKeepsItsScriptAndRegion() {
         let tag = LocaleTag("ZH-CMN-hant-tw")
