@@ -561,5 +561,22 @@ final class MotionLayoutTests: XCTestCase {
 
         XCTAssertEqual(heard, [8])
     }
+
+    /// EVERY HANDLER OF A TAP RUNS, in the order written.
+    func testEveryHandlerOfATapRunsInWritingOrder() async throws {
+        var heard: [String] = []
+        let renders = Renders()
+        let patch = renders.render(
+            MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+                .onItemActivated { heard.append("\($0) first") }
+                .onItemActivated(.runConcurrently) { heard.append("\($0) second") }
+                .node)
+        let tap = try XCTUnwrap(patch.first(.motionLayout)?.children[1].events?[.tapped])
+
+        XCTAssertTrue(renders.fire(tap))
+        _ = await settle()
+
+        XCTAssertEqual(heard, ["8 first", "8 second"])
+    }
 }
 

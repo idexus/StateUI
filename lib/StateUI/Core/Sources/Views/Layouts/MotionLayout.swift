@@ -163,13 +163,13 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var mask: Node?
 
     /// What runs when the user taps a view, through its gate.
-    private var activated: ValueHandler<ID>?
+    private var activated: [ValueHandler<ID>] = []
 
     /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
     /// dismisses it.
     private var itemStart: ItemDragStart?
-    private var dragged: (@MainActor (ItemDrag<ID>) throws -> Void)?
-    private var dismissal: LayoutDismissal<ID>?
+    private var dragged: [@MainActor (ItemDrag<ID>) throws -> Void] = []
+    private var dismissals: [LayoutDismissal<ID>] = []
 
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
@@ -181,7 +181,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
     /// What is told once the run comes to rest.
-    private var settled: ValueHandler<Parameters>?
+    private var settled: [ValueHandler<Parameters>] = []
 
     /// Whether the layout turns about its middle where it lays out right to left.
     private var mirrors = false
@@ -442,21 +442,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, answering an activation.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.activated = ValueHandler(step: handler)
+        copy.activated.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what an activation does while a run is under way.
     public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
+        copy.activated.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -466,21 +466,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .onSettled { parameters in save(parameters) }
     public func onSettled(_ handler: @escaping @MainActor (Parameters) throws -> Void) -> Self {
         var copy = self
-        copy.settled = ValueHandler(step: handler)
+        copy.settled.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what a rest does while a run is under way.
     public func onSettled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
         var copy = self
-        copy.settled = ValueHandler(run: handler, gate: .own(policy))
+        copy.settled.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSettled(gate: Gate, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
         var copy = self
-        copy.settled = ValueHandler(run: handler, gate: .shared(gate))
+        copy.settled.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -508,13 +508,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, telling the drag.
     public func onItemDragged(_ handler: @escaping @MainActor (ItemDrag<ID>) throws -> Void) -> Self {
         var copy = self
-        copy.dragged = handler
+        copy.dragged.append(handler)
         return copy
     }
 
     /// A view the hand lets go of past `beyond` points `directions` from where it took it - or thrown far enough
     /// that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
-    /// application removes the item then. Let go short of it, the view goes back to its place.
+    /// application removes the item then. Let go short of it, the view goes back to its place. Written again, each
+    /// one the view passed runs, in the order written.
     ///
     ///     .onItemDismissed(.up, beyond: 120) { id in cards.removeAll { $0.id == id } }
     ///
@@ -527,7 +528,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         _ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor (ID) throws -> Void
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(directions: directions, beyond: beyond, handler: ValueHandler(step: handler))
+        copy.dismissals.append(LayoutDismissal(directions: directions, beyond: beyond, handler: ValueHandler(step: handler)))
         return copy
     }
 
@@ -540,8 +541,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .own(policy)))
+        copy.dismissals.append(LayoutDismissal(
+            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .own(policy))))
         return copy
     }
 
@@ -551,8 +552,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .shared(gate)))
+        copy.dismissals.append(LayoutDismissal(
+            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .shared(gate))))
         return copy
     }
 
@@ -582,8 +583,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.translationOrientation, run.ways.count == 1 ? run.ways.first : nil)
             element.describe(MotionLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
-            if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
-            if run.settled != nil { element.destroying.append { run.states.settles.orphan() } }
+            if !run.dismissals.isEmpty { element.destroying.append { run.states.dismissals.orphan() } }
+            if !run.settled.isEmpty { element.destroying.append { run.states.settles.orphan() } }
             if run.moves {
                 element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
                     run.translationUpdated(gesture, moved: moved, velocity: velocity)
@@ -722,7 +723,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             named: named,
             itemStart: itemStart,
             dragged: dragged,
-            dismissal: dismissal,
+            dismissals: dismissals,
             parameters: parameters,
             states: States(
                 held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
@@ -761,9 +762,9 @@ extension MotionLayout: WalkedView {
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns),
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
-            ("followed", followed), ("mask", mask as Any), ("activated", activated as Any),
-            ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled as Any), ("mirrors", mirrors),
+            ("followed", followed), ("mask", mask as Any), ("activated", activated),
+            ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
+            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("mirrors", mirrors),
             ("named", named as Any),
         ]
     }

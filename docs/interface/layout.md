@@ -993,7 +993,9 @@ of the room, and the handler runs once it has left, where the application
 removes the item it names. Short of it, the view goes back. A handler that
 awaits takes a policy, as an event's does - `.onItemDismissed(.up, beyond: 120,
 policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
-ends with the layout.
+ends with the layout. Written more than once - `.up` to archive, `.down` to
+delete - a view let go runs every one whose way and distance it passed, in the
+order written.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn

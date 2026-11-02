@@ -51,10 +51,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var pin: Binding<Int>?
 
     /// What runs when the middle card changes, beside any binding, through its gate.
-    private var moved: ValueHandler<Int>?
+    private var moved: [ValueHandler<Int>] = []
 
     /// What runs when the user activates the card in front, with its identity, through its gate.
-    private var activated: ValueHandler<ID>?
+    private var activated: [ValueHandler<ID>] = []
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.wheel
@@ -160,7 +160,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Returns: the gallery, telling that handler.
     public func onPositionChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         var copy = self
-        copy.moved = ValueHandler(step: handler)
+        copy.moved.append(ValueHandler(step: handler))
         return copy
     }
 
@@ -168,14 +168,14 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// a run is under way.
     public func onPositionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: .own(policy))
+        copy.moved.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPositionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: .shared(gate))
+        copy.moved.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -192,7 +192,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Returns: the gallery, answering its card's activation.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.activated = ValueHandler(step: handler)
+        copy.activated.append(ValueHandler(step: handler))
         return copy
     }
 
@@ -200,14 +200,14 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// does while a run is under way.
     public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
+        copy.activated.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -412,7 +412,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // The activation, answered on the card in front: the press shows, and the card is back at its size, before
         // the activation's own work, which usually builds a page.
-        if let activated {
+        for activated in activated {
             let tapped: ValueEventHandler<ID> = { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
@@ -440,10 +440,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             Watcher(at: asked) { position in
                 if turns.wrappedValue != Double(position) { turns.wrappedValue = Double(position) }
 
-                guard let moved else { return }
-
-                moved.gate.runs(for: positionRuns).start(
-                    { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
+                for moved in moved {
+                    moved.gate.runs(for: positionRuns).start(
+                        { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
+                }
             }
         }
         // The run starts where the position stands, with no journey to it.

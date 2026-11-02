@@ -720,6 +720,36 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(heard, [0], "the card in front alone")
     }
 
+    /// EVERY HANDLER OF A GALLERY'S EVENT RUNS, in the order written: the card in front opened, and the position.
+    func testEveryHandlerOfAGallerysEventRunsInWritingOrder() async throws {
+        var heard: [String] = []
+        let renders = Renders()
+        let position = State(0)
+        func tree() -> Node {
+            gallery(5).position(position.projectedValue)
+                .onItemActivated { heard.append("opened \($0) first") }
+                .onItemActivated(.runConcurrently) { heard.append("opened \($0) second") }
+                .onPositionChanged { heard.append("at \($0) first") }
+                .onPositionChanged(.runConcurrently) { heard.append("at \($0) second") }
+                .node
+        }
+        let shown = laid(renders, tree)
+        let cards = try XCTUnwrap(find(.motionLayout, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
+
+        XCTAssertTrue(renders.fire(cards[0]))
+        for _ in 0..<100 {
+            guard heard.count < 2 else { break }
+            stateUIRunJobs()
+            try? await Task.sleep(nanoseconds: 5_000_000)
+        }
+        XCTAssertEqual(heard, ["opened 0 first", "opened 0 second"])
+
+        position.wrappedValue = 2
+        _ = renders.render(tree())
+        _ = await settle()
+        XCTAssertEqual(heard.suffix(2), ["at 2 first", "at 2 second"])
+    }
+
     /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.

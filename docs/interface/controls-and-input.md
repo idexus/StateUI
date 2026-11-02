@@ -832,7 +832,8 @@ one, or a row of a grid that fills.
 sections may hold equal items - and each with a `.header` and a `.footer`;
 `.header` and `.footer` on the list stand before and after everything.
 `.onEndReached(within:)` hears the user come within so many items of the
-end - once, until they scroll away or the number of items changes - and
+end - once, until they scroll away or the number of items changes; written
+more than once, every handler hears it within the farthest distance named - and
 `.emptyView` stands in the list's place while it has no items.
 
 ### Pull to refresh

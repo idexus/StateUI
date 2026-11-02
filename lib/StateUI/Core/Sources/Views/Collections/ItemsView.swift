@@ -34,9 +34,9 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var selected: ValueHandler<Set<ID>>?
-    private var activated: ValueHandler<ID>?
-    private var endReached: (within: Int, handler: Handler)?
+    private var selected: [ValueHandler<Set<ID>>] = []
+    private var activated: [ValueHandler<ID>] = []
+    private var endReached: (within: Int, handlers: [Handler])?
     private var aimed: Aim<Self>?
 
     /// What the list wears of the pull to refresh, in the order written.
@@ -109,7 +109,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
                 choice.write(ids)
             }
 
-            if let selected {
+            for selected in selected {
                 element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: selected.gate) {
                     guard let identities = MemberValues.carried(
                         EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
@@ -120,7 +120,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
             }
         }
 
-        if let activated {
+        for activated in activated {
             element.node.addHandler(ItemsViewContract.itemActivated.token, gate: activated.gate) {
                 guard let identity = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.itemActivated.name, as: String.self),
@@ -133,7 +133,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
 
         if let endReached {
             element.node.write(ItemsViewContract.endReachedWithin, endReached.within)
-            element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
+            element.node.addHandlers(ItemsViewContract.endReached.token, endReached.handlers)
         }
 
         return AnyView(RefreshWorn.wear(pull, on: element))
@@ -186,7 +186,7 @@ extension ItemsView {
     /// so reports nothing.
     public func onSelectionChanged(_ handler: @escaping @MainActor (Set<ID>) throws -> Void) -> Self {
         var copy = self
-        copy.selected = ValueHandler(step: handler)
+        copy.selected.append(ValueHandler(step: handler))
         return copy
     }
 
@@ -194,14 +194,14 @@ extension ItemsView {
     /// choice does while a run is under way.
     public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
         var copy = self
-        copy.selected = ValueHandler(run: handler, gate: .own(policy))
+        copy.selected.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSelectionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
         var copy = self
-        copy.selected = ValueHandler(run: handler, gate: .shared(gate))
+        copy.selected.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -209,7 +209,7 @@ extension ItemsView {
     /// on a desktop - handed its identity.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.activated = ValueHandler(step: handler)
+        copy.activated.append(ValueHandler(step: handler))
         return copy
     }
 
@@ -217,22 +217,23 @@ extension ItemsView {
     /// says what opening another item does while a run is under way.
     public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
+        copy.activated.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
     /// Hears the user scroll within `within` items of the end - where more
-    /// items are loaded.
+    /// items are loaded. Every handler written hears it, within the farthest
+    /// distance any of them names.
     public func onEndReached(within: Int = 0, _ handler: @escaping @MainActor () throws -> Void) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: Handler(step: handler))
+        copy.endReached = copy.reaching(within, Handler(step: handler))
         return copy
     }
 
@@ -244,7 +245,7 @@ extension ItemsView {
     ///         .onEndReached(.ignoreWhileRunning) { rows += try await nextPage() }
     public func onEndReached(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.endReached = (within: 0, handler: Handler(run: handler, gate: .own(policy)))
+        copy.endReached = copy.reaching(0, Handler(run: handler, gate: .own(policy)))
         return copy
     }
 
@@ -254,15 +255,20 @@ extension ItemsView {
     ///         .onEndReached(within: 5, policy: .ignoreWhileRunning) { rows += try await nextPage() }
     public func onEndReached(within: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .own(policy)))
+        copy.endReached = copy.reaching(within, Handler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onEndReached(within: Int = 0, gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .shared(gate)))
+        copy.endReached = copy.reaching(within, Handler(run: handler, gate: .shared(gate)))
         return copy
+    }
+
+    /// The end heard with `handler` after any written before it, within the farthest distance any of them names.
+    private func reaching(_ within: Int, _ handler: Handler) -> (within: Int, handlers: [Handler]) {
+        (max(within, endReached?.within ?? 0, 0), (endReached?.handlers ?? []) + [handler])
     }
 
     /// A view standing before every item, scrolled with them.

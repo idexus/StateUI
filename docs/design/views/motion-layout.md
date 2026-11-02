@@ -582,8 +582,10 @@ settles into its slot as a changed order would. With `.onItemDismissed`, a
 view the hand took far enough one of its ways - or threw far enough, as a
 throw of the input would carry it - flies on at the hand's speed, no slower
 than the room's length a motion's length, and its item is told once it has
-left the room; the application removes the item then. The handler runs after
-the frame, as a job of the UI thread, never inside the cycle.
+left the room; the application removes the item then. Every dismissal written
+is a way out: the view leaves when it passed one, and each one it passed is
+told, in the order written. The handler runs after the frame, as a job of the
+UI thread, never inside the cycle.
 
 ## A wheel's notch
 

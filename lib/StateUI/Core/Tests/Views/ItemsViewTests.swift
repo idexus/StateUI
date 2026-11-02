@@ -212,6 +212,30 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(ends.values, [true])
     }
 
+    /// Every handler of an event runs, in the order written; the end is heard within the farthest distance written.
+    func testEveryHandlerOfAnEventRunsInWritingOrder() throws {
+        let heard = Received<String>()
+        let chosen = State<Int?>(wrappedValue: nil)
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
+            .selection(chosen.projectedValue)
+            .onSelectionChanged { heard.values.append("chose \($0.sorted()) first") }
+            .onSelectionChanged { heard.values.append("chose \($0.sorted()) second") }
+            .onItemActivated { heard.values.append("opened \($0) first") }
+            .onItemActivated { heard.values.append("opened \($0) second") }
+            .onEndReached(within: 5) { heard.values.append("end first") }
+            .onEndReached(within: 2) { heard.values.append("end second") }.node))
+
+        XCTAssertEqual(list.props[.endReachedWithin], .number(5), "the farthest distance written")
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings(["3"])])
+        renders.fire(try XCTUnwrap(list.events?[.itemActivated]), with: [.string("6")])
+        renders.fire(try XCTUnwrap(list.events?[.endReached]))
+
+        XCTAssertEqual(heard.values, [
+            "chose [3] first", "chose [3] second", "opened 6 first", "opened 6 second", "end first", "end second",
+        ])
+    }
+
     /// Sections name their items apart - two sections may hold equal items - and
     /// each header and footer is an entry of its own.
     func testSectionsNameTheirItemsApart() throws {

@@ -35,6 +35,30 @@ final class LayoutSettleTests: XCTestCase {
         .node
     }
 
+    /// EVERY HANDLER OF THE REST RUNS, in the order written.
+    func testEveryHandlerOfTheRestRunsInWritingOrder() async {
+        let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())
+        func built() -> Node {
+            MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            }
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .motion(.eased(.milliseconds(160)))
+            .onSettled { told.phases.append($0) }
+            .onSettled { told.phases.append($0 + 10) }
+            .node
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(-100, 0))
+        bench.hand(renders, built, .ended)
+        for _ in 0..<80 { bench.cycle() }
+        _ = await settle()
+
+        XCTAssertEqual(told.phases, [1, 11])
+    }
+
     /// LAID OUT AT REST, IT TELLS NOTHING.
     func testLaidOutAtRestItTellsNothing() async {
         let (phase, items, told, renders) = (State(wrappedValue: 0.0), State(wrappedValue: [0, 1, 2, 3]), Told(), Renders())
