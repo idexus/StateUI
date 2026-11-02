@@ -11,7 +11,8 @@
 /// row, and as wide as its column in a grid; a size stated on the item's view
 /// is kept.
 public enum ItemsLayout: Equatable, Sendable, HostRepresentable {
-    /// One item under another, each as wide as the list, `spacing` apart.
+    /// One item under another, each as wide as the list, `spacing` apart; a
+    /// spacing below nought, or not finite, is nought, in every layout.
     case list(spacing: Double = 0)
 
     /// One item beside another, each as tall as the row, `spacing` apart,
@@ -30,16 +31,24 @@ public enum ItemsLayout: Equatable, Sendable, HostRepresentable {
         case grid = 2
     }
 
-    /// The kind, its spacing, then its narrowest item: nought but in a grid.
+    /// The kind, its spacing, then its narrowest item: nought but in a grid - each a length every host reads.
     public var propValue: PropValue {
         switch self {
         case .list(let spacing):
-            return .values([.enumeration(Kind.list.rawValue), .number(spacing), .number(0)])
+            return .values([.enumeration(Kind.list.rawValue), .number(Self.length(spacing)), .number(0)])
         case .row(let spacing):
-            return .values([.enumeration(Kind.row.rawValue), .number(spacing), .number(0)])
+            return .values([.enumeration(Kind.row.rawValue), .number(Self.length(spacing)), .number(0)])
         case .grid(let width, let spacing):
-            return .values([.enumeration(Kind.grid.rawValue), .number(spacing), .number(width)])
+            return .values([
+                .enumeration(Kind.grid.rawValue), .number(Self.length(spacing)), .number(Self.length(width)),
+            ])
         }
+    }
+
+    /// A spacing or a width as a layout reads it: below nought, or not finite, nought.
+    /// Design: docs/design/host/items.md#a-grid
+    @_spi(Host) public static func length(_ value: Double) -> Double {
+        value.isFinite ? max(value, 0) : 0
     }
 
     /// The layout a kind and its numbers name - nil for anything else.

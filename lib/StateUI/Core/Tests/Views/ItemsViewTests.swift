@@ -428,6 +428,15 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertNil(ItemsEntries(propValue: .string("nothing like it")))
     }
 
+    /// A spacing below nought, or not finite, crosses as nought, as a narrowest width does: every host reads it so.
+    func testALayoutCrossesItsLengthsAsNoughtAtLeast() {
+        let crossed = { (layout: ItemsLayout) in ItemsLayout(propValue: layout.propValue) }
+        XCTAssertEqual(crossed(.grid(minimumItemWidth: 100, spacing: -100)), .grid(minimumItemWidth: 100, spacing: 0))
+        XCTAssertEqual(crossed(.grid(minimumItemWidth: .nan, spacing: 4)), .grid(minimumItemWidth: 0, spacing: 4))
+        XCTAssertEqual(crossed(.list(spacing: .nan)), .list(spacing: 0))
+        XCTAssertEqual(crossed(.row(spacing: -.infinity)), .row(spacing: 0))
+    }
+
     /// Each layout crosses as its kind and numbers, and comes back.
     func testALayoutCrossesAndComesBack() {
         for layout: ItemsLayout in [.list(), .list(spacing: 4), .row(spacing: 8), .grid(minimumItemWidth: 120, spacing: 6)] {

@@ -114,7 +114,10 @@ road of its own for it.
 
 `ItemsGrid`: a grid holds as many columns as fit items at least the
 narrowest width, `spacing` apart, and one at least; the columns share what
-is left of the width.
+is left of the width. A spacing or a width below nought, or not finite, is
+nought (`ItemsLayout.length`) - the layout crosses so, and every host reads
+it so - and any numbers count the columns, none narrower than a point, so no
+count traps.
 
 ## A collection without sections
 

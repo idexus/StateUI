@@ -141,4 +141,15 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(ItemsGrid.columns(width: 80, minimumItemWidth: 120, spacing: 8), 1, "one at least")
         XCTAssertEqual(ItemsGrid.columnWidth(width: 400, columns: 3, spacing: 8), 128)
     }
+
+    /// Any numbers count the columns, and none traps: a spacing below nought or not finite is nought, a width not
+    /// finite holds one column, and no column is narrower than a point.
+    func testAGridCountsItsColumnsForAnyNumbers() {
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: -100), 4, "below nought is nought")
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: .nan), 4)
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: .infinity), 4)
+        XCTAssertEqual(ItemsGrid.columns(width: .infinity, minimumItemWidth: 100, spacing: 8), 1)
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 1e-300, spacing: 0), 400, "a point at least")
+        XCTAssertEqual(ItemsGrid.columnWidth(width: 400, columns: 4, spacing: -100), 100)
+    }
 }
