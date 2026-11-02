@@ -128,7 +128,7 @@ extension State {
 
         /// The derived states worked out from this one, by the element and the line that
         /// wrote each conversion - known weakly: the element holds them.
-        var derivations: [PathNumber: Derivation] = [:]
+        var derivations: [DerivationKey: Derivation] = [:]
 
         /// The derived state a conversion written at `site` keeps - made once for the
         /// element being built, then kept while the element holds it.

@@ -232,15 +232,20 @@ whole - a way back that comes and goes stays one call, `back: editing ? { … } 
 nil`, so the derived state stays the same object.
 
 ```text
-  derived state   known to the first source's storage under the element being
-                  built and the call's file, line and column - one number
-                  (PathNumber), spelled nowhere - and held by that element as it
-                  holds its readings: one state per element and line across
-                  renders - the host's tie keeps its number - two views
-                  converting one source on one line keep two, and an element
-                  that leaves takes its own; made with no element being built,
-                  the source holds it, worked out at once - its arithmetic
-                  reads the source, which would otherwise hold what holds it
+  derived state   known to the first source's storage under a key spelled
+                  nowhere (DerivationKey): the element being built and the
+                  call's file, line and column (PathNumber), the identities of
+                  the ForEach rows it stands in - values, compared as values -
+                  and which time that line ran in the build; held by that
+                  element as it holds its readings: one state per use across
+                  renders - the host's tie keeps its number - so two views
+                  converting one source on one line keep two, each row of a
+                  ForEach its own, kept with its row as the rows move, and a
+                  helper called twice two, told apart by its place in the
+                  build as a view without an id is; an element that leaves
+                  takes its own; made with no element being built, the source
+                  holds it, worked out at once - its arithmetic reads the
+                  source, which would otherwise hold what holds it
   sources         held WEAKLY by the conversion
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result

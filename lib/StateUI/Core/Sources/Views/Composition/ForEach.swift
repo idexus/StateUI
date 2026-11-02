@@ -69,8 +69,9 @@ public struct ForEach: Views {
         // The item's identity, unless the author wrote an `.id()` of their own.
         // Design: docs/design/views/builders.md#foreach-keys-are-values
         nodes = items.map { item in
-            var node = content(item).node
-            if node.identity == nil { node.identify(identify(item)) }
+            let identity = identify(item)
+            var node = DerivationScope.row(AnyHashable(identity)) { content(item).node }
+            if node.identity == nil { node.identify(identity) }
             return node
         }
     }
