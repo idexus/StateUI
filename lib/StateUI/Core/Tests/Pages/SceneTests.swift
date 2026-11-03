@@ -786,6 +786,31 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(texts(in: document), ["Document 7"])
     }
 
+    /// A window's session kept past its scene's end refuses its acts once the scene's record is gone too: it is a
+    /// window's, told by its key from the session of no scene, whose acts ask in the window the user is in.
+    func testAKeptSessionOfAnEndedSceneRefusesItsActsOnceTheRecordIsGone() async throws {
+        start(Alone())
+        let renders = Renders()
+        renders.render(tree())
+        weak var ended: SceneRecord?
+        let window: WindowSession
+        do {
+            let record = try scene("1")
+            ended = record
+            window = record.windowSession(try XCTUnwrap(record.windows.first).key)
+            try await window.close()
+        }
+        renders.render(tree(), changed: Renderer.shared.pendingChanges)
+        _ = drainedActs()
+
+        XCTAssertNil(ended, "the ended scene's record is let go")
+        XCTAssertThrowsError(try window.address) { XCTAssertEqual($0 as? WindowError, .noScene) }
+        let refused = await refusal { try await window.hideOnScreenKeyboard() }
+        XCTAssertEqual(refused, .noScene)
+        XCTAssertTrue(drainedActs().isEmpty, "a window's act fails before anything is sent")
+        XCTAssertEqual(try WindowSession().address.scene, Name(""), "the session of no scene asks in the user's window")
+    }
+
     /// Closed by value, a window leaves its scene - and a second close says it is not open.
     func testClosingAWindowByItsValue() async throws {
         Renders().render(tree())

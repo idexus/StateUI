@@ -192,7 +192,9 @@ A window's act names the window by its first two arguments: its scene's key
 and its own, as the tree keys both. A session of no scene - the one a view
 outside every window reads - names none, and its act asks in the window the
 user is in; a session whose scene ended, or whose window closed, throws
-`WindowError` before anything is sent. The host finds the window by the two
+`WindowError` before anything is sent - the scene's record standing or gone,
+as a window's session holds its key and the session of no scene none, which
+is what tells them apart once the record it holds weakly has left. The host finds the window by the two
 keys once, in the host layer; a window that closed while the act waited its
 turn is answered as the user dismissing it does.
 
