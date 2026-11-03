@@ -24,9 +24,10 @@
     }
 
     /// The element holding the keyboard under `root`: the deepest that `holds` it, as its toolkit says whether a
-    /// view holds the keyboard or holds the view that does; nil for none.
+    /// view holds the keyboard or holds the view that does, among everything `root` holds - a sheet an arrangement
+    /// keeps apart from its pages included; nil for none.
     public static func holder(under root: MountedElement, holds: (MountedElement) -> Bool) -> MountedElement? {
-        for child in root.children {
+        for child in root.held {
             if let found = holder(under: child, holds: holds) { return found }
         }
         return holds(root) ? root : nil

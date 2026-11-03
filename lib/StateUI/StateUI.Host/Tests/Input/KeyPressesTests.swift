@@ -36,6 +36,49 @@ final class KeyPressesTests: XCTestCase {
         root.id == .manual(id) ? root : root.children.lazy.compactMap { self.named(id, in: $0) }.first
     }
 
+    /// A navigation stack in a window: a page in it, and a sheet over it holding a page with a field taking the up
+    /// arrow and following its focus - a sheet the stack keeps apart from its pages, as a slot.
+    private func arranged() throws -> (runtime: HostRuntime, stack: MountedElement, field: MountedElement, front: MountedElement) {
+        var field = element("field", .textField, takes: [.upArrow])
+        field.events = .replace([.isFocusedChanged: 5])
+        var body = element("body", .vStack, takes: [])
+        body.children = .arranged([field])
+        var presented = element("presented", .page, takes: [])
+        presented.children = .arranged([body])
+        var sheet = element("sheet", .sheet, takes: [])
+        sheet.children = .arranged([presented])
+        var under = element("under", .page, takes: [])
+        under.children = .arranged([])
+        var stack = element("stack", .navigationStack, takes: [])
+        stack.children = .arranged([under, sheet])
+        var window = element("window", .window, takes: [])
+        window.children = .arranged([stack])
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(window, complete: true)
+        let mounted = try XCTUnwrap(runtime.tree.root?.first(id: .manual("stack")))
+        return (
+            runtime, mounted, try XCTUnwrap(mounted.first(id: .manual("field"))),
+            try XCTUnwrap(mounted.first(id: .manual("presented"))))
+    }
+
+    /// The view holding the keyboard is found among everything an arrangement holds - the sheet it keeps apart from
+    /// its pages included - and a key reaches it from there.
+    func testTheHolderIsFoundInAnArrangementsSlot() throws {
+        let (runtime, stack, field, front) = try arranged()
+        XCTAssertEqual(stack.slots.map(\.type), [.sheet], "the stack keeps the sheet apart from its pages")
+        let holder = KeyPresses.holder(under: stack) { $0 === field }
+        XCTAssertTrue(holder === field, "the field in the sheet holds the keyboard")
+        XCTAssertTrue(KeyPresses.target(of: .upArrow, modifiers: [], focused: holder, front: front) === field)
+        withExtendedLifetime(runtime) {}
+    }
+
+    /// Where the focus stands is told to every element following it, in the sheet an arrangement keeps apart too.
+    func testTheFocusIsReportedIntoAnArrangementsSlot() throws {
+        let (runtime, stack, field, _) = try arranged()
+        stack.reportFocus(in: runtime) { $0 === field }
+        XCTAssertTrue(field.reportedFocus, "the field in the sheet heard where the focus stands")
+    }
+
     func testAKeyReachesTheNearestViewTakingItOutFromTheKeyboard() throws {
         let (_, page) = try page()
         let field = named("field", in: page)
