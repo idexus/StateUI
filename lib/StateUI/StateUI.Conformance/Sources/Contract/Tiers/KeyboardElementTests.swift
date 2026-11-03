@@ -11,7 +11,8 @@
     public static let name = "KeyboardElement"
 
     public static var cases: [ConformanceCase] {
-        Specimens.wearing(KeyboardElementContract.self).flatMap { [keyed($0), moving($0)] } + [keyedThroughTheKeyboard]
+        Specimens.wearing(KeyboardElementContract.self).flatMap { [keyed($0), moving($0)] }
+            + [keyedThroughTheKeyboard, keyedInASheetOverAStack]
     }
 
     /// The keys an element takes reach it as its page's content, with nothing holding the keyboard, and a key it
@@ -106,6 +107,46 @@
             try s.perform(.pressKeys(KeyboardShortcut(.escape, modifiers: [])), on: field)
             s.settle { heard.values == ["field true", "stack true"] }
             s.expect(heard.values, ["field true", "stack true"], "the stack holding it takes Escape")
+        }
+    }
+
+    /// A key reaches the field holding the keyboard in a sheet over a navigation stack - a sheet the stack keeps
+    /// apart from its pages - as it reaches one on a page.
+    @MainActor
+    static var keyedInASheetOverAStack: ConformanceCase {
+        ConformanceCase("aKeyReachesTheFieldHoldingTheKeyboardInASheetOverAStack", proves: [
+            Covered(KeyboardElementContract.keyPressed, on: "TextField"),
+        ], needs: [
+            Covered(SheetContract.self), Covered(NavigationStackContract.self),
+            Covered(FocusElementContract.focus, on: "TextField"),
+        ]) { s in
+            let heard = Received<Key>()
+            let shows = State(wrappedValue: false)
+            s.start {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Under")
+                } destination: { _ in
+                    Text("Next")
+                }
+                .sheet(isPresented: shows.projectedValue) {
+                    VStack {
+                        TextField("")
+                            .width(200)
+                            .onKeyPressed([.upArrow]) { heard.values.append($0.key) }
+                            .id("field")
+                    }
+                    .padding(24)
+                }
+            }
+            shows.wrappedValue = true
+            try s.settle { try s.isShown("field") }
+            let field = try s.element("field")
+
+            try s.perform(.focus, on: field)
+            try s.settle { try s.focused(field) }
+            try s.perform(.pressKeys(KeyboardShortcut(.upArrow, modifiers: [])), on: field)
+            s.settle { heard.values == [.upArrow] }
+            s.expect(heard.values, [.upArrow], "the field in the sheet holds the keyboard, so its arrow reaches it")
         }
     }
 }
