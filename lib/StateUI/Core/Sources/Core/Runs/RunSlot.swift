@@ -64,6 +64,8 @@ final class RunSlot {
         }
 
         entry.task = task
+        // Superseded in its first step, before the task was in hand: cancelled as it comes to hand.
+        if run.superseded { task.cancel() }
         return task
     }
 

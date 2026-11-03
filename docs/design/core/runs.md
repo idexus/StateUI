@@ -130,7 +130,10 @@ or leaves the tree; an orphaned run still waiting its turn never starts, and
 its task ends. Its task
 is cancelled, so `Task.sleep` and whatever else checks cancellation ends it,
 and a superseded run ending in `CancellationError` is not reported; another
-error it ends in is refused, as the rest of what it asks of the host is. An element
+error it ends in is refused, as the rest of what it asks of the host is. A run
+superseded in its first step - before `RunSlot.start` has its task in hand: a
+task started through the same `.cancelPrevious` gate inside it, or its own
+render taking its element out - is cancelled as the task comes to hand. An element
 leaving cancels in one order every time - its events' runs by the events'
 names, then what its walk runs in the order begun - so what a cancellation
 handler does comes in that order too.

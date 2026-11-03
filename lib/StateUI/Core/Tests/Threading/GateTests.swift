@@ -625,6 +625,46 @@ final class GateTests: XCTestCase {
         XCTAssertEqual(found.wrappedValue, "task", "the click's late write overwrote the task's")
     }
 
+    /// A task started through a `.cancelPrevious` gate inside another's first step supersedes that run before its
+    /// task is in hand: the task is cancelled as it comes to hand, so what checks cancellation ends, and the gate is
+    /// free again.
+    func testARunSupersededInItsFirstStepIsCancelled() async throws {
+        let latch = Latch()
+        let search = Gate(.cancelPrevious)
+        var second: Task<Void, Never>?
+
+        let first = Task(gate: search) {
+            second = Task(gate: search) {}
+            await latch.wait()
+        }
+
+        XCTAssertTrue(first.isCancelled, "the run superseded in its first step was not cancelled")
+        latch.open()
+        await first.value
+        await second?.value
+        XCTAssertFalse(search.isBusy)
+    }
+
+    /// A handler whose own render takes its element out in its first step is orphaned before its task is in hand,
+    /// and resumes cancelled all the same.
+    func testAHandlerWhoseElementLeftInItsFirstStepIsCancelled() async throws {
+        let latch = Latch()
+        let gate = Gate(.ignoreWhileRunning)
+        var cancelled: Bool?
+        let renders = Renders()
+        let patch = renders.render(Button("Leave").onClicked(gate: gate) {
+            renders.render(Text("gone").node)
+            await latch.wait()
+            cancelled = Task.isCancelled
+        }.node)
+
+        renders.fire(try XCTUnwrap(patch.events?["clicked"]))
+        latch.open()
+        try await waitUntil { cancelled != nil }
+        XCTAssertEqual(cancelled, true, "the run orphaned in its first step was not cancelled")
+        XCTAssertFalse(gate.isBusy)
+    }
+
     /// Tasks through a gate that waits run one after another, in the order they were started, and the gate is busy
     /// while one waits.
     func testTasksThroughAWaitingGateRunInTheirOrder() async throws {
