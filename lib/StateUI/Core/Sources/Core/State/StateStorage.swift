@@ -133,14 +133,15 @@ extension State {
         /// Design: docs/design/core/state.md#a-state-has-one-shape
         private(set) var journeyed = false
 
-        /// Puts the value there - where it is, where it is going, standing still; for a
-        /// plain value, a write.
+        /// Puts the value there - where it is, where it is going, standing still - and keeps it, as every road a
+        /// value comes in by does; for a plain value, a write.
         func snap(_ newValue: Value) {
             if let hostSnap {
                 themed = Self.wearsTheTheme(newValue) ? newValue : nil
                 hostSnap(newValue)
+                keep?(newValue)
             } else {
-                value = newValue
+                write(newValue)
             }
         }
 
@@ -262,12 +263,18 @@ extension State {
             #if DEBUG
             HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
             #endif
-            guard HandlerRun.admits("a write of `\(origin ?? "a state")`") else { return false }
-            if let why = refuses?(value) {
-                complain(why)
-                return false
-            }
-            return true
+            return HandlerRun.admits("a write of `\(origin ?? "a state")`") && admits(value)
+        }
+
+        /// Whether the state takes `value` - asked on every road a value comes in by, before it lands: a value
+        /// refused is said once and lands nowhere.
+        /// Design: docs/design/core/state.md#kept-state
+        @usableFromInline
+        func admits(_ value: Value) -> Bool {
+            guard let why = refuses?(value) else { return true }
+
+            complain(why)
+            return false
         }
 
         /// Why a state refuses a value it is handed - said once, nothing lands - or nil; set once, as `keep` is.
@@ -381,7 +388,12 @@ extension State.Storage where Value: Walked {
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
                     // The destination moved - a drag, a press: every reader is asked, and a
-                    // kept state keeps where it is going.
+                    // kept state keeps where it is going. One the state refuses is put back where
+                    // it stood, standing still, which the host hears as any write.
+                    guard self?.admits(now.destination) ?? true else {
+                        self?.hostSnap?(known.destination)
+                        return
+                    }
                     known.destination = now.destination
                     self?.themed = nil
                     self?.askForRender()
@@ -542,12 +554,16 @@ extension State.Storage where Value: StateValue {
                 Renderer.shared.board.write(bytes, to: made)
             }
 
-            // A host write ends where this side's do, the storage deciding by its readers.
+            // A host write ends where this side's do, the storage deciding by its readers; a
+            // value it refuses is put back, which the host hears as any write.
             made.told = { [weak self, unowned made] _ in
                 let value = Self.lifted(from: made)
                 let now = StateImage.bytes(of: value.carried(in: .current))
 
                 guard now != known.bytes else { return }
+                guard self?.admits(value) ?? true else {
+                    return Renderer.shared.board.write(known.bytes, to: made)
+                }
 
                 known.bytes = now
                 self?.themed = nil

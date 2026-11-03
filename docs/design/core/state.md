@@ -313,8 +313,10 @@ a host shows nothing of them rather than trapping.
 
 `Binding.land` writes a report - a value the platform measured or the user
 moved - so that it lands where it is rather than animating there: value,
-destination and a speed of nought together. The state's readers are asked as
-for every write. A landed value is not saved: a measurement is not a setting.
+destination and a speed of nought together. It is a value coming in like any
+other: admitted first (`Storage.admits`), the state's readers asked, and the
+storage's `keep` run - a window's value snapped to is the value the window
+is about.
 
 ## Kept state
 
@@ -356,11 +358,17 @@ theme and accent, which reach the host as the acts that set them. A control
 handed `application.$colorScheme` writes the state, and the host is told as if
 the application had assigned it.
 
-A state may refuse a value before it lands - the storage's `refuses`, asked on
-the same roads once the run's admission is answered, with a setter that cannot
-throw: the refusal is said once, and the state, its keep and its readers stand
-as they were. A window's value refuses one another window of its kind is open
-for (scenes.md).
+A state may refuse a value before it lands - the storage's `refuses`, asked
+through one door, `Storage.admits`, on every road a value comes in by: a
+write and a post (`admitsWrite`, once the run's admission is answered), a
+movement (`Journey.send`, which starts no journey), a landing
+(`Binding.land`), and the host's report. A setter cannot throw, so the
+refusal is said once, and the state, its keep and its readers stand as they
+were. The host's report is on the board before the storage hears it, so a
+reported value the state refuses is put back - the bytes it last knew, a
+journey's known destination landed still - which the host hears at the next
+cycle as any write: its control returns to the value that stands. A window's
+value refuses one another window of its kind is open for (scenes.md).
 
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key

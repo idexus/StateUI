@@ -177,7 +177,9 @@ A scene declares its windows three ways:
   receives a `Binding`, so the same window can be retargeted without replacing
   its session; a value another window of the kind is open for is refused and
   said once, as `openWindow` refuses it - one window per value, whoever
-  writes. A kind with a value opens only with a value of its type,
+  writes: a handler, a post, a movement or a snap of the binding's journey,
+  or the control the host reports into, which is put back to the window's
+  value. A kind with a value opens only with a value of its type,
   `application.openWindow(.kind, value: id)`, and a kind of no value -
   `WindowType<Void>` - only without one: the compiler refuses the other.
 

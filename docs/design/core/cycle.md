@@ -96,7 +96,11 @@ value, which the host reads as a jump. A report naming every lane may change
 the value's length, as a text does.
 
 A Swift host reports a journey by its parts (`HostJourneyUpdate`): a frame is
-value and velocity; aiming, stopping and landing add the destination.
+value and velocity; aiming, stopping and landing add the destination. The
+storage hears the report once the board holds it; a value or a destination
+the state refuses (state.md, kept state) it puts back, and the next cycle
+hands the host the put-back as any write - a frame of value and velocity is
+no new destination and is never refused.
 
 A journey's report leaves every lane written since the host last read it. The
 host speaks of the journey it was handed: a travel landing in the frame after a

@@ -211,6 +211,9 @@ public struct Journey<Value: Walked> {
             return Arrival(at: false)
         }
 
+        // A destination the state refuses is no journey.
+        guard storage.admits(target) else { return Arrival(at: false) }
+
         // Nothing animates it, or an engine does: the destination is written through the
         // state and it arrives at once.
         // Design: docs/design/core/journeys.md#moving-and-waiting
@@ -282,9 +285,10 @@ public struct Journey<Value: Walked> {
         lanes.value[keyPath: part] = target
         lanes.destination[keyPath: part] = target
         lanes.velocity[keyPath: part] = 0
+        guard storage.admits(lanes.destination) else { return }
+
         storage.lay([.value, .destination, .velocity], of: lanes)
-        storage.noteDestination(lanes.destination)
-        storage.askForRender()
+        storage.moved(to: lanes.destination)
     }
 
     /// Stops an animation where it stands; whoever waits on it hears it did not run

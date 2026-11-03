@@ -218,10 +218,12 @@ extension Binding where Value: Walked {
 
 extension Binding {
     /// Writes a report - a value the platform measured or the user moved - so it
-    /// lands where it is: value, destination and a still speed together. A landed
-    /// value is not saved.
+    /// lands where it is: value, destination and a still speed together. Admitted
+    /// and kept as any write is.
     /// Design: docs/design/core/state.md#a-write-that-lands
     func land(_ value: Value) {
+        guard storage.admits(value) else { return }
+
         storage.snap(value)
         storage.askForRender()
     }

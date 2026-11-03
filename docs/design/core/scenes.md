@@ -122,11 +122,13 @@ text the platform keeps - so a write lands the same way whoever makes it: the
 view, a control the binding is handed to, the host. The scene reads what it has
 open and builds the window again; its key stays, so it is the same window about
 another value. A value another window of the kind is open for is refused on the
-same roads, before it lands (the storage's `refuses`, state.md): a kind has one
+same roads, before it lands (the storage's `refuses`, asked by `admits` on
+every road, state.md) - a write, a post, a movement, a landing, the host's
+report of what the user typed or stepped, which is put back: a kind has one
 window per value whoever writes, as `openWindow` refuses it, and a binding's
 write cannot throw, so the refusal is said once and the window stays about its
-own value, written down as it was - the state, the window's record and the
-text the platform keeps never part.
+own value, written down as it was - the state, the window's record, the
+text the platform keeps and the control carrying the value never part.
 
 ## Sessions
 

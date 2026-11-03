@@ -78,7 +78,9 @@ the host is told at the first crossing and cannot be told again.
 law and one without (`move(to:)`, under the value's own), and no optional
 law: `.none` written there is always the law that does not move, which a law
 that defaults to nil would read as "none given". A move is a write of the
-destination: the state reads the target at once, its readers are built again
+destination: admitted as one (`Storage.admits`, state.md - a destination the
+state refuses is no journey, and the arrival answers false), the state reads
+the target at once, its readers are built again
 and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
 the journey the host walks is the move's, on its law, never a second one on the
 value's own. A stop, in turn, comes back as a write of where the value stood:
