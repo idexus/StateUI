@@ -393,7 +393,8 @@ about it crosses to the host.
   .environment(obj)   stored on the node, outside the patch
   the differ          keeps a stack of provided objects as it walks, in both
                       walks, and fills each @Environment slot BEFORE the body
-                      builds; refilled on every build, never adopted
+                      builds; refilled on every build - to nothing where no
+                      provider stands any more - and never adopted
   invalidation        untouched: reading a provided object's @State records the
                       read as for any object; the provider only passes a
                       reference, so only replacing the object rebuilds it

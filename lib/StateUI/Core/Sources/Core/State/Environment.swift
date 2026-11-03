@@ -11,8 +11,8 @@ protocol EnvironmentSlot: AnyObject {
     /// The type this slot resolves, as the identity the scope is keyed by.
     var wants: ObjectIdentifier { get }
 
-    /// Hands the slot the nearest provided object of its type.
-    func fill(_ object: AnyObject)
+    /// Hands the slot the nearest provided object of its type - nothing, where no ancestor provides one any more.
+    func fill(_ object: AnyObject?)
 
     /// What it was handed, or nothing - what `Input.slot` compares.
     var filled: AnyObject? { get }
@@ -127,8 +127,8 @@ extension Environment: EnvironmentSlot {
 
     var filled: AnyObject? { resolved }
 
-    /// Takes the resolved object, found under this slot's key.
-    func fill(_ object: AnyObject) {
+    /// Takes the resolved object, found under this slot's key - or nothing, so a provider that left is not kept.
+    func fill(_ object: AnyObject?) {
         resolved = object
     }
 }

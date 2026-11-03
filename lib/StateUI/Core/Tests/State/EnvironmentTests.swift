@@ -87,6 +87,25 @@ private struct VisitButton: View {
     }
 }
 
+/// Whether a peek reads its environment - off, so a test can look at the slot after the provider left without
+/// the read reporting it.
+@MainActor
+private final class Peeking {
+    var reads = true
+}
+
+/// A reader that reads only while told to, and shows its slot.
+private struct Peek: View {
+    let peeking: Peeking
+    @Environment var session: Session
+
+    var slot: AnyObject? { _session.filled }
+
+    var body: some View {
+        AnyView(node: label(peeking.reads ? session.name : "-"))
+    }
+}
+
 /// A handler handing on one property of a provided object: `session.$name`,
 /// the `Binding` of the `@State` the class declares.
 private struct RenameButton: View {
@@ -275,6 +294,25 @@ final class EnvironmentTests: XCTestCase {
 
         let patch = renders.revisit(changed: changed)
         XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("visits 1"))
+    }
+
+    /// A slot keeps no provider from a walk before: rendered again with none, a kept view value holds nothing, and
+    /// the provider that left is released.
+    func testAProviderThatLeftIsNotKeptByTheSlot() {
+        let renders = Renders(), peeking = Peeking()
+        let peek = Peek(peeking: peeking)
+        var session: Session? = Session()
+        weak let gone = session
+
+        renders.render(stack([peek.environment(session!).node], id: "root"))
+        XCTAssertTrue(peek.slot === session)
+
+        peeking.reads = false
+        renders.render(stack([peek.node], id: "root"))
+        session = nil
+
+        XCTAssertNil(peek.slot, "a slot nobody provides for holds nothing")
+        XCTAssertNil(gone, "the provider that left is released")
     }
 
     func testAProvidedObjectsStateIsHandedOnByItsOwnBinding() {
