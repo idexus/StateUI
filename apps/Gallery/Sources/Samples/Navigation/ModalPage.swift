@@ -17,6 +17,10 @@ struct ModalPage: View {
     @State private var presentsAnother = false
     @State private var presentsStack = false
 
+    /// What the field says, and which of the two words the arrows mark.
+    @State private var query = ""
+    @State private var mark = 0
+
     var body: some View {
         VStack {
             SectionTitle("Over everything")
@@ -30,6 +34,18 @@ struct ModalPage: View {
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
+
+            // The field holds the keyboard in the sheet; the stack holding it takes the arrows.
+            VStack {
+                TextField($query)
+                    .placeholder("Type here: Up and Down move the mark")
+
+                Text(mark == 0 ? "▸ One    Two" : "One    ▸ Two")
+                    .fontSize(13)
+                    .horizontalTextAlignment(.center)
+            }
+            .spacing(6)
+            .onKeyPressed([.upArrow, .downArrow]) { press in mark = press.key == .upArrow ? 0 : 1 }
 
             Button("Close")
                 .horizontalAlignment(.center)

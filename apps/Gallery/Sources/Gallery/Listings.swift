@@ -97,6 +97,10 @@ enum Listings {
         /// it was built.
         @State private var says = "Press a button, and it says which view it reached."
 
+        /// Whether the first aim is on the second field too - on two views, which
+        /// an act aimed through it refuses, until it is on one again.
+        @State private var both = false
+
         var body: some View {
             VStack {
                 // `says` is written by the handlers and read here, so this is the
@@ -104,23 +108,32 @@ enum Listings {
                 // and an aim, neither of which reads anything.
                 DebugInfoLabel()
 
-                TextField($text)
-                    .placeholder("The first field")
-                    .aim(field)
+                // The first field is a view of its own, handed the aim and the text:
+                // nothing it holds changes as this page builds again, so it is
+                // carried - and keeps the aim on its field all the same.
+                AimedField(aim: field, text: $text)
 
                 TextField()
                     .placeholder("The second field")
-                    .aim(note)
+                    .aim(both ? field : note)
+
+                Switch($both)
+                    .text("The first aim on the second field too")
 
                 HStack {
                     // Printing an aim says where it is: the element identity the
                     // differ settled - "#12" - or the name an .id() gave it. Read
                     // in the HANDLER, because the walk fills it after the body
-                    // that describes the view was built.
+                    // that describes the view was built. On two views, the act
+                    // throws before anything is sent.
                     Button("Focus the first")
                         .onClicked(.ignoreWhileRunning) {
-                            try await field.focus()
-                            says = "focused \(field)"
+                            do {
+                                try await field.focus()
+                                says = "focused \(field)"
+                            } catch {
+                                says = "\(error)"
+                            }
                         }
 
                     Button("Focus the second")
@@ -139,6 +152,21 @@ enum Listings {
                     }
 
                 Text(says)
+            }
+        }
+        """#,
+        "AimSample.field": #"""
+        // Sources/Samples/State/AimSample.swift
+        /// The first field: handed the page's aim and its text, so the page building
+        /// again carries it - and the aim stays on the field it was put on.
+        private struct AimedField: View {
+            let aim: Aim<TextField>
+            @Binding var text: String
+
+            var body: some View {
+                TextField($text)
+                    .placeholder("The first field")
+                    .aim(aim)
             }
         }
         """#,
@@ -4491,6 +4519,12 @@ enum Listings {
 
         @State private var width = 220.0
 
+        // The rectangle fed into a state: the first, or the second while the
+        // switch says so. A state handed over reads it as it is handed over.
+        @State private var first = Rect(0, 0, 0, 0)
+        @State private var second = Rect(0, 0, 0, 0)
+        @State private var feedsSecond = false
+
         var body: some View {
             VStack {
                 // `slot`, `window` and `safe` are read in these braces - the three
@@ -4527,11 +4561,18 @@ enum Listings {
                     .onFrameChanged { slot = $0 }
                     .onFrameChanged(in: .global) { window = $0 }
                     .onFrameChanged(in: .safeArea) { safe = $0 }
+                    // Fed one way into a state, with no body reading it.
+                    .frame(feedsSecond ? $second : $first)
                 }
 
                 Slider($width)
                     .minimum(140)
                     .maximum(340)
+
+                Switch($feedsSecond)
+                    .text("Feed the rectangle into the second state")
+
+                Text("first · \(Int(first.width)) × \(Int(first.height))     second · \(Int(second.width)) × \(Int(second.height))")
 
                 // Where the panel sits, in three spaces. The first is against the
                 // tinted box above, which is why that box is drawn at all.
@@ -7462,6 +7503,10 @@ enum Listings {
             @State private var presentsAnother = false
             @State private var presentsStack = false
 
+            /// What the field says, and which of the two words the arrows mark.
+            @State private var query = ""
+            @State private var mark = 0
+
             var body: some View {
                 VStack {
                     SectionTitle("Over everything")
@@ -7470,6 +7515,15 @@ enum Listings {
                         .fontWeight(.bold)
 
                     Text("Present a stack: its bar comes with it.")
+
+                    // The field holds the keyboard in the sheet; the stack holding it takes the arrows.
+                    VStack {
+                        TextField($query)
+                            .placeholder("Type here: Up and Down move the mark")
+
+                        Text(mark == 0 ? "▸ One    Two" : "One    ▸ Two")
+                    }
+                    .onKeyPressed([.upArrow, .downArrow]) { press in mark = press.key == .upArrow ? 0 : 1 }
 
                     Button("Close")
                         .horizontalAlignment(.center)

@@ -18,6 +18,10 @@ struct AimSample: SampleContent, ExampleContent {
     /// differ fills an aim as it WALKS, which is after the body that would read
     /// it was built.
     @State private var says = "Press a button, and it says which view it reached."
+
+    /// Whether the first aim is on the second field too - on two views, which
+    /// an act aimed through it refuses, until it is on one again.
+    @State private var both = false
     // listing: end
 
     static let id = "aim"
@@ -32,27 +36,35 @@ struct AimSample: SampleContent, ExampleContent {
             // and an aim, neither of which reads anything.
             DebugInfoLabel()
 
-            TextField($text)
-                .accessibilityIdentifier("aim.first")
-                .accessibilityLabel("The first field")
-                .placeholder("The first field")
-                .aim(field)
+            // The first field is a view of its own, handed the aim and the text:
+            // nothing it holds changes as this page builds again, so it is
+            // carried - and keeps the aim on its field all the same.
+            AimedField(aim: field, text: $text)
 
             TextField()
                 .accessibilityIdentifier("aim.second")
                 .accessibilityLabel("The second field")
                 .placeholder("The second field")
-                .aim(note)
+                .aim(both ? field : note)
+
+            Switch($both)
+                .accessibilityIdentifier("aim.both")
+                .text("The first aim on the second field too")
 
             HStack {
                 // Printing an aim says where it is: the element identity the
                 // differ settled - "#12" - or the name an .id() gave it. Read
                 // in the HANDLER, because the walk fills it after the body
-                // that describes the view was built.
+                // that describes the view was built. On two views, the act
+                // throws before anything is sent.
                 Button("Focus the first")
                     .onClicked(.ignoreWhileRunning) {
-                        try await field.focus()
-                        says = "focused \(field)"
+                        do {
+                            try await field.focus()
+                            says = "focused \(field)"
+                        } catch {
+                            says = "\(error)"
+                        }
                     }
 
                 Button("Focus the second")
@@ -82,6 +94,11 @@ struct AimSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
+            Text("Put the first aim on the second field too: focusing the first says the aim is on two views. "
+                + "Take it off again, and the first field - carried all along - is the aim's once more.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Text("What an author holds is declared, one way for each kind. A value is "
                 + "@State, which the modifier that shows it also animates through its $ "
                 + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
@@ -114,3 +131,20 @@ struct AimSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 }
+
+// listing: AimSample.field
+/// The first field: handed the page's aim and its text, so the page building
+/// again carries it - and the aim stays on the field it was put on.
+private struct AimedField: View {
+    let aim: Aim<TextField>
+    @Binding var text: String
+
+    var body: some View {
+        TextField($text)
+            .accessibilityIdentifier("aim.first")
+            .accessibilityLabel("The first field")
+            .placeholder("The first field")
+            .aim(aim)
+    }
+}
+// listing: end

@@ -2,7 +2,7 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift fa38044121b2ffbd
-AimSample.swift 8f3ae752a74e34bf
+AimSample.swift 0eb04dbe74843045
 AnalogClockSample.swift b812972d23ed6c3e
 AnimatedInputSample.swift c8318a56dc2830ce
 AnimatedPropertySample.swift 8f5793298a0bd27e
@@ -47,7 +47,7 @@ FillSample.swift 16318f8118642298
 FoundationProbeSample.swift fcf69f5bc9919555
 GalleryViewSample.swift c39c4b4fe216aa69
 GateSample.swift d61b45a8fb209a3d
-GeometryReaderSample.swift 4e6226814b27d935
+GeometryReaderSample.swift bde5015fe11d8983
 GridSample.swift ab50747c056b3832
 HTTPRequestSample.swift 053e4f95d17e957d
 HoldSample.swift 3179a83bed36f2d7
@@ -81,7 +81,7 @@ MainQueueSample.swift 142b7947497fae78
 MapSample.swift 883d9aaf4c4031bb
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
-ModalSample.swift 28493152bcbfb7b6
+ModalSample.swift 5a8a3d2f56fa04f1
 MotionLayoutSample.swift a0d71ab1bcdc3de9
 MotionSample.swift 484c5ee826f9f851
 MultiWindowSample.swift 593d7a7dd9609e7f
