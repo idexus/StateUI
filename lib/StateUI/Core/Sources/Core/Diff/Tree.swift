@@ -29,15 +29,20 @@
     }
 }
 
+/// An `@Environment` slot as a view was placed with it: the slot, and the provider it resolved to at that place.
+/// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+typealias PlacedSlot = (slot: ObjectIdentifier, object: ObjectIdentifier?)
+
 /// A composed view an element was built by: its type, its walk, its state boxes by path, what it was built with,
-/// the branch its content root stood in - and what the clean walk builds it again from: the node that held it, what
-/// its body read and the derived states it made.
+/// its slots as placed, the branch its content root stood in - and what the clean walk builds it again from: the
+/// node that held it, what its body read and the derived states it made.
 /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
 typealias BuiltView = (
     type: KeyName,
     walk: ViewWalk,
     boxes: [(path: PathNumber, box: StateBox)],
     inputs: [(path: PathNumber, input: Input)],
+    slots: [PlacedSlot],
     branch: PathNumber?,
     placeholder: Node,
     reads: Set<ObjectIdentifier>,
@@ -81,6 +86,10 @@ final class RenderedNode {
     /// only the element read what moved; nil for an element that reads nothing itself.
     /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
     var expanded: Node?
+
+    /// Whether its view was refused its place - an anchor of no view, asked again by every walk.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+    var refused = false
 
     /// What the element itself read of a state it was handed - none of it a page value.
     var ownReads: Set<ObjectIdentifier> = []

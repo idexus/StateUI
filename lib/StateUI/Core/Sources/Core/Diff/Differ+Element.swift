@@ -164,8 +164,10 @@ extension Differ {
                 // the second place shows nothing, said once. After the walk is taken, so a view built as it was
                 // is walked by no mirror for this.
                 // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-                if let refusal = place(stateful, at: id) {
-                    complain(refusal)
+                let slots = resolution(of: stateful)
+                guard place(slots, at: id) else {
+                    complain(refusal(of: stateful))
+                    pass.refused = true
                     node = Node(contract: AnchorContract.self)
                     break
                 }
@@ -188,7 +190,7 @@ extension Differ {
 
                 pass.views.append((
                     type: stateful.viewType, walk: stateful.walk, boxes: stateful.boxes, inputs: stateful.inputs,
-                    branch: nil, placeholder: node, reads: [], derived: []))
+                    slots: slots, branch: nil, placeholder: node, reads: [], derived: []))
 
                 // Slots resolve against everything provided so far, before the body builds.
                 stateful.resolve(from: scope)
@@ -320,30 +322,47 @@ extension Differ {
         return nil
     }
 
-    /// Marks `stateful`'s slots as placed at `id` this walk, with what each resolves to here, or says why they may
-    /// not be: one of them was placed at another element this walk - outside the elements this one is in, so no
-    /// holder of the view - and resolved to another object there.
-    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-    private func place(_ stateful: Node.Stateful, at id: ElementID) -> String? {
-        let resolved = stateful.slots.map { slot in
-            (slot: ObjectIdentifier(slot), object: scope.last { $0.key == slot.wants }.map { ObjectIdentifier($0.object) })
+    /// What each `@Environment` slot of `stateful` resolves to where the walk stands.
+    private func resolution(of stateful: Node.Stateful) -> [PlacedSlot] {
+        stateful.slots.map { slot in
+            (ObjectIdentifier(slot), scope.last { $0.key == slot.wants }.map { ObjectIdentifier($0.object) })
         }
+    }
 
-        for (slot, object) in resolved {
+    /// Marks `slots` as standing at `id` this walk, with what each resolved to, or places none: one of them stood
+    /// this walk at another element the walk is not inside - so no holder of the view - resolving to another object.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+    private func place(_ slots: [PlacedSlot], at id: ElementID) -> Bool {
+        for (slot, object) in slots {
             if let earlier = placed[slot], earlier.element != id, !standing.contains(earlier.element),
                 earlier.object != object {
-                let name = Inspection.short(stateful.viewType.name)
-                return "A \(name) value stands in two places under different environments, so the second shows "
-                    + "nothing: its @Environment belongs to the place it stands in. Make a value for each place - "
-                    + "write \(name)() where each stands."
+                return false
             }
         }
 
-        for (slot, object) in resolved {
+        for (slot, object) in slots {
             placed[slot] = (id, object)
         }
 
-        return nil
+        return true
+    }
+
+    /// Places the slots of `views`, standing as they were built, in order up to one the placing refuses: how many
+    /// stand.
+    func stand(_ views: ArraySlice<BuiltView>, at id: ElementID) -> Int {
+        for (step, view) in views.enumerated() where !place(view.slots, at: id) {
+            return step
+        }
+
+        return views.count
+    }
+
+    /// What the library says of a value refused its second place.
+    private func refusal(of stateful: Node.Stateful) -> String {
+        let name = Inspection.short(stateful.viewType.name)
+        return "A \(name) value stands in two places under different environments, so the second shows "
+            + "nothing: its @Environment belongs to the place it stands in. Make a value for each place - "
+            + "write \(name)() where each stands."
     }
 
     /// Which of `rendered`'s views a walk for `changed` builds from: the outermost whose own body read what moved; the
@@ -356,10 +375,12 @@ extension Differ {
         return rendered.expanded != nil ? rendered.views.count : max(rendered.views.count - 1, 0)
     }
 
-    /// The views of `rendered` outside its view `start` standing as they were built - their state, what they read and
-    /// made, the environments they provided: the node the walk goes on from, the one holding that view.
+    /// The views of `rendered` outside its view `asked` standing as they were built - their state, their slots as
+    /// placed, what they read and made, the environments they provided: the node the walk goes on from, the one
+    /// holding that view - or holding the first view whose slots the placing refuses, which the walk refuses.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
-    private func standOutside(_ pass: ElementPass, _ rendered: RenderedNode, through start: Int) -> Node {
+    private func standOutside(_ pass: ElementPass, _ rendered: RenderedNode, through asked: Int) -> Node {
+        let start = stand(rendered.views.prefix(asked), at: pass.id)
         pass.views = Array(rendered.views.prefix(start))
         pass.seen = rendered.seen
         pass.builtFrom = start
@@ -741,6 +762,7 @@ extension Differ {
         )
         result.identity = pass.identity
         result.expanded = pass.expanded
+        result.refused = pass.refused
         result.enablement = pass.enablement
         result.branch = pass.branch
         result.ownReads = pass.ownReads
@@ -991,6 +1013,9 @@ final class ElementPass {
 
     /// The element its composed views made, kept where it reads a state itself.
     var expanded: Node?
+
+    /// Whether its view was refused its place.
+    var refused = false
 
     /// What the element itself read of a state it was handed.
     var ownReads: Set<ObjectIdentifier> = []

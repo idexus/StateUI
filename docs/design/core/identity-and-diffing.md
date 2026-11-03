@@ -177,19 +177,29 @@ nearest provider of the place it stands in, and a handler the body captured
 reads it later with no place to ask - so one value under two providers of its
 type would have both places read the one filled last, the first place's
 button writing the second place's model. The walk records, by the slot, which
-element it was placed at and what it resolved to there (`Differ.placed`,
-forgotten as a walk begins); a slot met again at another element, outside
+element it stands at and what it resolved to there (`Differ.placed`,
+forgotten as a walk begins): a view built places its slots as they resolve
+where it stands, and a view standing as it was - carried, or outside the
+view a clean walk builds again - places them as they were built (the
+`slots` of its `BuiltView`), so every place in the tree is on record in the
+tree's order, built or kept. A slot met again at another element, outside
 the elements the walk is inside, resolving to another object, refuses the
 placing: the second place shows nothing - an anchor of no view - and the
-library says so once, naming the type. Make a value for each place, where
-each stands. Under one provider, or none, the places read the same object
-and both stand.
+library says so once, naming the type. The tree's order decides, whichever
+walk placed the value first: a kept place met after a built one it
+disagrees with is built again, from that view, and refused there. Make a
+value for each place, where each stands. Under one provider, or none, the
+places read the same object and both stand.
+
+A refused place is asked again by every walk, built again from its
+placeholder whether or not it read what moved (`RenderedNode.refused`): once
+the first place leaves, or comes to the same provider, the second stands.
 
 A view a body holds in a property is one lineage, not two places: the
 holder's walk meets the held view's slots under the holder's paths before the
 held view's own place does, which stands inside the holder - so a placing
-checks the elements the walk is inside (`Differ.standing`), not the last
-claimant alone.
+checks the elements the walk is inside (`Differ.standing`, kept by the clean
+walk too), not the last claimant alone.
 
 ## Paths pair state
 

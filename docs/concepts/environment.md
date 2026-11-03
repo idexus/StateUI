@@ -58,7 +58,9 @@ provide `Account`, the nearest one wins for its branch.
 `@Environment` is resolved for the place the view stands in. One view value
 placed under two providers of its type would read one of them from both
 places, so it shows at the first place alone, and StateUI says so once; make a
-value for each place. Under one provider the same value may stand twice
+value for each place. The first place in the tree is the one that stands,
+whichever render moved a provider, and the second shows again once the two
+agree or the first leaves. Under one provider the same value may stand twice
 ([state](state-and-reactivity.md#owning-a-value-with-state)).
 
 The provider passes a reference without reading its properties. A write to

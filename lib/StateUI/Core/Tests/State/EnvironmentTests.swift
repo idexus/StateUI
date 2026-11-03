@@ -144,6 +144,39 @@ private struct Holder: View {
     }
 }
 
+/// One value of a view held outside the tree, so every place of it is the same value - with the one slot.
+@MainActor
+private final class Shared {
+    let button = NameButton()
+}
+
+/// A place of the shared button under what the parent provides, counting its builds: carried, it stands as built.
+private struct Placing: View {
+    let shared: Shared
+    let builds: Builds
+
+    var body: some View {
+        builds.count += 1
+        return VStack { shared.button }
+    }
+}
+
+/// What a place provides, held as state: a write of it reaches that place alone on the clean walk.
+@MainActor
+private final class Providing {
+    @State var session: Session
+
+    init(_ session: Session) { _session = State(wrappedValue: session) }
+}
+
+/// A place of the shared button under the session its providing holds.
+private struct Placed: View {
+    let shared: Shared
+    let providing: Providing
+
+    var body: some View { VStack { shared.button }.environment(providing.session) }
+}
+
 @MainActor
 final class EnvironmentTests: XCTestCase {
     override func setUp() async throws {
@@ -151,6 +184,18 @@ final class EnvironmentTests: XCTestCase {
     }
 
     private var changed: Set<ObjectIdentifier> { Renderer.shared.pendingChanges }
+
+    /// The handlers of the buttons captioned `caption` that `patch` says, in walk order.
+    private func clicks(_ caption: String, in patch: HostPatch) -> [Int] {
+        patch.subtree
+            .filter { $0.type == .button && $0.props[.text] == .string(caption) }
+            .compactMap { $0.events?[.clicked] }
+    }
+
+    /// The anchors `patch` puts where a view stood - what a refused place shows.
+    private func anchors(in patch: HostPatch) -> [ElementID] {
+        patch.subtree.filter { $0.type == .anchor }.map(\.id)
+    }
 
     // MARK: - Resolution
 
@@ -358,6 +403,130 @@ final class EnvironmentTests: XCTestCase {
 
         XCTAssertNil(peek.slot, "a slot nobody provides for holds nothing")
         XCTAssertNil(gone, "the provider that left is released")
+    }
+
+    /// A place carried as it was built keeps its environment: beside it, the value's other place built again under
+    /// another provider is the one refused, and the carried place's handler writes the object provided there.
+    func testAProviderReplacedBesideACarriedPlaceLeavesItsHandlerAlone() throws {
+        let renders = Renders(), shared = Shared(), first = Builds(), second = Builds()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        func tree(_ provider: Session) -> Node {
+            stack([
+                Placing(shared: shared, builds: first).environment(a).node,
+                Placing(shared: shared, builds: second).environment(provider).node,
+            ], id: "root")
+        }
+
+        let patch = renders.render(tree(a))
+        let clicked = try XCTUnwrap(clicks("a", in: patch).first)
+        let again = renders.render(tree(b))
+
+        XCTAssertEqual(first.count, 1, "the first place is carried")
+        XCTAssertEqual(anchors(in: again).count, 1, "the second, built again under another provider, shows nothing")
+        XCTAssertTrue(renders.fire(clicked))
+        XCTAssertEqual(a.visits, 1, "the carried place's handler writes the object provided there")
+        XCTAssertEqual(b.visits, 0)
+    }
+
+    /// The clean walk alike: the place whose provider moved is built again and refused, the kept place untouched.
+    func testTheCleanWalkRefusesThePlaceWhoseProviderMovedBesideAKeptOne() throws {
+        let renders = Renders(), shared = Shared()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        let left = Providing(a), right = Providing(a)
+        let patch = renders.render(stack([
+            Placed(shared: shared, providing: left).node,
+            Placed(shared: shared, providing: right).node,
+        ], id: "root"))
+        let clicked = try XCTUnwrap(clicks("a", in: patch).first)
+
+        right.session = b
+        let walked = renders.revisit(changed: changed)
+
+        XCTAssertEqual(anchors(in: walked).count, 1, "the place whose provider moved shows nothing")
+        XCTAssertTrue(renders.fire(clicked))
+        XCTAssertEqual(a.visits, 1)
+        XCTAssertEqual(b.visits, 0)
+    }
+
+    /// The first place in the tree wins whichever provider moved: the first, built again under another provider,
+    /// stands, and the second, carried, is built again as nothing - its handler would read the first's object.
+    func testAProviderReplacedAtTheFirstPlaceRefusesTheCarriedSecond() throws {
+        let renders = Renders(), shared = Shared(), first = Builds(), second = Builds()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        func tree(_ provider: Session) -> Node {
+            stack([
+                Placing(shared: shared, builds: first).environment(provider).node,
+                Placing(shared: shared, builds: second).environment(a).node,
+            ], id: "root")
+        }
+
+        let patch = renders.render(tree(a))
+        let clicked = try XCTUnwrap(clicks("a", in: patch).first)
+        let again = renders.render(tree(b))
+
+        XCTAssertEqual(second.count, 1, "the second place's holder is carried")
+        XCTAssertEqual(anchors(in: again).count, 1, "and its button shows nothing")
+        XCTAssertEqual(clicks("b", in: again), [], "the first place's button keeps its handler")
+        XCTAssertTrue(renders.fire(clicked))
+        XCTAssertEqual(b.visits, 1, "which writes the object provided there now")
+        XCTAssertEqual(a.visits, 0)
+    }
+
+    /// A refused place is asked again on every walk: once the first place comes to its provider, it stands - the
+    /// clean walk builds it again, though it read nothing that moved.
+    func testARefusedPlaceStandsOnceTheFirstPlaceComesToItsProvider() throws {
+        let renders = Renders(), shared = Shared()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        let left = Providing(a), right = Providing(b)
+        let patch = renders.render(stack([
+            Placed(shared: shared, providing: left).node,
+            Placed(shared: shared, providing: right).node,
+        ], id: "root"))
+        XCTAssertEqual(anchors(in: patch).count, 1)
+        let first = try XCTUnwrap(clicks("a", in: patch).first)
+
+        left.session = b
+        let walked = renders.revisit(changed: changed)
+        let second = try XCTUnwrap(clicks("b", in: walked).first, "the refused place stands under the provider both have")
+
+        XCTAssertTrue(renders.fire(first))
+        XCTAssertTrue(renders.fire(second))
+        XCTAssertEqual(b.visits, 2, "both places' handlers write the one object")
+        XCTAssertEqual(a.visits, 0)
+    }
+
+    /// The tree's order decides which place stands, not the walk that placed the value first: the places swapped,
+    /// the one now first stands and the other is refused; the first place gone, the one left stands.
+    func testThePlacesOrderInTheTreeDecides() throws {
+        let renders = Renders(), shared = Shared()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        func tree(_ places: [(Session, String)]) -> Node {
+            stack(places.map { shared.button.environment($0.0).id($0.1).node }, id: "root")
+        }
+
+        let patch = renders.render(tree([(a, "under a"), (b, "under b")]))
+        XCTAssertEqual(clicks("a", in: patch).count, 1)
+        XCTAssertEqual(anchors(in: patch).count, 1)
+
+        let swapped = renders.render(tree([(b, "under b"), (a, "under a")]))
+        XCTAssertEqual(clicks("b", in: swapped).count, 1, "first in the tree now, the place under b stands")
+        XCTAssertEqual(anchors(in: swapped).count, 1, "and the place under a is the one refused")
+
+        let alone = renders.render(tree([(a, "under a")]))
+        let clicked = try XCTUnwrap(clicks("a", in: alone).first, "the one place left stands")
+        XCTAssertTrue(renders.fire(clicked))
+        XCTAssertEqual(a.visits, 1)
+        XCTAssertEqual(b.visits, 0)
     }
 
     func testAProvidedObjectsStateIsHandedOnByItsOwnBinding() {

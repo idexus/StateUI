@@ -73,7 +73,7 @@ final class Differ {
     /// The elements the walk is inside, outermost first (Differ+Element.swift).
     var standing: [ElementID] = []
 
-    /// Where each `@Environment` slot met this walk was last placed, and what it resolved to there.
+    /// Where each `@Environment` slot met this walk last stood, built or kept, and what it resolved to there.
     /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
     var placed: [ObjectIdentifier: (element: ElementID, object: ObjectIdentifier?)] = [:]
 
@@ -175,23 +175,33 @@ final class Differ {
     }
 
     /// One kept element: built again from its placeholder when its reads moved - from the outermost of its views
-    /// whose own body read what moved, those outside it standing as they were - walked for changed descendants when
-    /// they did not.
+    /// whose own body read what moved, those outside it standing as they were - or when it stands refused, to ask
+    /// again; else its views stand, their slots placed as they were, from the first one refused this walk built
+    /// again, which refuses it; walked for changed descendants.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     func revisit(
         _ rendered: RenderedNode,
         walking: Bool = true
     ) -> (node: RenderedNode, patch: HostPatch) {
-        if let placeholder = rendered.placeholder,
-            !rendered.reads.isDisjoint(with: changed) {
-            return element(
-                id: rendered.id,
-                rendered: rendered,
-                node: placeholder,
-                forced: true,
-                sizesArrive: rendered.sizesArrive,
-                atPagePosition: rendered.atPagePosition,
-                from: Self.start(of: rendered, changed: changed))
+        standing.append(rendered.id)
+        defer { standing.removeLast() }
+
+        if let placeholder = rendered.placeholder {
+            let moved = !rendered.reads.isDisjoint(with: changed)
+            let from = moved
+                ? Self.start(of: rendered, changed: changed)
+                : rendered.refused ? 0 : stand(rendered.views[...], at: rendered.id)
+
+            if moved || rendered.refused || from < rendered.views.count {
+                return element(
+                    id: rendered.id,
+                    rendered: rendered,
+                    node: placeholder,
+                    forced: true,
+                    sizesArrive: rendered.sizesArrive,
+                    atPagePosition: rendered.atPagePosition,
+                    from: from)
+            }
         }
 
         // A composed view walked past is written down only as the path to something
