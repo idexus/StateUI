@@ -70,13 +70,12 @@ final class Differ {
     /// The composed views whose bodies the walk is inside, outermost first.
     var bodies: [String] = []
 
-    /// The elements the walk is inside, outermost first - what a placing is checked against (Differ+Element.swift).
+    /// The elements the walk is inside, outermost first (Differ+Element.swift).
     var standing: [ElementID] = []
 
-    /// Where each state box and `@Environment` slot met this walk was last placed, by the wrapper: a view value
-    /// standing in two places at once is refused the second.
-    /// Design: docs/design/core/identity-and-diffing.md#a-value-stands-once
-    var placed: [ObjectIdentifier: ElementID] = [:]
+    /// Where each `@Environment` slot met this walk was last placed, and what it resolved to there.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+    var placed: [ObjectIdentifier: (element: ElementID, object: ObjectIdentifier?)] = [:]
 
     /// What each element holding the one walked says of its enablement, outermost first - those that say any.
     /// Design: docs/design/views/styles.md#which-state-a-control-is-in
@@ -302,9 +301,8 @@ final class Differ {
         leaving.append(contentsOf: node.destroying)
     }
 
-    /// Starts a walk's scope with the standard providers, so any view resolves them
-    /// and an app's own `.environment()` below is nearer (StandardEnvironment.swift) - and forgets where the last
-    /// walk placed what it met.
+    /// Starts a walk's scope with the standard providers, so any view resolves them and an app's own
+    /// `.environment()` below is nearer (StandardEnvironment.swift); forgets where the last walk placed its slots.
     private func seedScope() {
         scope.removeAll(keepingCapacity: true)
         scope.append(contentsOf: StandardEnvironment.scope)

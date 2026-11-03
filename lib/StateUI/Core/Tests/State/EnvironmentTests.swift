@@ -322,7 +322,23 @@ final class EnvironmentTests: XCTestCase {
         XCTAssertEqual(a.visits, 1, "the first place's handler writes the object provided there")
         XCTAssertEqual(b.visits, 0, "the sibling's object is untouched")
         XCTAssertEqual(patch.child(.auto(2))?.type, .anchor, "the second place shows nothing")
-        XCTAssertTrue(hasComplained("NameButton value stands in two places at once"))
+        XCTAssertTrue(hasComplained("NameButton value stands in two places under different environments"))
+    }
+
+    /// One view value standing in two places under ONE provider resolves the same object at both, so both stand.
+    func testAValueStandingTwiceUnderOneProviderStandsTwice() throws {
+        let renders = Renders()
+        let session = Session()
+        session.name = "same"
+        let button = NameButton()
+
+        let patch = renders.render(
+            stack([button.environment(session).node, button.environment(session).node], id: "root"))
+
+        XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("same"))
+        XCTAssertEqual(patch.child(.auto(2))?.props["text"], .string("same"))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(patch.child(.auto(2))?.events?["clicked"])))
+        XCTAssertEqual(session.visits, 1)
     }
 
     /// A slot keeps no provider from a walk before: rendered again with none, a kept view value holds nothing, and

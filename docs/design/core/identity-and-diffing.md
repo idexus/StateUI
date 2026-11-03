@@ -165,26 +165,31 @@ the same view only when every view outside it is too, type and branch: the
 other branch of an `if` at a body's root holds a view of the same type, and
 starts over as it does inside a stack.
 
-## A value stands once
+## One value in two places
 
 A view's `@State` and `@Environment` are objects the value holds, so every
-copy of one value holds the same boxes and slots. The differ hands them the
-place's storage and the place's providers, and a handler the body captured
-reads them later: one value placed twice would have its boxes adopted twice
-and its slots filled twice, the second place winning for both, and the first
-place's button writing the second place's model. So a value stands once. The
-walk records, by the wrapper, which element each box and slot was placed at
-(`Differ.placed`, forgotten as a walk begins); a wrapper met again at another
-element, outside the elements the walk is inside, refuses the placing: the
-second place shows nothing - an anchor of no view - and the library says so
-once, naming the type. Make a value for each place, where each stands.
+copy of one value holds the same boxes and slots, and one value placed twice
+puts them at two places. A box shared is a state shared: both places adopt
+the one storage, so a write in either shows in both and the box keeps that
+storage across renders - two copies of a list, two readouts of one `State`
+handed in as a property. A slot is another matter: it resolves to the
+nearest provider of the place it stands in, and a handler the body captured
+reads it later with no place to ask - so one value under two providers of its
+type would have both places read the one filled last, the first place's
+button writing the second place's model. The walk records, by the slot, which
+element it was placed at and what it resolved to there (`Differ.placed`,
+forgotten as a walk begins); a slot met again at another element, outside
+the elements the walk is inside, resolving to another object, refuses the
+placing: the second place shows nothing - an anchor of no view - and the
+library says so once, naming the type. Make a value for each place, where
+each stands. Under one provider, or none, the places read the same object
+and both stand.
 
 A view a body holds in a property is one lineage, not two places: the
-holder's walk meets the held view's boxes under the holder's paths before the
+holder's walk meets the held view's slots under the holder's paths before the
 held view's own place does, which stands inside the holder - so a placing
 checks the elements the walk is inside (`Differ.standing`), not the last
-claimant alone. A value holding no state and no slot shares nothing, and may
-stand anywhere.
+claimant alone.
 
 ## Paths pair state
 

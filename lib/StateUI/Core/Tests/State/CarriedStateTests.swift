@@ -991,28 +991,27 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(part.wrappedValue, 90, "and reads it back")
     }
 
-    /// One view value placed twice has one box for both places, which can belong to one: the first place owns it
-    /// and the second shows nothing, said once.
-    func testAValueStandingInTwoPlacesOwnsItsStateInTheFirst() throws {
+    /// One view value placed twice has one box for both places, so the places share its state: a write in one
+    /// shows in the other, and the box keeps one storage across renders.
+    func testAValueStandingInTwoPlacesSharesItsState() throws {
         let renders = Renders()
         let tally = Tally()
 
         let patch = renders.render(stack([tally.node, tally.node], id: "root"))
 
         XCTAssertEqual(patch.child(.auto(1))?.props[.text], .string("0"))
-        XCTAssertEqual(patch.child(.auto(2))?.type, .anchor, "the second place shows nothing")
-        XCTAssertTrue(hasComplained("Tally value stands in two places at once"))
+        XCTAssertEqual(patch.child(.auto(2))?.props[.text], .string("0"))
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(patch.child(.auto(1))?.events?["clicked"])))
         let again = renders.render(
             stack([tally.node, tally.node], id: "root"), changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(again.child(.auto(1))?.props[.text], .string("1"), "the first place keeps its state")
-        XCTAssertNil(again.child(.auto(2)), "the second place, unchanged, is not said again")
+        XCTAssertEqual(again.child(.auto(1))?.props[.text], .string("1"), "the first place shows the write")
+        XCTAssertEqual(again.child(.auto(2))?.props[.text], .string("1"), "and so does the second: one state")
     }
 
-    /// A view held in a property and placed once stands once: its holder's walk meets its box first, and the view's
-    /// own place is under the holder.
+    /// A view held in a property and placed once: its holder's walk meets its box first, and the view's own place
+    /// is under the holder - one state, one place.
     func testAViewHeldInAPropertyStandsOnceUnderItsHolder() throws {
         let renders = Renders()
 
@@ -1021,7 +1020,6 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(button.type, .button)
         XCTAssertEqual(button.props[.text], .string("counted 0"))
-        XCTAssertFalse(hasComplained("Counted value stands in two places"))
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(button.events?["clicked"])))
         let again = renders.render(stack([Holding().node], id: "root"), changed: Renderer.shared.pendingChanges)

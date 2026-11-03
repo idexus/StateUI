@@ -136,9 +136,9 @@ extension Differ {
                     sceneRecord = record
                 }
 
-                // One value standing in two places would share its boxes and slots between them: the second
-                // place shows nothing, said once.
-                // Design: docs/design/core/identity-and-diffing.md#a-value-stands-once
+                // One value standing in two places under different providers would read one of them from both:
+                // the second place shows nothing, said once.
+                // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
                 if let refusal = place(stateful, at: id) {
                     complain(refusal)
                     node = Node(contract: AnchorContract.self)
@@ -319,24 +319,27 @@ extension Differ {
         return nil
     }
 
-    /// Marks `stateful`'s boxes and slots as placed at `id` this walk, or says why they may not be: one of them was
-    /// placed at another element this walk, outside the elements this one is in. A view a body holds in a property
-    /// has its boxes met under the holder before its own place does - one lineage, not two places.
-    /// Design: docs/design/core/identity-and-diffing.md#a-value-stands-once
+    /// Marks `stateful`'s slots as placed at `id` this walk, with what each resolves to here, or says why they may
+    /// not be: one of them was placed at another element this walk - outside the elements this one is in, so no
+    /// holder of the view - and resolved to another object there.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
     private func place(_ stateful: Node.Stateful, at id: ElementID) -> String? {
-        let wrappers = stateful.boxes.map { ObjectIdentifier($0.box) } + stateful.slots.map { ObjectIdentifier($0) }
+        let resolved = stateful.slots.map { slot in
+            (slot: ObjectIdentifier(slot), object: scope.last { $0.key == slot.wants }.map { ObjectIdentifier($0.object) })
+        }
 
-        for wrapper in wrappers {
-            if let earlier = placed[wrapper], earlier != id, !standing.contains(earlier) {
+        for (slot, object) in resolved {
+            if let earlier = placed[slot], earlier.element != id, !standing.contains(earlier.element),
+                earlier.object != object {
                 let name = Inspection.short(stateful.viewType.name)
-                return "A \(name) value stands in two places at once, so the second shows nothing: its @State and "
-                    + "@Environment belong to the place it stands in. Make a value for each place - write \(name)() "
-                    + "where each stands."
+                return "A \(name) value stands in two places under different environments, so the second shows "
+                    + "nothing: its @Environment belongs to the place it stands in. Make a value for each place - "
+                    + "write \(name)() where each stands."
             }
         }
 
-        for wrapper in wrappers {
-            placed[wrapper] = id
+        for (slot, object) in resolved {
+            placed[slot] = (id, object)
         }
 
         return nil

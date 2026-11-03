@@ -255,8 +255,7 @@ extension State {
             }
         }
 
-        /// Whether a write of `value` may land: not from a run a later event, or its element leaving,
-        /// superseded, and not a value the state refuses.
+        /// Whether a write of `value` may land: not from a superseded run, and not a value the state refuses.
         /// Design: docs/design/core/runs.md#a-superseded-run
         @usableFromInline
         func admitsWrite(_ value: Value) -> Bool {
@@ -271,9 +270,7 @@ extension State {
             return true
         }
 
-        /// Why a state refuses a value it is handed, where it does - said once, and nothing lands - and nil where
-        /// it takes any; asked on every road a value comes in by, before `keep`. Set once, by whoever made the
-        /// state: a window's value refuses one another window of its kind is open for (SceneRecord.swift).
+        /// Why a state refuses a value it is handed - said once, nothing lands - or nil; set once, as `keep` is.
         /// Design: docs/design/core/state.md#kept-state
         @usableFromInline var refuses: ((Value) -> String?)?
 

@@ -55,10 +55,11 @@ The type is the key. `AccountBadge` needs no initializer argument, and an
 environment of another type cannot collide with it. If several ancestors
 provide `Account`, the nearest one wins for its branch.
 
-A view value stands in one place. Its `@Environment` is resolved for the place
-the value stands in, as its `@State` is kept for it, so one value placed under
-two providers shows at the first place alone, and StateUI says so once; make a
-value for each place ([state](state-and-reactivity.md#owning-a-value-with-state)).
+`@Environment` is resolved for the place the view stands in. One view value
+placed under two providers of its type would read one of them from both
+places, so it shows at the first place alone, and StateUI says so once; make a
+value for each place. Under one provider the same value may stand twice
+([state](state-and-reactivity.md#owning-a-value-with-state)).
 
 The provider passes a reference without reading its properties. A write to
 `account.visits` therefore invalidates bodies that read `visits`, not the body
