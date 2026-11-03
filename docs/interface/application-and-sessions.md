@@ -175,7 +175,9 @@ A scene declares its windows three ways:
   `WindowType<ID>` - makes one window per value. The value is `Codable` and
   `Hashable` so it can identify and restore the window, and the closure
   receives a `Binding`, so the same window can be retargeted without replacing
-  its session. A kind with a value opens only with a value of its type,
+  its session; a value another window of the kind is open for is refused and
+  said once, as `openWindow` refuses it - one window per value, whoever
+  writes. A kind with a value opens only with a value of its type,
   `application.openWindow(.kind, value: id)`, and a kind of no value -
   `WindowType<Void>` - only without one: the compiler refuses the other.
 

@@ -255,16 +255,27 @@ extension State {
             }
         }
 
-        /// Whether a write may land: not from a run a later event, or its element leaving,
-        /// superseded.
+        /// Whether a write of `value` may land: not from a run a later event, or its element leaving,
+        /// superseded, and not a value the state refuses.
         /// Design: docs/design/core/runs.md#a-superseded-run
         @usableFromInline
-        func admitsWrite() -> Bool {
+        func admitsWrite(_ value: Value) -> Bool {
             #if DEBUG
             HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
             #endif
-            return HandlerRun.admits("a write of `\(origin ?? "a state")`")
+            guard HandlerRun.admits("a write of `\(origin ?? "a state")`") else { return false }
+            if let why = refuses?(value) {
+                complain(why)
+                return false
+            }
+            return true
         }
+
+        /// Why a state refuses a value it is handed, where it does - said once, and nothing lands - and nil where
+        /// it takes any; asked on every road a value comes in by, before `keep`. Set once, by whoever made the
+        /// state: a window's value refuses one another window of its kind is open for (SceneRecord.swift).
+        /// Design: docs/design/core/state.md#kept-state
+        @usableFromInline var refuses: ((Value) -> String?)?
 
         /// What a state does with every value it takes, whoever writes it - the
         /// program, a binding, the host: a kept state marks its key for saving, a

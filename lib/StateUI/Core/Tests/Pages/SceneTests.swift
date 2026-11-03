@@ -786,6 +786,27 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(texts(in: document), ["Document 7"])
     }
 
+    /// A window's value another window of its kind is open for is refused and said, as opening one is: the window
+    /// stays about its own value, written down as it was, and the kind keeps one window per value.
+    func testAWindowsValueIsRefusedWhereAnotherWindowIsOpenForIt() async throws {
+        let renders = Renders()
+        renders.render(tree())
+        let first = await refusal { try await self.application.openWindow(.document, value: 42) }
+        let second = await refusal { try await self.application.openWindow(.document, value: 7) }
+        XCTAssertNil(first)
+        XCTAssertNil(second)
+        let opened = renders.renderFromScratch(tree())
+
+        // The window for 42 writes 7 - the value the window beside it is open for.
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button("seven", in: opened))))
+        let whole = renders.renderFromScratch(tree())
+
+        XCTAssertTrue(hasComplained("is open for the value 7 already"))
+        XCTAssertEqual(try scene("1").windows.compactMap(\.value), [42, 7] as [AnyHashable])
+        XCTAssertEqual(try scene("1").windows.compactMap(\.text), ["42", "7"])
+        XCTAssertEqual(texts(in: whole).filter { $0.hasPrefix("Document") }, ["Document 42", "Document 7"])
+    }
+
     /// A window's session kept past its scene's end refuses its acts once the scene's record is gone too: it is a
     /// window's, told by its key from the session of no scene, whose acts ask in the window the user is in.
     func testAKeptSessionOfAnEndedSceneRefusesItsActsOnceTheRecordIsGone() async throws {

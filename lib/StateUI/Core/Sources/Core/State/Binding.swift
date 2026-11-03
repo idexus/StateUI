@@ -101,7 +101,7 @@ public struct Binding<Value> {
             return storage.value
         }
         write = {
-            guard storage.admitsWrite() else { return }
+            guard storage.admitsWrite($0) else { return }
 
             storage.write($0)
             storage.askForRender()

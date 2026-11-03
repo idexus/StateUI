@@ -356,6 +356,12 @@ theme and accent, which reach the host as the acts that set them. A control
 handed `application.$colorScheme` writes the state, and the host is told as if
 the application had assigned it.
 
+A state may refuse a value before it lands - the storage's `refuses`, asked on
+the same roads once the run's admission is answered, with a setter that cannot
+throw: the refusal is said once, and the state, its keep and its readers stand
+as they were. A window's value refuses one another window of its kind is open
+for (scenes.md).
+
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
 decides the storage, and only it reads the store.

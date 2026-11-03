@@ -67,7 +67,7 @@ public final class State<Value> {
             return storage.value
         }
         set {
-            guard storage.admitsWrite() else { return }
+            guard storage.admitsWrite(newValue) else { return }
 
             storage.write(newValue)
             storage.askForRender()
