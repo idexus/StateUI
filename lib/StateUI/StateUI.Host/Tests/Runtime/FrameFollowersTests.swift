@@ -33,6 +33,27 @@ private final class Received {
     var values: [String] = []
 }
 
+/// An element's view standing where it is, saying so through the element - and to the log where that reached a
+/// reader.
+@MainActor
+private final class Standing: FrameReporter {
+    let element: MountedElement
+    unowned let runtime: HostRuntime
+    let log: Received
+
+    init(_ element: MountedElement, in runtime: HostRuntime, _ log: Received) {
+        self.element = element
+        self.runtime = runtime
+        self.log = log
+    }
+
+    func reportFrame() {
+        let due = element.frameReportDue
+        element.reportFrame([0, 0, 100, 50, 0, 0, 0, 0], in: runtime)
+        if due { log.values.append("said") }
+    }
+}
+
 /// What the display's frames serve besides the core's cycle.
 @MainActor
 final class FrameFollowersTests: XCTestCase {
@@ -95,6 +116,31 @@ final class FrameFollowersTests: XCTestCase {
     }
 
     /// The elements `names` stand in `runtime`'s tree, in that order - the tree before replaced.
+    /// An element followed again as another state came to read its frame says where it stands on the next frame,
+    /// so the reader come since hears it; followed again for the same reader, it says nothing more.
+    func testAnElementFollowedAgainForAReaderComeSinceSaysWhereItStands() {
+        let runtime = HostRuntime.still()
+        let log = Received()
+        let element = Self.elements(of: runtime, ["reader"])[0]
+        let reader = Standing(element, in: runtime, log)
+        var reads = HostPatch(id: element.id, type: element.type)
+        reads.driven = .replace([.frame: HostStateBinding(state: 1, mode: .out, kind: .placement, laneKind: .number)])
+        element.apply(reads)
+        runtime.frames.follow(reader, of: element, reads: true)
+        runtime.frames.commit(now: 16)
+        XCTAssertEqual(log.values, ["said"])
+
+        runtime.frames.follow(reader, of: element, reads: true)
+        runtime.frames.commit(now: 32)
+        XCTAssertEqual(log.values, ["said"], "followed again for the same reader, nothing to say")
+
+        reads.driven = .replace([.frame: HostStateBinding(state: 2, mode: .out, kind: .placement, laneKind: .number)])
+        element.apply(reads)
+        runtime.frames.follow(reader, of: element, reads: true)
+        runtime.frames.commit(now: 48)
+        XCTAssertEqual(log.values, ["said", "said"], "another state reads it since")
+    }
+
     private static func elements(of runtime: HostRuntime, _ names: [String]) -> [MountedElement] {
         // What the core waits to render is rendered first, so no turn of the test's own replaces the tree.
         runtime.pump.turn()

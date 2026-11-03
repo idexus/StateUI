@@ -3,6 +3,12 @@
 
 @_spi(Host) import StateUI
 
+/// What reads where an element stands: the state its frame drives, and the handler of its changes.
+struct FrameReaders: Equatable {
+    let state: HostStateBinding?
+    let handler: Int32?
+}
+
 /// Where an element stands, said to the tree that reads it, the same on every host.
 /// Design: docs/design/host/runtime.md#where-a-view-stands
 extension MountedElement {
@@ -10,23 +16,26 @@ extension MountedElement {
     /// or - a split view - the state its sidebar's place drives (`reportSidebarOverlays(_:in:)`), said with it once
     /// laid out.
     public var readsOwnFrame: Bool {
-        readsFrameNumbers || driven[.sidebarOverlays] != nil
+        frameReaders != nil || driven[.sidebarOverlays] != nil
     }
 
-    /// Whether the tree reads this element's frame itself: a state it drives, or a handler of its changes.
-    private var readsFrameNumbers: Bool {
-        driven[.frame] != nil || events[.frameChanged] != nil
+    /// What reads this element's frame itself - a state it drives, a handler of its changes - or nil for nothing.
+    var frameReaders: FrameReaders? {
+        let readers = FrameReaders(state: driven[.frame], handler: events[.frameChanged])
+        return readers.state == nil && readers.handler == nil ? nil : readers
     }
 
-    /// Says where the element stands - `numbers`, a frame report's eight - where that changed since it last said:
-    /// its place in its parent onto the state its frame drives, and the whole report to its handler.
+    /// Says where the element stands - `numbers`, a frame report's eight - where that changed since it last said,
+    /// or a reader came since: its place in its parent onto the state its frame drives, and the whole report to its
+    /// handler.
     public func reportFrame(_ numbers: [Double], in runtime: HostRuntime) {
-        guard readsFrameNumbers, numbers != reportedFrame else { return }
+        guard let readers = frameReaders, numbers != reportedFrame || frameReportDue else { return }
         reportedFrame = numbers
-        if let binding = driven[.frame] {
+        frameReportDue = false
+        if let binding = readers.state {
             runtime.report(.lanes(Array(numbers.prefix(4))), through: binding)
         }
-        if let handler = handler(.frameChanged) {
+        if let handler = readers.handler {
             runtime.dispatch(handler, payload: [.numbers(numbers)])
         }
     }

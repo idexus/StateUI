@@ -458,8 +458,9 @@ Grid { tiles }
 ```
 
 Handing over `$room` is not a state read and therefore causes no body rebuild
-by itself. The host writes the standing parent-space rectangle into the state;
-an application write to that input feed does not set a native frame. A body
+by itself. The host writes the standing parent-space rectangle into the state
+as it is handed over and again as the rectangle changes; an application write
+to that input feed does not set a native frame. A body
 that separately reads `room` still follows ordinary state invalidation, and an
 engine listing the state in `following:` wakes on the host write.
 

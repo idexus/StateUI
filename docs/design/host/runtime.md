@@ -368,9 +368,12 @@ An element whose frame the tree reads - a state its frame drives, or a
 handler of its changes - says where it stands on the display's next frame
 after anything was laid out or moved: its place in its parent onto the
 state, the whole report to its handler, and nothing where the report is the
-one it last said (`MountedElement.reportFrame`). The runtime's
+one it last said - but to a state or a handler come since, the view standing
+still, which hears where it stands once (`MountedElement.reportFrame`, the
+report due as the patch brings the reader). The runtime's
 `FrameFollowers` keeps the frames coming while a scroller moves or has
-something to say, or a frame read may have moved, and on each frame lets the
+something to say, a frame read may have moved, or a reader of an element's
+frame waits for it as its host follows the element again (`follow`), and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
 order it was made, as one user's transaction. A host follows an element by
 the element (`FrameFollowers.follow(_:of:reads:)`); one that leaves the tree

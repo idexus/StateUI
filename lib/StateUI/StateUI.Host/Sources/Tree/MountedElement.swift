@@ -57,8 +57,10 @@
     /// Whether the pointer stands over the element's view, as its toolkit last told it.
     var pointerIsOver = false
 
-    /// The frame report this element last said, which a report the same says again to nobody.
+    /// The frame report this element last said, which a report the same says again to nobody - but to a reader
+    /// come since, which hears where the element stands once (`frameReportDue`).
     var reportedFrame: [Double] = []
+    var frameReportDue = false
 
     /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
     var reportedOverlays: (binding: HostStateBinding, over: Bool)?
@@ -204,6 +206,7 @@
 
         let previouslyShown = isPagePresented ? shownChildren : []
         let heardPull = hearsPull
+        let readFrameBefore = frameReaders
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)
         if case .replace(let replacement) = patch.driven {
@@ -244,6 +247,8 @@
             }
         }
         wear(driven)
+        // A reader of where the element stands come since hears the standing report (MountedElement+Frames.swift).
+        if frameReaders != readFrameBefore { frameReportDue = frameReaders != nil }
 
         for (property, binding) in driven where binding.mode != .in {
             drivenValues[property] = tree.core.value(for: binding)
