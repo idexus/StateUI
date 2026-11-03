@@ -760,6 +760,7 @@ extension Differ {
             derived: pass.derived,
             children: children
         )
+        result.contentAim = node.aim
         result.identity = pass.identity
         result.expanded = pass.expanded
         result.refused = pass.refused

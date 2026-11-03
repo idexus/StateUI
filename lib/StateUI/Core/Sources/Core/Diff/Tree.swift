@@ -58,6 +58,10 @@ final class RenderedNode {
     /// The kind of control the host made; a change of it replaces the element.
     var type: NodeType
 
+    /// The aim on the root of this element's content - its own, for a leaf - which a walk that leaves the element
+    /// standing attaches again, as the walk that built it did (Aim.swift).
+    var contentAim: AimBox?
+
     /// Every property the host has been told about, as it was told.
     var props: [Prop: PropValue]
 

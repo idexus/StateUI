@@ -142,8 +142,12 @@ because this side has an engine to move it with.
 it offers `goBack()` on a web view's aim and nowhere else. A fresh aim adopts
 its predecessor's box by the path the walk found it at, as a fresh `@State`
 adopts storage, so a handler captured three renders ago aims where one captured
-now does. The differ refills the box on every walk that visits the element; the
-key is stable, so the write is idempotent.
+now does. Every walk attaches the aim of every element standing in it: one
+built again through its description, one carried or left as it stands through
+what it keeps - the aim its parent wrote on it, its placeholder's, and the one
+on its content's root (`RenderedNode.contentAim`). The key is stable, so the
+writes are idempotent; and a conflict is two elements in one walk whichever of
+them was built, ending as one of them leaves.
 
 An aim takes no part in matching: a view carrying only an aim is identified by
 its builder path or position, as if nothing were written on it. A named row

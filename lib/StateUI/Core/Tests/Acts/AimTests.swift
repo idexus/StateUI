@@ -172,9 +172,9 @@ final class AimTests: XCTestCase {
         XCTAssertEqual(try outer.box.target, try card.inner.box.target)
     }
 
-    /// A carried view is not walked - and the box simply keeps the identity
-    /// it has, which is still the element's. A view built again restamps it
-    /// with the same one.
+    /// A carried view attaches its aim in every walk as a built one does, so
+    /// the box holds the element's identity still; a view built again
+    /// restamps it with the same one.
     func testAnAimUnderACarriedViewKeepsItsTarget() throws {
         struct Framed: View {
             let panel: Aim<ZStack>
@@ -195,6 +195,38 @@ final class AimTests: XCTestCase {
         XCTAssertEqual(try panel.box.target, first, "a carried view leaves the aim standing")
         renders.render(tree(2))
         XCTAssertEqual(try panel.box.target, first, "a rebuilt one restamps the same identity")
+    }
+
+    /// An aim on a carried view's content and on a second view is on two views: the carried view attaches it in the
+    /// walk that brought the second, as a rebuilt one would.
+    func testAnAimOnACarriedViewAndASecondIsAConflict() throws {
+        let renders = Renders()
+        let panel = Aim(ZStack.self)
+        let builds = Builds()
+
+        renders.render(stack([Handed(panel: panel, builds: builds).node], id: "root"))
+        renders.render(stack([Handed(panel: panel, builds: builds).node, ZStack().aim(panel).node], id: "root"))
+
+        XCTAssertEqual(builds.count, 1, "the first view is carried")
+        XCTAssertThrowsError(try panel.box.target)
+        XCTAssertEqual(panel.description, "two views")
+    }
+
+    /// A conflict ends as the other view leaves, the one standing carried: the walk attaches the carried view's
+    /// aim alone, so the act aims at it.
+    func testAConflictEndsAsTheOtherViewLeavesTheCarriedOne() throws {
+        let renders = Renders()
+        let panel = Aim(ZStack.self)
+        let builds = Builds()
+
+        renders.render(stack([Handed(panel: panel, builds: builds).node], id: "root"))
+        let first = try panel.box.target
+        renders.render(stack([Handed(panel: panel, builds: builds).node, ZStack().aim(panel).node], id: "root"))
+        XCTAssertThrowsError(try panel.box.target)
+        renders.render(stack([Handed(panel: panel, builds: builds).node], id: "root"))
+
+        XCTAssertEqual(builds.count, 1, "carried throughout")
+        XCTAssertEqual(try panel.box.target, first, "the view standing is the aim's")
     }
 
     // MARK: - Declared, handed, and held by a model

@@ -204,6 +204,11 @@ final class Differ {
             }
         }
 
+        // An element left standing attaches its aims in this walk as a built one does: the one its parent wrote on
+        // it, and the one on its content's root (Aim.swift).
+        rendered.placeholder?.aim?.attach(rendered.id, walk: walkStamp)
+        rendered.contentAim?.attach(rendered.id, walk: walkStamp)
+
         // A composed view walked past is written down only as the path to something
         // built below it, and not for a view just carried.
         let walked = walking && Inspection.recording && !rendered.views.isEmpty
