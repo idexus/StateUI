@@ -16,8 +16,12 @@ item's identity is `String(describing:)` of its id, whatever section holds it:
 an item's value stands once in the whole list, so a choice, an activation and
 a scroll name one row by the value alone, and an item moved to another section
 keeps its identity - the host moves its cell. A header or a footer is named
-after its section with a record separator (`\u{1E}header`), which no author
-writes.
+by the list: a record separator, its section's name and a second separator
+before its role (`\u{1E}Fruit\u{1E}header`), the list's own with no section
+between (`\u{1E}header`) - so a section of empty words is no "no section".
+Every name the list makes begins with a separator and no item's words hold
+one (below), so an entry named by the author and one named by the list are
+never one, whatever the author's words.
 
 A section is known by the value `.id` gives it, as an item is by its own, and
 one given none by its place; its name is that value's words - the place's
@@ -33,15 +37,20 @@ stands under it again, wherever it now is, before any new value is named. Two
 values that describe alike are two items, the second named with a variant of
 the words, and each keeps its own across a reorder: were the identities
 handed out by words in order, two such items swapping places would leave every
-identity where it was, and the host would move nothing. The same value twice
+identity where it was, and the host would move nothing. Every name of the
+build before is kept from a new value for that build, the names of values gone
+included: the entry under such a name is leaving as the new one comes, and a
+new entry under it would carry what it left - the state of a row that looked
+alike. The same value twice
 is a repeated identity, told apart as two repeated `.id()`s are, and a
 complaint says so: a platform's collection refuses two cells of one identity.
 The value names its first row; the repeat is reached by no choice nor scroll.
 
-A variant is the words, a group separator (`\u{1D}`) and a number, and no
-identity holds a NUL - an author's own is read as U+FFFD: GTK and WinUI hand
-the identities to their toolkits as C strings, which end at a NUL, and two
-identities that differ only after one would stand as one there.
+A variant is the words, a group separator (`\u{1D}`) and a number. An
+author's words hold neither separator nor a NUL - each is read as U+FFFD - so
+a value's words never read as a variant or as a name of the list's own, and
+GTK and WinUI, which hand the identities to their toolkits as C strings ending
+at a NUL, see each identity as its own.
 
 The entries cross in the patch as any property does, so they are compared,
 sent only when they change, and printed by the inspector. What a host needs

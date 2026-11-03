@@ -61,7 +61,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.footer = footer
 
         let names = sectionNames(book: book)
-        // What every value standing again stood under, kept for it before any new value is named.
+        // What every value standing again stood under, kept for it before any new value is named; every name of
+        // the build before, a value gone included, is kept from a new value.
         var kept: [ID: String] = [:]
         for section in sections {
             for place in 0..<section.count {
@@ -69,7 +70,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
                 if kept[id] == nil, let earlier = book.identities[id] { kept[id] = earlier }
             }
         }
-        let reserved = Set(kept.values)
+        let reserved = Set(book.identities.values)
 
         var built: [ItemsEntries.Section] = []
         for (number, section) in sections.enumerated() {
@@ -93,8 +94,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
             let name = names[number]
             built.append(ItemsEntries.Section(
                 name,
-                header: section.header.map { _ in named(name + "\u{1E}header", .sectionHeader(number)) },
-                footer: section.footer.map { _ in named(name + "\u{1E}footer", .sectionFooter(number)) },
+                header: section.header.map { _ in named("\u{1E}\(name)\u{1E}header", .sectionHeader(number)) },
+                footer: section.footer.map { _ in named("\u{1E}\(name)\u{1E}footer", .sectionFooter(number)) },
                 items: items))
         }
         entries = ItemsEntries(
@@ -137,8 +138,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         return names
     }
 
-    /// `identity`, or the first of its variants no entry stands under and no value standing again keeps.
-    private func free(_ identity: String, avoiding reserved: Set<String> = []) -> String {
+    /// `identity`, or the first of its variants no entry stands under and the build before kept from a new value.
+    private func free(_ identity: String, avoiding reserved: Set<String>) -> String {
         Self.variant(of: identity) { places[$0] != nil || reserved.contains($0) }
     }
 
@@ -150,19 +151,24 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         return "\(words)\u{1D}\(variant)"
     }
 
-    /// A value's words as an identity carries them: a NUL, where a C string ends, as U+FFFD.
+    /// A value's words as an identity carries them: a NUL, where a C string ends, and the list's own separators as
+    /// U+FFFD.
     /// Design: docs/design/views/items.md#identities-in-order
     private static func words(of value: Any) -> String {
         Renderer.shared.texts += 1
         let text = String(describing: value)
-        guard text.unicodeScalars.contains("\u{0}") else { return text }
-        return String(String.UnicodeScalarView(text.unicodeScalars.map { $0 == "\u{0}" ? "\u{FFFD}" : $0 }))
+        guard text.unicodeScalars.contains(where: isReserved) else { return text }
+        return String(String.UnicodeScalarView(text.unicodeScalars.map { isReserved($0) ? "\u{FFFD}" : $0 }))
     }
 
-    /// `identity` standing at `place`.
+    /// Whether `scalar` is one no words carry: a NUL, a group separator or a record separator.
+    private static func isReserved(_ scalar: Unicode.Scalar) -> Bool {
+        scalar == "\u{0}" || scalar == "\u{1D}" || scalar == "\u{1E}"
+    }
+
+    /// `identity` - a name of the list's own, which no words equal - standing at `place`.
     private func named(_ identity: String, _ place: Place) -> String {
         Renderer.shared.texts += 1
-        let identity = free(identity)
         places[identity] = place
         return identity
     }

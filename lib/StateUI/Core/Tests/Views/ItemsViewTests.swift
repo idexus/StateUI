@@ -247,12 +247,12 @@ final class ItemsViewTests: XCTestCase {
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Stone"], "each section by its id")
-        XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
-        XCTAssertEqual(entries.sections.map(\.footer), [nil, "Stone\u{1E}footer"])
+        XCTAssertEqual(entries.sections.map(\.header), ["\u{1E}Fruit\u{1E}header", nil])
+        XCTAssertEqual(entries.sections.map(\.footer), [nil, "\u{1E}Stone\u{1E}footer"])
         XCTAssertEqual(entries.sections.map(\.items), [["Apple", "Pear"], ["Plum"]])
 
-        let held = try self.list(in: hold(["Fruit\u{1E}header", "Plum"], in: renders, list: list))
-        XCTAssertEqual(held.child("Fruit\u{1E}header")?.props[.text], .string("Fruit"))
+        let held = try self.list(in: hold(["\u{1E}Fruit\u{1E}header", "Plum"], in: renders, list: list))
+        XCTAssertEqual(held.child("\u{1E}Fruit\u{1E}header")?.props[.text], .string("Fruit"))
         XCTAssertEqual(held.child("Plum")?.props[.text], .string("Plum"))
     }
 
@@ -375,6 +375,59 @@ final class ItemsViewTests: XCTestCase {
         }
     }
 
+    /// A name the list makes - its header's - is no item's: an item whose words read as one is named apart, so the
+    /// header keeps its own state and the item starts with its own.
+    func testAnItemWhoseWordsReadAsTheHeadersNameIsNamedApart() throws {
+        let renders = Renders()
+        func tree(_ items: [String]) -> Node {
+            ItemsView(items) { CounterRow(name: "item \($0)") }.header(CounterRow(name: "header")).node
+        }
+        let list = try list(in: renders.render(tree(["x"])))
+        let before = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        _ = try hold(before.identities, in: renders, list: list)
+        renders.fire(try XCTUnwrap(click("header:0", in: renders.renderFromScratch(tree(["x"])))))
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        let added = try self.list(in: renders.render(tree(["x", "\u{1E}header"]), changed: Renderer.shared.pendingChanges))
+        let after = try XCTUnwrap(added.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(after.header, before.header, "the header keeps its name")
+        _ = try hold(after.identities, in: renders, list: list)
+        let captions = captions(in: renders.renderFromScratch(tree(["x", "\u{1E}header"])))
+        XCTAssertEqual(captions.sorted(), ["header:1", "item \u{1E}header:0", "item x:0"])
+    }
+
+    /// A section whose id's words are empty is no "no section": its header and the list's own are each their own.
+    func testASectionOfEmptyWordsKeepsItsHeaderApartFromTheLists() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(sections: [
+            Section(["a"]) { Text($0) }.id("").header(Text("Section")),
+        ]).header(Text("List")).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.header, "\u{1E}header", "the list's own header is named as with no section")
+        XCTAssertNotEqual(entries.sections[0].header, entries.header)
+    }
+
+    /// A name an entry stood under in the build before is no new value's: a value coming as one of alike words goes
+    /// is named apart, and starts with its own state rather than carrying what the one gone kept.
+    func testAValueComingAsOneOfAlikeWordsGoesTakesNoState() throws {
+        let order = State(wrappedValue: [Twin(raw: 1)])
+        let renders = Renders()
+        let list = try list(in: renders.render(CountingTwins(order: order).node))
+        let before = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        _ = try hold(before.identities, in: renders, list: list)
+        renders.fire(try XCTUnwrap(click("1:0", in: renders.renderFromScratch(CountingTwins(order: order).node))))
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        order.wrappedValue = [Twin(raw: 2)]
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        let changed = try self.list(in: renders.renderFromScratch(CountingTwins(order: order).node))
+        let after = try XCTUnwrap(changed.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertNotEqual(after.identities, before.identities, "another value, another name")
+        _ = try hold(after.identities, in: renders, list: list)
+        XCTAssertEqual(captions(in: renders.renderFromScratch(CountingTwins(order: order).node)), ["2:0"])
+    }
+
     /// With no items the list is its empty view; a header alone is no item.
     func testAnEmptyListIsItsEmptyView() throws {
         let renders = Renders()
@@ -416,6 +469,16 @@ final class ItemsViewTests: XCTestCase {
     /// The words of every text in a patch, in order.
     private func texts(in patch: HostPatch) -> [String] {
         patch.subtree.filter { $0.type == .text }.compactMap { $0.props[.text]?.string }
+    }
+
+    /// The words of every button in a patch, in order.
+    private func captions(in patch: HostPatch) -> [String] {
+        patch.subtree.filter { $0.type == .button }.compactMap { $0.props[.text]?.string }
+    }
+
+    /// The click of the button of `caption`, where one stands.
+    private func click(_ caption: String, in patch: HostPatch) -> Int? {
+        patch.subtree.first { $0.type == .button && $0.props[.text] == .string(caption) }?.events?[.clicked]
     }
 
     /// The entries round-trip through what crosses.
@@ -493,5 +556,24 @@ private struct AlikeList: View {
 
     var body: some View {
         ItemsView(order.wrappedValue) { Text("\($0.raw)") }
+    }
+}
+
+/// A row counting its clicks in a state of its own: what a row keeps while it stands.
+private struct CounterRow: View {
+    let name: String
+    @State private var count = 0
+
+    var body: some View {
+        Button("\(name):\(count)").onClicked { count += 1 }
+    }
+}
+
+/// A list of `order`, each twin a counting row, built again as the order changes.
+private struct CountingTwins: View {
+    let order: State<[Twin]>
+
+    var body: some View {
+        ItemsView(order.wrappedValue) { CounterRow(name: "\($0.raw)") }
     }
 }
