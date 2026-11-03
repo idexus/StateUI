@@ -214,9 +214,11 @@ final class PersistentStore {
         return storage
     }
 
-    /// Marks a key for saving with its value; the write wakes the host.
+    /// Marks a key for saving with its value and asks the host for a turn to take it.
+    /// Design: docs/design/core/state.md#kept-state
     func record<Value>(_ key: PersistentKey<Value>, _ value: PropValue) {
         waiting[key.key] = value
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// How many keys are waiting - work the host takes whether or not a render was

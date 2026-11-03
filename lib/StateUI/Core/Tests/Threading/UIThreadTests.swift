@@ -193,6 +193,34 @@ final class UIThreadTests: XCTestCase {
         XCTAssertEqual(drainedActs().map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
+    /// A SAVE RECORDED asks for a turn whatever road the value came in by: a kept
+    /// state nobody reads, snapped to where a measurement put it, is saved with
+    /// no other event.
+    func testAKeptStateSnappedNobodyReadsStillAsksForATurn() throws {
+        _ = drainedActs()
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        let key = PersistentKey<Double>("mainThread.snapped")
+        let kept = State(wrappedValue: 1.0, persistentKey: key)
+
+        XCTAssertEqual(asked { kept.projectedValue.journey.snap(to: 0.5) }, 1, "the snap asked for no turn")
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
+        XCTAssertEqual(drainedActs().map { $0.name }, ["persistValue"], "the turn takes the save")
+    }
+
+    /// A scene's record asks for a turn as it records a value to keep, as the
+    /// store does: the save is the host's work whoever recorded it.
+    func testASceneValueRecordedAsksForATurn() throws {
+        _ = drainedActs()
+        stateUIRunJobs()
+
+        let record = SceneRecord(id: "1", declaration: 0)
+
+        XCTAssertEqual(asked { record.record(SceneKey<Double>("shade").key, .number(0.5)) }, 1)
+        XCTAssertEqual(record.pending, 1)
+    }
+
     /// A MOVEMENT asks for a turn: `move(to:)` books its waiter and writes the
     /// destination onto the value's board - no job, no act, and no render where
     /// nobody reads the value - and the write waiting for a cycle asks as it

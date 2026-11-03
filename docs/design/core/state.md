@@ -347,9 +347,13 @@ the storage itself, on every road a value comes in by, a moving value by where
 it is going. The saves go out as one act
 per key per take, sorted by name, holding the last value: a key written five
 times inside one handler is saved once. It is a collapse per drain, not a
-delay. A write to a kept state asks the host for a turn itself, and waiting
-saves count as pending work, because a kept state nobody reads asks for no
-render and its save must not wait for the next event.
+delay. The store asks the host for a turn as it records a save, and a
+scene's record as it records a value, as the act queue does for an act sent
+(concurrency.md#the-doorbell): whoever holds the work rings, so every road a
+value comes in by - a write, a landing, a movement's arrival - wakes the host
+alike, and none has to remember to. Waiting saves count as pending work,
+because a kept state nobody reads asks for no render and its save must not
+wait for the next event.
 
 The hook that marks the key - the storage's `keep`, run on every road a value
 comes in by - serves two more states whose every write must leave the core: a

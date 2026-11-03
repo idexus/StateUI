@@ -182,10 +182,12 @@ final class SceneRecord {
         return storage
     }
 
-    /// Marks a key as needing to be kept, replacing whatever value was
-    /// waiting.
+    /// Marks a key as needing to be kept, replacing whatever value was waiting, and asks the host for a turn to
+    /// take it.
+    /// Design: docs/design/core/state.md#kept-state
     func record(_ key: KeyName, _ value: PropValue) {
         waiting[key] = value
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// How many keys are waiting to be kept.
