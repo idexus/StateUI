@@ -97,8 +97,12 @@ each told in one call, in the same order.
 
 `EndReachedWatch`: the end is told as the last item in view comes within
 `endReachedWithin` items of the last one, once. It is told again only after
-the user scrolls away from the end, or once the list gains or loses items,
-so a list waiting for more is not asked for more on every frame.
+the user scrolls away from the end, or once items came or went, so a list
+waiting for more is not asked for more on every frame. The cells tell the
+watch that items came or went as they take the entries, where the items are
+others than before: as many others count - a page of results swapped for
+another of the same length asks again - while the same items in another order
+or a header come do not.
 
 ## The view moving
 

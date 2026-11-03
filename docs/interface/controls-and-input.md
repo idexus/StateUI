@@ -836,7 +836,7 @@ item alone, and an item moved to another section is the same item. Where one
 thing shows in two sections - a favorite among all the contacts - give each
 row its own id, the section's and the thing's together.
 `.onEndReached(within:)` hears the user come within so many items of the
-end - once, until they scroll away or the number of items changes; written
+end - once, until they scroll away or items come or go; written
 more than once, every handler hears it within the farthest distance named - and
 `.emptyView` stands in the list's place while it has no items.
 

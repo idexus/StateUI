@@ -42,6 +42,25 @@ private struct ShrinkingPage: View {
     var body: some View { ItemsView(0..<Shrinking.count) { Text("\($0)") } }
 }
 
+/// The items a changing list shows and the header it has, which a test replaces, and how often its end was told.
+private enum Changing {
+    nonisolated(unsafe) static var items = Array(0..<10)
+    nonisolated(unsafe) static var header: String?
+    nonisolated(unsafe) static var ends = 0
+}
+
+private struct ChangingApplication: Application {
+    var body: some Scene { WindowGroup { ChangingPage() } }
+}
+
+private struct ChangingPage: View {
+    var body: some View {
+        var list = ItemsView(Changing.items) { Text("\($0)") }
+        if let header = Changing.header { list = list.header(Text(header)) }
+        return list.onEndReached(within: 0) { Changing.ends += 1 }
+    }
+}
+
 /// A native cell as the host layer holds it.
 @MainActor
 private final class Cell: ItemsHolding {
@@ -432,6 +451,42 @@ final class ItemsCellsTests: XCTestCase {
         cells.showing(["94", "95"])
         cells.showing(["96", "99"])
         XCTAssertEqual(Heard.ends, 1)
+    }
+
+    /// The end is told again once items came or went - the items replaced by as many others, one more added - and
+    /// not as the same items stand in another order or a header comes, the view staying at the end throughout.
+    func testTheEndIsToldAgainOnceItemsCameOrWent() throws {
+        Changing.items = Array(0..<10)
+        Changing.header = nil
+        Changing.ends = 0
+        ChangingApplication.register()
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        func replace(_ items: [Int], header: String? = nil) {
+            Changing.items = items
+            Changing.header = header
+            Renderer.shared.setNeedsRender()
+            runtime.pump.turn()
+            cells.takeEntries()
+        }
+
+        cells.showing(["9"])
+        XCTAssertEqual(Changing.ends, 1)
+        replace(Array((0..<10).reversed()))
+        cells.showing(["0"])
+        XCTAssertEqual(Changing.ends, 1, "the same items in another order")
+        replace(Array(0..<10), header: "Header")
+        cells.showing(["9"])
+        XCTAssertEqual(Changing.ends, 1, "a header is no item")
+        replace(Array(10..<20), header: "Header")
+        cells.showing(["19"])
+        XCTAssertEqual(Changing.ends, 2, "others came, as many as went")
+        replace(Array(10..<21), header: "Header")
+        cells.showing(["20"])
+        XCTAssertEqual(Changing.ends, 3, "one more came")
     }
 
     /// A list's view moving moves its items in the window though nothing is laid out: whoever reads a frame says it
