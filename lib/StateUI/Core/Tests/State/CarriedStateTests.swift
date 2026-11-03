@@ -67,6 +67,28 @@ private struct Holder: View {
     }
 }
 
+/// A view counting with a state of its own, so a test can place ONE value of it twice.
+private struct Tally: View {
+    @State private var count = 0
+
+    var body: some View { Button("\(count)").onClicked { count += 1 } }
+}
+
+/// A view counting with a state of its own, held in a property by the view below.
+private struct Counted: View {
+    @State private var count = 0
+
+    var body: some View { Button("counted \(count)").onClicked { count += 1 } }
+}
+
+/// A view holding another in a property and placing it once: the holder's walk meets the held view's box before
+/// the held view's own place does - one lineage, not two places.
+private struct Holding: View {
+    let counted = Counted()
+
+    var body: some View { VStack { counted } }
+}
+
 /// A composed view with nothing of its own written on it, so a test can write
 /// a driven state ON it and look for the registration on the element its body ends at.
 private struct Plain: View {
@@ -967,6 +989,44 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(room.wrappedValue.width, 90, "the part writes through the whole")
         XCTAssertEqual(part.wrappedValue, 90, "and reads it back")
+    }
+
+    /// One view value placed twice has one box for both places, which can belong to one: the first place owns it
+    /// and the second shows nothing, said once.
+    func testAValueStandingInTwoPlacesOwnsItsStateInTheFirst() throws {
+        let renders = Renders()
+        let tally = Tally()
+
+        let patch = renders.render(stack([tally.node, tally.node], id: "root"))
+
+        XCTAssertEqual(patch.child(.auto(1))?.props[.text], .string("0"))
+        XCTAssertEqual(patch.child(.auto(2))?.type, .anchor, "the second place shows nothing")
+        XCTAssertTrue(hasComplained("Tally value stands in two places at once"))
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(patch.child(.auto(1))?.events?["clicked"])))
+        let again = renders.render(
+            stack([tally.node, tally.node], id: "root"), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(again.child(.auto(1))?.props[.text], .string("1"), "the first place keeps its state")
+        XCTAssertNil(again.child(.auto(2)), "the second place, unchanged, is not said again")
+    }
+
+    /// A view held in a property and placed once stands once: its holder's walk meets its box first, and the view's
+    /// own place is under the holder.
+    func testAViewHeldInAPropertyStandsOnceUnderItsHolder() throws {
+        let renders = Renders()
+
+        let patch = renders.render(stack([Holding().node], id: "root"))
+        let button = try XCTUnwrap(patch.child(.auto(1))?.child(.auto(2)))
+
+        XCTAssertEqual(button.type, .button)
+        XCTAssertEqual(button.props[.text], .string("counted 0"))
+        XCTAssertFalse(hasComplained("Counted value stands in two places"))
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button.events?["clicked"])))
+        let again = renders.render(stack([Holding().node], id: "root"), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(again.child(.auto(1))?.child(.auto(2))?.props[.text], .string("counted 1"))
     }
 
     /// `update(_:)` on a carried state MOVES the value, which is the whole of

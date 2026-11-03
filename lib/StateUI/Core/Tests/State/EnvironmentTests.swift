@@ -87,6 +87,15 @@ private struct VisitButton: View {
     }
 }
 
+/// A handler captioned by the provided object, so a test can tell which place's button it fires.
+private struct NameButton: View {
+    @Environment var session: Session
+
+    var body: some View {
+        Button(session.name).onClicked { session.visits += 1 }
+    }
+}
+
 /// Whether a peek reads its environment - off, so a test can look at the slot after the provider left without
 /// the read reporting it.
 @MainActor
@@ -294,6 +303,26 @@ final class EnvironmentTests: XCTestCase {
 
         let patch = renders.revisit(changed: changed)
         XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("visits 1"))
+    }
+
+    /// One view value standing in two places, each under its own provider: the first place's handler writes the
+    /// object provided THERE, and the second place shows nothing, said once - a value's slot belongs to one place.
+    func testAValueStandingTwiceKeepsTheFirstPlacesEnvironmentForItsHandler() throws {
+        let renders = Renders()
+        let a = Session(), b = Session()
+        a.name = "a"
+        b.name = "b"
+        let button = NameButton()
+
+        let patch = renders.render(
+            stack([button.environment(a).node, button.environment(b).node], id: "root"))
+
+        XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("a"))
+        XCTAssertTrue(renders.fire(try XCTUnwrap(patch.child(.auto(1))?.events?["clicked"])))
+        XCTAssertEqual(a.visits, 1, "the first place's handler writes the object provided there")
+        XCTAssertEqual(b.visits, 0, "the sibling's object is untouched")
+        XCTAssertEqual(patch.child(.auto(2))?.type, .anchor, "the second place shows nothing")
+        XCTAssertTrue(hasComplained("NameButton value stands in two places at once"))
     }
 
     /// A slot keeps no provider from a walk before: rendered again with none, a kept view value holds nothing, and

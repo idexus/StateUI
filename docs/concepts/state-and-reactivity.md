@@ -57,6 +57,12 @@ therefore continues to write the storage read by the current build. Removing
 the element ends that lifetime. See the ownership rules in
 [Architecture](architecture.md#deterministic-ownership).
 
+A view value stands in one place. Its `@State` and `@Environment` are what the
+value holds, and StateUI hands them the storage and the environment of the
+place the value stands in - so one value placed twice would share them between
+two places. The first place shows it; the second shows nothing, and StateUI
+says so once. Make a value for each place, where each stands.
+
 The expression beside a state declaration is evaluated lazily. A newly built
 box that adopts existing storage does not evaluate and discard its proposed
 initial value. State declared on the `Application` instead lives for the
