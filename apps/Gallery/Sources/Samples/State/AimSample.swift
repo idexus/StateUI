@@ -28,6 +28,8 @@ struct AimSample: SampleContent, ExampleContent {
     static let title = "Aiming an act"
     static let summary = "A value you write, or a control you call - @State and @Aim."
 
+    static var code: String { Listings.joined("AimedField", "AimSample") }
+
     // listing: AimSample
     var body: some View {
         VStack {
@@ -132,7 +134,7 @@ struct AimSample: SampleContent, ExampleContent {
     }
 }
 
-// listing: AimSample.field
+// listing: AimedField
 /// The first field: handed the page's aim and its text, so the page building
 /// again carries it - and the aim stays on the field it was put on.
 private struct AimedField: View {

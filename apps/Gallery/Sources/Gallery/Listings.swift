@@ -155,7 +155,7 @@ enum Listings {
             }
         }
         """#,
-        "AimSample.field": #"""
+        "AimedField": #"""
         // Sources/Samples/State/AimSample.swift
         /// The first field: handed the page's aim and its text, so the page building
         /// again carries it - and the aim stays on the field it was put on.
