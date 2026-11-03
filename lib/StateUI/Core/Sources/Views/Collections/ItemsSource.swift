@@ -111,13 +111,13 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     }
 
     /// Each section's name, in order: the one `book` says it stood under while its id stays on the list, else the
-    /// words of its id - of its place, where it has none - told apart from every other name. Two sections of one id
-    /// are said.
+    /// words of its id - of its place, where it has none - told apart from every other name, those of the build
+    /// before included. Two sections of one id are said.
     private func sectionNames(book: ItemsBook<ID>) -> [String] {
         let keys = sections.enumerated().map { number, section in
             section.identity ?? AnyHashable(SectionPlace(number))
         }
-        let reserved = Set(keys.compactMap { book.sections[$0] })
+        let reserved = Set(book.sections.values)
         var stood: [AnyHashable: String] = [:]
         var names: [String] = []
         for (number, key) in keys.enumerated() {

@@ -428,6 +428,30 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(captions(in: renders.renderFromScratch(CountingTwins(order: order).node)), ["2:0"])
     }
 
+    /// A name a section stood under in the build before is no new section's either: a section coming as one of
+    /// alike words goes is named apart, and its header and footer start with their own state.
+    func testASectionComingAsOneOfAlikeWordsGoesTakesNoState() throws {
+        let which = State(wrappedValue: Twin(raw: 1))
+        let renders = Renders()
+        let list = try list(in: renders.render(CountingShelf(which: which).node))
+        let before = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        _ = try hold(before.identities, in: renders, list: list)
+        let first = renders.renderFromScratch(CountingShelf(which: which).node)
+        renders.fire(try XCTUnwrap(click("header:0", in: first)))
+        renders.fire(try XCTUnwrap(click("footer:0", in: first)))
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        which.wrappedValue = Twin(raw: 2)
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        let changed = try self.list(in: renders.renderFromScratch(CountingShelf(which: which).node))
+        let after = try XCTUnwrap(changed.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertNotEqual(after.sections[0].identity, before.sections[0].identity, "another section, another name")
+        _ = try hold(after.identities, in: renders, list: list)
+        XCTAssertEqual(
+            captions(in: renders.renderFromScratch(CountingShelf(which: which).node)).sorted(),
+            ["footer:0", "header:0", "item:0"])
+    }
+
     /// With no items the list is its empty view; a header alone is no item.
     func testAnEmptyListIsItsEmptyView() throws {
         let renders = Renders()
@@ -566,6 +590,20 @@ private struct CounterRow: View {
 
     var body: some View {
         Button("\(name):\(count)").onClicked { count += 1 }
+    }
+}
+
+/// One section of `which`, its header, item and footer each a counting row, built again as the section changes.
+private struct CountingShelf: View {
+    let which: State<Twin>
+
+    var body: some View {
+        ItemsView(sections: [
+            Section(["a"]) { _ in CounterRow(name: "item") }
+                .id(which.wrappedValue)
+                .header(CounterRow(name: "header"))
+                .footer(CounterRow(name: "footer")),
+        ])
     }
 }
 

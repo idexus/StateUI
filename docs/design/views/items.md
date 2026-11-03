@@ -26,9 +26,12 @@ never one, whatever the author's words.
 A section is known by the value `.id` gives it, as an item is by its own, and
 one given none by its place; its name is that value's words - the place's
 number - and the list keeps the name each section stood under across builds
-(`ItemsBook`), so a section keeps its name wherever it moves. Two sections
-given one id are a repeat, told apart and said; a place whose number reads as
-an author's id is no repeat, only told apart.
+(`ItemsBook`), so a section keeps its name wherever it moves. Every name of
+the build before is kept from a new section as it is from a new item (below),
+a section gone included: its header and footer are named from it, and a new
+section under it would carry their state. Two sections given one id are a
+repeat, told apart and said; a place whose number reads as an author's id is
+no repeat, only told apart.
 
 An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
 and its words only name it. The list keeps, from one build to the next, the
