@@ -136,15 +136,6 @@ extension Differ {
                     sceneRecord = record
                 }
 
-                // One value standing in two places under different providers would read one of them from both:
-                // the second place shows nothing, said once.
-                // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
-                if let refusal = place(stateful, at: id) {
-                    complain(refusal)
-                    node = Node(contract: AnchorContract.self)
-                    break
-                }
-
                 // A view lying byte for byte as its predecessor holds what that held: its walk is the
                 // predecessor's, its boxes already the ones kept.
                 // Design: docs/design/core/identity-and-diffing.md#a-view-built-as-it-was
@@ -167,6 +158,16 @@ extension Differ {
                             fresh.adopt(from: previous)
                         }
                     }
+                }
+
+                // One value standing in two places under different providers would read one of them from both:
+                // the second place shows nothing, said once. After the walk is taken, so a view built as it was
+                // is walked by no mirror for this.
+                // Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+                if let refusal = place(stateful, at: id) {
+                    complain(refusal)
+                    node = Node(contract: AnchorContract.self)
+                    break
                 }
 
                 // A state met for the first time is named by its property: the walk's paths spelled
