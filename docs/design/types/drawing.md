@@ -72,7 +72,11 @@ ends.
 A host drawing in Swift reads the records into instructions the same way on
 every such host (`CanvasInstruction`), keeps what they set by one pen
 (`CanvasPen`), and draws an arc as the curves the host layer makes of it
-(`CanvasArithmetic`) - an arc of a whole turn the ellipse whole.
+(`CanvasArithmetic`) - an arc of a whole turn the ellipse whole. An arc's
+turn is the difference of its angles reduced to one turn, in degrees, the way
+asked - a difference of a whole turn or more the whole ellipse, either way
+round - so an angle of any size costs the same; an angle that is no number
+draws nothing.
 
 The instructions run in the order they are written, and a setting holds
 until the next of its kind: a `fillColor` paints every fill after it until

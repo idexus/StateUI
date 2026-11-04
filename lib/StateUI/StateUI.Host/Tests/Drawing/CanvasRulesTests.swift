@@ -65,6 +65,23 @@ final class CanvasRulesTests: XCTestCase {
         XCTAssertEqual(wedge.last, .close)
     }
 
+    /// An arc of any finite angle is drawn at once: a turn of any size past the whole is the ellipse whole, back
+    /// where it began, either way round; an angle that is no number draws nothing.
+    func testAnArcOfAnyAngleIsDrawnAtOnce() throws {
+        let room = Rect(x: 0, y: 0, width: 100, height: 60)
+        for (start, end, clockwise) in [(1e20, 0.0, true), (0.0, -1e20, false), (720.0, 0.0, false), (-1e300, 1e300, true)] {
+            let curve = CanvasArithmetic.arc(in: room, start: start, end: end, clockwise: clockwise, closed: false, wedge: false)
+            XCTAssertGreaterThan(curve.count, 2, "\(start) to \(end)")
+            guard case .move(let began)? = curve.first, case .cubic(_, _, let ended)? = curve.last else {
+                return XCTFail("a whole turn is curves from a point: \(start) to \(end) ends in \(String(describing: curve.last))")
+            }
+            XCTAssertEqual(ended.x, began.x, accuracy: 1e-6, "\(start) to \(end)")
+            XCTAssertEqual(ended.y, began.y, accuracy: 1e-6, "\(start) to \(end)")
+        }
+        XCTAssertEqual(CanvasArithmetic.arc(in: room, start: .infinity, end: 0, clockwise: true, closed: false, wedge: false), [])
+        XCTAssertEqual(CanvasArithmetic.arc(in: room, start: 0, end: .nan, clockwise: false, closed: true, wedge: true), [])
+    }
+
     /// A replay takes each setting into its pen, saves and puts back in turn - a put back with none saved doing
     /// nothing - and draws everything else with the pen as it stands.
     func testAReplayDrawsWithThePenAsItStands() {

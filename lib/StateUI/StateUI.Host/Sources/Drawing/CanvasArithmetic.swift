@@ -13,17 +13,17 @@ import StateUIFoundation
     public static func arc(
         in rect: Rect, start: Double, end: Double, clockwise: Bool, closed: Bool, wedge: Bool
     ) -> [HostCurveCommand] {
+        guard start.isFinite, end.isFinite else { return [] }
         let middle = Point(x: rect.x + rect.width / 2, y: rect.y + rect.height / 2)
         let (radiusX, radiusY) = (abs(rect.width) / 2, abs(rect.height) / 2)
-        let from = start * .pi / 180
-        var to = end * .pi / 180
-        if clockwise {
-            while to < from { to += 2 * .pi }
-        } else {
-            while to > from { to -= 2 * .pi }
-        }
+        // The turn in degrees, reduced to one whatever the angles' size: the way asked, or whole past a whole.
         let whole = abs(end - start) >= 360
-        if whole { to = from + (clockwise ? 2 : -2) * .pi }
+        var turn = (end - start).truncatingRemainder(dividingBy: 360)
+        if clockwise, turn < 0 { turn += 360 }
+        if !clockwise, turn > 0 { turn -= 360 }
+        if whole { turn = clockwise ? 360 : -360 }
+        let from = start.truncatingRemainder(dividingBy: 360) * .pi / 180
+        let to = from + turn * .pi / 180
         func point(_ angle: Double) -> Point {
             Point(x: middle.x + radiusX * cos(angle), y: middle.y + radiusY * sin(angle))
         }
