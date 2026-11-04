@@ -462,6 +462,29 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(element.spokenWords, "Row five", "its own label stands for all it holds")
     }
 
+    /// An element hidden from assistive technology says nothing of its own - not its label, not its words - while
+    /// what it holds still speaks; one hidden with all it holds says nothing at all.
+    @MainActor
+    func testAHiddenElementSaysNothingOfItsOwnWhileWhatItHoldsSpeaks() throws {
+        var child = HostPatch(id: .manual("child"), type: .text)
+        child.properties = [.text: .string("Shown")]
+        var row = HostPatch(id: .manual("row"), type: .vStack)
+        row.properties = [
+            .accessibilityLabel: .string("Private"), .text: .string("Own"), .isAccessibilityHidden: .bool(true),
+        ]
+        row.children = .arranged([child])
+        let (tree, _) = Self.tree(viewless: [])
+        tree.apply(row, complete: true)
+        let element = try XCTUnwrap(tree.root)
+
+        XCTAssertEqual(element.spokenWords, "Shown", "neither the label nor the words of the hidden element")
+
+        var whole = HostPatch(id: .manual("row"), type: .vStack)
+        whole.properties = [.hidesChildrenFromAccessibility: .bool(true)]
+        tree.apply(whole, complete: false)
+        XCTAssertEqual(element.spokenWords, "", "hidden with all it holds")
+    }
+
     /// Four sides are read once for every host: leading, top, trailing, bottom, as the tree gives them; nothing all
     /// round where it gives none, or fewer than four.
     @MainActor

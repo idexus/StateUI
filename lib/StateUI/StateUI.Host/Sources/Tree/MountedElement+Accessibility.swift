@@ -116,14 +116,15 @@ extension MountedElement {
     /// What assistive technology says for this element and all it holds, in reading order - the name of a row a
     /// toolkit's screen reader reads no further into: an element's label where it gives one, standing for all it
     /// holds; else its own words - its runs of words whole - then its children's, apart by commas; nothing of what
-    /// is left out or hidden.
+    /// is left out, and nothing of a hidden element's own while what it holds still speaks.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
     public var spokenWords: String {
         let words = accessibilityWords
         guard words.presence != .hiddenWithChildren, bool(.isVisible) != false else { return "" }
-        if let label = words.label, !label.isEmpty { return label }
-        if let runs = textRuns { return words.presence == .hidden ? "" : runs.map(\.text).joined() }
-        let own = words.presence == .hidden ? nil : string(.text)
+        let hidden = words.presence == .hidden
+        if !hidden, let label = words.label, !label.isEmpty { return label }
+        if let runs = textRuns { return hidden ? "" : runs.map(\.text).joined() }
+        let own = hidden ? nil : string(.text)
         return ([own ?? ""] + children.map(\.spokenWords)).filter { !$0.isEmpty }.joined(separator: ", ")
     }
 }

@@ -284,6 +284,7 @@ left it.
 Where a toolkit's screen reader reads a row by its name alone - a list's
 container - the row is named by what its entry says (`spokenWords`): an
 element's label stands for all it holds; else its own words, a label's runs
-whole, then its children's, apart by commas; what is left out or hidden says
-nothing.
+whole, then its children's, apart by commas; what is left out says nothing,
+and an element hidden by itself says nothing of its own - not its label, not
+its words - while what it holds still speaks, as it is still met.
 
