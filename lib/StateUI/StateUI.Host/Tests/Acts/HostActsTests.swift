@@ -89,7 +89,7 @@ final class HostActsTests: XCTestCase {
         var spun = 0
         acts.add(InteropTestActs.shake, control: { $0 }) { _ in spun += 1; return "spun" }
         var wheel: Wheel? = Wheel()
-        weak var dropped = wheel
+        weak let dropped = wheel
         var said: [String] = []
         let call = HostActCall(act: InteropTestActs.shake.token, arguments: [.string("wheel")], completion: nil)
 
