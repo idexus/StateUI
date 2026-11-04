@@ -79,6 +79,9 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
     private var dragged = false
     private var mirrors = false
 
+    /// Whether the hand was told to have begun and not yet to have ended.
+    private var holding = false
+
     init() {
         super.init(target: nil, action: nil)
         target = self
@@ -96,13 +99,13 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         // A press with ⌥ over a view two fingers move is theirs.
         mirrors = AppKitMirroredRecognizer.takes(event.modifierFlags)
             && view?.gestureRecognizers.contains { $0 is AppKitMirroredRecognizer } == true
-        guard !mirrors else { return }
-        pressed(at: point(of: event))
+        guard !mirrors, let at = point(of: event) else { return }
+        pressed(at: at)
     }
 
     override func mouseUp(with event: NSEvent) {
         super.mouseUp(with: event)
-        if !dragged, !mirrors { released() }
+        if !dragged, !mirrors, holding { released() }
     }
 
     /// The pointer pressed at `point` of the view: the hand begins there.
@@ -110,7 +113,15 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         down = point
         last = .zero
         dragged = false
+        holding = true
         reader?.hand(.began, moved: .zero, point: point)
+    }
+
+    /// The view is flattened under the hand: the press under way, if one, is taken away.
+    private func takenAway() {
+        guard holding else { return }
+        holding = false
+        reader?.hand(.cancelled, moved: .zero)
     }
 
     /// The pointer pressed moved to `point` of the view, as the drag tells it.
@@ -123,13 +134,15 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
     /// The pointer pressed let go, at the speed the drag read where it moved.
     func released(speed: Point? = nil) {
+        holding = false
         reader?.hand(.ended, moved: .zero, speed: speed)
     }
 
-    /// Where `event` happened in the view, where the view is drawn, from its top left.
-    private func point(of event: NSEvent) -> Point {
-        guard let view else { return .zero }
-        return view.topLeft(view.drawnPoint(fromWindow: event.locationInWindow))
+    /// Where `event` happened in the view, where the view is drawn, from its top left; nil where no point lands in
+    /// the view, flattened by its drawing.
+    private func point(of event: NSEvent) -> Point? {
+        guard let view else { return nil }
+        return view.drawnPoint(fromWindow: event.locationInWindow).map(view.topLeft)
     }
 
     @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
@@ -138,8 +151,9 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         // How far the press came, measured where the view is drawn, from its top left.
         let now = location(in: nil)
         let moved = translation(in: nil)
-        let at = view.topLeft(view.drawnPoint(fromWindow: now))
-        let from = view.topLeft(view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)))
+        guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
+              let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
+        else { return takenAway() }
         let total = Point(at.x - from.x, at.y - from.y)
 
         switch state {
@@ -154,6 +168,7 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
             let speed = velocity(in: view)
             released(speed: Point(Double(speed.x), Double(flipped ? speed.y : -speed.y)))
         case .cancelled, .failed:
+            holding = false
             reader?.hand(.cancelled, moved: .zero)
         default:
             break

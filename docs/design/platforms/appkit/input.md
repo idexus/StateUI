@@ -43,7 +43,14 @@ in a space the view does not. A view drawn as it lies costs nothing of this.
 What AppKit tracks by itself keeps its frame: a native control drawn away
 from it - a button translated or turned - is found where it is drawn, then
 follows its click by its frame, which is the toolkit's; a drag's speed is the
-toolkit's reading too.
+toolkit's reading too. A drawing that flattens the view - a scale of zero on
+an axis, a plane turned edge-on - has no inverse: no point of the window
+lands in the view, `undrawn` and `drawnPoint(fromWindow:)` answer nil, and
+the view is not under the pointer. A layout passes over it as it finds what
+is hit, a press begun on it ends as cancelled, a drag, a pinch, two fingers
+and the hand are taken away, the pointer is told to have left and nothing
+more, and a native button's own tracking counts its press outside. The frame
+alone never stands in for a drawing that has no inverse.
 
 ## A disabled view
 

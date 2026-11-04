@@ -30,9 +30,10 @@ extension NSView {
 
     /// Where `point`, in the window, lands in the view's own coordinates under what its drawing and its ancestors'
     /// move - which `convert(_:from:)` leaves out: the point taken down from the window's content, each drawing
-    /// undone in turn; by the frames alone where none draws away.
+    /// undone in turn; by the frames alone where none draws away. Nil where a drawing on the way flattens its view:
+    /// no point lands in it.
     /// Design: docs/design/platforms/appkit/input.md#a-view-drawn-away-from-its-frame
-    func drawnPoint(fromWindow point: NSPoint) -> NSPoint {
+    func drawnPoint(fromWindow point: NSPoint) -> NSPoint? {
         guard standsDrawnAway else { return convert(point, from: nil) }
         var views: [NSView] = []
         var each: NSView? = self
@@ -42,25 +43,27 @@ extension NSView {
         }
         var landed = point
         for view in views.reversed() {
-            landed = view.undrawnLocal(view.convert(landed, from: view.superview))
+            guard let undone = view.undrawnLocal(view.convert(landed, from: view.superview)) else { return nil }
+            landed = undone
         }
         return landed
     }
 
     /// `point`, in the superview's coordinates, as the frame alone would map it to where it lands in the view under
-    /// its drawing: what `hitTest(_:)` takes.
+    /// its drawing: what `hitTest(_:)` takes. Nil where the drawing flattens the view: nothing lands in it.
     /// Design: docs/design/platforms/appkit/input.md#a-view-drawn-away-from-its-frame
-    func undrawn(_ point: NSPoint) -> NSPoint {
+    func undrawn(_ point: NSPoint) -> NSPoint? {
         guard isDrawnAway else { return point }
-        return convert(undrawnLocal(convert(point, from: superview)), to: superview)
+        return undrawnLocal(convert(point, from: superview)).map { convert($0, to: superview) }
     }
 
     /// `point`, in the view's own coordinates where its drawing lands, as the frame alone maps it: the drawing
-    /// undone, in the view's space from its top left - the space the drawing counts in.
-    private func undrawnLocal(_ point: NSPoint) -> NSPoint {
+    /// undone, in the view's space from its top left - the space the drawing counts in; nil where the drawing has
+    /// no inverse.
+    private func undrawnLocal(_ point: NSPoint) -> NSPoint? {
         guard let drawing = AppKitViewDrawing.of(self), drawing.drawsAway else { return point }
         let top = isFlipped ? point.y : bounds.height - point.y
-        guard let local = drawing.undrawn(Point(Double(point.x), Double(top))) else { return point }
+        guard let local = drawing.undrawn(Point(Double(point.x), Double(top))) else { return nil }
         return NSPoint(x: local.x, y: isFlipped ? local.y : Double(bounds.height) - local.y)
     }
 }
