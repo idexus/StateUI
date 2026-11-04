@@ -9,6 +9,25 @@ import AppKit
 @_spi(Host) import StateUIApple
 import XCTest
 
+/// A drawing that takes as long as a test says: it says when it has begun, and ends when it is told to.
+private final class SlowDrawing: NSImageRep, @unchecked Sendable {
+    let begun = DispatchSemaphore(value: 0)
+    let done = DispatchSemaphore(value: 0)
+
+    override init() {
+        super.init()
+        size = NSSize(width: 40, height: 20)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func draw(in rect: NSRect) -> Bool {
+        begun.signal()
+        _ = done.wait(timeout: .now() + 5)
+        return true
+    }
+}
+
 @MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
@@ -80,6 +99,31 @@ final class AppKitImageViewTests: XCTestCase {
         view.layoutSubtreeIfNeeded()
         let grown = try pixels(of: view, other: shown)
         XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "more pixels, drawn again")
+    }
+
+    /// A drawing's pixels being made keep no view that left the tree meanwhile: the work holds the drawing, and the
+    /// view is let go as its owner lets it go, however long the drawing takes; the pixels come to nobody.
+    func testADrawingsPixelsBeingMadeKeepNoViewThatLeft() async throws {
+        let drawing = NSImage(size: NSSize(width: 40, height: 20))
+        let slow = SlowDrawing()
+        drawing.addRepresentation(slow)
+        XCTAssertTrue(drawing.isDrawing)
+        weak var gone: AppKitImageView?
+        autoreleasepool {
+            let view = AppKitImageView()
+            gone = view
+            view.frame = NSRect(x: 0, y: 0, width: 40, height: 20)
+            view.apply(image: drawing, aspect: .fit, animationPlaying: false)
+            view.layoutSubtreeIfNeeded()
+        }
+        defer { slow.done.signal() }
+        XCTAssertTrue(begun(slow), "the drawing is being made")
+        XCTAssertNil(gone, "the view, let go by its owner, is gone while its drawing is still being made")
+    }
+
+    /// Whether `drawing` has begun within two seconds - waited for apart from any task, as a semaphore is.
+    nonisolated private func begun(_ drawing: SlowDrawing) -> Bool {
+        drawing.begun.wait(timeout: .now() + 2) == .success
     }
 
     /// The pixels the view shows once they come, other than `other`.
