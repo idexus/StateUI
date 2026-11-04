@@ -75,7 +75,7 @@ public final class TestWindow {
     ///     let window = try await TestWindow(motion: .none) { page }
     ///     let field = try window.element(page.name)
     public func element<Target>(_ aim: Aim<Target>) throws -> TestElement {
-        let element = TestElement(window: self, finding: .aim { aim.element })
+        let element = TestElement(window: self, finding: .aim { aim.place })
         _ = try element.mounted()
         return element
     }

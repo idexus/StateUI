@@ -13,8 +13,8 @@ public struct TestElement {
     enum Finding {
         /// By the identifier automation knows it by.
         case identifier(String)
-        /// By the aim put on it.
-        case aim(@MainActor () -> ElementID?)
+        /// By the aim put on it: where the view stands, the keys from the root down.
+        case aim(@MainActor () -> [ElementID]?)
     }
 
     let window: TestWindow
@@ -64,8 +64,8 @@ public struct TestElement {
         let found: [MountedElement] = switch finding {
         case .identifier(let identifier):
             window.root.map { Self.all(in: $0) { $0.value(.accessibilityIdentifier)?.string == identifier } } ?? []
-        case .aim(let identity):
-            identity().flatMap { id in window.root?.first(id: id) }.map { [$0] } ?? []
+        case .aim(let place):
+            place().flatMap { keys in window.root?.element(at: keys) }.map { [$0] } ?? []
         }
         guard found.count == 1 else {
             throw TestFailure(description: found.isEmpty ? "no view is \(self)" : "\(found.count) views are \(self)")

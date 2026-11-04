@@ -128,10 +128,10 @@ final class IdentityTests: XCTestCase {
         XCTAssertFalse(hasComplained("Ticket"), "nothing to say")
     }
 
-    /// One name under two parents is two elements - an id is distinct among siblings, no further - each with a key
-    /// of its own, so each aim names its own view: the first keeps the name while it stands, the second a number,
-    /// and both keep their keys through a render; nothing is said.
-    func testOneNameUnderTwoParentsIsTwoElements() {
+    /// One name under two parents is two elements - an id is distinct among siblings, no further - each keyed by
+    /// the name, and each aim names its own by where it stands: the keys from the root down, apart at the parents;
+    /// both keep their places through a render, and nothing is said.
+    func testAnAimNamesItsViewByWhereItStands() throws {
         let renders = Renders()
         let left = Aim(TextField.self), right = Aim(TextField.self)
         func page() -> Node {
@@ -142,14 +142,16 @@ final class IdentityTests: XCTestCase {
         }
 
         let fields = renders.render(page()).subtree.filter { $0.type == .textField }.map(\.id)
-        XCTAssertEqual(fields.count, 2)
-        XCTAssertEqual(fields.first, .manual("editor"), "the first keeps the name")
-        XCTAssertNotEqual(fields.first, fields.last, "two keys")
-        XCTAssertEqual(left.element, fields.first)
-        XCTAssertEqual(right.element, fields.last)
+        XCTAssertEqual(fields, [.manual("editor"), .manual("editor")], "each keyed by its name")
+        let (one, other) = (try XCTUnwrap(left.place), try XCTUnwrap(right.place))
+        XCTAssertEqual(one.last, .manual("editor"))
+        XCTAssertEqual(other.last, .manual("editor"))
+        XCTAssertEqual(one.count, 3, "the stack, the column, the field")
+        XCTAssertNotEqual(one, other, "apart at the columns")
+        XCTAssertEqual(one.dropLast(2), other.dropLast(2), "under one stack")
         XCTAssertNil(renders.render(page()).arrangement, "the same elements again, in the same order")
-        XCTAssertEqual(left.element, fields.first, "kept")
-        XCTAssertEqual(right.element, fields.last, "kept")
+        XCTAssertEqual(left.place, one, "kept")
+        XCTAssertEqual(right.place, other, "kept")
         XCTAssertFalse(hasComplained("editor"), "nothing to say: the ids are distinct among their siblings")
     }
 

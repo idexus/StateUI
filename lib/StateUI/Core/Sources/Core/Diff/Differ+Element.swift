@@ -79,7 +79,6 @@ extension Differ {
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
-        if !Self.namedByStateUI.contains(pass.node.type) { keysHeld.insert(id) }
 
         // What it says of its enablement holds for everything in it.
         pass.enablement = Enablement(pass.node)
@@ -109,8 +108,8 @@ extension Differ {
         let (id, rendered, forced) = (pass.id, pass.rendered, pass.forced)
         var node = pass.node
 
-        // An aim takes the key this element settled on (Aim.swift).
-        pass.written?.attach(id, walk: walkStamp)
+        // An aim takes where this element stands (Aim.swift).
+        pass.written?.attach(standing, walk: walkStamp)
 
         // The readings asked for here, keyed by their target and held by this element
         // (Sampling.swift).
@@ -434,7 +433,7 @@ extension Differ {
 
         // An aim on the root of a composed view's content is the same element.
         if let inner = node.aim, inner !== pass.written {
-            inner.attach(id, walk: walkStamp)
+            inner.attach(standing, walk: walkStamp)
         }
 
         // The same for a reading written on that root.
@@ -530,9 +529,7 @@ extension Differ {
         }
 
         if replace, let rendered = rendered {
-            // The one replaced goes, under the same key: the key stays this element's.
             forget(rendered)
-            if !Self.namedByStateUI.contains(node.type) { keysHeld.insert(id) }
         }
 
         // Armed once the old element is let go: a replaced one starts its engines over under fresh numbers.
@@ -944,7 +941,7 @@ extension Differ {
 
         rendered.placeholder = node
 
-        return revisit(rendered, walking: false)
+        return revisit(rendered, walking: false, standingAlready: true)
     }
 
     /// The nearest provided object per type, by identity - what a carry compares.

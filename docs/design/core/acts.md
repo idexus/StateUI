@@ -114,8 +114,9 @@ the same way, as an ordinary act the host logs.
 ## Aims
 
 An act aimed at a control has to say which control, and a description rebuilt
-every render has no object to point at. What survives a render is the
-element's key, and an `Aim` is that key, declared where the view declares its
+every render has no object to point at. What survives a render is where the
+element stands - the keys from the root down to it, each distinct among its
+siblings - and an `Aim` is that place, declared where the view declares its
 state:
 
 ```text
@@ -123,9 +124,10 @@ state:
   WebView(address).aim(browser)                  put on a view
   try await browser.goBack()                     an act the control's type offers
 
-  the differ, reaching the element, writes its key into the aim's box
-  the act sends it as argument 0: a number, or the .id() name as text
-  the host resolves either back to its control
+  the differ, reaching the element, writes where it stands into the aim's box
+  the act sends it as argument 0: the keys from the root down, each a number
+  or the .id() name as text
+  the host walks them from its root back to the control
 ```
 
 What an author holds is declared one way for each kind: a value with `@State`,

@@ -542,6 +542,18 @@
         return nil
     }
 
+    /// The element standing at `place` - the keys from this one down, this one's first, each the next's among
+    /// those it holds; nil where none stands so.
+    public func element(at place: [ElementID]) -> MountedElement? {
+        guard place.first == id else { return nil }
+        var element = self
+        for key in place.dropFirst() {
+            guard let next = element.held.first(where: { $0.id == key }) else { return nil }
+            element = next
+        }
+        return element
+    }
+
     /// The element numbered `sought` in this subtree, this one first; nil where none is.
     public func first(mount sought: UInt64) -> MountedElement? {
         if mount == sought { return self }

@@ -50,19 +50,14 @@ An identity is matched as the value it is (`ElementIdentity`): the value, and
 its hash worked out once as it is written, so siblings are looked up by a
 number and two values compared only where their numbers meet. Its
 description is made once, as an element is born, for the patch's `.manual`
-key; an element matched by value keeps the key it was born with. A name is
-one view's while that view stands in the tree (`Differ.keysHeld`, taken as
-an element is prepared and let go as it is forgotten), wherever it stands:
-an id is distinct among siblings, no further, so two parents may each hold
-an `editor`, and two values that describe themselves alike are two elements.
-The second born with a key another holds takes a fresh number instead, and
-keeps it - so an aim, an act and automation reach the element they name,
-never the first one holding the name. A parent's children are all matched
-before any is born, so the name of a child not continued is free for one
-born in its place, in the same walk. A scene and a window are named by
-StateUI - a scene by its record, a window by its key - and those names stand
-apart from the views' (`namedByStateUI`): a list's item `1` and the scene
-`1` each keep theirs.
+key; an element matched by value keeps the key it was born with. Two values
+that describe themselves alike are two elements: the second born with a key
+the first already holds takes a fresh number instead. A name is distinct
+among siblings, no further: two parents may each hold an `editor`, a stack
+describes one declaration into each of its pages, two lists hold items `1`,
+and a scene is keyed by its record as a view is by its id - the key tells
+siblings apart, and what reaches one element among many of a name reaches it
+by where it stands ([aims](#aims-and-readings-on-an-element)).
 
 ## Another kind of view
 
@@ -576,9 +571,14 @@ what left, so an element replaced in the same render answers nothing.
 
 ## Aims and readings on an element
 
-An aim written on a view takes the key the element settled on; that is the
-whole of how an act aims. The content a composed view unwraps to may carry an
-aim of its own on its root, which is the same element and takes the same key.
+An aim written on a view takes where the element stands: the keys from the
+root down to it, the key the element settled on last (`Differ.standing` as
+the element is prepared). A key is distinct among siblings alone, so two
+views named alike under two parents are two aims, each reaching its own; the
+act sends the keys as its first argument and the host walks them from its
+root (`MountedTree.aimed`). The content a composed view unwraps to may carry
+an aim of its own on its root, which is the same element and takes the same
+place.
 A reading asked for with `.samples` is held by the element and keyed by its
 target, so a view described again replaces its own reading.
 

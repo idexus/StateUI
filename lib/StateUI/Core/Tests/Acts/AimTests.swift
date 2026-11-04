@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // An aim is an id nobody spells: the differ fills it with the element's own
-// identity, and the act aims with the number. These tests drive the differ for
+// identity, and the act aims with where it stands. These tests drive the differ for
 // real - a fresh Differ counts identities from 1, so every number here is
 // exact rather than matched by shape.
 
@@ -26,13 +26,13 @@ final class AimTests: XCTestCase {
 
         renders.render(stack([ZStack().aim(panel).node], id: "root"))
 
-        XCTAssertEqual(try panel.box.target, .number(1))
+        XCTAssertEqual(try panel.box.target, .values([.string("root"), .number(1)]))
         XCTAssertEqual(panel.description, "#1")
 
         renders.render(stack([ZStack().aim(panel).opacity(0.5).node], id: "root"))
 
         XCTAssertEqual(
-            try panel.box.target, .number(1),
+            try panel.box.target, .values([.string("root"), .number(1)]),
             "the element's identity is stable, so the aim is")
     }
 
@@ -46,7 +46,7 @@ final class AimTests: XCTestCase {
         renders.render(tree)
         renders.renderFromScratch(tree)
 
-        XCTAssertEqual(try panel.box.target, .number(1))
+        XCTAssertEqual(try panel.box.target, .values([.string("root"), .number(1)]))
     }
 
     /// Leaving the tree ends the element, and a view that returns is a NEW
@@ -67,8 +67,8 @@ final class AimTests: XCTestCase {
         renders.render(tree(showing: true))
         let second = try panel.box.target
 
-        XCTAssertEqual(first, .number(1))
-        XCTAssertEqual(second, .number(2), "the returned view is a new element")
+        XCTAssertEqual(first, .values([.string("root"), .number(1)]))
+        XCTAssertEqual(second, .values([.string("root"), .number(2)]), "the returned view is a new element")
     }
 
     /// An aim takes no part in MATCHING: a view carrying only one is
@@ -80,7 +80,7 @@ final class AimTests: XCTestCase {
 
         renders.render(stack([ZStack().id("row-7").aim(row).node], id: "root"))
 
-        XCTAssertEqual(try row.box.target, .string("row-7"))
+        XCTAssertEqual(try row.box.target, .values([.string("root"), .string("row-7")]))
     }
 
     // MARK: - What throws, and why
@@ -135,7 +135,7 @@ final class AimTests: XCTestCase {
         renders.render(stack([ZStack().aim(panel).node], id: "root"))
 
         XCTAssertEqual(
-            try panel.box.target, .number(1),
+            try panel.box.target, .values([.string("root"), .number(1)]),
             "one view again, and the surviving element's identity answers")
     }
 
@@ -154,8 +154,8 @@ final class AimTests: XCTestCase {
         let first = try a.panel.box.target
         let second = try b.panel.box.target
 
-        XCTAssertEqual(first, .number(1))
-        XCTAssertEqual(second, .number(2))
+        XCTAssertEqual(first, .values([.string("root"), .number(1)]))
+        XCTAssertEqual(second, .values([.string("root"), .number(2)]))
     }
 
     /// An aim on the composed view at the call site and one on its content's
@@ -298,7 +298,7 @@ final class AimTests: XCTestCase {
 
         renders.render(stack([page.node], id: "root"))
 
-        XCTAssertEqual(try page.form.field.target, .number(1))
+        XCTAssertEqual(try page.form.field.target, .values([.string("root"), .number(1)]))
     }
 
     // MARK: - What an APPLICATION can write
@@ -328,7 +328,7 @@ final class AimTests: XCTestCase {
         let queued = drainedActs()
 
         XCTAssertEqual(queued.first?.name, "Test.Spin")
-        XCTAssertEqual(queued.first?.arguments.first, .number(1), "the element it was put on")
+        XCTAssertEqual(queued.first?.arguments.first, .values([.string("root"), .number(1)]), "the element it was put on")
         XCTAssertEqual(queued.first?.arguments.last, .number(90))
 
         for id in queued.compactMap(\.completion) {

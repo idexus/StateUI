@@ -23,17 +23,11 @@ extension Differ {
         var children: [RenderedNode] = []
         var patches: [HostPatch] = []
 
-        // Every child matched before any is born: the names of the children not continued are free for the
-        // children born in their place.
-        // Design: docs/design/core/identity-and-diffing.md#keys
-        let identified = node.children.indices.map { identified(node.children[$0], at: $0, by: matching) }
-        for child in matching.rendered where !matching.claimed.contains(child.id) { keysHeld.remove(child.id) }
-
-        for next in identified {
+        for index in node.children.indices {
+            let next = identified(node.children[index], at: index, by: matching)
             describesPagePosition = placesPages
             let (child, childPatch) = element(
-                id: next.match?.id ?? identity(for: next.node), rendered: next.match, node: next.node,
-                sizesArrive: sizesArrive)
+                id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
 
             // An arrangement where no page stands, and a toolbar on a stack or tabs, is left out
             // (Differ+Arrangements.swift).
@@ -56,7 +50,7 @@ extension Differ {
     @inline(never)
     private func identified(
         _ written: Node, at index: Int, by matching: ChildMatching
-    ) -> (match: RenderedNode?, node: Node) {
+    ) -> (id: ElementID, match: RenderedNode?, node: Node) {
         // A repeated identity takes a stable variant: the value and its occurrence.
         // Design: docs/design/core/identity-and-diffing.md#repeated-ids
         var childNode = written
@@ -86,7 +80,15 @@ extension Differ {
             matching.claimed.insert(match.id)
         }
 
-        return (match, childNode)
+        var id = match?.id ?? identity(for: childNode)
+
+        // A backstop for a variant that still collided, which it should not.
+        if matching.used.contains(id) {
+            id = .auto(allocateElementId())
+        }
+
+        matching.used.insert(id)
+        return (id, match, childNode)
     }
 
     /// The children walked, said to the host: the last render's that were not continued forgotten, and the
@@ -150,7 +152,7 @@ extension Differ {
 }
 
 /// The last render's children as this render's are matched against them - by the author's `.id()`, by the builder
-/// path, by position - and what the matching has claimed so far, behind a reference the walk's frame holds.
+/// path, by position - and what the matching has claimed and used so far, behind a reference the walk's frame holds.
 /// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
 @MainActor
 final class ChildMatching {
@@ -162,6 +164,7 @@ final class ChildMatching {
     let unkeyed: [RenderedNode]
 
     var claimed: Set<ElementID> = []
+    var used: Set<ElementID> = []
     var unkeyedSoFar = 0
     var identitiesSeen: [ElementIdentity: Int] = [:]
 

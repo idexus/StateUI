@@ -73,16 +73,14 @@ final class ActCallShapeTests: XCTestCase {
         XCTAssertEqual(batch.first?.completion != nil, awaited, "whether a caller waits", file: file, line: line)
     }
 
-    /// An act on a control the author never NAMED carries the element identity
-    /// as a NUMBER - `ElementID.auto`, the other namespace of the same argument
-    /// beside a name's `.manual`. The box is filled by hand
-    /// here because the differ's half is AimTests' business; what this
-    /// pins is the act.
+    /// An act on a control carries where the control stands - the keys from the root down, a NUMBER for an element
+    /// the author never named, `ElementID.auto`, a name's text for `.manual` - as its first argument. The box is
+    /// filled by hand here because the differ's half is AimTests' business; what this pins is the act.
     func testAnActByElementNumberCrossesWithItsArgumentsInPlace() async throws {
         let field = Aim(TextField.self)
-        field.box.attach(.auto(7), walk: 1)
+        field.box.attach([.manual("window"), .auto(7)], walk: 1)
 
-        try await check("focus", [.number(7)]) {
+        try await check("focus", [.values([.string("window"), .number(7)])]) {
             _ = try await field.focus()
         }
     }
@@ -171,13 +169,13 @@ final class ActCallShapeTests: XCTestCase {
     }
 
     func testFocusingAViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("focus", [.string("email")]) {
+        try await check("focus", [.values([.string("email")])]) {
             _ = try await named("email", TextField.self).focus()
         }
     }
 
     func testUnfocusingAViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("unfocus", [.string("email")]) {
+        try await check("unfocus", [.values([.string("email")])]) {
             try await named("email", TextField.self).unfocus()
         }
     }
@@ -197,19 +195,19 @@ final class ActCallShapeTests: XCTestCase {
     /// at 0 and nothing else - and each is pinned by name, so a rename on one
     /// side cannot slip past the other.
     func testGoingBackInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goBack", [.string("browser")]) {
+        try await check("goBack", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).goBack()
         }
     }
 
     func testGoingForwardInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goForward", [.string("browser")]) {
+        try await check("goForward", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).goForward()
         }
     }
 
     func testReloadingAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("reload", [.string("browser")]) {
+        try await check("reload", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).reload()
         }
     }
@@ -217,14 +215,14 @@ final class ActCallShapeTests: XCTestCase {
     /// The one WebView act with a second argument: the script after the view,
     /// and an answer somebody is waiting for.
     func testRunningJavaScriptCrossesWithItsArgumentsInPlace() async throws {
-        try await check("evaluateJavaScript", [.string("browser"), .string("document.title")]) {
+        try await check("evaluateJavaScript", [.values([.string("browser")]), .string("document.title")]) {
             _ = try await named("browser", WebView.self).evaluateJavaScript("document.title")
         }
     }
 
     /// A list scrolls to an item's identity and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
-        try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
+        try await check("scrollTo", [.values([.string("list")]), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
             try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
         }
     }
@@ -248,7 +246,7 @@ final class ActCallShapeTests: XCTestCase {
     /// A map slides on its region after the view: one run of three numbers - latitude, longitude, and the radius in
     /// METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
-        try await check("moveToRegion", [.string("map"), .numbers([52.2297, 21.0122, 3000])]) {
+        try await check("moveToRegion", [.values([.string("map")]), .numbers([52.2297, 21.0122, 3000])]) {
             try await named("map", Map.self).moveToRegion(
                 MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
         }

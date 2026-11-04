@@ -114,7 +114,7 @@ StateUI resolves identity in this order:
 An explicit id must be unique among siblings and stable while the element means
 the same thing. It is compared as its value: two identities that describe
 themselves alike are two elements, and one id written under two parents is
-two elements, each with its own key, aim and automation handle. Identify a
+two elements, each with its own aim and automation handle. Identify a
 class instance by a stable property it owns rather than by the class value
 itself. Siblings sharing one identity are said once, naming which it is.
 

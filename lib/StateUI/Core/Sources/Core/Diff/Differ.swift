@@ -17,13 +17,6 @@ final class Differ {
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
-    /// The keys of every view standing in the tree: a name an author wrote is one view's while it stands.
-    /// Design: docs/design/core/identity-and-diffing.md#keys
-    var keysHeld: Set<ElementID> = []
-
-    /// What StateUI names itself - a scene by its record, a window by its key - apart from the views' names.
-    static let namedByStateUI: Set<NodeType> = [.scene, .window]
-
     /// Which walk this is, so an aim knows one walk from the next.
     private(set) var walkStamp = 0
 
@@ -188,10 +181,12 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     func revisit(
         _ rendered: RenderedNode,
-        walking: Bool = true
+        walking: Bool = true,
+        standingAlready: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
-        standing.append(rendered.id)
-        defer { standing.removeLast() }
+        // Its key stands on the walk's stack while it is here - pushed by the caller that carries it.
+        if !standingAlready { standing.append(rendered.id) }
+        defer { if !standingAlready { standing.removeLast() } }
 
         if let placeholder = rendered.placeholder {
             let moved = !rendered.reads.isDisjoint(with: changed)
@@ -213,8 +208,8 @@ final class Differ {
 
         // An element left standing attaches its aims in this walk as a built one does: the one its parent wrote on
         // it, and the one on its content's root (Aim.swift).
-        rendered.placeholder?.aim?.attach(rendered.id, walk: walkStamp)
-        rendered.contentAim?.attach(rendered.id, walk: walkStamp)
+        rendered.placeholder?.aim?.attach(standing, walk: walkStamp)
+        rendered.contentAim?.attach(standing, walk: walkStamp)
 
         // A composed view walked past is written down only as the path to something
         // built below it, and not for a view just carried.
@@ -288,7 +283,6 @@ final class Differ {
     /// everything under it, and books its `.onDestroying` - a page standing
     /// shown its `.onDisappearing` first.
     func forget(_ node: RenderedNode) {
-        keysHeld.remove(node.id)
         if shownPages.remove(node.id) != nil, let id = node.events[.disappearing], let registration = handlers[id] {
             // Heard as a host tells a phase: carrying nothing, whatever the event that left it carried.
             leaving.append(contentsOf: registration.handlers.map { handler in
@@ -334,14 +328,9 @@ final class Differ {
 
     // MARK: - Identity
 
-    /// A new element's key: the author's name, where no view standing holds it; a fresh number otherwise. A scene
-    /// and a window keep the names StateUI gives them.
+    /// A new element's key: the author's, or a fresh number.
     func identity(for node: Node) -> ElementID {
-        if let identity = node.identity {
-            let named = ElementID.manual(Node.described(identity))
-            if Self.namedByStateUI.contains(node.type) || !keysHeld.contains(named) { return named }
-        }
-        return .auto(allocateElementId())
+        node.identity.map { .manual(Node.described($0)) } ?? .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.
