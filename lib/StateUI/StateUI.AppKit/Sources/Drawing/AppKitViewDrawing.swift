@@ -44,6 +44,31 @@ final class AppKitViewDrawing {
 
     init(_ view: NSView) {
         self.view = view
+        Self.drawings.setObject(self, forKey: view)
+    }
+
+    /// Each view's drawing, held weakly either way: what input asks to meet a view where it is drawn.
+    private static let drawings = NSMapTable<NSView, AppKitViewDrawing>(keyOptions: .weakMemory, valueOptions: .weakMemory)
+
+    /// The drawing of `view`; nil for a view no element draws.
+    static func of(_ view: NSView) -> AppKitViewDrawing? {
+        drawings.object(forKey: view)
+    }
+
+    /// Whether the view is drawn away from its frame: moved, turned or sized by its own properties or its placement.
+    var drawsAway: Bool {
+        !own.isIdentity || placement.map { !$0.isIdentity } == true
+    }
+
+    /// The point of the view, from its top left, drawn at `drawn` - a point from the top left of where its frame
+    /// lies; nil where the drawing flattens the view.
+    /// Design: docs/design/platforms/appkit/input.md#a-view-drawn-away-from-its-frame
+    func undrawn(_ drawn: Point) -> Point? {
+        guard let view else { return nil }
+        let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
+        var matrix = own.matrix(width: width, height: height)
+        if let placement { matrix = matrix * placement.matrix(width: width, height: height) }
+        return matrix.unapplied(to: drawn.x, drawn.y).map { Point($0.x, $0.y) }
     }
 
     private var composes: Bool {

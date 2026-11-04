@@ -300,7 +300,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         // AppKit tracks the press inside this call, until the button is let go.
         case .none, .arrow: super.mouseDown(with: event)
         }
-        let inside = window.map { bounds.contains(convert($0.mouseLocationOutsideOfEventStream, from: nil)) } ?? false
+        let inside = window.map { bounds.contains(drawnPoint(fromWindow: $0.mouseLocationOutsideOfEventStream)) } ?? false
         reach = inside ? PressedFill.underPointer : 1
         onReleased?()
     }
@@ -325,7 +325,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
                 if next.type == .leftMouseUp { letGo = next }
             }
             guard let letGo else { return showMenu() }
-            if bounds.contains(convert(letGo.locationInWindow, from: nil)) { onClicked?() }
+            if bounds.contains(drawnPoint(fromWindow: letGo.locationInWindow)) { onClicked?() }
         }
     }
 

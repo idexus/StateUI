@@ -57,18 +57,17 @@ final class AppKitPressRecognizer: NSGestureRecognizer {
         hearing?(.press(phase, at: point, size: size, byFinger: false))
     }
 
-    /// Where `event` stands in the view, from its top left corner.
+    /// Where `event` stands in the view, where the view is drawn, from its top left corner.
     private func point(of event: NSEvent) -> Point {
         guard let view else { return Point(x: 0, y: 0) }
-        let at = view.convert(event.locationInWindow, from: nil)
-        return Point(x: Double(at.x), y: Double(view.isFlipped ? at.y : view.bounds.height - at.y))
+        return view.topLeft(view.drawnPoint(fromWindow: event.locationInWindow))
     }
 
     /// Whether the press `event` begins is the view's own: not one on a control inside it a click works, nor on a
     /// view inside it that hears its own taps; one on the parts of a view that is a control is its own.
     private func isOwn(_ event: NSEvent) -> Bool {
         guard let view, !(view is NSControl), let superview = view.superview else { return true }
-        var each = view.hitTest(superview.convert(event.locationInWindow, from: nil))
+        var each = view.hitTest(view.undrawn(superview.drawnPoint(fromWindow: event.locationInWindow)))
         while let inner = each, inner !== view {
             if Self.takesItsOwnPress(inner) { return false }
             each = inner.superview

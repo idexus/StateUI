@@ -44,6 +44,26 @@ final class HostDrawingTransformTests: XCTestCase {
         assert(matrix, draws: (100, 60), at: (150, 45))
     }
 
+    /// A point drawn somewhere is undrawn to where it was - moved, turned, sized, tipped into perspective - and
+    /// a drawing that flattens the view undraws nothing.
+    func testAPointDrawnIsUndrawnToWhereItWas() {
+        let drawings = [
+            HostDrawingTransform(translationX: 10, translationY: 5, rotation: 90),
+            HostDrawingTransform(scaleX: 2, scaleY: 0.5, pivotX: 0, pivotY: 1),
+            HostDrawingTransform(translationX: 7, rotationX: 55, rotationY: -20),
+        ]
+        for drawing in drawings {
+            let matrix = drawing.matrix(width: 100, height: 60)
+            for point in [(0.0, 0.0), (100.0, 0.0), (37.0, 59.0), (50.0, 30.0)] {
+                let drawn = matrix.applied(to: point.0, point.1)
+                let back = matrix.unapplied(to: drawn.x, drawn.y)
+                XCTAssertEqual(back?.x ?? .nan, point.0, accuracy: 1e-9, "\(drawing)")
+                XCTAssertEqual(back?.y ?? .nan, point.1, accuracy: 1e-9, "\(drawing)")
+            }
+        }
+        XCTAssertNil(HostDrawingTransform(scaleX: 0).matrix(width: 100, height: 60).unapplied(to: 50, 30))
+    }
+
     func testTippingAboutTheHorizontalAxisSendsTheTopAway() {
         let matrix = HostDrawingTransform(rotationX: 55).matrix(width: 100, height: 60)
         let top = matrix.applied(to: 100, 0).x - matrix.applied(to: 0, 0).x

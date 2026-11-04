@@ -126,17 +126,21 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         reader?.hand(.ended, moved: .zero, speed: speed)
     }
 
-    /// Where `event` happened in the view, from its top left.
+    /// Where `event` happened in the view, where the view is drawn, from its top left.
     private func point(of event: NSEvent) -> Point {
         guard let view else { return .zero }
-        let at = view.convert(event.locationInWindow, from: nil)
-        return Point(Double(at.x), Double(view.isFlipped ? at.y : view.bounds.height - at.y))
+        return view.topLeft(view.drawnPoint(fromWindow: event.locationInWindow))
     }
 
     @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
-        let flipped = view?.isFlipped == true
-        let moved = translation(in: view)
-        let total = Point(Double(moved.x), Double(flipped ? moved.y : -moved.y))
+        guard let view else { return }
+        let flipped = view.isFlipped
+        // How far the press came, measured where the view is drawn, from its top left.
+        let now = location(in: nil)
+        let moved = translation(in: nil)
+        let at = view.topLeft(view.drawnPoint(fromWindow: now))
+        let from = view.topLeft(view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)))
+        let total = Point(at.x - from.x, at.y - from.y)
 
         switch state {
         case .began:

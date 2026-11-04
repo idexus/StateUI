@@ -61,13 +61,26 @@ class AppKitHitTestView: NSView {
     /// stands behind it.
     /// Design: docs/design/platforms/appkit/input.md#hit-testing
     private func hitPassingIgnored(_ point: NSPoint) -> NSView? {
-        let target = super.hitTest(point)
+        let target = hitWhereDrawn(point)
         guard let target, let ignored = AppKitIgnoredInput.child(of: self, holding: target) else { return target }
 
         let local = convert(point, from: superview)
         for subview in subviews.reversed()
         where subview !== ignored && !subview.isHidden && !AppKitIgnoredInput.views.contains(subview) {
-            if let hit = subview.hitTest(local) { return hit }
+            if let hit = subview.hitTest(subview.undrawn(local)) { return hit }
+        }
+        return self
+    }
+
+    /// What stands under `point`, in the superview's coordinates: AppKit's own answer, each subview drawn away from
+    /// its frame met where it is drawn.
+    /// Design: docs/design/platforms/appkit/input.md#a-view-drawn-away-from-its-frame
+    private func hitWhereDrawn(_ point: NSPoint) -> NSView? {
+        guard subviews.contains(where: \.isDrawnAway) else { return super.hitTest(point) }
+        let local = convert(point, from: superview)
+        guard !isHidden, isMousePoint(local, in: bounds) else { return nil }
+        for subview in subviews.reversed() where !subview.isHidden {
+            if let hit = subview.hitTest(subview.undrawn(local)) { return hit }
         }
         return self
     }

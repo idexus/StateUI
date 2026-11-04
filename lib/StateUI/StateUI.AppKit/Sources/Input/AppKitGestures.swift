@@ -58,9 +58,6 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
     }
 
     private func recognized(_ recognizer: NSPanGestureRecognizer) {
-        let moved = recognizer.translation(in: recognizer.view)
-        // AppKit's translation grows upward in a view drawn from the bottom.
-        let down = recognizer.view?.isFlipped == false ? -moved.y : moved.y
         let phase: GesturePhase? = switch recognizer.state {
         case .began: .began
         case .changed: .changed
@@ -69,10 +66,12 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
         default: nil
         }
         guard let phase, let view = recognizer.view else { return }
-        // Where the press is now, from the view's top left, less how far it came: where it began.
-        let location = recognizer.location(in: view)
-        let top = view.isFlipped ? location.y : view.bounds.height - location.y
-        dragged(phase, x: Double(moved.x), y: Double(down), from: Point(x: Double(location.x - moved.x), y: Double(top) - Double(down)))
+        // Where the press is now and where it began, each where the view is drawn, from the view's top left.
+        let now = recognizer.location(in: nil)
+        let moved = recognizer.translation(in: nil)
+        let at = view.topLeft(view.drawnPoint(fromWindow: now))
+        let from = view.topLeft(view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)))
+        dragged(phase, x: at.x - from.x, y: at.y - from.y, from: from)
     }
 }
 
@@ -116,7 +115,7 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
         guard let phase else { return }
         let view = recognizer.view
         let at = PinchStep.share(
-            of: view.map { $0.topLeft(recognizer.location(in: $0)) },
+            of: view.map { $0.topLeft($0.drawnPoint(fromWindow: recognizer.location(in: nil))) },
             width: Double(view?.bounds.width ?? 0), height: Double(view?.bounds.height ?? 0))
         pinched(phase, scale: Double(1 + recognizer.magnification), at: at)
     }
@@ -213,13 +212,12 @@ final class AppKitMirroredRecognizer: NSGestureRecognizer {
         other is NSPanGestureRecognizer
     }
 
-    /// `event` at `phase`, where it is in the view from its top left.
+    /// `event` at `phase`, where it is in the view, where the view is drawn, from its top left.
     private func said(_ phase: GesturePhase, _ event: NSEvent) {
         guard let view else { return }
-        let at = view.convert(event.locationInWindow, from: nil)
         let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
         mirrored(
-            phase, at: Point(Double(at.x), view.isFlipped ? Double(at.y) : height - Double(at.y)),
+            phase, at: view.topLeft(view.drawnPoint(fromWindow: event.locationInWindow)),
             middle: Point(width / 2, height / 2))
     }
 }
@@ -315,7 +313,7 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
 
     private func point(in event: NSEvent) -> Point {
         guard let view = trackedView else { return Point(x: 0, y: 0) }
-        return view.topLeft(view.convert(event.locationInWindow, from: nil))
+        return view.topLeft(view.drawnPoint(fromWindow: event.locationInWindow))
     }
 }
 
