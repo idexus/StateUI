@@ -17,6 +17,10 @@ final class Differ {
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
+    /// The keys of every element standing in the tree: a name an author wrote is one element's while it stands.
+    /// Design: docs/design/core/identity-and-diffing.md#keys
+    var keysHeld: Set<ElementID> = []
+
     /// Which walk this is, so an aim knows one walk from the next.
     private(set) var walkStamp = 0
 
@@ -281,6 +285,7 @@ final class Differ {
     /// everything under it, and books its `.onDestroying` - a page standing
     /// shown its `.onDisappearing` first.
     func forget(_ node: RenderedNode) {
+        keysHeld.remove(node.id)
         if shownPages.remove(node.id) != nil, let id = node.events[.disappearing], let registration = handlers[id] {
             // Heard as a host tells a phase: carrying nothing, whatever the event that left it carried.
             leaving.append(contentsOf: registration.handlers.map { handler in
@@ -326,9 +331,13 @@ final class Differ {
 
     // MARK: - Identity
 
-    /// A new element's key: the author's, or a fresh number.
+    /// A new element's key: the author's name, where no element standing holds it; a fresh number otherwise.
     func identity(for node: Node) -> ElementID {
-        node.identity.map { .manual(Node.described($0)) } ?? .auto(allocateElementId())
+        if let identity = node.identity {
+            let named = ElementID.manual(Node.described(identity))
+            if !keysHeld.contains(named) { return named }
+        }
+        return .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.

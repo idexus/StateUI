@@ -79,6 +79,7 @@ extension Differ {
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
+        keysHeld.insert(id)
 
         // What it says of its enablement holds for everything in it.
         pass.enablement = Enablement(pass.node)

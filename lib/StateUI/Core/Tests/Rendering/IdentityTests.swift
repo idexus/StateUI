@@ -123,6 +123,31 @@ final class IdentityTests: XCTestCase {
         XCTAssertFalse(hasComplained("Ticket"), "nothing to say")
     }
 
+    /// One name under two parents is two elements - an id is distinct among siblings, no further - each with a key
+    /// of its own, so each aim names its own view: the first keeps the name while it stands, the second a number,
+    /// and both keep their keys through a render; nothing is said.
+    func testOneNameUnderTwoParentsIsTwoElements() {
+        let renders = Renders()
+        let left = Aim(TextField.self), right = Aim(TextField.self)
+        func page() -> Node {
+            HStack {
+                VStack { TextField().text("left").id("editor").aim(left) }
+                VStack { TextField().text("right").id("editor").aim(right) }
+            }.node
+        }
+
+        let fields = renders.render(page()).subtree.filter { $0.type == .textField }.map(\.id)
+        XCTAssertEqual(fields.count, 2)
+        XCTAssertEqual(fields.first, .manual("editor"), "the first keeps the name")
+        XCTAssertNotEqual(fields.first, fields.last, "two keys")
+        XCTAssertEqual(left.element, fields.first)
+        XCTAssertEqual(right.element, fields.last)
+        XCTAssertNil(renders.render(page()).arrangement, "the same elements again, in the same order")
+        XCTAssertEqual(left.element, fields.first, "kept")
+        XCTAssertEqual(right.element, fields.last, "kept")
+        XCTAssertFalse(hasComplained("editor"), "nothing to say: the ids are distinct among their siblings")
+    }
+
     /// A marker written with an id stays itself when another is put before it: matched by its id, not by its place
     /// among the map's markers.
     func testAMarkerKeepsItsElementByItsId() {

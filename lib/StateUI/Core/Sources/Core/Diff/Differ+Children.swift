@@ -80,15 +80,7 @@ extension Differ {
             matching.claimed.insert(match.id)
         }
 
-        var id = match?.id ?? identity(for: childNode)
-
-        // A backstop for a variant that still collided, which it should not.
-        if matching.used.contains(id) {
-            id = .auto(allocateElementId())
-        }
-
-        matching.used.insert(id)
-        return (id, match, childNode)
+        return (match?.id ?? identity(for: childNode), match, childNode)
     }
 
     /// The children walked, said to the host: the last render's that were not continued forgotten, and the
@@ -152,7 +144,7 @@ extension Differ {
 }
 
 /// The last render's children as this render's are matched against them - by the author's `.id()`, by the builder
-/// path, by position - and what the matching has claimed and used so far, behind a reference the walk's frame holds.
+/// path, by position - and what the matching has claimed so far, behind a reference the walk's frame holds.
 /// Design: docs/design/core/identity-and-diffing.md#the-walks-stack
 @MainActor
 final class ChildMatching {
@@ -164,7 +156,6 @@ final class ChildMatching {
     let unkeyed: [RenderedNode]
 
     var claimed: Set<ElementID> = []
-    var used: Set<ElementID> = []
     var unkeyedSoFar = 0
     var identitiesSeen: [ElementIdentity: Int] = [:]
 

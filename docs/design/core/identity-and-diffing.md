@@ -50,9 +50,14 @@ An identity is matched as the value it is (`ElementIdentity`): the value, and
 its hash worked out once as it is written, so siblings are looked up by a
 number and two values compared only where their numbers meet. Its
 description is made once, as an element is born, for the patch's `.manual`
-key; an element matched by value keeps the key it was born with. Two values
-that describe themselves alike are two elements: the second born with a key
-the first already holds takes a fresh number instead.
+key; an element matched by value keeps the key it was born with. A name is
+one element's while that element stands in the tree (`Differ.keysHeld`,
+taken as an element is prepared and let go as it is forgotten), wherever it
+stands: an id is distinct among siblings, no further, so two parents may
+each hold an `editor`, and two values that describe themselves alike are two
+elements. The second born with a key another holds takes a fresh number
+instead, and keeps it - so an aim, an act and automation reach the element
+they name, never the first one holding the name.
 
 ## Another kind of view
 
