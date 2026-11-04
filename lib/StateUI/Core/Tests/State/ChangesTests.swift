@@ -473,7 +473,7 @@ final class ChangesTests: XCTestCase {
         // and addressed the way every act is.
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "focus")
-        XCTAssertEqual(Array(acts.first?.arguments.prefix(1) ?? []), [.string("card")])
+        XCTAssertEqual(Array(acts.first?.arguments.prefix(1) ?? []), [.values([.number(1), .string("card")])])
 
         // The host reports the view took the focus; the handler resumes and
         // writes what it was told.

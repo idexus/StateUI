@@ -361,7 +361,7 @@ final class ContractTests: XCTestCase {
         let asked = Self.begin { try await lamp.call(LampContract.flash, 3) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Flash")
-        XCTAssertEqual(acts.first?.arguments, [.number(1), .number(3)], "the element it was put on, then the times")
+        XCTAssertEqual(acts.first?.arguments, [.values([.string("root"), .number(1)]), .number(3)], "the element it was put on, then the times")
 
         await report(try completionId(in: acts), .finished([.bool(true)]))
         let flashed = try await asked.value

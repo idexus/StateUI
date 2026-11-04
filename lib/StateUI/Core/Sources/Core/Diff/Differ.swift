@@ -184,10 +184,6 @@ final class Differ {
         walking: Bool = true,
         standingAlready: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
-        // Its key stands on the walk's stack while it is here - pushed by the caller that carries it.
-        if !standingAlready { standing.append(rendered.id) }
-        defer { if !standingAlready { standing.removeLast() } }
-
         if let placeholder = rendered.placeholder {
             let moved = !rendered.reads.isDisjoint(with: changed)
             let from = moved
@@ -205,6 +201,10 @@ final class Differ {
                     from: from)
             }
         }
+
+        // Its key on the walk's stack while it stands here, unless the caller pushed it (the carried road).
+        if !standingAlready { standing.append(rendered.id) }
+        defer { if !standingAlready { standing.removeLast() } }
 
         // An element left standing attaches its aims in this walk as a built one does: the one its parent wrote on
         // it, and the one on its content's root (Aim.swift).
