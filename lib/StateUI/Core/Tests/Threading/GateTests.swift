@@ -851,6 +851,35 @@ final class GateTests: XCTestCase {
         return ids
     }
 
+    /// A run begun by a run - a task through a gate, started inside a handler - descends from it: a wait on the runs
+    /// begun since a mark counts it where the run it descends from began after the mark, and not where that began
+    /// before, however late it itself began; a later click's run, and what it begins, are since the mark.
+    func testARunDescendsFromTheRunThatBeganIt() async throws {
+        let latch = Latch()
+        let clicks = Gate(.runConcurrently), work = Gate(.runConcurrently)
+        let (renders, id) = button(gate: clicks) {
+            await latch.wait()
+            await Task(gate: work) { await latch.wait() }.value
+        }
+
+        renders.fire(id)
+        let mark = HostBoundary.runsBegun
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 0, "the click's run began before the mark")
+        latch.open()
+        try await waitUntil { latch.waiting == 1 }
+        XCTAssertEqual(RunSlot.underWay, 2, "the click's run and the work it began")
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 0, "the work descends from a run begun before the mark")
+
+        renders.fire(id)
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 1, "a later click's run is since the mark")
+        latch.open()
+        try await waitUntil { latch.waiting == 1 }
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 2, "and so is the work it began, standing beside it")
+
+        latch.open()
+        try await waitUntil { RunSlot.underWay == 0 }
+    }
+
     /// A button whose click runs `handler` under its own `policy`, rendered, and its click's id.
     private func button(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> (Renders, Int) {
         rendered(Button("Go").onClicked(policy, handler))

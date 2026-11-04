@@ -5,31 +5,28 @@
 /// Design: docs/design/core/runs.md#a-gate
 @MainActor
 final class RunSlot {
-    /// One run the slot took: under way, or waiting for its turn while `turn` is set; numbered as it was taken.
-    private final class Entry {
+    /// One run the slot took: under way, or waiting for its turn while `turn` is set.
+    @MainActor private final class Entry {
         let run = HandlerRun()
         let owner: ObjectIdentifier
         var task: Task<Void, Never>?
         var turn: CheckedContinuation<Bool, Never>?
-        var number = 0
 
         init(owner: ObjectIdentifier) { self.owner = owner }
     }
 
     private var entries: [Entry] = []
 
-    /// How many runs every slot has taken, ever: the mark a wait takes, to wait on the runs begun after it alone.
-    private(set) static var taken = 0
+    /// The runs of every slot under way or waiting: each one's origin, by its number.
+    private static var standing: [Int: Int] = [:]
 
-    /// The numbers of the runs of every slot under way or waiting.
-    private static var standing: Set<Int> = []
-
-    /// How many runs of every slot are under way or wait: what a test waits on, and the tally's `runs`.
+    /// How many runs of every slot are under way or wait: the tally's `runs`.
     static var underWay: Int { standing.count }
 
-    /// How many runs taken after `mark` - a count `taken` gave - are under way or wait.
+    /// How many runs under way or waiting descend from a run begun after `mark` - a count `HandlerRun.begun` gave:
+    /// what a test waits on after an act, what a run begun before the mark began left out.
     static func underWay(since mark: Int) -> Int {
-        standing.count { $0 > mark }
+        standing.values.count { $0 > mark }
     }
 
     /// Told whether a run is under way or waits, as that changes.
@@ -117,9 +114,7 @@ final class RunSlot {
 
     private func take(_ entry: Entry) {
         entries.append(entry)
-        RunSlot.taken += 1
-        entry.number = RunSlot.taken
-        RunSlot.standing.insert(entry.number)
+        RunSlot.standing[entry.run.number] = entry.run.origin
         busy = true
     }
 
@@ -127,7 +122,7 @@ final class RunSlot {
     private func dropWaiting(where chosen: (Entry) -> Bool) {
         let dropped = entries.filter { $0.turn != nil && chosen($0) }
         entries.removeAll { entry in dropped.contains { $0 === entry } }
-        for entry in dropped { RunSlot.standing.remove(entry.number) }
+        for entry in dropped { RunSlot.standing.removeValue(forKey: entry.run.number) }
         for entry in dropped {
             let turn = entry.turn
             entry.turn = nil
@@ -145,7 +140,7 @@ final class RunSlot {
 
     private func finished(_ entry: Entry) {
         entries.removeAll { $0 === entry }
-        RunSlot.standing.remove(entry.number)
+        RunSlot.standing.removeValue(forKey: entry.run.number)
 
         if !entries.contains(where: { $0.turn == nil }), let next = entries.first {
             let turn = next.turn

@@ -304,9 +304,10 @@
 
     /// How many runs have begun so far - a handler's, a task's through a gate: the mark a test takes before an act,
     /// to wait on the runs the act began alone.
-    public static var runsBegun: Int { RunSlot.taken }
+    public static var runsBegun: Int { HandlerRun.begun }
 
-    /// How many runs begun after `mark`, a count `runsBegun` gave, are under way or wait their turn.
+    /// How many runs under way or waiting their turn descend from one begun after `mark`, a count `runsBegun` gave:
+    /// the handlers an act after the mark raised and what they began; what a run begun before began is left out.
     public static func runsUnderWay(since mark: Int) -> Int { RunSlot.underWay(since: mark) }
 
     /// What this process's renders came to, for a host that prints the tally.

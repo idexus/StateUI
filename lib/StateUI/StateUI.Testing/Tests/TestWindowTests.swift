@@ -128,6 +128,61 @@ final class TestWindowTests: XCTestCase {
         XCTAssertTrue(held.returned)
         XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
     }
+
+    /// An act holds on nothing an earlier service begins while the act runs: the service the page began as it
+    /// appeared goes on through the act and starts work of its own, which is the service's, not the act's.
+    func testAnActHoldsOnNothingAnEarlierServiceBegins() async throws {
+        let held = Onward()
+        let window = try await TestWindow(motion: .none) { OnwardPage(held: held) }
+        defer { held.ownWork?.resume() }
+        let button = try window.element("onward.go")
+
+        let action = Task { @MainActor in
+            try await button.perform(.activate)
+            held.returned = true
+        }
+        for _ in 0..<1000 { if held.entered { break }; await Task.yield() }
+        XCTAssertTrue(held.entered)
+        held.service?.resume()
+        held.service = nil
+        for _ in 0..<1000 { if held.ownWorkBegan { break }; await Task.yield() }
+        XCTAssertTrue(held.ownWorkBegan, "the service, let go, began work of its own")
+        held.release?.resume()
+        held.release = nil
+        try await action.value
+
+        XCTAssertTrue(held.returned, "the service's own work holds no act")
+    }
+}
+
+/// What the page's service and handler hold: the continuations that keep them running, and what they came to.
+@MainActor private final class Onward {
+    let gate = Gate(.runConcurrently)
+    var service: CheckedContinuation<Void, Never>?
+    var entered = false
+    var release: CheckedContinuation<Void, Never>?
+    var ownWorkBegan = false
+    var ownWork: CheckedContinuation<Void, Never>?
+    var returned = false
+}
+
+/// A page whose service, let go, begins work of its own through a gate and waits on it, and whose button's handler
+/// waits to be let go.
+private struct OnwardPage: View {
+    let held: Onward
+
+    var body: some View {
+        Button("Go").accessibilityIdentifier("onward.go")
+            .onClicked(.runConcurrently) {
+                await withCheckedContinuation { held.release = $0; held.entered = true }
+            }
+            .onAppearing(.runConcurrently) {
+                await withCheckedContinuation { held.service = $0 }
+                await Task(gate: held.gate) {
+                    await withCheckedContinuation { held.ownWork = $0; held.ownWorkBegan = true }
+                }.value
+            }
+    }
 }
 
 /// A page that says it appeared.

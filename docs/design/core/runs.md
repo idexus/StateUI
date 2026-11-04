@@ -65,10 +65,16 @@ both overloads; inside the library a handler keeps `Gating`, `.own` or
 time. The policies are a struct's static members over an internal kind, so
 `.runConcurrently` names one thing given alone or to `Gate(_:)`. An element
 leaving supersedes its owners' runs alone, so behind a shared gate the
-others' runs stand. Every run is numbered as its gate takes it
-(`RunSlot.taken`) and the runs standing are known by number, so a test waits
-on the runs begun after a mark it took and on none begun before
-(`HostBoundary.runsUnderWay(since:)`).
+others' runs stand. Every run is numbered as it begins
+(`HandlerRun.number`; `begun`, how many have) and carries its origin: the
+number of the run under way as it began - the one whose task started it, a
+`Task(gate:)` inside a handler - or its own where none was, so a run's origin
+is the first of the runs it descends from. The runs standing are known by
+number and origin, so a test waits on the runs whose origin began after a
+mark it took (`HostBoundary.runsUnderWay(since:)`) and on none descending
+from a run begun before, however late those began: a service the page began
+runs on, and the work it starts while an act runs is the service's, not the
+act's.
 
 The policy stands first and unlabelled where the modifier takes nothing else,
 and `policy:` follows the event's own arguments, which keep the step
@@ -121,7 +127,8 @@ run as a later event would - a run still waiting its turn leaves the queue at
 once, through a job on the UI thread - and a task the gate lets go ends at
 once, its work not run. Its owner is the gate's own `RunOwner`, which nothing orphans, so no
 element leaving ends the run; started inside a handler, it runs under a
-`HandlerRun` of its own, not the handler's. A policy is no gate for a task -
+`HandlerRun` of its own, not the handler's, descending from it: its origin
+is the handler's. A policy is no gate for a task -
 it has no element to keep its runs - so `Task(gate:)` takes a `Gate`
 alone.
 

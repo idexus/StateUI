@@ -10,6 +10,23 @@ final class HandlerRun: Sendable {
     /// The run the calling task belongs to; nil outside every handler.
     @TaskLocal static var current: HandlerRun?
 
+    /// How many runs have begun, ever: the mark a wait takes, to wait on the runs begun after it alone.
+    @MainActor private(set) static var begun = 0
+
+    /// The run's number, in the order the runs began.
+    let number: Int
+
+    /// The number of the run this one descends from - the run under way as it began, through whose task it was
+    /// started - or its own where none was.
+    /// Design: docs/design/core/runs.md#a-gate
+    let origin: Int
+
+    @MainActor init() {
+        Self.begun += 1
+        number = Self.begun
+        origin = Self.current?.origin ?? number
+    }
+
     /// Superseded runs still alive: a write reads this alone while there are none.
     private static let supersededUnderWay = Atomic<Int>(0)
 

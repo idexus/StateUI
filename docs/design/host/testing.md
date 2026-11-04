@@ -39,11 +39,13 @@ a guess.
 An act is done once its work is: the runs it began - the handlers it raised,
 the work they began through a gate - to the last one's end, then the frames
 they asked for, a second of them on the window's own clock, the UI thread's
-work run between the steps. Every run is numbered as its gate takes it
-(`RunSlot.taken`), so the window waits on the runs begun after the mark it
-took before the act (`HostBoundary.runsUnderWay(since:)`) and on nothing
-begun before - a service the page began as it appeared runs on, and holds no
-act. A run the act began still under way after the window's patience, ten
+work run between the steps. Every run is numbered as it begins and knows the
+run it descends from (`HandlerRun.origin`, runs.md), so the window waits on
+the runs descending from one begun after the mark it took before the act
+(`HostBoundary.runsUnderWay(since:)`) and on nothing descending from a run
+begun before - a service the page began as it appeared runs on, and the work
+it starts while the act runs is its own: neither holds the act. A run the
+act began still under way after the window's patience, ten
 seconds, fails the act, naming how many stand: a wait is bounded, and a run
 meant to outlive its act belongs to the page's appearing. The window's own
 start waits a second of frames alone. `motion: .none` makes a change show at
