@@ -150,7 +150,7 @@ final class UIKitRendererTests: XCTestCase {
         host.connect(scene)
 
         let (element, controller) = try XCTUnwrap(host.roster.windows.first)
-        XCTAssertEqual(host.roster.windows.map(\.0.id), [.manual("uikit.kept.note 1")])
+        XCTAssertEqual(host.roster.windows.map(\.0.id), [.window(1, kind: "uikit.kept.note")])
         XCTAssertTrue(controller.window?.windowScene === scene)
         XCTAssertEqual(element.first(type: .text)?.value(.text)?.string, "note 7, section 2")
         XCTAssertEqual(Self.record(in: scene)?.kind, "uikit.kept.note")
