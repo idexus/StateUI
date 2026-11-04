@@ -48,12 +48,12 @@ final class KeptScenesTests: XCTestCase {
     func testTheScenesATreeHoldsAreKeptWithTheirWindows() {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
-        var scene = HostPatch(id: .manual("1"), type: .scene)
-        var note = HostPatch(id: .manual("note 2"), type: .window)
+        var scene = HostPatch(id: .scene("1"), type: .scene)
+        var note = HostPatch(id: .window(2, kind: "note"), type: .window)
         note.properties = [.windowType: .name("note"), .windowValue: .string("7")]
-        scene.children = .arranged([HostPatch(id: .manual("window 1"), type: .window), note])
-        var about = HostPatch(id: .manual("2"), type: .scene)
-        var aboutWindow = HostPatch(id: .manual("about 1"), type: .window)
+        scene.children = .arranged([HostPatch(id: .window(1), type: .window), note])
+        var about = HostPatch(id: .scene("2"), type: .scene)
+        var aboutWindow = HostPatch(id: .window(1, kind: "about"), type: .window)
         aboutWindow.properties = [.windowType: .name("about")]
         about.children = .arranged([aboutWindow])
         root.children = .arranged([scene, about])
@@ -93,7 +93,7 @@ final class KeptScenesTests: XCTestCase {
         keeper.restore(kept, in: runtime)
         let scenes = SceneValues.scenes(of: runtime.tree.root)
         XCTAssertEqual(scenes.map { $0.windows.map(\.id) }, [
-            [.manual("window 1"), .manual("kept.note 2")], [.manual("kept.about 1")],
+            [.window(1), .window(2, kind: "kept.note")], [.window(1, kind: "kept.about")],
         ], "the windows came back; a kind no scene declares did not")
         XCTAssertEqual(KeptApplication.sections.first, 2, "the scene's value, read at its first render")
         XCTAssertEqual(KeptScenes(try XCTUnwrap(keeper.changed(root: runtime.tree.root))), KeptScenes(scenes: [
@@ -119,12 +119,12 @@ final class KeptScenesTests: XCTestCase {
         let keeper = SceneKeeper()
 
         keeper.restore(KeptScenes(""), in: runtime)
-        XCTAssertEqual(SceneValues.scenes(of: runtime.tree.root).map { $0.windows.map(\.id) }, [[.manual("window 1")]])
+        XCTAssertEqual(SceneValues.scenes(of: runtime.tree.root).map { $0.windows.map(\.id) }, [[.window(1)]])
         runtime.connectWindow()
         runtime.pump.turn()
         XCTAssertEqual(
             SceneValues.scenes(of: runtime.tree.root).map { $0.windows.map(\.id) },
-            [[.manual("window 1"), .manual("window 2")]], "a new window is one more")
+            [[.window(1), .window(2)]], "a new window is one more")
         XCTAssertNotNil(keeper.changed(root: runtime.tree.root), "the scene that stands is kept")
         XCTAssertNil(keeper.changed(root: nil), "no scene stands")
         XCTAssertNil(keeper.changed(root: runtime.tree.root), "and the scenes kept are the ones that stood")

@@ -458,8 +458,8 @@ public final class Renderer {
         label.write(TextualElementContract.text, "StateUI: no application registered")
 
         let page = Node(contract: PageContract.self, children: [label])
-        let window = Node(contract: WindowContract.self, id: "window 1", children: [page])
-        let scene = Node(contract: SceneContract.self, id: "1", children: [window])
+        let window = Node(contract: WindowContract.self, id: OwnKey.window(kind: nil, serial: 1), children: [page])
+        let scene = Node(contract: SceneContract.self, id: OwnKey.scene("1"), children: [window])
 
         return Node(contract: ApplicationContract.self, children: [scene])
     }

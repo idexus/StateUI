@@ -23,7 +23,7 @@ struct SceneElement: Element {
             SceneElement.build(record, scene)
         }
 
-        node.id = record.id
+        node.id = record.key
 
         // What the application offered its scenes, and the scene's own session.
         node.environments = SceneElement.offered(by: scene)

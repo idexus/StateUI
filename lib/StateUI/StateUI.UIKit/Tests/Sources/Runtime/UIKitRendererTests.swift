@@ -177,7 +177,7 @@ final class UIKitRendererTests: XCTestCase {
 
         host.connect(scene)
 
-        XCTAssertEqual(host.roster.windows.map(\.0.id), [.manual("window 1")])
+        XCTAssertEqual(host.roster.windows.map(\.0.id), [.window(1)])
         XCTAssertTrue(host.roster.windows.first?.1.window?.windowScene === scene)
         XCTAssertNil(Self.record(in: scene)?.kind)
     }

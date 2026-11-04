@@ -149,8 +149,11 @@ id every render would rebuild the repeat's control, handlers and state each
 time. The repeat takes a stable variant instead (`RepeatedIdentity`) - the
 value and its occurrence, described as the id, a group separator (`\u{1D}`)
 and the number - which is the same key every render and never equals a value
-an author writes. No identity StateUI makes holds a NUL: GTK and WinUI hand
-words to their toolkits as C strings, which end at one. A repeat is said once.
+an author writes. The keys StateUI makes for itself - a scene's, a window's -
+hold the record separator the same way ([the scene
+tree](scenes.md#the-scene-tree)). No identity StateUI makes holds a NUL: GTK
+and WinUI hand words to their toolkits as C strings, which end at one. A
+repeat is said once.
 
 ## State survives a rebuild
 

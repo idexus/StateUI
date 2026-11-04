@@ -164,7 +164,7 @@ final class IdentityTests: XCTestCase {
 
         let tree = Renders().render(OpenScenes.shared.tree(of: try XCTUnwrap(Renderer.shared.madeApplication())))
 
-        XCTAssertEqual(tree.children.first?.id, .manual("1"), "the scene")
+        XCTAssertEqual(tree.children.first?.id, .scene("1"), "the scene, behind its own separator")
         XCTAssertTrue(tree.subtree.contains { $0.type == .text && $0.id == .manual("1") }, "the view named 1 too")
     }
 

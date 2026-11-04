@@ -287,7 +287,7 @@ extension Differ {
 
         // A scene written as a node rather than a scene type - a test's own tree.
         if node.type == .scene, sceneRecord == nil, case .manual(let name) = id {
-            sceneRecord = OpenScenes.shared.record(id: name)
+            sceneRecord = OpenScenes.shared.record(key: name)
         }
 
         // The container's own content runs here, inside this element's read scope and

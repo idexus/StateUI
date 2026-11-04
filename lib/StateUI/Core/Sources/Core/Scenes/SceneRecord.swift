@@ -5,8 +5,11 @@
 /// under it.
 @MainActor
 final class SceneRecord {
-    /// Its number - "1" for the first scene - which is also its key in the tree.
+    /// Its number - "1" for the first scene - its name in an act and in what is kept.
     let id: String
+
+    /// Its key in the tree: its number behind StateUI's own separator.
+    var key: String { OwnKey.scene(id) }
 
     /// Where its scene stands among those the application's body declares.
     var declaration: Int
@@ -216,8 +219,8 @@ struct OpenedWindow: Equatable {
     /// That value written down, the way the platform keeps it.
     var text: String?
 
-    /// What the tree knows it by: its kind - "window" for the group with no name - and its number.
-    var key: String { "\(type?.name ?? "window") \(serial)" }
+    /// Its key in the tree: its kind - "window" for the group with no name - and its number, behind StateUI's own separator.
+    var key: String { OwnKey.window(kind: type?.name, serial: serial) }
 }
 
 /// A state box a scene may keep - one declared with a `SceneKey`, which the

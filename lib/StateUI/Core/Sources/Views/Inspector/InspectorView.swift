@@ -23,7 +23,7 @@ struct InspectorView: View {
         // scene opening its inspector's window by itself.
         model.record()
 
-        let element = ElementID.manual(scene)
+        let element = ElementID.scene(scene)
         let index = OpenScenes.shared.index(of: scene)
         let all = Array(Inspection.passes.reversed())
         let passes = InspectorView.history(of: element, in: all)

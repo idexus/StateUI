@@ -225,7 +225,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession(OwnKey.window(kind: nil, serial: 1))
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
 
         runtime.windowStateChanged(element, minimized: true, activated: false)
@@ -275,7 +275,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession(OwnKey.window(kind: nil, serial: 1))
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
         runtime.windowStateChanged(element, minimized: false, activated: true)
         runtime.settlePhases()

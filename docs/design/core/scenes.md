@@ -11,11 +11,11 @@ state the root of the tree reads.
 
 ```text
   Application
-    Scene "1"            one per scene standing, in the order they opened
-      Window "window 1"  a window of the group with no name: "window", and its number
-      Window "fonts 2"   a window of a kind: the kind, and its number
-    Scene "2"
-      Window "about 1"
+    Scene scene<RS>1       one per scene standing, in the order they opened
+      Window window<RS>1   a window of the group with no name: "window", and its number
+      Window fonts<RS>2    a window of a kind: the kind, and its number
+    Scene scene<RS>2
+      Window about<RS>1
 ```
 
 The application is the root and its scenes an arranged list. The host opens
@@ -23,9 +23,14 @@ and closes platform windows to match, so a window that leaves the tree is a
 window that closes.
 
 A scene's number is the library's - "1", "2", in the order they opened - and
-never the platform's, which keeps the patch the same on every run. A window's
-key is its kind and a number of its own in its scene, in the order its windows
-opened, which keeps it the same window when the value it stands for changes.
+never the platform's, which keeps the patch the same on every run; it is the
+scene's name in an act and in what a host keeps. A window's key is its kind
+and a number of its own in its scene, in the order its windows opened, which
+keeps it the same window when the value it stands for changes. In the tree
+both stand behind the record separator (`OwnKey`, RS above): `scene<RS>1`,
+`window<RS>1`, `fonts<RS>2` - keys no author's `.id()` equals, so a view
+named `1` beside scene 1 is found as itself by whoever searches from the
+root, and the differ reads a scene's number out of its key (`record(key:)`).
 
 The list of scenes is a `@State` the root reads, so a scene opening or ending
 builds the application again and nothing in the scenes that stay. Each scene's

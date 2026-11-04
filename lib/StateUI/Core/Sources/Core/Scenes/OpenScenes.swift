@@ -60,6 +60,11 @@ final class OpenScenes {
     }
 
     /// The scene with a number, if it stands - read off the storage, so no build that asks becomes the list's reader.
+    /// The scene whose key in the tree is `key`; nil for a key no scene has.
+    func record(key: String) -> SceneRecord? {
+        OwnKey.sceneNumber(of: key).flatMap(record(id:))
+    }
+
     func record(id: String) -> SceneRecord? {
         _list.storage.value.first { $0.id == id }
     }

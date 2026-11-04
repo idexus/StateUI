@@ -74,7 +74,7 @@ final class LinkInboxTests: XCTestCase {
     func testEveryViewOfTheWindowThatHearsLinksHearsIt() throws {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
-        var scene = HostPatch(id: .manual("1"), type: .scene)
+        var scene = HostPatch(id: .scene("1"), type: .scene)
         var window = HostPatch(id: .manual("window"), type: .window)
         var outer = HostPatch(id: .manual("outer"), type: .vStack)
         outer.events = .replace([.linkOpened: 1])
@@ -99,7 +99,7 @@ final class LinkInboxTests: XCTestCase {
     private static func windows(_ hearing: KeyValuePairs<String, Bool>) -> HostRuntime {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
-        var scene = HostPatch(id: .manual("1"), type: .scene)
+        var scene = HostPatch(id: .scene("1"), type: .scene)
         scene.children = .arranged(hearing.enumerated().map { place, each in
             var window = HostPatch(id: .manual("\(each.key) window"), type: .window)
             var view = HostPatch(id: .manual(each.key), type: .vStack)

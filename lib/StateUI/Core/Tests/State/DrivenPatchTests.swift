@@ -30,10 +30,10 @@ final class DrivenPatchTests: XCTestCase {
         var launched = Node(type: "Window", children: [
             Node(type: "Page", children: [content]),
         ])
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         return Node(type: "Application", children: [scene])
     }
@@ -42,7 +42,7 @@ final class DrivenPatchTests: XCTestCase {
     /// content, `.auto(3)` first.
     private func page(_ content: Node) throws -> HostPatch {
         try XCTUnwrap(Differ().reconcile(nil, with: rooted(content)).patch
-            .at(.manual("1"), .manual("window 1"), .auto(2)))
+            .at(.scene("1"), .window(1), .auto(2)))
     }
 
     /// The registrations of the element at `path` below `page`.

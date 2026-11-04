@@ -220,7 +220,7 @@ final class Differ {
         // And the scene it is in, whose record the kept state below is claimed from.
         let outer = sceneRecord
         if rendered.type == .scene, sceneRecord == nil, case .manual(let name) = rendered.id {
-            sceneRecord = OpenScenes.shared.record(id: name)
+            sceneRecord = OpenScenes.shared.record(key: name)
         }
         defer { sceneRecord = outer }
 

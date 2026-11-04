@@ -852,15 +852,15 @@ final class StyleTests: XCTestCase {
                 .node,
             ]),
         ])
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         let tree = Node(type: "Application", children: [scene])
 
         let stack = try XCTUnwrap(differ.reconcile(nil, with: tree, styles: sheet).patch
-            .at(.manual("1"), .manual("window 1"), .auto(2), .auto(3)))
+            .at(.scene("1"), .window(1), .auto(2), .auto(3)))
         let ink = Color(hex: 0x212121).propValue
 
         // The headline's style, based on the body's - and standing in place of

@@ -261,17 +261,17 @@ final class HostActPerformerTests: XCTestCase {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
         root.children = .arranged(["1", "2"].map { name in
-            var scene = HostPatch(id: .manual(name), type: .scene)
-            scene.children = .arranged([HostPatch(id: .manual("window 1"), type: .window)])
+            var scene = HostPatch(id: .scene(name), type: .scene)
+            scene.children = .arranged([HostPatch(id: .window(1), type: .window)])
             return scene
         })
         runtime.tree.apply(root, complete: true)
-        let second = try XCTUnwrap(runtime.tree.root?.first(id: .manual("2"))?.first(id: .manual("window 1")))
+        let second = try XCTUnwrap(runtime.tree.root?.first(id: .scene("2"))?.first(id: .window(1)))
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers, tree: runtime.tree)
 
         acts.perform(HostActCall(
-            act: .confirm, arguments: HostActCall.window("window 1", of: "2") + [.string("Delete?")], completion: 1))
+            act: .confirm, arguments: HostActCall.window(OwnKey.window(kind: nil, serial: 1), of: "2") + [.string("Delete?")], completion: 1))
         acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
         acts.perform(HostActCall(
             act: .alert, arguments: HostActCall.window("window 7", of: "1") + [.string("Gone")], completion: 3))
@@ -286,7 +286,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done", "Last"], "and the next shows")
 
         acts.perform(HostActCall(
-            act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 1", of: "2"), completion: 5))
+            act: .hideOnScreenKeyboard, arguments: HostActCall.window(OwnKey.window(kind: nil, serial: 1), of: "2"), completion: 5))
         acts.perform(HostActCall(
             act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 7", of: "2"), completion: 6))
         XCTAssertTrue(try XCTUnwrap(toolkit.keyboards.first) === second)

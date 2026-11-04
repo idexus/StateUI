@@ -151,10 +151,10 @@ final class DeterminismTests: XCTestCase {
         // most applications have one.
         func tree() -> Node {
             var launched = window()
-            launched.id = "window 1"
+            launched.id = OwnKey.window(kind: nil, serial: 1)
 
             var scene = Node(type: .scene, children: [launched])
-            scene.id = "1"
+            scene.id = OwnKey.scene("1")
 
             return Node(type: .application, children: [scene])
         }
