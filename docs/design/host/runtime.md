@@ -494,8 +494,12 @@ host whose toolkit tells a finger's pointer apart says so.
 A view the tree disables keeps its place and still stands in the way of a
 press, but answers none; on a layout the whole branch in it answers none
 (`MountedElement.isEffectivelyEnabled`). The rule is the host layer's, once:
-`hear` drops what the user does to a view in a disabled branch - only a drag
-it began still ends there - and a view's `isEnabled` reaches its control as
+`hear` lets nothing begin on a view in a disabled branch, and what began
+there ends there - a press goes out; a drag, a pinch, a turn and the hand
+under way hear their end as cancelled, whatever the platform said, so none
+becomes a swipe or a throw; a pointer over the view leaves it; a drag between
+views ends or leaves - each the same road the platform's own cancel takes
+(`ending(of:)`), and none taken. A view's `isEnabled` reaches its control as
 `presented(_:)` gives it, false wherever a view holding it is disabled. When
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and

@@ -103,6 +103,9 @@
     /// How far the pan heard on the element has come since it began, as it last told.
     var panFromStart = Point(x: 0, y: 0)
 
+    /// Whether a pan heard on the element is under way: begun, and not yet ended or cancelled.
+    var panUnderWay = false
+
     /// How fast the pan, the pinch and the rotation heard on the element go (`SpeedReading`).
     var panSpeed = SpeedReading()
     var pinchSpeed = SpeedReading()
