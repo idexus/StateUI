@@ -134,6 +134,16 @@ host; the price is that a language is work in StateUI, and a user's own
 patterns in the system's settings are not read - only the facts the host
 reports (the 24-hour clock where the formats are the system's).
 
+A number with a fraction is written from the digits Swift writes for it - the
+shortest that read back as the same number, `String(Double)` - split at the
+point and rounded there in decimal, half away from zero, carrying into the
+whole (`MessageContext.number`): one path for every size, so a number past
+what an `Int` holds is written in full and grouped like any other, as the
+user wrote it - `1e23` is `100,000,000,000,000,000,000,000`, not the binary
+value's `99,999,999,999,999,991,611,392` - and no product of a whole and a
+fraction ever outgrows a number. Infinity and not-a-number keep Swift's
+spelling.
+
 The words of a format follow the sentence's language; the digits, separators,
 the order of a day's parts and the clock follow the formats' region. An English
 sentence with Polish formats says "30 September 2026" and writes `12 345,5`.

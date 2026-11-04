@@ -35,26 +35,55 @@ public struct MessageContext: Sendable {
     }
 
     /// A number with a fraction: up to three digits after the point, or exactly `fractionDigits` - nine at most -
-    /// rounded half away from zero.
+    /// rounded half away from zero. Written in full whatever its size, from the digits Swift writes for it - the
+    /// shortest that read back as the same number; infinity and not-a-number keep Swift's spelling.
     public func number(_ value: Double, fractionDigits: Int? = nil) -> String {
-        guard value.isFinite, abs(value) < 1e15 else { return String(value) }
-
-        // The whole part and the fraction rounded apart, so no product of the two outgrows a whole number.
+        guard value.isFinite else { return String(value) }
         let places = max(0, min(fractionDigits ?? 3, 9))
-        let scale = (0..<places).reduce(1) { whole, _ in whole * 10 }
-        var whole = Int(value.magnitude.rounded(.towardZero))
-        var rest = Int(((value.magnitude - Double(whole)) * Double(scale)).rounded(.toNearestOrAwayFromZero))
-        if rest >= scale {
-            rest -= scale
-            whole += 1
+        var (whole, fraction) = Self.digits(of: value.magnitude)
+        if fraction.count > places {
+            let cut = fraction.index(fraction.startIndex, offsetBy: places)
+            let up = fraction[cut] >= "5"
+            fraction = String(fraction[..<cut])
+            if up {
+                let carried = Self.incremented(whole + fraction)
+                whole = String(carried.dropLast(places))
+                fraction = String(carried.suffix(places))
+            }
         }
-
-        var fraction = places == 0 ? "" : String(rest)
-        fraction = String(repeating: "0", count: max(0, places - fraction.count)) + fraction
+        fraction += String(repeating: "0", count: places - fraction.count)
         if fractionDigits == nil { while fraction.last == "0" { fraction.removeLast() } }
 
-        let text = grouped(String(whole)) + (fraction.isEmpty ? "" : region.decimal + fraction)
-        return (value < 0 && (whole != 0 || rest != 0) ? "-" : "") + text
+        let text = grouped(whole) + (fraction.isEmpty ? "" : region.decimal + fraction)
+        let nothing = (whole + fraction).allSatisfy { $0 == "0" }
+        return (value < 0 && !nothing ? "-" : "") + text
+    }
+
+    /// The digits of `magnitude` before and after the point, from the shortest Swift writes - `12345.5`, `1e+20`,
+    /// `1.5e-07` - with no exponent left.
+    private static func digits(of magnitude: Double) -> (whole: String, fraction: String) {
+        let written = String(magnitude).split(separator: "e")
+        let mantissa = written[0].split(separator: ".", omittingEmptySubsequences: false)
+        let digits = mantissa.joined()
+        let point = mantissa[0].count + (written.count > 1 ? Int(written[1]) ?? 0 : 0)
+        if point <= 0 { return ("0", String(repeating: "0", count: -point) + digits) }
+        if point >= digits.count { return (digits + String(repeating: "0", count: point - digits.count), "") }
+        return (String(digits.prefix(point)), String(digits.dropFirst(point)))
+    }
+
+    /// `digits` one more, carried: `0999` is `1000`.
+    private static func incremented(_ digits: String) -> String {
+        var carried = Array(digits.utf8)
+        var at = carried.count - 1
+        while at >= 0 {
+            guard carried[at] == UInt8(ascii: "9") else {
+                carried[at] += 1
+                return String(decoding: carried, as: UTF8.self)
+            }
+            carried[at] = UInt8(ascii: "0")
+            at -= 1
+        }
+        return "1" + String(decoding: carried, as: UTF8.self)
     }
 
     /// A share as a percentage: `0.25` is `25%`.

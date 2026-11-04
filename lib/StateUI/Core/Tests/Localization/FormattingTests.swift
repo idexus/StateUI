@@ -43,6 +43,36 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.number(12_000_000_000.5, fractionDigits: 9), "12,000,000,000.500000000")
         XCTAssertEqual(english.number(0.9996, fractionDigits: 3), "1.000")
         XCTAssertEqual(english.number(-2.5, fractionDigits: 0), "-3")
+        XCTAssertEqual(english.number(1.125, fractionDigits: 2), "1.13", "a tie rounds away from zero")
+        XCTAssertEqual(english.number(-1.125, fractionDigits: 2), "-1.13")
+    }
+
+    /// A number of any size is written in full from the digits Swift writes for it - the shortest that read back
+    /// as the same number - grouped, with the digits asked for after the point: a whole number too large for an
+    /// `Int`, the largest there is, and one too small to show its digits alike; only infinity and not-a-number
+    /// keep Swift's own spelling.
+    func testANumberOfAnySizeIsWrittenInFull() {
+        let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
+        let whole = 1_000_000_000_000_000
+
+        XCTAssertEqual(english.number(Double(whole), fractionDigits: 2), english.number(whole) + ".00")
+        XCTAssertEqual(english.number(-Double(whole), fractionDigits: 2), english.number(-whole) + ".00")
+        XCTAssertEqual(english.number(1e15 + 0.5), "1,000,000,000,000,000.5")
+        XCTAssertEqual(english.number(1e20, fractionDigits: 2), "100,000,000,000,000,000,000.00")
+        XCTAssertEqual(polish.number(-1e20, fractionDigits: 0), "-100\u{A0}000\u{A0}000\u{A0}000\u{A0}000\u{A0}000\u{A0}000")
+        XCTAssertEqual(english.number(1e23), "100,000,000,000,000,000,000,000", "the digits Swift writes, not the binary value's")
+
+        let largest = english.number(Double.greatestFiniteMagnitude, fractionDigits: 99)
+        XCTAssertTrue(largest.hasPrefix("179,769,313,486,231,570,000,"), largest)
+        XCTAssertTrue(largest.hasSuffix(",000.000000000"), "nine digits at most after the point")
+        XCTAssertEqual(largest.filter(\.isNumber).count, 309 + 9)
+
+        XCTAssertEqual(english.number(1.5e-7), "0")
+        XCTAssertEqual(english.number(1.5e-7, fractionDigits: 7), "0.0000002")
+        XCTAssertEqual(english.number(-1.5e-7, fractionDigits: 2), "0.00", "no minus before nothing")
+        for value in [Double.infinity, -Double.infinity, Double.nan] {
+            XCTAssertEqual(english.number(value, fractionDigits: 2), String(value))
+        }
     }
 
     func testDays() {

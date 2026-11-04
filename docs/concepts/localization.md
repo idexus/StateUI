@@ -537,7 +537,11 @@ func written() -> [String] {
 
 An English sentence with Polish formats therefore says "30 September 2026"
 and writes `12 345,5`; Polish groups digits only from five up (`1234`,
-`12 345`). StateUI writes English and Polish today, with the formats of the
+`12 345`). A number with a fraction is written with up to three digits after
+the point, or exactly the `fractionDigits` asked for, nine at most, rounded
+half away from zero - and in full whatever its size, from the digits Swift
+writes for it: `1e20` is `100,000,000,000,000,000,000`. StateUI writes
+English and Polish today, with the formats of the
 United States, the United Kingdom and Poland. A language or region it does not
 write yet is said once in debug and written in English with the United
 States' formats.
