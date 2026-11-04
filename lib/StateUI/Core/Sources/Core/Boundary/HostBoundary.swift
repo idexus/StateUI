@@ -302,6 +302,13 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() }
 
+    /// How many runs have begun so far - a handler's, a task's through a gate: the mark a test takes before an act,
+    /// to wait on the runs the act began alone.
+    public static var runsBegun: Int { RunSlot.taken }
+
+    /// How many runs begun after `mark`, a count `runsBegun` gave, are under way or wait their turn.
+    public static func runsUnderWay(since mark: Int) -> Int { RunSlot.underWay(since: mark) }
+
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {
         let renderer = Renderer.shared

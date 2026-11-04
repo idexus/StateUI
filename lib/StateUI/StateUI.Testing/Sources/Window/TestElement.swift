@@ -21,18 +21,21 @@ public struct TestElement {
     let finding: Finding
 
     /// Acts on the view as its user does - `.activate` clicks a button, `.type("Ada")` types into a field - then
-    /// waits for what the act began: the handlers it raised, their work and the frames they asked for.
+    /// waits for what the act began: the handlers it raised, their work and the frames they asked for. It fails
+    /// where the act cannot be made, and where a run the act began is still under way after ten seconds.
     ///
     ///     try await button.perform(.activate)
     public func perform(_ act: UserAct) async throws {
+        let begun = HostBoundary.runsBegun
         try does(act)
-        await window.settle()
+        try await window.settle(since: begun)
     }
 
     /// The same, the driver's steps alone running the work it began - on a host's own loop.
     @_spi(Host) public func performNow(_ act: UserAct) throws {
+        let begun = HostBoundary.runsBegun
         try does(act)
-        window.settleNow()
+        try window.settleNow(since: begun)
     }
 
     /// Does `act` to the view standing now, through the window's driver.

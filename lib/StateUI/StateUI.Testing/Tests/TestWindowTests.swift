@@ -95,6 +95,75 @@ final class TestWindowTests: XCTestCase {
         XCTAssertNil(button.value(TextualElementContract.text), "the last window closed")
         XCTAssertThrowsError(try last.element("counter.add"))
     }
+
+    /// The page hears it is shown as the window opens, as a host's window tells it, so what it does on appearing is
+    /// done before the test reads it.
+    func testThePageHearsItIsShownAsTheWindowOpens() async throws {
+        let window = try await TestWindow(motion: .none) { AppearingPage() }
+
+        XCTAssertEqual(try window.element("appearing.state").value(TextualElementContract.text), "appeared")
+    }
+
+    /// An act is done once the work it began is: a handler still awaiting holds `perform`, which returns after the
+    /// handler's last write shows - and holds on nothing the page began before the act, which runs on.
+    func testAnActWaitsOnTheWorkItBeganAlone() async throws {
+        let held = Held()
+        let window = try await TestWindow(motion: .none) { WaitingPage(held: held) }
+        defer { held.service?.resume() }
+        XCTAssertTrue(held.serviceBegan, "the page's service runs on through the window's start")
+        let button = try window.element("waiting.go")
+
+        let action = Task { @MainActor in
+            try await button.perform(.activate)
+            held.returned = true
+        }
+        for _ in 0..<1000 { if held.entered { break }; await Task.yield() }
+        XCTAssertTrue(held.entered)
+        for _ in 0..<300 { await Task.yield() }
+        XCTAssertFalse(held.returned, "perform waits on the handler it began")
+        held.release?.resume()
+        held.release = nil
+        try await action.value
+
+        XCTAssertTrue(held.returned)
+        XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
+    }
+}
+
+/// A page that says it appeared.
+private struct AppearingPage: View {
+    @State private var state = "made"
+
+    var body: some View {
+        Text(state).accessibilityIdentifier("appearing.state").onAppearing { state = "appeared" }
+    }
+}
+
+/// What a page's handlers hold: the continuations that keep them running, and what they came to.
+@MainActor private final class Held {
+    var serviceBegan = false
+    var service: CheckedContinuation<Void, Never>?
+    var entered = false
+    var release: CheckedContinuation<Void, Never>?
+    var returned = false
+}
+
+/// A page whose service runs for its life, and whose button's handler waits to be let go.
+private struct WaitingPage: View {
+    let held: Held
+    @State private var label = "go"
+
+    var body: some View {
+        Button(label).accessibilityIdentifier("waiting.go")
+            .onClicked(.runConcurrently) {
+                await withCheckedContinuation { held.release = $0; held.entered = true }
+                label = "done"
+            }
+            .onAppearing(.runConcurrently) {
+                held.serviceBegan = true
+                await withCheckedContinuation { held.service = $0 }
+            }
+    }
 }
 
 /// A page the user cannot do everything to: a disabled button, a read-only field, a field holding one capital.

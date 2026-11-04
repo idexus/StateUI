@@ -65,7 +65,10 @@ both overloads; inside the library a handler keeps `Gating`, `.own` or
 time. The policies are a struct's static members over an internal kind, so
 `.runConcurrently` names one thing given alone or to `Gate(_:)`. An element
 leaving supersedes its owners' runs alone, so behind a shared gate the
-others' runs stand.
+others' runs stand. Every run is numbered as its gate takes it
+(`RunSlot.taken`) and the runs standing are known by number, so a test waits
+on the runs begun after a mark it took and on none begun before
+(`HostBoundary.runsUnderWay(since:)`).
 
 The policy stands first and unlabelled where the modifier takes nothing else,
 and `policy:` follows the event's own arguments, which keep the step

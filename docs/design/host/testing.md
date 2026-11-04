@@ -10,7 +10,9 @@ window is what a host's driver does on its toolkit.
 
 A `TestWindow` stands over StateUI's core and the host layer where `swift test`
 runs, with no platform's toolkit: each view's native half keeps nothing, so
-what a view holds is what the tree gave it, and a user's act is the report a
+what a view holds is what the tree gave it; the page hears it is shown as a
+host's window tells it (`WindowPresentation`), so what it does on appearing
+is done as the window opens; and a user's act is the report a
 host makes of it - a click the button's `clicked`, words typed the field's
 `textChanged` with its words, a switch turned its `toggled` with the value
 it turned to, a tap the host layer's hearing of one. The window acts as the
@@ -34,9 +36,17 @@ a guess.
 
 ## An act and its work
 
-An act is done once its work is: the handlers it raised, the work they began
-and the frames they asked for - a second of frames on the window's own clock,
-the UI thread's work run between them. `motion: .none` makes a change show at
+An act is done once its work is: the runs it began - the handlers it raised,
+the work they began through a gate - to the last one's end, then the frames
+they asked for, a second of them on the window's own clock, the UI thread's
+work run between the steps. Every run is numbered as its gate takes it
+(`RunSlot.taken`), so the window waits on the runs begun after the mark it
+took before the act (`HostBoundary.runsUnderWay(since:)`) and on nothing
+begun before - a service the page began as it appeared runs on, and holds no
+act. A run the act began still under way after the window's patience, ten
+seconds, fails the act, naming how many stand: a wait is bounded, and a run
+meant to outlive its act belongs to the page's appearing. The window's own
+start waits a second of frames alone. `motion: .none` makes a change show at
 once, where a test reads what it changed with no frames of motion between;
 the default motion animates as the application's does.
 

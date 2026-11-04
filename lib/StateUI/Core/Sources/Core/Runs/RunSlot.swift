@@ -5,20 +5,32 @@
 /// Design: docs/design/core/runs.md#a-gate
 @MainActor
 final class RunSlot {
-    /// One run the slot took: under way, or waiting for its turn while `turn` is set.
+    /// One run the slot took: under way, or waiting for its turn while `turn` is set; numbered as it was taken.
     private final class Entry {
         let run = HandlerRun()
         let owner: ObjectIdentifier
         var task: Task<Void, Never>?
         var turn: CheckedContinuation<Bool, Never>?
+        var number = 0
 
         init(owner: ObjectIdentifier) { self.owner = owner }
     }
 
     private var entries: [Entry] = []
 
+    /// How many runs every slot has taken, ever: the mark a wait takes, to wait on the runs begun after it alone.
+    private(set) static var taken = 0
+
+    /// The numbers of the runs of every slot under way or waiting.
+    private static var standing: Set<Int> = []
+
     /// How many runs of every slot are under way or wait: what a test waits on, and the tally's `runs`.
-    private(set) static var underWay = 0
+    static var underWay: Int { standing.count }
+
+    /// How many runs taken after `mark` - a count `taken` gave - are under way or wait.
+    static func underWay(since mark: Int) -> Int {
+        standing.count { $0 > mark }
+    }
 
     /// Told whether a run is under way or waits, as that changes.
     var busyChanged: ((Bool) -> Void)?
@@ -105,7 +117,9 @@ final class RunSlot {
 
     private func take(_ entry: Entry) {
         entries.append(entry)
-        RunSlot.underWay += 1
+        RunSlot.taken += 1
+        entry.number = RunSlot.taken
+        RunSlot.standing.insert(entry.number)
         busy = true
     }
 
@@ -113,7 +127,7 @@ final class RunSlot {
     private func dropWaiting(where chosen: (Entry) -> Bool) {
         let dropped = entries.filter { $0.turn != nil && chosen($0) }
         entries.removeAll { entry in dropped.contains { $0 === entry } }
-        RunSlot.underWay -= dropped.count
+        for entry in dropped { RunSlot.standing.remove(entry.number) }
         for entry in dropped {
             let turn = entry.turn
             entry.turn = nil
@@ -131,7 +145,7 @@ final class RunSlot {
 
     private func finished(_ entry: Entry) {
         entries.removeAll { $0 === entry }
-        RunSlot.underWay -= 1
+        RunSlot.standing.remove(entry.number)
 
         if !entries.contains(where: { $0.turn == nil }), let next = entries.first {
             let turn = next.turn

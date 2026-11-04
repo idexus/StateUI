@@ -18,6 +18,9 @@ final class CoreDriver: HostDriver {
     private var runtime: HostRuntime?
     private let clock = CoreClock()
 
+    /// The window's presentation: what a host's window controller keeps, so the page hears it is shown.
+    private var presentation = WindowPresentation()
+
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
@@ -26,6 +29,7 @@ final class CoreDriver: HostDriver {
             clock: self.clock, reducesMotion: { reducesMotion }, makeNative: { _ in CoreView() }, log: { _ in })
         runtime.presenter = self
         self.runtime = runtime
+        presentation = WindowPresentation()
         runtime.connectWindow()
         runtime.pump.turn()
         return runtime.tree
@@ -92,10 +96,14 @@ final class CoreDriver: HostDriver {
     }
 }
 
-/// No windows around the tree: what a test reads is the tree's, and an act - a question, a file - is answered as a
-/// host answers one it cannot perform.
+/// No windows around the tree: the one window's page hears it is shown as a host's window shows it, what a test
+/// reads is the tree's, and an act - a question, a file - is answered as a host answers one it cannot perform.
 extension CoreDriver: HostPresenter {
-    func presentRendered(touchedChrome: Bool) {}
+    func presentRendered(touchedChrome: Bool) {
+        guard let runtime, let window = runtime.tree.root?.windows.first else { return }
+        _ = presentation.show(window, in: runtime.lifecycle)
+    }
+
     func presentFrame(movedChrome: Bool) {}
 
     func perform(_ call: HostActCall) {

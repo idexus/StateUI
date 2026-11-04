@@ -36,11 +36,11 @@ public final class TestWindow {
     public convenience init(motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View)
         async throws {
         self.init(driver: CoreDriver(), motion: motion, page)
-        await settle()
+        try await settle(since: nil)
     }
 
-    /// Shows `page` through `driver` - a host's own, on its toolkit - every change animating under `motion`, the
-    /// work it began done: what a host's suite walks a window through (`TestWindowWalk`).
+    /// Shows `page` through `driver` - a host's own, on its toolkit - every change animating under `motion`, a second
+    /// of its frames run: what a host's suite walks a window through (`TestWindowWalk`).
     @_spi(Host) public init(
         driver: any HostDriver, motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View
     ) {
@@ -49,7 +49,8 @@ public final class TestWindow {
         HostBoundary.application.motion = motion
         tree = driver.start(clock: nil, reducesMotion: false) { page() }
         Self.standing = self
-        settleNow()
+        // The page's own work - a service begun as it appears - is the page's, not an act's: a second of frames.
+        try? settleNow(since: nil)
     }
 
     /// Another window took this one's place: what it showed is gone, and a view found in it is found no more.
@@ -82,20 +83,46 @@ public final class TestWindow {
     /// The elements the page mounted now, searched from the window's root; none once the window closed.
     var root: MountedElement? { tree?.root }
 
-    /// Runs the page's work until nothing more waits: the handlers an act raised, the work they began, the frames
-    /// they asked for - the UI thread's work run between the steps.
-    func settle() async {
-        for _ in 0..<Self.turns {
+    /// Runs the page's work until nothing more waits: the runs begun since `mark` - the handlers an act raised, the
+    /// work they began - to their end, and a second of frames after the last, the UI thread's work run between the
+    /// steps; a second of frames alone where `mark` is nil.
+    /// - Throws: `TestFailure` where a run begun since `mark` is still under way as the patience runs out.
+    func settle(since mark: Int?) async throws {
+        var frames = 0
+        let deadline = ContinuousClock.now + Self.patience
+        while frames < Self.turns {
+            if try Self.waiting(since: mark, until: deadline) { frames = 0 }
             driver.step()
+            frames += 1
             await Task.yield()
         }
     }
 
     /// The same, the driver's steps alone running the UI thread's work - a host's own loop, turned by its driver.
-    func settleNow() {
-        for _ in 0..<Self.turns { driver.step() }
+    func settleNow(since mark: Int?) throws {
+        var frames = 0
+        let deadline = ContinuousClock.now + Self.patience
+        while frames < Self.turns {
+            if try Self.waiting(since: mark, until: deadline) { frames = 0 }
+            driver.step()
+            frames += 1
+        }
     }
 
-    /// How many steps a settling takes: a second of frames, each with the work waiting between them.
+    /// Whether a run begun since `mark` is still under way; it fails where `deadline` has passed with one standing.
+    private static func waiting(since mark: Int?, until deadline: ContinuousClock.Instant) throws -> Bool {
+        guard let mark else { return false }
+        let standing = HostBoundary.runsUnderWay(since: mark)
+        guard standing > 0 else { return false }
+        guard ContinuousClock.now < deadline else {
+            throw TestFailure(description: "\(standing) run(s) the act began are still under way after \(patience)")
+        }
+        return true
+    }
+
+    /// How many steps a settling takes after the last run ends: a second of frames, the work waiting between them.
     private static let turns = 60
+
+    /// How long a settling waits on the runs an act began before failing.
+    private static let patience = Duration.seconds(10)
 }
