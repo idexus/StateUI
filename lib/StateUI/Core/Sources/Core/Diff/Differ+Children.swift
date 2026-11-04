@@ -23,11 +23,17 @@ extension Differ {
         var children: [RenderedNode] = []
         var patches: [HostPatch] = []
 
-        for index in node.children.indices {
-            let next = identified(node.children[index], at: index, by: matching)
+        // Every child matched before any is born: the names of the children not continued are free for the
+        // children born in their place.
+        // Design: docs/design/core/identity-and-diffing.md#keys
+        let identified = node.children.indices.map { identified(node.children[$0], at: $0, by: matching) }
+        for child in matching.rendered where !matching.claimed.contains(child.id) { keysHeld.remove(child.id) }
+
+        for next in identified {
             describesPagePosition = placesPages
             let (child, childPatch) = element(
-                id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
+                id: next.match?.id ?? identity(for: next.node), rendered: next.match, node: next.node,
+                sizesArrive: sizesArrive)
 
             // An arrangement where no page stands, and a toolbar on a stack or tabs, is left out
             // (Differ+Arrangements.swift).
@@ -50,7 +56,7 @@ extension Differ {
     @inline(never)
     private func identified(
         _ written: Node, at index: Int, by matching: ChildMatching
-    ) -> (id: ElementID, match: RenderedNode?, node: Node) {
+    ) -> (match: RenderedNode?, node: Node) {
         // A repeated identity takes a stable variant: the value and its occurrence.
         // Design: docs/design/core/identity-and-diffing.md#repeated-ids
         var childNode = written
@@ -80,7 +86,7 @@ extension Differ {
             matching.claimed.insert(match.id)
         }
 
-        return (match?.id ?? identity(for: childNode), match, childNode)
+        return (match, childNode)
     }
 
     /// The children walked, said to the host: the last render's that were not continued forgotten, and the

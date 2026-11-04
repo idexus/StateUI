@@ -51,13 +51,18 @@ its hash worked out once as it is written, so siblings are looked up by a
 number and two values compared only where their numbers meet. Its
 description is made once, as an element is born, for the patch's `.manual`
 key; an element matched by value keeps the key it was born with. A name is
-one element's while that element stands in the tree (`Differ.keysHeld`,
-taken as an element is prepared and let go as it is forgotten), wherever it
-stands: an id is distinct among siblings, no further, so two parents may
-each hold an `editor`, and two values that describe themselves alike are two
-elements. The second born with a key another holds takes a fresh number
-instead, and keeps it - so an aim, an act and automation reach the element
-they name, never the first one holding the name.
+one view's while that view stands in the tree (`Differ.keysHeld`, taken as
+an element is prepared and let go as it is forgotten), wherever it stands:
+an id is distinct among siblings, no further, so two parents may each hold
+an `editor`, and two values that describe themselves alike are two elements.
+The second born with a key another holds takes a fresh number instead, and
+keeps it - so an aim, an act and automation reach the element they name,
+never the first one holding the name. A parent's children are all matched
+before any is born, so the name of a child not continued is free for one
+born in its place, in the same walk. A scene and a window are named by
+StateUI - a scene by its record, a window by its key - and those names stand
+apart from the views' (`namedByStateUI`): a list's item `1` and the scene
+`1` each keep theirs.
 
 ## Another kind of view
 

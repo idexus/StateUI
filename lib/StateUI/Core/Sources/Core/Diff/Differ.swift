@@ -17,9 +17,12 @@ final class Differ {
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
-    /// The keys of every element standing in the tree: a name an author wrote is one element's while it stands.
+    /// The keys of every view standing in the tree: a name an author wrote is one view's while it stands.
     /// Design: docs/design/core/identity-and-diffing.md#keys
     var keysHeld: Set<ElementID> = []
+
+    /// What StateUI names itself - a scene by its record, a window by its key - apart from the views' names.
+    static let namedByStateUI: Set<NodeType> = [.scene, .window]
 
     /// Which walk this is, so an aim knows one walk from the next.
     private(set) var walkStamp = 0
@@ -331,11 +334,12 @@ final class Differ {
 
     // MARK: - Identity
 
-    /// A new element's key: the author's name, where no element standing holds it; a fresh number otherwise.
+    /// A new element's key: the author's name, where no view standing holds it; a fresh number otherwise. A scene
+    /// and a window keep the names StateUI gives them.
     func identity(for node: Node) -> ElementID {
         if let identity = node.identity {
             let named = ElementID.manual(Node.described(identity))
-            if !keysHeld.contains(named) { return named }
+            if Self.namedByStateUI.contains(node.type) || !keysHeld.contains(named) { return named }
         }
         return .auto(allocateElementId())
     }

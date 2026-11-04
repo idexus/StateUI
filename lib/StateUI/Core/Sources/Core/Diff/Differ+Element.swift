@@ -79,7 +79,7 @@ extension Differ {
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
-        keysHeld.insert(id)
+        if !Self.namedByStateUI.contains(pass.node.type) { keysHeld.insert(id) }
 
         // What it says of its enablement holds for everything in it.
         pass.enablement = Enablement(pass.node)
@@ -530,7 +530,9 @@ extension Differ {
         }
 
         if replace, let rendered = rendered {
+            // The one replaced goes, under the same key: the key stays this element's.
             forget(rendered)
+            if !Self.namedByStateUI.contains(node.type) { keysHeld.insert(id) }
         }
 
         // Armed once the old element is let go: a replaced one starts its engines over under fresh numbers.

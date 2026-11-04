@@ -47,6 +47,11 @@ private struct Converting: View {
     }
 }
 
+/// An application whose one window shows a view named as its scene is.
+private struct OneNamedApplication: Application {
+    var body: some Scene { WindowGroup { Text("One").id(1) } }
+}
+
 /// Who a view is: the value an identity was written from, compared as that value, and its name in the patch.
 @MainActor
 final class IdentityTests: XCTestCase {
@@ -146,6 +151,19 @@ final class IdentityTests: XCTestCase {
         XCTAssertEqual(left.element, fields.first, "kept")
         XCTAssertEqual(right.element, fields.last, "kept")
         XCTAssertFalse(hasComplained("editor"), "nothing to say: the ids are distinct among their siblings")
+    }
+
+    /// A scene's name is StateUI's, a window's too, apart from the views': a view named `1` beside the scene `1`
+    /// keeps its name, and the scene its own.
+    func testAViewNamedAsASceneKeepsItsName() throws {
+        Renderer.shared.setApplication(OneNamedApplication())
+        defer { OpenScenes.shared.reset() }
+        HostBoundary.connectWindow()
+
+        let tree = Renders().render(OpenScenes.shared.tree(of: try XCTUnwrap(Renderer.shared.madeApplication())))
+
+        XCTAssertEqual(tree.children.first?.id, .manual("1"), "the scene")
+        XCTAssertTrue(tree.subtree.contains { $0.type == .text && $0.id == .manual("1") }, "the view named 1 too")
     }
 
     /// A marker written with an id stays itself when another is put before it: matched by its id, not by its place
