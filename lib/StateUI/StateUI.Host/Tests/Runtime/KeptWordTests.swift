@@ -23,4 +23,13 @@ final class KeptWordTests: XCTestCase {
         XCTAssertEqual(KeptWord.restored("true", as: .text), .string("true"), "a text that reads as a word")
         XCTAssertNil(KeptWord.restored("three", as: .integer))
     }
+
+    /// Words of another kind under a boolean key - a number an older version kept, text, a case or a suffix - read
+    /// as none, so the key's declared value stands: only the two words a boolean is kept as read.
+    func testWordsOfAnotherKindUnderABooleanKeyReadAsNone() {
+        for word in ["37", "garbage", "", "TRUE", "false suffix"] {
+            XCTAssertNil(KeptWord.restored(word, as: .boolean), "\"\(word)\" is no boolean")
+        }
+        XCTAssertEqual(KeptWord.restored("false", as: .boolean), .bool(false))
+    }
 }

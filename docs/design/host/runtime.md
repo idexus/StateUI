@@ -947,10 +947,12 @@ Every host keeps a value as its words, by one rule (`KeptWord`): a save
 carries no kind, so a value is written as the words of its own kind - true or
 false, a number (a whole one whole), words - and read back as the kind of the
 key that reads it, which the core asks for by name and kind through the
-reader the host gives it as it starts (`CoreLink.readsKept`). The words stand
-in the platform's own store where it has one - the preferences on a Mac, on
-iOS and on Android, read through the application's context, which outlives
-every activity.
+reader the host gives it as it starts (`CoreLink.readsKept`). Words of no
+such kind - a number an older version kept under a key now a boolean, text,
+a case the kind is never written in - read as none, so the key's declared
+value stands. The words stand in the platform's own store where it has one -
+the preferences on a Mac, on iOS and on Android, read through the
+application's context, which outlives every activity.
 
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
