@@ -155,8 +155,9 @@ final class GTKWindow {
     /// forgotten.
     private static var reported: [Int64: Int64] = [:]
 
-    /// Whether the frame of the window numbered `number` is kept - what a test reads.
-    static func keepsFrame(of number: Int64) -> Bool { reported[number] != nil }
+    /// The frame the readers of the window numbered `number` last said where they stand in; nil for a window gone
+    /// or one laid out in no frame yet - what a test reads.
+    static func reportedFrame(of number: Int64) -> Int64? { reported[number] }
 
     /// Lets what reads a frame say where it stands, once a frame of `clock`, the clock of the window numbered
     /// `window`: the layout that what they say changes repeats once, and ends.

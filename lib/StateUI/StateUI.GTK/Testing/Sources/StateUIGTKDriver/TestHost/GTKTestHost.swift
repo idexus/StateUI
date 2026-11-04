@@ -107,6 +107,17 @@ enum GTKTestHost {
             g_usleep(2_000)
         } while g_get_monotonic_time() < end
     }
+
+    /// Turns GLib's loop one source at a time until `done` holds, at most `seconds` - a frame's phases run between
+    /// two looks - and says whether it does.
+    static func pump(until done: () -> Bool, within seconds: Double = 2) -> Bool {
+        let end = g_get_monotonic_time() + gint64(seconds * 1_000_000)
+        while !done() {
+            guard g_get_monotonic_time() < end else { return false }
+            if g_main_context_iteration(nil, 0) == 0 { g_usleep(2_000) }
+        }
+        return true
+    }
 }
 
 extension XCTestCase {

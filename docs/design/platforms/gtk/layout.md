@@ -57,7 +57,11 @@ allocates and every scroller's movement, and asks only the views that are
 read, in the order they were made; a view that did not move says nothing. It
 speaks after GTK's allocation rather than inside it, and what a handler
 renders is laid out again before the frame is drawn: the frame clock repeats
-its layout for it. A view in no window, or one not laid
+its layout for it. The views say once a frame, by the clock's frame counter
+(`GTKWindow.reportLaidOut`): the layout repeated for what they said hears
+nothing more - a layout that is no fixed point would otherwise ask again
+until GTK gives the frame up - and a frame whose layout moved nothing is one
+they said in too. A view in no window, or one not laid
 out yet by the host layer's rule (`MountedElement.isLaidOut`, [where a view
 stands](../../host/runtime.md#where-a-view-stands)), stands nowhere and says
 nothing: a frame's tick comes before its layout, so a view made just before it
