@@ -26,7 +26,7 @@ DatePicker.pointerReleased: ✓ hover on DatePicker: the view's listening handed
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.tapped: ✓ pressDown on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Fill.panTouchCount: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Fill.panUpdated: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.panXChannel: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.frameChanged: ✅
@@ -63,7 +63,7 @@ MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interacti
 MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.tapCount: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-Path.panTouchCount: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
+Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panXChannel: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.frameChanged: ✅
@@ -111,7 +111,7 @@ Spinner.layoutBody: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.tapped: ✓ pressDown on Stepper: the view's listening handed the recognizer's states, no touch sent
-Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panXChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.area: ✅

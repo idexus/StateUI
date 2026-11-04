@@ -33,9 +33,9 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (107)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 39 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 41 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>77 ✅ · 5 ☑️ · 14 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 38 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 40 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>77 ✅ · 6 ☑️ · 13 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>85 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>71 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>GtkButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>82 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;button&gt;</code></td></tr></tbody>
@@ -61,8 +61,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ButtonRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ButtonRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android draws no look for the way out or a destructive action, only the main action's colored button.</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -177,8 +177,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>isDraggable</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPanUpdated</code> (<code>panUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Point, Point, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>panXChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>

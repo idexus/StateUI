@@ -28,7 +28,7 @@ Ellipse.pointerReleased: ✓ hover on Ellipse: handed to the host's recognizer o
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
 Fill.filesDropped: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
 Fill.tapped: ✓ pressDown on Fill: handed to the host's recognizer or handler, no NSEvent sent
-Grid.panTouchCount: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.panXChannel: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 HStack.frameChanged: ✅
@@ -62,7 +62,7 @@ MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: handed to the host's r
 Path.droppedFileTypes: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.filesDropped: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
-Picker.panTouchCount: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Picker.panUpdated: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panXChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.frameChanged: ✅
@@ -121,7 +121,7 @@ Switch.droppedFileTypes: ✓ dropFiles on Switch: the window's drop routing told
 Switch.filesDropped: ✓ dropFiles on Switch: the window's drop routing told the driver's files, no dragging session
 Switch.tapped: ✓ pressDown on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.panYChannel: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.panTouchCount: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextEditor.panUpdated: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.panXChannel: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.frameChanged: ✅

@@ -15,7 +15,7 @@ Canvas.pointerReleased: ✓ hover on Canvas: the view's listening handed the rec
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the drop interaction's handler told the driver's files, no drag session
 Capsule.filesDropped: ✓ dropFiles on Capsule: the drop interaction's handler told the driver's files, no drag session
 Capsule.tapped: ✓ pressDown on Capsule: the view's listening handed the recognizer's states, no touch sent
-CheckBox.panTouchCount: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
+CheckBox.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 CheckBox.panUpdated: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
 CheckBox.panXChannel: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.frameChanged: ✅
@@ -47,7 +47,7 @@ ItemsView.margin: ✅
 ItemsView.swipeDirection: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swiped: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
-Line.panTouchCount: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
+Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Line.panUpdated: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panXChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Link.frameChanged: ✅
@@ -91,7 +91,7 @@ Rectangle.pointerReleased: ✓ hover on Rectangle: the view's listening handed t
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the drop interaction's handler told the driver's files, no drag session
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the drop interaction's handler told the driver's files, no drag session
 ScrollView.tapped: ✓ pressDown on ScrollView: the view's listening handed the recognizer's states, no touch sent
-SearchField.panTouchCount: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
+SearchField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 SearchField.panUpdated: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.panXChannel: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 Separator.held: ✓ hold on Separator: the view's listening handed the recognizer's states, no touch sent

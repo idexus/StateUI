@@ -28,7 +28,7 @@ Ellipse.pointerReleased: ✓ hover on Ellipse: the view's listening handed the r
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
 Fill.filesDropped: ✓ dropFiles on Fill: the drop interaction's handler told the driver's files, no drag session
 Fill.tapped: ✓ pressDown on Fill: the view's listening handed the recognizer's states, no touch sent
-Grid.panTouchCount: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.panXChannel: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.frameChanged: ✅
@@ -62,7 +62,7 @@ MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the view's listening h
 Path.droppedFileTypes: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.filesDropped: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.tapped: ✓ pressDown on Path: the view's listening handed the recognizer's states, no touch sent
-Picker.panTouchCount: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
+Picker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Picker.panUpdated: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.panXChannel: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.frameChanged: ✅
@@ -121,7 +121,7 @@ Switch.droppedFileTypes: ✓ dropFiles on Switch: the drop interaction's handler
 Switch.filesDropped: ✓ dropFiles on Switch: the drop interaction's handler told the driver's files, no drag session
 Switch.tapped: ✓ pressDown on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.panYChannel: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
-TextEditor.panTouchCount: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
+TextEditor.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextEditor.panUpdated: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.panXChannel: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.frameChanged: ✅

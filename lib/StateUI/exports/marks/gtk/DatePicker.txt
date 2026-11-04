@@ -5,6 +5,6 @@ DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: ☑️ GTK writes the long and the short day in the user's own way, and the medium as the short.
 DatePicker.isOpen: ✅
-DatePicker.maximumDate: ✓ read maximumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none
-DatePicker.minimumDate: ✓ read minimumDate of DatePicker: the range the host holds the day in: GtkCalendar holds none
+DatePicker.maximumDate: ☑️ GtkCalendar offers every day: one the user picks past the range stands at its end.
+DatePicker.minimumDate: ☑️ GtkCalendar offers every day: one the user picks past the range stands at its end.
 DatePicker.opened: ✅

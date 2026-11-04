@@ -8,4 +8,4 @@ Button.keyboardShortcut: ✓ pressKeys on Button: the key event no view took han
 Button.lineBreak: ✅
 Button.pressed: ✅
 Button.released: ✅
-Button.role: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
+Button.role: ☑️ Android draws no look for the way out or a destructive action, only the main action's colored button.

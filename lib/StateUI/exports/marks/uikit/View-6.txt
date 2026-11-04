@@ -16,7 +16,7 @@ Capsule.pointerReleased: ✓ hover on Capsule: the view's listening handed the r
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the drop interaction's handler told the driver's files, no drag session
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the drop interaction's handler told the driver's files, no drag session
 CheckBox.tapped: ✓ pressDown on CheckBox: the view's listening handed the recognizer's states, no touch sent
-ColorPicker.panTouchCount: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
+ColorPicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ColorPicker.panUpdated: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.panXChannel: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.frameChanged: ✅
@@ -46,7 +46,7 @@ ItemsView.holdDuration: ✅
 Line.droppedFileTypes: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.filesDropped: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.tapped: ✓ pressDown on Line: the view's listening handed the recognizer's states, no touch sent
-Link.panTouchCount: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
+Link.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Link.panUpdated: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Link.panXChannel: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Map.frameChanged: ✅
@@ -97,7 +97,7 @@ Separator.frameChanged: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRowSpan: ✅
 Separator.isDraggable: ✓ dragAndDrop on Separator: the drag and drop interactions' handlers called, no drag session
-Slider.panTouchCount: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Slider.panUpdated: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.panXChannel: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.frameChanged: ✅
