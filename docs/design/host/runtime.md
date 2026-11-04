@@ -1013,9 +1013,13 @@ so they stand as typed until it commits them (`composing`), which each host
 reads from its toolkit's marked text or composing span; a toolkit that asks
 before it inserts takes what goes in, in the case and within the bound, in
 the same terms (`InputWords.fitting`). A caret and a selection the tree
-puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take
-(`InputWords.utf16Selection`), so a character outside the basic plane - an
-emoji - is never split. A picker is given its choices where they changed, and
+puts, in characters, reach a toolkit in the units it counts in - UTF-16
+units (`InputWords.utf16Selection`) or Unicode scalars
+(`InputWords.scalarSelection`, GTK's) - as the units those characters take,
+so a character of several units - an emoji, a letter and its mark - is never
+split; each end is kept within the words before any arithmetic, as a number
+a program hands may be any, and a start past the words selects nothing at
+their end. A picker is given its choices where they changed, and
 its choice only where the tree changed it or the choices (`PickerChoices`):
 the user's own choice is never argued with.
 

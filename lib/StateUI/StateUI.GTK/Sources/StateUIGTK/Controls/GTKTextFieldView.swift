@@ -111,15 +111,16 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
         self.textCase = textCase
     }
 
-    /// Words going in at `place`: in the field's case, and where they would take the field past its bound only the
-    /// first characters that fit (`InputWords.fitting`) - from a key, a paste and a program's write alike.
+    /// Words going in at `place`, a scalar's offset: in the field's case, and where they would take the field past its
+    /// bound only the first characters that fit there (`InputWords.fitting`) - from a key, a paste and a program's
+    /// write alike.
     private func inserting(_ typed: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<Int32>?) {
         guard let typed else { return }
         let inserted = bytes < 0
             ? String(cString: typed) : String(decoding: UnsafeRawBufferPointer(start: typed, count: Int(bytes)), as: UTF8.self)
-        guard let fitting = InputWords.fitting(inserted, beside: text, in: textCase, toBound: maximumLength) else {
-            return
-        }
+        guard let fitting = InputWords.fitting(
+            inserted, beside: text, atScalar: place.map { Int($0.pointee) }, in: textCase, toBound: maximumLength)
+        else { return }
         g_signal_stop_emission_by_name(UnsafeMutableRawPointer(words), "insert-text")
         guard !fitting.isEmpty else { return }
         gtk_editable_insert_text(OpaquePointer(words), fitting, -1, place)
@@ -153,10 +154,13 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
         gtk_text_set_attributes(words, list)
     }
 
+    /// Puts the caret `start` characters in and selects `length` from it, in the scalars GTK counts
+    /// (`InputWords.scalarSelection`).
     func select(start: Int, length: Int) {
         if ProgramWrite.isWriting { programCaret = (start, length) }
-        let first = Int32(clamping: max(0, start))
-        gtk_editable_select_region(editable, first, first + Int32(clamping: max(0, length)))
+        let scalars = InputWords.scalarSelection(start: start, length: length, in: text)
+        gtk_editable_select_region(
+            editable, Int32(clamping: scalars.start), Int32(clamping: scalars.start + scalars.length))
     }
 
     /// The field took the focus: GNOME has selected its words whole, and the program's caret, where it put one,
