@@ -1129,6 +1129,7 @@ final class ControlTests: XCTestCase {
         for day in [
             CalendarDate(year: -5, month: 3, day: 1), CalendarDate(year: 0, month: 12, day: 31),
             CalendarDate(year: 2026, month: 8, day: 2), CalendarDate(year: 12345, month: 6, day: 7),
+            CalendarDate(year: Int.min, month: 3, day: 1), CalendarDate(year: Int.max, month: 2, day: 29),
         ] {
             XCTAssertEqual(CalendarDate(day.text), day, "\(day.text) reads back as the day it was written from")
         }
