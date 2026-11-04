@@ -227,12 +227,12 @@ extension GTKRendererTests {
 
     /// The user's languages are the locale names GLib reads, most wanted first, each as a tag said once - without
     /// its codeset and modifier, the C locale no language - and the core holds them so, the first the locale's own.
-    func testTheUsersLanguagesAreGLibsNamesAsTags() throws {
+    func testTheUsersLanguagesAreGLibsNamesAsTags() {
         XCTAssertEqual(
             GTKEnvironment.languages(of: ["pl_PL.UTF-8", "pl_PL", "pl", "en_US@latin", "en_US.UTF-8", "C"]),
             ["pl-PL", "pl", "en-US"])
         XCTAssertEqual(GTKEnvironment.languages(of: ["C", "POSIX"]), [])
-        try onUIThread {
+        onUIThread {
             _ = GTKRenderer.running { Text("Languages") }
             let locale = StandardEnvironment.locale
             let first = g_get_language_names()?.pointee.map { String(cString: $0) } ?? "C"
