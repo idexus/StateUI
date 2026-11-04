@@ -152,6 +152,13 @@ Rectangle()
     }
 ```
 
+A view drawn away from where it was laid out - moved, turned or sized - takes
+input where it is drawn, on every host: a tap on a turned card's corner is
+the card's, and a tap where its frame lies and nothing is drawn is nobody's
+(the Gallery's Drawn away sample). A control a platform tracks itself keeps
+the platform's own tracking: a button of the Mac's is found where it is drawn
+and follows its click by the frame it was laid out in.
+
 Each report also says how fast the gesture goes, a second - `velocity`, a
 `Point`, for a pan, and for a pinch's scale and a rotation's angle a number -
 nought as it begins and, at its end, as fast as it lifted, beside where it

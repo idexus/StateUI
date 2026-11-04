@@ -366,6 +366,7 @@ final class Catalog {
                 Sample(PointerSample()),
                 Sample(DragAndDropSample()),
                 Sample(TouchThroughSample()),
+                Sample(DrawnAwaySample()),
             ])
     }
 

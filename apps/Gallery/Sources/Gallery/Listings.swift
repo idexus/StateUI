@@ -2966,6 +2966,46 @@ enum Listings {
             }
         }
         """#,
+        "DrawnAwaySample": #"""
+        // Sources/Samples/Gestures/DrawnAwaySample.swift
+        @State private var turned = 0
+        @State private var moved = 0
+        @State private var grown = 0
+
+        var body: some View {
+            VStack {
+                // The counts are read here, so every tap builds this closure.
+                DebugInfoLabel()
+
+                // Turned: its corners stand outside the frame it was laid out in, and a tap on a corner is its own.
+                card("Tap the turned card")
+                    .rotation(20)
+                    .onTapped { turned += 1 }
+
+                // Moved a card's width to the right: a tap where it stands counts, one where its frame lies does not.
+                card("Tap the moved card")
+                    .translationX(120)
+                    .onTapped { moved += 1 }
+
+                // Grown by half: a tap on the grown edge counts.
+                card("Tap the grown card")
+                    .scale(1.5)
+                    .onTapped { grown += 1 }
+
+                Text("Turned \(turned), moved \(moved), grown \(grown)")
+            }
+        }
+
+        private func card(_ words: String) -> some View {
+            ZStack {
+                Text(words)
+            }
+            .width(220)
+            .style(.card)
+            .stroke(Palette.outline)
+            .lineWidth(1)
+        }
+        """#,
         "DrivenReadingSample": #"""
         // Sources/Samples/Driven/DrivenReadingSample.swift
         /// The bar's width, driven - so both readings live here and neither costs
