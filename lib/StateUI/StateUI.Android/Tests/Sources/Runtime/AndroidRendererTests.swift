@@ -50,6 +50,7 @@ struct EnvironmentPage: View {
     var body: some View {
         VStack {
             Text("locale \(locale.language?.identifier ?? "") \(locale.timeZone?.identifier ?? "")")
+            Text("languages \(locale.languages.map(\.identifier).joined(separator: " "))")
             Text("battery \(device.battery.state)")
             Text("network \(device.connectivity.networkAccess)")
         }
@@ -379,8 +380,10 @@ final class AndroidRendererTests: XCTestCase {
             let host = AndroidRenderer.running { EnvironmentPage() }
             let texts = host.views(AndroidTextView.self).map(\.text)
 
-            XCTAssertEqual(texts.count, 3)
+            XCTAssertEqual(texts.count, 4)
             XCTAssertFalse(texts.first?.hasPrefix("locale  ") ?? true, "\(texts)")
+            let language = texts.first?.split(separator: " ").dropFirst().first ?? ""
+            XCTAssertTrue(texts[1].hasPrefix("languages \(language)"), "the user's languages, the locale's first: \(texts)")
             XCTAssertFalse(texts.contains("battery unknown"), "\(texts)")
             XCTAssertFalse(texts.contains("network unknown"), "\(texts)")
         }

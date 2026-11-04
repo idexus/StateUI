@@ -725,7 +725,11 @@ the platform's own. A host that realizes it declares
 What a host reads of the machine it stands on is told to the core the same
 way on every host: the locale as eight words - language, region, name, time
 zone, a 24-hour clock, the week's first day from Sunday's 0, metric measures,
-a language written right to left - the network as its access and a set of
+a language written right to left - and then the user's languages as tags,
+most wanted first, as the platform keeps them (Apple's preferred languages,
+GLib's locale names, Android's locale list, Windows's profile languages), so
+a localization following the system falls through to the first language its
+catalog speaks; the network as its access and a set of
 bits for its connections, a battery as present or not, charging, on mains
 or full, and a screen as landscape where it stands at least as wide as it is
 tall, turned by quarters from its natural orientation - none on one that

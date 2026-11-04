@@ -7,7 +7,8 @@ AppKit and UIKit read much of the system alike, and the package they share,
 
 The user's locale - its language and region, the time zone, a 24-hour clock,
 the first day of the week, metric measures, the direction words read in - is
-read from Foundation's current locale, calendar and time zone; what the
+read from Foundation's current locale, calendar and time zone, and the user's
+languages in order from its preferred languages; what the
 network reaches - the internet, only what is near, or nothing - and through
 what is read from the system's path (`SystemFacts`). One watch hears the
 locale and the time zone change, and the network, at once and then as it

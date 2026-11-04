@@ -580,14 +580,16 @@ Android. Where the platform has the control, it names those parts itself.
 ## What a host adds
 
 Every word and number above is worked out in Swift before anything reaches a
-host. Three things belong to the hosts and are still to come:
+host. The user's ordered languages, which `\.locale.languages` holds, every
+native host reads from its platform - the preferred languages on Apple's,
+GLib's locale names, Android's locale list, the profile's languages on
+Windows - so a localization following the system reaches the first language
+its catalog speaks. Two things belong to the hosts and are still to come:
 
 - the language of a branch's text, for a screen reader's pronunciation,
   hyphenation and the glyphs of Han characters;
 - the formats and zone of native date and time pickers, which write their own
-  months;
-- the user's ordered languages, which `\.locale.languages` holds; until a host
-  fills it, `language` and `name` stand in.
+  months.
 
 ## Related contracts
 

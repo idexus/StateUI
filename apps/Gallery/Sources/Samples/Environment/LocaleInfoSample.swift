@@ -30,6 +30,10 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
                 .fontSize(15)
             Text("region · \(locale.language?.region ?? "none")")
                 .fontSize(15)
+            // The user's languages, most wanted first - what a
+            // localization following the system chooses from.
+            Text("languages · \(locale.languages.map(\.identifier).joined(separator: ", "))")
+                .fontSize(15)
             Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 .fontSize(15)
             Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")

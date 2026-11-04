@@ -149,8 +149,8 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
-    /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
-    /// has it now.
+    /// The environment is Windows' own: the page reads a desktop running Windows, the system's theme as Windows
+    /// has it now, and the user's languages from the profile, the locale's own first.
     func testThePageReadsWindowsAndItsTheme() {
         onUIThread {
             let host = WinUIRenderer.running { EnvironmentPage() }
@@ -158,7 +158,9 @@ final class WinUIRendererTests: XCTestCase {
             _ = stateui_winui_facts(.theme, nil, &bytes, 8)
             let dark = bytes[0] == 0x31
 
-            XCTAssertEqual(host.views(WinUITextView.self).map(\.text), ["Windows desktop", dark ? "dark" : "light"])
+            XCTAssertEqual(
+                host.views(WinUITextView.self).map(\.text),
+                ["Windows desktop", dark ? "dark" : "light", "languages first"])
         }
     }
 }
@@ -195,11 +197,15 @@ private struct AccessibilityPage: View {
 private struct EnvironmentPage: View {
     @Environment(\.device) private var device
     @Environment(\.application) private var app
+    @Environment(\.locale) private var locale
 
     var body: some View {
         VStack {
             Text("\(device.info.platform) \(device.info.formFactor)")
             Text("\(app.info.colorScheme)")
+            // The profile's first language may stand without its region - "pl" beside the locale's "pl-PL".
+            Text(locale.languages.first?.language == locale.language?.language
+                ? "languages first" : "languages \(locale.languages)")
         }
     }
 }

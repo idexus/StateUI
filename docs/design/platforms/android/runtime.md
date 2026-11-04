@@ -129,8 +129,9 @@ The user's locale, the battery and the network are read with them and again
 whenever one changes: the activity watches the zone, the clock, the battery,
 its saver and the default network from its creation to its destruction, each
 change read whole in one call per group. A change of language creates the
-activity again, so the locale - its direction with it - is read as the new one
-starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
+activity again, so the locale - its direction with it, and the user's
+languages as the configuration's locale list in order - is read as the new
+one starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
 asks for; without it the network is reported unknown.
 
 The accessibility settings are read with them: less motion where the

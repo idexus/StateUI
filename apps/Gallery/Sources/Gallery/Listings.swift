@@ -6649,6 +6649,9 @@ enum Listings {
 
                 Text("language · \(locale.language?.language ?? "not said")")
                 Text("region · \(locale.language?.region ?? "none")")
+                // The user's languages, most wanted first - what a
+                // localization following the system chooses from.
+                Text("languages · \(locale.languages.map(\.identifier).joined(separator: ", "))")
                 Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")

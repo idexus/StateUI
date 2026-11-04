@@ -17,6 +17,7 @@
 #include <winrt/Windows.Security.ExchangeActiveSyncProvisioning.h>
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.System.Profile.h>
+#include <winrt/Windows.System.UserProfile.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 
@@ -76,6 +77,10 @@ namespace {
               << (localeInfo(LOCALE_STIMEFORMAT).find('H') != std::string::npos)
               << static_cast<double>((firstDay + 1) % 7) << (localeInfo(LOCALE_IMEASURE) == "0")
               << (localeInfo(LOCALE_IREADINGLAYOUT) == "1");
+        // Then the user's languages as tags, most wanted first: the profile's ordered list.
+        for (auto const &language : winrt::Windows::System::UserProfile::GlobalizationPreferences::Languages()) {
+            facts << language;
+        }
     }
 
     void battery(Facts &facts) {

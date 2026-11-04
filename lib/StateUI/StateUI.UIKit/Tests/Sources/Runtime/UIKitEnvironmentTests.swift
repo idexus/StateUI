@@ -163,6 +163,8 @@ final class UIKitEnvironmentTests: XCTestCase {
 
         XCTAssertEqual(locale.language, LocaleTag(Locale.current.identifier(.bcp47)))
         XCTAssertEqual(locale.language?.language, Locale.current.language.languageCode?.identifier)
+        XCTAssertEqual(locale.languages, Locale.preferredLanguages.map { LocaleTag($0) }, "the user's languages, in order")
+        XCTAssertFalse(locale.languages.isEmpty)
         XCTAssertEqual(locale.timeZone?.identifier, TimeZone.current.identifier)
         XCTAssertEqual(
             locale.layoutDirection,

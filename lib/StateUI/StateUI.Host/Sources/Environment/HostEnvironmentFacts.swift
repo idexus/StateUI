@@ -6,15 +6,16 @@
 /// What a host reads of the machine it stands on, turned into what the core is told the same way on every host.
 /// Design: docs/design/host/runtime.md#the-environment
 extension HostLocaleInfo {
-    /// The locale as eight words: its language, its region, its name, its time zone, "1" for a 24-hour clock, the
+    /// The locale as eight words - its language, its region, its name, its time zone, "1" for a 24-hour clock, the
     /// first day of the week as a number from Sunday's 0, "1" for metric measures and "1" for a language written
-    /// right to left; nil for any other count of words.
+    /// right to left - and then the user's languages as tags, most wanted first; nil for fewer words.
     public init?(words: [String]) {
-        guard words.count == 8 else { return nil }
+        guard words.count >= 8 else { return nil }
         self.init(
             language: words[0], region: words[1], name: words[2], timeZone: words[3], uses24HourClock: words[4] == "1",
             firstDayOfWeek: Weekday(rawValue: Int32(Double(words[5]) ?? 0)) ?? .sunday,
-            isMetric: words[6] == "1", layoutDirection: words[7] == "1" ? .rightToLeft : .leftToRight)
+            isMetric: words[6] == "1", layoutDirection: words[7] == "1" ? .rightToLeft : .leftToRight,
+            languages: Array(words.dropFirst(8)))
     }
 }
 

@@ -9,15 +9,19 @@ import XCTest
 /// follows a change of it.
 @MainActor
 final class EnvironmentFactsTests: XCTestCase {
-    /// A locale is eight words; the week's first day counts from Sunday's 0; any other count is no locale.
-    func testALocaleIsEightWords() throws {
-        let locale = try XCTUnwrap(HostLocaleInfo(words: ["ar", "EG", "ar-EG", "Africa/Cairo", "1", "6", "1", "1"]))
+    /// A locale is eight words and then the user's languages, most wanted first - none where the host gives only the
+    /// one; the week's first day counts from Sunday's 0; fewer words are no locale.
+    func testALocaleIsEightWordsAndTheUsersLanguages() throws {
+        let eight = ["ar", "EG", "ar-EG", "Africa/Cairo", "1", "6", "1", "1"]
+        let locale = try XCTUnwrap(HostLocaleInfo(words: eight))
         XCTAssertEqual(locale.language, "ar")
         XCTAssertEqual(locale.timeZone, "Africa/Cairo")
         XCTAssertTrue(locale.uses24HourClock)
         XCTAssertEqual(locale.firstDayOfWeek, .saturday)
         XCTAssertTrue(locale.isMetric)
         XCTAssertEqual(locale.layoutDirection, .rightToLeft)
+        XCTAssertEqual(locale.languages, [])
+        XCTAssertEqual(HostLocaleInfo(words: eight + ["ar-EG", "en-GB"])?.languages, ["ar-EG", "en-GB"])
         XCTAssertNil(HostLocaleInfo(words: ["en", "US"]))
     }
 

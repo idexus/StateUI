@@ -11,8 +11,8 @@ import Network
 /// Design: docs/design/platforms/apple/system.md#the-systems-facts
 @_spi(Host) @MainActor
 public enum SystemFacts {
-    /// The user's locale as it stands: the language and region, the time zone, the clock, the week, the measures and
-    /// the direction words read in.
+    /// The user's locale as it stands: the language and region, the time zone, the clock, the week, the measures,
+    /// the direction words read in, and the user's languages in order.
     public static var locale: HostLocaleInfo {
         let locale = Locale.current
         let hourCycle = locale.hourCycle
@@ -24,7 +24,8 @@ public enum SystemFacts {
             uses24HourClock: hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour,
             firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
             isMetric: locale.measurementSystem != .us,
-            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
+            languages: Locale.preferredLanguages)
     }
 
     /// What `path` reaches - the internet, only what is near, nothing - and through what.
