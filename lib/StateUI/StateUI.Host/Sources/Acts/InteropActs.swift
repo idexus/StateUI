@@ -70,31 +70,37 @@
     /// the element it names - answering it through `core` once the performer returns, or failing it with why;
     /// whether the application registered the act.
     public func perform(
-        _ call: HostActCall, in tree: MountedTree, core: CoreLink, view: (MountedElement) -> View?,
+        _ call: HostActCall, in tree: MountedTree, core: CoreLink, view: @escaping (MountedElement) -> View?,
         log: @escaping (String) -> Void
     ) -> Bool {
         guard let performer = performers[call.act] else { return false }
 
-        var aimed: View?
+        var aimed: (id: ElementID, mount: UInt64)?
         if case .aimed = performer {
             do {
                 let element = try tree.aimed(call)
-                guard let found = view(element) else {
+                guard view(element) != nil else {
                     core.fail(call, "\(element.id) has no view", log: log)
                     return true
                 }
-                aimed = found
+                aimed = (element.id, element.mount)
             } catch {
                 core.fail(call, error.reason, log: log)
                 return true
             }
         }
-        // A performer may await; the call is answered once it returns.
+        // A performer may await; the call is answered once it returns. An aimed one is handed its control as it
+        // begins, the element found again by its number: the queue holds no control, and one that left fails.
+        // Design: docs/design/host/runtime.md#an-applications-own-acts
         Task { @MainActor in
             do {
                 switch performer {
                 case .application(let perform): core.reply(call, try await perform(call.arguments))
-                case .aimed(let perform): core.reply(call, try await perform(aimed!, Array(call.arguments.dropFirst())))
+                case .aimed(let perform):
+                    guard let aimed, let element = tree.root?.first(mount: aimed.mount), let control = view(element) else {
+                        return core.fail(call, "\(aimed.map { "\($0.id)" } ?? "the view") left before its act began", log: log)
+                    }
+                    core.reply(call, try await perform(control, Array(call.arguments.dropFirst())))
                 }
             } catch {
                 core.fail(call, "\(error)", log: log)

@@ -838,8 +838,13 @@ and performed the same way on every host (`InteropActs`): handed the values
 its contract declares, an aimed one also the control of the element its first
 argument names, and answered once it returns, or failed with why - a call
 carrying other values than its act declares, an element the host shows
-otherwise, or what the performer threw. What a host adds is its toolkit's:
-the control it hands an aimed act.
+otherwise, or what the performer threw. An aimed act finds its element as
+the call arrives, so one naming nothing fails at once, and is handed its
+control as it begins - the element found again by its number, the control
+read then - so the queue holds no control meanwhile, and an element that left
+in between, or stands replaced, fails the act rather than reach a control the
+tree dropped. What a host adds is its toolkit's: the control it hands an
+aimed act.
 
 ## Questions for the user
 

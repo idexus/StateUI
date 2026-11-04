@@ -80,6 +80,36 @@ final class HostActsTests: XCTestCase {
         XCTAssertFalse(acts.perform(unknown, in: runtime.tree, core: runtime.core, view: { _ in nil }, log: { _ in }))
     }
 
+    /// An aimed act queued before its control left the tree holds nothing of the control meanwhile and, beginning,
+    /// fails with that rather than reach it; one whose control stands as it begins is handed the control.
+    func testAQueuedAimedActBeginsOnlyWhereItsControlStillStands() async throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(HostPatch(id: .manual("wheel"), type: .vStack), complete: true)
+        let acts = InteropActs<Wheel>()
+        var spun = 0
+        acts.add(InteropTestActs.shake, control: { $0 }) { _ in spun += 1; return "spun" }
+        var wheel: Wheel? = Wheel()
+        weak var dropped = wheel
+        var said: [String] = []
+        let call = HostActCall(act: InteropTestActs.shake.token, arguments: [.string("wheel")], completion: nil)
+
+        XCTAssertTrue(acts.perform(call, in: runtime.tree, core: runtime.core, view: { _ in wheel }, log: { said.append($0) }))
+        runtime.tree.apply(HostPatch(id: .manual("empty"), type: .vStack), complete: true)
+        wheel = nil
+        XCTAssertNil(dropped, "the queue holds no control the tree dropped")
+        for _ in 0..<100 { await Task.yield() }
+        XCTAssertEqual(spun, 0, "an act begins on no control that left")
+        XCTAssertEqual(said.count, 1)
+        XCTAssertTrue(said.first?.contains("left before") == true, "\(said)")
+
+        runtime.tree.apply(HostPatch(id: .manual("wheel"), type: .vStack), complete: true)
+        wheel = Wheel()
+        XCTAssertTrue(acts.perform(call, in: runtime.tree, core: runtime.core, view: { _ in wheel }, log: { said.append($0) }))
+        for _ in 0..<100 { await Task.yield() }
+        XCTAssertEqual(spun, 1, "a control standing as the act begins is handed over")
+        XCTAssertEqual(said.count, 1)
+    }
+
     /// An act forgotten is not performed, and every other registration stands - a backend's acts, which a host's
     /// tests register once for the whole run, among them.
     func testAnActForgottenLeavesTheOthersStanding() {
@@ -101,6 +131,9 @@ final class HostActsTests: XCTestCase {
         XCTAssertEqual(written.lines, ["StateUI WinUI: a window closed\n"])
     }
 }
+
+/// A control an aimed act is handed, counted as it goes.
+@MainActor private final class Wheel {}
 
 /// What a log wrote.
 private final class Written: @unchecked Sendable {
