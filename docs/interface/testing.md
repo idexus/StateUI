@@ -36,7 +36,8 @@ A test target depends on the `StateUITesting` product of
 is that name; `window.element(page.name)` finds the view a page's `@Aim` is
 put on. A view is found again each time it is used, so it stays the same view
 while the page builds again. Finding no view, or two, fails and names the
-view.
+view. One window stands at a time: a new one closes the last, whose views are
+found no more.
 
 ## Acting and reading
 
@@ -44,7 +45,10 @@ view.
 `.submit`, `.choose(2)`, `.slide(to: 0.5)`, `.tap(count: 2)`, a screen reader's
 `.performAccessibilityAction("Clear")` and `.adjust(.increment)` - and returns
 once the work it began is done: its handlers, what they started, and the
-frames they asked for. `motion: .none` shows every change at once.
+frames they asked for. `motion: .none` shows every change at once. The window
+acts as the user can: an act on a disabled view, or words typed into a
+read-only field, fails and says why, and words typed are held as the field
+holds them - in its case, within its bound.
 
 `value(_:)` reads a contract member - `TextualElementContract.text`,
 `SwitchContract.isOn`, `VisualElementContract.accessibilityValue` - as the

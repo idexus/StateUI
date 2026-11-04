@@ -60,4 +60,55 @@ final class TestWindowTests: XCTestCase {
             XCTAssertEqual("\(error)", "2 views are the view \"form.twice\"")
         }
     }
+
+    /// The window acts as the user can: nothing on a disabled view, no words into a read-only field - each a failure
+    /// saying why - and words typed held as the field holds them, in its case and to its bound.
+    func testTheWindowActsAsTheUserCan() async throws {
+        let window = try await TestWindow(motion: .none) { GuardedPage() }
+
+        do {
+            try await window.element("guarded.locked").perform(.activate)
+            XCTFail("a disabled button was activated")
+        } catch {
+            XCTAssertTrue("\(error)".contains("disabled"), "\(error)")
+        }
+        do {
+            try await window.element("guarded.shown").perform(.type("changed"))
+            XCTFail("a read-only field took words")
+        } catch {
+            XCTAssertTrue("\(error)".contains("read-only"), "\(error)")
+        }
+        try await window.element("guarded.code").perform(.type("ab"))
+
+        XCTAssertEqual(try window.element("guarded.state").value(TextualElementContract.text), "0 kept A")
+    }
+
+    /// A new window takes the place of the last: a view found in the last is found no more.
+    func testANewWindowTakesThePlaceOfTheLast() async throws {
+        let last = try await TestWindow(motion: .none) { CounterPage() }
+        let button = try last.element("counter.add")
+        XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 0 times")
+
+        let next = try await TestWindow(motion: .none) { FormPage() }
+
+        XCTAssertNotNil(try next.element("form.name"))
+        XCTAssertNil(button.value(TextualElementContract.text), "the last window closed")
+        XCTAssertThrowsError(try last.element("counter.add"))
+    }
+}
+
+/// A page the user cannot do everything to: a disabled button, a read-only field, a field holding one capital.
+private struct GuardedPage: View {
+    @State private var clicks = 0
+    @State private var shown = "kept"
+    @State private var code = ""
+
+    var body: some View {
+        VStack {
+            Button("Locked").isEnabled(false).accessibilityIdentifier("guarded.locked").onClicked { clicks += 1 }
+            TextField($shown).isReadOnly(true).accessibilityIdentifier("guarded.shown")
+            TextField($code).textCase(.uppercase).maximumLength(1).accessibilityIdentifier("guarded.code")
+            Text("\(clicks) \(shown) \(code)").accessibilityIdentifier("guarded.state")
+        }
+    }
 }

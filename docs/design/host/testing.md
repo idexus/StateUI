@@ -13,11 +13,15 @@ runs, with no platform's toolkit: each view's native half keeps nothing, so
 what a view holds is what the tree gave it, and a user's act is the report a
 host makes of it - a click the button's `clicked`, words typed the field's
 `textChanged` with its words, a switch turned its `toggled` with the value
-it turned to, a tap the host layer's hearing of one. An act the window cannot
-make of a view - one its contract does not take - fails naming the view. A
-question or a file the page asks for is answered as a host answers an act it
-cannot perform. One window stands at a time, as the core runs one
-application; a new window takes the place of the last.
+it turned to, a tap the host layer's hearing of one. The window acts as the
+user can, no further: an act the window cannot make of a view - one its
+contract does not take - fails naming the view, and so does one the user
+cannot make, on a view in a disabled branch or words into a read-only field,
+saying why; words typed are held as the field holds them, in its case and to
+its bound, by the host layer's one rule (`InputWords.held`). A question or a
+file the page asks for is answered as a host answers an act it cannot
+perform. One window stands at a time, as the core runs one application; a new
+window closes the last (`HostDriver.close`), whose views are found no more.
 
 ## A view found as automation finds it
 

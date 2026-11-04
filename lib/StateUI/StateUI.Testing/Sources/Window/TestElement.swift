@@ -41,7 +41,7 @@ public struct TestElement {
         do {
             try window.driver.perform(act, on: element)
         } catch let cannot as DriverCannot {
-            throw TestFailure(description: "\(self) cannot \(act): \(cannot)")
+            throw TestFailure(description: "\(self) cannot \(act): \(cannot.because ?? cannot.ability)")
         }
     }
 

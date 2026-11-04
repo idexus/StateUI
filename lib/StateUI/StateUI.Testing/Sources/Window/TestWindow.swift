@@ -25,8 +25,11 @@ public final class TestWindow {
     /// The driver the window acts and reads through.
     let driver: any HostDriver
 
-    /// The tree the page mounted.
-    private let tree: MountedTree
+    /// The tree the page mounted; nil once another window took this one's place.
+    private var tree: MountedTree?
+
+    /// The window standing: one at a time.
+    private static weak var standing: TestWindow?
 
     /// Shows `page` in a window, every change in it animating under `motion` - `.none` for a change shown at once,
     /// where a test reads what it changed with no waiting.
@@ -42,9 +45,17 @@ public final class TestWindow {
         driver: any HostDriver, motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View
     ) {
         self.driver = driver
+        Self.standing?.close()
         HostBoundary.application.motion = motion
         tree = driver.start(clock: nil, reducesMotion: false) { page() }
+        Self.standing = self
         settleNow()
+    }
+
+    /// Another window took this one's place: what it showed is gone, and a view found in it is found no more.
+    private func close() {
+        tree = nil
+        driver.close()
     }
 
     /// The view automation knows by `identifier` - its `accessibilityIdentifier`; it fails where no view, or more
@@ -68,8 +79,8 @@ public final class TestWindow {
         return element
     }
 
-    /// The elements the page mounted now, searched from the window's root.
-    var root: MountedElement? { tree.root }
+    /// The elements the page mounted now, searched from the window's root; none once the window closed.
+    var root: MountedElement? { tree?.root }
 
     /// Runs the page's work until nothing more waits: the handlers an act raised, the work they began, the frames
     /// they asked for - the UI thread's work run between the steps.

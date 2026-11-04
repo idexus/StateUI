@@ -46,6 +46,10 @@
     /// Forgets what the host's stores keep - the values, the scenes - as an application's first launch finds them.
     func forgetWhatIsKept()
 
+    /// Closes the window `start` showed, letting go of what it held: another window takes its place. A driver whose
+    /// host closes the last window as it starts the next has nothing to do here.
+    func close()
+
     /// One bounded step of the host: its toolkit's loop a moment, the jobs, a turn of the pump, and a display
     /// frame while one is asked for.
     func step()
@@ -168,6 +172,8 @@ extension HostDriver {
     }
 
     public func forgetWhatIsKept() {}
+
+    public func close() {}
 
     public var liveViews: Int? {
         nil

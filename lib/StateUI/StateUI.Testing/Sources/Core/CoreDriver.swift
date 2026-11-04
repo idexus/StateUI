@@ -45,8 +45,15 @@ final class CoreDriver: HostDriver {
         runtime?.displayCycle.frame(now: clock.time)
     }
 
+    func close() {
+        runtime = nil
+    }
+
     func perform(_ act: UserAct, on element: MountedElement) throws {
+        // As the user: nothing on a disabled view, no words into a read-only field, words as the field holds them.
+        // Design: docs/design/host/testing.md#a-window-with-no-toolkit
         guard let runtime else { throw DriverCannot(act, on: element) }
+        guard element.isEffectivelyEnabled else { throw DriverCannot("\(act) on \(element.type.name)", because: "it is disabled") }
         switch act {
         case .activate where element.handler(.clicked) != nil:
             element.send(.clicked, [], in: runtime)
@@ -58,7 +65,13 @@ final class CoreDriver: HostDriver {
             let on = element.value(.isOn)?.bool ?? false
             element.reportUserChange(.isOn, .toggled, .bool(!on), in: runtime)
         case .type(let words):
-            element.reportUserChange(.text, .textChanged, .string(words), in: runtime)
+            guard element.value(.isReadOnly)?.bool != true else {
+                throw DriverCannot("\(act) on \(element.type.name)", because: "it is read-only")
+            }
+            let held = InputWords.held(
+                words, in: element.value(.textCase)?.enumeration.flatMap(TextCase.init(rawValue:)),
+                toBound: element.number(.maximumLength).map(Int.init), composing: false)
+            element.reportUserChange(.text, .textChanged, .string(held ?? words), in: runtime)
         case .submit:
             element.send(.submitted, [], in: runtime)
         case .slide(let value):
