@@ -230,7 +230,9 @@ A run gives a verdict on every member its cases cover, one line each under
 `lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ✓ where it
 proved it only through the host's own entry or read, ☑️ with what the host's
-register says is missing, – with why where the host's family never has it or
+register says is missing - whichever way the case reached the member, since
+the host's own road proves no more than the register admits -, – with why
+where the host's family never has it or
 a case proved it absent, 🧩 where the host leaves it to the application's own
 registration, · with what the driver cannot do, or what the platform holds
 nothing of, and why, ⏸ where its case waits on a member the host does not

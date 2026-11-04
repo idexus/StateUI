@@ -77,12 +77,12 @@
         return missing + covered.map { $0.verdict(.waiting(on: gap.description)) }
     }
 
-    /// What a passing case proved: ✅ each member realized in full, ☑️ with what is missing each realized in part -
-    /// and ✓ each it reached only through the host's own entry or record, `byHost`.
+    /// What a passing case proved: ☑️ with what is missing each member realized in part, whichever way the case
+    /// reached it; ✓ each realized in full it reached only through the host's own entry or record, `byHost`; ✅ the rest.
     func proofs(byHost: [Session.ByHost] = []) -> [HostVerdict] {
         realized.map { covered, judgment in
-            if let own = byHost.first(where: { $0.bears(on: covered) }) { return covered.verdict(.byHost(own.why)) }
             if case .partial(let missing) = judgment { return covered.verdict(.partial(missing: missing)) }
+            if let own = byHost.first(where: { $0.bears(on: covered) }) { return covered.verdict(.byHost(own.why)) }
             return covered.verdict(.proven)
         }
     }

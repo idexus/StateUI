@@ -132,6 +132,23 @@ final class ConformanceRunnerTests: XCTestCase {
             """)
     }
 
+    /// A member realized in part stays ☑️ with what is missing whichever way its case reached it: the host's own
+    /// road proves no more than the register admits, and only a member realized in full is ✓ through it.
+    func testWhatTheRegisterSaysIsMissingStandsBeforeTheHostsOwnRoad() {
+        let partial = HostRegister(records: [.partial(SwitchContract.isOn, missing: "what the host keeps of it")])
+        let own = [Session.ByHost(element: "Switch", member: "isOn", why: "a copy the host keeps")]
+        let outcome = Outcome(proving: [Covered(SwitchContract.isOn)], on: partial)
+        XCTAssertTrue(outcome.runs)
+        XCTAssertEqual(
+            outcome.proofs(byHost: own),
+            [Covered(SwitchContract.isOn).verdict(.partial(missing: "what the host keeps of it"))])
+
+        let complete = HostRegister(records: [.complete(SwitchContract.isOn)])
+        XCTAssertEqual(
+            Outcome(proving: [Covered(SwitchContract.isOn)], on: complete).proofs(byHost: own),
+            [Covered(SwitchContract.isOn).verdict(.byHost("a copy the host keeps"))])
+    }
+
     /// A case says nothing of what it only needs, a failing one fails what it proves with its first failure, and one
     /// that proved its members absent here marks them never had, with why.
     func testACaseJudgesWhatItProvesAlone() {
