@@ -107,16 +107,16 @@ public final class ApplicationSession {
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {
         // Whoever writes them - the application, a control the binding is handed to - the host is told.
-        // Design: docs/design/core/state.md#kept-state
-        _colorScheme.storage.keep = { [unowned self] scheme in
-            guard scheme != sentColorScheme else { return }
-            sentColorScheme = scheme
+        // Design: docs/design/core/state.md#bindings
+        _colorScheme.storage.keep = { [weak self] scheme in
+            guard let self, scheme != self.sentColorScheme else { return }
+            self.sentColorScheme = scheme
             tellAct(ApplicationContract.useColorScheme, scheme)
         }
-        _accentColor.storage.keep = { [unowned self] accent in
-            guard accent != sentAccentColor else { return }
-            sentAccentColor = accent
-            sendAccentColor()
+        _accentColor.storage.keep = { [weak self] accent in
+            guard let self, accent != self.sentAccentColor else { return }
+            self.sentAccentColor = accent
+            self.sendAccentColor()
         }
     }
 

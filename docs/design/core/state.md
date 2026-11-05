@@ -121,6 +121,11 @@ recognize each other. A view's inputs compare by it (`lends`), the host's
 image, the journey and an engine's following all hang off it, and a post
 through it waits for the whole.
 
+A projected binding retains its state storage and can outlive the view or
+model that declared it. An application session's state hooks keep the session
+weakly: when it is gone, its retained theme or accent binding still changes
+its state, while the hook performs no host effect.
+
 `$` lends a capability: a borrower may write the whole value or one property of
 it, and a model lent this way may be edited or replaced outright. Handing over
 less is done by handing over less - the value to read it, the object to edit
