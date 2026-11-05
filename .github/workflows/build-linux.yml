@@ -1,6 +1,6 @@
-# The core's suites on Linux - the library, the host layer and the conformance
-# runner - and the Gallery's and the starter application's. The GTK host's
-# suite stands in gtk.yml.
+# The core's suites on Linux - the library, the host layer, the conformance
+# runner and the application-testing package - and the Gallery's and starter
+# application's. The GTK host's suite stands in gtk.yml.
 #
 # The container is swift.org's own image, so the library compiles with the
 # release it is written against.
@@ -48,6 +48,9 @@ jobs:
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Conformance runner tests
         run: swift test --package-path lib/StateUI/StateUI.Conformance
+
+      - name: Application-testing package tests
+        run: swift test --package-path lib/StateUI/StateUI.Testing
 
   gallery:
     name: Gallery

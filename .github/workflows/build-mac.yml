@@ -1,6 +1,7 @@
-# The core's suites on macOS - the library, the host layer and the conformance
-# runner - the host layer's benchmarks built for release, and the Gallery's and
-# the starter application's. Each host's own suite runs in a workflow of its own.
+# The core's suites on macOS - the library, the host layer, the conformance
+# runner and the application-testing package - the host layer's benchmarks
+# built for release, and the Gallery's and starter application's. Each host's
+# own suite runs in a workflow of its own.
 
 name: Core macOS
 
@@ -36,6 +37,8 @@ jobs:
       # pure Swift: no host runs here, so no verdict is read or written.
       - name: Test StateUI.Conformance
         run: swift test --package-path lib/StateUI/StateUI.Conformance
+      - name: Test StateUI.Testing
+        run: swift test --package-path lib/StateUI/StateUI.Testing
 
   # The same suites under Thread Sanitizer: a race it sees fails the run. On
   # macOS, whose locks it understands; on Linux a `Mutex` is a futex it cannot
@@ -56,6 +59,8 @@ jobs:
         run: swift test --sanitize=thread --package-path lib/StateUI/StateUI.Host
       - name: Test StateUI.Conformance
         run: swift test --sanitize=thread --package-path lib/StateUI/StateUI.Conformance
+      - name: Test StateUI.Testing
+        run: swift test --sanitize=thread --package-path lib/StateUI/StateUI.Testing
 
   # The benchmarks built for release: the debug runs above gate their counts, and this run writes each gesture's
   # times, a trend read across runs (docs/design/host/benchmarks.md).

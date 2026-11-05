@@ -276,6 +276,7 @@ Each suite lives beside the package whose behavior it verifies:
 swift test
 swift test --package-path lib/StateUI/StateUI.Host
 swift test --package-path lib/StateUI/StateUI.Conformance
+swift test --package-path lib/StateUI/StateUI.Testing
 swift test --package-path lib/StateUI/StateUI.AppKit
 swift test --package-path apps/Gallery
 swift test --package-path apps/HelloWorld
@@ -291,8 +292,10 @@ AppKit build (`STATEUI_HOST=appkit`), on a build directory of its own:
 The first suite covers core semantics and the typed boundary. The host
 layer's suite proves the rules every host shares, pure, with no toolkit. The
 conformance package's own tests prove its runner and that every member has
-its case; each host's suite runs the cases themselves. The AppKit suite drives
-native AppKit objects. The Gallery's treats Gallery as application behavior
+its case; each host's suite runs the cases themselves. The application-testing
+package's suite proves its window, interaction, and teardown behavior; building
+it as an application's dependency does not run those tests. The AppKit suite
+drives native AppKit objects. The Gallery's treats Gallery as application behavior
 and compiles the documentation examples. HelloWorld's holds one example test,
 which a new application starts with: its page shown in a test window, its
 button clicked. In VS Code, **StateUI: Run Tests**
@@ -363,12 +366,14 @@ the package graph.
 On GitHub each suite has a workflow of its own, so each shows its own state,
 the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
 Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
-the host layer and the conformance runner, and the Gallery and HelloWorld), and one
-for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
+the host layer, the conformance runner and the application-testing package,
+and the Gallery and HelloWorld), and one for each host - **AppKit**, **UIKit**
+(an iPhone and an iPad simulator),
 **Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**,
-**GTK** and **Web**. **Core macOS** runs the core, the host layer and the
-conformance runner once more under Thread Sanitizer, where a race it sees
-fails the run - `swift test --sanitize=thread` on a Mac; on Linux the
+**GTK** and **Web**. **Core macOS** runs the core, the host layer, the
+conformance runner and the application-testing package once more under
+Thread Sanitizer, where a race it sees fails the run -
+`swift test --sanitize=thread` on a Mac; on Linux the
 sanitizer cannot see through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
