@@ -20,6 +20,7 @@ nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidStandardStreamsTests.allTests),
     testCase(AndroidThreadNumberTests.allTests),
     testCase(AndroidFileTests.allTests),
+    testCase(AndroidRequestTests.allTests),
     testCase(AndroidLeaveTests.allTests),
     testCase(AndroidTestWindowTests.allTests),
     testCase(AndroidMotionTests.allTests),

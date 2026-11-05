@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,9 +26,31 @@ import java.util.concurrent.Executors;
 final class StateUIRequests {
     private static final Handler ui = new Handler(Looper.getMainLooper());
     private static final ExecutorService senders = Executors.newCachedThreadPool();
-    /** Each request's connection under way, and the requests stopped, by ticket. */
-    private static final Map<Long, HttpURLConnection> underWay = new ConcurrentHashMap<>();
-    private static final Set<Long> stopped = ConcurrentHashMap.newKeySet();
+    private static final Map<Long, Request> requests = new ConcurrentHashMap<>();
+
+    // A request stands before its worker starts; cancellation and completion take its connection once.
+    // Design: docs/design/platforms/android/runtime.md#requests
+    private static final class Request {
+        private boolean stopped;
+        private HttpURLConnection connection;
+
+        synchronized boolean attach(HttpURLConnection connection) {
+            if (stopped) return false;
+            this.connection = connection;
+            return true;
+        }
+
+        synchronized HttpURLConnection cancel() {
+            stopped = true;
+            return take();
+        }
+
+        synchronized HttpURLConnection take() {
+            HttpURLConnection taken = connection;
+            connection = null;
+            return taken;
+        }
+    }
 
     private StateUIRequests() {}
 
@@ -39,6 +60,8 @@ final class StateUIRequests {
      */
     static void send(long ticket, String address, String method, String[] headers, byte[] body) {
         if (CookieHandler.getDefault() == null) CookieHandler.setDefault(new CookieManager());
+        Request request = new Request();
+        requests.put(ticket, request);
         senders.execute(() -> {
             int status = 0;
             List<String> said = new ArrayList<>();
@@ -47,8 +70,10 @@ final class StateUIRequests {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(address).openConnection();
-                underWay.put(ticket, connection);
-                if (stopped.contains(ticket)) throw new java.io.IOException("the request was stopped");
+                if (!request.attach(connection)) {
+                    connection.disconnect();
+                    throw new java.io.IOException("the request was stopped");
+                }
                 connection.setRequestMethod(method);
                 for (int index = 0; index + 1 < headers.length; index += 2) {
                     connection.addRequestProperty(headers[index], headers[index + 1]);
@@ -77,9 +102,9 @@ final class StateUIRequests {
             } catch (Exception failed) {
                 failure = failed.getMessage() != null ? failed.getMessage() : failed.toString();
             } finally {
-                underWay.remove(ticket);
-                stopped.remove(ticket);
-                if (connection != null) connection.disconnect();
+                requests.remove(ticket, request);
+                HttpURLConnection remaining = request.take();
+                if (remaining != null) remaining.disconnect();
             }
             int answered = status;
             String[] names = said.toArray(new String[0]);
@@ -91,9 +116,15 @@ final class StateUIRequests {
 
     /** Stops the request under `ticket`: its connection closed, or never opened. */
     static void cancel(long ticket) {
-        stopped.add(ticket);
-        HttpURLConnection connection = underWay.remove(ticket);
+        Request request = requests.get(ticket);
+        if (request == null) return;
+        HttpURLConnection connection = request.cancel();
         if (connection != null) senders.execute(connection::disconnect);
+    }
+
+    /** The native requests still standing; an answer already posted to the UI thread stands no longer. */
+    static int waitingForTesting() {
+        return requests.size();
     }
 
     private static byte[] all(InputStream in) throws java.io.IOException {

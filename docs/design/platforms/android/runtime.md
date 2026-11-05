@@ -199,6 +199,21 @@ the threads' timing. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
 
+## Requests
+
+A request has one native record from before its worker starts until that
+worker ends (`StateUIRequests`). The record holds cancellation and the
+connection under the same lock. A request cancelled before the connection
+arrives starts no I/O; cancellation during I/O takes the connection and
+disconnects it away from the UI thread. Cancellation and completion each
+take the connection at most once, and every completed worker removes its
+record before posting the answer. A cancellation after that finds nothing,
+including while the answer still waits on the UI thread.
+
+The Swift callback's ticket remains until the UI answer arrives
+(`AndroidNetwork`): it owns the answer, not a native request still running.
+The common act performer decides whether that answer still has a caller.
+
 ## The clipboard
 
 The clipboard is the `ClipboardManager`'s primary clip: words are written as
