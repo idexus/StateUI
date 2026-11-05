@@ -42,6 +42,7 @@ final class RunSlot {
     func start(
         _ handler: @escaping EventHandler, _ policy: GatePolicy, payload: [PropValue]?, owner: RunOwner
     ) -> Task<Void, Never> {
+        guard owner.isCurrent else { return Task.immediate {} }
         owner.started(in: self)
         let entry = Entry(owner: ObjectIdentifier(owner))
         let run = entry.run
@@ -159,6 +160,8 @@ final class RunSlot {
 final class RunOwner {
     private var slots: [RunSlot] = []
 
+    private(set) var isCurrent = true
+
     /// The runs of a handler whose gate is a policy alone, each handler its own.
     private(set) lazy var ownRuns = RunSlot()
 
@@ -169,6 +172,8 @@ final class RunOwner {
 
     /// Every run this owner started is superseded, in the order its slots were first used.
     func orphan() {
+        guard isCurrent else { return }
+        isCurrent = false
         for slot in slots { slot.orphan(self) }
         slots.removeAll()
     }

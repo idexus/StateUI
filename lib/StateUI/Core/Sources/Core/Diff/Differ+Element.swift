@@ -518,13 +518,20 @@ extension Differ {
         // The runs of what this element's walks find, kept while it is the same element.
         let kept = replace ? RunSlots() : rendered?.runs ?? RunSlots()
         pass.kept = kept
+        let watchKeys = node.watches.enumerated().map {
+            RunSlots.Key.watch($0.offset, ObjectIdentifier(type(of: $0.element.value)))
+        }
+        let stateKeys = node.visualStateListeners.enumerated().map {
+            RunSlots.Key.visualState($0.offset, $0.element.states)
+        }
+        kept.keep(Set(watchKeys + stateKeys + node.created.indices.map { .created($0) }))
 
         // A state entered is heard after this render; an element made again arrives in its state, unheard.
         if !replace, let state = pass.visualState {
             for (index, listener) in heard {
                 fired.append(Fired(
                     run: { try await listener.handler.run(state) }, gate: listener.handler.gate,
-                    owner: kept.owner("state \(index)")))
+                    owner: kept.owner(.visualState(index, listener.states))))
             }
         }
 
@@ -597,7 +604,8 @@ extension Differ {
             if watch.matches(old) == false {
                 let new = watch.value
                 fired.append(Fired(
-                    run: { try await watch.run(old, new) }, gate: watch.gate, owner: kept.owner("watch \(index)")))
+                    run: { try await watch.run(old, new) }, gate: watch.gate,
+                    owner: kept.owner(.watch(index, ObjectIdentifier(type(of: watch.value))))))
             }
         }
 
@@ -608,7 +616,7 @@ extension Differ {
         // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
             for (index, created) in node.created.enumerated() {
-                fired.append(Fired(run: created, owner: kept.owner("created \(index)")))
+                fired.append(Fired(run: created, owner: kept.owner(.created(index))))
             }
 
             // A node type the host does not realize is said once, with near misses.

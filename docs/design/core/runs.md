@@ -200,12 +200,15 @@ where the run stopped.
 ## What a walk runs
 
 `.onChanged`, `.onVisualStateChanged` and `.onCreated` run what a render's walk
-found. Each starts its runs under an owner the element's `RunSlots` keep, under
-a key the element keeps from one render to the next - its watch's place, its
-listener's place, its handler's place - so a change passes through its gate as
-an event does, and an element leaving supersedes them all. `.onCreated` runs once; it keeps
-runs only so that its element leaving ends them. `.onDestroying` runs as its
-element leaves, a farewell, with no runs of its own: it goes to its end.
+found. Each starts its runs under an owner the element's `RunSlots` keep by
+registration: a watch's place and value type, a listener's place and state
+filter, or a created handler's place. Every render keeps only the registrations
+still written, so removing one or changing a watch's type supersedes its runs
+without another event. A retained registration keeps its owner and gate work.
+An owner that leaves is retired: queued delivery cannot start it again.
+An element leaving supersedes all of its owners. `.onCreated` runs once; its
+runs belong to that registration's lifetime. `.onDestroying` runs as its element
+leaves, a farewell, with no runs of its own: it goes to its end.
 
 A subscription to a host event is an owner, and `cancel()` supersedes its
 runs. A control the library composes that hears an author's handler inside its

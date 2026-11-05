@@ -38,6 +38,7 @@ extension Renderer {
     /// Runs a handler a render's walk found, with no payload, through its gate, outside every run, as an event's.
     /// Design: docs/design/core/runs.md#what-a-walk-runs
     func run(_ fired: Fired) {
+        guard fired.owner?.isCurrent != false else { return }
         HandlerRun.$current.withValue(nil) {
             if let owner = fired.owner {
                 fired.gate.runs(for: owner).start(fired.run, fired.gate.policy, payload: nil, owner: owner)
