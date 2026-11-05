@@ -26,7 +26,7 @@ final class APISurfaceTests: XCTestCase {
     /// Design: docs/design/architecture.md#two-surfaces
     static let extendingTypes: Set<String> = [
         "Act", "AppliedProperties", "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct",
-        "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event", "HostEventSubscription",
+        "ControlChild", "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event", "HostEventSubscription",
         "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name", "Node", "NodeType",
         "Prop", "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue", "Walked",
     ]
@@ -144,19 +144,88 @@ final class APISurfaceTests: XCTestCase {
         }
     }
 
+    func testTheSurfaceRecordsProjectedValuesAndPublicSetterAccess() throws {
+        let surface = try Self.surface()
+        let setting = try XCTUnwrap(surface.first { $0.hasPrefix("swift.property ApplicationSession.colorScheme:") })
+        let phase = try XCTUnwrap(surface.first { $0.hasPrefix("swift.property ApplicationSession.phase:") })
+
+        XCTAssertTrue(setting.hasSuffix("{ get set }"), "an application's setting is writable")
+        XCTAssertTrue(phase.hasSuffix("{ get }"), "a reported fact has no public setter: \(phase)")
+        XCTAssertTrue(surface.contains {
+            $0.hasPrefix("swift.property ApplicationSession.$colorScheme:")
+                && $0.contains("@MainActor") && $0.contains("Binding<ColorScheme>") && $0.hasSuffix("{ get }")
+        }, "a setting's projected binding and its isolation are public API")
+    }
+
+    func testTheCompilerSurfaceTracksAccessProjectionAndIsolation() throws {
+        let original = try Self.fixtureSurface()
+        XCTAssertTrue(original.contains("swift.property Example.value: @Wrapped @MainActor var value: Int { get }"))
+        XCTAssertTrue(original.contains("swift.property Example.$value: @MainActor var $value: Int { get }"),
+                      "restricting the wrapped setter alone leaves the projection public")
+        XCTAssertTrue(original.contains("swift.property Example.setting: @Wrapped @MainActor var setting: Int { get set }"))
+        XCTAssertTrue(original.contains("swift.property Conforming.count: var count: Int { get }"),
+                      "an inherited declaration keeps its public accessor")
+        XCTAssertFalse(original.contains { $0.contains("Example.hidden") || $0.contains("Example.$hidden")
+            || $0.contains("Example.hostValue") || $0.contains("Example.$hostValue") })
+
+        let writable = try Self.fixtureSurface(restricted: false)
+        XCTAssertTrue(writable.contains("swift.property Example.value: @Wrapped @MainActor var value: Int { get set }"))
+        XCTAssertNotEqual(original, writable, "opening a setter must change the record")
+
+        let noProjection = try Self.fixtureSurface(projected: false)
+        XCTAssertFalse(noProjection.contains { $0.hasPrefix("swift.property Example.$") })
+        XCTAssertNotEqual(original, noProjection, "removing a projection must change the record")
+
+        let unisolated = try Self.fixtureSurface(isolated: false)
+        XCTAssertTrue(unisolated.contains("swift.property Example.$value: var $value: Int { get }"))
+        XCTAssertNotEqual(original, unisolated, "removing isolation must change the record")
+    }
+
+    private static func fixtureSurface(
+        restricted: Bool = true, projected: Bool = true, isolated: Bool = true
+    ) throws -> [String] {
+        let scratch = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-api-fixture-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: scratch, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: scratch) }
+        let file = scratch.appendingPathComponent("Fixture.swift")
+        let source = """
+            @propertyWrapper public struct Wrapped<Value> {
+                public var wrappedValue: Value
+                \(projected ? "public var projectedValue: Value { wrappedValue }" : "")
+                public init(wrappedValue: Value) { self.wrappedValue = wrappedValue }
+            }
+            \(isolated ? "@MainActor " : "")public final class Example {
+                @Wrapped public \(restricted ? "private(set) " : "")var value = 1
+                @Wrapped public var setting = 2
+                @Wrapped private var hidden = 3
+                @_spi(Host) @Wrapped public var hostValue = 4
+                public init() {}
+            }
+            public protocol Counted {}
+            extension Counted { public var count: Int { 1 } }
+            public struct Conforming: Counted { public init() {} }
+            """
+        try source.write(to: file, atomically: true, encoding: .utf8)
+        var arguments = ["-emit-module", "-parse-as-library", "-swift-version", "6", "-warnings-as-errors", "-module-name", "APIExample",
+                         "-target", try triple(), file.path, "-emit-module-path", scratch.appendingPathComponent("APIExample.swiftmodule").path]
+        if let sdk = try sdk() { arguments += ["-sdk", sdk] }
+        _ = try run("swiftc", arguments)
+        return try surface(module: "APIExample", directory: scratch)
+    }
+
     /// Every public declaration of the module this run built - its kind, its path and its declaration - and every
     /// type's conformances, sorted, from the symbol graph the toolchain beside `swift` extracts: the module's own and
     /// its extensions of other modules'.
-    private static func surface() throws -> [String] {
+    private static func surface(module: String = "StateUI", directory: URL? = nil) throws -> [String] {
         // Never a skip: a check that did not run reads as one that passed.
-        guard let modules = builtModules() else {
+        guard let modules = directory ?? builtModules() else {
             throw CocoaError(.fileNoSuchFile, userInfo: [NSDebugDescriptionErrorKey: "no StateUI.swiftmodule beside the tests"])
         }
         let output = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-api-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: output) }
 
-        var arguments = ["-module-name", "StateUI", "-I", modules.path, "-target", try triple(),
+        var arguments = ["-module-name", module, "-I", modules.path, "-target", try triple(),
                          "-minimum-access-level", "public", "-output-dir", output.path]
         if let sdk = try sdk() { arguments += ["-sdk", sdk] }
         let said = try run("swift-symbolgraph-extract", arguments)
@@ -166,8 +235,15 @@ final class APISurfaceTests: XCTestCase {
         let read = try graphs.map { graph -> (extended: Substring, json: [String: Any]) in
             // A graph named `StateUI@Swift` holds what the module adds to the standard library's types.
             let json = try JSONSerialization.jsonObject(with: Data(contentsOf: output.appendingPathComponent(graph)))
-            return (graph.dropFirst("StateUI".count).dropLast(".symbols.json".count), json as? [String: Any] ?? [:])
+            return (graph.dropFirst(module.count).dropLast(".symbols.json".count), json as? [String: Any] ?? [:])
         }
+
+        let digest = output.appendingPathComponent("accessors.json")
+        var digestArguments = ["-dump-sdk", "-module", module, "-I", modules.path, "-target", try triple(), "-o", digest.path]
+        if let sdk = try sdk() { digestArguments += ["-sdk", sdk] }
+        _ = try run("swift-api-digester", digestArguments)
+        let json = try JSONSerialization.jsonObject(with: Data(contentsOf: digest))
+        let properties = try APIProperties(json as? [String: Any] ?? [:], module: module)
 
         // Where each symbol stands, by its identifier - a type another module declares by what its members say.
         var paths: [String: String] = [:]
@@ -187,28 +263,37 @@ final class APISurfaceTests: XCTestCase {
         }
 
         var lines: Set<String> = []
+        var declarations: [String: String] = [:]
+        var wrappers: Set<String> = []
         for (extended, json) in read {
             for symbol in json["symbols"] as? [[String: Any]] ?? [] {
                 // A member another module's protocol lends a StateUI type - `!=`, `hashValue`, an integer's
                 // `init(bigEndian:)` - is that module's: the conformance below records it, toolchain by toolchain alike.
                 // Design: docs/design/architecture.md#the-public-surface
                 let lent = Self.identifier(of: symbol).components(separatedBy: "::SYNTHESIZED::")
-                if lent.count > 1, !lent[0].contains("7StateUI") { continue }
+                if lent.count > 1, !lent[0].contains("\(module.utf8.count)\(module)") { continue }
                 let kind = (symbol["kind"] as? [String: Any])?["identifier"] as? String ?? "?"
                 let path = (symbol["pathComponents"] as? [String] ?? []).joined(separator: ".")
                 let fragments = symbol["declarationFragments"] as? [[String: Any]] ?? []
                 // One line each: a declaration the compiler prints over lines, or ending in one, reads as one.
-                let declaration = fragments.compactMap { $0["spelling"] as? String }.joined()
+                var declaration = fragments.compactMap { $0["spelling"] as? String }.joined()
                     .split(whereSeparator: \.isWhitespace).joined(separator: " ")
+                if kind == "swift.property" {
+                    declaration = properties.declaration(declaration, of: Self.identifier(of: symbol))
+                    declarations[extended + path] = declaration
+                }
+                if declaration.contains("@propertyWrapper "), let name = path.split(separator: ".").last {
+                    wrappers.insert(String(name))
+                }
                 lines.insert("\(kind) \(extended)\(path): \(declaration)")
             }
             for relationship in json["relationships"] as? [[String: Any]] ?? [] where relationship["kind"] as? String == "conformsTo" {
                 guard let source = paths[relationship["source"] as? String ?? ""] else { continue }
                 let target = relationship["targetFallback"] as? String ?? paths[relationship["target"] as? String ?? ""]
-                    .map { "StateUI." + $0 } ?? "?"
+                    .map { module + "." + $0 } ?? "?"
                 // What every type is unless it says otherwise, and what another module's type was before StateUI.
                 if ["Swift.Copyable", "Swift.Escapable", "Swift.SendableMetatype"].contains(target) { continue }
-                if !extended.isEmpty, !target.hasPrefix("StateUI.") { continue }
+                if !extended.isEmpty, !target.hasPrefix(module + ".") { continue }
                 let constraints = (relationship["swiftConstraints"] as? [[String: Any]] ?? []).filter { constraint in
                     !["Copyable", "Escapable"].contains(constraint["rhs"] as? String ?? "")
                 }.map { constraint in
@@ -218,6 +303,7 @@ final class APISurfaceTests: XCTestCase {
                     + (constraints.isEmpty ? "" : " where " + constraints.sorted().joined(separator: ", ")))
             }
         }
+        lines.formUnion(try properties.projectedLines(declarations: declarations, wrappers: wrappers))
         return lines.sorted()
     }
 
@@ -227,7 +313,7 @@ final class APISurfaceTests: XCTestCase {
     }
 
     /// Where the build that made this test put the module, beside the test bundle or in a Modules folder there.
-    private static func builtModules() -> URL? {
+    static func builtModules() -> URL? {
         let bundle = Bundle(for: APISurfaceTests.self).bundleURL
         for folder in [bundle, bundle.deletingLastPathComponent()] {
             for modules in [folder, folder.appendingPathComponent("Modules")]
@@ -239,7 +325,7 @@ final class APISurfaceTests: XCTestCase {
     }
 
     /// The triple the toolchain builds for here, with the system's version - the one the module was built for.
-    private static func triple() throws -> String {
+    static func triple() throws -> String {
         let info = try JSONSerialization.jsonObject(with: Data(try run("swiftc", ["-print-target-info"]).utf8))
         guard let triple = ((info as? [String: Any])?["target"] as? [String: Any])?["triple"] as? String else {
             throw CocoaError(.propertyListReadCorrupt)
@@ -249,7 +335,7 @@ final class APISurfaceTests: XCTestCase {
 
     /// The SDK the toolchain compiles against on this system, where one is needed: Xcode's on macOS, the one
     /// `SDKROOT` names elsewhere - Windows' standard library stands there; Linux names none.
-    private static func sdk() throws -> String? {
+    static func sdk() throws -> String? {
         #if os(macOS)
         return try run("xcrun", ["--show-sdk-path"]).trimmingCharacters(in: .whitespacesAndNewlines)
         #else
@@ -260,7 +346,7 @@ final class APISurfaceTests: XCTestCase {
 
     /// Runs a tool found on PATH - the toolchain running these tests - or, where PATH holds only Xcode's `swift`,
     /// in Xcode's toolchain, and answers what it printed.
-    private static func run(_ tool: String, _ arguments: [String]) throws -> String {
+    static func run(_ tool: String, _ arguments: [String]) throws -> String {
         let environment = ProcessInfo.processInfo.environment
         let path = environment["PATH"] ?? environment.first { $0.key.lowercased() == "path" }?.value ?? ""
         #if os(Windows)
@@ -284,7 +370,12 @@ final class APISurfaceTests: XCTestCase {
         try process.run()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
-        return String(decoding: data, as: UTF8.self)
+        let output = String(decoding: data, as: UTF8.self)
+        guard process.terminationStatus == 0 else {
+            throw NSError(domain: "StateUI.Compiler", code: Int(process.terminationStatus),
+                          userInfo: [NSDebugDescriptionErrorKey: "\(tool): \(output)"])
+        }
+        return output
     }
 
     /// A tool of Xcode's toolchain, which stands off PATH beside the `/usr/bin/swift` shim; nil off macOS.

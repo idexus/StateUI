@@ -68,7 +68,7 @@ extension UIKitRegistrations {
         view.setNeedsLayout()
     }
 
-    private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: Reports<Realized>) {
+    private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: ControlReports<Realized>) {
         view.typing.onTextChanged = { typed in
             reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
         }

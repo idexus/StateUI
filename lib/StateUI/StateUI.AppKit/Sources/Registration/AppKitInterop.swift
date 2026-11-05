@@ -166,63 +166,19 @@ public enum StateUIControls {
     ///   - members: registers the members the view takes and raises.
     public static func add<Realized: ElementContract, Made: NSView>(
         _ contract: Realized.Type,
-        create: @escaping (AppKitReports<Realized>) -> Made,
-        members: (AppKitRegistration<Realized, Made>) -> Void = { _ in }
+        create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+        members: @MainActor (AppKitRegistration<Realized, Made>) -> Void = { _ in }
     ) {
         AppKitRegistrations.registry.add(
             contract,
-            create: { reports in create(AppKitReports(reports)) },
+            create: create,
             members: { registration in members(AppKitRegistration(registration)) })
-    }
-}
-
-/// What an element of the APPLICATION'S OWN tells the application: an event of
-/// its own or of a tier it wears, and a value its user changed.
-///
-/// Handed to the view where the view is made, so the view names members of its
-/// contract and never a handler.
-public struct AppKitReports<Realized: ElementContract> {
-    private let reports: Reports<Realized>
-
-    /// Made where the element's view is.
-    init(_ reports: Reports<Realized>) {
-        self.reports = reports
-    }
-
-    /// Raises an event with the values its contract declares - one of the
-    /// element's own, or one a tier it wears declares. An event of a contract
-    /// the element does not wear is refused, and said once.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - value: what it carries, in the order its contract declares.
-    public func raise<Owner: Contract, each Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, (repeat each Value)>,
-        _ value: repeat each Value
-    ) {
-        reports.raise(event, repeat each value)
-    }
-
-    /// A value the USER changed: it lands on the state the element's value
-    /// is carried in, and the event is raised with it - so an application
-    /// hears the change once, whether it holds the value in a state or in a
-    /// handler.
-    ///
-    /// - Parameters:
-    ///   - property: the value's member, written with its contract.
-    ///   - value: what the user made it.
-    ///   - event: the member the element raises for that change.
-    public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
-        _ property: ElementProperty<Owner, Value>,
-        _ value: Value,
-        as event: ElementEvent<Raised, Value>
-    ) {
-        reports.report(property, value, as: event)
     }
 }
 
 /// How an application's own element is realized on this host, member by
 /// member: the properties its view takes, and the events of its own it raises.
+@MainActor
 public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     private let registration: Registration<Realized, Made>
 
@@ -242,7 +198,7 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     ///   - apply: puts the value on the view.
     public func property<Owner: Contract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
-        _ apply: @escaping (Made, Value?) -> Void
+        _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
         registration.property(member, apply)
     }
@@ -261,7 +217,7 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     ///   - apply: puts the values on the view.
     public func applies<each Owner: Contract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>,
-        apply: @escaping (Made, ControlValues<Realized>) -> Void
+        apply: @escaping @MainActor (Made, ControlValues<Realized>) -> Void
     ) {
         registration.applies(repeat each properties) { made, values in apply(made, ControlValues(values)) }
     }
@@ -296,35 +252,12 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,
         events: repeat ElementEvent<each EventOwner, each Payload>,
-        apply: @escaping (Made, [AppKitChild<Child>]) -> Void
+        apply: @escaping @MainActor (Made, [ControlChild<Child>]) -> Void
     ) {
         registration.children(contract, properties: repeat each properties, events: repeat each events) { made, children in
-            apply(made, children.map(AppKitChild.init))
+            apply(made, children)
         }
     }
 }
 
-/// A child element the view draws itself - a map's marker: its values as the types its contract declares, and the
-/// reports its events leave through. Two are equal when they are the same child, for as long as it lives, so a
-/// view keeps what it drew for one by it.
-public struct AppKitChild<Child: ElementContract>: Hashable {
-    private let child: ChildElement<Child>
-
-    init(_ child: ChildElement<Child>) {
-        self.child = child
-    }
-
-    /// One of the child's values, as the type its contract declares - nil where it is not described.
-    ///
-    /// - Parameter property: the member, written with its contract.
-    /// - Returns: the value, or nil.
-    public func value<Owner: Contract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
-        child.value(property)
-    }
-
-    /// What the child's events and the user's values on it leave through.
-    public var reports: AppKitReports<Child> {
-        AppKitReports(child.reports)
-    }
-}
 #endif

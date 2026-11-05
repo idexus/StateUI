@@ -20,7 +20,12 @@ public final class Gate {
 
     /// Whether a run is under way through the gate, or waits to start: a state, read to dim a control or show
     /// progress while the work goes on.
-    @State public private(set) var isBusy = false
+    public private(set) var isBusy: Bool {
+        get { _isBusy }
+        set { _isBusy = newValue }
+    }
+
+    @State private var _isBusy = false
 
     /// A gate of `policy`, shared by every handler and task written with it.
     public init(_ policy: GatePolicy) {

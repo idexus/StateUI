@@ -63,7 +63,7 @@ private final class ShelfControl: GTKControl {
     let widget = gtk_label_new("shelf")!
 
     /// The books it was handed last, in order.
-    var books: [GTKChild<BookContract>] = []
+    var books: [ControlChild<BookContract>] = []
 
     /// How many times it was handed its books.
     var handed = 0

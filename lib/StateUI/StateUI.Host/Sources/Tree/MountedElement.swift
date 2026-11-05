@@ -162,7 +162,7 @@
     }
 
     /// The patch the element is made from while its native half is made - what a toolkit making another control of
-    /// what the element holds reads (`Reports.made`); nil after.
+    /// what the element holds reads (`ControlReports.made`); nil after.
     public private(set) var made: HostPatch?
 
     /// Applies a patch of this element. The tree is made and applied by recursion - an element, then its children -

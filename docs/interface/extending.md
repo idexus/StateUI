@@ -24,6 +24,15 @@ events registered in Swift*: [AppKit](../hosts/appkit.md),
 [UIKit](../hosts/uikit.md), [Android Views](../hosts/android.md),
 [WinUI](../hosts/winui.md), [GTK](../hosts/gtk.md) and [Web](../hosts/web.md).
 
+The native half receives the same `ControlReports<Contract>` on every
+host. A child drawn by its parent is a `ControlChild<Contract>`. Reading
+live control values or a child, and reporting a native event, runs on
+`MainActor`; a toolkit callback
+enters that actor at its adapter boundary. Reporting is synchronous and
+keeps the order of the native callback. Child identity can be compared and
+hashed without reading its native values. Application events raised through
+`StateUIEvents.raise` use the host's queue and can originate on any thread.
+
 ### The contract and the view
 
 The Gallery's traffic light is a whole element:

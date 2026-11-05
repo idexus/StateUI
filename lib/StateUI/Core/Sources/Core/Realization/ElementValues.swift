@@ -7,13 +7,13 @@
 /// changed.
 @_spi(Host) public struct ElementValues<Realized: ElementContract> {
     /// The element's current value for a key, as the host presents it.
-    private let read: (Prop) -> HostValue?
+    private let read: @MainActor (Prop) -> HostValue?
 
     /// Whether a key's value is carried IN - the host's to write.
-    private let carried: (Prop) -> Bool
+    private let carried: @MainActor (Prop) -> Bool
 
     /// Where a key's value is headed: the destination of the journey a state carries it on.
-    private let heading: (Prop) -> HostValue?
+    private let heading: @MainActor (Prop) -> HostValue?
 
     /// The properties that changed.
     private let changes: Set<Prop>
@@ -31,9 +31,9 @@
     ///     journey a state carries it on, nil where none does.
     public init(
         changed: Set<Prop>,
-        reading read: @escaping (Prop) -> HostValue?,
-        carriedIn carried: @escaping (Prop) -> Bool = { _ in false },
-        heading: @escaping (Prop) -> HostValue? = { _ in nil }
+        reading read: @escaping @MainActor (Prop) -> HostValue?,
+        carriedIn carried: @escaping @MainActor (Prop) -> Bool = { _ in false },
+        heading: @escaping @MainActor (Prop) -> HostValue? = { _ in nil }
     ) {
         self.read = read
         self.carried = carried
@@ -46,10 +46,12 @@
     /// described, or crossed as another kind.
     ///
     /// - Parameter member: the property, written with its contract.
+    @MainActor
     public func destination<Owner: Contract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) -> Value? {
-        (heading(member.token) ?? read(member.token)).flatMap(Value.init(propValue:))
+        guard let value = heading(member.token) ?? read(member.token) else { return nil }
+        return Value(propValue: value)
     }
 
     /// Whether this member's value is the HOST'S to write - a field fed from
@@ -61,6 +63,7 @@
     ///         : values[TextualElementContract.text]
     ///
     /// - Parameter member: the property, written with its contract.
+    @MainActor
     public func carriedIn<Owner: Contract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) -> Bool {
@@ -71,6 +74,7 @@
     /// it is not described, or crossed as another kind, which is said once.
     ///
     /// - Parameter member: the property, written with its contract.
+    @MainActor
     public subscript<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
         guard let value = read(member.token) else { return nil }
 

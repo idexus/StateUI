@@ -27,6 +27,7 @@
 
         /// What a row's members say: wrapped where it `wraps`, its lines `rowSpacing` apart and standing as its
         /// `lineAlignment` says.
+        @MainActor
         public init(_ values: ElementValues<HStackContract>) {
             self = values[HStackContract.wraps] == true
                 ? .wrapped(spacing: values[HStackContract.rowSpacing] ?? 0,

@@ -252,6 +252,35 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
+    func testEachFactNamesAndInvalidatesOnlyItsOwnReaders() {
+        let battery = Battery()
+        let (_, chargeReads) = ReadScope.collect { battery.chargeLevel }
+        let (_, stateReads) = ReadScope.collect { battery.state }
+        XCTAssertEqual(chargeReads.count, 1)
+        XCTAssertEqual(stateReads.count, 1)
+        XCTAssertTrue(chargeReads.isDisjoint(with: stateReads))
+        let reads = chargeReads.union(stateReads)
+        Renderer.shared.reading(reads)
+        defer { Renderer.shared.unreading(reads) }
+        Renderer.shared.clearInvalidation()
+
+        battery.chargeLevel = 0.5
+        XCTAssertEqual(Renderer.shared.pendingChanges, chargeReads)
+        XCTAssertEqual(Renderer.shared.pendingWrites.values.map { BuildScope.name(of: $0) }, ["chargeLevel"])
+        Renderer.shared.clearInvalidation()
+
+        battery.state = .charging
+        XCTAssertEqual(Renderer.shared.pendingChanges, stateReads)
+        XCTAssertEqual(Renderer.shared.pendingWrites.values.map { BuildScope.name(of: $0) }, ["state"])
+    }
+
+    func testSamplingTheThemeCreatesNoReader() {
+        let (theme, reads) = ReadScope.collect { ThemeInForce.current }
+        XCTAssertTrue(reads.isEmpty)
+        XCTAssertEqual(theme.scheme, StandardEnvironment.application.info.colorScheme)
+        XCTAssertEqual(theme.accent, StandardEnvironment.application.info.accentColor)
+    }
+
     // MARK: - The provider schema
 
     /// Every report lands whole: each field on the provider's property of the

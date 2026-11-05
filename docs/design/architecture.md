@@ -120,11 +120,20 @@ What an application can name of the library is recorded:
 `lib/StateUI/exports/api/` holds every public declaration of the
 `StateUI` module, a line each - its kind, its path and its declaration as the
 compiler prints it - and every conformance of its types, sorted, read from the symbol graph the toolchain extracts
-from the module the core's tests just built. `APISurfaceTests` compares the
+from the module the core's tests just built. The compiler's API digest supplies
+public accessor access and synthesized projections that the symbol graph omits.
+The graph remains the public surface's filter, so private and SPI projections
+stay out. `APISurfaceTests` compares the
 module with the record, so a change to the public API stands in its commit's
 diff as lines added and taken away, and passes only once
 `STATEUI_UPDATE_EXPORTS=1` has written it. `@_spi(Host)` declarations are the
 hosts' and stay out; documentation changes nothing there.
+
+Compiled fixtures prove that changing a setter's access, a projection or actor
+isolation changes the record. Public-client checks also prove the boundary:
+reported facts can be read, while application-owned settings lend writable
+bindings. Both use the compiler and module under test, with no handwritten
+projection inventory in the exporter.
 
 The record holds StateUI's declarations and each type's conformances. A
 member another module's protocol lends a StateUI type - `!=` from `Equatable`,

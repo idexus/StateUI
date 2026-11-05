@@ -464,7 +464,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Realization
 
-- **`Registry`**, **`Registration`**, **`ElementValues`** and **`Reports`**
+- **`Registry`**, **`Registration`**, **`ElementValues`** and **`ControlReports`**
   are a host's realization of each element contract, member by member: how
   its view is made, which members the view takes, which events it raises -
   generic over the platform's view type. *Host.*

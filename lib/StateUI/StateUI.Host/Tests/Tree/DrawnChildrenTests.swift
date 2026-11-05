@@ -89,7 +89,7 @@ final class DrawnChildrenTests: XCTestCase {
 /// The shelf's view: every list of books it was handed, each book with its title.
 @MainActor
 final class ShelfView {
-    var handed: [[(child: ChildElement<BookContract>, title: String)]] = []
+    var handed: [[(child: ControlChild<BookContract>, title: String)]] = []
 }
 
 /// A native half handing its view the children it draws, as every host's does.

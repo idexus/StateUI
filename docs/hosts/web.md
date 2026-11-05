@@ -137,8 +137,8 @@ says which contract it realizes, as on every host:
 ```swift quote
 public static func add<Realized: ElementContract, Made: WebControl>(
     _ contract: Realized.Type,
-    create: @escaping (WebReports<Realized>) -> Made,
-    members: (WebRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (WebRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 The element a control shows is a `WebPageElement`: one of the browser's own,
@@ -232,7 +232,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`WebChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 element of its own on the page.

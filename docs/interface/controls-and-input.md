@@ -374,6 +374,9 @@ Button("Close keyboard")
 
 ## Choices and ranges
 
+A picker requires its choices and selection when it is created. Its style
+is written as `Style<Picker>()` without constructing a picker.
+
 Choice controls follow the same binding rule:
 
 ```swift
@@ -593,6 +596,9 @@ whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
 
 ## Links
+
+A link requires its words and address when it is created. Its style is
+written as `Style<Link>()` without constructing a link.
 
 A `Link` is words that open an address - a page, a mail, a call - in the
 application the system gives it, as `application.launch` does:

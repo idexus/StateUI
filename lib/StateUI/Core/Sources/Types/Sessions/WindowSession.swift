@@ -31,7 +31,12 @@
 public final class WindowSession {
     /// Where the window stands right now: in use, showing behind another, or out of sight - going away included.
     /// Starts `.background`, before the platform has made it.
-    @State public internal(set) var phase: SessionPhase = .background
+    public internal(set) var phase: SessionPhase {
+        get { _phase }
+        set { _phase = newValue }
+    }
+
+    @State private var _phase: SessionPhase = .background
 
     /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil

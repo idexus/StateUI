@@ -10,17 +10,14 @@ struct ThemeInForce: Sendable, Equatable {
 
     /// The application's, as it stands - read without making anybody its reader.
     @MainActor static var current: ThemeInForce {
-        let info = StandardEnvironment.application.info
-
-        return ThemeInForce(scheme: info.$colorScheme.standing, accent: info.$accentColor.standing)
+        StandardEnvironment.application.info.theme
     }
 
     /// Where none is handed: the light half, the application's first accent.
     static let standard = ThemeInForce(scheme: .light, accent: ApplicationInfo.standardAccent)
 }
 
-/// A value that turns with the theme or the accent: a color pair, the accent,
-/// what holds one.
+/// A value whose carried form follows the theme or accent.
 protocol ThemeWearing {
     var wearsTheTheme: Bool { get }
 

@@ -184,6 +184,9 @@ swift.conformance ContextMenuContract: StateUI.Contract
 swift.conformance ContextMenuContract: StateUI.ElementContract
 swift.conformance Contract: Swift.Sendable
 swift.conformance ContractMember: Swift.Sendable
+swift.conformance ControlChild: Swift.Equatable
+swift.conformance ControlChild: Swift.Hashable
+swift.conformance ControlReports: Swift.Sendable
 swift.conformance CornerRadius: StateUI.HostRepresentable
 swift.conformance CorneredShape: StateUI.AutomationElement
 swift.conformance CorneredShape: StateUI.CorneredShapeProperties
@@ -1410,6 +1413,7 @@ swift.enum.case StateKind.text: case text
 swift.enum.case StateMode.in: case `in`
 swift.enum.case StateMode.inOut: case inOut
 swift.enum.case StateMode.out: case out
+swift.func.op ControlChild.==(_:_:): static func == (lhs: ControlChild<Child>, rhs: ControlChild<Child>) -> Bool
 swift.func.op Event.<(_:_:): static func < (lhs: Event, rhs: Event) -> Bool
 swift.func.op NodeType.<(_:_:): static func < (lhs: NodeType, rhs: NodeType) -> Bool
 swift.func.op Prop.<(_:_:): static func < (lhs: Prop, rhs: Prop) -> Bool
@@ -1765,6 +1769,10 @@ swift.method ColorPicker.onHostEvent(_:policy:_:): @MainActor func onHostEvent<O
 swift.method ColorPicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ColorPicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method ColorPicker.setValue(_:whenDescribed:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, whenDescribed value: @escaping @MainActor @Sendable () -> Value) -> Self where Owner : Contract, Value : HostRepresentable
+swift.method ControlChild.hash(into:): func hash(into hasher: inout Hasher)
+swift.method ControlChild.value(_:): @MainActor func value<Owner, Value>(_ property: ElementProperty<Owner, Value>) -> Value? where Owner : Contract, Value : HostRepresentable
+swift.method ControlReports.raise(_:_:): @MainActor func raise<Owner, each Value>(_ event: ElementEvent<Owner, (repeat each Value)>, _ value: repeat each Value) where Owner : Contract, repeat each Value : HostRepresentable
+swift.method ControlReports.report(_:_:as:): @MainActor func report<Owner, Raised, Value>(_ property: ElementProperty<Owner, Value>, _ value: Value, as event: ElementEvent<Raised, Value>) where Owner : Contract, Raised : Contract, Value : HostRepresentable
 swift.method ControlValues.changed(_:): func changed<Owner, Value>(_ member: ElementProperty<Owner, Value>) -> Bool where Owner : Contract, Value : HostRepresentable
 swift.method DatePicker.modified(_:): @MainActor func modified(_ change: (inout Node) -> Void) -> Self
 swift.method DatePicker.onEvent(_:_:): @MainActor func onEvent<Owner, First, Second, Third, Fourth>(_ event: ElementEvent<Owner, (First, Second, Third, Fourth)>, _ handler: @escaping @MainActor @Sendable (First, Second, Third, Fourth) throws -> Void) -> Self.Modified where Owner : Contract, First : HostRepresentable, Second : HostRepresentable, Third : HostRepresentable, Fourth : HostRepresentable
@@ -3251,6 +3259,7 @@ swift.property ContainerShape.propValue: var propValue: PropValue { get }
 swift.property ContentMode.carried: var carried: StateCarried { get }
 swift.property ContentMode.propValue: var propValue: PropValue { get }
 swift.property ContractMember.name: var name: String { get }
+swift.property ControlChild.reports: @MainActor var reports: ControlReports<Child> { get }
 swift.property CornerRadius.propValue: var propValue: PropValue { get }
 swift.property DatePicker.node: @MainActor var node: Node
 swift.property DatePicker.nodes: @MainActor var nodes: [Node] { get }
@@ -3361,7 +3370,7 @@ swift.property Name.text: let text: String
 swift.property NavigationStack.node: @MainActor var node: Node
 swift.property NavigationStack.nodes: @MainActor var nodes: [Node] { get }
 swift.property Node.children: @MainActor var children: [Node]
-swift.property Node.id: @MainActor var id: String? { get set }
+swift.property Node.id: @MainActor var id: String? { get }
 swift.property Node.node: @MainActor var node: Node { get }
 swift.property Node.type: @MainActor var type: NodeType { get }
 swift.property NodeType.description: var description: String { get }
@@ -3551,6 +3560,8 @@ swift.protocol VisualElementProperties: @MainActor protocol VisualElementPropert
 swift.protocol Walked: protocol Walked : LaneValue
 swift.protocol WebViewProperties: @MainActor protocol WebViewProperties : PropertyContainer
 swift.struct Act: struct Act
+swift.struct ControlChild: struct ControlChild<Child> where Child : ElementContract
+swift.struct ControlReports: @MainActor struct ControlReports<Realized> where Realized : ElementContract
 swift.struct ControlValues: struct ControlValues<Realized> where Realized : ElementContract
 swift.struct ElementAct: struct ElementAct<Owner, Arguments, Answer> where Owner : Contract
 swift.struct ElementEvent: struct ElementEvent<Owner, Payload> where Owner : Contract
@@ -3562,7 +3573,7 @@ swift.struct Name: struct Name
 swift.struct Node: @MainActor struct Node
 swift.struct NodeType: struct NodeType
 swift.struct Prop: struct Prop
-swift.subscript ControlValues.subscript(_:): subscript<Owner, Value>(member: ElementProperty<Owner, Value>) -> Value? where Owner : Contract, Value : HostRepresentable { get }
+swift.subscript ControlValues.subscript(_:): @MainActor subscript<Owner, Value>(member: ElementProperty<Owner, Value>) -> Value? where Owner : Contract, Value : HostRepresentable { get }
 swift.type.method @SwiftArray.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method @SwiftBool.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method @SwiftDouble.propValue(of:): static func propValue(of list: [Double]) -> PropValue

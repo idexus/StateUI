@@ -69,7 +69,7 @@ handler a gate of its own: two buttons written with `.ignoreWhileRunning` never
 hold each other back. Where several actions touch one thing - a save and a
 delete of one document - they pass through one `Gate`, kept in a state or a
 model and given as `gate:`, and its `isBusy` says whether a run is under way
-through it:
+through it. This is a read-only fact; starting and completing work update it:
 
 ```swift
 @MainActor
@@ -320,6 +320,10 @@ Hold a ticker in `@State` so the same instance survives view rebuilds. Reading
 subscribes the current description to that ticker. A tick, and each change
 to `interval`, `limit` or `isRepeating`, requests a render; setting `onTick`
 does not.
+
+`ticks` and `isRunning` are read-only facts. Use `start()`, `stop()` and
+`reset()` to control them; the writable settings `limit` and `isRepeating`
+also offer bindings for controls.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the

@@ -58,7 +58,7 @@ extension AppKitDriver {
     /// The map a marker stands on, and MapKit's annotation for it.
     private func mapPin(_ element: MountedElement) throws -> (AppKitMapView, MapKitMarker) {
         guard let renderer, let map = (element.parent?.native as? AppKitElement)?.view as? AppKitMapView,
-              let pin = map.pin(of: ChildElement(element.asChild(in: renderer.runtime)))
+              let pin = map.pin(of: ControlChild(element.asChild(in: renderer.runtime)))
         else { throw DriverCannot("find a Marker on its map") }
         return (map, pin)
     }

@@ -10,7 +10,7 @@ import MapKit
 @_spi(Host) @MainActor
 public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
     /// The child the marker stands for.
-    public let child: ChildElement<MarkerContract>
+    public let child: ControlChild<MarkerContract>
 
     /// Where the marker stands.
     @objc public dynamic var coordinate = CLLocationCoordinate2D()
@@ -25,7 +25,7 @@ public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
     public private(set) var type = MarkerType.generic
 
     /// The marker of `child`, its values not yet taken.
-    public init(_ child: ChildElement<MarkerContract>) {
+    public init(_ child: ControlChild<MarkerContract>) {
         self.child = child
         super.init()
     }

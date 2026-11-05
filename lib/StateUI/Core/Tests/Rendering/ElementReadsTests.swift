@@ -183,8 +183,8 @@ final class ElementReadsTests: XCTestCase {
         let place = State(wrappedValue: 0)
         assertTheElementReads("setValue(_:whenDescribed:)", type: "Picker", prop: "selectedIndex", becomes: .number(1),
                               root: { Handing(builds: $0) {
-                                  AnyView(Picker().setValue(
-                                      PickerContract.selectedIndex, whenDescribed: { place.wrappedValue }))
+                                  AnyView(node: Node(contract: PickerContract.self)).setValue(
+                                      PickerContract.selectedIndex, whenDescribed: { place.wrappedValue })
                               } },
                               write: { place.wrappedValue = 1 })
     }

@@ -80,7 +80,12 @@ public final class Ticker {
     /// Read it and the interface follows: each property is a state of its own,
     /// so a tick rebuilds the views that read the count and leaves the rest of
     /// the tree alone.
-    @State public private(set) var ticks = 0
+    public private(set) var ticks: Int {
+        get { _ticks }
+        set { _ticks = newValue }
+    }
+
+    @State private var _ticks = 0
 
     /// Whether another tick is coming. `start()` and `stop()` are what change
     /// it.
@@ -90,7 +95,12 @@ public final class Ticker {
     /// this before running its closure, which is what lets that closure start
     /// the next round. So a false here means "nothing further is scheduled",
     /// not "the work is over".
-    @State public private(set) var isRunning = false
+    public private(set) var isRunning: Bool {
+        get { _isRunning }
+        set { _isRunning = newValue }
+    }
+
+    @State private var _isRunning = false
 
     /// Whether it has counted all the way to its `limit`. Always false for a
     /// ticker with no limit.

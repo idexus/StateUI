@@ -27,12 +27,14 @@
         FontElementContract.fontAttributes, FontElementContract.fontFamily)
 
     /// A toggle's words beside it in their case, whether or not they changed; empty where it says none.
+    @MainActor
     public static func caption<Realized>(_ values: ElementValues<Realized>) -> String {
         let text = values[TextualElementContract.text] ?? ""
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
     /// A toggle's words' look: their color, in the platform's own font.
+    @MainActor
     public static func captionLook<Realized>(_ values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.color = values[TextColorElementContract.textColor]?.propValue
@@ -40,6 +42,7 @@
     }
 
     /// The words in their case, where the words or their case changed; nil where neither did.
+    @MainActor
     public static func words<Realized>(_ values: ElementValues<Realized>) -> String? {
         guard values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) else {
             return nil
@@ -49,6 +52,7 @@
     }
 
     /// The look the font, its scaling and the color give the words, where one of them changed; nil where none did.
+    @MainActor
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
         guard values.changed(FontElementContract.textStyle) || values.changed(FontElementContract.fontWeight)
             || values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
@@ -74,6 +78,7 @@
     }
 
     /// The look the font and the color give the words, whether or not they changed.
+    @MainActor
     public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.style = values[FontElementContract.textStyle]

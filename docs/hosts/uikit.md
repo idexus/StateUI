@@ -138,8 +138,8 @@ module to see them. The UIKit halves of the Gallery's own are in
 ```swift quote
 public static func add<Realized: ElementContract, Made: UIView>(
     _ contract: Realized.Type,
-    create: @escaping (UIKitReports<Realized>) -> Made,
-    members: (UIKitRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (UIKitRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the view once per element, and wires what the view
@@ -226,7 +226,7 @@ A view may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the view realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`UIKitChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
 view of its own. The Gallery's [Web](web.md#children-a-control-draws) and

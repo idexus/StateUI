@@ -1459,7 +1459,6 @@ swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point
 swift.init LineBreak.init(rawValue:): init?(rawValue: Int32)
 swift.init LineCap.init(rawValue:): init?(rawValue: Int32)
 swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
-swift.init Link.init(): @MainActor init()
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: String)
 swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
@@ -1494,7 +1493,6 @@ swift.init Path.init(_:): @MainActor init(_ data: String)
 swift.init PersistentKey.init(_:): init(_ name: String)
 swift.init PersistentKind.init(rawValue:): init?(rawValue: Int32)
 swift.init PersistentValue.init(persistentValue:): init?(persistentValue: PropValue)
-swift.init Picker.init(): @MainActor init()
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
@@ -12964,34 +12962,38 @@ swift.property @SwiftDouble.persistentValue: var persistentValue: PropValue { ge
 swift.property @SwiftInt.persistentValue: var persistentValue: PropValue { get }
 swift.property @SwiftNever.body: @MainActor var body: Never { get }
 swift.property @SwiftString.persistentValue: var persistentValue: PropValue { get }
-swift.property AccessibilitySettings.isScreenReaderOn: @State @MainActor var isScreenReaderOn: Bool { get set }
-swift.property AccessibilitySettings.prefersHigherContrast: @State @MainActor var prefersHigherContrast: Bool { get set }
-swift.property AccessibilitySettings.reducesMotion: @State @MainActor var reducesMotion: Bool { get set }
-swift.property AccessibilitySettings.textScale: @State @MainActor var textScale: Double { get set }
+swift.property AccessibilitySettings.isScreenReaderOn: @MainActor var isScreenReaderOn: Bool { get }
+swift.property AccessibilitySettings.prefersHigherContrast: @MainActor var prefersHigherContrast: Bool { get }
+swift.property AccessibilitySettings.reducesMotion: @MainActor var reducesMotion: Bool { get }
+swift.property AccessibilitySettings.textScale: @MainActor var textScale: Double { get }
 swift.property Aim.description: @MainActor var description: String { get }
 swift.property Aim.wrappedValue: @MainActor var wrappedValue: Aim<Target> { get }
 swift.property AnyView.body: @MainActor var body: Never { get }
 swift.property Application.body: @ApplicationBuilder @MainActor var body: Self.Body { get }
-swift.property ApplicationInfo.accentColor: @State @MainActor var accentColor: Color { get set }
-swift.property ApplicationInfo.buildString: @State @MainActor var buildString: String { get set }
-swift.property ApplicationInfo.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
+swift.property ApplicationInfo.accentColor: @MainActor var accentColor: Color { get }
+swift.property ApplicationInfo.buildString: @MainActor var buildString: String { get }
+swift.property ApplicationInfo.colorScheme: @MainActor var colorScheme: ColorScheme { get }
 swift.property ApplicationInfo.libraryVersion: @MainActor let libraryVersion: String
-swift.property ApplicationInfo.name: @State @MainActor var name: String { get set }
-swift.property ApplicationInfo.packageName: @State @MainActor var packageName: String { get set }
-swift.property ApplicationInfo.versionString: @State @MainActor var versionString: String { get set }
+swift.property ApplicationInfo.name: @MainActor var name: String { get }
+swift.property ApplicationInfo.packageName: @MainActor var packageName: String { get }
+swift.property ApplicationInfo.versionString: @MainActor var versionString: String { get }
+swift.property ApplicationSession.$accentColor: @MainActor var $accentColor: Binding<Color?> { get }
+swift.property ApplicationSession.$colorScheme: @MainActor var $colorScheme: Binding<ColorScheme> { get }
+swift.property ApplicationSession.$motion: @MainActor var $motion: Binding<Motion> { get }
+swift.property ApplicationSession.$styles: @MainActor var $styles: Binding<StyleSheet?> { get }
 swift.property ApplicationSession.accentColor: @State @MainActor var accentColor: Color? { get set }
 swift.property ApplicationSession.clipboard: @MainActor var clipboard: Clipboard { get }
 swift.property ApplicationSession.clock: @MainActor var clock: WallClock { get }
 swift.property ApplicationSession.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
 swift.property ApplicationSession.info: @MainActor let info: ApplicationInfo
 swift.property ApplicationSession.motion: @State @MainActor var motion: Motion { get set }
-swift.property ApplicationSession.phase: @State @MainActor var phase: SessionPhase { get set }
+swift.property ApplicationSession.phase: @MainActor var phase: SessionPhase { get }
 swift.property ApplicationSession.scenes: @MainActor var scenes: [SceneSession] { get }
 swift.property ApplicationSession.styles: @State @MainActor var styles: StyleSheet? { get set }
-swift.property Battery.chargeLevel: @State @MainActor var chargeLevel: Double? { get set }
-swift.property Battery.energySaverStatus: @State @MainActor var energySaverStatus: EnergySaverStatus { get set }
-swift.property Battery.powerSource: @State @MainActor var powerSource: BatteryPowerSource { get set }
-swift.property Battery.state: @State @MainActor var state: BatteryState { get set }
+swift.property Battery.chargeLevel: @MainActor var chargeLevel: Double? { get }
+swift.property Battery.energySaverStatus: @MainActor var energySaverStatus: EnergySaverStatus { get }
+swift.property Battery.powerSource: @MainActor var powerSource: BatteryPowerSource { get }
+swift.property Battery.state: @MainActor var state: BatteryState { get }
 swift.property Binding.journey: @MainActor var journey: Journey<Value> { get }
 swift.property Binding.projectedValue: @MainActor var projectedValue: Binding<Value> { get }
 swift.property Binding.wrappedValue: @MainActor var wrappedValue: Value { get nonmutating set }
@@ -13012,8 +13014,8 @@ swift.property ClockTime.minute: var minute: Int
 swift.property ClockTime.second: var second: Int
 swift.property ClockTime.text: var text: String { get }
 swift.property ColorPicker.body: @MainActor var body: Never { get }
-swift.property Connectivity.connectionProfiles: @State @MainActor var connectionProfiles: [ConnectionProfile] { get set }
-swift.property Connectivity.networkAccess: @State @MainActor var networkAccess: NetworkAccess { get set }
+swift.property Connectivity.connectionProfiles: @MainActor var connectionProfiles: [ConnectionProfile] { get }
+swift.property Connectivity.networkAccess: @MainActor var networkAccess: NetworkAccess { get }
 swift.property DatePicker.body: @MainActor var body: Never { get }
 swift.property DebugInspector.body: @MainActor var body: some View { get }
 swift.property Device.accessibility: @MainActor let accessibility: AccessibilitySettings
@@ -13021,20 +13023,20 @@ swift.property Device.battery: @MainActor let battery: Battery
 swift.property Device.connectivity: @MainActor let connectivity: Connectivity
 swift.property Device.display: @MainActor let display: DeviceDisplay
 swift.property Device.info: @MainActor let info: DeviceInfo
-swift.property DeviceDisplay.density: @State @MainActor var density: Double? { get set }
-swift.property DeviceDisplay.height: @State @MainActor var height: Double? { get set }
-swift.property DeviceDisplay.orientation: @State @MainActor var orientation: DisplayOrientation { get set }
-swift.property DeviceDisplay.refreshRate: @State @MainActor var refreshRate: Double? { get set }
-swift.property DeviceDisplay.rotation: @State @MainActor var rotation: DisplayRotation { get set }
-swift.property DeviceDisplay.width: @State @MainActor var width: Double? { get set }
+swift.property DeviceDisplay.density: @MainActor var density: Double? { get }
+swift.property DeviceDisplay.height: @MainActor var height: Double? { get }
+swift.property DeviceDisplay.orientation: @MainActor var orientation: DisplayOrientation { get }
+swift.property DeviceDisplay.refreshRate: @MainActor var refreshRate: Double? { get }
+swift.property DeviceDisplay.rotation: @MainActor var rotation: DisplayRotation { get }
+swift.property DeviceDisplay.width: @MainActor var width: Double? { get }
 swift.property DeviceInfo.architecture: @MainActor let architecture: String
-swift.property DeviceInfo.formFactor: @State @MainActor var formFactor: FormFactor { get set }
-swift.property DeviceInfo.isVirtual: @State @MainActor var isVirtual: Bool? { get set }
-swift.property DeviceInfo.manufacturer: @State @MainActor var manufacturer: String { get set }
-swift.property DeviceInfo.model: @State @MainActor var model: String { get set }
-swift.property DeviceInfo.name: @State @MainActor var name: String { get set }
-swift.property DeviceInfo.platform: @State @MainActor var platform: String { get set }
-swift.property DeviceInfo.versionString: @State @MainActor var versionString: String { get set }
+swift.property DeviceInfo.formFactor: @MainActor var formFactor: FormFactor { get }
+swift.property DeviceInfo.isVirtual: @MainActor var isVirtual: Bool? { get }
+swift.property DeviceInfo.manufacturer: @MainActor var manufacturer: String { get }
+swift.property DeviceInfo.model: @MainActor var model: String { get }
+swift.property DeviceInfo.name: @MainActor var name: String { get }
+swift.property DeviceInfo.platform: @MainActor var platform: String { get }
+swift.property DeviceInfo.versionString: @MainActor var versionString: String { get }
 swift.property Either.body: @MainActor var body: Never { get }
 swift.property ElementView.body: @MainActor var body: Never { get }
 swift.property Ellipse.body: @MainActor var body: Never { get }
@@ -13053,7 +13055,7 @@ swift.property FileType.extensions: let extensions: [String]
 swift.property Fill.body: @MainActor var body: Never { get }
 swift.property FontAttributes.rawValue: let rawValue: Int32
 swift.property GalleryView.body: @MainActor var body: some View { get }
-swift.property Gate.isBusy: @State @MainActor var isBusy: Bool { get set }
+swift.property Gate.isBusy: @MainActor var isBusy: Bool { get }
 swift.property Gate.policy: nonisolated let policy: GatePolicy
 swift.property GeometryReader.body: @MainActor var body: some View { get }
 swift.property Glass.clarity: let clarity: Glass.Clarity
@@ -13106,13 +13108,13 @@ swift.property LayoutCurve.reach: var reach: Int { get }
 swift.property LayoutInterpolation.reach: var reach: Int { get }
 swift.property Line.body: @MainActor var body: Never { get }
 swift.property Link.body: @MainActor var body: Never { get }
-swift.property LocaleInfo.firstDayOfWeek: @State @MainActor var firstDayOfWeek: Weekday { get set }
-swift.property LocaleInfo.isMetric: @State @MainActor var isMetric: Bool { get set }
-swift.property LocaleInfo.language: @State @MainActor var language: LocaleTag? { get set }
-swift.property LocaleInfo.languages: @State @MainActor var languages: [LocaleTag] { get set }
-swift.property LocaleInfo.layoutDirection: @State @MainActor var layoutDirection: LayoutDirection { get set }
-swift.property LocaleInfo.timeZone: @State @MainActor var timeZone: TimeZoneName? { get set }
-swift.property LocaleInfo.uses24HourClock: @State @MainActor var uses24HourClock: Bool { get set }
+swift.property LocaleInfo.firstDayOfWeek: @MainActor var firstDayOfWeek: Weekday { get }
+swift.property LocaleInfo.isMetric: @MainActor var isMetric: Bool { get }
+swift.property LocaleInfo.language: @MainActor var language: LocaleTag? { get }
+swift.property LocaleInfo.languages: @MainActor var languages: [LocaleTag] { get }
+swift.property LocaleInfo.layoutDirection: @MainActor var layoutDirection: LayoutDirection { get }
+swift.property LocaleInfo.timeZone: @MainActor var timeZone: TimeZoneName? { get }
+swift.property LocaleInfo.uses24HourClock: @MainActor var uses24HourClock: Bool { get }
 swift.property LocaleTag.description: var description: String { get }
 swift.property LocaleTag.direction: var direction: LayoutDirection { get }
 swift.property LocaleTag.identifier: let identifier: String
@@ -13172,7 +13174,7 @@ swift.property SafeAreaEdges.rawValue: let rawValue: Int32
 swift.property Scene.body: @SceneBuilder @MainActor var body: Self.Body { get }
 swift.property SceneKey.description: var description: String { get }
 swift.property SceneKey.name: var name: String { get }
-swift.property SceneSession.phase: @State @MainActor var phase: SessionPhase { get set }
+swift.property SceneSession.phase: @MainActor var phase: SessionPhase { get }
 swift.property SceneSession.windows: @MainActor var windows: [WindowSession] { get }
 swift.property Scenes.body: @MainActor var body: Never { get }
 swift.property ScrollAxes.rawValue: let rawValue: Int32
@@ -13197,13 +13199,15 @@ swift.property Text.body: @MainActor var body: Never { get }
 swift.property TextDecorations.rawValue: let rawValue: Int32
 swift.property TextEditor.body: @MainActor var body: Never { get }
 swift.property TextField.body: @MainActor var body: Never { get }
+swift.property Ticker.$isRepeating: @MainActor var $isRepeating: Binding<Bool> { get }
+swift.property Ticker.$limit: @MainActor var $limit: Binding<Int?> { get }
 swift.property Ticker.interval: @MainActor var interval: Duration { get set }
 swift.property Ticker.isFinished: @MainActor var isFinished: Bool { get }
 swift.property Ticker.isRepeating: @State @MainActor var isRepeating: Bool { get set }
-swift.property Ticker.isRunning: @State @MainActor var isRunning: Bool { get set }
+swift.property Ticker.isRunning: @MainActor var isRunning: Bool { get }
 swift.property Ticker.limit: @State @MainActor var limit: Int? { get set }
 swift.property Ticker.onTick: @MainActor var onTick: Ticker.Tick? { get set }
-swift.property Ticker.ticks: @State @MainActor var ticks: Int { get set }
+swift.property Ticker.ticks: @MainActor var ticks: Int { get }
 swift.property TimePicker.body: @MainActor var body: Never { get }
 swift.property TimeZoneName.description: var description: String { get }
 swift.property TimeZoneName.identifier: let identifier: String
@@ -13218,6 +13222,18 @@ swift.property WebNavigation.type: var type: WebNavigationType
 swift.property WebView.body: @MainActor var body: Never { get }
 swift.property Window.body: @MainActor var body: Never { get }
 swift.property WindowGroup.body: @MainActor var body: Never { get }
+swift.property WindowSession.$background: @MainActor var $background: Binding<Material?> { get }
+swift.property WindowSession.$height: @MainActor var $height: Binding<Double?> { get }
+swift.property WindowSession.$isMaximizable: @MainActor var $isMaximizable: Binding<Bool?> { get }
+swift.property WindowSession.$isMinimizable: @MainActor var $isMinimizable: Binding<Bool?> { get }
+swift.property WindowSession.$maximumHeight: @MainActor var $maximumHeight: Binding<Double?> { get }
+swift.property WindowSession.$maximumWidth: @MainActor var $maximumWidth: Binding<Double?> { get }
+swift.property WindowSession.$minimumHeight: @MainActor var $minimumHeight: Binding<Double?> { get }
+swift.property WindowSession.$minimumWidth: @MainActor var $minimumWidth: Binding<Double?> { get }
+swift.property WindowSession.$title: @MainActor var $title: Binding<String?> { get }
+swift.property WindowSession.$width: @MainActor var $width: Binding<Double?> { get }
+swift.property WindowSession.$x: @MainActor var $x: Binding<Double?> { get }
+swift.property WindowSession.$y: @MainActor var $y: Binding<Double?> { get }
 swift.property WindowSession.background: @State @MainActor var background: Material? { get set }
 swift.property WindowSession.height: @State @MainActor var height: Double? { get set }
 swift.property WindowSession.isInspectorOpen: @MainActor var isInspectorOpen: Bool { get }
@@ -13227,7 +13243,7 @@ swift.property WindowSession.maximumHeight: @State @MainActor var maximumHeight:
 swift.property WindowSession.maximumWidth: @State @MainActor var maximumWidth: Double? { get set }
 swift.property WindowSession.minimumHeight: @State @MainActor var minimumHeight: Double? { get set }
 swift.property WindowSession.minimumWidth: @State @MainActor var minimumWidth: Double? { get set }
-swift.property WindowSession.phase: @State @MainActor var phase: SessionPhase { get set }
+swift.property WindowSession.phase: @MainActor var phase: SessionPhase { get }
 swift.property WindowSession.title: @State @MainActor var title: String? { get set }
 swift.property WindowSession.width: @State @MainActor var width: Double? { get set }
 swift.property WindowSession.x: @State @MainActor var x: Double? { get set }

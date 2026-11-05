@@ -16,11 +16,6 @@ public struct Link: ElementView, TextualElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Link>` is written against.
-    public init() {
-        node = Node(contract: LinkContract.self)
-    }
-
     /// A link saying `text` and opening `address`.
     public init(_ text: String, address: String) {
         node = Node(contract: LinkContract.self)

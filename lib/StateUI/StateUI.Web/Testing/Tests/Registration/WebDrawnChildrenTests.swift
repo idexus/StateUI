@@ -61,7 +61,7 @@ private final class ShelfControl: WebControl {
     let element = WebPageElement(tag: "test-shelf")
 
     /// The books it was handed last, in order.
-    var books: [WebChild<BookContract>] = []
+    var books: [ControlChild<BookContract>] = []
 
     /// How many times it was handed its books.
     var handed = 0

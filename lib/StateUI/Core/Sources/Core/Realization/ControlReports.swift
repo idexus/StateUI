@@ -13,17 +13,18 @@
 ///         }
 ///         return light
 ///     })
-@_spi(Host) public struct Reports<Realized: ElementContract> {
+@MainActor
+public struct ControlReports<Realized: ElementContract> {
     /// Hands an event and its encoded values on - to the element's handler.
-    private let send: (Event, [HostValue]) -> Void
+    private let send: @MainActor (Event, [HostValue]) -> Void
 
     /// Hands a value the user changed on - to the state the element's value is carried
     /// in, and to the element's handler for the event.
-    private let carry: (Prop, Event, HostValue) -> Void
+    private let carry: @MainActor (Prop, Event, HostValue) -> Void
 
     /// What the element is made from - its first patch, with the children and the handlers it begins with - where
     /// a toolkit makes another control of what the element holds, as a button holding a menu; nil where unknown.
-    public let made: HostPatch?
+    @_spi(Host) public let made: HostPatch?
 
     /// The reports of one element: `send` finds the element's handler for an event,
     /// `carry` writes the user's value where the element carries it and raises the
@@ -33,9 +34,9 @@
     ///   - send: given the event's key and what it carries.
     ///   - carry: given the property's key, the event's key, and the value.
     ///   - made: the patch the element is made from.
-    public init(
-        sending send: @escaping (Event, [HostValue]) -> Void,
-        reporting carry: @escaping (Prop, Event, HostValue) -> Void,
+    @_spi(Host) public init(
+        sending send: @escaping @MainActor (Event, [HostValue]) -> Void,
+        reporting carry: @escaping @MainActor (Prop, Event, HostValue) -> Void,
         made: HostPatch? = nil
     ) {
         self.send = send

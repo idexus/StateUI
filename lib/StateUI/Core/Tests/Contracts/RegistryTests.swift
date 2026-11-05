@@ -30,7 +30,7 @@ final class RegistryTests: XCTestCase {
         var strayed: ((Double) -> Void)?
         var settled: (() -> Void)?
         var straySettled: (() -> Void)?
-        var bulbs: [ChildElement<BulbContract>] = []
+        var bulbs: [ControlChild<BulbContract>] = []
         var handed = 0
     }
 

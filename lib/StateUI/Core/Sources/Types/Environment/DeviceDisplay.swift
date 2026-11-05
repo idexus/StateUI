@@ -9,23 +9,53 @@
 public final class DeviceDisplay {
     /// The screen's width in PIXELS - divide by `density` for the points a
     /// layout speaks.
-    @State public internal(set) var width: Double?
+    public internal(set) var width: Double? {
+        get { _width }
+        set { _width = newValue }
+    }
+
+    @State private var _width: Double?
 
     /// The screen's height in pixels.
-    @State public internal(set) var height: Double?
+    public internal(set) var height: Double? {
+        get { _height }
+        set { _height = newValue }
+    }
+
+    @State private var _height: Double?
 
     /// Pixels per layout point - 3 on a modern phone, 2 on a Mac.
-    @State public internal(set) var density: Double?
+    public internal(set) var density: Double? {
+        get { _density }
+        set { _density = newValue }
+    }
+
+    @State private var _density: Double?
 
     /// Portrait or landscape.
-    @State public internal(set) var orientation: DisplayOrientation = .unknown
+    public internal(set) var orientation: DisplayOrientation {
+        get { _orientation }
+        set { _orientation = newValue }
+    }
+
+    @State private var _orientation: DisplayOrientation = .unknown
 
     /// How far the screen is rotated from its natural position.
-    @State public internal(set) var rotation: DisplayRotation = .unknown
+    public internal(set) var rotation: DisplayRotation {
+        get { _rotation }
+        set { _rotation = newValue }
+    }
+
+    @State private var _rotation: DisplayRotation = .unknown
 
     /// Frames per second the display draws; nil where the platform does not
     /// say.
-    @State public internal(set) var refreshRate: Double?
+    public internal(set) var refreshRate: Double? {
+        get { _refreshRate }
+        set { _refreshRate = newValue }
+    }
+
+    @State private var _refreshRate: Double?
 
     /// A display as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(

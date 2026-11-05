@@ -12,8 +12,8 @@ extension Registry {
     public func apply(_ changed: Set<Prop>, to view: View, presenting element: MountedElement) -> Set<Prop> {
         apply(
             changed, to: view, of: element.type,
-            reading: { [element] in element.presented($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in },
-            heading: { [element] in element.destination($0) })
+            reading: { [weak element] in element?.presented($0) },
+            carriedIn: { [weak element] in element?.driven[$0]?.mode == .in },
+            heading: { [weak element] in element?.destination($0) })
     }
 }

@@ -8,6 +8,7 @@ extension ElementValues {
     /// tree's where the tree changed the value or an end - a range widened over a value the control stood clamped
     /// at shows it - else `standing`, the one the control shows, so a hand on it is never argued with.
     /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    @MainActor
     public func written<Owner: Contract>(
         _ value: ElementProperty<Owner, Double>, within ends: [ElementProperty<Owner, Double>], standing: Double
     ) -> Double {
@@ -21,6 +22,7 @@ extension ElementValues where Realized == StepperContract {
     /// The value a stepper shows - the tree's where it changed, else `standing` - as one of its steps alone: a step
     /// of where its value is headed (`ValueArithmetic.stepped`), never what a journey stands at between two.
     /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    @MainActor
     public func shownStep(standing: Double) -> Double {
         let ends = ValueArithmetic.range(self[StepperContract.minimum] ?? 0, self[StepperContract.maximum] ?? 100)
         let value = written(

@@ -64,7 +64,7 @@ extension WinUIRegistrations {
             shape: values[BorderElementContract.shape]?.propValue)
     }
 
-    private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: Reports<Realized>) {
+    private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: ControlReports<Realized>) {
         view.onTextChanged = { typed in reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged) }
     }
 

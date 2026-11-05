@@ -102,6 +102,7 @@
     ]
 
     /// The traits `values` give.
+    @MainActor
     public init<Realized>(_ values: ElementValues<Realized>) {
         self.init(
             spellChecked: values[TextInputContract.isSpellCheckEnabled] ?? true,
@@ -110,6 +111,7 @@
     }
 
     /// The traits `values` give where one of their members changed; nil where none did.
+    @MainActor
     public static func changed<Realized>(_ values: ElementValues<Realized>) -> InputTraits? {
         guard values.changed(TextInputContract.isSpellCheckEnabled)
             || values.changed(TextInputContract.isTextPredictionEnabled)

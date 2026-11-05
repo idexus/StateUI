@@ -47,11 +47,6 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Picker>` is written against.
-    public init() {
-        node = Node(contract: PickerContract.self)
-    }
-
     /// A picker offering `items`, each by its `caption`, with the one
     /// `selection` holds chosen; the user's choice is written into it.
     ///
@@ -88,9 +83,9 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         _ items: [Item], read: @escaping @MainActor () -> Item?, write: @escaping @MainActor (Item?) -> Void,
         caption: (Item) -> String
     ) {
-        var picker = Picker()
-        picker.node.write(PickerContract.options, items.map(caption))
-        self = picker.described(
+        node = Node(contract: PickerContract.self)
+        node.write(PickerContract.options, items.map(caption))
+        self = described(
             .selectedIndex,
             read: { read().flatMap { items.firstIndex(of: $0) } ?? -1 },
             write: { place in if items.indices.contains(place) { write(items[place]) } },

@@ -35,7 +35,7 @@
         case "Link": return dressing.dress(Link("Swift", address: "https://www.swift.org"))
         case "Map": return dressing.dress(Map())
         case "Path": return dressing.dress(Path())
-        case "Picker": return dressing.dress(Picker())
+        case "Picker": return dressing.dress(Picker(["One"], selection: State(wrappedValue: "One").projectedValue))
         case "Polygon": return dressing.dress(Polygon())
         case "Polyline": return dressing.dress(Polyline())
         case "ProgressBar": return dressing.dress(ProgressBar())

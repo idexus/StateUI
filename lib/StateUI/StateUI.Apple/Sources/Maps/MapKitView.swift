@@ -16,7 +16,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     public var onLocationTapped: ((Location) -> Void)?
 
     /// The markers shown, each kept by its child for as long as it lives.
-    private var pins: [ChildElement<MarkerContract>: MapKitMarker] = [:]
+    private var pins: [ControlChild<MarkerContract>: MapKitMarker] = [:]
 
     /// What asks the user, once, for leave to know where they are.
     private let locations = CLLocationManager()
@@ -68,7 +68,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     }
 
     /// Shows `children` as markers: one kept for each child for as long as it lives, its values taken again.
-    public func show(_ children: [ChildElement<MarkerContract>]) {
+    public func show(_ children: [ControlChild<MarkerContract>]) {
         let kept = Set(children)
         for (child, pin) in pins where !kept.contains(child) {
             removeAnnotation(pin)
@@ -118,7 +118,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     }
 
     /// The marker MapKit holds for `child`.
-    public func pin(of child: ChildElement<MarkerContract>) -> MapKitMarker? {
+    public func pin(of child: ControlChild<MarkerContract>) -> MapKitMarker? {
         pins[child]
     }
 

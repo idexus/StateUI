@@ -74,7 +74,7 @@ The presenter is held weakly; the host keeps it.
 The registry is the core's
 ([realizations](../design/core/contracts.md#realizations)): each registration
 makes an element's view, puts the members the view takes, and raises its
-events through `Reports`. What every element realizes by the layer's rules -
+events through `ControlReports`. What every element realizes by the layer's rules -
 its place, its drawing, what assistive technology meets, the user's input - a
 host names in one line each: `everyElementTakesItsPlace`,
 `everyElementIsDrawnOverItsPlace`, `everyElementMeetsAssistiveTechnology` and

@@ -13,17 +13,17 @@ import StateUIWeb
 final class GoogleMapElement: WebControl {
     let element = WebPageElement(tag: "gallery-map")
 
-    private let reports: WebReports<MapContract>
+    private let reports: ControlReports<MapContract>
 
     /// Each marker shown, by the number the element knows it by.
-    private var markers: [Int: WebChild<MarkerContract>] = [:]
-    private var numbers: [WebChild<MarkerContract>: Int] = [:]
+    private var markers: [Int: ControlChild<MarkerContract>] = [:]
+    private var numbers: [ControlChild<MarkerContract>: Int] = [:]
     private var nextNumber = 1
 
     /// How many times the map was sent somewhere, so the same place asked twice moves it twice.
     private var moves = 0
 
-    init(_ reports: WebReports<MapContract>) {
+    init(_ reports: ControlReports<MapContract>) {
         self.reports = reports
         element.listen("mapclick", words: { [weak self] words in
             let place = words.split(separator: " ").compactMap { Double($0) }
@@ -66,8 +66,8 @@ final class GoogleMapElement: WebControl {
 
     /// Shows `children` as the map's markers, a line each - its number, where it stands, its kind, its label and
     /// what is under the label - so the element keeps a marker the same for as long as its child lives.
-    func show(_ children: [WebChild<MarkerContract>]) {
-        var kept: [WebChild<MarkerContract>: Int] = [:]
+    func show(_ children: [ControlChild<MarkerContract>]) {
+        var kept: [ControlChild<MarkerContract>: Int] = [:]
         markers = [:]
         let lines = children.compactMap { child -> String? in
             guard let location = child.value(MarkerContract.location) else { return nil }
@@ -89,7 +89,7 @@ final class GoogleMapElement: WebControl {
         element.setAttribute("markers", lines.joined(separator: "\n"))
     }
 
-    private func marker(_ number: String) -> WebChild<MarkerContract>? {
+    private func marker(_ number: String) -> ControlChild<MarkerContract>? {
         Int(number).flatMap { markers[$0] }
     }
 

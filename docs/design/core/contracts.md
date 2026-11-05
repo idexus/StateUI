@@ -165,7 +165,7 @@ views through it. It is generic over the platform's view type, so every Swift
 host takes the same machinery.
 
 ```text
-  Reports         what a view tells the application: raise(event, values)
+  ControlReports  what a view tells the application: raise(event, values)
                   and report(property, value, as: event) - a user's value lands
                   on the state carrying it and the event is raised with it
   ElementValues   what a registration reads: each member typed, whether it
@@ -173,7 +173,7 @@ host takes the same machinery.
                   source), and whether the patch changed it
   Registration    property(...), applies(...), raises(...),
                   children(Contract, properties:, events:) - children the view draws
-                  itself, a map's markers, handed over whole as ChildElements
+                  itself, a map's markers, handed over whole as ControlChild values
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
                   childTypes, applyChildren, realization
@@ -186,6 +186,12 @@ application's own offered as properties: `AppliedProperties` keeps its one
 requirement on the host's side, and the default it offers every other type is
 unavailable. A child the view draws itself is named the same way, its
 properties apart from its events (`children(_:properties:events:apply:)`).
+
+`ControlReports` and `ControlChild` are the common public native-control
+facades. Hosts construct them through the Host SPI. Reports, live value and
+child reads, registrations and their callbacks run on `MainActor`; child identity
+has no UI dependency. An adapter preserves the actor on the callback type
+rather than scheduling a new task, so event delivery stays synchronous.
 
 A member of a contract the element does not wear is refused and said once, at
 registration, at a raise and at a report alike. `apply` puts changed properties registered

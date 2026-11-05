@@ -109,14 +109,16 @@ SavePanel().environment(offline)
 
 Only that branch sees the override. The process-wide provider remains the
 answer everywhere else. A fact is the host's to write: the application reads
-it, and a fake states its facts as it is made.
+it, and a fake states its facts as it is made. A fact exposes its value without
+a writable `$` projection. Settings the application owns, such as
+`application.colorScheme`, expose their bindings as usual.
 
 ## What the library offers
 
 Every tree starts with one process-wide instance of each, read by its name.
 The host seeds the facts it knows before the first render and updates changing
-facts on its UI thread. Each field is `@State`, so reading one field subscribes
-to that field rather than to the whole object.
+facts on its UI thread. Each fact has its own private `@State`, so reading its
+public value subscribes to that fact rather than to the whole object.
 
 | Name | Type | What it holds |
 | --- | --- | --- |

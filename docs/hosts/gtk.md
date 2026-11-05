@@ -113,8 +113,8 @@ realizes:
 ```swift quote
 public static func add<Realized: ElementContract, Made: GTKControl>(
     _ contract: Realized.Type,
-    create: @escaping (GTKReports<Realized>) -> Made,
-    members: (GTKRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (GTKRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
@@ -193,7 +193,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`GTKChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 widget of its own. The Gallery's [Web](web.md#children-a-control-draws) and

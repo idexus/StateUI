@@ -16,18 +16,38 @@
 public final class AccessibilitySettings {
     /// Whether the user asked for less motion: a view moves less - StateUI's own animations already do - and a
     /// change shows at once or cross fades where it would travel.
-    @State public internal(set) var reducesMotion = false
+    public internal(set) var reducesMotion: Bool {
+        get { _reducesMotion }
+        set { _reducesMotion = newValue }
+    }
+
+    @State private var _reducesMotion = false
 
     /// Whether the user asked for more contrast: lines drawn stronger, colors further apart.
-    @State public internal(set) var prefersHigherContrast = false
+    public internal(set) var prefersHigherContrast: Bool {
+        get { _prefersHigherContrast }
+        set { _prefersHigherContrast = newValue }
+    }
+
+    @State private var _prefersHigherContrast = false
 
     /// Whether a screen reader is running - a reason to say in words what a picture shows, never to make the
     /// application work otherwise.
-    @State public internal(set) var isScreenReaderOn = false
+    public internal(set) var isScreenReaderOn: Bool {
+        get { _isScreenReaderOn }
+        set { _isScreenReaderOn = newValue }
+    }
+
+    @State private var _isScreenReaderOn = false
 
     /// How much larger than the system's own size the user asked words to be: 1 as it draws them, 1.3 for 30 %
     /// larger.
-    @State public internal(set) var textScale: Double = 1
+    public internal(set) var textScale: Double {
+        get { _textScale }
+        set { _textScale = newValue }
+    }
+
+    @State private var _textScale: Double = 1
 
     /// Settings as a test or a preview fakes them, for one branch with `.environment(...)`; what is not said starts
     /// as a headless host's does.
