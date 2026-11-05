@@ -134,6 +134,13 @@ desktop's - overflows some fifteen levels down a WebAssembly Gallery, before
 its first frame (`RangeError: Maximum call stack size exceeded`).
 `DifferStackTests` holds a level under eight kilobytes.
 
+The element walk and expansion live in `Differ+Element.swift`; preparation
+and final assembly live in `Differ+Prepare.swift` and `Differ+Finish.swift`.
+`ElementPass.swift` owns their shared working values: authored inputs, the
+scope entered while expanding them, the prepared registration and patch,
+and the result assembled after walking children. Each bounded step completes
+before the walk descends into the children.
+
 ## Ids are never reused
 
 Element ids and handler ids come from counters that are never reset, not even
