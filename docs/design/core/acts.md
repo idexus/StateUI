@@ -162,6 +162,11 @@ the next walk's first attachment clears it. An act on an aim that reached no vie
 throws. An aim whose view left the tree keeps its last key, and the act reports
 that no such view is on screen.
 
+An aim identifies its control without owning it. A list's resolver borrows
+the live item source weakly; the element's producer owns that source while
+the list stands. Keeping an aim after the list leaves therefore keeps no
+item content, including content that captures the aim itself.
+
 ## An aim a view is handed
 
 `@Aim` declares an aim; a plain stored property holding one - a child given its
