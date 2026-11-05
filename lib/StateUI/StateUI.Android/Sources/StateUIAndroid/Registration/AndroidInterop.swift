@@ -144,7 +144,6 @@ public enum StateUIEvents {
 /// How an application's own element is realized on this host, member by member: the properties its control takes,
 /// and the events of its own it raises.
 @MainActor
-@MainActor
 public final class AndroidRegistration<Realized: ElementContract, Made: AndroidControl> {
     private let registration: Registration<Realized, AndroidHostedView<Made>>
 

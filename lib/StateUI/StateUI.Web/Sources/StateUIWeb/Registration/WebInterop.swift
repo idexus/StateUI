@@ -204,7 +204,6 @@ public enum StateUIControls {
 /// How an application's own element is realized on this host, member by member: the properties its control takes,
 /// and the events of its own it raises.
 @MainActor
-@MainActor
 public final class WebRegistration<Realized: ElementContract, Made: WebControl> {
     private let registration: Registration<Realized, WebHostedView<Made>>
 
