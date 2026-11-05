@@ -44,7 +44,10 @@ run it descends from (`HandlerRun.origin`, runs.md), so the window waits on
 the runs descending from one begun after the mark it took before the act
 (`HostBoundary.runsUnderWay(since:)`) and on nothing descending from a run
 begun before - a service the page began as it appeared runs on, and the work
-it starts while the act runs is its own: neither holds the act. A run the
+it starts while the act runs is its own: neither holds the act. The handlers
+an act raises descend from no run of the test's, whatever task the test acts
+from - a task through a gate too - as every handler the host begins (runs.md,
+`Renderer.start`). A run the
 act began still under way after the window's patience, ten
 seconds, fails the act, naming how many stand: a wait is bounded, and a run
 meant to outlive its act belongs to the page's appearing. The window's own

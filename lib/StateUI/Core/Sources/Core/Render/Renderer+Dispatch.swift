@@ -26,20 +26,24 @@ extension Renderer {
         return true
     }
 
-    /// Starts a dispatched event's handlers, each through its gate - the road a test exercises too.
+    /// Starts a dispatched event's handlers, each through its gate - the road a test exercises too - outside
+    /// every run: whatever task the host reported it from, its runs descend from none.
     /// Design: docs/design/core/runs.md#the-runs-of-a-handler
     func start(_ registration: EventRegistration) {
         // Read now: a handler that suspends keeps the payload it started with.
-        registration.start(payload: EventBuffer.current)
+        let payload = EventBuffer.current
+        HandlerRun.$current.withValue(nil) { registration.start(payload: payload) }
     }
 
-    /// Runs a handler a render's walk found, with no payload, through its gate.
+    /// Runs a handler a render's walk found, with no payload, through its gate, outside every run, as an event's.
     /// Design: docs/design/core/runs.md#what-a-walk-runs
     func run(_ fired: Fired) {
-        if let owner = fired.owner {
-            fired.gate.runs(for: owner).start(fired.run, fired.gate.policy, payload: nil, owner: owner)
-        } else {
-            begin(fired.run, payload: nil)
+        HandlerRun.$current.withValue(nil) {
+            if let owner = fired.owner {
+                fired.gate.runs(for: owner).start(fired.run, fired.gate.policy, payload: nil, owner: owner)
+            } else {
+                begin(fired.run, payload: nil)
+            }
         }
     }
 

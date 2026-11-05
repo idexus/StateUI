@@ -129,6 +129,30 @@ final class TestWindowTests: XCTestCase {
         XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
     }
 
+    /// An act waits on its handler wherever the test does it from - a task through a gate too, whose run is not
+    /// the act's: the handler the act raised begins runs of its own.
+    func testAnActFromATaskThroughAGateWaitsOnItsHandler() async throws {
+        let held = Held()
+        let window = try await TestWindow(motion: .none) { WaitingPage(held: held) }
+        defer { held.service?.resume() }
+        let button = try window.element("waiting.go")
+
+        let action = Task(gate: Gate(.runConcurrently)) {
+            try await button.perform(.activate)
+            held.returned = true
+        }
+        for _ in 0..<1000 { if held.entered { break }; await Task.yield() }
+        XCTAssertTrue(held.entered)
+        for _ in 0..<300 { await Task.yield() }
+        XCTAssertFalse(held.returned, "perform waits on the handler it began")
+        held.release?.resume()
+        held.release = nil
+        await action.value
+
+        XCTAssertTrue(held.returned)
+        XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
+    }
+
     /// An act holds on nothing an earlier service begins while the act runs: the service the page began as it
     /// appeared goes on through the act and starts work of its own, which is the service's, not the act's.
     func testAnActHoldsOnNothingAnEarlierServiceBegins() async throws {

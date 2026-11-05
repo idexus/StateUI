@@ -880,6 +880,54 @@ final class GateTests: XCTestCase {
         try await waitUntil { RunSlot.underWay == 0 }
     }
 
+    /// A handler the host begins - an event's, or one a render's walk found - begins a line of runs of its own,
+    /// whatever task called the host: inside a run's task too, as a test acts from a task through a gate. A wait on
+    /// the runs since a mark taken there counts each.
+    func testAHandlerTheHostBeginsDescendsFromNoRun() async throws {
+        let latch = Latch()
+        let counts = Counts()
+        func tree(_ value: Int) -> Node {
+            VStack { Button("Go").onClicked(.runConcurrently) { await latch.wait() } }
+                .onChanged(value, policy: .runConcurrently) { await latch.wait() }
+                .node
+        }
+        let renders = Renders()
+        let id = clickedIds(in: renders.render(tree(1)))[0]
+
+        await Task(gate: Gate(.runConcurrently)) {
+            let mark = HostBoundary.runsBegun
+            renders.fire(id)
+            counts.values.append(HostBoundary.runsUnderWay(since: mark))
+            renders.render(tree(2))
+            counts.values.append(HostBoundary.runsUnderWay(since: mark))
+        }.value
+
+        XCTAssertEqual(counts.values, [1, 2], "the click's run, then the change's, each its own and since the mark")
+        latch.open()
+        try await waitUntil { RunSlot.underWay == 0 }
+    }
+
+    /// What a handler the host begins writes stands though the run whose task called the host is superseded: an
+    /// act from a cancelled task through a gate lands as the user's.
+    func testAHandlerTheHostBeginsWritesInsideASupersededRun() async throws {
+        let latch = Latch()
+        let count = State(wrappedValue: 0)
+        count.storage.origin = "countByTheUser"
+        let (renders, id) = rendered(Button("Go").onClicked { count.wrappedValue += 1 })
+
+        let caller = Task(gate: Gate(.runConcurrently)) {
+            await latch.wait()
+            renders.fire(id)
+        }
+        try await waitUntil { latch.waiting == 1 }
+        caller.cancel()
+        latch.open()
+        await caller.value
+
+        XCTAssertEqual(count.wrappedValue, 1, "the click's write lands")
+        XCTAssertFalse(hasComplained("`countByTheUser`"))
+    }
+
     /// A button whose click runs `handler` under its own `policy`, rendered, and its click's id.
     private func button(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> (Renders, Int) {
         rendered(Button("Go").onClicked(policy, handler))
@@ -944,4 +992,10 @@ private final class Latch {
         continuations = []
         for continuation in waiting { continuation.resume() }
     }
+}
+
+/// What a run counted, in order.
+@MainActor
+private final class Counts {
+    var values: [Int] = []
 }

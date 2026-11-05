@@ -74,7 +74,12 @@ number and origin, so a test waits on the runs whose origin began after a
 mark it took (`HostBoundary.runsUnderWay(since:)`) and on none descending
 from a run begun before, however late those began: a service the page began
 runs on, and the work it starts while an act runs is the service's, not the
-act's.
+act's. A handler the host begins - an event's, or one a render's walk found -
+starts outside every run (`Renderer.start`, `Renderer.run`): the task the
+host was called from is the platform's or a test's, never the handler's
+parent. So a test acting from a task through a gate still waits on the
+handlers its act raised, and a run superseded around the call refuses nothing
+they write.
 
 The policy stands first and unlabelled where the modifier takes nothing else,
 and `policy:` follows the event's own arguments, which keep the step

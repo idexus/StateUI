@@ -45,10 +45,10 @@ found no more.
 `.submit`, `.choose(2)`, `.slide(to: 0.5)`, `.tap(count: 2)`, a screen reader's
 `.performAccessibilityAction("Clear")` and `.adjust(.increment)` - and returns
 once the work it began is done: its handlers, what they started, and the
-frames they asked for - work the page began before the act, a service begun
-as it appeared, is not waited on, nor is what that work begins. Work the act
-began that is still under way
-after ten seconds fails the act, saying how many runs stand. `motion: .none`
+frames they asked for, whatever task the test calls it from. Work the page
+began before the act, a service begun as it appeared, is not waited on, nor
+is what that work begins. Work the act began that is still under way after
+ten seconds fails the act, saying how many runs stand. `motion: .none`
 shows every change at once. The window
 acts as the user can: an act on a disabled view, or words typed into a
 read-only field, fails and says why, and words typed are held as the field
