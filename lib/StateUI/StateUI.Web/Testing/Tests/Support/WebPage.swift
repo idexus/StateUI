@@ -19,6 +19,14 @@ enum WebPage {
         read(name) { stateui_web_testing_read_style(element, $0, $1) }
     }
 
+    /// The style writes and layout reads made by `body`, as the Node page received them.
+    static func traceStyles(_ body: () -> Void) -> (writes: [String], layoutReads: Int32) {
+        stateui_web_testing_begin_style_trace()
+        body()
+        let writes = copyRead(stateui_web_testing_read_style_trace()).split(separator: "\n").map(String.init)
+        return (writes, stateui_web_testing_style_trace_layout_reads())
+    }
+
     /// An attribute of the element; nil where it has none.
     static func attribute(of element: Int32, _ name: String) -> String? {
         let length = withUTF8(name) { stateui_web_testing_read_attribute(element, $0, $1) }

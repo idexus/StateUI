@@ -12,6 +12,9 @@
 STATEUI_WEB_TESTING(child_count) int32_t stateui_web_testing_child_count(int32_t element);
 STATEUI_WEB_TESTING(child) int32_t stateui_web_testing_child(int32_t element, int32_t index);
 STATEUI_WEB_TESTING(read_style) int32_t stateui_web_testing_read_style(int32_t element, const char *name, int32_t length);
+STATEUI_WEB_TESTING(begin_style_trace) void stateui_web_testing_begin_style_trace(void);
+STATEUI_WEB_TESTING(read_style_trace) int32_t stateui_web_testing_read_style_trace(void);
+STATEUI_WEB_TESTING(style_trace_layout_reads) int32_t stateui_web_testing_style_trace_layout_reads(void);
 STATEUI_WEB_TESTING(read_attribute) int32_t stateui_web_testing_read_attribute(int32_t element, const char *name, int32_t length);
 STATEUI_WEB_TESTING(read_text) int32_t stateui_web_testing_read_text(int32_t element);
 STATEUI_WEB_TESTING(read_value) int32_t stateui_web_testing_read_value(int32_t element);
