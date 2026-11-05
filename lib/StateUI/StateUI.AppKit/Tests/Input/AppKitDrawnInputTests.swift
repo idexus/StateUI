@@ -118,6 +118,170 @@ final class AppKitDrawnInputTests: XCTestCase {
         XCTAssertEqual(heard, [.began, .cancelled], "the view under the press is flattened: the press is taken away")
     }
 
+    /// The hand pressed on a view flattened before it lets go, never having moved, is taken away; on a view drawn
+    /// whole it is let go.
+    func testAStillHandOnAViewFlattenedUnderItIsTakenAway() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var heard: [GesturePhase] = []
+            let reader = AppKitHandReader { input in
+                if case .hand(let phase, _, _, _, _) = input { heard.append(phase) }
+                return true
+            }
+            stage.view.addGestureRecognizer(reader.dragging)
+
+            reader.dragging.mouseDown(with: try event(.leftMouseDown, at: stage.middle, in: stage.window))
+            if flattened { stage.flatten() }
+            reader.dragging.mouseUp(with: try event(.leftMouseUp, at: stage.middle, in: stage.window))
+
+            XCTAssertEqual(heard, flattened ? [.began, .cancelled] : [.began, .ended], "flattened: \(flattened)")
+        }
+    }
+
+    /// The hand dragged on a view flattened under it is taken away once, as the drag tells its next step: its
+    /// release tells nothing more.
+    func testAHandDraggedOnAViewFlattenedUnderItIsTakenAwayOnce() throws {
+        let stage = ViewToFlatten()
+        defer { stage.window.orderOut(nil) }
+        var heard: [GesturePhase] = []
+        let reader = AppKitHandReader { input in
+            if case .hand(let phase, _, _, _, _) = input { heard.append(phase) }
+            return true
+        }
+        stage.view.addGestureRecognizer(reader.dragging)
+
+        reader.dragging.mouseDown(with: try event(.leftMouseDown, at: stage.middle, in: stage.window))
+        stage.flatten()
+        actionSent(by: reader.dragging)
+        reader.dragging.mouseUp(with: try event(.leftMouseUp, at: stage.middle, in: stage.window))
+
+        XCTAssertEqual(heard, [.began, .cancelled])
+    }
+
+    /// A click of a run of taps let go on a view flattened under it is no tap; on a view drawn whole it is one.
+    func testAClickOnAViewFlattenedUnderItIsNoTap() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var taps = 0
+            let tap = AppKitTapRecognizer { if case .tap = $0 { taps += 1 } }
+            tap.countsRuns = true
+            stage.view.addGestureRecognizer(tap)
+
+            if flattened { stage.flatten() }
+            actionSent(by: tap, during: try event(.leftMouseUp, at: stage.middle, in: stage.window))
+
+            XCTAssertEqual(taps, flattened ? 0 : 1, "flattened: \(flattened)")
+        }
+    }
+
+    /// A press held on a view flattened under it before the hold's time is no hold; on a view drawn whole it is one.
+    func testAPressHeldOnAViewFlattenedUnderItIsNoHold() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var holds = 0
+            let hold = AppKitHoldRecognizer { if case .hold = $0 { holds += 1 } }
+            stage.view.addGestureRecognizer(hold)
+
+            if flattened { stage.flatten() }
+            hold.recognized(.began, at: stage.middle)
+
+            XCTAssertEqual(holds, flattened ? 0 : 1, "flattened: \(flattened)")
+        }
+    }
+
+    /// A rotation under way on a view flattened under it is taken away; on a view drawn whole it ends.
+    func testARotationOnAViewFlattenedUnderItIsTakenAway() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var heard: [GesturePhase] = []
+            let rotation = AppKitRotationRecognizer { if case .rotation(let phase, _) = $0 { heard.append(phase) } }
+            stage.view.addGestureRecognizer(rotation)
+
+            rotation.recognized(.began, degrees: 0, at: stage.middle)
+            if flattened { stage.flatten() }
+            rotation.recognized(.changed, degrees: 10, at: stage.middle)
+            rotation.recognized(.ended, degrees: 10, at: stage.middle)
+
+            XCTAssertEqual(heard, flattened ? [.began, .cancelled] : [.began, .changed, .ended], "flattened: \(flattened)")
+        }
+    }
+
+    /// A pinch under way on a view flattened under it is taken away; on a view drawn whole it ends.
+    func testAPinchOnAViewFlattenedUnderItIsTakenAway() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var heard: [GesturePhase] = []
+            let pinch = AppKitPinchRecognizer { if case .pinch(let phase, _, _) = $0 { heard.append(phase) } }
+            stage.view.addGestureRecognizer(pinch)
+
+            pinch.recognized(.began, magnification: 0, at: stage.middle)
+            if flattened { stage.flatten() }
+            pinch.recognized(.changed, magnification: 0.2, at: stage.middle)
+            pinch.recognized(.ended, magnification: 0.2, at: stage.middle)
+
+            XCTAssertEqual(heard, flattened ? [.began, .cancelled] : [.began, .changed, .ended], "flattened: \(flattened)")
+        }
+    }
+
+    /// A drag under way on a view flattened under it is taken away; on a view drawn whole it ends.
+    func testADragOnAViewFlattenedUnderItIsTakenAway() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var heard: [GesturePhase] = []
+            let pan = AppKitPanRecognizer { if case .drag(let phase, _, _, _) = $0 { heard.append(phase) } }
+            stage.view.addGestureRecognizer(pan)
+            let on = NSPoint(x: stage.middle.x + 10, y: stage.middle.y)
+
+            pan.recognized(.began, at: stage.middle, moved: .zero)
+            if flattened { stage.flatten() }
+            pan.recognized(.changed, at: on, moved: NSPoint(x: 10, y: 0))
+            pan.recognized(.ended, at: on, moved: NSPoint(x: 10, y: 0))
+
+            XCTAssertEqual(heard, flattened ? [.began, .cancelled] : [.began, .changed, .ended], "flattened: \(flattened)")
+        }
+    }
+
+    /// The pointer over a view flattened under it is told to have left, once, and nothing more; over a view drawn
+    /// whole it moves and lets go.
+    func testThePointerOverAViewFlattenedUnderItHasLeft() throws {
+        for flattened in [true, false] {
+            let stage = ViewToFlatten()
+            defer { stage.window.orderOut(nil) }
+            var heard: [Event] = []
+            let pointer = AppKitPointerRecognizer { if case .pointer(let event, _, _) = $0 { heard.append(event) } }
+            pointer.install(on: stage.view)
+
+            pointer.mouseEntered(with: try event(.mouseMoved, at: stage.middle, in: stage.window))
+            if flattened { stage.flatten() }
+            pointer.mouseMoved(with: try event(.mouseMoved, at: stage.middle, in: stage.window))
+            pointer.mouseUp(with: try event(.leftMouseUp, at: stage.middle, in: stage.window))
+
+            XCTAssertEqual(
+                heard, flattened ? [.pointerEntered, .pointerExited] : [.pointerEntered, .pointerMoved, .pointerReleased],
+                "flattened: \(flattened)")
+        }
+    }
+
+    /// AppKit sends `recognizer`'s action to its target, as it does as the recognizer moves on - `event` the
+    /// application's current one, where given: a recognizer of AppKit's own follows only the events a shown window
+    /// hands it.
+    private func actionSent(by recognizer: NSGestureRecognizer, during event: NSEvent? = nil) {
+        guard let action = recognizer.action else { return XCTFail("\(recognizer) has no action") }
+        let application = NSApplication.shared
+        if let event {
+            application.postEvent(event, atStart: true)
+            let current = application.nextEvent(matching: .any, until: .distantPast, inMode: .default, dequeue: true)
+            XCTAssertTrue(current === application.currentEvent && current?.type == event.type, "\(String(describing: current))")
+        }
+        application.sendAction(action, to: recognizer.target, from: recognizer)
+    }
+
     /// A press as a mouse makes it, down and up at `point` of the window.
     private func click(_ press: AppKitPressRecognizer, at point: NSPoint) throws {
         let window = try XCTUnwrap(press.view?.window)
@@ -136,5 +300,31 @@ final class AppKitDrawnInputTests: XCTestCase {
 /// The taps a page's handlers heard, in order.
 private final class Tapped: @unchecked Sendable {
     var values: [String] = []
+}
+
+/// A window holding one view of StateUI's, 40 points square, with its drawing - what a test flattens under input.
+@MainActor
+private struct ViewToFlatten {
+    let window = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 300, height: 200), styleMask: [.titled], backing: .buffered,
+        defer: false)
+    let view = AppKitHitTestView(frame: NSRect(x: 20, y: 20, width: 40, height: 40))
+    let drawing: AppKitViewDrawing
+
+    init() {
+        window.contentView = AppKitHitTestView(frame: NSRect(x: 0, y: 0, width: 300, height: 200))
+        window.contentView?.addSubview(view)
+        drawing = AppKitViewDrawing(view)
+    }
+
+    /// The view's middle, in the window.
+    var middle: NSPoint { view.convert(NSPoint(x: 20, y: 20), to: nil) }
+
+    /// Flattens the view to a line: its drawing has no inverse.
+    func flatten() {
+        var flat = HostDrawingTransform.identity
+        flat.scaleX = 0
+        drawing.own = flat
+    }
 }
 #endif

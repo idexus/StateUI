@@ -29,7 +29,9 @@ final class AppKitTapRecognizer: NSClickGestureRecognizer {
     /// Whether the view counts a run of taps.
     var countsRuns = false
 
+    /// A click let go where no point lands in the view, flattened by its drawing, is no tap.
     @objc private func recognized(_ sender: NSClickGestureRecognizer) {
+        guard let view, view.drawnPoint(fromWindow: sender.location(in: nil)) != nil else { return }
         clicked(run: NSApp.currentEvent.map { max(1, $0.clickCount) } ?? 1)
     }
 

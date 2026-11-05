@@ -105,7 +105,8 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
     override func mouseUp(with event: NSEvent) {
         super.mouseUp(with: event)
-        if !dragged, !mirrors, holding { released() }
+        guard !dragged, !mirrors, holding else { return }
+        if point(of: event) == nil { takenAway() } else { released() }
     }
 
     /// The pointer pressed at `point` of the view: the hand begins there.

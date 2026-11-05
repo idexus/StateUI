@@ -47,10 +47,16 @@ toolkit's reading too. A drawing that flattens the view - a scale of zero on
 an axis, a plane turned edge-on - has no inverse: no point of the window
 lands in the view, `undrawn` and `drawnPoint(fromWindow:)` answer nil, and
 the view is not under the pointer. A layout passes over it as it finds what
-is hit, a press begun on it ends as cancelled, a drag, a pinch, two fingers
-and the hand are taken away, the pointer is told to have left and nothing
-more, and a native button's own tracking counts its press outside. The frame
-alone never stands in for a drawing that has no inverse.
+is hit, a press begun on it ends as cancelled, a drag, a pinch, a rotation,
+two fingers and the hand - dragged or held still - are taken away, a click of
+a run of taps and a press held tell nothing, the pointer is told to have left
+and nothing more, and a native button's own tracking counts its press
+outside. The frame alone never stands in for a drawing that has no inverse.
+A recognizer of AppKit's own - a drag, a pinch, a rotation, a hold - reads
+what AppKit tells, its state and its place in the window, and hands it to
+the part that decides (`recognized(_:at:)`), which a test drives: AppKit
+follows such a recognizer's state only through the events a shown window
+hands it.
 
 ## A disabled view
 

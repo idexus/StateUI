@@ -34,7 +34,13 @@ final class AppKitHoldRecognizer: NSPressGestureRecognizer {
     }
 
     @objc private func recognized(_ sender: NSPressGestureRecognizer) {
-        guard sender.state == .began else { return }
+        recognized(sender.state, at: sender.location(in: nil))
+    }
+
+    /// AppKit's press at `state`, at `point` of the window: held once it begins where a point lands in the view -
+    /// none where the view is flattened by its drawing.
+    func recognized(_ state: NSGestureRecognizer.State, at point: NSPoint) {
+        guard state == .began, let view, view.drawnPoint(fromWindow: point) != nil else { return }
         held()
     }
 
