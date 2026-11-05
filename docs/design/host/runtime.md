@@ -527,6 +527,20 @@ with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
+## A gesture taken away
+
+A host that takes a platform's gesture away by itself, while the platform's
+recognizer goes on with it - AppKit's, its view flattened under it ([a view
+drawn away from its frame](../platforms/appkit/input.md#a-view-drawn-away-from-its-frame))
+- tells the element its end, as cancelled, where one was told under way, and
+then nothing more of it (`ToldGesture`): the platform's further steps and its
+end go no further, though the view is drawn whole again before the end, so an
+element never hears a gesture go on after its end. One taken away as it
+begins tells nothing at all. The platform's own end closes the taking, and so
+does its next beginning: the next gesture is told whole, or with no beginning
+where the platform tells none, as a trackpad's pinch may come ([a pinch from
+its start](../types/gestures.md#a-pinch-from-its-start)).
+
 ## A gesture's speed
 
 How fast a gesture goes is read by one rule on every host

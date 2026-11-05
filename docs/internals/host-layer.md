@@ -478,6 +478,10 @@ host.
   where the press went down, and it completes or is cancelled with the press.
   The host tells it the press and holds the pointer as it becomes a drag.
   ([A press dragged](../design/host/runtime.md#a-press-dragged))
+- **`ToldGesture`** is a platform's gesture as a host tells it on: under way
+  from its beginning to its end, and nothing more told once the host takes it
+  away - to the platform's end, or the next beginning.
+  ([A gesture taken away](../design/host/runtime.md#a-gesture-taken-away))
 - **`SwipeDirection.swiped`** tells a swipe from a press and how far it moved:
   the way it moved most, far enough, where the view listens for that way.
   ([A swipe](../design/host/runtime.md#a-swipe))

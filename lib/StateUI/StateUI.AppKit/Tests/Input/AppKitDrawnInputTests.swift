@@ -153,7 +153,8 @@ final class AppKitDrawnInputTests: XCTestCase {
 
         reader.dragging.mouseDown(with: try event(.leftMouseDown, at: stage.middle, in: stage.window))
         stage.flatten()
-        actionSent(by: reader.dragging)
+        reader.dragging.recognized(.changed, at: stage.middle, moved: NSPoint(x: 10, y: 0))
+        reader.dragging.recognized(.ended, at: stage.middle, moved: NSPoint(x: 10, y: 0))
         reader.dragging.mouseUp(with: try event(.leftMouseUp, at: stage.middle, in: stage.window))
 
         XCTAssertEqual(heard, [.began, .cancelled])
@@ -247,6 +248,35 @@ final class AppKitDrawnInputTests: XCTestCase {
         }
     }
 
+    /// A gesture taken away from a view flattened under it - as it begins or as it goes on - tells nothing more of
+    /// AppKit's gesture, the view drawn whole again, to its end; the next is heard whole. A drag, a pinch, a rotation
+    /// and the hand alike.
+    func testAGestureTakenAwayTellsNothingMoreOfItsPlatformGesture() throws {
+        for family in ["drag", "pinch", "rotation", "hand"] {
+            for flattenedAs in [GesturePhase.began, .changed] {
+                let stage = ViewToFlatten()
+                defer { stage.window.orderOut(nil) }
+                let gesture = try driven(family, on: stage)
+                let named = "\(family), flattened as it \(flattenedAs == .began ? "begins" : "goes on")"
+
+                if flattenedAs == .began { stage.flatten() }
+                gesture.begin()
+                stage.flatten()
+                gesture.step()
+                stage.drawWhole()
+                gesture.step()
+                gesture.end()
+                XCTAssertEqual(gesture.heard.phases, flattenedAs == .began ? [] : [.began, .cancelled], named)
+
+                gesture.heard.phases = []
+                gesture.begin()
+                gesture.step()
+                gesture.end()
+                XCTAssertEqual(gesture.heard.phases, [.began, .changed, .ended], "\(named): the next")
+            }
+        }
+    }
+
     /// The pointer over a view flattened under it is told to have left, once, and nothing more; over a view drawn
     /// whole it moves and lets go.
     func testThePointerOverAViewFlattenedUnderItHasLeft() throws {
@@ -280,6 +310,51 @@ final class AppKitDrawnInputTests: XCTestCase {
             XCTAssertTrue(current === application.currentEvent && current?.type == event.type, "\(String(describing: current))")
         }
         application.sendAction(action, to: recognizer.target, from: recognizer)
+    }
+
+    /// `family`'s recognizer on `stage`'s view, driven as AppKit tells its gesture: its beginning, a step and its end.
+    private func driven(_ family: String, on stage: ViewToFlatten) throws -> DrivenGesture {
+        let heard = HeardPhases()
+        let on = NSPoint(x: stage.middle.x + 10, y: stage.middle.y)
+        let moved = NSPoint(x: 10, y: 0)
+        switch family {
+        case "drag":
+            let pan = AppKitPanRecognizer { if case .drag(let phase, _, _, _) = $0 { heard.phases.append(phase) } }
+            stage.view.addGestureRecognizer(pan)
+            return DrivenGesture(
+                heard: heard, begin: { pan.recognized(.began, at: stage.middle, moved: .zero) },
+                step: { pan.recognized(.changed, at: on, moved: moved) },
+                end: { pan.recognized(.ended, at: on, moved: moved) })
+        case "pinch":
+            let pinch = AppKitPinchRecognizer { if case .pinch(let phase, _, _) = $0 { heard.phases.append(phase) } }
+            stage.view.addGestureRecognizer(pinch)
+            return DrivenGesture(
+                heard: heard, begin: { pinch.recognized(.began, magnification: 0, at: stage.middle) },
+                step: { pinch.recognized(.changed, magnification: 0.2, at: stage.middle) },
+                end: { pinch.recognized(.ended, magnification: 0.2, at: stage.middle) })
+        case "rotation":
+            let rotation = AppKitRotationRecognizer { if case .rotation(let phase, _) = $0 { heard.phases.append(phase) } }
+            stage.view.addGestureRecognizer(rotation)
+            return DrivenGesture(
+                heard: heard, begin: { rotation.recognized(.began, degrees: 0, at: stage.middle) },
+                step: { rotation.recognized(.changed, degrees: 10, at: stage.middle) },
+                end: { rotation.recognized(.ended, degrees: 10, at: stage.middle) })
+        default:
+            let reader = AppKitHandReader { input in
+                if case .hand(let phase, _, _, _, _) = input { heard.phases.append(phase) }
+                return true
+            }
+            stage.view.addGestureRecognizer(reader.dragging)
+            let down = try event(.leftMouseDown, at: stage.middle, in: stage.window)
+            let up = try event(.leftMouseUp, at: on, in: stage.window)
+            return DrivenGesture(
+                heard: heard, begin: { reader.dragging.mouseDown(with: down) },
+                step: { reader.dragging.recognized(.changed, at: on, moved: moved) },
+                end: {
+                    reader.dragging.recognized(.ended, at: on, moved: moved)
+                    reader.dragging.mouseUp(with: up)
+                })
+        }
     }
 
     /// A press as a mouse makes it, down and up at `point` of the window.
@@ -326,5 +401,25 @@ private struct ViewToFlatten {
         flat.scaleX = 0
         drawing.own = flat
     }
+
+    /// Draws the view whole again, as it lies.
+    func drawWhole() {
+        drawing.own = .identity
+    }
+}
+
+/// The phases a recognizer told the host, in order.
+@MainActor
+private final class HeardPhases {
+    var phases: [GesturePhase] = []
+}
+
+/// A recognizer driven as AppKit tells its gesture - its beginning, a step and its end - and what it told the host.
+@MainActor
+private struct DrivenGesture {
+    let heard: HeardPhases
+    let begin: () -> Void
+    let step: () -> Void
+    let end: () -> Void
 }
 #endif

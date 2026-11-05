@@ -49,8 +49,8 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
     private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
 
-    /// Whether a drag was told begun and not yet ended.
-    private var underWay = false
+    /// The drag as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -70,7 +70,7 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
 
     /// A press dragged, at `phase`, `x` across and `y` down from where it began, `from`, in the view's points.
     func dragged(_ phase: GesturePhase, x: Double, y: Double, from: Point) {
-        underWay = phase == .began || phase == .changed
+        gesture.told(phase)
         hearing(.drag(phase, x: x, y: y, from: from))
     }
 
@@ -80,17 +80,16 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
 
     /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began.
     func recognized(_ state: NSGestureRecognizer.State, at now: NSPoint, moved: NSPoint) {
-        guard let phase = GesturePhase(state), let view else { return }
+        guard let phase = GesturePhase(state), let view, gesture.tells(phase) else { return }
         // Where the press is now and where it began, each where the view is drawn, from the view's top left.
         guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
               let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
-        else { return takenAway() }
+        else {
+            // The view is flattened under the drag: the drag under way, if one, is taken away.
+            if gesture.takeAway(at: phase) { dragged(.cancelled, x: 0, y: 0, from: .zero) }
+            return
+        }
         dragged(phase, x: at.x - from.x, y: at.y - from.y, from: from)
-    }
-
-    /// The view is flattened under the drag: the drag under way, if one, is taken away.
-    private func takenAway() {
-        if underWay { dragged(.cancelled, x: 0, y: 0, from: .zero) }
     }
 }
 
@@ -102,8 +101,8 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
     private let actionTarget: AppKitGestureAction
     private var steps = PinchStep()
 
-    /// Whether a pinch was told begun and not yet ended.
-    private var underWay = false
+    /// The pinch as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -123,7 +122,7 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
 
     /// A pinch at `phase`, its magnification since it began `scale`, at `at` in shares of the view's size.
     func pinched(_ phase: GesturePhase, scale: Double, at: Point) {
-        underWay = phase == .began || phase == .changed
+        gesture.told(phase)
         hearing(.pinch(phase, scale: steps.step(phase, scale: scale), at: at))
     }
 
@@ -133,12 +132,12 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
 
     /// AppKit's pinch at `state`, magnified by `magnification` since it began, at `point` of the window.
     func recognized(_ state: NSGestureRecognizer.State, magnification: Double, at point: NSPoint) {
-        guard let phase = GesturePhase(state) else { return }
+        guard let phase = GesturePhase(state), gesture.tells(phase) else { return }
         let (width, height) = (Double(view?.bounds.width ?? 0), Double(view?.bounds.height ?? 0))
         let drawn = view?.drawnPoint(fromWindow: point)
         if view != nil, drawn == nil {
             // The view is flattened under the pinch: the pinch under way, if one, is taken away.
-            if underWay { pinched(.cancelled, scale: 1, at: Point(x: 0.5, y: 0.5)) }
+            if gesture.takeAway(at: phase) { pinched(.cancelled, scale: 1, at: Point(x: 0.5, y: 0.5)) }
             return
         }
         let at = PinchStep.share(of: drawn.map { view?.topLeft($0) ?? .zero }, width: width, height: height)
@@ -154,8 +153,8 @@ final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
     private let actionTarget: AppKitGestureAction
     private var steps = RotationStep()
 
-    /// Whether a rotation was told begun and not yet ended.
-    private var underWay = false
+    /// The rotation as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -175,7 +174,7 @@ final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
 
     /// A rotation at `phase`, turned `degrees` clockwise since it began.
     func rotated(_ phase: GesturePhase, degrees: Double) {
-        underWay = phase == .began || phase == .changed
+        gesture.told(phase)
         hearing(.rotation(phase, degrees: steps.step(phase, degrees: degrees)))
     }
 
@@ -185,10 +184,10 @@ final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
 
     /// AppKit's rotation at `state`, turned `degrees` clockwise since it began, at `point` of the window.
     func recognized(_ state: NSGestureRecognizer.State, degrees: Double, at point: NSPoint) {
-        guard let phase = GesturePhase(state) else { return }
+        guard let phase = GesturePhase(state), gesture.tells(phase) else { return }
         if let view, view.drawnPoint(fromWindow: point) == nil {
             // The view is flattened under the rotation: the rotation under way, if one, is taken away.
-            if underWay { rotated(.cancelled, degrees: 0) }
+            if gesture.takeAway(at: phase) { rotated(.cancelled, degrees: 0) }
             return
         }
         rotated(phase, degrees: degrees)

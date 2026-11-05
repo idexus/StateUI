@@ -79,8 +79,8 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
     private var dragged = false
     private var mirrors = false
 
-    /// Whether the hand was told to have begun and not yet to have ended.
-    private var holding = false
+    /// The hand as the host was told it.
+    private var gesture = ToldGesture()
 
     init() {
         super.init(target: nil, action: nil)
@@ -99,14 +99,15 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         // A press with ⌥ over a view two fingers move is theirs.
         mirrors = AppKitMirroredRecognizer.takes(event.modifierFlags)
             && view?.gestureRecognizers.contains { $0 is AppKitMirroredRecognizer } == true
-        guard !mirrors, let at = point(of: event) else { return }
+        guard !mirrors else { return }
+        guard let at = point(of: event) else { return takenAway(at: .began) }
         pressed(at: at)
     }
 
     override func mouseUp(with event: NSEvent) {
         super.mouseUp(with: event)
-        guard !dragged, !mirrors, holding else { return }
-        if point(of: event) == nil { takenAway() } else { released() }
+        guard !dragged, !mirrors, gesture.isUnderWay else { return }
+        if point(of: event) == nil { takenAway(at: .ended) } else { released() }
     }
 
     /// The pointer pressed at `point` of the view: the hand begins there.
@@ -114,14 +115,15 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
         down = point
         last = .zero
         dragged = false
-        holding = true
+        gesture.told(.began)
         reader?.hand(.began, moved: .zero, point: point)
     }
 
-    /// The view is flattened under the hand: the press under way, if one, is taken away.
-    private func takenAway() {
-        guard holding else { return }
-        holding = false
+    /// The view is flattened under the hand at `phase`: the press under way, if one, is taken away, and nothing more
+    /// of it is told.
+    private func takenAway(at phase: GesturePhase) {
+        guard gesture.takeAway(at: phase) else { return }
+        gesture.told(.cancelled)
         reader?.hand(.cancelled, moved: .zero)
     }
 
@@ -135,7 +137,7 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
 
     /// The pointer pressed let go, at the speed the drag read where it moved.
     func released(speed: Point? = nil) {
-        holding = false
+        gesture.told(.ended)
         reader?.hand(.ended, moved: .zero, speed: speed)
     }
 
@@ -147,14 +149,20 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
     }
 
     @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
-        guard let view else { return }
-        let flipped = view.isFlipped
+        recognized(state, at: location(in: nil), moved: translation(in: nil), speed: velocity(in: view))
+    }
+
+    /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began, at
+    /// `speed` in the view's points.
+    func recognized(_ state: NSGestureRecognizer.State, at now: NSPoint, moved: NSPoint, speed: NSPoint = .zero) {
+        // The press began the hand: the drag's beginning is a step of it.
+        guard let view, let phase = GesturePhase(state).map({ $0 == .began ? GesturePhase.changed : $0 }),
+              gesture.tells(phase)
+        else { return }
         // How far the press came, measured where the view is drawn, from its top left.
-        let now = location(in: nil)
-        let moved = translation(in: nil)
         guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
               let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
-        else { return takenAway() }
+        else { return takenAway(at: phase) }
         let total = Point(at.x - from.x, at.y - from.y)
 
         switch state {
@@ -166,10 +174,9 @@ final class AppKitHandDrag: NSPanGestureRecognizer {
             reader?.hand(.changed, moved: Point(total.x - last.x, total.y - last.y))
             last = total
         case .ended:
-            let speed = velocity(in: view)
-            released(speed: Point(Double(speed.x), Double(flipped ? speed.y : -speed.y)))
+            released(speed: Point(Double(speed.x), Double(view.isFlipped ? speed.y : -speed.y)))
         case .cancelled, .failed:
-            holding = false
+            gesture.told(.cancelled)
             reader?.hand(.cancelled, moved: .zero)
         default:
             break
