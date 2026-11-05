@@ -144,12 +144,12 @@ final class HostActPerformerTests: XCTestCase {
         let (network, answers) = (Network(), Answers())
         let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
         network.answer = .success(HostResponse(status: 404, headers: [
-            HostHeader(name: "Set-Cookie", value: "a=1"), HostHeader(name: "Content-Type", value: "text/plain"),
-            HostHeader(name: "set-cookie", value: "b=2"),
+            HostHeader(name: "Vary", value: "Accept"), HostHeader(name: "Content-Type", value: "text/plain"),
+            HostHeader(name: "vary", value: "Accept-Encoding"),
         ], body: Array("Not here".utf8)))
 
         acts.perform(HostActCall(act: .sendRequest, arguments: [
-            .string("https://example.com/parcels"), .name("post"), .strings(["Accept", "json"]), .bytes([1, 2]),
+            .string("https://example.com/parcels"), .name("POST"), .strings(["Accept", "json"]), .bytes([1, 2]),
         ], completion: 1))
         network.answer = .failure(ActFailure("the server could not be found"))
         acts.perform(HostActCall(act: .sendRequest, arguments: [
@@ -160,9 +160,25 @@ final class HostActPerformerTests: XCTestCase {
             address: "https://example.com/parcels", method: "POST", headers: [HostHeader(name: "Accept", value: "json")],
             body: [1, 2]))
         XCTAssertEqual(answers.replies[1], [
-            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1, b=2"]), .bytes(Array("Not here".utf8)),
+            .number(404), .strings(["content-type", "text/plain", "vary", "Accept, Accept-Encoding"]),
+            .bytes(Array("Not here".utf8)),
         ])
         XCTAssertEqual(answers.failures[2], "the server could not be found")
+    }
+
+    func testCustomMethodNamesReachTheNetworkUnchanged() {
+        let (network, answers) = (Network(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
+        let names = ["ReadRecord", "READRECORD", "readRecord"]
+
+        for (index, name) in names.enumerated() {
+            acts.perform(HostActCall(act: .sendRequest, arguments: [
+                .string("https://example.com/parcels"), .name(name), .strings([]), .bytes([]),
+            ], completion: index + 1))
+        }
+
+        XCTAssertEqual(network.sent.map(\.method), names)
+        XCTAssertEqual(answers.replies.count, names.count)
     }
 
     /// An address with no scheme is read against a page, where one stands - the Web's; elsewhere it fails before

@@ -425,6 +425,15 @@ final class ActCallShapeTests: XCTestCase {
         ]) { _ = try await StandardEnvironment.application.send(request) }
     }
 
+    func testCustomRequestMethodsCrossWithTheirCasePreserved() async throws {
+        for name in ["ReadRecord", "READRECORD", "readRecord"] {
+            let request = HTTPRequest("https://example.com/parcels", method: HTTPMethod(name))
+            try await check("sendRequest", [
+                .string("https://example.com/parcels"), .name(name), .strings([]), .bytes([]),
+            ]) { _ = try await StandardEnvironment.application.send(request) }
+        }
+    }
+
     /// The server's answer comes back as its status, its headers - by name in any case, one said twice holding both
     /// values - and its body.
     func testAServersAnswerComesBackAsItWasSaid() async throws {
@@ -433,7 +442,7 @@ final class ActCallShapeTests: XCTestCase {
         let call = try XCTUnwrap(drain().first?.completion)
 
         HostBoundary.reply(call, with: [
-            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1", "set-cookie", "b=2"]),
+            .number(404), .strings(["content-type", "text/plain", "vary", "Accept", "vary", "Accept-Encoding"]),
             .bytes(Array("Not here".utf8)),
         ])
         await settle()
@@ -441,7 +450,7 @@ final class ActCallShapeTests: XCTestCase {
 
         XCTAssertEqual(response.status, 404, "a status is an answer")
         XCTAssertEqual(response.header("Content-Type"), "text/plain")
-        XCTAssertEqual(response.header("set-cookie"), "a=1, b=2")
+        XCTAssertEqual(response.header("Vary"), "Accept, Accept-Encoding")
         XCTAssertEqual(response.text, "Not here")
     }
 

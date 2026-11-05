@@ -268,9 +268,20 @@ an answer: a 404 is the server's word, not a failure, and what throws is no
 answer at all. The request crosses as its address, its method's name, its
 headers as names and values in turn, sorted by name, and its body as bytes;
 the answer comes back as its status, its headers the same way and its body.
-What every host does alike - the header names in lowercase, a header said
-twice joined with a comma, an address with no scheme refused but where a
-page stands to read it against - is the host layer's (`HostRequest`).
+The method token keeps the author's case in the public value, typed call and
+host request; the named standard methods supply uppercase tokens.
+
+Response headers are the provider's combined view. A provider can combine
+or filter fields, and its session owns cookie handling; the browser filters
+`Set-Cookie`. `HostResponse` lowers field names and joins repeated names in
+the order the provider supplied, preserving existing values and their commas.
+It sorts only the resulting unique names for the typed answer. The public
+synthetic `HTTPResponse` initializer receives a dictionary, so it orders the
+original names by UTF-8 before combining case variants. A dictionary carries
+no field-line order to recover.
+
+Common request validation is the host layer's too: `HostActPerformer` refuses
+an address with no scheme except where the toolkit reads it against a page.
 
 ## Announcements
 

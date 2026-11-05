@@ -485,10 +485,19 @@ Any status is an answer - a 404 is the server's word; what throws is no
 answer at all: no connection, no server, an address the platform cannot
 read. A request carries a method - an `HTTPMethod`, `.get` unless said -
 headers and a body (`HTTPRequest(address, method: .post, headers:, body:)`),
-and a header's
-name is read in any case (`response.header("Content-Type")`). The platform
-keeps the cookies a server sets, as a browser does, so a session a server
-opens holds for the requests after it. A request ends with the run that sent
+and a header's name is read in any case (`response.header("Content-Type")`).
+Named methods use their standard uppercase tokens; a custom method such as
+`HTTPMethod("ReadRecord")` preserves its case, which is part of its identity.
+
+Response headers are the combined view exposed by the platform's networking,
+with lowercase names. The provider can combine or filter fields, and each
+value stays intact, including any commas it contains. On the Web, the
+browser filters fields such as `Set-Cookie`. The platform's session manages
+cookies, so a session a server opens holds for the requests after it.
+Constructing an `HTTPResponse` from a dictionary combines names that differ
+only in case in the UTF-8 order of their original names.
+
+A request ends with the run that sent
 it: under `.cancelPrevious` the next tap stops the one under way, and a page
 left stops its own
 ([Concurrency](concurrency.md#when-the-event-comes-again)).

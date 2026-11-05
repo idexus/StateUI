@@ -28,7 +28,7 @@ extension NetworkToolkit {
     /// Where the request goes.
     public let address: String
 
-    /// The method's name, in capitals.
+    /// The method's name, with its case preserved.
     public let method: String
 
     /// The headers, names and values, sorted by name.
@@ -43,7 +43,7 @@ extension NetworkToolkit {
         let said = call.arguments.value(1)?.name ?? "GET"
         let pairs = call.arguments.value(2)?.strings ?? []
         self.address = address
-        method = said.uppercased()
+        method = said
         headers = stride(from: 0, to: pairs.count - 1, by: 2).map { HostHeader(name: pairs[$0], value: pairs[$0 + 1]) }
         body = call.arguments.value(3)?.bytes ?? []
     }
@@ -51,7 +51,7 @@ extension NetworkToolkit {
     /// A request made in code - what a test sends.
     public init(address: String, method: String = "GET", headers: [HostHeader] = [], body: [UInt8] = []) {
         self.address = address
-        self.method = method.uppercased()
+        self.method = method
         self.headers = headers
         self.body = body
     }
@@ -84,7 +84,7 @@ extension NetworkToolkit {
     /// The status.
     public let status: Int
 
-    /// The headers as the platform gave them: any case, a name perhaps twice.
+    /// The headers exposed by the provider: any case, possibly combined or filtered, a name perhaps twice.
     public let headers: [HostHeader]
 
     /// What came back.
@@ -97,8 +97,8 @@ extension NetworkToolkit {
         self.body = body
     }
 
-    /// The answer as the act carries it: the status, the headers as names and values in turn - their names in
-    /// lowercase, one said twice joined with a comma, sorted by name - and the body.
+    /// The answer as the act carries it: the status, lowercase header names and combined values sorted by name,
+    /// and the body. Repeated names are joined in provider order; existing values stay intact.
     public var answer: [HostValue] {
         var joined: [String: String] = [:]
         for header in headers {
