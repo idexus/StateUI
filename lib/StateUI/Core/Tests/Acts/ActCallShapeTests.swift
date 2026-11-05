@@ -231,7 +231,8 @@ final class ActCallShapeTests: XCTestCase {
     func testScrollingASectionedListFindsItsItem() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
-        Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
+        let renders = Renders()
+        renders.render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
         drain()
 
         let task = Self.begin { try await list.scrollTo("Pear") }
@@ -241,6 +242,7 @@ final class ActCallShapeTests: XCTestCase {
 
         await finish(batch)
         _ = try? await task.value
+        withExtendedLifetime(renders) {}
     }
 
     /// A map slides on its region after the view: one run of three numbers - latitude, longitude, and the radius in
