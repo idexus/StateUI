@@ -28,7 +28,7 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElem
         node.write(ToolbarToggleContract.isOn, isOn)
     }
 
-    /// An item with nothing set - what a `Style<ToolbarToggle>` is written for.
+    /// A toolbar toggle with no caption or state binding supplied.
     public init() {
         node = Node(contract: ToolbarToggleContract.self)
     }

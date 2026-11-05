@@ -57,7 +57,7 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<DatePicker>` is written against.
+    /// A date picker with no date supplied. Use `.date(_:)` to set or bind it.
     public init() {
         node = Node(contract: DatePickerContract.self)
     }

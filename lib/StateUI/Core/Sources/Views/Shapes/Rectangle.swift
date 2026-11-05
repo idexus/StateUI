@@ -18,8 +18,7 @@ public struct Rectangle: FilledShape, CorneredShape, RectangleProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A rectangle with nothing set - which is also what a `Style<Rectangle>` is
-    /// written against.
+    /// A rectangle with square corners; use `.fill(_:)` or `.stroke(_:)` to paint it.
     public init() {
         node = Node(contract: RectangleContract.self)
     }

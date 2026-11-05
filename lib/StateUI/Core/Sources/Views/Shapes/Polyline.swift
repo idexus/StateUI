@@ -41,8 +41,7 @@ public struct Polyline: FilledShape, CorneredShape, PolylineProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A polyline with no points yet - what a `Style<Polyline>` is written
-    /// against.
+    /// A polyline with no points. Use `.points(_:)` to supply its vertices.
     public init() {
         node = Node(contract: PolylineContract.self)
     }

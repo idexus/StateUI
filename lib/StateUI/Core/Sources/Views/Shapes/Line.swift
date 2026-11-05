@@ -16,7 +16,7 @@ public struct Line: Shape, LineProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A line with nothing set - what a `Style<Line>` is written against.
+    /// A line whose endpoints are both the origin. Use `.from(_:)` and `.to(_:)` to set them.
     public init() {
         node = Node(contract: LineContract.self)
     }

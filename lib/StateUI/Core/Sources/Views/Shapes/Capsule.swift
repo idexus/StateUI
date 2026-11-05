@@ -14,7 +14,7 @@ public struct Capsule: FilledShape {
     /// The node this control describes.
     public var node: Node
 
-    /// A capsule with nothing set - which is also what a `Style<Capsule>` is written against.
+    /// A capsule filling the room it is given; use `.fill(_:)` or `.stroke(_:)` to paint it.
     public init() {
         node = Node(contract: CapsuleContract.self)
     }

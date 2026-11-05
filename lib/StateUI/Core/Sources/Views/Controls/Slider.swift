@@ -37,7 +37,7 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Slider>` is written against.
+    /// A slider with its default value and range, configured by modifiers.
     public init() {
         node = Node(contract: SliderContract.self)
     }

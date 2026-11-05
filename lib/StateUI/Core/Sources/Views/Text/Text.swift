@@ -43,7 +43,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Text>` is written against.
+    /// Text with no words supplied. Use `.text(_:)` to set or bind them.
     public init() {
         node = Node(contract: TextContract.self)
     }

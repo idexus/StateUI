@@ -35,7 +35,7 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<SearchField>` is written against.
+    /// A search field with no text supplied. Use `.text(_:)` to set or bind its text.
     public init() {
         node = Node(contract: SearchFieldContract.self)
     }

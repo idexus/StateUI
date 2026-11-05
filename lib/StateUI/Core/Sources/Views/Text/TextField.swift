@@ -54,7 +54,7 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<TextField>` is written against.
+    /// A field with no text supplied. Use `.text(_:)` to set or bind its text.
     public init() {
         node = Node(contract: TextFieldContract.self)
     }

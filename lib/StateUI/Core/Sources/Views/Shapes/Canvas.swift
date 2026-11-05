@@ -47,7 +47,7 @@ public struct Canvas: ElementView, CanvasProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty canvas - what a `Style<Canvas>` is written against.
+    /// A canvas with no drawing. Use `.drawing` to supply its drawing commands.
     public init() {
         node = Node(contract: CanvasContract.self)
     }

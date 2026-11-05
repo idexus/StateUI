@@ -49,7 +49,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<WebView>` is written against.
+    /// A web view with no page loaded. Use `.source(_:)` or `.source(html:baseAddress:)` to supply one.
     public init() {
         node = Node(contract: WebViewContract.self)
     }

@@ -26,7 +26,7 @@ public struct Spinner: ElementView, TintElement, SpinnerProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Spinner>` is written against.
+    /// A spinner whose animation is set or bound with `.isAnimating(_:)`.
     public init() {
         node = Node(contract: SpinnerContract.self)
     }

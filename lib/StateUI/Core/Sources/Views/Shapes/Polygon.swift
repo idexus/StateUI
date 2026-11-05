@@ -37,8 +37,7 @@ public struct Polygon: FilledShape, CorneredShape, PolygonProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A polygon with no points yet - what a `Style<Polygon>` is written
-    /// against.
+    /// A polygon with no points. Use `.points(_:)` to supply its corners.
     public init() {
         node = Node(contract: PolygonContract.self)
     }

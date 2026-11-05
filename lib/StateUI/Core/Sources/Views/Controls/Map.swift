@@ -59,7 +59,7 @@ public struct Map: ElementView, MapProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Map>` is written against.
+    /// A map with no opening region or markers supplied.
     public init() {
         node = Node(contract: MapContract.self)
     }

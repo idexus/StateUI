@@ -49,7 +49,7 @@ public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, 
         node.write(MenuItemElementContract.text, text)
     }
 
-    /// An item with nothing set - what a `Style<ToolbarButton>` is written for.
+    /// A toolbar button with no caption or action supplied.
     public init() {
         node = Node(contract: ToolbarButtonContract.self)
     }

@@ -142,15 +142,14 @@ export async function run(): Promise<void> {
         }
 
         // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and no
-        //    .NET MAUI. A launch on a machine that runs no host resolves to nothing.
+        //    WinUI on Windows, GTK on Linux, and the Web on macOS and Linux.
+        //    A launch on a machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and never .NET MAUI",
+        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and the Web on macOS and Linux",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "web"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
             && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
-            && availableHosts("freebsd").length === 0
-            && !hosts.some((each) => each.label.includes("MAUI")));
+            && availableHosts("freebsd").length === 0);
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({

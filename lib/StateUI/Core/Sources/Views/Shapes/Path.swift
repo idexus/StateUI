@@ -19,7 +19,7 @@ public struct Path: FilledShape, CorneredShape, PathProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A path with no outline yet - what a `Style<Path>` is written against.
+    /// A path with no outline. Use `.data(_:)` to supply its SVG path data.
     public init() {
         node = Node(contract: PathContract.self)
     }

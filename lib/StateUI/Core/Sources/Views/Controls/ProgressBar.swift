@@ -29,7 +29,7 @@ public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ProgressBar>` is written against.
+    /// A progress bar with no fraction supplied. Use `.progress(_:)` to set or bind it.
     public init() {
         node = Node(contract: ProgressBarContract.self)
     }

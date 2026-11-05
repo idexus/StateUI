@@ -25,7 +25,7 @@ public struct Fill: ElementView, BorderElement {
     /// The node this fill describes.
     public var node: Node
 
-    /// A clear fill - which is also what a `Style<Fill>` is written against.
+    /// A clear fill that takes the room it is given and accepts gestures.
     public init() {
         node = Node(contract: FillContract.self)
     }

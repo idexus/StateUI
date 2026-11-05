@@ -37,7 +37,7 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ColorPicker>` is written against.
+    /// A color picker with no color supplied. Use `.color(_:)` to set or bind it.
     public init() {
         node = Node(contract: ColorPickerContract.self)
     }

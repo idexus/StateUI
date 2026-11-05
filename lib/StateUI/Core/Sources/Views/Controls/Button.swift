@@ -66,7 +66,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Button>` is written against.
+    /// A button with no caption. Use `.text(_:)` to supply one.
     public init() {
         node = Node(contract: ButtonContract.self)
     }

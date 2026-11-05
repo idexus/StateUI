@@ -36,7 +36,7 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<TextEditor>` is written against.
+    /// An editor with no text supplied. Use `.text(_:)` to set or bind its text.
     public init() {
         node = Node(contract: TextEditorContract.self)
     }

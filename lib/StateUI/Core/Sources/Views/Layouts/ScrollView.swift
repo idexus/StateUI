@@ -49,7 +49,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ScrollView>` is written against.
+    /// A scroll view with no content.
     public init() {
         node = Node(contract: ScrollViewContract.self)
     }

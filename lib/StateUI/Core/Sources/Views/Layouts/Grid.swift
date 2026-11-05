@@ -65,7 +65,7 @@ public struct Grid: Layout, GridProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Grid>` is written against.
+    /// A grid with no children.
     public init() {
         node = Node(contract: GridContract.self)
     }

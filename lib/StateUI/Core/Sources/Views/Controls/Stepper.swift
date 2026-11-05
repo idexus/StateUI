@@ -46,7 +46,7 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Stepper>` is written against.
+    /// A stepper with its default value and range, configured by modifiers.
     public init() {
         node = Node(contract: StepperContract.self)
     }

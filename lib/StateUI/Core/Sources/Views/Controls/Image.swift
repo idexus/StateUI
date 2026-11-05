@@ -33,7 +33,7 @@ public struct Image: ElementView, ImageElement, ImageProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Image>` is written against.
+    /// An image with no picture source.
     public init() {
         node = Node(contract: ImageContract.self)
     }

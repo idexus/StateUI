@@ -28,7 +28,7 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<CheckBox>` is written against.
+    /// A checkbox with no state binding. Use `.isOn(_:)` to set or bind its value.
     public init() {
         node = Node(contract: CheckBoxContract.self)
     }

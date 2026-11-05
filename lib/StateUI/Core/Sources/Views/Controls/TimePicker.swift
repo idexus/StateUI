@@ -50,7 +50,7 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<TimePicker>` is written against.
+    /// A time picker with no time supplied. Use `.time(_:)` to set or bind it.
     public init() {
         node = Node(contract: TimePickerContract.self)
     }

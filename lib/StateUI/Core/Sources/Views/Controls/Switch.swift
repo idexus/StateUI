@@ -29,8 +29,7 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Switch>` is written against, and what
-    /// `.isOn(_:)` plus `.onToggled` build on.
+    /// A switch with no state binding. Use `.isOn(_:)` to set or bind its value.
     public init() {
         node = Node(contract: SwitchContract.self)
     }
