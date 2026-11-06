@@ -101,8 +101,8 @@ private struct BasketPage: View {
                 .id("source")
             Text("Basket")
                 .onDrop { @MainActor words in said.append("drop \(words)") }
-                .onDragOver { @MainActor in said.append("over") }
-                .onDragLeave { @MainActor in said.append("left") }
+                .onDragEntered { @MainActor in said.append("over") }
+                .onDragExited { @MainActor in said.append("left") }
                 .id("basket")
             Text("Still").id("still")
             Text("Held").dragText("Held").isDraggable(false).id("held")

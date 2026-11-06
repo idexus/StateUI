@@ -701,7 +701,7 @@
     static func droppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
             Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.drop, on: element),
-            Covered(ViewContract.dragOver, on: element), Covered(ViewContract.dragLeave, on: element),
+            Covered(ViewContract.dragEntered, on: element), Covered(ViewContract.dragExited, on: element),
         ]) { s in
             let heard = Received<String>()
             s.start {
@@ -714,8 +714,8 @@
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                         Write(ViewContract.allowsDrop, true),
-                        HearDone(ViewContract.dragOver) { heard.values.append("over") },
-                        HearDone(ViewContract.dragLeave) { heard.values.append("left") },
+                        HearDone(ViewContract.dragEntered) { heard.values.append("over") },
+                        HearDone(ViewContract.dragExited) { heard.values.append("left") },
                         Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
                     ], id: "crossed")
                     Specimens.view(element, [

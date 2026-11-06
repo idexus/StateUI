@@ -23,8 +23,8 @@ Ellipse.area: ✅
 Ellipse.frameChanged: ✅
 Ellipse.rotationUpdated: ✓ rotate on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Fill.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Fill.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Fill.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.tapCount: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.tapped: ✓ tap on Fill: handed to the host's recognizer or handler, no NSEvent sent
@@ -60,8 +60,8 @@ MotionLayout.horizontalAlignment: ✅
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Path.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Path.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Path.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.tapCount: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapped: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -114,8 +114,8 @@ Stepper.area: ✅
 Stepper.frameChanged: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Switch.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Switch.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Switch.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Switch.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.tapCount: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.tapped: ✓ tap on Switch: handed to the host's recognizer or handler, no NSEvent sent

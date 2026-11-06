@@ -25,8 +25,8 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `allowsDrop` | property | `Bool` | native |
 | `area` | property | `Area` | structure |
-| `onDragLeave` (`dragLeave`) | event |  | native |
-| `onDragOver` (`dragOver`) | event |  | native |
+| `onDragEntered` (`dragEntered`) | event |  | native |
+| `onDragExited` (`dragExited`) | event |  | native |
 | `onDragStarting` (`dragStarting`) | event |  | native |
 | `dragText` | property | `String` | native |
 | `onDrop` (`drop`) | event | `String` | native |

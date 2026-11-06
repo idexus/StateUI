@@ -62,8 +62,8 @@ struct FilesSample: SampleContent, ExampleContent {
             .stroke(dropping ? Palette.accent : Palette.outline)
             .lineWidth(dropping ? 2 : 1)
             .shape(.roundedRectangle(10))
-            .onDragOver { dropping = true }
-            .onDragLeave { dropping = false }
+            .onDragEntered { dropping = true }
+            .onDragExited { dropping = false }
             .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                 dropping = false
                 let start = try await files[0].read(atMost: 1025)

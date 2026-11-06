@@ -279,6 +279,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Button>().accessibilityIdentifier("save")"#,
             open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
         Road(
+            name: "a drop of files that does not say files",
+            closed: #"_ = Text("x").onDrop { (files: [ChosenFile]) in }"#,
+            open: #"_ = Text("x").onDrop(files: []) { files in }"#),
+        Road(
             name: "a control's value given by a style",
             closed: #"_ = Style<Slider>().value(0.5)"#,
             open: #"_ = Slider().value(0.5)"#),

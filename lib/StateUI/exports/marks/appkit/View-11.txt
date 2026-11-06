@@ -3,8 +3,8 @@ Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Canvas.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Canvas.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Canvas.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.tapCount: ✓ tap on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.tapped: ✓ tap on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -80,8 +80,8 @@ ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Rectangle.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Rectangle.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Rectangle.frameChanged: ✅
 Rectangle.tapCount: ✓ tap on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -115,8 +115,8 @@ Switch.horizontalAlignment: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Text.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Text.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Text.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Text.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Text.tapCount: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.tapped: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
@@ -134,8 +134,8 @@ VStack.area: ✅
 VStack.frameChanged: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-WebView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-WebView.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.tapCount: ✓ tap on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.tapped: ✓ tap on WebView: handed to the host's recognizer or handler, no NSEvent sent

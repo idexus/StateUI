@@ -4,8 +4,8 @@ Canvas.area: ✅
 Canvas.frameChanged: ✅
 Canvas.rotationUpdated: ✓ rotate on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Capsule.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Capsule.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Capsule.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Capsule.tapCount: ✓ tap on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.tapped: ✓ tap on Capsule: handed to the host's recognizer or handler, no NSEvent sent
@@ -58,8 +58,8 @@ Map.pointerMoved: ✓ hover on Map: handed to the host's recognizer or handler, 
 Map.pointerPressed: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerReleased: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 MotionLayout.tapCount: ✓ tap on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.tapped: ✓ tap on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -84,8 +84,8 @@ Rectangle.area: ✅
 Rectangle.frameChanged: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.tapCount: ✓ tap on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.tapped: ✓ tap on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
@@ -135,8 +135,8 @@ WebView.area: ✅
 WebView.frameChanged: ✅
 WebView.rotationUpdated: ✓ rotate on WebView: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ZStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ZStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ZStack.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ZStack.tapCount: ✓ tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.tapped: ✓ tap on ZStack: handed to the host's recognizer or handler, no NSEvent sent

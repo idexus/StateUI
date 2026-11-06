@@ -17,8 +17,8 @@ ColorPicker.area: ✅
 ColorPicker.frameChanged: ✅
 ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.tapCount: ✓ tap on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.tapped: ✓ tap on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -51,8 +51,8 @@ Link.area: ✅
 Link.frameChanged: ✅
 Link.rotationUpdated: ✓ rotate on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Map.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Map.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Map.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Map.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Map.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Map.tapCount: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -96,8 +96,8 @@ Slider.area: ✅
 Slider.frameChanged: ✅
 Slider.rotationUpdated: ✓ rotate on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Space.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Space.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Space.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Space.tapCount: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.tapped: ✓ tap on Space: handed to the host's recognizer or handler, no NSEvent sent

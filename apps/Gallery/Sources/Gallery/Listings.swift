@@ -2950,8 +2950,8 @@ enum Listings {
                 // which is what the two events are for.
                 .stroke(over ? Palette.accent : Palette.outline)
                 .lineWidth(over ? 2 : 1)
-                .onDragOver { over = true }
-                .onDragLeave { over = false }
+                .onDragEntered { over = true }
+                .onDragExited { over = false }
                 // A drop is not a leave, so the light comes down here too. Words
                 // longer than 1 KB are left out.
                 .onDrop { text in
@@ -3372,8 +3372,8 @@ enum Listings {
                 }
                 .stroke(dropping ? Palette.accent : Palette.outline)
                 .lineWidth(dropping ? 2 : 1)
-                .onDragOver { dropping = true }
-                .onDragLeave { dropping = false }
+                .onDragEntered { dropping = true }
+                .onDragExited { dropping = false }
                 .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)

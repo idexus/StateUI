@@ -417,8 +417,8 @@ ZStack
   width
   zIndex
   dragEnded()
-  dragLeave()
-  dragOver()
+  dragEntered()
+  dragExited()
   dragStarting()
   drop()
   filesDropped()

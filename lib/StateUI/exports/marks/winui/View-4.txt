@@ -1,7 +1,7 @@
 # revision 21.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.frameChanged: ✅
 Button.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -43,8 +43,8 @@ Fill.swipeDirection: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Grid.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Grid.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Grid.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Grid.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Grid.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Grid.frameChanged: ✅
 Grid.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -74,8 +74,8 @@ Link.swipeDirection: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Map.allowsDrop: 🧩
-Map.dragLeave: 🧩
-Map.dragOver: 🧩
+Map.dragExited: 🧩
+Map.dragEntered: 🧩
 Map.drop: 🧩
 Map.frameChanged: 🧩
 Map.holdDuration: 🧩
@@ -122,8 +122,8 @@ Rectangle.swipeDirection: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.frameChanged: ✅
 ScrollView.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -178,8 +178,8 @@ TextField.swipeDirection: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.frameChanged: ✅
 TimePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.

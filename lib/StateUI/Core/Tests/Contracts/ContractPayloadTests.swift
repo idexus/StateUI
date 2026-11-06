@@ -23,8 +23,8 @@ final class ContractPayloadTests: XCTestCase {
 
         // What the tiers and mixins report.
         check(FocusElementContract.isFocusedChanged, [.bool(true)])
-        check(ViewContract.dragLeave)
-        check(ViewContract.dragOver)
+        check(ViewContract.dragExited)
+        check(ViewContract.dragEntered)
         check(ViewContract.dragStarting)
         check(ViewContract.drop, [.string("dropped")])
         check(ViewContract.filesDropped, [[ChosenFile(address: "/Reports/Report.txt", name: "Report.txt")].propValue])

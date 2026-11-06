@@ -146,9 +146,9 @@ extension MountedElement {
         case .dragEnded:
             send(.dragEnded, [], in: runtime)
         case .dragOver:
-            if dropTarget.over() { send(.dragOver, [], in: runtime) }
+            if dropTarget.over() { send(.dragEntered, [], in: runtime) }
         case .dragLeft:
-            if dropTarget.left() { send(.dragLeave, [], in: runtime) }
+            if dropTarget.left() { send(.dragExited, [], in: runtime) }
         case .dropped(let words):
             dropTarget.dropped()
             send(.drop, [.string(words)], in: runtime)

@@ -16,11 +16,11 @@ public enum ViewContract: Contract {
     /// The part of the enclosing ZStack's room the view stands in.
     public static let area = ElementProperty<Self, Area>("area", layer: .structure, travels: false)
 
-    /// A drag left the view without being let go.
-    public static let dragLeave = ElementEvent<Self, Void>("dragLeave", layer: .native)
+    /// A drag came over the view, not yet let go.
+    public static let dragEntered = ElementEvent<Self, Void>("dragEntered", layer: .native)
 
-    /// A drag is over the view, not yet let go.
-    public static let dragOver = ElementEvent<Self, Void>("dragOver", layer: .native)
+    /// A drag left the view without being let go.
+    public static let dragExited = ElementEvent<Self, Void>("dragExited", layer: .native)
 
     /// A drag of the view is starting.
     public static let dragStarting = ElementEvent<Self, Void>("dragStarting", layer: .native)
@@ -147,8 +147,8 @@ public enum ViewContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        allowsDrop, area, dragLeave,
-        dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
+        allowsDrop, area, dragEntered,
+        dragExited, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,

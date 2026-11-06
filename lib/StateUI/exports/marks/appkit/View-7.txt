@@ -20,8 +20,8 @@ DatePicker.area: ✅
 DatePicker.frameChanged: ✅
 DatePicker.rotationUpdated: ✓ rotate on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.tapCount: ✓ tap on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.tapped: ✓ tap on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -92,8 +92,8 @@ ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the drag source and the w
 SearchField.held: ✓ hold on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.layoutBody: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Separator.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Separator.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.tapCount: ✓ tap on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Separator.tapped: ✓ tap on Separator: handed to the host's recognizer or handler, no NSEvent sent
@@ -105,8 +105,8 @@ Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the window's drop routing to
 Spinner.filesDropped: ✓ dropFiles on Spinner: the window's drop routing told the driver's files, no dragging session
 Spinner.tapped: ✓ pressDown on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Stepper.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Stepper.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.tapCount: ✓ tap on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.tapped: ✓ tap on Stepper: handed to the host's recognizer or handler, no NSEvent sent

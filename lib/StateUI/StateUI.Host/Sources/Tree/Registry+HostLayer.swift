@@ -121,8 +121,8 @@ extension Registry {
         everyElementRealizes(ViewContract.allowsDrop)
         everyElementRaises(ViewContract.dragStarting)
         everyElementRaises(ViewContract.dragEnded)
-        everyElementRaises(ViewContract.dragOver)
-        everyElementRaises(ViewContract.dragLeave)
+        everyElementRaises(ViewContract.dragEntered)
+        everyElementRaises(ViewContract.dragExited)
         everyElementRaises(ViewContract.drop)
     }
 

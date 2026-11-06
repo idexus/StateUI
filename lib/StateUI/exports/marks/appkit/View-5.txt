@@ -6,8 +6,8 @@ Capsule.area: ✅
 Capsule.frameChanged: ✅
 Capsule.rotationUpdated: ✓ rotate on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 CheckBox.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 CheckBox.tapCount: ✓ tap on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.tapped: ✓ tap on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -45,8 +45,8 @@ Image.isDraggable: ✓ dragAndDrop on Image: the drag source and the window's dr
 ItemsView.held: ✓ hold on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.layoutBody: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Line.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Line.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Line.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Line.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Line.tapCount: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -83,8 +83,8 @@ ScrollView.area: ✅
 ScrollView.frameChanged: ✅
 ScrollView.rotationUpdated: ✓ rotate on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-SearchField.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-SearchField.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+SearchField.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 SearchField.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 SearchField.tapCount: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.tapped: ✓ tap on SearchField: handed to the host's recognizer or handler, no NSEvent sent

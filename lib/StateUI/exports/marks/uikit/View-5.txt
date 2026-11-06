@@ -6,8 +6,8 @@ Capsule.area: ✅
 Capsule.frameChanged: ✅
 Capsule.rotationUpdated: ✓ rotate on Capsule: the view's listening handed the recognizer's states, no touch sent
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 CheckBox.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 CheckBox.tapCount: ✓ tap on CheckBox: the view's listening handed the recognizer's states, no touch sent
 CheckBox.tapped: ✓ tap on CheckBox: the view's listening handed the recognizer's states, no touch sent
@@ -45,8 +45,8 @@ Image.isDraggable: ✓ dragAndDrop on Image: the drag and drop interactions' han
 ItemsView.held: ✓ hold on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.layoutBody: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Line.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Line.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Line.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.tapCount: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
 Line.tapped: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
@@ -83,8 +83,8 @@ ScrollView.area: ✅
 ScrollView.frameChanged: ✅
 ScrollView.rotationUpdated: ✓ rotate on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-SearchField.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-SearchField.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+SearchField.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 SearchField.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 SearchField.tapCount: ✓ tap on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.tapped: ✓ tap on SearchField: the view's listening handed the recognizer's states, no touch sent

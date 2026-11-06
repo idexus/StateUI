@@ -3,8 +3,8 @@ Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Canvas.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Canvas.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Canvas.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Canvas.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Canvas.tapCount: ✓ tap on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.tapped: ✓ tap on Canvas: the view's listening handed the recognizer's states, no touch sent
@@ -80,8 +80,8 @@ ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Rectangle.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Rectangle.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.frameChanged: ✅
 Rectangle.tapCount: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -115,8 +115,8 @@ Switch.horizontalAlignment: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Text.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Text.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Text.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.tapCount: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
 Text.tapped: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
@@ -134,8 +134,8 @@ VStack.area: ✅
 VStack.frameChanged: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the view's listening handed the recognizer's states, no touch sent
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-WebView.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-WebView.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.tapCount: ✓ tap on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.tapped: ✓ tap on WebView: the view's listening handed the recognizer's states, no touch sent

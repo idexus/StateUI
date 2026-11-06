@@ -318,8 +318,8 @@ extension NodeType {
     static let deactivated = SceneContract.deactivated.token
     static let destroying = WindowContract.destroying.token
     static let disappearing = PageContract.disappearing.token
-    static let dragLeave = ViewContract.dragLeave.token
-    static let dragOver = ViewContract.dragOver.token
+    static let dragEntered = ViewContract.dragEntered.token
+    static let dragExited = ViewContract.dragExited.token
     static let dragStarting = ViewContract.dragStarting.token
     static let drop = ViewContract.drop.token
     static let filesDropped = ViewContract.filesDropped.token

@@ -634,8 +634,8 @@ final class ControlTests: XCTestCase {
                 .onDragEnded {}
                 .onDrop { _ in }
                 .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
-                .onDragOver {}
-                .onDragLeave {}),
+                .onDragEntered {}
+                .onDragExited {}),
         ]
     }
 

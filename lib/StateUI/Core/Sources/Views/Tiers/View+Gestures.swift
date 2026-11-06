@@ -585,7 +585,7 @@ extension View {
     }
 
     /// Accepts files the user drops on the view from the system - of
-    /// `types`, any file where none is given - with those dropped.
+    /// `types`, any file where the list is empty - with those dropped.
     ///
     ///     Text("Drop a report here")
     ///         .onDrop(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
@@ -593,9 +593,10 @@ extension View {
     ///         }
     ///
     /// A dropped file reads and launches as one the user opened
-    /// (`ChosenFile`); files of other kinds are not taken.
+    /// (`ChosenFile`); files of other kinds are not taken. `files:` is always
+    /// written, so a drop of files never reads as a drop of words.
     public func onDrop(
-        files types: [FileType] = [], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
+        files types: [FileType], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
         modified {
             $0.takesFiles(types)
@@ -611,14 +612,6 @@ extension View {
 
     /// The same, with a handler that awaits - reading a file does: its `policy` says what a drop does while a
     /// run is under way.
-    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
-        modified {
-            $0.takesFiles([])
-            $0.addHandler(ViewContract.filesDropped.token, gate: .own(policy), dropped([], handler))
-        }
-    }
-
-    /// The same, taking files of `types` alone.
     public func onDrop(
         files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
@@ -630,7 +623,7 @@ extension View {
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onDrop(
-        files types: [FileType] = [], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
+        files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
             $0.takesFiles(types)
@@ -638,37 +631,37 @@ extension View {
         }
     }
 
-    /// Runs while a drag is over the view, before it is let go.
-    public func onDragOver(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.dragOver, handler)
+    /// Runs as a drag comes over the view, before it is let go - where a highlight goes up.
+    public func onDragEntered(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(ViewContract.dragEntered, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragOver, policy: policy, handler)
+    public func onDragEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEntered, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragOver, gate: gate, handler)
+    public func onDragEntered(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEntered, gate: gate, handler)
     }
 
     /// Runs when a drag leaves the view without being let go - the mirror of
-    /// `onDragOver`, and where a highlight put up there is taken down.
-    public func onDragLeave(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.dragLeave, handler)
+    /// `onDragEntered`, and where a highlight put up there is taken down.
+    public func onDragExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(ViewContract.dragExited, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragLeave(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragLeave, policy: policy, handler)
+    public func onDragExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragExited, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDragLeave(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragLeave, gate: gate, handler)
+    public func onDragExited(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragExited, gate: gate, handler)
     }
 }
 

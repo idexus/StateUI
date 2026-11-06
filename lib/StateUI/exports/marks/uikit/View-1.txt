@@ -31,8 +31,8 @@ Fill.area: ✅
 Fill.frameChanged: ✅
 Fill.rotationUpdated: ✓ rotate on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Grid.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Grid.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Grid.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Grid.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.tapCount: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -70,8 +70,8 @@ Path.area: ✅
 Path.frameChanged: ✅
 Path.rotationUpdated: ✓ rotate on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Picker.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Picker.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Picker.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Picker.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.tapCount: ✓ tap on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.tapped: ✓ tap on Picker: the view's listening handed the recognizer's states, no touch sent
@@ -123,8 +123,8 @@ Text.droppedFileTypes: ✓ dropFiles on Text: the drop interaction's handler tol
 Text.filesDropped: ✓ dropFiles on Text: the drop interaction's handler told the driver's files, no drag session
 Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TextEditor.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TextEditor.tapCount: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.tapped: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent

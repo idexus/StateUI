@@ -215,8 +215,8 @@ Text(item.title)
 
 ZStack { Text("Drop here") }
     .onDrop { text in receive(text) }
-    .onDragOver { highlighted = true }
-    .onDragLeave { highlighted = false }
+    .onDragEntered { highlighted = true }
+    .onDragExited { highlighted = false }
 ```
 
 The payload is declared before the native drag starts. A start handler may
@@ -226,7 +226,7 @@ moment, as the platform's own drags do.
 
 Files dragged from the system - from a file manager, another application, the
 desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
-kinds it lists:
+kinds it lists, an empty list taking any file:
 
 ```swift
 @State private var report = ""
@@ -237,7 +237,7 @@ ZStack { Text("Drop a report here") }
     }
 ```
 
-A view may take words and files both; `onDragOver` and `onDragLeave` serve
+A view may take words and files both; `onDragEntered` and `onDragExited` serve
 either. Files of other kinds are not taken, and a drop holding none of the
 view's kinds is heard by nobody. A dropped file reads and launches as one the
 user opened ([Files and links](#files-and-links)).
