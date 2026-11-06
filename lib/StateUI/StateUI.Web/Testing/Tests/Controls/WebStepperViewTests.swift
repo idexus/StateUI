@@ -29,8 +29,8 @@ final class WebStepperViewTests: XCTestCase {
 
     /// Its buttons say the library's words to a screen reader, in the system's language.
     func testItsButtonsSayTheLibrarysWords() throws {
-        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
-        let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+        let english = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
         defer { CoreLink().setLocaleInfo(english) }
         CoreLink().setLocaleInfo(polish)
 

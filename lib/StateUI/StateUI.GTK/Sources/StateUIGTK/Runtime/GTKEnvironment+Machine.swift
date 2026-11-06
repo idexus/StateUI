@@ -22,19 +22,19 @@ extension GTKEnvironment {
     /// week and the measures of the C library's locale, and the user's languages in order.
     static var locale: HostLocaleInfo {
         let names = languageNames
-        let name = names.first ?? "C"
-        let parts = tag(of: name).split(separator: "-").map(String.init)
+        let name = tag(of: names.first ?? "C")
         let zone = localZone()
         defer { g_time_zone_unref(zone) }
         let time = String(cString: nl_langinfo(nl_item(T_FMT)))
+        let zoneName = String(cString: g_time_zone_get_identifier(zone))
         return HostLocaleInfo(
-            language: parts.first ?? "", region: parts.count > 1 ? parts[1] : "",
-            name: parts.joined(separator: "-"), timeZone: String(cString: g_time_zone_get_identifier(zone)),
+            language: name.isEmpty ? nil : LocaleTag(name),
+            timeZone: zoneName.isEmpty ? nil : TimeZoneName(zoneName),
             uses24HourClock: !time.contains("%r") && !time.contains("%I") && !time.contains("%p"),
             firstDayOfWeek: firstDayOfWeek,
             isMetric: nl_langinfo(nl_item(_NL_MEASUREMENT_MEASUREMENT)).pointee != 2,
             layoutDirection: gtk_get_locale_direction() == GTK_TEXT_DIR_RTL ? .rightToLeft : .leftToRight,
-            languages: languages(of: names))
+            languages: languages(of: names).map { LocaleTag($0) })
     }
 
     /// The locale names GLib reads from the environment, most wanted first: `pl_PL.UTF-8`, `pl_PL`, `pl`, `C`.

@@ -142,7 +142,7 @@ final class ActCallShapeTests: XCTestCase {
     /// question's buttons alike, its sentence empty where none is given.
     func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
+            language: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
             firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
 
         try await check("prompt", Self.usersWindow + [
@@ -164,7 +164,7 @@ final class ActCallShapeTests: XCTestCase {
         }
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
+            language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
             isMetric: true, layoutDirection: .leftToRight))
     }
 

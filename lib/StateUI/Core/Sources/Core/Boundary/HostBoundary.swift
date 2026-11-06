@@ -104,13 +104,13 @@
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
-        update(locale, \.language, info.tag)
-        update(locale, \.timeZone, info.timeZone.isEmpty ? nil : TimeZoneName(info.timeZone))
+        update(locale, \.language, info.language)
+        update(locale, \.timeZone, info.timeZone)
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
         update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
-        update(locale, \.languages, info.languages.map { LocaleTag($0) })
+        update(locale, \.languages, info.languages)
     }
 
     /// The way the user's language is written, as the host last reported it.

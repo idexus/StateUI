@@ -70,10 +70,8 @@ namespace {
         wchar_t name[LOCALE_NAME_MAX_LENGTH] = {};
         GetUserDefaultLocaleName(name, LOCALE_NAME_MAX_LENGTH);
         auto full = winrt::to_string(name);
-        auto dash = full.find('-');
         auto firstDay = std::stoi(localeInfo(LOCALE_IFIRSTDAYOFWEEK));
-        facts << full.substr(0, dash) << (dash == std::string::npos ? std::string() : full.substr(dash + 1)) << full
-              << winrt::Windows::Globalization::Calendar().GetTimeZone()
+        facts << full << winrt::Windows::Globalization::Calendar().GetTimeZone()
               << (localeInfo(LOCALE_STIMEFORMAT).find('H') != std::string::npos)
               << static_cast<double>((firstDay + 1) % 7) << (localeInfo(LOCALE_IMEASURE) == "0")
               << (localeInfo(LOCALE_IREADINGLAYOUT) == "1");

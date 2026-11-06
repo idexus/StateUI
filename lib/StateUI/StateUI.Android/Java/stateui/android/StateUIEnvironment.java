@@ -102,7 +102,7 @@ final class StateUIEnvironment {
     }
 
     /**
-     * The language, the region, the locale's tag, the zone, "1" for a 24-hour clock, the week's first day from
+     * The locale's full tag, the zone, "1" for a 24-hour clock, the week's first day from
      * Sunday's 0, "1" for metric units, "1" where the language is written right to left, and then the user's
      * languages as tags, most wanted first.
      */
@@ -112,7 +112,7 @@ final class StateUIEnvironment {
         boolean metric = LocaleData.getMeasurementSystem(ULocale.forLocale(locale)) != LocaleData.MeasurementSystem.US;
         boolean rightToLeft = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
         List<String> facts = new ArrayList<>(Arrays.asList(
-            locale.getLanguage(), locale.getCountry(), locale.toLanguageTag(), TimeZone.getDefault().getID(),
+            locale.toLanguageTag(), TimeZone.getDefault().getID(),
             DateFormat.is24HourFormat(context) ? "1" : "0",
             Integer.toString(Calendar.getInstance(locale).getFirstDayOfWeek() - Calendar.SUNDAY),
             metric ? "1" : "0", rightToLeft ? "1" : "0"));

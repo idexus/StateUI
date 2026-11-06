@@ -46,13 +46,12 @@ final class AppKitPageTests: XCTestCase {
     func testTheChromesOwnControlsSpeakTheSystemsLanguage() throws {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(
-            language: locale.language?.language ?? "", region: locale.language?.region ?? "",
-            name: locale.language?.identifier ?? "", timeZone: locale.timeZone?.identifier ?? "",
+            language: locale.language, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
-            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
+            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection, languages: locale.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
             firstDayOfWeek: before.firstDayOfWeek, isMetric: true, layoutDirection: .leftToRight))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }

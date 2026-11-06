@@ -276,8 +276,8 @@ final class AndroidPagesTests: XCTestCase {
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
             }
-            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
-            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
             defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
             host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(hebrew) }
             host.layOut()

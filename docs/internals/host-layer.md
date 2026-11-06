@@ -584,7 +584,9 @@ and nothing more.
 - **`HostLocaleInfo(words:)`**, **`HostDeviceInfo`**,
   **`HostConnectivityInfo`**, **`HostBatteryInfo`** and **`HostDisplayInfo`**
   (`Environment/`) turn what a host reads of its machine into what the core is
-  told: the locale as eight words, the device as five, the network by its
+  told: the locale as a typed language tag, zone, calendar habits and preferred
+  languages (the native relay decoder takes six words and then the preferences),
+  the device as five words, the network by its
   access and a set of bits, a desktop's power, and a screen that is landscape
   where it is at least as wide as it is tall. The host reports them through
   `CoreLink`'s setters. A change goes through `HostRuntime.environmentChanged`,

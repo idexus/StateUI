@@ -52,9 +52,10 @@ enum WebEnvironment {
         let region = filled.dropFirst().first { $0.count == 2 && $0 == $0.uppercased() } ?? ""
         let firstDay = Int32(words[4]).map { Weekday(rawValue: $0 % 7) ?? .sunday } ?? .sunday
         return HostLocaleInfo(
-            language: filled.first?.lowercased() ?? "", region: region, name: words[0], timeZone: words[2],
+            language: LocaleTag(words[0]), timeZone: words[2].isEmpty ? nil : TimeZoneName(words[2]),
             uses24HourClock: words[3] == "h23" || words[3] == "h24", firstDayOfWeek: firstDay,
             isMetric: !["US", "LR", "MM"].contains(region),
-            layoutDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight, languages: Array(words.dropFirst(6)))
+            layoutDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight,
+            languages: words.dropFirst(6).map { LocaleTag($0) })
     }
 }

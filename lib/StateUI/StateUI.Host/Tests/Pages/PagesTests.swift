@@ -423,8 +423,8 @@ final class PagesTests: XCTestCase {
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
-        let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
-        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+        let english = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
+        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
         defer { runtime.core.setLocaleInfo(english) }
 
         runtime.core.setLocaleInfo(polish)

@@ -24,7 +24,7 @@ final class AppKitMenuBarTests: XCTestCase {
     /// The locale the core hears: `language`, or none.
     private static func speak(_ language: String) {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: language, region: "", name: language, timeZone: "", uses24HourClock: true,
+            language: language.isEmpty ? nil : LocaleTag(language), timeZone: nil, uses24HourClock: true,
             firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
     }
 

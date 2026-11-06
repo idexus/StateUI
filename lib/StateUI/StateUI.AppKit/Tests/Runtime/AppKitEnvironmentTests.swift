@@ -73,10 +73,9 @@ final class AppKitEnvironmentTests: XCTestCase {
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(
-            language: locale.language?.language ?? "", region: locale.language?.region ?? "",
-            name: locale.language?.identifier ?? "", timeZone: locale.timeZone?.identifier ?? "",
+            language: locale.language, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
-            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
+            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection, languages: locale.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         locale.language = nil
         locale.layoutDirection = .rightToLeft

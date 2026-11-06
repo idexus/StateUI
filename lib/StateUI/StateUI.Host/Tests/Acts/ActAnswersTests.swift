@@ -58,11 +58,11 @@ final class ActAnswersTests: XCTestCase {
     /// buttons are - never one fixed English word.
     func testAQuestionsOwnCaptionsSpeakTheSystemsLanguage() throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "", uses24HourClock: true, firstDayOfWeek: .monday,
+            language: "pl-PL", timeZone: nil, uses24HourClock: true, firstDayOfWeek: .monday,
             isMetric: true, layoutDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
-                language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
+                language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
                 isMetric: true, layoutDirection: .leftToRight))
         }
         let confirm = try XCTUnwrap(HostQuestion(HostActCall(

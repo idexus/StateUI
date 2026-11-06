@@ -168,7 +168,7 @@ final class HostEnvironmentTests: XCTestCase {
         let battery = HostBatteryInfo(chargeLevel: 0.5, state: .charging, powerSource: .usb, energySaverStatus: .off)
         let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wifi])
         let locale = HostLocaleInfo(
-            language: "ar", region: "EG", name: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
+            language: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
             firstDayOfWeek: .saturday, isMetric: true, layoutDirection: .rightToLeft)
         HostBoundary.setBatteryInfo(battery)
         HostBoundary.setConnectivityInfo(network)
@@ -320,14 +320,14 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.device.display.refreshRate, 120)
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw",
+            language: "pl-PL", timeZone: "Europe/Warsaw",
             uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
         XCTAssertEqual(StandardEnvironment.locale.language, "pl-PL")
         XCTAssertEqual(StandardEnvironment.locale.language?.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "",
+            language: "pl-PL", timeZone: nil,
             uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
         XCTAssertNil(StandardEnvironment.locale.timeZone, "a zone the host has not said is none, never an empty name")
         XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)

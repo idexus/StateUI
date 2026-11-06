@@ -125,11 +125,11 @@ final class FormattingTests: XCTestCase {
 
     func testTheSystemsClockDecidesWhereTheFormatsAreTheSystems() {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "en", region: "US", name: "en-US", timeZone: "America/New_York", uses24HourClock: true,
+            language: "en-US", timeZone: "America/New_York", uses24HourClock: true,
             firstDayOfWeek: .sunday, isMetric: false, layoutDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
-                language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
+                language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
                 isMetric: true, layoutDirection: .leftToRight))
         }
 

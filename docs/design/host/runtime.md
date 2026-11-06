@@ -740,15 +740,26 @@ the platform's own. A host that realizes it declares
 
 ## The environment
 
-What a host reads of the machine it stands on is told to the core the same
-way on every host: the locale as eight words - language, region, name, time
-zone, a 24-hour clock, the week's first day from Sunday's 0, metric measures,
-a language written right to left - and then the user's languages as tags,
-most wanted first, as the platform keeps them (Apple's preferred languages,
+What a host reads of the machine it stands on reaches the core in typed
+reports. `HostLocaleInfo` carries one optional `LocaleTag`, one optional
+`TimeZoneName`, the clock, week, measures and writing direction, and the
+user's languages as `[LocaleTag]`, most wanted first. Native adapters read
+and normalize their platform's strings once; the core assigns these values
+directly. An unavailable tag or zone is nil. An invalid tag remains a
+`LocaleTag` whose `isValid` is false.
+
+The Android and WinUI relays supply six words: the full tag, zone, a 24-hour
+clock, the week's first day from Sunday's 0, metric measures and a language
+written right to left, then the preferred languages. `HostLocaleInfo(words:)`
+decodes that report. Decimal weekday text is truncated toward zero; an
+unavailable, unrepresentable or unknown weekday is Sunday. Every adapter
+preserves its platform's preference order (Apple's preferred languages,
 GLib's locale names, Android's locale list, Windows's profile languages), so
-a localization following the system falls through to the first language its
-catalog speaks; the network as its access and a set of
-bits for its connections, a battery as present or not, charging, on mains
+a localization following the system reaches the first language its catalog
+speaks.
+
+The network is its access and a set of bits for its connections, a battery
+is present or not, charging, on mains
 or full, and a screen as landscape where it stands at least as wide as it is
 tall, turned by quarters from its natural orientation - none on one that
 turns with nothing - and the user's accessibility settings as four facts:
