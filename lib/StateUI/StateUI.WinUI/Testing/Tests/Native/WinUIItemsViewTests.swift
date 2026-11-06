@@ -107,7 +107,7 @@ final class WinUIItemsViewTests: XCTestCase {
                     Text(identity.isEmpty ? "empty item" : identity)
                 }
                 .selection(chosen.projectedValue)
-                .onSelectionChanged { heard.append($0) }
+                .onSelectionChanged { heard.append(chosen.wrappedValue) }
                 .height(360)
             }
             let host = try XCTUnwrap(driver.renderer)
@@ -137,7 +137,7 @@ final class WinUIItemsViewTests: XCTestCase {
                     Text(identity.isEmpty ? "empty item" : identity)
                 }
                 .selection(chosen.projectedValue)
-                .onSelectionChanged { heard.append($0) }
+                .onSelectionChanged { heard.append(chosen.wrappedValue) }
                 .height(360)
             }
             let host = try XCTUnwrap(driver.renderer)
@@ -154,7 +154,7 @@ final class WinUIItemsViewTests: XCTestCase {
                 host.settle { chosen.wrappedValue == wanted && !heard.isEmpty }
 
                 XCTAssertEqual(chosen.wrappedValue, wanted, "native event for \(Self.choiceIdentities[place].debugDescription)")
-                XCTAssertEqual(heard, [wanted], "the event carries exactly the chosen item once")
+                XCTAssertEqual(heard, [wanted], "the event is heard once, the state holding exactly the chosen item")
                 XCTAssertEqual(list.selectedForTesting, [Self.choiceIdentities[place]], "the same item stays chosen natively")
             }
         }

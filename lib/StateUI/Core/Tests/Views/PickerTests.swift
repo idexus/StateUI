@@ -71,7 +71,7 @@ final class PickerTests: XCTestCase {
         var seen: [Span] = []
         let renders = Renders()
         let patch = renders.render(
-            Picker(Span.allCases, selection: span.projectedValue).onSelectedIndexChanged { _ in
+            Picker(Span.allCases, selection: span.projectedValue).onSelectionChanged {
                 seen.append(span.wrappedValue)
             }.node)
 

@@ -211,19 +211,19 @@ private struct SurfacePickers: View {
             }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
             Picker(AccentChoice.allCases, selection: color) {
                 $0.name
             }
                 .accessibilityIdentifier("\(id)Color")
                 .accessibilityLabel("\(label)'s color, \(theme)")
                 .isEnabled(made.showsColor)
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
             Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
                 .accessibilityIdentifier("\(id)Blur")
                 .accessibilityLabel("\(label)'s blur, \(theme)")
                 .isEnabled(made.showsBlur)
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
         }
         .spacing(10)
     }

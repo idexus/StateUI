@@ -88,21 +88,21 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
 
     // MARK: Events
 
-    /// The user has chosen the value at `index` in the list, after the state's
-    /// write. A choice the application makes raises nothing.
-    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, handler)
+    /// The user has chosen another value, after the selection's write: the
+    /// handler reads it there. A choice the application makes raises nothing.
+    public func onSelectionChanged(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged) { (_: Int) in try handler() }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, policy: policy, handler)
+    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, policy: policy) { (_: Int) in try await handler() }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, gate: gate, handler)
+    public func onSelectionChanged(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, gate: gate) { (_: Int) in try await handler() }
     }
 
     /// The user has opened the list of choices. Opening it with `isOpen(true)`

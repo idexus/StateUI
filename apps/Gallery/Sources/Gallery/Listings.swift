@@ -1057,15 +1057,15 @@ enum Listings {
                     Picker(SurfaceMaterial.offered(on: part), selection: material) {
                         $0.name
                     }
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                     Picker(AccentChoice.allCases, selection: color) {
                         $0.name
                     }
                         .isEnabled(made.showsColor)
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                     Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
                         .isEnabled(made.showsBlur)
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                 }
             }
         }

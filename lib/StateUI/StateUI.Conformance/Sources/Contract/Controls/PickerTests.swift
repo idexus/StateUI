@@ -34,7 +34,7 @@
                     VStack {
                         Text("size \(size.wrappedValue)").id("label")
                         Picker(sizes, selection: size.projectedValue)
-                            .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                            .onSelectionChanged { written.values.append(size.wrappedValue) }
                             .id("picker")
                         Button("Small").onClicked { size.wrappedValue = "S" }.id("small")
                     }
@@ -187,7 +187,7 @@
                 VStack {
                     Text("size \(size.wrappedValue)").id("label")
                     Picker(sizes, selection: size.projectedValue)
-                        .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                        .onSelectionChanged { written.values.append(size.wrappedValue) }
                         .presentation(presentation)
                         .id("picker")
                 }

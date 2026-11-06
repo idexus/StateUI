@@ -34,7 +34,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
-    private var selected: [ValueHandler<Set<ID>>] = []
+    private var selected: [Handler] = []
     private var activated: [ValueHandler<ID>] = []
     private var endReached: (within: Int, handlers: [Handler])?
     private var aimed: Aim<Self>?
@@ -117,11 +117,11 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
 
             for selected in selected {
                 element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: selected.gate) {
-                    guard let identities = MemberValues.carried(
-                        EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
+                    guard MemberValues.carried(
+                        EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self) != nil
                     else { return }
 
-                    try await selected.run(Set(identities.compactMap { source.id(for: $0) }))
+                    try await selected.run()
                 }
             }
         }
@@ -205,28 +205,27 @@ extension ItemsView {
         return copy
     }
 
-    /// Hears the user change what is chosen, handed the ids chosen now - at
-    /// most one where one is chosen at a time, none where they let it go -
-    /// after the selection's write. A list with no selection chooses nothing,
-    /// so reports nothing.
-    public func onSelectionChanged(_ handler: @escaping @MainActor (Set<ID>) throws -> Void) -> Self {
+    /// Hears the user change what is chosen, after the selection's write: the
+    /// handler reads it there. A list with no selection chooses nothing, so
+    /// reports nothing.
+    public func onSelectionChanged(_ handler: @escaping @MainActor () throws -> Void) -> Self {
         var copy = self
-        copy.selected.append(ValueHandler(step: handler))
+        copy.selected.append(Handler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what another
     /// choice does while a run is under way.
-    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
+    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.selected.append(ValueHandler(run: handler, gate: .own(policy)))
+        copy.selected.append(Handler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onSelectionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
+    public func onSelectionChanged(gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.selected.append(ValueHandler(run: handler, gate: .shared(gate)))
+        copy.selected.append(Handler(run: handler, gate: .shared(gate)))
         return copy
     }
 

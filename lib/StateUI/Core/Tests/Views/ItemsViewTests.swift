@@ -202,7 +202,7 @@ final class ItemsViewTests: XCTestCase {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
             .selection(chosen.projectedValue)
-            .onSelectionChanged { _ in seen.values.append(chosen.wrappedValue) }.node))
+            .onSelectionChanged { seen.values.append(chosen.wrappedValue) }.node))
         let ids = try itemIdentities(in: list)
 
         renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings([ids[3]])])
@@ -234,8 +234,8 @@ final class ItemsViewTests: XCTestCase {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
             .selection(chosen.projectedValue)
-            .onSelectionChanged { heard.values.append("chose \($0.sorted()) first") }
-            .onSelectionChanged { heard.values.append("chose \($0.sorted()) second") }
+            .onSelectionChanged { heard.values.append("chose \(chosen.wrappedValue ?? -1) first") }
+            .onSelectionChanged { heard.values.append("chose \(chosen.wrappedValue ?? -1) second") }
             .onItemActivated { heard.values.append("opened \($0) first") }
             .onItemActivated { heard.values.append("opened \($0) second") }
             .onEndReached(within: 5) { heard.values.append("end first") }
@@ -248,7 +248,7 @@ final class ItemsViewTests: XCTestCase {
         renders.fire(try XCTUnwrap(list.events?[.endReached]))
 
         XCTAssertEqual(heard.values, [
-            "chose [3] first", "chose [3] second", "opened 6 first", "opened 6 second", "end first", "end second",
+            "chose 3 first", "chose 3 second", "opened 6 first", "opened 6 second", "end first", "end second",
         ])
     }
 

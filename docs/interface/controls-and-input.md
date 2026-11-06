@@ -434,7 +434,8 @@ VStack {
 
 The application owns the selected value: one choice of several is a picker,
 offered as radio buttons where `.radio` says so, and the one state holding its
-selection. Range bounds are semantic constraints and are not
+selection. `.onSelectionChanged` hears the user's choice after the state's
+write, and its handler reads the value from the state. Range bounds are semantic constraints and are not
 animated presentation values.
 
 ## Activity and progress
@@ -827,7 +828,7 @@ near what the platform holds. The binding given to `.selection` says how many th
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
 reported to nobody. `.onSelectionChanged` hears the user's choice after the
-write, handed the ids chosen - a set in either mode. `.onItemActivated` hears an item opened: a tap on a
+write, and its handler reads the choice from the state. `.onItemActivated` hears an item opened: a tap on a
 phone, a double-click or Return on a desktop. An aim at the list,
 `Aim<ItemsView<ID>>`, scrolls it to an item by an identity of the list's
 own type.
