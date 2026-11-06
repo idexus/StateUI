@@ -10,7 +10,9 @@ extension ColorPickerProperties {
     public func choosesOpacity(_ value: Bool) -> Modified {
         setValue(ColorPickerContract.choosesOpacity, value)
     }
+}
 
+extension ColorPicker {
     /// `choosesOpacity` from a state, `$x`: the host sets each new value as it stands, and no view is rebuilt
     /// for it.
     public func choosesOpacity(_ state: Binding<Bool>) -> Modified {

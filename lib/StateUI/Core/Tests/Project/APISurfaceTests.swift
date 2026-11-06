@@ -139,6 +139,16 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(offenders.map(String.init), [], "an application's surface names a host's value")
     }
 
+    /// A style carries values and states alone: no modifier of `Styling` takes a binding, which the sheet could not
+    /// carry and would drop without a word.
+    func testAStyleTakesNoState() throws {
+        let styling = try String(contentsOf: Self.record, encoding: .utf8).split(separator: "\n")
+            .filter { $0.hasPrefix("swift.method Styling.") }
+
+        XCTAssertGreaterThan(styling.count, 100, "the record holds almost no style modifier")
+        XCTAssertEqual(styling.filter { $0.contains("Binding<") }.map(String.init), [], "a style modifier takes a state")
+    }
+
     /// The module this run built says what the records say, each line in the record of its surface.
     func testThePublicSurfaceIsTheRecordedOne() throws {
         let surface = try Self.surface()

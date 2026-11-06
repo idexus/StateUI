@@ -283,6 +283,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Text("x").onDrop { (files: [ChosenFile]) in }"#,
             open: #"_ = Text("x").onDrop(files: []) { files in }"#),
         Road(
+            name: "a state handed to a style",
+            closed: #"_ = Style<Button>().tooltip(State(wrappedValue: "Saves").projectedValue)"#,
+            open: #"_ = Button("Save").tooltip(State(wrappedValue: "Saves").projectedValue)"#),
+        Road(
             name: "a control's value given by a style",
             closed: #"_ = Style<Slider>().value(0.5)"#,
             open: #"_ = Slider().value(0.5)"#),

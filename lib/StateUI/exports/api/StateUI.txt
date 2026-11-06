@@ -1733,7 +1733,6 @@ swift.method @SwiftNever.title(_:): @MainActor func title(_ value: String) -> Se
 swift.method @SwiftNever.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method @SwiftNever.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method @SwiftNever.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method @SwiftNever.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method @SwiftNever.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method @SwiftNever.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -1937,7 +1936,6 @@ swift.method AnyView.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method AnyView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method AnyView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method AnyView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method AnyView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method AnyView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method AnyView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -2207,7 +2205,6 @@ swift.method Button.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method Button.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Button.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Button.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Button.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Button.tracking(_:): @MainActor func tracking(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Button.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
@@ -2414,7 +2411,6 @@ swift.method Canvas.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method Canvas.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Canvas.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Canvas.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Canvas.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Canvas.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Canvas.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -2626,7 +2622,6 @@ swift.method Capsule.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method Capsule.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Capsule.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Capsule.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Capsule.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Capsule.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Capsule.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -2838,7 +2833,6 @@ swift.method CheckBox.title(_:): @MainActor func title(_ value: String) -> Self.
 swift.method CheckBox.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method CheckBox.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method CheckBox.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method CheckBox.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method CheckBox.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method CheckBox.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -2872,8 +2866,7 @@ swift.method ColorPicker.background(_:): @MainActor func background(_ value: Bru
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method ColorPicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
-swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
-swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
+swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> ColorPicker
 swift.method ColorPicker.color(_:): @MainActor func color(_ state: Binding<Color>) -> ColorPicker.Modified
 swift.method ColorPicker.color(_:): @MainActor func color(_ value: Color) -> ColorPicker.Modified
 swift.method ColorPicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
@@ -3054,7 +3047,6 @@ swift.method ColorPicker.title(_:): @MainActor func title(_ value: String) -> Se
 swift.method ColorPicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ColorPicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ColorPicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ColorPicker.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ColorPicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ColorPicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -3063,7 +3055,6 @@ swift.method ColorPicker.visualState(_:): @MainActor func visualState(_ state: V
 swift.method ColorPicker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ColorPicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method ColorPickerProperties.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPickerProperties.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
 swift.method CorneredShape.lineJoin(_:): @MainActor func lineJoin(_ state: Binding<LineJoin>) -> Self.Modified
 swift.method CorneredShape.miterLimit(_:): @MainActor func miterLimit(_ state: Binding<Double>) -> Self.Modified
@@ -3286,7 +3277,6 @@ swift.method DatePicker.title(_:): @MainActor func title(_ value: String) -> Sel
 swift.method DatePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DatePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DatePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method DatePicker.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method DatePicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method DatePicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -3483,7 +3473,6 @@ swift.method DebugInspector.title(_:): @MainActor func title(_ value: String) ->
 swift.method DebugInspector.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspector.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspector.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspector.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method DebugInspector.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method DebugInspector.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -3675,7 +3664,6 @@ swift.method DebugInspectorButton.title(_:): @MainActor func title(_ value: Stri
 swift.method DebugInspectorButton.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspectorButton.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method DebugInspectorButton.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method DebugInspectorButton.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspectorButton.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4119,7 +4107,6 @@ swift.method Ellipse.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method Ellipse.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Ellipse.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Ellipse.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Ellipse.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Ellipse.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Ellipse.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4321,7 +4308,6 @@ swift.method Fill.title(_:): @MainActor func title(_ value: String) -> Self.Modi
 swift.method Fill.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Fill.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Fill.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Fill.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Fill.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Fill.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4547,7 +4533,6 @@ swift.method GalleryView.title(_:): @MainActor func title(_ value: String) -> Se
 swift.method GalleryView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GalleryView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method GalleryView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method GalleryView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method GalleryView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4739,7 +4724,6 @@ swift.method GeometryReader.title(_:): @MainActor func title(_ value: String) ->
 swift.method GeometryReader.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GeometryReader.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method GeometryReader.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method GeometryReader.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method GeometryReader.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method GeometryReader.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -4954,7 +4938,6 @@ swift.method Grid.title(_:): @MainActor func title(_ value: String) -> Self.Modi
 swift.method Grid.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Grid.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Grid.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Grid.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Grid.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Grid.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -5152,7 +5135,6 @@ swift.method Group.title(_:): @MainActor func title(_ value: String) -> Self.Mod
 swift.method Group.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Group.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Group.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Group.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Group.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Group.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -5364,7 +5346,6 @@ swift.method HStack.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method HStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method HStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method HStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method HStack.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method HStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method HStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -5571,7 +5552,6 @@ swift.method Image.title(_:): @MainActor func title(_ value: String) -> Self.Mod
 swift.method Image.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Image.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Image.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Image.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Image.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Image.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -5799,7 +5779,6 @@ swift.method ItemsView.title(_:): @MainActor func title(_ value: String) -> Self
 swift.method ItemsView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ItemsView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ItemsView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ItemsView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ItemsView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ItemsView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -6026,7 +6005,6 @@ swift.method Line.to(_:): @MainActor func to(_ state: Binding<Point>) -> Line.Mo
 swift.method Line.to(_:): @MainActor func to(_ value: Point) -> Line.Modified
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Line.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Line.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Line.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -6237,7 +6215,6 @@ swift.method Link.title(_:): @MainActor func title(_ value: String) -> Self.Modi
 swift.method Link.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Link.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Link.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Link.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Link.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Link.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -6454,7 +6431,6 @@ swift.method Map.title(_:): @MainActor func title(_ value: String) -> Self.Modif
 swift.method Map.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Map.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Map.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Map.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Map.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Map.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -6713,7 +6689,6 @@ swift.method ModifiedContent.title(_:): @MainActor func title(_ value: String) -
 swift.method ModifiedContent.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ModifiedContent.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ModifiedContent.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ModifiedContent.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ModifiedContent.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ModifiedContent.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -6931,7 +6906,6 @@ swift.method MotionLayout.title(_:): @MainActor func title(_ value: String) -> S
 swift.method MotionLayout.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method MotionLayout.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method MotionLayout.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method MotionLayout.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method MotionLayout.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -7147,7 +7121,6 @@ swift.method NavigationStack.toolbarSpacing(_:): @MainActor func toolbarSpacing(
 swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method NavigationStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method NavigationStack.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method NavigationStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method NavigationStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -7363,7 +7336,6 @@ swift.method Path.title(_:): @MainActor func title(_ value: String) -> Self.Modi
 swift.method Path.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Path.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Path.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Path.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Path.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Path.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -7588,7 +7560,6 @@ swift.method Picker.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method Picker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Picker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Picker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Picker.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Picker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Picker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -7805,7 +7776,6 @@ swift.method Polygon.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method Polygon.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polygon.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polygon.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Polygon.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Polygon.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Polygon.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -8021,7 +7991,6 @@ swift.method Polyline.title(_:): @MainActor func title(_ value: String) -> Self.
 swift.method Polyline.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polyline.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Polyline.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Polyline.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Polyline.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Polyline.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -8232,7 +8201,6 @@ swift.method PositionDots.title(_:): @MainActor func title(_ value: String) -> S
 swift.method PositionDots.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method PositionDots.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method PositionDots.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method PositionDots.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method PositionDots.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method PositionDots.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -8432,7 +8400,6 @@ swift.method ProgressBar.title(_:): @MainActor func title(_ value: String) -> Se
 swift.method ProgressBar.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ProgressBar.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ProgressBar.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ProgressBar.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ProgressBar.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -8647,7 +8614,6 @@ swift.method Rectangle.title(_:): @MainActor func title(_ value: String) -> Self
 swift.method Rectangle.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Rectangle.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Rectangle.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Rectangle.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Rectangle.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Rectangle.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -8879,7 +8845,6 @@ swift.method ScrollView.title(_:): @MainActor func title(_ value: String) -> Sel
 swift.method ScrollView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ScrollView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ScrollView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ScrollView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ScrollView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ScrollView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -9117,7 +9082,6 @@ swift.method SearchField.title(_:): @MainActor func title(_ value: String) -> Se
 swift.method SearchField.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SearchField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method SearchField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method SearchField.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method SearchField.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method SearchField.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -9320,7 +9284,6 @@ swift.method Separator.title(_:): @MainActor func title(_ value: String) -> Self
 swift.method Separator.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Separator.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Separator.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Separator.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Separator.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Separator.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -9548,7 +9511,6 @@ swift.method Slider.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method Slider.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Slider.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Slider.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Slider.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Slider.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Slider.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -9754,7 +9716,6 @@ swift.method Space.title(_:): @MainActor func title(_ value: String) -> Self.Mod
 swift.method Space.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Space.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Space.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Space.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Space.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Space.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -9955,7 +9916,6 @@ swift.method Spinner.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method Spinner.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Spinner.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Spinner.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Spinner.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Spinner.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Spinner.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -10170,7 +10130,6 @@ swift.method SplitView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ valu
 swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method SplitView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method SplitView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method SplitView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method SplitView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -10381,7 +10340,6 @@ swift.method Stepper.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method Stepper.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Stepper.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Stepper.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Stepper.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Stepper.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Stepper.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -10413,7 +10371,6 @@ swift.method Styling.background(_:): @MainActor func background(_ value: Brush) 
 swift.method Styling.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Styling.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method Styling.basedOn(_:): @MainActor func basedOn(_ key: StyleKey<Target>) -> Styling<Target, Scope>.Modified
-swift.method Styling.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method Styling.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
 swift.method Styling.clipsContent(_:): @MainActor func clipsContent(_ value: Bool) -> Self.Modified
 swift.method Styling.columnSpacing(_:): @MainActor func columnSpacing(_ value: Double) -> Self.Modified
@@ -10520,7 +10477,6 @@ swift.method Styling.textColor(_:): @MainActor func textColor(_ value: Color) ->
 swift.method Styling.textDecorations(_:): @MainActor func textDecorations(_ value: TextDecorations) -> Self.Modified
 swift.method Styling.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
 swift.method Styling.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
-swift.method Styling.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Styling.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Styling.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
 swift.method Styling.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
@@ -10739,7 +10695,6 @@ swift.method Switch.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method Switch.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Switch.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Switch.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Switch.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Switch.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Switch.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -10946,7 +10901,6 @@ swift.method TabView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ value:
 swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method TabView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method TabView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method TabView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method TabView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -11162,7 +11116,6 @@ swift.method Text.title(_:): @MainActor func title(_ value: String) -> Self.Modi
 swift.method Text.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Text.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Text.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method Text.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Text.tracking(_:): @MainActor func tracking(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Text.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
@@ -11401,7 +11354,6 @@ swift.method TextEditor.title(_:): @MainActor func title(_ value: String) -> Sel
 swift.method TextEditor.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextEditor.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextEditor.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method TextEditor.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method TextEditor.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method TextEditor.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -11638,7 +11590,6 @@ swift.method TextField.title(_:): @MainActor func title(_ value: String) -> Self
 swift.method TextField.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextField.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TextField.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method TextField.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method TextField.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method TextField.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -11920,7 +11871,6 @@ swift.method TimePicker.title(_:): @MainActor func title(_ value: String) -> Sel
 swift.method TimePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TimePicker.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method TimePicker.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method TimePicker.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method TimePicker.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method TimePicker.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -12243,7 +12193,6 @@ swift.method VStack.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method VStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method VStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method VStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method VStack.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method VStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method VStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -12438,6 +12387,7 @@ swift.method VisualElement.samples(_:into:_:): @MainActor func samples<Value>(_ 
 swift.method VisualElement.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
+swift.method VisualElement.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method VisualElement.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
@@ -12470,7 +12420,6 @@ swift.method VisualElementProperties.rotationY(_:): @MainActor func rotationY(_ 
 swift.method VisualElementProperties.scale(_:): @MainActor func scale(_ value: Double) -> Self.Modified
 swift.method VisualElementProperties.scaleX(_:): @MainActor func scaleX(_ value: Double) -> Self.Modified
 swift.method VisualElementProperties.scaleY(_:): @MainActor func scaleY(_ value: Double) -> Self.Modified
-swift.method VisualElementProperties.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method VisualElementProperties.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method VisualElementProperties.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method VisualElementProperties.translationX(_:): @MainActor func translationX(_ value: Double) -> Self.Modified
@@ -12687,7 +12636,6 @@ swift.method WebView.title(_:): @MainActor func title(_ value: String) -> Self.M
 swift.method WebView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method WebView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method WebView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method WebView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method WebView.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method WebView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
@@ -12924,7 +12872,6 @@ swift.method ZStack.title(_:): @MainActor func title(_ value: String) -> Self.Mo
 swift.method ZStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ZStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method ZStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method ZStack.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method ZStack.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method ZStack.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
