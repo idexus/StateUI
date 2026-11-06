@@ -262,7 +262,7 @@ struct MainPage: View {
                 // tab's page is the stack rather than the page inside it - so
                 // they are written on the stack.
                 .title("Stack")
-                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
             case .second:
                 SecondTabPage(nav: nav)

@@ -502,7 +502,7 @@ NavigationStack($settingsPath) {
     SettingsDestination(route: route)
 }
 .title("Settings")
-.icon("settings.png")
+.pageIcon("settings.png")
 ```
 
 The container's title and icon describe it when it is an item in another

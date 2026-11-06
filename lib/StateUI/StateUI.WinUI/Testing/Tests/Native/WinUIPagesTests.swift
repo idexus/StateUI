@@ -227,7 +227,7 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 TabView([0, 1]) { tab in
                     if tab == 0 {
-                        Text("Wide").title("Wide").icon("test_wide.png")
+                        Text("Wide").title("Wide").pageIcon("test_wide.png")
                     } else {
                         Text("Plain").title("Plain")
                     }

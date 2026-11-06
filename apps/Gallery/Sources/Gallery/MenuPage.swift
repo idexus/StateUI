@@ -59,7 +59,7 @@ struct MenuPage: View {
         }
         .ignoresSafeArea(.all)
         .title("StateUI")
-        .icon(Self.mark)
+        .pageIcon(Self.mark)
         // The line about what this is stands at the menu's foot, and the rows
         // scroll under it.
         .bottomBar {

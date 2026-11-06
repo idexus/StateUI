@@ -1644,7 +1644,6 @@ swift.method @SwiftNever.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: B
 swift.method @SwiftNever.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method @SwiftNever.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method @SwiftNever.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method @SwiftNever.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -1764,6 +1763,7 @@ swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ st
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method @SwiftNever.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method @SwiftNever.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -1848,7 +1848,6 @@ swift.method AnyView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method AnyView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method AnyView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method AnyView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method AnyView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -1968,6 +1967,7 @@ swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method AnyView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method AnyView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2221,6 +2221,7 @@ swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Button.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Button.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2314,7 +2315,6 @@ swift.method Canvas.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method Canvas.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Canvas.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Canvas.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Canvas.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -2437,6 +2437,7 @@ swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Canvas.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Canvas.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2522,7 +2523,6 @@ swift.method Capsule.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method Capsule.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Capsule.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Capsule.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Capsule.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -2647,6 +2647,7 @@ swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Capsule.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Capsule.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2723,7 +2724,6 @@ swift.method CheckBox.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bind
 swift.method CheckBox.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method CheckBox.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method CheckBox.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method CheckBox.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -2854,6 +2854,7 @@ swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ state
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method CheckBox.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method CheckBox.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -2943,7 +2944,6 @@ swift.method ColorPicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: B
 swift.method ColorPicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method ColorPicker.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ColorPicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ColorPicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -3073,6 +3073,7 @@ swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ st
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ColorPicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ColorPicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3161,7 +3162,6 @@ swift.method DatePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bi
 swift.method DatePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method DatePicker.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method DatePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DatePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -3301,6 +3301,7 @@ swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ sta
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method DatePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method DatePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3383,7 +3384,6 @@ swift.method DebugInspector.gridRowSpan(_:): @MainActor func gridRowSpan(_ state
 swift.method DebugInspector.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method DebugInspector.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method DebugInspector.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspector.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -3503,6 +3503,7 @@ swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method DebugInspector.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method DebugInspector.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3593,7 +3594,6 @@ swift.method Either.hidesChildrenFromAccessibility(_:): @MainActor func hidesChi
 swift.method Either.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ value: Alignment) -> Self.Modified
-swift.method Either.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Either.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
@@ -3724,6 +3724,7 @@ swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Either.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Either.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -3819,7 +3820,6 @@ swift.method Ellipse.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method Ellipse.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Ellipse.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Ellipse.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Ellipse.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -3944,6 +3944,7 @@ swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Ellipse.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Ellipse.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4020,7 +4021,6 @@ swift.method Fill.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<
 swift.method Fill.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Fill.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Fill.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Fill.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -4144,6 +4144,7 @@ swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Fill.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Fill.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4242,7 +4243,6 @@ swift.method GalleryView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: B
 swift.method GalleryView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method GalleryView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method GalleryView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GalleryView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -4371,6 +4371,7 @@ swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ st
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method GalleryView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method GalleryView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4446,7 +4447,6 @@ swift.method GeometryReader.gridRowSpan(_:): @MainActor func gridRowSpan(_ state
 swift.method GeometryReader.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method GeometryReader.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method GeometryReader.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GeometryReader.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -4566,6 +4566,7 @@ swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method GeometryReader.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method GeometryReader.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4643,7 +4644,6 @@ swift.method Grid.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<
 swift.method Grid.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Grid.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Grid.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Grid.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
@@ -4775,6 +4775,7 @@ swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Grid.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Grid.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -4859,7 +4860,6 @@ swift.method Group.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding
 swift.method Group.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Group.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Group.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Group.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -4979,6 +4979,7 @@ swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ state: B
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Group.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Group.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5052,7 +5053,6 @@ swift.method HStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method HStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method HStack.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method HStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method HStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
@@ -5185,6 +5185,7 @@ swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method HStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method HStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5271,7 +5272,6 @@ swift.method Image.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding
 swift.method Image.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Image.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Image.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Image.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -5395,6 +5395,7 @@ swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ state: B
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Image.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Image.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5473,7 +5474,6 @@ swift.method InspectorButton.gridRowSpan(_:): @MainActor func gridRowSpan(_ stat
 swift.method InspectorButton.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method InspectorButton.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method InspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method InspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -5593,6 +5593,7 @@ swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(
 swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method InspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method InspectorButton.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5668,7 +5669,6 @@ swift.method ItemsView.header(_:): @MainActor func header(_ view: some View) -> 
 swift.method ItemsView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method ItemsView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ItemsView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ItemsView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -5812,6 +5812,7 @@ swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ stat
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ItemsView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ItemsView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -5911,7 +5912,6 @@ swift.method Line.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<
 swift.method Line.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Line.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Line.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Line.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -6036,6 +6036,7 @@ swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Line.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Line.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6117,7 +6118,6 @@ swift.method Link.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<
 swift.method Link.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Link.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Link.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Link.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -6247,6 +6247,7 @@ swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Link.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Link.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6335,7 +6336,6 @@ swift.method Map.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<I
 swift.method Map.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Map.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Map.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Map.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -6464,6 +6464,7 @@ swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ state: Bin
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Map.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Map.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6606,7 +6607,6 @@ swift.method ModifiedContent.gridRowSpan(_:): @MainActor func gridRowSpan(_ stat
 swift.method ModifiedContent.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method ModifiedContent.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ModifiedContent.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ModifiedContent.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -6726,6 +6726,7 @@ swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ModifiedContent.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ModifiedContent.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -6801,7 +6802,6 @@ swift.method MotionLayout.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: 
 swift.method MotionLayout.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method MotionLayout.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method MotionLayout.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method MotionLayout.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.interpolation(_:): @MainActor func interpolation(_ curve: some LayoutInterpolation) -> MotionLayout<Items, ID, Parameters>
@@ -6937,6 +6937,7 @@ swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ s
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method MotionLayout.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method MotionLayout.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.parameterMotion(_:): @MainActor func parameterMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
@@ -7031,7 +7032,6 @@ swift.method NavigationStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ stat
 swift.method NavigationStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method NavigationStack.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method NavigationStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method NavigationStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -7151,6 +7151,7 @@ swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method NavigationStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method NavigationStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7239,7 +7240,6 @@ swift.method Path.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<
 swift.method Path.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Path.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Path.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Path.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -7366,6 +7366,7 @@ swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Path.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Path.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7448,7 +7449,6 @@ swift.method Picker.height(_:): @MainActor func height(_ state: Binding<Double>)
 swift.method Picker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Picker.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
-swift.method Picker.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Picker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Picker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -7586,6 +7586,7 @@ swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Picker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Picker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7679,7 +7680,6 @@ swift.method Polygon.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method Polygon.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Polygon.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Polygon.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polygon.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -7806,6 +7806,7 @@ swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Polygon.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Polygon.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -7895,7 +7896,6 @@ swift.method Polyline.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bind
 swift.method Polyline.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Polyline.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Polyline.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polyline.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -8022,6 +8022,7 @@ swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ state
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Polyline.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Polyline.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8113,7 +8114,6 @@ swift.method PositionDots.hidesChildrenFromAccessibility(_:): @MainActor func hi
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ state: Binding<Bool>) -> PositionDots
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ value: Bool) -> PositionDots
 swift.method PositionDots.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method PositionDots.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method PositionDots.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method PositionDots.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -8235,6 +8235,7 @@ swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ s
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method PositionDots.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method PositionDots.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8309,7 +8310,6 @@ swift.method ProgressBar.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: B
 swift.method ProgressBar.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method ProgressBar.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ProgressBar.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ProgressBar.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -8432,6 +8432,7 @@ swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ st
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ProgressBar.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ProgressBar.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8521,7 +8522,6 @@ swift.method Rectangle.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bin
 swift.method Rectangle.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Rectangle.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Rectangle.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Rectangle.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -8648,6 +8648,7 @@ swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ stat
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Rectangle.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Rectangle.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8737,7 +8738,6 @@ swift.method ScrollView.height(_:): @MainActor func height(_ state: Binding<Doub
 swift.method ScrollView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ScrollView.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> ScrollView.Modified
-swift.method ScrollView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ScrollView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ScrollView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -8877,6 +8877,7 @@ swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ sta
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ScrollView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ScrollView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -8966,7 +8967,6 @@ swift.method SearchField.height(_:): @MainActor func height(_ state: Binding<Dou
 swift.method SearchField.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SearchField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
-swift.method SearchField.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method SearchField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SearchField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
@@ -9106,6 +9106,7 @@ swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ st
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method SearchField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method SearchField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9196,7 +9197,6 @@ swift.method Separator.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bin
 swift.method Separator.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Separator.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Separator.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Separator.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -9319,6 +9319,7 @@ swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ stat
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Separator.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Separator.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9407,7 +9408,6 @@ swift.method Slider.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method Slider.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Slider.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Slider.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Slider.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -9545,6 +9545,7 @@ swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Slider.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Slider.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9625,7 +9626,6 @@ swift.method Space.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding
 swift.method Space.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Space.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Space.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Space.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -9749,6 +9749,7 @@ swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ state: B
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Space.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Space.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -9827,7 +9828,6 @@ swift.method Spinner.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method Spinner.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Spinner.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -9951,6 +9951,7 @@ swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Spinner.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Spinner.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10034,7 +10035,6 @@ swift.method SplitView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bin
 swift.method SplitView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method SplitView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method SplitView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SplitView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -10154,6 +10154,7 @@ swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ stat
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method SplitView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method SplitView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10240,7 +10241,6 @@ swift.method Stepper.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method Stepper.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Stepper.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Stepper.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Stepper.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -10372,6 +10372,7 @@ swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Stepper.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Stepper.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10609,7 +10610,6 @@ swift.method Switch.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method Switch.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method Switch.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Switch.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Switch.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -10740,6 +10740,7 @@ swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Switch.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Switch.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -10826,7 +10827,6 @@ swift.method TabView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method TabView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method TabView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method TabView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TabView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -10946,6 +10946,7 @@ swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method TabView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TabView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11026,7 +11027,6 @@ swift.method Text.height(_:): @MainActor func height(_ state: Binding<Double>) -
 swift.method Text.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Text.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
-swift.method Text.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Text.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Text.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -11157,6 +11157,7 @@ swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method Text.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method Text.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11253,7 +11254,6 @@ swift.method TextEditor.height(_:): @MainActor func height(_ state: Binding<Doub
 swift.method TextEditor.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextEditor.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
-swift.method TextEditor.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method TextEditor.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextEditor.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
@@ -11390,6 +11390,7 @@ swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ sta
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method TextEditor.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TextEditor.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11482,7 +11483,6 @@ swift.method TextField.height(_:): @MainActor func height(_ state: Binding<Doubl
 swift.method TextField.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
-swift.method TextField.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method TextField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
@@ -11623,6 +11623,7 @@ swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ stat
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method TextField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TextField.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -11773,7 +11774,6 @@ swift.method TimePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bi
 swift.method TimePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method TimePicker.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method TimePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TimePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -11911,6 +11911,7 @@ swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ sta
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method TimePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method TimePicker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -12100,7 +12101,6 @@ swift.method VStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method VStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method VStack.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method VStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
@@ -12232,6 +12232,7 @@ swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method VStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method VStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -12287,7 +12288,6 @@ swift.method View.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method View.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method View.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method View.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method View.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method View.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method View.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method View.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
@@ -12380,6 +12380,7 @@ swift.method View.pageBackground(_:): @MainActor func pageBackground(_ state: Bi
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method View.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method View.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method View.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method View.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -12541,7 +12542,6 @@ swift.method WebView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindi
 swift.method WebView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method WebView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method WebView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method WebView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -12677,6 +12677,7 @@ swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ state:
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method WebView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method WebView.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
@@ -12783,7 +12784,6 @@ swift.method ZStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method ZStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method ZStack.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ZStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ZStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
@@ -12915,6 +12915,7 @@ swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ state: 
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method ZStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
 swift.method ZStack.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified

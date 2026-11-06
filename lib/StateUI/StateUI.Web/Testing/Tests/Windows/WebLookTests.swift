@@ -495,7 +495,7 @@ final class WebLookTests: XCTestCase {
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery").subtitle("Every sample").icon("test_dot.png")
+                Text("Samples").title("Gallery").subtitle("Every sample").pageIcon("test_dot.png")
             } detail: {
                 Text("Detail").title("Page")
             }

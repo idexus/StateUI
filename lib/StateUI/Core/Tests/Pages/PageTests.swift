@@ -69,7 +69,7 @@ private struct EveryPropertyPage: View {
             .title("Everything")
             .subtitle("All of it")
             .showsTitle(false)
-            .icon(ImageSource("tab.png"))
+            .pageIcon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
             // What it asks of a NavigationStack.
             .showsNavigationBar(false)
@@ -117,7 +117,7 @@ private struct KnobPage: View {
             .title(on ? "On" : "Off")
             .subtitle(on ? "Lit" : "Dark")
             .showsTitle(on)
-            .icon(ImageSource(on ? "on.png" : "off.png"))
+            .pageIcon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
             .showsNavigationBar(on)
             .showsBackButton(on)
@@ -264,7 +264,7 @@ final class PageTests: XCTestCase {
 
     /// What is written ON a composed view stands over what its body says, the way every modifier on one does.
     func testWhatIsWrittenOnAViewStandsOverItsBody() {
-        let page = Renders().render(Node.page(Named(name: "Home").title("Away").icon("away.png")))
+        let page = Renders().render(Node.page(Named(name: "Home").title("Away").pageIcon("away.png")))
 
         XCTAssertEqual(page.props[.title], .string("Away"))
         XCTAssertEqual(page.props[.icon], .string("away.png"))
@@ -363,6 +363,15 @@ final class PageTests: XCTestCase {
         }
     }
 
+    /// A button standing for its page names its own picture and the page's apart: `.icon` is the button's,
+    /// `.pageIcon` the page's, as on every view.
+    func testAButtonsIconAndItsPagesStandApart() {
+        let page = Renders().render(Node.page(Button("plain").icon("own.png").pageIcon("page.png")))
+
+        XCTAssertEqual(page.props[.icon], .string("page.png"), "the page's own")
+        XCTAssertEqual(page.children.first?.props[.icon], .string("own.png"), "the button's own")
+    }
+
     /// Every arrangement is a page already, and is shown as it is; the pages it arranges stand inside it.
     func testEveryArrangementIsShownAsItIs() {
         let path = State<[Int]>([])
@@ -387,7 +396,7 @@ final class PageTests: XCTestCase {
         let path = State<[Int]>([])
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
             .title("Home")
-            .icon("house.png")
+            .pageIcon("house.png")
             .showsNavigationBar(false)
 
         let patch = Renders().render(Node.page(stack))

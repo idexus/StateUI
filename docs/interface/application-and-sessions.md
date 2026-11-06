@@ -622,7 +622,7 @@ What the page is, the view it shows says by modifier:
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
-| `.icon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
+| `.pageIcon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
 | `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
@@ -630,7 +630,7 @@ What the page is, the view it shows says by modifier:
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
 
 What is not said is left with the host. Each takes a value, and each but
-`.icon` a state, `$x`, which the host follows with no view built again. The space between the page's
+`.pageIcon` a state, `$x`, which the host follows with no view built again. The space between the page's
 edge and what it shows is that view's own `.padding`. These are said of the
 page only by the view it shows - or by that view's `body` - and a view further
 in that says them says nothing, and is told so once.
@@ -643,7 +643,7 @@ the `body` of the view written there - through a modifier, a `Group`, or an
 on a page. Anywhere else - inside a `VStack`, inside a page's content - an
 arrangement is left out and said once. It fills where it stands, so
 it keeps only what its contract declares, and takes its own `.title` and
-`.icon`, for where it is an item of something else, such as a tab, and
+`.pageIcon`, for where it is an item of something else, such as a tab, and
 `.pageBackground`, the ground of each of its pages that says none.
 
 What has a body of its own - the page's actions, the view in its title's place
@@ -728,7 +728,7 @@ struct NotesPage: View {
         SplitView {
             Text("Folders")
                 .title("Notes")
-                .icon("notes.png")
+                .pageIcon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
                 .title(folder)

@@ -34,7 +34,9 @@ extension View {
 
     /// The picture that stands for the page: a tab's icon, and the mark beside the title of a sidebar's page, which
     /// names the application.
-    public func icon(_ value: ImageSource) -> Modified {
+    ///
+    ///     NotesPage().title("Notes").pageIcon("notes.png")
+    public func pageIcon(_ value: ImageSource) -> Modified {
         pageSays { $0.setValue(PageElementContract.icon, value) }
     }
 

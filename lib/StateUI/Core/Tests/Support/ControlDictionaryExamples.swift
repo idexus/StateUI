@@ -924,7 +924,7 @@ extension ControlDictionary {
                 Text(section)
             }
             .title("Settings")
-            .icon("settings.png")
+            .pageIcon("settings.png")
             """#),
     ]
 

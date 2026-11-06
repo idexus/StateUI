@@ -256,7 +256,7 @@ enum Presented {
         default:
             let words = VStack { Beside([Text("Page")] + others) }
             if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
-            if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.icon(icon) }
+            if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.pageIcon(icon) }
             return words
         }
     }

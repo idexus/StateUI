@@ -881,7 +881,7 @@ extension AndroidPagesTests {
                     } destination: { _ in
                         TitledPage(title: "Pushed")
                     }
-                    .icon(number == 0 ? "test_dot.png" : "test_wide.png")
+                    .pageIcon(number == 0 ? "test_dot.png" : "test_wide.png")
                 }
             }
             host.layOut()
@@ -1233,7 +1233,7 @@ private struct TitledPage: View {
 
     var body: some View {
         let words = Text(title).toolbar { actions }.title(title)
-        return (icon.map { words.icon($0) } ?? words).loggingPhases(log, as: title)
+        return (icon.map { words.pageIcon($0) } ?? words).loggingPhases(log, as: title)
     }
 }
 

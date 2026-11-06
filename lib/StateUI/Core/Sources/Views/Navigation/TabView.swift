@@ -28,12 +28,12 @@
 ///         var body: some View {
 ///             Text("Nothing due.")
 ///                 .title("Today")                    // the caption
-///                 .icon("today.png")                 // and the icon
+///                 .pageIcon("today.png")             // and the icon
 ///         }
 ///     }
 ///
 /// A tab's caption and icon are what its view says of its page, `.title` and
-/// `.icon`. A `NavigationStack` inside a tab takes them the same way and keeps
+/// `.pageIcon`. A `NavigationStack` inside a tab takes them the same way and keeps
 /// its own path while the user is on another tab.
 ///
 /// Moving between tabs from code is assigning the binding, `tab = .settings`;

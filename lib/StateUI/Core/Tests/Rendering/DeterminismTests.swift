@@ -57,7 +57,7 @@ private struct HomePage: View {
         }
         .spacing(12)
         .title("Home")
-        .icon(ImageSource("home.png"))
+        .pageIcon(ImageSource("home.png"))
     }
 }
 
@@ -74,7 +74,7 @@ private struct SettingsPage: View {
             Switch(true).onToggled { _ in }
         }
         .title("Settings")
-        .icon(ImageSource("settings.png"))
+        .pageIcon(ImageSource("settings.png"))
     }
 }
 

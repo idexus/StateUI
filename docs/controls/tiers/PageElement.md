@@ -13,7 +13,7 @@ NavigationStack($path) {
     Text(section)
 }
 .title("Settings")
-.icon("settings.png")
+.pageIcon("settings.png")
 ```
 
 Worn by: [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)

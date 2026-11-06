@@ -7124,7 +7124,7 @@ enum Listings {
                     // tab's page is the stack rather than the page inside it - so
                     // they are written on the stack.
                     .title("Stack")
-                    .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                    .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
                 case .second:
                     SecondTabPage(nav: nav)
@@ -7466,7 +7466,7 @@ enum Listings {
                 }
                 .ignoresSafeArea(.all)
                 .title("StateUI")
-                .icon(Self.mark)
+                .pageIcon(Self.mark)
                 // The line about what this is stands at the menu's foot, and the rows
                 // scroll under it.
                 .bottomBar {
@@ -11600,7 +11600,7 @@ enum Listings {
                             Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                         }
                         .title("Inbox")
-                        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+                        .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
                     case .drafts:
                         NavigationStack($drafts) {
@@ -11620,7 +11620,7 @@ enum Listings {
                             Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                         }
                         .title("Drafts")
-                        .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
+                        .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
                     }
                 }
                 .selection($tab)

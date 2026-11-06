@@ -70,7 +70,7 @@ struct SampleTabPage: View {
         // its tab: the tab's caption and icon. The window takes the sample's
         // name from the tabs (`SamplePage.shown`).
         .galleryPage(sample.caption(of: tab))
-        .icon(sample.icon(of: tab))
+        .pageIcon(sample.icon(of: tab))
     }
 
     /// The line under the title over what the tab shows, in one cell that
