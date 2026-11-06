@@ -14,6 +14,8 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#ids-are-never-reused
     private var nextElementId = 1
 
+    let menuKeys = MenuKeys()
+
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
@@ -108,6 +110,7 @@ final class Differ {
         changed: Set<ObjectIdentifier> = [],
         buildsEveryView: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
+        menuKeys.prune()
         self.describeAll = describeAll
         self.buildsEveryView = buildsEveryView
         self.changed = changed
@@ -116,9 +119,8 @@ final class Differ {
         walkStamp += 1
         seedScope()
 
-        // The root keeps whatever key it was given until the author states another.
-        let id = tree.identity.map { ElementID.manual(Node.described($0)) } ?? rendered?.id ?? identity(for: tree)
-        let previous = rendered?.id == id ? rendered : nil
+        let previous = rendered?.identity == tree.identity ? rendered : nil
+        let id = previous?.id ?? identity(for: tree)
 
         if let rendered = rendered, previous == nil {
             forget(rendered)
@@ -136,6 +138,7 @@ final class Differ {
         _ rendered: RenderedNode,
         changed: Set<ObjectIdentifier>
     ) -> (node: RenderedNode, patch: HostPatch) {
+        menuKeys.prune()
         describeAll = false
         buildsEveryView = false
         self.changed = changed
@@ -328,9 +331,10 @@ final class Differ {
 
     // MARK: - Identity
 
-    /// A new element's key: the author's, or a fresh number.
+    /// A literal string keeps its name; every other element gets a fresh number.
     func identity(for node: Node) -> ElementID {
-        node.identity.map { .manual(Node.described($0)) } ?? .auto(allocateElementId())
+        if let name = node.identity?.value.base as? String { return .manual(name) }
+        return .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.

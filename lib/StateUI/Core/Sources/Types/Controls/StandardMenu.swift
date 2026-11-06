@@ -31,8 +31,7 @@ public enum StandardMenu: Hashable, Sendable, CaseIterable, CustomStringConverti
     /// The menu of help.
     case help
 
-    /// The identity a menu takes with `.id(StandardMenu.file)`, apart from
-    /// every identity an author writes.
+    /// The menu's name in diagnostics. Its typed role is distinct from every string an author writes.
     public var description: String {
         switch self {
         case .file: "StandardMenu.file"
@@ -41,13 +40,5 @@ public enum StandardMenu: Hashable, Sendable, CaseIterable, CustomStringConverti
         case .window: "StandardMenu.window"
         case .help: "StandardMenu.help"
         }
-    }
-}
-
-@_spi(Host) extension StandardMenu {
-    /// The standard menu an element's identity names; nil for any other.
-    public init?(identity: String) {
-        guard let named = Self.allCases.first(where: { $0.description == identity }) else { return nil }
-        self = named
     }
 }

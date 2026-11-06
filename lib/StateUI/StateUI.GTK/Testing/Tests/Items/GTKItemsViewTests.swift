@@ -41,13 +41,16 @@ final class GTKItemsViewTests: XCTestCase {
             let list = try XCTUnwrap(host.views(GTKItemsView.self).first)
             host.settle { list.shownRows.count > 4 }
             let row = Double(try XCTUnwrap(list.shownRows.first))
+            let ids = list.cells.entries.sections.flatMap(\.items)
+            XCTAssertEqual(ids.count, 100)
+            guard ids.count == 100 else { return }
 
-            list.scroll(to: "3", anchor: .start)
+            list.scroll(to: ids[3], anchor: .start)
             XCTAssertEqual(list.glidesForTesting, !host.runtime.reducesMotion(), "laid out: it glides")
             host.settle { !list.glidesForTesting && abs(list.offsetForTesting - 3 * row) < 0.5 }
             XCTAssertEqual(list.offsetForTesting, 3 * row, accuracy: 0.5, "row 3 at the start")
 
-            list.scroll(to: "90", anchor: .start)
+            list.scroll(to: ids[90], anchor: .start)
             XCTAssertFalse(list.glidesForTesting, "too far to be laid out: brought into view at once")
         }
     }

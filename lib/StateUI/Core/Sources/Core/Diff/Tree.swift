@@ -6,22 +6,19 @@
 
 /// An element's key, stable for as long as the element lives.
 ///
-/// `.auto` is a number the differ assigns and `.manual` is what the author
-/// passed to `.id()`; the two never collide. An automatic key survives a render
-/// while the element is written in the same place in the source, or stands at
-/// the same position when put in by hand. A manual one survives anywhere, which
-/// is what a collection needs.
+/// `.manual` keeps a literal string name, including structural names StateUI
+/// assigns; `.auto` numbers every other element. Both survive while the element
+/// matches by its authored value, builder path or position. The representation
+/// does not decide how an element matches, and the two namespaces never collide.
 @_spi(Host) public enum ElementID: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)
 
-    /// Written by the author with `.id()`. Written as text, which is what
-    /// keeps the two namespaces from ever colliding.
+    /// A literal name, written as text in its own namespace.
     case manual(String)
 
-    /// Whether the author named this one - an element matched by its builder path
-    /// must not take an author's name.
+    /// Whether this key carries a literal name rather than a number.
     @_spi(Host) public var isManual: Bool {
         if case .manual = self { return true }
 
@@ -74,6 +71,8 @@ final class RenderedNode {
 
     /// The value the element was written as (`Node.identity`), a repeat's variant included.
     var identity: ElementIdentity?
+
+    var menuKey: MenuKeys.Key?
 
     /// The composed views this element was built by, outermost first: each one's
     /// type, its state boxes by path, what it was built with, and the branch its
@@ -246,6 +245,7 @@ extension HostPatch {
     /// Design: docs/design/core/identity-and-diffing.md#merging-patches
     var isEmpty: Bool {
         !replace
+            && menuKey == nil
             && motion == nil
             && properties.isEmpty
             && clearedProperties.isEmpty
@@ -284,6 +284,7 @@ extension HostPatch {
         merged.clearedProperties.sort()
 
         merged.motion = later.motion ?? motion
+        merged.menuKey = later.menuKey ?? menuKey
         merged.driven = later.driven ?? driven
         merged.events = later.events ?? events
         merged.children = HostChildrenUpdate.merging(children, with: later.children)

@@ -222,9 +222,16 @@ final class ActCallShapeTests: XCTestCase {
 
     /// A list scrolls to an item's identity and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
-        try await check("scrollTo", [.values([.string("list")]), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
-            try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
+        let list = Aim(ItemsView<Int>.self)
+        let renders = Renders()
+        let patch = renders.render(ItemsView(0..<1_000) { Text("\($0)") }.aim(list).id("list").node)
+        let entries = try XCTUnwrap(patch.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        drain()
+        try await check("scrollTo", [.values([.string("list")]), .string(entries.sections[0].items[500]),
+                                     .enumeration(ScrollAnchor.start.rawValue)]) {
+            try await list.scrollTo(500, anchor: .start)
         }
+        withExtendedLifetime(renders) {}
     }
 
     /// A list of sections scrolls to an item by the identity its own source wrote for it, whatever section holds it.

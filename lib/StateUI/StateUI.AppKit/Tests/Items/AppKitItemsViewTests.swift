@@ -239,7 +239,11 @@ final class AppKitItemsViewTests: XCTestCase {
             guard cells.count < 5 || cells.contains(where: { $0.holding.shown == nil }) else { break }
             step()
         }
-        let stood = drawn().filter { Int($0.key)! < 6 }
+        let ids = Array(items.cells.entries.sections.flatMap(\.items).prefix(6))
+        XCTAssertEqual(ids.count, 6)
+        guard ids.count == 6 else { return }
+        let firstRows = Set(ids)
+        let stood = drawn().filter { firstRows.contains($0.key) }
 
         numbers.wrappedValue = [999] + Array(0..<999)
         var astray: [String] = []
@@ -247,17 +251,17 @@ final class AppKitItemsViewTests: XCTestCase {
             step()
             let now = drawn()
             for row in 0..<5 {
-                guard let at = now["\(row)"], let from = stood["\(row)"], let to = stood["\(row + 1)"] else { continue }
+                guard let at = now[ids[row]], let from = stood[ids[row]], let to = stood[ids[row + 1]] else { continue }
                 if at < from - 0.5 || at > to + 0.5 { astray.append("step \(index): row \(row) at \(at), not within \(from)...\(to)") }
             }
         }
         for _ in 0..<100 {
-            guard drawn()["0"] != stood["1"] else { break }
+            guard drawn()[ids[0]] != stood[ids[1]] else { break }
             step()
         }
 
         XCTAssertEqual(astray, [])
-        XCTAssertEqual(drawn()["0"], stood["1"], "row 0 ends where row 1 stood")
+        XCTAssertEqual(drawn()[ids[0]], stood[ids[1]], "row 0 ends where row 1 stood")
     }
 }
 #endif

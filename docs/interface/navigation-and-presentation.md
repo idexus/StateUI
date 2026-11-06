@@ -982,7 +982,9 @@ an entry with the `.id` of an entry there stands in that entry's place while
 its page is shown - a window's disabled Save becomes the document page's own,
 and the window's comes back as the page goes. Other menus follow the ones
 declared further out, before the platform's Window and Help; `order` moves a
-declaration's menus and sections earlier or later, lower first.
+declaration's menus and sections earlier or later, lower first. Identities
+compare by their Hashable values: equal values join even when their descriptions
+differ, and equal descriptions do not join unequal values.
 
 ```swift
 struct Library: View { var body: some View { Text("Library") } }
@@ -1007,7 +1009,8 @@ SplitView {
 ```
 
 The platform's own menus are joined by identity, never by caption:
-`.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
+A standard role is typed; a string such as `"StandardMenu.file"` is an ordinary
+authored identity. `.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
 own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
 ordinary menu of the application's; on GTK, a submenu of the header bar's main

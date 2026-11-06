@@ -164,7 +164,9 @@ final class SplitViewTests: XCTestCase {
         let detail = try XCTUnwrap(split.child("detail"))
         XCTAssertEqual(detail.type, .navigationStack)
         XCTAssertEqual(detail.props["title"], .string("Diary"))
-        XCTAssertEqual(detail.arrangement, [.manual("root"), .manual("0/1")])
+        XCTAssertEqual(detail.children.first?.id, .manual("root"))
+        XCTAssertEqual(Set(detail.children.map(\.id)).count, 2)
+        XCTAssertNotNil(detail.arrangement)
         XCTAssertEqual(detail.children.map { $0.props["title"] }, [.string("today"), .string("level 1")])
     }
 

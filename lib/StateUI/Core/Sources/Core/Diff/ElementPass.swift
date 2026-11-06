@@ -62,6 +62,7 @@ final class ElementPass {
     var events: [Event: Int] = [:]
     var driven: [Prop: StateEntry] = [:]
     var patch: HostPatch
+    var menuKey: MenuKeys.Key?
 
     init(
         id: ElementID, rendered: RenderedNode?, node: Node, forced: Bool, sizesArrive: Bool, atPageRoot: Bool,

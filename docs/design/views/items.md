@@ -8,57 +8,47 @@ virtualization stands inside the platform's.
 
 ## Identities in order
 
-Every entry the list shows has an identity, and the element carries all of
-them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
-the list's header and footer, and each section by its name with its header,
-items and footer. A list with no sections is one section with neither. An
-item's identity is `String(describing:)` of its id, whatever section holds it:
-an item's value stands once in the whole list, so a choice, an activation and
-a scroll name one row by the value alone, and an item moved to another section
-keeps its identity - the host moves its cell. A header or a footer is named
-by the list: a record separator, its section's name and a second separator
-before its role (`\u{1E}Fruit\u{1E}header`), the list's own with no section
-between (`\u{1E}header`) - so a section of empty words is no "no section".
-Every name the list makes begins with a separator and no item's words hold
-one (below), so an entry named by the author and one named by the list are
-never one, whatever the author's words.
+Every entry has a host token. `ItemsViewContract.items` carries them in the
+order the list shows: its header, each section's header, items and footer,
+then its footer. The token is an address within this list, not a description
+of the authored value. Selection, activation and scrolling map between the
+token and the value on the Swift side.
 
-A section is known by the value `.id` gives it, as an item is by its own, and
-one given none by its place; its name is that value's words - the place's
-number - and the list keeps the name each section stood under across builds
-(`ItemsBook`), so a section keeps its name wherever it moves. Every name of
-the build before is kept from a new section as it is from a new item (below),
-a section gone included: its header and footer are named from it, and a new
-section under it would carry their state. Two sections given one id are a
-repeat, told apart and said; a place whose number reads as an author's id is
-no repeat, only told apart.
+`ItemsBook` keeps the token each value stood under while it remains in the
+list. A retained value keeps that token across reorder and movement between
+sections. Every token of the previous build is reserved before naming a new
+value, including values leaving in this build, so new content cannot inherit
+a departing row's state. An authored string keeps its name when available;
+another Hashable value receives a monotonically allocated token, independent
+of its description, hash-table order or address. Item and section allocations
+have separate prefixes, a group separator followed by `i` or `s` and a number.
+Allocated tokens are never reused during the book's lifetime.
 
-An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
-and its words only name it. The list keeps, from one build to the next, the
-identity each value stood under (`ItemsBook`), and a value still on the list
-stands under it again, wherever it now is, before any new value is named. Two
-values that describe alike are two items, the second named with a variant of
-the words, and each keeps its own across a reorder: were the identities
-handed out by words in order, two such items swapping places would leave every
-identity where it was, and the host would move nothing. Every name of the
-build before is kept from a new value for that build, the names of values gone
-included: the entry under such a name is leaving as the new one comes, and a
-new entry under it would carry what it left - the state of a row that looked
-alike. The same value twice
-is a repeated identity, told apart as two repeated `.id()`s are, and a
-complaint says so: a platform's collection refuses two cells of one identity.
-The value names its first row; the repeat is reached by no choice nor scroll.
+A section is matched by the value `.id` gives it, and by its position where
+it has none. A position has its own key type, distinct from every authored
+value. Its host name is the position's decimal number where available; an
+explicit string keeps its name and another explicit value receives a token.
+Sections reserve their previous names just as items do.
 
-A variant is the words, a group separator (`\u{1D}`) and a number. An
-author's words hold neither separator nor a NUL - each is read as U+FFFD - so
-a value's words never read as a variant or as a name of the list's own, and
-GTK and WinUI, which hand the identities to their toolkits as C strings ending
-at a NUL, see each identity as its own.
+The same authored value twice is invalid data and is reported. The book
+keeps the token of each occurrence in writing order so that collision handling
+is stable as other names leave. This does not distinguish equal authored
+values semantically: selection and scrolling still name the first occurrence.
+A new occurrence uses the first occurrence's token with a group separator and
+an unused suffix. Two unequal values with equal descriptions remain distinct.
 
-The entries cross in the patch as any property does, so they are compared,
-sent only when they change, and printed by the inspector. What a host needs
-from one list to the next - removals and insertions, an entry that moved being
-one of each - is worked out once in the host layer.
+Decorations have their own domain: a record separator, the section's token
+and another record separator before `header` or `footer`; the list's own
+header and footer omit the section. An empty section name therefore still has
+two separators and cannot equal the list's own decoration. Authored strings
+have NUL, group separator and record separator replaced by U+FFFD before
+naming. The generated tokens contain no NUL, so GTK and WinUI can carry them
+through their native C-string interfaces without truncating identities.
+
+The entries cross as an ordinary property and are sent only when they change.
+The common host layer computes the removals, insertions and moves native
+collections need. A host and its tests use the tokens actually emitted;
+converting an authored ID to text cannot reconstruct one.
 
 ## Built when a cell asks
 

@@ -352,6 +352,12 @@ box a declared group gives its buttons.
 
 ## The menus of a path
 
+A menu's `HostMenuKey` carries its authored identity across page levels,
+independently of its scoped runtime `ElementID`. Literal names, standard menu
+roles and allocated value keys are separate cases; a description is never a
+lookup key. The core supplies the key on complete patches, and the mounted
+element keeps it through sparse updates.
+
 The menu bar a page's window shows is composed from the menu bars its path
 declares (`ChromeMenus`). A menu whose `.id`
 was declared further out joins that menu, which its outermost declaration

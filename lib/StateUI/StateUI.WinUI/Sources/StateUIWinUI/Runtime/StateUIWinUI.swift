@@ -210,10 +210,13 @@ enum WinUICallbacks {
             itemLetGo: { view, cell in
                 MainActor.assumeIsolated { WinUIItemsList.owner(of: view)?.letGo(cell) }
             },
-            itemsChose: { view, utf8 in
-                let joined = utf8.map { String(cString: $0) } ?? ""
+            itemsChose: { view, count, identities in
+                let chosen = (0..<Int(count)).compactMap { index -> String? in
+                    guard let identity = identities?[index] else { return nil }
+                    return String(cString: identity)
+                }
                 MainActor.assumeIsolated {
-                    WinUIItemsList.owner(of: view)?.chose(joined.split(separator: "\n").map(String.init))
+                    WinUIItemsList.owner(of: view)?.chose(chosen)
                 }
             },
             itemInvoked: { view, utf8 in

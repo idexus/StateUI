@@ -81,8 +81,8 @@
 
     /// The platform's menu this one joins, where its `.id` is a `StandardMenu`.
     public var standard: StandardMenu? {
-        guard case .manual(let identity) = element?.id else { return nil }
-        return StandardMenu(identity: identity)
+        guard case .standard(let standard) = element?.menuKey else { return nil }
+        return standard
     }
 
     /// The entries `container` holds - a menu, a context menu, a submenu - in order; what is none of them is none.

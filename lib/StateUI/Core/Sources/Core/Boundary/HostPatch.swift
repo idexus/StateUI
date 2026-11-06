@@ -16,6 +16,11 @@
     /// The kind of native control or structural element this patch describes.
     public let type: NodeType
 
+    /// The authored identity by which menus compose across page levels. Present on a complete named menu or
+    /// entry, including resync and replacement; nil on a partial patch means unchanged. An identity change makes
+    /// another element, so an unnamed replacement starts with no key.
+    public var menuKey: HostMenuKey?
+
     /// The native control cannot be updated into what the node now says, so the
     /// host discards it and builds it again from this complete patch.
     ///

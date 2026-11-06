@@ -42,22 +42,44 @@ the control, focus and caret of the one that left. Hand-written nodes, such as
 a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
-`ElementID` has two cases that are two namespaces: `.auto` is a number the
-differ assigns and `.manual` is the author's identity described. One is a
-number and the other a string, so they can never collide.
+`ElementID` has two namespaces: `.manual` preserves a literal string name,
+including a structural name StateUI writes; `.auto` numbers every other
+element. An authored value can have either representation. Position matches
+only an element with no authored identity, whatever its runtime key looks
+like. The root uses the same value equality when it has an authored identity.
 
 An identity is matched as the value it is (`ElementIdentity`): the value, and
 its hash worked out once as it is written, so siblings are looked up by a
 number and two values compared only where their numbers meet. Its
-description is made once, as an element is born, for the patch's `.manual`
-key; an element matched by value keeps the key it was born with. Two values
-that describe themselves alike are two elements: the second born with a key
-the first already holds takes a fresh number instead. A name is distinct
+description is used only for diagnostics. A non-string identity receives a
+number in traversal order as its element is born; one matched by value keeps
+that number. Allocated numbers are never reused, including after removal.
+Two values that describe themselves alike are two elements. A name is distinct
 among siblings, no further: two parents may each hold an `editor`, a stack
 describes one declaration into each of its pages, two lists hold items `1`,
 and a scene is keyed by its record as a view is by its id - the key tells
 siblings apart, and what reaches one element among many of a name reaches it
 by where it stands ([aims](#aims-and-readings-on-an-element)).
+
+## Menu identities
+
+A menu's scoped runtime key identifies its native element. Its authored
+identity also joins declarations across page levels, which is a separate
+scope. `HostPatch.menuKey` carries that semantic identity: a literal name,
+an explicit `StandardMenu` role, or a number shared by equal authored values.
+A string reading `StandardMenu.file` remains an authored name, not a role.
+
+`MenuKeys` assigns numbers in traversal order. A rendered menu or entry owns
+its key object; the lookup book holds only weak references indexed by cached
+hashes. Hashes never cross in the patch or determine output order. Dead weak
+entries are pruned at the start of a walk, so the book neither retains an
+author's id object nor accumulates old identities. A value whose last live
+declaration leaves receives a new allocated key when it returns.
+
+The complete menu key accompanies first creation, resync and replacement.
+A partial patch omits it. Changing authored identity makes another element;
+a replacement with no menu identity starts with no key. The common host
+composes menus by this key and interprets the typed standard role directly.
 
 ## Another kind of view
 

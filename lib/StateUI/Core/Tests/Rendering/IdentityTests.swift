@@ -49,7 +49,7 @@ private struct Converting: View {
 
 /// An application whose one window shows a view named as its scene is.
 private struct OneNamedApplication: Application {
-    var body: some Scene { WindowGroup { Text("One").id(1) } }
+    var body: some Scene { WindowGroup { Text("One").id("1") } }
 }
 
 /// Who a view is: the value an identity was written from, compared as that value, and its name in the patch.
@@ -82,20 +82,19 @@ final class IdentityTests: XCTestCase {
         XCTAssertEqual(Renderer.shared.texts, texts, "a second render, no element born: no text")
     }
 
-    /// AN IDENTITY WHOSE DESCRIPTION CHANGES KEEPS ITS ELEMENT: it is matched as the value it is, its description
-    /// asked once, as the element is born.
+    /// An identity is matched as its value; a changing description is never needed to allocate or retain its key.
     func testAnIdentityWhoseDescriptionChangesKeepsItsElement() {
         let renders = Renders()
         func list() -> Node {
             VStack { ForEach([Restless(number: 1), Restless(number: 2)], id: \.self) { Text("\($0.number)") } }.node
         }
 
-        let first = renders.render(list()).children.map(\.id)
         let asked = Restless.asked
+        let first = renders.render(list()).children.map(\.id)
         let second = renders.render(list())
 
         XCTAssertNil(second.arrangement, "the same elements, in the same order")
-        XCTAssertEqual(Restless.asked, asked, "described once each, as they were born")
+        XCTAssertEqual(Restless.asked, asked, "descriptions are diagnostics, not runtime keys")
         XCTAssertEqual(first.count, 2)
     }
 

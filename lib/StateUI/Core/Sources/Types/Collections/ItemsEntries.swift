@@ -11,7 +11,7 @@
 public struct ItemsEntries: Equatable, Sendable, HostRepresentable {
     /// One section of items, with the header and the footer it has.
     public struct Section: Equatable, Sendable {
-        /// The section's name: what `.id` named it, else its place - which a host knows the section by.
+        /// The section's stable host token. Compare it as written; an authored value's description is not its token.
         public let identity: String
 
         /// The header's identity, where the section has one.

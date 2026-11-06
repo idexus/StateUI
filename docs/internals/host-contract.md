@@ -29,6 +29,8 @@ struct HostPatch {
     let id: ElementID
     let type: NodeType
 
+    var menuKey: HostMenuKey?
+
     var replace = false
     var properties: [Prop: HostValue] = [:]
     var clearedProperties: [Prop] = []
@@ -81,6 +83,13 @@ Absence is meaningful:
 Explicit `.id()` wins, then a `ForEach` item identity, then builder path, then
 position. Swift owns matching and diffing; a host does not infer identity from
 native objects.
+
+Literal string ids keep their names; other authored values receive opaque
+numbers. A node's diagnostic description is not a lookup key. Menus also
+carry `menuKey`, which compares authored values across page levels separately
+from scoped element identity. It is present on complete named menu/entry
+descriptions and retained through sparse updates; standard menu roles are
+typed values, never inferred from strings.
 
 ## Apply order
 

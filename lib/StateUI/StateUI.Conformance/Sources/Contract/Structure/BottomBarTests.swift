@@ -97,8 +97,8 @@
                             .id("go")
                     }
                 }
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
-                let foot = { (try? s.place(of: s.item("59", of: s.element("list")))).map { $0.y + $0.height } }
+                s.settle { (try? item(0, in: s)) != nil }
+                let foot = { (try? s.place(of: item(59, in: s))).map { $0.y + $0.height } }
                 let resting = { try foot().map { abs($0 - (try s.place(of: s.element("go")).y)) < 1 } ?? false }
                 try s.perform(.activate, on: s.element("go"))
                 try s.settle { try resting() }
@@ -126,12 +126,12 @@
                             .id("go")
                     }
                 }
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                s.settle { (try? item(0, in: s)) != nil }
                 let (list, bar) = (try s.place(of: s.element("list")), try s.place(of: s.element("go")))
                 s.expect(list.y + list.height >= bar.y - 0.5, true, "the list reaches its bar: \(list), \(bar)")
 
                 try s.perform(.activate, on: s.element("go"))
-                let foot = { (try? s.place(of: s.item("59", of: s.element("list")))).map { $0.y + $0.height } }
+                let foot = { (try? s.place(of: item(59, in: s))).map { $0.y + $0.height } }
                 s.settle { foot().map { abs($0 - bar.y) < 1 } ?? false }
                 s.expect(foot().map { abs($0 - bar.y) < 1 }, true, "the last item at rest on the bar: \(String(describing: foot())), \(bar)")
             },
@@ -189,5 +189,16 @@
                 s.expect(try s.held(BottomBarContract.scrollEdge, on: bar), ScrollEdge.none, "the edge it changed to")
             },
         ]
+    }
+
+    @MainActor
+    private static func item(_ position: Int, in session: Session) throws -> MountedElement {
+        let list = try session.element("list")
+        guard let entries = list.value(ItemsViewContract.items.token).flatMap(ItemsEntries.init(propValue:)) else {
+            throw StateUIError.noItem("\(position)")
+        }
+        let items = entries.sections.flatMap(\.items)
+        guard items.indices.contains(position) else { throw StateUIError.noItem("\(position)") }
+        return try session.item(items[position], of: list)
     }
 }

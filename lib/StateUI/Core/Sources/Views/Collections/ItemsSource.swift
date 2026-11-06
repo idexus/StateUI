@@ -48,11 +48,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         ItemsSource(sections: sections)
     }
 
-    /// Takes the list's own header and footer and names every entry - once for
-    /// the source, however often the view is built from it: a section by its
-    /// id, an item by its value, once in the whole list - each under the name
-    /// `book` says it stood under while it stays on the list, a new one under
-    /// its words, told apart from any other's.
+    /// Names every entry once for the source: an existing occurrence keeps its token; a new string takes a free
+    /// name, and another value takes an allocated token. The book preserves them across builds.
     /// Design: docs/design/views/items.md#identities-in-order
     func finish(header: (any View)?, footer: (any View)?, book: ItemsBook<ID>) {
         guard !finished else { return }
@@ -61,32 +58,26 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.footer = footer
 
         let names = sectionNames(book: book)
-        // What every value standing again stood under, kept for it before any new value is named; every name of
-        // the build before, a value gone included, is kept from a new value.
-        var kept: [ID: String] = [:]
-        for section in sections {
-            for place in 0..<section.count {
-                let id = section.identify(place)
-                if kept[id] == nil, let earlier = book.identities[id] { kept[id] = earlier }
-            }
-        }
-        let reserved = Set(book.identities.values)
+        let reserved = Set(book.items.values.flatMap { $0 })
+        var stood: [ID: [String]] = [:]
 
         var built: [ItemsEntries.Section] = []
         for (number, section) in sections.enumerated() {
             var items: [String] = []
             for place in 0..<section.count {
                 let id = section.identify(place)
-                let identity: String
-                if identities[id] == nil, let earlier = kept[id] {
-                    identity = earlier
-                } else {
-                    let words = Self.words(of: id)
-                    if identities[id] != nil {
-                        complain("an ItemsView holds the same item twice, \"\(words)\"; give each its own identity")
-                    }
-                    identity = free(words, avoiding: reserved)
+                let occurrence = stood[id]?.count ?? 0
+                if occurrence > 0 {
+                    complain("an ItemsView holds the same item twice, \"\(Self.words(String(describing: id)))\"; give each its own identity")
                 }
+                let identity: String
+                if let earlier = book.items[id], earlier.indices.contains(occurrence) {
+                    identity = earlier[occurrence]
+                } else {
+                    let proposed = stood[id]?.first ?? (id as? String).map { Self.words($0) } ?? book.item()
+                    identity = free(proposed, avoiding: reserved)
+                }
+                stood[id, default: []].append(identity)
                 identities[id] = identities[id] ?? identity
                 places[identity] = .item(number, place)
                 items.append(identity)
@@ -107,31 +98,33 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         for (position, identity) in ordered.enumerated() {
             order[identity] = position
         }
-        book.identities = identities
+        book.items = stood
     }
 
-    /// Each section's name, in order: the one `book` says it stood under while its id stays on the list, else the
-    /// words of its id - of its place, where it has none - told apart from every other name, those of the build
-    /// before included. Two sections of one id are said.
+    /// Each section's token, kept by id and occurrence. An unkeyed section uses its position; every new name is
+    /// kept apart from those of the build before, including sections that are leaving.
     private func sectionNames(book: ItemsBook<ID>) -> [String] {
         let keys = sections.enumerated().map { number, section in
             section.identity ?? AnyHashable(SectionPlace(number))
         }
-        let reserved = Set(book.sections.values)
-        var stood: [AnyHashable: String] = [:]
+        let reserved = Set(book.sections.values.flatMap { $0 })
+        var stood: [AnyHashable: [String]] = [:]
         var names: [String] = []
         for (number, key) in keys.enumerated() {
-            let name: String
-            if stood[key] == nil, let earlier = book.sections[key] {
-                name = earlier
-            } else {
-                let words = sections[number].identity.map { Self.words(of: $0.base) } ?? String(number)
-                if stood[key] != nil {
-                    complain("two sections of an ItemsView share the id \"\(words)\"; give each its own")
-                }
-                name = Self.variant(of: words) { names.contains($0) || reserved.contains($0) }
+            let occurrence = stood[key]?.count ?? 0
+            if occurrence > 0 {
+                complain("two sections of an ItemsView share the id \"\(Self.words(String(describing: key.base)))\"; give each its own")
             }
-            stood[key] = stood[key] ?? name
+            let name: String
+            if let earlier = book.sections[key], earlier.indices.contains(occurrence) {
+                name = earlier[occurrence]
+            } else {
+                let proposed = stood[key]?.first ?? sections[number].identity.map {
+                    ($0.base as? String).map { Self.words($0) } ?? book.section()
+                } ?? String(number)
+                name = Self.variant(of: proposed) { names.contains($0) || reserved.contains($0) }
+            }
+            stood[key, default: []].append(name)
             names.append(name)
         }
         book.sections = stood
@@ -151,12 +144,10 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         return "\(words)\u{1D}\(variant)"
     }
 
-    /// A value's words as an identity carries them: a NUL, where a C string ends, and the list's own separators as
-    /// U+FFFD.
+    /// An authored string with NUL and the list's reserved separators replaced by U+FFFD.
     /// Design: docs/design/views/items.md#identities-in-order
-    private static func words(of value: Any) -> String {
+    private static func words(_ text: String) -> String {
         Renderer.shared.texts += 1
-        let text = String(describing: value)
         guard text.unicodeScalars.contains(where: isReserved) else { return text }
         return String(String.UnicodeScalarView(text.unicodeScalars.map { isReserved($0) ? "\u{FFFD}" : $0 }))
     }
@@ -232,17 +223,6 @@ struct ItemsEntry: View, @MainActor Equatable {
         // Chosen by identity, so held as `any View` and handed on as its node.
         AnyView(node: (source.view(for: identity) ?? VStack {}).node)
     }
-}
-
-/// What a list knows of its items across its builds: the identity each value stood under, kept while the value stays
-/// on the list - so a value keeps its identity as the order changes, whatever its words.
-/// Design: docs/design/views/items.md#identities-in-order
-final class ItemsBook<ID: Hashable> {
-    /// The identity each value stood under in the last build.
-    var identities: [ID: String] = [:]
-
-    /// The name each section stood under in the last build: by its id, by its place where it has none.
-    var sections: [AnyHashable: String] = [:]
 }
 
 /// What a section given no id is known by: its place, which no author's id equals.

@@ -233,8 +233,8 @@ public struct Node {
     /// `.vStack`, or an application's own registered type.
     public internal(set) var type: NodeType
 
-    /// Who this element is, when the author says so - `.id("row-7")` - as its patch names it. An element that
-    /// keeps its key keeps its control, with its focus, caret and scroll offset; a collection's rows need one.
+    /// The authored identity described for diagnostics, or nil where none was given. The renderer compares the
+    /// original value and assigns its host key separately; this description is not a host lookup key.
     public internal(set) var id: String? {
         get { identity.map(Self.described) }
         set { identity = newValue.map { ElementIdentity(AnyHashable($0)) } }
@@ -249,7 +249,7 @@ public struct Node {
         identity = ElementIdentity(AnyHashable(value))
     }
 
-    /// An identity as the patch names it: its description, made where an element is born.
+    /// An authored identity described for diagnostics; never used to allocate or match a host key.
     /// Design: docs/design/core/identity-and-diffing.md#keys
     static func described(_ identity: ElementIdentity) -> String {
         if let text = identity.value.base as? String { return text }

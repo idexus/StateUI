@@ -3,6 +3,7 @@
 
 import CStateUIWinUI
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
 @testable import StateUIWinUIDriver
 import StateUIConformance
@@ -115,11 +116,12 @@ final class WinUIFrameReportTests: XCTestCase {
             let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
             host.settle { !heard.values.isEmpty }
             let before = try XCTUnwrap(heard.values.last)
+            let target = try XCTUnwrap(list.cells.entries.sections.flatMap(\.items).dropFirst(5).first)
 
             // A list asked to move before its first frames are composed stays: asked until it starts moving.
             host.settle {
                 if list.standing.offset.y > 0 { return true }
-                list.scroll(to: "5", anchor: .nearest)
+                list.scroll(to: target, anchor: .nearest)
                 return false
             }
             host.settle { list.standing.offset.y == 60 && heard.values.last?[5] == before[5] - 60 }

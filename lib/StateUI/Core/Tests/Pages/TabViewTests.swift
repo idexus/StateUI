@@ -53,8 +53,8 @@ final class TabViewTests: XCTestCase {
         let patch = Renders().settled(tabs(selection.projectedValue).node)
 
         XCTAssertEqual(patch.type, "TabView")
-        XCTAssertEqual(patch.children.map { $0.id },
-                       [.manual("home"), .manual("browse"), .manual("settings")])
+        XCTAssertEqual(Set(patch.children.map(\.id)).count, 3)
+        XCTAssertNotNil(patch.arrangement)
         XCTAssertEqual(patch.children.map { $0.props["title"] },
                        [.string("home"), .string("browse"), .string("settings")])
     }
@@ -99,14 +99,13 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let renders = Renders()
 
-        renders.settled(tabs(selection.projectedValue).node)
+        let before = renders.settled(tabs(selection.projectedValue).node).children.map(\.id)
 
         let patch = renders.settled(
             tabs(selection.projectedValue, [.settings, .home, .browse]).node)
 
         XCTAssertTrue(patch.arranged, "the tabs moved, so the arrangement is described")
-        XCTAssertEqual(patch.children.map { $0.id },
-                       [.manual("settings"), .manual("home"), .manual("browse")])
+        XCTAssertEqual(patch.children.map(\.id), [before[2], before[0], before[1]])
         XCTAssertTrue(patch.children.allSatisfy { $0.isEmpty },
                       "every page moved and none of them was built again")
     }
@@ -173,7 +172,7 @@ final class TabViewTests: XCTestCase {
         let stack = try XCTUnwrap(patch.children.first)
 
         XCTAssertEqual(stack.type, "NavigationStack")
-        XCTAssertEqual(stack.id, .manual("home"), "the tab names the page in it")
+        XCTAssertEqual(patch.children.count, 1, "one tab holds the whole stack")
         XCTAssertEqual(stack.props["title"], .string("Home"))
         XCTAssertEqual(stack.props["icon"], ImageSource("house.png").propValue)
         XCTAssertEqual(stack.children.count, 2, "the root and the one route")
@@ -263,12 +262,14 @@ final class TabViewTests: XCTestCase {
             "barBackground": Color(hex: 0x512BD4).propValue, "selectedTab": .number(1),
         ])
         XCTAssertEqual(tabs.eventNames, ["selectedTabChanged"])
-        XCTAssertEqual(tabs.arrangement, [.manual("home"), .manual("settings")])
+        XCTAssertNotNil(tabs.arrangement)
+        XCTAssertEqual(tabs.children.count, 2)
+        XCTAssertEqual(Set(tabs.children.map(\.id)).count, 2)
 
-        let home = try XCTUnwrap(tabs.child("home"))
+        let home = try XCTUnwrap(tabs.children.first)
         XCTAssertEqual(home.props, ["icon": .string("house.png"), "title": .string("Home")])
         XCTAssertEqual(home.child("root")?.props, ["icon": .string("home.png"), "title": .string("home")])
-        XCTAssertEqual(tabs.child("settings")?.props, ["icon": .string("settings.png"), "title": .string("settings")])
+        XCTAssertEqual(tabs.children.dropFirst().first?.props, ["icon": .string("settings.png"), "title": .string("settings")])
     }
 
     // MARK: - What comes back

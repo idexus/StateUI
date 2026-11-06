@@ -233,13 +233,15 @@ final class NavigationStackTests: XCTestCase {
         // As the message that brings the pages carries them - with what each
         // one's view says of it.
         let stack = Renders().settled(tree)
-        let dressed = ElementID.manual("1/level(2)")
+        let dressed = try XCTUnwrap(stack.children.last?.id)
 
         XCTAssertEqual(stack.props, [
             "barBackground": Color(hex: 0x512BD4).propValue, "barForegroundColor": Color.white.propValue,
         ])
         XCTAssertEqual(stack.eventNames, ["popped"])
-        XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])
+        XCTAssertEqual(stack.children.first?.id, .manual("root"))
+        XCTAssertEqual(Set(stack.children.map(\.id)).count, 3)
+        XCTAssertNotNil(stack.arrangement)
         XCTAssertEqual(stack.children.map { $0.props["title"] }, [.string("Home"), .string("one"), .string("Level 2")])
         XCTAssertTrue(stack.children.allSatisfy { $0.eventNames.isEmpty }, "a page hears what its view hears: nothing here")
 

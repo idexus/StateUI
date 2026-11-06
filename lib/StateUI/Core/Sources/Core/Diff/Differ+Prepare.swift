@@ -42,6 +42,9 @@ extension Differ {
     /// events and driven states - everything but its children.
     @inline(never)
     func prepare(_ pass: ElementPass) {
+        if let identity = pass.identity, [.menu, .menuItem, .menuToggle].contains(pass.node.type) {
+            pass.menuKey = menuKeys.key(for: identity)
+        }
         let (id, rendered, sizesArrive) = (pass.id, pass.rendered, pass.sizesArrive)
         var node = pass.node
         defer { pass.node = node }

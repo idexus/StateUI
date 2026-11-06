@@ -17,8 +17,8 @@
 /// lives while the item stays near what the platform holds. The platform scrolls, reuses its cells, lets
 /// the user choose and open items, and tells assistive technology about them.
 ///
-/// An item is known by its identity's value, named by `String(describing:)`
-/// of it; each value stands once in a list.
+/// An item is known by its identity's value, independently of its description;
+/// each value stands once in a list. The host receives a token the list keeps for that value.
 public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The items, their identities and their views - one source a build.
     private var source: ItemsSource<ID>

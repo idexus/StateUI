@@ -428,8 +428,8 @@ typedef struct {
     /// An ItemsView put the cell of the panel `cell` names aside.
     void (*itemLetGo)(int64_t view, int64_t cell);
 
-    /// The user changed an ItemsView's choice: every item chosen now, their identities joined by newlines.
-    void (*itemsChose)(int64_t view, char const *identities);
+    /// The user changed an ItemsView's choice: every identity chosen now, each string borrowed until return.
+    void (*itemsChose)(int64_t view, int32_t count, char const *const *identities);
 
     /// The user invoked an ItemsView's item.
     void (*itemInvoked)(int64_t view, char const *identity);
@@ -1164,8 +1164,11 @@ void stateui_winui_items_scroll_to(StateUIObjectRef items, int32_t index, int32_
 /// The ItemsView left: nothing waits, and every cell is let go.
 void stateui_winui_items_release(StateUIObjectRef items);
 
-/// What a test reads: the identities the list holds chosen, joined by newlines; the length it needs.
-int32_t stateui_winui_items_chosen(StateUIObjectRef items, char *utf8, int32_t capacity);
+/// What a test reads: how many identities the list holds chosen, including an empty identity.
+int32_t stateui_winui_items_chosen_count(StateUIObjectRef items);
+
+/// The chosen identity at `index`, written as UTF-8; the length it needs.
+int32_t stateui_winui_items_chosen_at(StateUIObjectRef items, int32_t index, char *utf8, int32_t capacity);
 
 /// What a test reads: how many items the user may choose, as `set_choice` numbers it.
 int32_t stateui_winui_items_mode(StateUIObjectRef items);

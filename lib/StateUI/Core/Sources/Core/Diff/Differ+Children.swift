@@ -136,7 +136,7 @@ extension Differ {
 
         let candidate = rendered[index]
 
-        guard case .auto = candidate.id, !claimed.contains(candidate.id) else {
+        guard candidate.identity == nil, case .auto = candidate.id, !claimed.contains(candidate.id) else {
             return nil
         }
 

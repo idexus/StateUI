@@ -30,6 +30,8 @@ extension Differ {
         )
         result.contentAim = node.aim
         result.identity = pass.identity
+        result.menuKey = pass.menuKey
+        if pass.patch.fresh || pass.patch.replace { pass.patch.menuKey = pass.menuKey?.host }
         result.expanded = pass.expanded
         result.refused = pass.refused
         result.enablement = pass.enablement

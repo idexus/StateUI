@@ -11,9 +11,9 @@ extension Aim {
         try await call(ItemsViewContract.scrollTo, try identity(of: item), anchor)
     }
 
-    /// The identity the list wrote for `item`; before the list is built, its words.
+    /// The token the live list wrote for `item`; no described identity is a substitute for a missing target.
     private func identity<ID>(of item: ID) throws -> String where Target == ItemsView<ID> {
-        guard let resolves = box.resolves else { return String(describing: item) }
+        guard let resolves = box.resolves else { throw StateUIError.aimOnNoView }
         guard let identity = resolves(item).first else {
             throw StateUIError.noItem("\(item)")
         }

@@ -33,6 +33,9 @@
     /// The properties the patches described.
     public private(set) var properties: [Prop: HostValue] = [:]
 
+    /// The semantic key a menu or entry composes by across page levels, separate from its scoped element id.
+    public private(set) var menuKey: HostMenuKey?
+
     /// The properties bound to states, by property.
     public private(set) var driven: [Prop: HostStateBinding] = [:]
 
@@ -144,6 +147,7 @@
         Self.liveCount += 1
         id = patch.id
         type = patch.type
+        menuKey = patch.menuKey
         self.tree = tree
         self.parent = parent
         mount = tree.allocateMount()
@@ -204,6 +208,7 @@
     /// The patch's own values taken: its properties, events, driven states and motion, before its children.
     @inline(never)
     private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
+        if let key = patch.menuKey { menuKey = key }
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
 

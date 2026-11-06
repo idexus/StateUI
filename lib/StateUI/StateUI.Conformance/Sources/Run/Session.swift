@@ -75,14 +75,23 @@
 
     /// The element the page gave the id `id`.
     /// - Throws: where the page holds none.
-    public func element(_ id: some Hashable) throws -> MountedElement {
-        let key = ElementID.manual(String(describing: id))
-        guard let element = tree?.root?.first(id: key) else { throw Missing(id: String(describing: id)) }
+    public func element(_ id: String) throws -> MountedElement {
+        let key = ElementID.manual(id)
+        guard let element = tree?.root?.first(id: key) else { throw Missing(id: id) }
+        return element
+    }
+
+    /// The control an aim identifies, whatever its authored identity's type.
+    /// - Throws: where the aim names no control in the mounted tree.
+    public func element<Target>(_ aim: Aim<Target>) throws -> MountedElement {
+        guard let place = aim.place, let element = tree?.root?.element(at: place) else {
+            throw Missing(id: aim.description)
+        }
         return element
     }
 
     /// Whether the element the page gave the id `id` stands shown; not where the page holds none.
-    public func isShown(_ id: some Hashable) throws -> Bool {
+    public func isShown(_ id: String) throws -> Bool {
         guard let shown = try? element(id) else { return false }
         return try held(VisualElementContract.isVisible, on: shown) == true
     }

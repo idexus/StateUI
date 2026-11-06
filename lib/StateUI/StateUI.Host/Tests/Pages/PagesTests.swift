@@ -1105,13 +1105,17 @@ final class PagesTests: XCTestCase {
     }
 
     /// A menu captioned `text`.
-    private func menu(_ id: String, _ text: String, _ entries: [HostPatch]) -> HostPatch {
-        node(id, .menu, [.text: .string(text)], children: entries)
+    private func menu(_ id: String, _ text: String, _ entries: [HostPatch], key: HostMenuKey? = nil) -> HostPatch {
+        var patch = node(id, .menu, [.text: .string(text)], children: entries)
+        patch.menuKey = key ?? .name(id)
+        return patch
     }
 
     /// An entry captioned `text`, one that can be chosen unless said otherwise.
     private func menuItem(_ id: String, _ text: String, enabled: Bool = true) -> HostPatch {
-        node(id, .menuItem, [.text: .string(text), .isEnabled: .bool(enabled)])
+        var patch = node(id, .menuItem, [.text: .string(text), .isEnabled: .bool(enabled)])
+        patch.menuKey = .name(id)
+        return patch
     }
 
     /// How a composed menu bar reads: each menu's caption and its entries, "!" before one that cannot be chosen and
@@ -1189,7 +1193,7 @@ final class PagesTests: XCTestCase {
     /// A menu whose `.id` is a standard menu joins the platform's by that identity, never by its caption.
     func testAStandardMenuIsKnownByItsIdentity() throws {
         let runtime = runtime(node("page", .page, children: [menuBar("bar", [
-            menu(StandardMenu.file.description, "Plik", [menuItem("export", "Eksportuj")]),
+            menu(StandardMenu.file.description, "Plik", [menuItem("export", "Eksportuj")], key: .standard(.file)),
             menu("file", "File", [menuItem("other", "Other")]),
         ])])) { _ in }
 
@@ -1202,7 +1206,7 @@ final class PagesTests: XCTestCase {
     /// application's entries stand after them; another menu is as the path composes it.
     func testAnEditMenuIsHeadedByItsOwnEntriesWhereAHostKeepsThem() throws {
         let runtime = runtime(node("page", .page, children: [menuBar("bar", [
-            menu(StandardMenu.edit.description, "Edit", [menuItem("find", "Find")]),
+            menu(StandardMenu.edit.description, "Edit", [menuItem("find", "Find")], key: .standard(.edit)),
             menu("file", "File", [menuItem("open", "Open")]),
         ])])) { _ in }
         let words = EditWords(

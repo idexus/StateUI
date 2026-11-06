@@ -36,6 +36,12 @@ back into the window - its tab chosen again - so the handlers hang on each
 scroller once, or every return would add a pair and tell the same view again
 for each.
 
+The relay carries the choice as a count and an array of strings: an empty
+identity still occupies one entry, and a line feed is part of its identity.
+Native strings own the callback's pointers until it returns; Swift copies
+the strings in that callback. Reading the native choice uses its count and
+one identity at each index, through the same boundary without separators.
+
 ## Its room
 
 WinUI's `ScrollView`, the one an `ItemsView` holds, takes its viewport from

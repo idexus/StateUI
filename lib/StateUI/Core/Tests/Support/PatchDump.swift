@@ -51,6 +51,8 @@ enum PatchDump {
         if case .arranged(let children) = patch.children { head += " arranged(\(children.count))" }
         out += head + "\n"
 
+        if let key = patch.menuKey { out += indent + "  menuKey: \(key)\n" }
+
         for key in patch.properties.keys.sorted() {
             out += indent + "  \(key.name): \(line(for: patch.properties[key]!, under: key.name, in: patch.type))\n"
         }
