@@ -6,12 +6,13 @@ and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
 Six hosts are active - AppKit, UIKit, Android Views, WinUI 3, GTK 4 and the
-Web - each Swift, in the application's own process. The supported setup is a
-StateUI checkout: each host is a sibling Swift package whose manifest uses a
-local dependency on the repository root. No host has a published package route
-yet, so an application outside the checkout sits in a
-[project group](editors/VSCode/README.md#a-project-group) that builds with a
-checkout on disk.
+Web - each Swift, in the application's own process. Install StateUI as a
+complete checkout: a release tag for a released application, or a local
+development checkout. Each host is a sibling Swift package whose manifest uses
+a local dependency on the repository root. An application outside the checkout
+lives in a [project group](editors/VSCode/README.md#a-project-group): the group clones a
+release into its `StateUI/` directory or names an existing checkout. The library,
+the selected host, and any backends are built from that same checkout.
 
 ## Requirements
 
@@ -94,6 +95,14 @@ which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 
 ```bash
 .scripts/new-app.sh Notes
+```
+
+Test it, then build its AppKit head from the same repository root:
+
+```bash
+swift test --package-path apps/Notes
+STATEUI_HOST=appkit swift build --package-path apps/Notes \
+  --scratch-path apps/Notes/.build/appkit --product NotesAppKit
 ```
 
 ## Application shape

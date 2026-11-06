@@ -537,10 +537,17 @@ in is being built.
 
 The repository-root `Package.swift` is the package boundary for the
 platform-neutral `StateUI` product. Native hosts remain sibling packages so a
-consumer selects a toolkit without pulling it into the core. Every host
-package uses the root checkout as a local dependency; the complete remote
-library-plus-host installation path is not published yet. Keep Getting Started
-honest about that state until both products have a supported versioned route.
+consumer selects a toolkit without pulling it into the core. The supported
+installation is a complete checkout of a release tag or a local development
+tree. Each host and backend uses the root checkout as a local dependency, and
+`StateUI.Head` selects the application's host. A
+[project group](editors/VSCode/README.md#a-project-group)
+keeps applications outside the checkout while naming it by path; it uses the
+checkout's build scripts too.
+
+Every native head and its host link the same dynamic `StateUI` product, so one
+process holds one runtime. The Web build compiles the application, StateUI and
+its host into one WebAssembly module.
 
 A release has one version, stated in the editor extension's
 `editors/VSCode/package.json`. Every other place that names it - the
