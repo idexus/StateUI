@@ -117,9 +117,10 @@ final class CompleteContractTests: XCTestCase {
     // MARK: - The platform contract
 
     /// Every name a row of the platform contract's tables uses is in the
-    /// contract - a node type, a member, a handler's `on…` spelling of an
-    /// event member - or one of the core view members the hand-written table
-    /// names, each listed here with what it is.
+    /// contract - a node type, a member, the `on…` modifier an event member is
+    /// heard through (`onSelectionChanged` hears `selectedIndexChanged`) - or one
+    /// of the core view members the hand-written table names, each listed here
+    /// with what it is.
     func testEveryNameThePlatformContractsTablesUseIsInTheContract() throws {
         let document = try Self.platformContract()
         let sections = ["## Control creation", "## Host acts", "## Shared view members", "## Contract members"]
@@ -134,11 +135,12 @@ final class CompleteContractTests: XCTestCase {
         let types = Set(LibraryContracts.elements.map { $0.nodeType.name })
         let members = Set(declared.map(\.member.name))
         let events = names(of: .event)
+        let heardThrough = Set(try ControlDictionary.handlerSpellings().values.flatMap { $0 })
         var stranger: [String] = []
 
         for section in sections {
             for name in Self.backticked(inTableOf: section, in: document).sorted() {
-                let handler = name.hasPrefix("on") && name.count > 2
+                let handler = heardThrough.contains(name) || name.hasPrefix("on") && name.count > 2
                     && events.contains(name.dropFirst(2).prefix(1).lowercased() + name.dropFirst(3))
                 if !types.contains(name) && !members.contains(name) && !handler && !coreAPI.contains(name) {
                     stranger.append("\(section): `\(name)`")
