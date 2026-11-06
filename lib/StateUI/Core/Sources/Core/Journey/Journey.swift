@@ -19,7 +19,7 @@
 /// The state's own value is the destination: reading it answers where the value
 /// is going, writing it sends it there. The host animates a state handed to a
 /// driven modifier, a two-way control or a scroller; an engine of your own
-/// animates one declared `@State(motion: .custom)`; a state nobody wears lands
+/// animates one declared `@State(animatedBy: .engine)`; a state nobody wears lands
 /// where it is sent. A part of a state has none: a journey is a whole state's.
 @MainActor
 public struct Journey<Value: Walked> {
@@ -123,21 +123,21 @@ public struct Journey<Value: Walked> {
     ///     $rotation.journey.motion = .spring()
     ///
     /// On the value rather than the view: `.motion(_:)` says how an element animates,
-    /// this says how this value does. `.inherited` is the element's own. `.custom` is
-    /// not set here: who animates a value is settled at its declaration. A law given to
-    /// `move(to:_:)` is that move's alone and leaves this one standing.
+    /// this says how this value does. `.inherited` is the element's own. A state an
+    /// engine animates answers `.none` - the host lays each value the engine writes at
+    /// once - and takes no law. A law given to `move(to:_:)` is that move's alone and
+    /// leaves this one standing.
     public var motion: Motion {
         get {
             _ = lanes()
-            return storage.law
+            return storage.law.kind == .custom ? .none : storage.law
         }
 
         nonmutating set {
             guard HandlerRun.admits("a journey's law") else { return }
-            guard newValue.kind != .custom, storage.law.kind != .custom else {
-                complain("`\(storage.origin ?? "a state")` was given a law after it was declared "
-                    + "that would change who walks it. `.custom` is said at the declaration - "
-                    + "`@State(motion: .custom)` - and a value declared so keeps it.")
+            guard storage.law.kind != .custom else {
+                complain("`\(storage.origin ?? "a state")` was given a law, but an engine animates it - "
+                    + "`@State(animatedBy: .engine)` - and the host is not told again who does.")
                 return
             }
 
@@ -178,7 +178,7 @@ public struct Journey<Value: Walked> {
     ///     try await sliding.arrived()
     ///
     /// Where nothing wears the state yet, or an engine of the application's animates
-    /// it (`.custom`), it arrives at once; already there, or where the user asked for
+    /// it (`@State(animatedBy: .engine)`), it arrives at once; already there, or where the user asked for
     /// less motion, it arrives on the host's next frame. A law given here is this move's
     /// alone: the next write that names none travels under the value's own.
     ///

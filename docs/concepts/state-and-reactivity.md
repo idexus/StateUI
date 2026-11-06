@@ -628,7 +628,7 @@ cycle whether it has more to do - a spring, a stopwatch:
 
 ```swift
 struct SpringDot: View {
-    @State(motion: .custom) private var y = 0.0
+    @State(animatedBy: .engine) private var y = 0.0
 
     var body: some View {
         VStack {
@@ -693,7 +693,7 @@ An engine that always returns `.again` keeps the display clock active. Return
 `.wait` as soon as no visible work remains. Every engine that draws movement
 must make an explicit reduced-motion decision.
 
-Use `@State(motion: .custom)` only when the engine owns the journey. Ordinary
+Use `@State(animatedBy: .engine)` only when the engine owns the journey. Ordinary
 motion laws remain the host's responsibility and need no custom engine.
 
 ## Related contracts

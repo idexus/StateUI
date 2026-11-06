@@ -298,14 +298,14 @@ final class JourneyTests: XCTestCase {
                        "and a stated law is read before any cycle has run")
     }
 
-    /// `.custom` HANDS THE WALK TO AN ENGINE ON THIS SIDE. A write moves the
+    /// A STATE AN ENGINE ANIMATES IS WALKED ON THIS SIDE. A write moves the
     /// destination alone - whoever wears the state or not - and the value
     /// stays where the engine left it; the engine's own write to the value is
     /// what moves the screen. In the patch the host is handed `.none` and a
     /// destination that is wherever the engine wrote the value, so it wears
     /// every frame as it comes and walks nothing.
-    func testACustomLawLeavesTheValueToTheEngine() throws {
-        let ball = State(wrappedValue: 0.0, motion: .custom)
+    func testAStateAnEngineAnimatesLeavesTheValueToTheEngine() throws {
+        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
         let journey = ball.projectedValue.journey
         let renders = Renders()
 
@@ -333,32 +333,30 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(law(crossing: image), Motion.none, "the host is told not to walk")
         XCTAssertEqual(StateImage.lane(0, of: crossed), 40, "and where the engine put the value")
         XCTAssertEqual(StateImage.lane(1, of: crossed), 40, "is where it is told the value is going")
-        XCTAssertEqual(journey.motion, .custom, "while the image itself goes on saying whose the walk is")
+        XCTAssertEqual(journey.motion, Motion.none, "the law the host walks it under")
+        XCTAssertEqual(law(publishedBy: image), .custom, "while the image itself goes on saying whose the walk is")
     }
 
-    /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: `.custom` cannot be
-    /// written onto a walking value, and a value declared `.custom` is not
-    /// given the host's law later, because the host was told at the first
-    /// crossing and cannot be told again.
-    func testTheWalkerIsNotChangedAfterTheDeclaration() {
-        let hosted = State(wrappedValue: 0.0)
-        let own = State(wrappedValue: 0.0, motion: .custom)
-
-        _ = hosted.projectedValue.journeyImage
-        _ = own.projectedValue.journeyImage
-
-        hosted.projectedValue.journey.motion = .custom
-        XCTAssertEqual(hosted.projectedValue.journey.motion, .inherited, "refused, and said")
+    /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: a state an engine
+    /// animates is not given the host's law later, because the host was told
+    /// at the first crossing and cannot be told again. No law says an engine:
+    /// the declaration does.
+    func testTheWalkerIsNotChangedAfterTheDeclaration() throws {
+        let own = State(wrappedValue: 0.0, animatedBy: .engine)
+        let renders = Renders()
+        renders.render(Rectangle().translationY(own.projectedValue).node)
+        let image = try XCTUnwrap(own.projectedValue.journeyImage)
 
         own.projectedValue.journey.motion = .spring()
-        XCTAssertEqual(own.projectedValue.journey.motion, .custom, "refused the other way too")
+        XCTAssertEqual(own.projectedValue.journey.motion, Motion.none, "refused, and said")
+        XCTAssertEqual(law(publishedBy: image), .custom, "the engine still animates it")
     }
 
-    /// A `move` awaited on a `.custom` value writes the destination and answers
-    /// at once: the walk is the engine's, and the engine is the only one that
-    /// knows when it is done.
-    func testAMoveUnderACustomLawAnswersAtOnce() throws {
-        let ball = State(wrappedValue: 0.0, motion: .custom)
+    /// A `move` awaited on a state an engine animates writes the destination
+    /// and answers at once: the walk is the engine's, and the engine is the
+    /// only one that knows when it is done.
+    func testAMoveOfAStateAnEngineAnimatesAnswersAtOnce() throws {
+        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
         let binding = ball.projectedValue
         let renders = Renders()
 
@@ -431,6 +429,13 @@ final class JourneyTests: XCTestCase {
     }
 
     /// The law lying in a crossing's bytes, read the way the host reads it.
+    /// The law the image itself holds, before its crossing resolves it.
+    private func law(publishedBy image: HostStorage) -> Motion? {
+        guard let door = image.door, let at = StateLaw.within(door, lanes: image.published.count / 8) else { return nil }
+
+        return StateLaw.motion(of: (0..<StateLaw.lanes).map { StateImage.lane(at + $0, of: image.published) })
+    }
+
     private func law(crossing image: HostStorage) -> Motion? {
         let bytes = image.crossing()
 

@@ -41,6 +41,7 @@ DragAndDropSample.swift f37d18b6b90465c5
 DrawnAwaySample.swift 7b9524abf7e874ab
 DrivenReadingSample.swift d5a729eee3b3aade
 DrivenSample.swift 0fdb09b8eedbaae5
+EngineAnimationSample.swift 130db00e37e60478
 EngineSample.swift d5a3e7207bb60bac
 EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 17e54d707dd19245

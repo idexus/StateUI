@@ -114,6 +114,7 @@ final class Catalog {
                 Sample(BoundPropertiesSample()),
                 Sample(DrivenSample()),
                 Sample(EngineSample()),
+                Sample(EngineAnimationSample()),
                 Sample(DrivenReadingSample()),
             ])
     }

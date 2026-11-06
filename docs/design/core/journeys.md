@@ -65,7 +65,7 @@ the host is told at the first crossing and cannot be told again.
 ```text
   handed to a driven modifier, a two-way control or a scroller
       -> the HOST animates it and writes value and velocity back every frame
-  @State(motion: .custom)
+  @State(animatedBy: .engine)
       -> an engine of the application's writes value and velocity
   worn by no live element (no tie, number or not)
       -> nothing animates it: a write lands at the destination at once

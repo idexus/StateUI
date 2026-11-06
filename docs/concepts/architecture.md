@@ -258,7 +258,8 @@ same; only the animation is shortened or removed.
 
 ## Custom engines
 
-`Motion.custom` gives the walk to StateUI code. An engine runs inside the host
+A state declared `@State(animatedBy: .engine)` gives the walk to StateUI
+code. An engine runs inside the host
 display cycle and reads and writes state. An engine declared with
 `.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
 until a tracked state is written; one declared with `.engine(following:)` runs
@@ -267,7 +268,7 @@ writes came - and once after each render that describes its view.
 
 ```swift
 struct FallingDot: View {
-    @State(motion: .custom) private var y = 0.0
+    @State(animatedBy: .engine) private var y = 0.0
 
     var body: some View {
         VStack {

@@ -58,6 +58,9 @@ swift.conformance Alignment: Swift.Hashable
 swift.conformance Alignment: Swift.RawRepresentable
 swift.conformance Alignment: Swift.Sendable
 swift.conformance AnchorContract: Swift.Sendable
+swift.conformance AnimationOwner: Swift.Equatable
+swift.conformance AnimationOwner: Swift.Hashable
+swift.conformance AnimationOwner: Swift.Sendable
 swift.conformance AnyStyle: Swift.Sendable
 swift.conformance AnyView: StateUI.View
 swift.conformance AnyView: StateUI.Views
@@ -825,6 +828,7 @@ swift.enum ActionElementContract: enum ActionElementContract
 swift.enum ActionRole: enum ActionRole
 swift.enum Alignment: enum Alignment
 swift.enum AnchorContract: enum AnchorContract
+swift.enum AnimationOwner: enum AnimationOwner
 swift.enum ApplicationBuilder: @MainActor @resultBuilder enum ApplicationBuilder
 swift.enum ApplicationContract: enum ApplicationContract
 swift.enum Area: enum Area
@@ -1021,6 +1025,7 @@ swift.enum.case Alignment.end: case end
 swift.enum.case Alignment.fill: case fill
 swift.enum.case Alignment.firstBaseline: case firstBaseline
 swift.enum.case Alignment.start: case start
+swift.enum.case AnimationOwner.engine: case engine
 swift.enum.case Area.absolute(_:): case absolute(Rect)
 swift.enum.case Area.proportional(_:): case proportional(Rect)
 swift.enum.case BatteryPowerSource.ac: case ac
@@ -1447,6 +1452,7 @@ swift.init State.init(_:): @MainActor convenience init(_ initialValue: @autoclos
 swift.init State.init(_:): @MainActor convenience init(_ initialValue: Value)
 swift.init State.init(wrappedValue:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value)
 swift.init State.init(wrappedValue:): @MainActor convenience init(wrappedValue: Value)
+swift.init State.init(wrappedValue:animatedBy:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, animatedBy owner: AnimationOwner)
 swift.init State.init(wrappedValue:motion:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, motion: Motion)
 swift.init State.init(wrappedValue:persistentKey:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, persistentKey key: PersistentKey<Value>)
 swift.init State.init(wrappedValue:sceneKey:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, sceneKey key: SceneKey<Value>)
@@ -13748,7 +13754,6 @@ swift.type.property MenuSeparatorContract.name: static var name: String { get }
 swift.type.property MenuToggleContract.isOn: static let isOn: ElementProperty<MenuToggleContract, Bool>
 swift.type.property MenuToggleContract.name: static var name: String { get }
 swift.type.property MenuToggleContract.toggled: static let toggled: ElementEvent<MenuToggleContract, Bool>
-swift.type.property Motion.custom: static let custom: Motion
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion

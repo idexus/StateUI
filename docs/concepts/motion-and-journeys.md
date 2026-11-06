@@ -23,12 +23,15 @@ still apply the final destination, normally by snapping. Only checked rows in
   destination, as long as that speed takes to get there and no longer than
   `longest` - what a value thrown by the hand goes on with.
 
-Three special values select ownership:
+Two values name no timing:
 
 - `.inherited` resolves through the value or element, the application default,
   and finally `Motion.standard`;
-- `.none` snaps to the destination;
-- `.custom` leaves the walk to a StateUI engine attached to the state.
+- `.none` snaps to the destination.
+
+A state an engine of the application's animates says so where it is
+declared, `@State(animatedBy: .engine)`, not by a motion
+([Custom engines](#custom-engines)).
 
 `Motion.standard` is a 200-millisecond cubic-out movement. Reduced-motion input
 may shorten or remove an animation, but never changes its destination.
@@ -278,8 +281,9 @@ shows verified host support.
 
 ## Custom engines
 
-`@State(motion: .custom)` fixes who animates the state when it is first
-registered. An engine reads destination, standing value, velocity, and frame
+`@State(animatedBy: .engine)` - the one `AnimationOwner` - fixes who animates
+the state when it is first registered: an engine of the application's, and no law can be given to it
+later. An engine reads destination, standing value, velocity, and frame
 timing, and writes the next standing lanes. One declared with
 `.engine(tracking:)` returns `.again` while it needs another frame or `.wait`
 until a tracked state is written; one declared with `.engine(following:)` runs

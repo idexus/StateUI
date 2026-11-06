@@ -3161,6 +3161,48 @@ enum Listings {
                 .onClicked(act)
         }
         """#,
+        "EngineAnimationSample": #"""
+        // Sources/Samples/Driven/EngineAnimationSample.swift
+        /// Where the dot is going - and, frame by frame, where the engine has it.
+        @State(animatedBy: .engine) private var offset = 0.0
+
+        var body: some View {
+            VStack {
+                Ellipse()
+                    .fill(Palette.accent)
+                    .width(32)
+                    .height(32)
+                    .translationX($offset)
+                    .horizontalAlignment(.center)
+
+                HStack {
+                    Button("Left").onClicked { offset = -120 }
+                    Button("Center").onClicked { offset = 0 }
+                    Button("Right").onClicked { offset = 120 }
+                }
+                .horizontalAlignment(.center)
+            }
+            .engine(tracking: $offset) { cycle in
+                let journey = $offset.journey
+
+                // With less motion the dot lands where it is sent.
+                guard !cycle.reducesMotion else {
+                    journey.snap(to: journey.destination)
+                    return .wait
+                }
+
+                // A spring towards the destination, damped by the speed.
+                let seconds = cycle.elapsed / 1000
+                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
+                journey.velocity += pull * seconds
+                journey.value += journey.velocity * seconds
+
+                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
+                journey.snap(to: journey.destination)
+                return .wait
+            }
+        }
+        """#,
         "EngineSample": #"""
         // Sources/Samples/Driven/EngineSample.swift
         /// The reading as it stood when Lap was last pressed - ORDINARY state, so

@@ -287,6 +287,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Button>().tooltip(State(wrappedValue: "Saves").projectedValue)"#,
             open: #"_ = Button("Save").tooltip(State(wrappedValue: "Saves").projectedValue)"#),
         Road(
+            name: "an engine said by a motion",
+            closed: #"_ = State(wrappedValue: 0.0, motion: .custom)"#,
+            open: #"_ = State(wrappedValue: 0.0, animatedBy: .engine)"#),
+        Road(
             name: "a control's value given by a style",
             closed: #"_ = Style<Slider>().value(0.5)"#,
             open: #"_ = Slider().value(0.5)"#),
