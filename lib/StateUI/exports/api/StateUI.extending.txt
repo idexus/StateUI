@@ -186,6 +186,8 @@ swift.conformance ControlChild: Swift.Equatable
 swift.conformance ControlChild: Swift.Hashable
 swift.conformance ControlReports: Swift.Sendable
 swift.conformance CornerRadius: StateUI.HostRepresentable
+swift.conformance CornerRadius: Swift.Equatable
+swift.conformance CornerRadius: Swift.Sendable
 swift.conformance CorneredShape: StateUI.AutomationElement
 swift.conformance CorneredShape: StateUI.CorneredShapeProperties
 swift.conformance CorneredShape: StateUI.Element
@@ -461,6 +463,10 @@ swift.conformance KeyboardElement: StateUI.VisualElement
 swift.conformance KeyboardElement: StateUI.VisualElementProperties
 swift.conformance KeyboardElementContract: StateUI.Contract
 swift.conformance KeyboardShortcut: StateUI.HostRepresentable
+swift.conformance KeyboardShortcut: Swift.CustomStringConvertible
+swift.conformance KeyboardShortcut: Swift.Equatable
+swift.conformance KeyboardShortcut: Swift.Hashable
+swift.conformance KeyboardShortcut: Swift.Sendable
 swift.conformance LaneKind: Swift.Equatable
 swift.conformance LaneKind: Swift.Hashable
 swift.conformance LaneKind: Swift.Sendable
@@ -592,6 +598,12 @@ swift.conformance ModifiedContent: StateUI.PropertyContainer
 swift.conformance ModifiedContent: StateUI.ViewProperties
 swift.conformance ModifiedContent: StateUI.VisualElement
 swift.conformance ModifiedContent: StateUI.VisualElementProperties
+swift.conformance MotionLanes: Swift.Equatable
+swift.conformance MotionLanes: Swift.ExpressibleByArrayLiteral
+swift.conformance MotionLanes: Swift.OptionSet
+swift.conformance MotionLanes: Swift.RawRepresentable
+swift.conformance MotionLanes: Swift.Sendable
+swift.conformance MotionLanes: Swift.SetAlgebra
 swift.conformance MotionLayout: StateUI.AutomationElement
 swift.conformance MotionLayout: StateUI.Element
 swift.conformance MotionLayout: StateUI.ModifiableElement
@@ -654,6 +666,10 @@ swift.conformance Path: StateUI.VisualElement
 swift.conformance Path: StateUI.VisualElementProperties
 swift.conformance PathContract: StateUI.Contract
 swift.conformance PathContract: StateUI.ElementContract
+swift.conformance PersistentKind: Swift.Equatable
+swift.conformance PersistentKind: Swift.Hashable
+swift.conformance PersistentKind: Swift.RawRepresentable
+swift.conformance PersistentKind: Swift.Sendable
 swift.conformance Picker: StateUI.AutomationElement
 swift.conformance Picker: StateUI.Element
 swift.conformance Picker: StateUI.ElementView
@@ -828,6 +844,10 @@ swift.conformance SearchFieldContract: StateUI.Contract
 swift.conformance SearchFieldContract: StateUI.ElementContract
 swift.conformance SearchFieldProperties: StateUI.PropertyContainer
 swift.conformance SelectionMode: StateUI.HostRepresentable
+swift.conformance SelectionMode: Swift.Equatable
+swift.conformance SelectionMode: Swift.Hashable
+swift.conformance SelectionMode: Swift.RawRepresentable
+swift.conformance SelectionMode: Swift.Sendable
 swift.conformance Separator: StateUI.AutomationElement
 swift.conformance Separator: StateUI.Element
 swift.conformance Separator: StateUI.ElementView
@@ -1349,6 +1369,8 @@ swift.conformance WebViewContract: StateUI.Contract
 swift.conformance WebViewContract: StateUI.ElementContract
 swift.conformance WebViewProperties: StateUI.PropertyContainer
 swift.conformance WebViewSource: StateUI.HostRepresentable
+swift.conformance WebViewSource: Swift.Equatable
+swift.conformance WebViewSource: Swift.Sendable
 swift.conformance WindowContract: StateUI.Contract
 swift.conformance WindowContract: StateUI.ElementContract
 swift.conformance ZStack: StateUI.AutomationElement
@@ -1366,13 +1388,19 @@ swift.conformance ZStack: StateUI.VisualElement
 swift.conformance ZStack: StateUI.VisualElementProperties
 swift.conformance ZStackContract: StateUI.Contract
 swift.conformance ZStackContract: StateUI.ElementContract
+swift.enum CornerRadius: enum CornerRadius
 swift.enum ElementLayer: enum ElementLayer
 swift.enum HostEvents: @MainActor enum HostEvents
 swift.enum LaneKind: enum LaneKind
+swift.enum PersistentKind: enum PersistentKind
 swift.enum PropValue: enum PropValue
+swift.enum SelectionMode: enum SelectionMode
 swift.enum StateCarried: enum StateCarried
 swift.enum StateKind: enum StateKind
 swift.enum StateMode: enum StateMode
+swift.enum WebViewSource: enum WebViewSource
+swift.enum.case CornerRadius.corners(topLeft:topRight:bottomLeft:bottomRight:): case corners(topLeft: Double, topRight: Double, bottomLeft: Double, bottomRight: Double)
+swift.enum.case CornerRadius.uniform(_:): case uniform(Double)
 swift.enum.case ElementLayer.adaptive: case adaptive
 swift.enum.case ElementLayer.native: case native
 swift.enum.case ElementLayer.provider: case provider
@@ -1383,6 +1411,10 @@ swift.enum.case LaneKind.choice: case choice
 swift.enum.case LaneKind.color: case color
 swift.enum.case LaneKind.material: case material
 swift.enum.case LaneKind.number: case number
+swift.enum.case PersistentKind.boolean: case boolean
+swift.enum.case PersistentKind.integer: case integer
+swift.enum.case PersistentKind.number: case number
+swift.enum.case PersistentKind.text: case text
 swift.enum.case PropValue.bool(_:): case bool(Bool)
 swift.enum.case PropValue.bytes(_:): case bytes([UInt8])
 swift.enum.case PropValue.color(red:green:blue:alpha:): case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
@@ -1396,6 +1428,9 @@ swift.enum.case PropValue.strings(_:): case strings([String])
 swift.enum.case PropValue.systemColor(_:alpha:): case systemColor(Int32, alpha: UInt8)
 swift.enum.case PropValue.themed(light:dark:): indirect case themed(light: PropValue, dark: PropValue)
 swift.enum.case PropValue.values(_:): case values([PropValue])
+swift.enum.case SelectionMode.multiple: case multiple
+swift.enum.case SelectionMode.none: case none
+swift.enum.case SelectionMode.single: case single
 swift.enum.case StateCarried.lanes(_:): case lanes([Double])
 swift.enum.case StateCarried.text(_:): case text(String)
 swift.enum.case StateKind.feed: case feed
@@ -1406,6 +1441,8 @@ swift.enum.case StateKind.text: case text
 swift.enum.case StateMode.in: case `in`
 swift.enum.case StateMode.inOut: case inOut
 swift.enum.case StateMode.out: case out
+swift.enum.case WebViewSource.address(_:): case address(String)
+swift.enum.case WebViewSource.html(_:baseAddress:): case html(String, baseAddress: String?)
 swift.func.op ControlChild.==(_:_:): static func == (lhs: ControlChild<Child>, rhs: ControlChild<Child>) -> Bool
 swift.func.op Event.<(_:_:): static func < (lhs: Event, rhs: Event) -> Bool
 swift.func.op NodeType.<(_:_:): static func < (lhs: NodeType, rhs: NodeType) -> Bool
@@ -1514,6 +1551,7 @@ swift.init ItemsLayout.init(propValue:): init?(propValue: PropValue)
 swift.init Key.init(propValue:): init?(propValue: PropValue)
 swift.init KeyModifiers.init(propValue:): init?(propValue: PropValue)
 swift.init KeyModifiers.init(rawValue:): init(rawValue: Int32)
+swift.init KeyboardShortcut.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = .primary)
 swift.init KeyboardShortcut.init(propValue:): init?(propValue: PropValue)
 swift.init LayoutBody.init(propValue:): init?(propValue: PropValue)
 swift.init LayoutDirection.init(carried:): init?(carried: StateCarried)
@@ -3407,6 +3445,9 @@ swift.property ItemsView.nodes: @MainActor var nodes: [Node] { get }
 swift.property Key.propValue: var propValue: PropValue { get }
 swift.property KeyModifiers.propValue: var propValue: PropValue { get }
 swift.property KeyModifiers.rawValue: let rawValue: Int32
+swift.property KeyboardShortcut.description: var description: String { get }
+swift.property KeyboardShortcut.key: let key: Key
+swift.property KeyboardShortcut.modifiers: let modifiers: KeyModifiers
 swift.property KeyboardShortcut.propValue: var propValue: PropValue { get }
 swift.property LayoutBody.propValue: var propValue: PropValue { get }
 swift.property LayoutDirection.carried: var carried: StateCarried { get }
@@ -3651,6 +3692,8 @@ swift.struct ElementProperty: struct ElementProperty<Owner, Value> where Owner :
 swift.struct Event: struct Event
 swift.struct ItemsEntries.Section: struct Section
 swift.struct ItemsEntries: struct ItemsEntries
+swift.struct KeyboardShortcut: struct KeyboardShortcut
+swift.struct MotionLanes: struct MotionLanes
 swift.struct Name: struct Name
 swift.struct Node: @MainActor struct Node
 swift.struct NodeType: struct NodeType
@@ -4135,6 +4178,12 @@ swift.type.property MenuToggleContract.members: static let members: [any Contrac
 swift.type.property MenuToggleContract.nodeType: static let nodeType: NodeType
 swift.type.property MenuToggleContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property MenuToggleContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property MotionLanes.all: static let all: MotionLanes
+swift.type.property MotionLanes.height: static let height: MotionLanes
+swift.type.property MotionLanes.place: static let place: MotionLanes
+swift.type.property MotionLanes.width: static let width: MotionLanes
+swift.type.property MotionLanes.x: static let x: MotionLanes
+swift.type.property MotionLanes.y: static let y: MotionLanes
 swift.type.property MotionLayout.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MotionLayoutContract.layer: static let layer: ElementLayer
 swift.type.property MotionLayoutContract.layer: static var layer: ElementLayer { get }

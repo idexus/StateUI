@@ -9,7 +9,7 @@
 /// Design: docs/design/views/motion-layout.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
     /// How far the hand travels for one unit of the parameters.
-    public enum Travel: Equatable, Sendable {
+    enum Travel: Equatable, Sendable {
         /// So many device units, one at least.
         case points(Double)
 

@@ -26,9 +26,12 @@ final class APISurfaceTests: XCTestCase {
     /// Design: docs/design/architecture.md#two-surfaces
     static let extendingTypes: Set<String> = [
         "Act", "AppliedProperties", "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct",
-        "ControlChild", "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event", "HostEventSubscription",
-        "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name", "Node", "NodeType",
-        "Prop", "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue", "Walked",
+        "ControlChild", "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event",
+        "HostEventSubscription", "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name",
+        "Node", "NodeType", "Prop", "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue",
+        "Walked",
+        // Values only a contract's member, a host or a kept value's store takes.
+        "CornerRadius", "KeyboardShortcut", "MotionLanes", "PersistentKind", "SelectionMode", "WebViewSource",
     ]
 
     /// The members an author extending StateUI writes, on whatever type they stand: a view's own node, its values
@@ -179,6 +182,43 @@ final class APISurfaceTests: XCTestCase {
 
         XCTAssertGreaterThan(styling.count, 100, "the record holds almost no style modifier")
         XCTAssertEqual(styling.filter { $0.contains("Binding<") }.map(String.init), [], "a style modifier takes a state")
+    }
+
+    /// Every type of the application surface is one an application meets: one it writes itself - a protocol it
+    /// adopts, an object it makes, a view, a scene, an error it catches, a namespace it calls, a contract - or one
+    /// another of its declarations names. A value only a contract's member or a host takes is the extending
+    /// surface's.
+    /// Design: docs/design/architecture.md#two-surfaces
+    func testEveryApplicationTypeIsOneAnApplicationMeets() throws {
+        let lines = try String(contentsOf: Self.record, encoding: .utf8).split(separator: "\n").map(String.init)
+        let fields = lines.map { line -> (kind: String, path: String, text: String) in
+            let parts = line.split(separator: " ", maxSplits: 2).map(String.init)
+            let path = parts[1].hasSuffix(":") ? String(parts[1].dropLast()) : parts[1]
+            return (parts[0], path, line.components(separatedBy: ": ").dropFirst().joined(separator: ": "))
+        }
+        let written = ["StateUI.View", "StateUI.Views", "StateUI.ToolbarItem", "StateUI.Scene", "Swift.Error"]
+        // Handed to `.id(_:)`, which takes any hashable value.
+        let handedGenerically = ["StandardMenu"]
+        let isContract = { (path: String) in
+            let owner = path.prefix { $0 != "." }
+            return owner.hasSuffix("Contract") || owner.hasSuffix("Tier")
+        }
+
+        var unmet: [String] = []
+        for type in fields where ["swift.struct", "swift.enum", "swift.class"].contains(type.kind) {
+            let own = { (path: String) in path == type.path || path.hasPrefix(type.path + ".") }
+            let isWritten = type.text.contains("class ") || isContract(type.path)
+                || fields.contains { $0.kind == "swift.conformance" && $0.path == type.path && written.contains($0.text) }
+                || (type.kind == "swift.enum" && !fields.contains { $0.kind == "swift.enum.case" && own($0.path) })
+            let word = try Regex("(?:^|[^A-Za-z0-9_])\(type.path.split(separator: ".").last!)(?:$|[^A-Za-z0-9_])")
+            let isNamed = fields.contains {
+                $0.kind != "swift.conformance" && !own($0.path) && !isContract($0.path) && $0.text.contains(word)
+            }
+            if !isWritten && !isNamed && !handedGenerically.contains(type.path) { unmet.append(type.path) }
+        }
+
+        XCTAssertGreaterThan(fields.count, 10_000, "the record holds almost nothing")
+        XCTAssertEqual(unmet.sorted(), [], "the application surface holds a type no application meets")
     }
 
     /// Whatever takes a `Material` takes a `Color` and a `Brush` beside it, and a state of a color where it takes

@@ -166,8 +166,6 @@ swift.conformance ContextMenuContract: Swift.Sendable
 swift.conformance CoordinateSpace: Swift.Equatable
 swift.conformance CoordinateSpace: Swift.Hashable
 swift.conformance CoordinateSpace: Swift.Sendable
-swift.conformance CornerRadius: Swift.Equatable
-swift.conformance CornerRadius: Swift.Sendable
 swift.conformance CorneredShape: StateUI.Shape
 swift.conformance CorneredShape: StateUI.View
 swift.conformance CorneredShape: StateUI.Views
@@ -377,10 +375,6 @@ swift.conformance KeyPress: Swift.Sendable
 swift.conformance KeyboardElement: StateUI.View
 swift.conformance KeyboardElement: StateUI.Views
 swift.conformance KeyboardElementContract: Swift.Sendable
-swift.conformance KeyboardShortcut: Swift.CustomStringConvertible
-swift.conformance KeyboardShortcut: Swift.Equatable
-swift.conformance KeyboardShortcut: Swift.Hashable
-swift.conformance KeyboardShortcut: Swift.Sendable
 swift.conformance Layout: StateUI.View
 swift.conformance Layout: StateUI.Views
 swift.conformance LayoutBody: Swift.Equatable
@@ -395,8 +389,6 @@ swift.conformance LayoutDirection: Swift.RawRepresentable
 swift.conformance LayoutDirection: Swift.Sendable
 swift.conformance LayoutDynamics: Swift.Equatable
 swift.conformance LayoutDynamics: Swift.Sendable
-swift.conformance LayoutInput.Travel: Swift.Equatable
-swift.conformance LayoutInput.Travel: Swift.Sendable
 swift.conformance LayoutInput: Swift.Equatable
 swift.conformance LayoutInput: Swift.Sendable
 swift.conformance LayoutInterpolation: Swift.Sendable
@@ -474,12 +466,6 @@ swift.conformance ModifiedContent: StateUI.Views
 swift.conformance ModifiedContent: Swift.Sendable
 swift.conformance Motion: Swift.Equatable
 swift.conformance Motion: Swift.Sendable
-swift.conformance MotionLanes: Swift.Equatable
-swift.conformance MotionLanes: Swift.ExpressibleByArrayLiteral
-swift.conformance MotionLanes: Swift.OptionSet
-swift.conformance MotionLanes: Swift.RawRepresentable
-swift.conformance MotionLanes: Swift.Sendable
-swift.conformance MotionLanes: Swift.SetAlgebra
 swift.conformance MotionLayout: StateUI.View
 swift.conformance MotionLayout: StateUI.Views
 swift.conformance MotionLayout: Swift.Sendable
@@ -520,10 +506,6 @@ swift.conformance PersistentKey: Swift.CustomStringConvertible
 swift.conformance PersistentKey: Swift.Equatable
 swift.conformance PersistentKey: Swift.Hashable
 swift.conformance PersistentKey: Swift.Sendable
-swift.conformance PersistentKind: Swift.Equatable
-swift.conformance PersistentKind: Swift.Hashable
-swift.conformance PersistentKind: Swift.RawRepresentable
-swift.conformance PersistentKind: Swift.Sendable
 swift.conformance Picker: StateUI.View
 swift.conformance Picker: StateUI.Views
 swift.conformance Picker: Swift.Sendable
@@ -617,10 +599,6 @@ swift.conformance SearchField: StateUI.View
 swift.conformance SearchField: StateUI.Views
 swift.conformance SearchField: Swift.Sendable
 swift.conformance SearchFieldContract: Swift.Sendable
-swift.conformance SelectionMode: Swift.Equatable
-swift.conformance SelectionMode: Swift.Hashable
-swift.conformance SelectionMode: Swift.RawRepresentable
-swift.conformance SelectionMode: Swift.Sendable
 swift.conformance Separator: StateUI.View
 swift.conformance Separator: StateUI.Views
 swift.conformance Separator: Swift.Sendable
@@ -816,8 +794,6 @@ swift.conformance WebView: StateUI.View
 swift.conformance WebView: StateUI.Views
 swift.conformance WebView: Swift.Sendable
 swift.conformance WebViewContract: Swift.Sendable
-swift.conformance WebViewSource: Swift.Equatable
-swift.conformance WebViewSource: Swift.Sendable
 swift.conformance Weekday: Swift.Equatable
 swift.conformance Weekday: Swift.Hashable
 swift.conformance Weekday: Swift.RawRepresentable
@@ -878,7 +854,6 @@ swift.enum ContainerShape: enum ContainerShape
 swift.enum ContentMode: enum ContentMode
 swift.enum ContextMenuContract: enum ContextMenuContract
 swift.enum CoordinateSpace: enum CoordinateSpace
-swift.enum CornerRadius: enum CornerRadius
 swift.enum CorneredShapeContract: enum CorneredShapeContract
 swift.enum DatePickerContract: enum DatePickerContract
 swift.enum DateStyle: enum DateStyle
@@ -918,7 +893,6 @@ swift.enum ItemsViewContract: enum ItemsViewContract
 swift.enum KeyboardElementContract: enum KeyboardElementContract
 swift.enum LayoutContract: enum LayoutContract
 swift.enum LayoutDirection: enum LayoutDirection
-swift.enum LayoutInput.Travel: enum Travel
 swift.enum LineBreak: enum LineBreak
 swift.enum LineCap: enum LineCap
 swift.enum LineContract: enum LineContract
@@ -948,7 +922,6 @@ swift.enum PaddingElementContract: enum PaddingElementContract
 swift.enum PageContract: enum PageContract
 swift.enum PageElementContract: enum PageElementContract
 swift.enum PathContract: enum PathContract
-swift.enum PersistentKind: enum PersistentKind
 swift.enum PickerContract: enum PickerContract
 swift.enum PickerPresentation: enum PickerPresentation
 swift.enum PolygonContract: enum PolygonContract
@@ -964,7 +937,6 @@ swift.enum ScrollEdge: enum ScrollEdge
 swift.enum ScrollIndicatorVisibility: enum ScrollIndicatorVisibility
 swift.enum ScrollViewContract: enum ScrollViewContract
 swift.enum SearchFieldContract: enum SearchFieldContract
-swift.enum SelectionMode: enum SelectionMode
 swift.enum SeparatorContract: enum SeparatorContract
 swift.enum SessionPhase: enum SessionPhase
 swift.enum ShapeContract: enum ShapeContract
@@ -1020,7 +992,6 @@ swift.enum VisualElementContract: enum VisualElementContract
 swift.enum WebNavigationResult: enum WebNavigationResult
 swift.enum WebNavigationType: enum WebNavigationType
 swift.enum WebViewContract: enum WebViewContract
-swift.enum WebViewSource: enum WebViewSource
 swift.enum Weekday: enum Weekday
 swift.enum WindowContract: enum WindowContract
 swift.enum WindowError: enum WindowError
@@ -1096,8 +1067,6 @@ swift.enum.case ContentMode.stretch: case stretch
 swift.enum.case CoordinateSpace.global: case global
 swift.enum.case CoordinateSpace.parent: case parent
 swift.enum.case CoordinateSpace.safeArea: case safeArea
-swift.enum.case CornerRadius.corners(topLeft:topRight:bottomLeft:bottomRight:): case corners(topLeft: Double, topRight: Double, bottomLeft: Double, bottomRight: Double)
-swift.enum.case CornerRadius.uniform(_:): case uniform(Double)
 swift.enum.case DateStyle.long: case long
 swift.enum.case DateStyle.medium: case medium
 swift.enum.case DateStyle.short: case short
@@ -1212,9 +1181,6 @@ swift.enum.case ItemsLayout.row(spacing:): case row(spacing: Double = 0)
 swift.enum.case LayoutDirection.inherited: case inherited
 swift.enum.case LayoutDirection.leftToRight: case leftToRight
 swift.enum.case LayoutDirection.rightToLeft: case rightToLeft
-swift.enum.case LayoutInput.Travel.front: case front
-swift.enum.case LayoutInput.Travel.points(_:): case points(Double)
-swift.enum.case LayoutInput.Travel.room: case room
 swift.enum.case LineBreak.characterWrap: case characterWrap
 swift.enum.case LineBreak.headTruncation: case headTruncation
 swift.enum.case LineBreak.middleTruncation: case middleTruncation
@@ -1243,10 +1209,6 @@ swift.enum.case NetworkAccess.none: case none
 swift.enum.case NetworkAccess.unknown: case unknown
 swift.enum.case Orientation.horizontal: case horizontal
 swift.enum.case Orientation.vertical: case vertical
-swift.enum.case PersistentKind.boolean: case boolean
-swift.enum.case PersistentKind.integer: case integer
-swift.enum.case PersistentKind.number: case number
-swift.enum.case PersistentKind.text: case text
 swift.enum.case PickerPresentation.menu: case menu
 swift.enum.case PickerPresentation.radio: case radio
 swift.enum.case PickerPresentation.segmented: case segmented
@@ -1260,9 +1222,6 @@ swift.enum.case ScrollEdge.none: case none
 swift.enum.case ScrollIndicatorVisibility.automatic: case automatic
 swift.enum.case ScrollIndicatorVisibility.never: case never
 swift.enum.case ScrollIndicatorVisibility.visible: case visible
-swift.enum.case SelectionMode.multiple: case multiple
-swift.enum.case SelectionMode.none: case none
-swift.enum.case SelectionMode.single: case single
 swift.enum.case SessionPhase.active: case active
 swift.enum.case SessionPhase.background: case background
 swift.enum.case SessionPhase.inactive: case inactive
@@ -1318,8 +1277,6 @@ swift.enum.case WebNavigationType.forward: case forward
 swift.enum.case WebNavigationType.newPage: case newPage
 swift.enum.case WebNavigationType.reload: case reload
 swift.enum.case WebNavigationType.unknown: case unknown
-swift.enum.case WebViewSource.address(_:): case address(String)
-swift.enum.case WebViewSource.html(_:baseAddress:): case html(String, baseAddress: String?)
 swift.enum.case Weekday.friday: case friday
 swift.enum.case Weekday.monday: case monday
 swift.enum.case Weekday.saturday: case saturday
@@ -1330,9 +1287,9 @@ swift.enum.case Weekday.wednesday: case wednesday
 swift.enum.case WindowError.alreadyOpen: case alreadyOpen
 swift.enum.case WindowError.noScene: case noScene
 swift.enum.case WindowError.notOpen: case notOpen
-swift.enum.case WindowError.undeclared(_:): case undeclared(Name)
+swift.enum.case WindowError.undeclared(_:): case undeclared(String)
 swift.enum.case WindowError.unsupported: case unsupported
-swift.enum.case WindowError.wrongValue(_:): case wrongValue(Name)
+swift.enum.case WindowError.wrongValue(_:): case wrongValue(String)
 swift.func.op CalendarDate.<(_:_:): static func < (left: CalendarDate, right: CalendarDate) -> Bool
 swift.func.op ClockTime.<(_:_:): static func < (left: ClockTime, right: ClockTime) -> Bool
 swift.init @_ConcurrencyTask.init(gate:operation:): @discardableResult @MainActor init(gate: Gate, operation: @escaping EventHandler)
@@ -1422,7 +1379,6 @@ swift.init ItemsView.init(sections:): @MainActor init(sections: [Section<ID>])
 swift.init Key.init(_:): init(_ character: Character)
 swift.init Key.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClusterLiteral value: Character)
 swift.init KeyPress.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = [])
-swift.init KeyboardShortcut.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = .primary)
 swift.init LayoutParameters.init(): init()
 swift.init Line.init(): @MainActor init()
 swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
@@ -13079,9 +13035,6 @@ swift.property Journey.value: @MainActor var value: Value { get nonmutating set 
 swift.property Journey.velocity: @MainActor var velocity: Value { get nonmutating set }
 swift.property KeyPress.key: let key: Key
 swift.property KeyPress.modifiers: let modifiers: KeyModifiers
-swift.property KeyboardShortcut.description: var description: String { get }
-swift.property KeyboardShortcut.key: let key: Key
-swift.property KeyboardShortcut.modifiers: let modifiers: KeyModifiers
 swift.property LayoutCurve.reach: var reach: Int { get }
 swift.property LayoutInterpolation.reach: var reach: Int { get }
 swift.property Line.body: @MainActor var body: Never { get }
@@ -13288,7 +13241,6 @@ swift.struct Journey: @MainActor struct Journey<Value> where Value : Walked
 swift.struct Key: struct Key
 swift.struct KeyModifiers: struct KeyModifiers
 swift.struct KeyPress: struct KeyPress
-swift.struct KeyboardShortcut: struct KeyboardShortcut
 swift.struct LayoutBody: struct LayoutBody
 swift.struct LayoutCurve: struct LayoutCurve
 swift.struct LayoutDynamics: struct LayoutDynamics
@@ -13310,7 +13262,6 @@ swift.struct Message: struct Message<Arguments>
 swift.struct MessageContext: struct MessageContext
 swift.struct ModifiedContent: @MainActor struct ModifiedContent<Content> where Content : View
 swift.struct Motion: struct Motion
-swift.struct MotionLanes: struct MotionLanes
 swift.struct MotionLayout: @MainActor struct MotionLayout<Items, ID, Parameters> where Items : RandomAccessCollection, ID : Hashable, Parameters : LayoutParameters
 swift.struct MotionValues: struct MotionValues
 swift.struct MultiBinding: @MainActor struct MultiBinding<Out, Sources> where Out : StateValue
@@ -13802,12 +13753,6 @@ swift.type.property Motion.custom: static let custom: Motion
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
-swift.type.property MotionLanes.all: static let all: MotionLanes
-swift.type.property MotionLanes.height: static let height: MotionLanes
-swift.type.property MotionLanes.place: static let place: MotionLanes
-swift.type.property MotionLanes.width: static let width: MotionLanes
-swift.type.property MotionLanes.x: static let x: MotionLanes
-swift.type.property MotionLanes.y: static let y: MotionLanes
 swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
 swift.type.property MotionLayoutContract.magnifies: static let magnifies: ElementProperty<MotionLayoutContract, Bool>

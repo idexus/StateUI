@@ -168,7 +168,12 @@ protocol a control and its style wear - a control's
 `…Properties`, a tier's `…Element` - stands there as a declaration and as each
 conformance to it, while its members, the modifiers, are the application's.
 `APISurfaceTests` keeps the two lists, `extendingTypes` and `extendingMembers`,
-and every line goes to exactly one file. Both are frozen alike at 1.0: an
+and every line goes to exactly one file. A type of the application's file is
+one an application meets: one it writes itself - a protocol it adopts, an
+object it makes, a view, a scene, an error it catches, a namespace it calls, a
+contract - or one another of its declarations names. A value only a contract's
+member, a host or the store takes - a corner radius, a keyboard shortcut, a
+web view's source - is the extending file's. Both are frozen alike at 1.0: an
 application's own control is an extension of the protocol every library
 control wears, so the plumbing stays on the views and the second file names
 it. The handbook's [Extending StateUI](../interface/extending.md) teaches it.
