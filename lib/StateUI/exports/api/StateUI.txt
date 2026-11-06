@@ -1338,35 +1338,20 @@ swift.enum.case WindowError.unsupported: case unsupported
 swift.enum.case WindowError.wrongValue(_:): case wrongValue(Name)
 swift.func.op CalendarDate.<(_:_:): static func < (left: CalendarDate, right: CalendarDate) -> Bool
 swift.func.op ClockTime.<(_:_:): static func < (left: ClockTime, right: ClockTime) -> Bool
-swift.init @SwiftBool.init(persistentValue:): init?(persistentValue: PropValue)
-swift.init @SwiftDouble.init(persistentValue:): init?(persistentValue: PropValue)
-swift.init @SwiftInt.init(persistentValue:): init?(persistentValue: PropValue)
-swift.init @SwiftString.init(persistentValue:): init?(persistentValue: PropValue)
 swift.init @_ConcurrencyTask.init(gate:operation:): @discardableResult @MainActor init(gate: Gate, operation: @escaping EventHandler)
-swift.init AccessibilityAdjustment.init(rawValue:): init?(rawValue: Int32)
-swift.init AccessibilityHeadingLevel.init(rawValue:): init?(rawValue: Int32)
-swift.init AccessibilityRole.init(rawValue:): init?(rawValue: Int32)
 swift.init AccessibilitySettings.init(reducesMotion:prefersHigherContrast:isScreenReaderOn:textScale:): @MainActor init(reducesMotion: Bool = false, prefersHigherContrast: Bool = false, isScreenReaderOn: Bool = false, textScale: Double = 1)
-swift.init ActionRole.init(rawValue:): init?(rawValue: Int32)
 swift.init Aim.init(_:): @MainActor init(_ target: Target.Type)
-swift.init Alignment.init(rawValue:): init?(rawValue: Int32)
 swift.init AnyView.init(_:): @MainActor init<Held>(_ view: Held) where Held : View
 swift.init Application.init(): @MainActor init()
 swift.init ApplicationInfo.init(name:packageName:versionString:buildString:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", versionString: String = "", buildString: String = "", colorScheme: ColorScheme = .system, accentColor: Color? = nil)
 swift.init ApplicationSession.init(): @MainActor init()
 swift.init AxisValues.init(arrayLiteral:): init(arrayLiteral values: Double...)
 swift.init Battery.init(chargeLevel:state:powerSource:energySaverStatus:): @MainActor init(chargeLevel: Double? = nil, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown, energySaverStatus: EnergySaverStatus = .unknown)
-swift.init BatteryPowerSource.init(rawValue:): init?(rawValue: Int32)
-swift.init BatteryState.init(rawValue:): init?(rawValue: Int32)
 swift.init Binding.init(_:): @MainActor init(_ state: State<Value>)
 swift.init Binding.init(projectedValue:): @MainActor init(projectedValue: Binding<Value>)
-swift.init Blur.Thickness.init(propValue:): init?(propValue: PropValue)
-swift.init Blur.Thickness.init(rawValue:): init?(rawValue: Int32)
 swift.init Button.init(): @MainActor init()
 swift.init Button.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init Button.init(_:): @MainActor init(_ text: String)
-swift.init ButtonMenuKind.init(rawValue:): init?(rawValue: Int32)
-swift.init ButtonRole.init(rawValue:): init?(rawValue: Int32)
 swift.init CalendarDate.init(_:): init?(_ text: String)
 swift.init CalendarDate.init(year:month:day:): init(year: Int, month: Int, day: Int)
 swift.init Canvas.init(): @MainActor init()
@@ -1386,24 +1371,15 @@ swift.init Color.init(red:green:blue:opacity:): init(red: Int, green: Int, blue:
 swift.init ColorPicker.init(): @MainActor init()
 swift.init ColorPicker.init(_:): @MainActor init(_ color: Color)
 swift.init ColorPicker.init(_:): @MainActor init(_ state: Binding<Color>)
-swift.init ColorScheme.init(rawValue:): init?(rawValue: Int32)
-swift.init ConnectionProfile.init(rawValue:): init?(rawValue: Int32)
 swift.init Connectivity.init(networkAccess:connectionProfiles:): @MainActor init(networkAccess: NetworkAccess = .unknown, connectionProfiles: [ConnectionProfile] = [])
-swift.init ContentMode.init(rawValue:): init?(rawValue: Int32)
 swift.init DatePicker.init(): @MainActor init()
 swift.init DatePicker.init(_:): @MainActor init(_ date: CalendarDate)
 swift.init DatePicker.init(_:): @MainActor init(_ state: Binding<CalendarDate>)
-swift.init DateStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init DebugInspector.init(): @MainActor init()
 swift.init Device.init(info:display:battery:connectivity:accessibility:): @MainActor init(info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(), connectivity: Connectivity = Connectivity(), accessibility: AccessibilitySettings = AccessibilitySettings())
 swift.init DeviceDisplay.init(width:height:density:orientation:rotation:refreshRate:): @MainActor init(width: Double? = nil, height: Double? = nil, density: Double? = nil, orientation: DisplayOrientation = .unknown, rotation: DisplayRotation = .unknown, refreshRate: Double? = nil)
 swift.init DeviceInfo.init(formFactor:platform:model:manufacturer:name:versionString:isVirtual:): @MainActor init(formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "", name: String = "", versionString: String = "", isVirtual: Bool? = nil)
-swift.init DisplayOrientation.init(rawValue:): init?(rawValue: Int32)
-swift.init DisplayRotation.init(rawValue:): init?(rawValue: Int32)
-swift.init DotShape.init(rawValue:): init?(rawValue: Int32)
-swift.init Easing.init(rawValue:): init?(rawValue: Int32)
 swift.init Ellipse.init(): @MainActor init()
-swift.init EnergySaverStatus.init(rawValue:): init?(rawValue: Int32)
 swift.init Environment.init(): @MainActor init() where Value : AnyObject
 swift.init Environment.init(): @MainActor init() where Value : LocalizedResources
 swift.init Environment.init(_:): @MainActor init(_ name: KeyPath<EnvironmentValues, Value>) where Value : AnyObject
@@ -1414,20 +1390,13 @@ swift.init Fill.init(_:): @MainActor init(_ color: Color)
 swift.init Fill.init(_:): @MainActor init(_ material: Material)
 swift.init Fill.init(_:): @MainActor init(_ state: Binding<Color>)
 swift.init Fill.init(_:): @MainActor init(_ state: Binding<Material>)
-swift.init FillRule.init(rawValue:): init?(rawValue: Int32)
-swift.init FontAttributes.init(rawValue:): init(rawValue: Int32)
-swift.init FontWeight.init(rawValue:): init?(rawValue: Int32)
 swift.init ForEach.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View, Items.Element : Hashable
 swift.init ForEach.init(_:id:content:): @MainActor init<Items, ID, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: (Items.Element) -> Content) where Items : RandomAccessCollection, ID : Hashable, Content : View
-swift.init FormFactor.init(rawValue:): init?(rawValue: Int32)
 swift.init GalleryView.init(_:content:): @MainActor init<Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Content : View
 swift.init GalleryView.init(_:id:content:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Content : View
 swift.init Gate.init(_:): @MainActor init(_ policy: GatePolicy)
 swift.init GeometryReader.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping (Rect) -> Content) where Content : Views
 swift.init GeometryReader.init(in:content:): @MainActor init<Content>(in space: CoordinateSpace, @ViewBuilder content: @escaping (Rect) -> Content) where Content : Views
-swift.init GesturePhase.init(rawValue:): init?(rawValue: Int32)
-swift.init Glass.Clarity.init(propValue:): init?(propValue: PropValue)
-swift.init Glass.Clarity.init(rawValue:): init?(rawValue: Int32)
 swift.init GradientStop.init(_:_:): init(_ color: Color, _ offset: Double)
 swift.init Grid.init(): @MainActor init()
 swift.init Grid.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
@@ -1438,37 +1407,28 @@ swift.init HStack.init(content:): @MainActor init<Content>(@ViewBuilder content:
 swift.init HTTPMethod.init(_:): init(_ name: String)
 swift.init HTTPRequest.init(_:method:headers:body:): init(_ address: String, method: HTTPMethod = .get, headers: [String : String] = [:], body: [UInt8] = [])
 swift.init HTTPResponse.init(status:headers:body:): init(status: Int, headers: [String : String] = [:], body: [UInt8] = [])
-swift.init Icon.init(rawValue:): init?(rawValue: Int32)
-swift.init IconPosition.init(rawValue:): init?(rawValue: Int32)
 swift.init Image.init(): @MainActor init()
 swift.init Image.init(_:): @MainActor init(_ source: ImageSource)
 swift.init ImageSource.init(_:): init(_ file: String)
 swift.init ImageSource.init(bytes:): init(bytes: [UInt8])
 swift.init ImageSource.init(light:dark:): init(light: String, dark: String)
 swift.init ImageSource.init(stringLiteral:): init(stringLiteral value: String)
-swift.init InputPurpose.init(rawValue:): init?(rawValue: Int32)
 swift.init Insets.init(_:): init(_ uniformSize: Double)
 swift.init Insets.init(floatLiteral:): init(floatLiteral value: Double)
 swift.init Insets.init(horizontal:vertical:): init(horizontal: Double, vertical: Double)
 swift.init Insets.init(integerLiteral:): init(integerLiteral value: Int)
 swift.init Insets.init(start:top:end:bottom:): init(start: Double, top: Double, end: Double, bottom: Double)
 swift.init InspectorButton.init(): @MainActor init()
-swift.init ItemDragStart.init(rawValue:): init?(rawValue: Int32)
 swift.init ItemsView.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Items : RandomAccessCollection, Content : View
 swift.init ItemsView.init(_:id:content:): @MainActor init<Items, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
 swift.init ItemsView.init(sections:): @MainActor init(sections: [Section<ID>])
 swift.init Key.init(_:): init(_ character: Character)
 swift.init Key.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClusterLiteral value: Character)
-swift.init KeyModifiers.init(rawValue:): init(rawValue: Int32)
 swift.init KeyPress.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = [])
 swift.init KeyboardShortcut.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = .primary)
-swift.init LayoutDirection.init(rawValue:): init?(rawValue: Int32)
 swift.init LayoutParameters.init(): init()
 swift.init Line.init(): @MainActor init()
 swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
-swift.init LineBreak.init(rawValue:): init?(rawValue: Int32)
-swift.init LineCap.init(rawValue:): init?(rawValue: Int32)
-swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: String)
 swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
@@ -1479,9 +1439,7 @@ swift.init Location.init(latitude:longitude:): init(latitude: Double, longitude:
 swift.init Map.init(): @MainActor init()
 swift.init Map.init(region:): @MainActor init(region: MapRegion)
 swift.init MapRegion.init(center:radiusMeters:): init(center: Location, radiusMeters: Double)
-swift.init MapType.init(rawValue:): init?(rawValue: Int32)
 swift.init Marker.init(at:): @MainActor init(at location: Location)
-swift.init MarkerType.init(rawValue:): init?(rawValue: Int32)
 swift.init Material.init(light:dark:): init(light: Material?, dark: Material?)
 swift.init Menu.init(_:items:): @MainActor init(_ text: String, @MenuBuilder items: () -> MenuEntries)
 swift.init MenuItem.init(_:): @MainActor init(_ text: String)
@@ -1489,23 +1447,16 @@ swift.init MenuSeparator.init(): @MainActor init()
 swift.init MenuToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Binding<Bool>)
 swift.init MenuToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
 swift.init Message.init(_:): init(_ say: @escaping @MainActor @Sendable (Arguments, MessageContext) -> String)
-swift.init MotionLanes.init(rawValue:): init(rawValue: UInt8)
 swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters) -> [Placement]) where Content : View
 swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor init<Content>(_ items: Items, id: KeyPath<Items.Element, ID>, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters, Parameters) -> [Placement]) where Content : View
 swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters) -> [Placement]) where ID == Items.Element, Content : View
 swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters, Parameters) -> [Placement]) where ID == Items.Element, Content : View
-swift.init MotionValues.init(rawValue:): init(rawValue: Int)
 swift.init NavigationStack.init(_:root:destination:): @MainActor init<Route, Root, Destination>(_ path: Binding<[Route]>, @ViewBuilder root: () -> Root, @ViewBuilder destination: @escaping (Route) -> Destination) where Route : Hashable, Root : View, Destination : View
-swift.init NetworkAccess.init(rawValue:): init?(rawValue: Int32)
-swift.init Orientation.init(rawValue:): init?(rawValue: Int32)
 swift.init Path.init(): @MainActor init()
 swift.init Path.init(_:): @MainActor init(_ data: String)
 swift.init PersistentKey.init(_:): init(_ name: String)
-swift.init PersistentKind.init(rawValue:): init?(rawValue: Int32)
-swift.init PersistentValue.init(persistentValue:): init?(persistentValue: PropValue)
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
-swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
 swift.init Placement.init(_:transform:opacity:shade:zIndex:): init(_ bounds: Rect, transform: ViewTransform = .identity, opacity: Double = 1, shade: Double = 0, zIndex: Int = 0)
 swift.init Point.init(_:_:): init(_ x: Double, _ y: Double)
 swift.init Point.init(x:y:): init(x: Double, y: Double)
@@ -1521,13 +1472,8 @@ swift.init ProgressBar.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Rect.init(_:_:_:_:): init(_ x: Double, _ y: Double, _ width: Double, _ height: Double)
 swift.init Rect.init(x:y:width:height:): init(x: Double, y: Double, width: Double, height: Double)
 swift.init Rectangle.init(): @MainActor init()
-swift.init SafeAreaEdges.init(rawValue:): init(rawValue: Int32)
 swift.init SceneKey.init(_:): init(_ name: String)
 swift.init SceneSession.init(): @MainActor convenience init()
-swift.init ScrollAnchor.init(rawValue:): init?(rawValue: Int32)
-swift.init ScrollAxes.init(rawValue:): init(rawValue: Int32)
-swift.init ScrollEdge.init(rawValue:): init?(rawValue: Int32)
-swift.init ScrollIndicatorVisibility.init(rawValue:): init?(rawValue: Int32)
 swift.init ScrollView.init(): @MainActor init()
 swift.init ScrollView.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.init SearchField.init(): @MainActor init()
@@ -1535,9 +1481,7 @@ swift.init SearchField.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init SearchField.init(_:): @MainActor init(_ text: String)
 swift.init Section.init(_:content:): init<Items, Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Items : RandomAccessCollection, Content : View
 swift.init Section.init(_:id:content:): init<Items, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
-swift.init SelectionMode.init(rawValue:): init?(rawValue: Int32)
 swift.init Separator.init(): @MainActor init()
-swift.init SessionPhase.init(rawValue:): init?(rawValue: Int32)
 swift.init Slider.init(): @MainActor init()
 swift.init Slider.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Slider.init(_:): @MainActor init(_ value: Double)
@@ -1562,8 +1506,6 @@ swift.init Styling.init(): @MainActor init()
 swift.init Styling.init(_:): @MainActor init(_ key: StyleKey<Target>)
 swift.init Styling.init(presentation:): @MainActor init(presentation: PickerPresentation)
 swift.init Styling.init(role:): @MainActor init(role: ButtonRole)
-swift.init SubmitLabel.init(rawValue:): init?(rawValue: Int32)
-swift.init SwipeDirection.init(rawValue:): init(rawValue: Int32)
 swift.init Switch.init(): @MainActor init()
 swift.init Switch.init(_:): @MainActor init(_ isOn: Bool)
 swift.init Switch.init(_:): @MainActor init(_ state: Binding<Bool>)
@@ -1573,9 +1515,6 @@ swift.init TabView.init(_:destination:): @MainActor init<Tabs, Destination>(_ ta
 swift.init Text.init(): @MainActor init()
 swift.init Text.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init Text.init(_:): @MainActor init(_ text: String)
-swift.init TextAlignment.init(rawValue:): init?(rawValue: Int32)
-swift.init TextCase.init(rawValue:): init?(rawValue: Int32)
-swift.init TextDecorations.init(rawValue:): init(rawValue: Int32)
 swift.init TextEditor.init(): @MainActor init()
 swift.init TextEditor.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init TextEditor.init(_:): @MainActor init(_ text: String)
@@ -1584,34 +1523,25 @@ swift.init TextField.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init TextField.init(_:): @MainActor init(_ text: String)
 swift.init TextSpan.init(): @MainActor init()
 swift.init TextSpan.init(_:): @MainActor init(_ text: String)
-swift.init TextStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init Ticker.init(every:isRepeating:limit:onTick:): @MainActor init(every interval: Duration, isRepeating: Bool = true, limit: Int? = nil, onTick: Ticker.Tick? = nil)
 swift.init TimePicker.init(): @MainActor init()
 swift.init TimePicker.init(_:): @MainActor init(_ state: Binding<ClockTime>)
 swift.init TimePicker.init(_:): @MainActor init(_ time: ClockTime)
-swift.init TimeStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init TimeZoneName.init(_:): init(_ identifier: String)
 swift.init TimeZoneName.init(stringLiteral:): init(stringLiteral value: String)
 swift.init ToolbarButton.init(): @MainActor init()
 swift.init ToolbarButton.init(_:): @MainActor init(_ text: String)
-swift.init ToolbarEdge.init(rawValue:): init?(rawValue: Int32)
 swift.init ToolbarGroup.init(): @MainActor init()
 swift.init ToolbarGroup.init(items:): @MainActor init(@ToolbarGroupBuilder items: () -> ToolbarGroupContent)
 swift.init ToolbarLabel.init(_:): @MainActor init(_ text: String)
-swift.init ToolbarPart.init(rawValue:): init?(rawValue: Int32)
-swift.init ToolbarPosition.init(rawValue:): init?(rawValue: Int32)
-swift.init ToolbarStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init ToolbarToggle.init(): @MainActor init()
 swift.init ToolbarToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Binding<Bool>)
 swift.init ToolbarToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
 swift.init VStack.init(): @MainActor init()
 swift.init VStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.init ViewTransform.init(): init()
-swift.init WebNavigationResult.init(rawValue:): init?(rawValue: Int32)
-swift.init WebNavigationType.init(rawValue:): init?(rawValue: Int32)
 swift.init WebView.init(): @MainActor init()
 swift.init WebView.init(_:): @MainActor init(_ address: String)
-swift.init Weekday.init(rawValue:): init?(rawValue: Int32)
 swift.init Window.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowGroup.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ type: WindowType<Value>, @ViewBuilder content: @escaping (Binding<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
@@ -1620,7 +1550,6 @@ swift.init WindowSession.init(): @MainActor convenience init()
 swift.init WindowType.init(_:): init(_ name: String)
 swift.init ZStack.init(): @MainActor init()
 swift.init ZStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
-swift.method @SwiftArray.value(_:): func value(_ index: Int = 0) -> PropValue?
 swift.method @SwiftNever.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13007,11 +12936,7 @@ swift.method ZStack.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method ZStack.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ZStack.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.property @SwiftBool.persistentValue: var persistentValue: PropValue { get }
-swift.property @SwiftDouble.persistentValue: var persistentValue: PropValue { get }
-swift.property @SwiftInt.persistentValue: var persistentValue: PropValue { get }
 swift.property @SwiftNever.body: @MainActor var body: Never { get }
-swift.property @SwiftString.persistentValue: var persistentValue: PropValue { get }
 swift.property AccessibilitySettings.isScreenReaderOn: @MainActor var isScreenReaderOn: Bool { get }
 swift.property AccessibilitySettings.prefersHigherContrast: @MainActor var prefersHigherContrast: Bool { get }
 swift.property AccessibilitySettings.reducesMotion: @MainActor var reducesMotion: Bool { get }
@@ -13103,7 +13028,6 @@ swift.property EnvironmentValues.window: @MainActor var window: WindowSession { 
 swift.property FileType.caption: let caption: String
 swift.property FileType.extensions: let extensions: [String]
 swift.property Fill.body: @MainActor var body: Never { get }
-swift.property FontAttributes.rawValue: let rawValue: Int32
 swift.property GalleryView.body: @MainActor var body: some View { get }
 swift.property Gate.isBusy: @MainActor var isBusy: Bool { get }
 swift.property Gate.policy: nonisolated let policy: GatePolicy
@@ -13148,7 +13072,6 @@ swift.property Journey.destination: @MainActor var destination: Value { get nonm
 swift.property Journey.motion: @MainActor var motion: Motion { get nonmutating set }
 swift.property Journey.value: @MainActor var value: Value { get nonmutating set }
 swift.property Journey.velocity: @MainActor var velocity: Value { get nonmutating set }
-swift.property KeyModifiers.rawValue: let rawValue: Int32
 swift.property KeyPress.key: let key: Key
 swift.property KeyPress.modifiers: let modifiers: KeyModifiers
 swift.property KeyboardShortcut.description: var description: String { get }
@@ -13184,9 +13107,7 @@ swift.property Map.body: @MainActor var body: Never { get }
 swift.property MapRegion.center: var center: Location
 swift.property MapRegion.radiusMeters: var radiusMeters: Double
 swift.property ModifiedContent.body: @MainActor var body: Never { get }
-swift.property MotionLanes.rawValue: let rawValue: UInt8
 swift.property MotionLayout.body: @MainActor var body: some View { get }
-swift.property MotionValues.rawValue: let rawValue: Int
 swift.property NavigationStack.body: @MainActor var body: Never { get }
 swift.property PanUpdate.at: var at: Point
 swift.property PanUpdate.phase: var phase: GesturePhase
@@ -13195,7 +13116,6 @@ swift.property PanUpdate.velocity: var velocity: Point
 swift.property Path.body: @MainActor var body: Never { get }
 swift.property PersistentKey.description: var description: String { get }
 swift.property PersistentKey.name: var name: String { get }
-swift.property PersistentValue.persistentValue: var persistentValue: PropValue { get }
 swift.property Picker.body: @MainActor var body: Never { get }
 swift.property PinchUpdate.phase: var phase: GesturePhase
 swift.property PinchUpdate.pivot: var pivot: Point
@@ -13220,14 +13140,12 @@ swift.property Rectangle.body: @MainActor var body: Never { get }
 swift.property RotationUpdate.angle: var angle: Double
 swift.property RotationUpdate.phase: var phase: GesturePhase
 swift.property RotationUpdate.velocity: var velocity: Double
-swift.property SafeAreaEdges.rawValue: let rawValue: Int32
 swift.property Scene.body: @SceneBuilder @MainActor var body: Self.Body { get }
 swift.property SceneKey.description: var description: String { get }
 swift.property SceneKey.name: var name: String { get }
 swift.property SceneSession.phase: @MainActor var phase: SessionPhase { get }
 swift.property SceneSession.windows: @MainActor var windows: [WindowSession] { get }
 swift.property Scenes.body: @MainActor var body: Never { get }
-swift.property ScrollAxes.rawValue: let rawValue: Int32
 swift.property ScrollView.body: @MainActor var body: Never { get }
 swift.property SearchField.body: @MainActor var body: Never { get }
 swift.property Separator.body: @MainActor var body: Never { get }
@@ -13242,11 +13160,9 @@ swift.property StatePart.wrappedValue: @MainActor var wrappedValue: Value { get 
 swift.property StateUIError.description: var description: String { get }
 swift.property Stepper.body: @MainActor var body: Never { get }
 swift.property StyleKey.name: var name: String { get }
-swift.property SwipeDirection.rawValue: let rawValue: Int32
 swift.property Switch.body: @MainActor var body: Never { get }
 swift.property TabView.body: @MainActor var body: Never { get }
 swift.property Text.body: @MainActor var body: Never { get }
-swift.property TextDecorations.rawValue: let rawValue: Int32
 swift.property TextEditor.body: @MainActor var body: Never { get }
 swift.property TextField.body: @MainActor var body: Never { get }
 swift.property Ticker.$isRepeating: @MainActor var $isRepeating: Binding<Bool> { get }
@@ -13461,27 +13377,11 @@ swift.subscript Binding.subscript(dynamicMember:): @MainActor subscript<Subject>
 swift.subscript StatePart.subscript(_:): @MainActor subscript(index: Value.Index) -> StatePart<Value.Element> { get }
 swift.subscript StatePart.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
 swift.subscript StatePart.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any WritableKeyPath<Value, Subject> & Sendable) -> StatePart<Subject> { get }
-swift.type.method @SwiftArray.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftBool.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftDouble.list(from:): static func list(from value: PropValue) -> [Double]?
-swift.type.method @SwiftDouble.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftInt.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftOptional.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftString.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftString.list(from:): static func list(from value: PropValue) -> [String]?
-swift.type.method @SwiftUInt8.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method @SwiftUInt8.list(from:): static func list(from value: PropValue) -> [UInt8]?
-swift.type.method AccessibilityAdjustment.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method AccessibilityHeadingLevel.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method AccessibilityRole.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ActionRole.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Alignment.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Application.register(): @MainActor static func register()
 swift.type.method ApplicationBuilder.buildExpression(_:): @MainActor static func buildExpression<Declared>(_ scene: Declared) -> ApplicationBuilder.Declared where Declared : Scene
 swift.type.method ApplicationBuilder.buildFinalResult(_:): @MainActor static func buildFinalResult(_ declared: ApplicationBuilder.Declared) -> Scenes
 swift.type.method ApplicationBuilder.buildPartialBlock(accumulated:next:): @MainActor static func buildPartialBlock(accumulated: ApplicationBuilder.Declared, next: ApplicationBuilder.Declared) -> ApplicationBuilder.Declared
 swift.type.method ApplicationBuilder.buildPartialBlock(first:): @MainActor static func buildPartialBlock(first: ApplicationBuilder.Declared) -> ApplicationBuilder.Declared
-swift.type.method Area.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method AxisValues.at(_:): static func at(_ values: some Sequence<Double>) -> AxisValues
 swift.type.method AxisValues.every(_:): static func every(_ step: Double) -> AxisValues
 swift.type.method Binding.multi(_:_:): @MainActor static func multi<A, B>(_ a: Binding<A>, _ b: Binding<B>) -> MultiBinding<Value, (A, B)> where A : StateValue, B : StateValue
@@ -13494,25 +13394,10 @@ swift.type.method Binding.multi(_:_:_:_:_:_:_:): @MainActor static func multi<A,
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H, I>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue, I : StateValue
 swift.type.method Binding.multi(_:_:_:_:_:_:_:_:_:_:): @MainActor static func multi<A, B, C, D, E, F, G, H, I, J>(_ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>, _ j: Binding<J>) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I, J)> where A : StateValue, B : StateValue, C : StateValue, D : StateValue, E : StateValue, F : StateValue, G : StateValue, H : StateValue, I : StateValue, J : StateValue
-swift.type.method Blur.Thickness.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Blur.Thickness.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Brush.linearGradient(_:startPoint:endPoint:): static func linearGradient(_ stops: [GradientStop], startPoint: Point = Point(0, 0), endPoint: Point = Point(0, 1)) -> Brush
-swift.type.method Brush.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Brush.radialGradient(_:center:radius:): static func radialGradient(_ stops: [GradientStop], center: Point = Point(0.5, 0.5), radius: Double = 0.5) -> Brush
 swift.type.method Brush.solidColor(_:): static func solidColor(_ color: Color) -> Brush
-swift.type.method ButtonMenuKind.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ButtonRole.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method CalendarDate.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ChosenFile.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ClockTime.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Color.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ColorScheme.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Complaints.route(to:): static func route(to hear: (@Sendable (String) -> Void)?)
-swift.type.method ContainerShape.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ContentMode.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method CornerRadius.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method DateStyle.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method DotShape.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Draw.fillArc(x:y:width:height:startAngle:endAngle:clockwise:): static func fillArc(x: Double, y: Double, width: Double, height: Double, startAngle: Double, endAngle: Double, clockwise: Bool) -> DrawCommand
 swift.type.method Draw.fillColor(_:): static func fillColor(_ value: Color) -> DrawCommand
 swift.type.method Draw.fillEllipse(x:y:width:height:): static func fillEllipse(x: Double, y: Double, width: Double, height: Double) -> DrawCommand
@@ -13536,7 +13421,6 @@ swift.type.method Draw.strokeRoundedRectangle(x:y:width:height:cornerRadius:): s
 swift.type.method Draw.text(_:x:y:width:height:horizontalAlignment:verticalAlignment:): static func text(_ text: String, x: Double, y: Double, width: Double, height: Double, horizontalAlignment: TextAlignment = .start, verticalAlignment: TextAlignment = .start) -> DrawCommand
 swift.type.method Draw.textColor(_:): static func textColor(_ value: Color) -> DrawCommand
 swift.type.method Draw.translateBy(x:y:): static func translateBy(x: Double, y: Double) -> DrawCommand
-swift.type.method DrawCommand.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method DrawingBuilder.buildArray(_:): static func buildArray(_ components: [[DrawCommand]]) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildBlock(_:): static func buildBlock(_ components: [DrawCommand]...) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildEither(first:): static func buildEither(first component: [DrawCommand]) -> [DrawCommand]
@@ -13544,58 +13428,30 @@ swift.type.method DrawingBuilder.buildEither(second:): static func buildEither(s
 swift.type.method DrawingBuilder.buildExpression(_:): static func buildExpression(_ expression: DrawCommand) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildExpression(_:): static func buildExpression(_ expression: [DrawCommand]) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildOptional(_:): static func buildOptional(_ component: [DrawCommand]?) -> [DrawCommand]
-swift.type.method FileType.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method FillRule.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method FontAttributes.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method FontWeight.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method GesturePhase.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Glass.Clarity.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Glass.Clarity.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method GridLength.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method GridTracks.auto(count:): static func auto(count: Int) -> GridTracks
 swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridTracks
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
-swift.type.method Icon.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method IconPosition.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ImageSource.icon(_:): static func icon(_ icon: Icon) -> ImageSource
-swift.type.method ImageSource.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method InputPurpose.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Insets.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ItemDragStart.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ItemsLayout.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Key.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method KeyModifiers.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method KeyboardShortcut.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LayoutBody.followsLayout(response:damping:): static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody
-swift.type.method LayoutBody.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
-swift.type.method LayoutDirection.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LayoutDynamics.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutDynamics
 swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
 swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
 swift.type.method LayoutInput.scroll(_:pointsPerUnit:): static func scroll(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
 swift.type.method LayoutInput.swipe(_:pointsPerUnit:): static func swipe(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
 swift.type.method LayoutInterpolation.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
-swift.type.method LineBreak.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method LineCap.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method LineJoin.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LocalizedResources.resources(for:): @MainActor static func resources(for language: Self.Catalog.CatalogLanguage) -> Self
-swift.type.method Location.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method MapRegion.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method MapType.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method MarkerBuilder.buildBlock(_:): static func buildBlock(_ components: [Marker]...) -> [Marker]
 swift.type.method MarkerBuilder.buildEither(first:): static func buildEither(first component: [Marker]) -> [Marker]
 swift.type.method MarkerBuilder.buildEither(second:): static func buildEither(second component: [Marker]) -> [Marker]
 swift.type.method MarkerBuilder.buildExpression(_:): static func buildExpression(_ expression: Marker) -> [Marker]
 swift.type.method MarkerBuilder.buildExpression(_:): static func buildExpression(_ expression: [Marker]) -> [Marker]
 swift.type.method MarkerBuilder.buildOptional(_:): static func buildOptional(_ component: [Marker]?) -> [Marker]
-swift.type.method MarkerType.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Material.blur(_:): static func blur(_ blur: Blur) -> Material
 swift.type.method Material.color(_:): static func color(_ color: Color) -> Material
 swift.type.method Material.glass(_:): static func glass(_ glass: Glass) -> Material
 swift.type.method Material.gradient(_:): static func gradient(_ brush: Brush) -> Material
-swift.type.method Material.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method MenuBarBuilder.buildBlock(_:): static func buildBlock(_ components: [Menu]...) -> [Menu]
 swift.type.method MenuBarBuilder.buildEither(first:): static func buildEither(first component: [Menu]) -> [Menu]
 swift.type.method MenuBarBuilder.buildEither(second:): static func buildEither(second component: [Menu]) -> [Menu]
@@ -13615,12 +13471,6 @@ swift.type.method MenuBuilder.buildOptional(_:): @MainActor static func buildOpt
 swift.type.method Motion.eased(_:curve:): static func eased(_ length: Duration, curve: Easing = .cubicOut) -> Motion
 swift.type.method Motion.glide(longest:): static func glide(longest: Duration) -> Motion
 swift.type.method Motion.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion
-swift.type.method Orientation.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method PickerPresentation.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Point.list(from:): static func list(from value: PropValue) -> [Point]?
-swift.type.method Point.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method Rect.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method SafeAreaEdges.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method SceneBuilder.buildEither(first:): @MainActor static func buildEither(first: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildEither(second:): @MainActor static func buildEither(second: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildExpression(_:): @MainActor static func buildExpression(_ group: WindowGroup) -> SceneBuilder.Declared
@@ -13629,11 +13479,6 @@ swift.type.method SceneBuilder.buildFinalResult(_:): @MainActor static func buil
 swift.type.method SceneBuilder.buildOptional(_:): @MainActor static func buildOptional(_ declared: SceneBuilder.Declared?) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildPartialBlock(accumulated:next:): @MainActor static func buildPartialBlock(accumulated: SceneBuilder.Declared, next: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method SceneBuilder.buildPartialBlock(first:): @MainActor static func buildPartialBlock(first: SceneBuilder.Declared) -> SceneBuilder.Declared
-swift.type.method ScrollAnchor.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ScrollAxes.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ScrollEdge.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ScrollIndicatorVisibility.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method SelectionMode.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method StyleBuilder.buildArray(_:): @MainActor static func buildArray(_ parts: [[AnyStyle]]) -> [AnyStyle]
 swift.type.method StyleBuilder.buildBlock(_:): @MainActor static func buildBlock(_ parts: [AnyStyle]...) -> [AnyStyle]
 swift.type.method StyleBuilder.buildEither(first:): @MainActor static func buildEither(first: [AnyStyle]) -> [AnyStyle]
@@ -13641,19 +13486,12 @@ swift.type.method StyleBuilder.buildEither(second:): @MainActor static func buil
 swift.type.method StyleBuilder.buildExpression(_:): @MainActor static func buildExpression(_ styles: [AnyStyle]) -> [AnyStyle]
 swift.type.method StyleBuilder.buildExpression(_:): @MainActor static func buildExpression<Target>(_ style: Style<Target>) -> [AnyStyle] where Target : StyleTarget
 swift.type.method StyleBuilder.buildOptional(_:): @MainActor static func buildOptional(_ part: [AnyStyle]?) -> [AnyStyle]
-swift.type.method SubmitLabel.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method SwipeDirection.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method TextAlignment.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method TextCase.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method TextDecorations.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method TextSpanBuilder.buildBlock(_:): static func buildBlock(_ components: [TextSpan]...) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildEither(first:): static func buildEither(first component: [TextSpan]) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildEither(second:): static func buildEither(second component: [TextSpan]) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildExpression(_:): static func buildExpression(_ expression: TextSpan) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildExpression(_:): static func buildExpression(_ expression: [TextSpan]) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildOptional(_:): static func buildOptional(_ component: [TextSpan]?) -> [TextSpan]
-swift.type.method TextStyle.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method TimeStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ToolbarBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarContent...) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarContent) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarContent) -> ToolbarContent
@@ -13663,22 +13501,17 @@ swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func bui
 swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarContent?) -> ToolbarContent
 swift.type.method ToolbarButton.inspector(_:): @MainActor static func inspector(_ window: WindowSession) -> ToolbarButton
-swift.type.method ToolbarEdge.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ToolbarGroupBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarGroupContent...) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarGroupContent) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarGroupContent) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [some ToolbarItem]) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarGroupContent?) -> ToolbarGroupContent
-swift.type.method ToolbarPart.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ToolbarPosition.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ToolbarStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ViewBuilder.buildBlock(_:): @MainActor static func buildBlock<Content>(_ content: Content) -> Content where Content : Views
 swift.type.method ViewBuilder.buildBlock(_:): @MainActor static func buildBlock<each Part>(_ part: repeat each Part) -> Statements<repeat each Part> where repeat each Part : Views
 swift.type.method ViewBuilder.buildEither(first:): @MainActor static func buildEither<First, Second>(first: First) -> Either<First, Second>
 swift.type.method ViewBuilder.buildEither(second:): @MainActor static func buildEither<First, Second>(second: Second) -> Either<First, Second>
 swift.type.method ViewBuilder.buildOptional(_:): @MainActor static func buildOptional<Wrapped>(_ wrapped: Wrapped?) -> Wrapped? where Wrapped : Views
-swift.type.method ViewTransform.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ViewTransform.rotate(_:): static func rotate(_ degrees: Double) -> ViewTransform
 swift.type.method ViewTransform.scale(_:): static func scale(_ factor: Double) -> ViewTransform
 swift.type.method ViewTransform.scaleX(_:): static func scaleX(_ factor: Double) -> ViewTransform
@@ -13687,26 +13520,11 @@ swift.type.method ViewTransform.skew(_:_:): static func skew(_ x: Double, _ y: D
 swift.type.method ViewTransform.tilt(_:): static func tilt(_ degrees: Double) -> ViewTransform
 swift.type.method ViewTransform.translate(_:_:): static func translate(_ x: Double, _ y: Double) -> ViewTransform
 swift.type.method ViewTransform.turn(_:): static func turn(_ degrees: Double) -> ViewTransform
-swift.type.method WebNavigationResult.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method WebNavigationType.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method WebViewSource.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.property @SwiftBool.persistentKind: static var persistentKind: PersistentKind { get }
 swift.type.property @SwiftDouble.axes: static var axes: [WritableKeyPath<Double, Double>] { get }
-swift.type.property @SwiftDouble.persistentKind: static var persistentKind: PersistentKind { get }
-swift.type.property @SwiftInt.persistentKind: static var persistentKind: PersistentKind { get }
-swift.type.property @SwiftString.persistentKind: static var persistentKind: PersistentKind { get }
 swift.type.property ActionElementContract.clicked: static let clicked: ElementEvent<ActionElementContract, Void>
-swift.type.property ActionElementContract.members: static let members: [any ContractMember]
 swift.type.property ActionElementContract.name: static let name: String
 swift.type.property ActionElementContract.role: static let role: ElementProperty<ActionElementContract, ActionRole>
-swift.type.property ActionElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ActionElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property AnchorContract.layer: static let layer: ElementLayer
-swift.type.property AnchorContract.layer: static var layer: ElementLayer { get }
-swift.type.property AnchorContract.members: static let members: [any ContractMember]
 swift.type.property AnchorContract.name: static var name: String { get }
-swift.type.property AnchorContract.nodeType: static let nodeType: NodeType
-swift.type.property AnchorContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ApplicationContract.alert: static let alert: ElementAct<ApplicationContract, (Name, Name, String, String, String), Void>
 swift.type.property ApplicationContract.announce: static let announce: ElementAct<ApplicationContract, String, Void>
 swift.type.property ApplicationContract.cancelCall: static let cancelCall: ElementAct<ApplicationContract, Int, Void>
@@ -13717,123 +13535,65 @@ swift.type.property ApplicationContract.handlerFailed: static let handlerFailed:
 swift.type.property ApplicationContract.hideOnScreenKeyboard: static let hideOnScreenKeyboard: ElementAct<ApplicationContract, (Name, Name), Bool>
 swift.type.property ApplicationContract.launchAddress: static let launchAddress: ElementAct<ApplicationContract, String, Bool>
 swift.type.property ApplicationContract.launchFile: static let launchFile: ElementAct<ApplicationContract, ChosenFile, Bool>
-swift.type.property ApplicationContract.layer: static let layer: ElementLayer
-swift.type.property ApplicationContract.layer: static var layer: ElementLayer { get }
-swift.type.property ApplicationContract.members: static let members: [any ContractMember]
 swift.type.property ApplicationContract.name: static var name: String { get }
-swift.type.property ApplicationContract.nodeType: static let nodeType: NodeType
 swift.type.property ApplicationContract.openFiles: static let openFiles: ElementAct<ApplicationContract, (Name, Name, [FileType], Bool), [ChosenFile]>
-swift.type.property ApplicationContract.persistSceneValue: static let persistSceneValue: ElementAct<ApplicationContract, (Name, Name, PropValue), Void>
-swift.type.property ApplicationContract.persistValue: static let persistValue: ElementAct<ApplicationContract, (Name, PropValue), Void>
 swift.type.property ApplicationContract.prompt: static let prompt: ElementAct<ApplicationContract, (Name, Name, String, String, String, String, String?, Int?, InputPurpose, String), String?>
 swift.type.property ApplicationContract.readClipboard: static let readClipboard: ElementAct<ApplicationContract, Void, String?>
 swift.type.property ApplicationContract.readFile: static let readFile: ElementAct<ApplicationContract, (ChosenFile, Int?), [UInt8]>
 swift.type.property ApplicationContract.saveFile: static let saveFile: ElementAct<ApplicationContract, (Name, Name, [UInt8], String, [FileType]), ChosenFile?>
 swift.type.property ApplicationContract.sendRequest: static let sendRequest: ElementAct<ApplicationContract, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>
 swift.type.property ApplicationContract.share: static let share: ElementAct<ApplicationContract, (Name, Name, String?, String?), Bool>
-swift.type.property ApplicationContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ApplicationContract.useAccentColor: static let useAccentColor: ElementAct<ApplicationContract, Color?, Void>
 swift.type.property ApplicationContract.useColorScheme: static let useColorScheme: ElementAct<ApplicationContract, ColorScheme, Void>
 swift.type.property ApplicationContract.utcOffset: static let utcOffset: ElementAct<ApplicationContract, (String?, CalendarDate?), Int>
 swift.type.property ApplicationContract.writeClipboard: static let writeClipboard: ElementAct<ApplicationContract, String, Void>
 swift.type.property AutomationElementContract.accessibilityIdentifier: static let accessibilityIdentifier: ElementProperty<AutomationElementContract, String>
-swift.type.property AutomationElementContract.members: static let members: [any ContractMember]
 swift.type.property AutomationElementContract.name: static let name: String
-swift.type.property AutomationElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property AxisValues.endpoints: static var endpoints: AxisValues { get }
-swift.type.property BarButtonElementContract.members: static let members: [any ContractMember]
 swift.type.property BarButtonElementContract.name: static let name: String
 swift.type.property BarButtonElementContract.pressed: static let pressed: ElementEvent<BarButtonElementContract, Void>
 swift.type.property BarButtonElementContract.released: static let released: ElementEvent<BarButtonElementContract, Void>
-swift.type.property BarButtonElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property BarButtonElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property BarElementContract.barBackground: static let barBackground: ElementProperty<BarElementContract, Material>
 swift.type.property BarElementContract.barForegroundColor: static let barForegroundColor: ElementProperty<BarElementContract, Color>
 swift.type.property BarElementContract.barScrollEdge: static let barScrollEdge: ElementProperty<BarElementContract, ScrollEdge>
-swift.type.property BarElementContract.members: static let members: [any ContractMember]
 swift.type.property BarElementContract.name: static let name: String
-swift.type.property BarElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property BarElementContract.toolbarSpacing: static let toolbarSpacing: ElementProperty<BarElementContract, Double>
 swift.type.property BarElementContract.toolbarStyle: static let toolbarStyle: ElementProperty<BarElementContract, ToolbarStyle>
 swift.type.property BarItemElementContract.background: static let background: ElementProperty<BarItemElementContract, Material>
-swift.type.property BarItemElementContract.members: static let members: [any ContractMember]
 swift.type.property BarItemElementContract.name: static let name: String
 swift.type.property BarItemElementContract.pointerEntered: static let pointerEntered: ElementEvent<BarItemElementContract, Void>
 swift.type.property BarItemElementContract.pointerExited: static let pointerExited: ElementEvent<BarItemElementContract, Void>
 swift.type.property BarItemElementContract.style: static let style: ElementProperty<BarItemElementContract, Name>
-swift.type.property BarItemElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Blur.regular: static let regular: Blur
 swift.type.property Blur.thick: static let thick: Blur
 swift.type.property Blur.thin: static let thin: Blur
 swift.type.property Blur.ultraThick: static let ultraThick: Blur
 swift.type.property Blur.ultraThin: static let ultraThin: Blur
 swift.type.property BorderElementContract.lineWidth: static let lineWidth: ElementProperty<BorderElementContract, Double>
-swift.type.property BorderElementContract.members: static let members: [any ContractMember]
 swift.type.property BorderElementContract.name: static let name: String
 swift.type.property BorderElementContract.shape: static let shape: ElementProperty<BorderElementContract, ContainerShape>
 swift.type.property BorderElementContract.stroke: static let stroke: ElementProperty<BorderElementContract, Brush>
-swift.type.property BorderElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property BottomBarContract.layer: static let layer: ElementLayer
-swift.type.property BottomBarContract.layer: static var layer: ElementLayer { get }
-swift.type.property BottomBarContract.members: static let members: [any ContractMember]
 swift.type.property BottomBarContract.name: static var name: String { get }
-swift.type.property BottomBarContract.nodeType: static let nodeType: NodeType
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
-swift.type.property BottomBarContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Button.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ButtonContract.clicked: static let clicked: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.icon: static let icon: ElementProperty<ButtonContract, ImageSource>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
 swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementProperty<ButtonContract, Double>
 swift.type.property ButtonContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<ButtonContract, KeyboardShortcut>
-swift.type.property ButtonContract.layer: static let layer: ElementLayer
-swift.type.property ButtonContract.layer: static var layer: ElementLayer { get }
 swift.type.property ButtonContract.lineBreak: static let lineBreak: ElementProperty<ButtonContract, LineBreak>
-swift.type.property ButtonContract.members: static let members: [any ContractMember]
 swift.type.property ButtonContract.name: static var name: String { get }
-swift.type.property ButtonContract.nodeType: static let nodeType: NodeType
 swift.type.property ButtonContract.pressed: static let pressed: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.released: static let released: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.role: static let role: ElementProperty<ButtonContract, ButtonRole>
-swift.type.property ButtonContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ButtonContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ButtonMenuContract.layer: static let layer: ElementLayer
-swift.type.property ButtonMenuContract.layer: static var layer: ElementLayer { get }
-swift.type.property ButtonMenuContract.members: static let members: [any ContractMember]
 swift.type.property ButtonMenuContract.name: static var name: String { get }
-swift.type.property ButtonMenuContract.nodeType: static let nodeType: NodeType
-swift.type.property ButtonMenuContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ButtonMenuElementContract.members: static let members: [any ContractMember]
 swift.type.property ButtonMenuElementContract.menuKind: static let menuKind: ElementProperty<ButtonMenuElementContract, ButtonMenuKind>
 swift.type.property ButtonMenuElementContract.name: static let name: String
 swift.type.property ButtonMenuElementContract.showsMenuArrow: static let showsMenuArrow: ElementProperty<ButtonMenuElementContract, Bool>
-swift.type.property ButtonMenuElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Canvas.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property CanvasContract.drawing: static let drawing: ElementProperty<CanvasContract, [DrawCommand]>
-swift.type.property CanvasContract.layer: static let layer: ElementLayer
-swift.type.property CanvasContract.layer: static var layer: ElementLayer { get }
-swift.type.property CanvasContract.members: static let members: [any ContractMember]
 swift.type.property CanvasContract.name: static var name: String { get }
-swift.type.property CanvasContract.nodeType: static let nodeType: NodeType
-swift.type.property CanvasContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property CanvasContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Capsule.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property CapsuleContract.layer: static let layer: ElementLayer
-swift.type.property CapsuleContract.layer: static var layer: ElementLayer { get }
-swift.type.property CapsuleContract.members: static let members: [any ContractMember]
 swift.type.property CapsuleContract.name: static var name: String { get }
-swift.type.property CapsuleContract.nodeType: static let nodeType: NodeType
-swift.type.property CapsuleContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property CapsuleContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property CheckBox.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property CheckBoxContract.isOn: static let isOn: ElementProperty<CheckBoxContract, Bool>
-swift.type.property CheckBoxContract.layer: static let layer: ElementLayer
-swift.type.property CheckBoxContract.layer: static var layer: ElementLayer { get }
-swift.type.property CheckBoxContract.members: static let members: [any ContractMember]
 swift.type.property CheckBoxContract.name: static var name: String { get }
-swift.type.property CheckBoxContract.nodeType: static let nodeType: NodeType
-swift.type.property CheckBoxContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property CheckBoxContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property CheckBoxContract.toggled: static let toggled: ElementEvent<CheckBoxContract, Bool>
 swift.type.property Color.accent: static let accent: Color
 swift.type.property Color.black: static let black: Color
@@ -13870,77 +13630,33 @@ swift.type.property Color.violet: static let violet: Color
 swift.type.property Color.white: static let white: Color
 swift.type.property Color.whiteSmoke: static let whiteSmoke: Color
 swift.type.property Color.yellow: static let yellow: Color
-swift.type.property ColorPicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ColorPickerContract.choosesOpacity: static let choosesOpacity: ElementProperty<ColorPickerContract, Bool>
 swift.type.property ColorPickerContract.color: static let color: ElementProperty<ColorPickerContract, Color>
 swift.type.property ColorPickerContract.colorChanged: static let colorChanged: ElementEvent<ColorPickerContract, Color>
-swift.type.property ColorPickerContract.layer: static let layer: ElementLayer
-swift.type.property ColorPickerContract.layer: static var layer: ElementLayer { get }
-swift.type.property ColorPickerContract.members: static let members: [any ContractMember]
 swift.type.property ColorPickerContract.name: static var name: String { get }
-swift.type.property ColorPickerContract.nodeType: static let nodeType: NodeType
-swift.type.property ColorPickerContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ColorPickerContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ContextMenuContract.layer: static let layer: ElementLayer
-swift.type.property ContextMenuContract.layer: static var layer: ElementLayer { get }
-swift.type.property ContextMenuContract.members: static let members: [any ContractMember]
 swift.type.property ContextMenuContract.name: static var name: String { get }
-swift.type.property ContextMenuContract.nodeType: static let nodeType: NodeType
-swift.type.property ContextMenuContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property CorneredShapeContract.lineJoin: static let lineJoin: ElementProperty<CorneredShapeContract, LineJoin>
-swift.type.property CorneredShapeContract.members: static let members: [any ContractMember]
 swift.type.property CorneredShapeContract.miterLimit: static let miterLimit: ElementProperty<CorneredShapeContract, Double>
 swift.type.property CorneredShapeContract.name: static let name: String
-swift.type.property CorneredShapeContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property CorneredShapeContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property DatePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property DatePickerContract.closed: static let closed: ElementEvent<DatePickerContract, Void>
 swift.type.property DatePickerContract.date: static let date: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.dateChanged: static let dateChanged: ElementEvent<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.format: static let format: ElementProperty<DatePickerContract, DateStyle>
 swift.type.property DatePickerContract.isOpen: static let isOpen: ElementProperty<DatePickerContract, Bool>
-swift.type.property DatePickerContract.layer: static let layer: ElementLayer
-swift.type.property DatePickerContract.layer: static var layer: ElementLayer { get }
 swift.type.property DatePickerContract.maximumDate: static let maximumDate: ElementProperty<DatePickerContract, CalendarDate>
-swift.type.property DatePickerContract.members: static let members: [any ContractMember]
 swift.type.property DatePickerContract.minimumDate: static let minimumDate: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.name: static var name: String { get }
-swift.type.property DatePickerContract.nodeType: static let nodeType: NodeType
 swift.type.property DatePickerContract.opened: static let opened: ElementEvent<DatePickerContract, Void>
-swift.type.property DatePickerContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property DatePickerContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property DecorableTextElementContract.members: static let members: [any ContractMember]
 swift.type.property DecorableTextElementContract.name: static let name: String
 swift.type.property DecorableTextElementContract.textDecorations: static let textDecorations: ElementProperty<DecorableTextElementContract, TextDecorations>
-swift.type.property DecorableTextElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Ellipse.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property EllipseContract.layer: static let layer: ElementLayer
-swift.type.property EllipseContract.layer: static var layer: ElementLayer { get }
-swift.type.property EllipseContract.members: static let members: [any ContractMember]
 swift.type.property EllipseContract.name: static var name: String { get }
-swift.type.property EllipseContract.nodeType: static let nodeType: NodeType
-swift.type.property EllipseContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property EllipseContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property EngineCycle.mostElapsed: static let mostElapsed: Double
-swift.type.property Fill.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property FillContract.layer: static let layer: ElementLayer
-swift.type.property FillContract.layer: static var layer: ElementLayer { get }
-swift.type.property FillContract.members: static let members: [any ContractMember]
 swift.type.property FillContract.name: static var name: String { get }
-swift.type.property FillContract.nodeType: static let nodeType: NodeType
-swift.type.property FillContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property FillContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property FilledShapeContract.fill: static let fill: ElementProperty<FilledShapeContract, Material>
-swift.type.property FilledShapeContract.members: static let members: [any ContractMember]
 swift.type.property FilledShapeContract.name: static let name: String
-swift.type.property FilledShapeContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property FilledShapeContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property FocusElementContract.focus: static let focus: ElementAct<FocusElementContract, Void, Bool>
 swift.type.property FocusElementContract.isFocusedChanged: static let isFocusedChanged: ElementEvent<FocusElementContract, Bool>
-swift.type.property FocusElementContract.members: static let members: [any ContractMember]
 swift.type.property FocusElementContract.name: static let name: String
-swift.type.property FocusElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property FocusElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property FocusElementContract.unfocus: static let unfocus: ElementAct<FocusElementContract, Void, Void>
 swift.type.property FontAttributes.italic: static let italic: FontAttributes
 swift.type.property FontAttributes.monospacedDigits: static let monospacedDigits: FontAttributes
@@ -13950,41 +13666,25 @@ swift.type.property FontElementContract.fontFamily: static let fontFamily: Eleme
 swift.type.property FontElementContract.fontSize: static let fontSize: ElementProperty<FontElementContract, Double>
 swift.type.property FontElementContract.fontWeight: static let fontWeight: ElementProperty<FontElementContract, FontWeight>
 swift.type.property FontElementContract.isFontAutoScalingEnabled: static let isFontAutoScalingEnabled: ElementProperty<FontElementContract, Bool>
-swift.type.property FontElementContract.members: static let members: [any ContractMember]
 swift.type.property FontElementContract.name: static let name: String
 swift.type.property FontElementContract.textStyle: static let textStyle: ElementProperty<FontElementContract, TextStyle>
-swift.type.property FontElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property GatePolicy.cancelPrevious: static var cancelPrevious: GatePolicy { get }
 swift.type.property GatePolicy.ignoreWhileRunning: static var ignoreWhileRunning: GatePolicy { get }
 swift.type.property GatePolicy.runConcurrently: static var runConcurrently: GatePolicy { get }
 swift.type.property GatePolicy.waitForPrevious: static var waitForPrevious: GatePolicy { get }
 swift.type.property Glass.clear: static let clear: Glass
 swift.type.property Glass.regular: static let regular: Glass
-swift.type.property Grid.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property GridContract.columnSpacing: static let columnSpacing: ElementProperty<GridContract, Double>
 swift.type.property GridContract.columns: static let columns: ElementProperty<GridContract, [GridLength]>
-swift.type.property GridContract.layer: static let layer: ElementLayer
-swift.type.property GridContract.layer: static var layer: ElementLayer { get }
-swift.type.property GridContract.members: static let members: [any ContractMember]
 swift.type.property GridContract.name: static var name: String { get }
-swift.type.property GridContract.nodeType: static let nodeType: NodeType
 swift.type.property GridContract.rowSpacing: static let rowSpacing: ElementProperty<GridContract, Double>
 swift.type.property GridContract.rows: static let rows: ElementProperty<GridContract, [GridLength]>
-swift.type.property GridContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property GridContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property GridLength.fill: static var fill: GridLength { get }
 swift.type.property GridTracks.auto: static var auto: GridTracks { get }
 swift.type.property GridTracks.fill: static var fill: GridTracks { get }
-swift.type.property HStack.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property HStackContract.layer: static let layer: ElementLayer
-swift.type.property HStackContract.layer: static var layer: ElementLayer { get }
 swift.type.property HStackContract.lineAlignment: static let lineAlignment: ElementProperty<HStackContract, TextAlignment>
-swift.type.property HStackContract.members: static let members: [any ContractMember]
 swift.type.property HStackContract.name: static var name: String { get }
-swift.type.property HStackContract.nodeType: static let nodeType: NodeType
 swift.type.property HStackContract.rowSpacing: static let rowSpacing: ElementProperty<HStackContract, Double>
-swift.type.property HStackContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property HStackContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property HStackContract.wraps: static let wraps: ElementProperty<HStackContract, Bool>
 swift.type.property HTTPMethod.delete: static let delete: HTTPMethod
 swift.type.property HTTPMethod.get: static let get: HTTPMethod
@@ -13992,38 +13692,22 @@ swift.type.property HTTPMethod.head: static let head: HTTPMethod
 swift.type.property HTTPMethod.patch: static let patch: HTTPMethod
 swift.type.property HTTPMethod.post: static let post: HTTPMethod
 swift.type.property HTTPMethod.put: static let put: HTTPMethod
-swift.type.property Image.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ImageContract.isAnimating: static let isAnimating: ElementProperty<ImageContract, Bool>
-swift.type.property ImageContract.layer: static let layer: ElementLayer
-swift.type.property ImageContract.layer: static var layer: ElementLayer { get }
-swift.type.property ImageContract.members: static let members: [any ContractMember]
 swift.type.property ImageContract.name: static var name: String { get }
-swift.type.property ImageContract.nodeType: static let nodeType: NodeType
 swift.type.property ImageContract.source: static let source: ElementProperty<ImageContract, ImageSource>
-swift.type.property ImageContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ImageContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ImageElementContract.contentMode: static let contentMode: ElementProperty<ImageElementContract, ContentMode>
-swift.type.property ImageElementContract.members: static let members: [any ContractMember]
 swift.type.property ImageElementContract.name: static let name: String
-swift.type.property ImageElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ItemsView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ItemsViewContract.endReached: static let endReached: ElementEvent<ItemsViewContract, Void>
 swift.type.property ItemsViewContract.endReachedWithin: static let endReachedWithin: ElementProperty<ItemsViewContract, Int>
 swift.type.property ItemsViewContract.itemActivated: static let itemActivated: ElementEvent<ItemsViewContract, String>
 swift.type.property ItemsViewContract.items: static let items: ElementProperty<ItemsViewContract, ItemsEntries>
 swift.type.property ItemsViewContract.itemsLayout: static let itemsLayout: ElementProperty<ItemsViewContract, ItemsLayout>
-swift.type.property ItemsViewContract.layer: static let layer: ElementLayer
-swift.type.property ItemsViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property ItemsViewContract.members: static let members: [any ContractMember]
 swift.type.property ItemsViewContract.name: static var name: String { get }
-swift.type.property ItemsViewContract.nodeType: static let nodeType: NodeType
 swift.type.property ItemsViewContract.realizedChanged: static let realizedChanged: ElementEvent<ItemsViewContract, [String]>
 swift.type.property ItemsViewContract.scrollTo: static let scrollTo: ElementAct<ItemsViewContract, (String, ScrollAnchor), Void>
 swift.type.property ItemsViewContract.selectedItems: static let selectedItems: ElementProperty<ItemsViewContract, [String]>
 swift.type.property ItemsViewContract.selectedItemsChanged: static let selectedItemsChanged: ElementEvent<ItemsViewContract, [String]>
 swift.type.property ItemsViewContract.selectionMode: static let selectionMode: ElementProperty<ItemsViewContract, SelectionMode>
-swift.type.property ItemsViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ItemsViewContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Key.delete: static let delete: Key
 swift.type.property Key.downArrow: static let downArrow: Key
 swift.type.property Key.end: static let end: Key
@@ -14054,16 +13738,11 @@ swift.type.property KeyModifiers.primary: static let primary: KeyModifiers
 swift.type.property KeyModifiers.shift: static let shift: KeyModifiers
 swift.type.property KeyboardElementContract.keyPressed: static let keyPressed: ElementEvent<KeyboardElementContract, (Key, KeyModifiers)>
 swift.type.property KeyboardElementContract.keysTaken: static let keysTaken: ElementProperty<KeyboardElementContract, [Key]>
-swift.type.property KeyboardElementContract.members: static let members: [any ContractMember]
 swift.type.property KeyboardElementContract.name: static let name: String
-swift.type.property KeyboardElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property LayoutContract.clipsContent: static let clipsContent: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.ignoresSafeArea: static let ignoresSafeArea: ElementProperty<LayoutContract, SafeAreaEdges>
 swift.type.property LayoutContract.letsInputThrough: static let letsInputThrough: ElementProperty<LayoutContract, Bool>
-swift.type.property LayoutContract.members: static let members: [any ContractMember]
 swift.type.property LayoutContract.name: static let name: String
-swift.type.property LayoutContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property LayoutContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property LayoutCurve.catmullRom: static var catmullRom: LayoutCurve { get }
 swift.type.property LayoutCurve.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutCurve.monotone: static var monotone: LayoutCurve { get }
@@ -14074,103 +13753,45 @@ swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: Layou
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutInterpolation.monotone: static var monotone: LayoutCurve { get }
 swift.type.property LayoutParameters.axes: static var axes: [WritableKeyPath<Self, Double>] { get }
-swift.type.property Line.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property LineContract.from: static let from: ElementProperty<LineContract, Point>
-swift.type.property LineContract.layer: static let layer: ElementLayer
-swift.type.property LineContract.layer: static var layer: ElementLayer { get }
-swift.type.property LineContract.members: static let members: [any ContractMember]
 swift.type.property LineContract.name: static var name: String { get }
-swift.type.property LineContract.nodeType: static let nodeType: NodeType
-swift.type.property LineContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property LineContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property LineContract.to: static let to: ElementProperty<LineContract, Point>
 swift.type.property LineHeightElementContract.lineHeight: static let lineHeight: ElementProperty<LineHeightElementContract, Double>
-swift.type.property LineHeightElementContract.members: static let members: [any ContractMember]
 swift.type.property LineHeightElementContract.name: static let name: String
-swift.type.property LineHeightElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Link.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property LinkContract.address: static let address: ElementProperty<LinkContract, String>
 swift.type.property LinkContract.clicked: static let clicked: ElementEvent<LinkContract, Void>
-swift.type.property LinkContract.layer: static let layer: ElementLayer
-swift.type.property LinkContract.layer: static var layer: ElementLayer { get }
-swift.type.property LinkContract.members: static let members: [any ContractMember]
 swift.type.property LinkContract.name: static var name: String { get }
-swift.type.property LinkContract.nodeType: static let nodeType: NodeType
-swift.type.property LinkContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property LinkContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property LocalizationCatalog.defaultLanguage: static var defaultLanguage: Self.CatalogLanguage { get }
-swift.type.property Map.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MapContract.isScrollEnabled: static let isScrollEnabled: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.isZoomEnabled: static let isZoomEnabled: ElementProperty<MapContract, Bool>
-swift.type.property MapContract.layer: static let layer: ElementLayer
-swift.type.property MapContract.layer: static var layer: ElementLayer { get }
 swift.type.property MapContract.locationTapped: static let locationTapped: ElementEvent<MapContract, Location>
-swift.type.property MapContract.members: static let members: [any ContractMember]
 swift.type.property MapContract.moveToRegion: static let moveToRegion: ElementAct<MapContract, MapRegion, Void>
 swift.type.property MapContract.name: static var name: String { get }
-swift.type.property MapContract.nodeType: static let nodeType: NodeType
 swift.type.property MapContract.region: static let region: ElementProperty<MapContract, MapRegion>
 swift.type.property MapContract.showsTraffic: static let showsTraffic: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.showsUserLocation: static let showsUserLocation: ElementProperty<MapContract, Bool>
-swift.type.property MapContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property MapContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MapContract.type: static let type: ElementProperty<MapContract, MapType>
 swift.type.property MarkerContract.detailsClicked: static let detailsClicked: ElementEvent<MarkerContract, Void>
-swift.type.property MarkerContract.layer: static let layer: ElementLayer
-swift.type.property MarkerContract.layer: static var layer: ElementLayer { get }
 swift.type.property MarkerContract.location: static let location: ElementProperty<MarkerContract, Location>
-swift.type.property MarkerContract.members: static let members: [any ContractMember]
 swift.type.property MarkerContract.name: static var name: String { get }
-swift.type.property MarkerContract.nodeType: static let nodeType: NodeType
 swift.type.property MarkerContract.selected: static let selected: ElementEvent<MarkerContract, Void>
 swift.type.property MarkerContract.subtitle: static let subtitle: ElementProperty<MarkerContract, String>
-swift.type.property MarkerContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MarkerContract.title: static let title: ElementProperty<MarkerContract, String>
 swift.type.property MarkerContract.type: static let type: ElementProperty<MarkerContract, MarkerType>
-swift.type.property MenuBarContract.layer: static let layer: ElementLayer
-swift.type.property MenuBarContract.layer: static var layer: ElementLayer { get }
-swift.type.property MenuBarContract.members: static let members: [any ContractMember]
 swift.type.property MenuBarContract.name: static var name: String { get }
-swift.type.property MenuBarContract.nodeType: static let nodeType: NodeType
 swift.type.property MenuBarContract.order: static let order: ElementProperty<MenuBarContract, Int>
-swift.type.property MenuBarContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MenuContract.isEnabled: static let isEnabled: ElementProperty<MenuContract, Bool>
-swift.type.property MenuContract.layer: static let layer: ElementLayer
-swift.type.property MenuContract.layer: static var layer: ElementLayer { get }
-swift.type.property MenuContract.members: static let members: [any ContractMember]
 swift.type.property MenuContract.name: static var name: String { get }
-swift.type.property MenuContract.nodeType: static let nodeType: NodeType
 swift.type.property MenuContract.text: static let text: ElementProperty<MenuContract, String>
-swift.type.property MenuContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property MenuItemContract.layer: static let layer: ElementLayer
-swift.type.property MenuItemContract.layer: static var layer: ElementLayer { get }
-swift.type.property MenuItemContract.members: static let members: [any ContractMember]
 swift.type.property MenuItemContract.name: static var name: String { get }
-swift.type.property MenuItemContract.nodeType: static let nodeType: NodeType
-swift.type.property MenuItemContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property MenuItemContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MenuItemElementContract.icon: static let icon: ElementProperty<MenuItemElementContract, ImageSource>
 swift.type.property MenuItemElementContract.isEnabled: static let isEnabled: ElementProperty<MenuItemElementContract, Bool>
 swift.type.property MenuItemElementContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<MenuItemElementContract, KeyboardShortcut>
-swift.type.property MenuItemElementContract.members: static let members: [any ContractMember]
 swift.type.property MenuItemElementContract.name: static let name: String
 swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
-swift.type.property MenuItemElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property MenuItemElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property MenuSeparatorContract.layer: static let layer: ElementLayer
-swift.type.property MenuSeparatorContract.layer: static var layer: ElementLayer { get }
-swift.type.property MenuSeparatorContract.members: static let members: [any ContractMember]
 swift.type.property MenuSeparatorContract.name: static var name: String { get }
-swift.type.property MenuSeparatorContract.nodeType: static let nodeType: NodeType
-swift.type.property MenuSeparatorContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MenuToggleContract.isOn: static let isOn: ElementProperty<MenuToggleContract, Bool>
-swift.type.property MenuToggleContract.layer: static let layer: ElementLayer
-swift.type.property MenuToggleContract.layer: static var layer: ElementLayer { get }
-swift.type.property MenuToggleContract.members: static let members: [any ContractMember]
 swift.type.property MenuToggleContract.name: static var name: String { get }
-swift.type.property MenuToggleContract.nodeType: static let nodeType: NodeType
-swift.type.property MenuToggleContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property MenuToggleContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MenuToggleContract.toggled: static let toggled: ElementEvent<MenuToggleContract, Bool>
 swift.type.property Motion.custom: static let custom: Motion
 swift.type.property Motion.inherited: static let inherited: Motion
@@ -14182,22 +13803,15 @@ swift.type.property MotionLanes.place: static let place: MotionLanes
 swift.type.property MotionLanes.width: static let width: MotionLanes
 swift.type.property MotionLanes.x: static let x: MotionLanes
 swift.type.property MotionLanes.y: static let y: MotionLanes
-swift.type.property MotionLayout.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
-swift.type.property MotionLayoutContract.layer: static let layer: ElementLayer
-swift.type.property MotionLayoutContract.layer: static var layer: ElementLayer { get }
 swift.type.property MotionLayoutContract.magnifies: static let magnifies: ElementProperty<MotionLayoutContract, Bool>
-swift.type.property MotionLayoutContract.members: static let members: [any ContractMember]
 swift.type.property MotionLayoutContract.mirrorsRightToLeft: static let mirrorsRightToLeft: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.name: static var name: String { get }
-swift.type.property MotionLayoutContract.nodeType: static let nodeType: NodeType
 swift.type.property MotionLayoutContract.pans: static let pans: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.parameters: static let parameters: ElementProperty<MotionLayoutContract, [Double]>
 swift.type.property MotionLayoutContract.pinchRotationUpdated: static let pinchRotationUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Double, Double, Point)>
 swift.type.property MotionLayoutContract.rotates: static let rotates: ElementProperty<MotionLayoutContract, Bool>
-swift.type.property MotionLayoutContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property MotionLayoutContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property MotionLayoutContract.translationOrientation: static let translationOrientation: ElementProperty<MotionLayoutContract, Orientation>
 swift.type.property MotionLayoutContract.translationUpdated: static let translationUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point)>
 swift.type.property MotionLayoutContract.wheelStepped: static let wheelStepped: ElementEvent<MotionLayoutContract, Point>
@@ -14212,129 +13826,58 @@ swift.type.property MotionValues.spacing: static let spacing: MotionValues
 swift.type.property MotionValues.text: static let text: MotionValues
 swift.type.property MotionValues.transform: static let transform: MotionValues
 swift.type.property MotionValues.width: static let width: MotionValues
-swift.type.property NavigationStackContract.layer: static let layer: ElementLayer
-swift.type.property NavigationStackContract.layer: static var layer: ElementLayer { get }
-swift.type.property NavigationStackContract.members: static let members: [any ContractMember]
 swift.type.property NavigationStackContract.name: static var name: String { get }
-swift.type.property NavigationStackContract.nodeType: static let nodeType: NodeType
 swift.type.property NavigationStackContract.popped: static let popped: ElementEvent<NavigationStackContract, Int>
-swift.type.property NavigationStackContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property NavigationStackContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property OverlayContract.layer: static let layer: ElementLayer
-swift.type.property OverlayContract.layer: static var layer: ElementLayer { get }
-swift.type.property OverlayContract.members: static let members: [any ContractMember]
 swift.type.property OverlayContract.name: static var name: String { get }
-swift.type.property OverlayContract.nodeType: static let nodeType: NodeType
-swift.type.property OverlayContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property PaddingElementContract.members: static let members: [any ContractMember]
 swift.type.property PaddingElementContract.name: static let name: String
 swift.type.property PaddingElementContract.padding: static let padding: ElementProperty<PaddingElementContract, Insets>
-swift.type.property PaddingElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PageContract.appearing: static let appearing: ElementEvent<PageContract, Void>
 swift.type.property PageContract.backButtonTitle: static let backButtonTitle: ElementProperty<PageContract, String>
 swift.type.property PageContract.disappearing: static let disappearing: ElementEvent<PageContract, Void>
-swift.type.property PageContract.layer: static let layer: ElementLayer
-swift.type.property PageContract.layer: static var layer: ElementLayer { get }
-swift.type.property PageContract.members: static let members: [any ContractMember]
 swift.type.property PageContract.name: static var name: String { get }
 swift.type.property PageContract.navigatedFrom: static let navigatedFrom: ElementEvent<PageContract, Void>
 swift.type.property PageContract.navigatedTo: static let navigatedTo: ElementEvent<PageContract, Void>
 swift.type.property PageContract.navigatingFrom: static let navigatingFrom: ElementEvent<PageContract, Void>
-swift.type.property PageContract.nodeType: static let nodeType: NodeType
 swift.type.property PageContract.showsBackButton: static let showsBackButton: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsCloseButton: static let showsCloseButton: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsNavigationBar: static let showsNavigationBar: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsTitle: static let showsTitle: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.subtitle: static let subtitle: ElementProperty<PageContract, String>
-swift.type.property PageContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property PageContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PageElementContract.background: static let background: ElementProperty<PageElementContract, Material>
 swift.type.property PageElementContract.icon: static let icon: ElementProperty<PageElementContract, ImageSource>
 swift.type.property PageElementContract.linkOpened: static let linkOpened: ElementEvent<PageElementContract, String>
-swift.type.property PageElementContract.members: static let members: [any ContractMember]
 swift.type.property PageElementContract.name: static let name: String
-swift.type.property PageElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>
-swift.type.property Path.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PathContract.data: static let data: ElementProperty<PathContract, String>
-swift.type.property PathContract.layer: static let layer: ElementLayer
-swift.type.property PathContract.layer: static var layer: ElementLayer { get }
-swift.type.property PathContract.members: static let members: [any ContractMember]
 swift.type.property PathContract.name: static var name: String { get }
-swift.type.property PathContract.nodeType: static let nodeType: NodeType
-swift.type.property PathContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property PathContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property PersistentValue.persistentKind: static var persistentKind: PersistentKind { get }
-swift.type.property Picker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PickerContract.closed: static let closed: ElementEvent<PickerContract, Void>
 swift.type.property PickerContract.isOpen: static let isOpen: ElementProperty<PickerContract, Bool>
-swift.type.property PickerContract.layer: static let layer: ElementLayer
-swift.type.property PickerContract.layer: static var layer: ElementLayer { get }
-swift.type.property PickerContract.members: static let members: [any ContractMember]
 swift.type.property PickerContract.name: static var name: String { get }
-swift.type.property PickerContract.nodeType: static let nodeType: NodeType
 swift.type.property PickerContract.opened: static let opened: ElementEvent<PickerContract, Void>
 swift.type.property PickerContract.options: static let options: ElementProperty<PickerContract, [String]>
 swift.type.property PickerContract.placeholder: static let placeholder: ElementProperty<PickerContract, String>
 swift.type.property PickerContract.presentation: static let presentation: ElementProperty<PickerContract, PickerPresentation>
 swift.type.property PickerContract.selectedIndex: static let selectedIndex: ElementProperty<PickerContract, Int>
 swift.type.property PickerContract.selectedIndexChanged: static let selectedIndexChanged: ElementEvent<PickerContract, Int>
-swift.type.property PickerContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property PickerContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Point.zero: static let zero: Point
-swift.type.property Polygon.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PolygonContract.fillRule: static let fillRule: ElementProperty<PolygonContract, FillRule>
-swift.type.property PolygonContract.layer: static let layer: ElementLayer
-swift.type.property PolygonContract.layer: static var layer: ElementLayer { get }
-swift.type.property PolygonContract.members: static let members: [any ContractMember]
 swift.type.property PolygonContract.name: static var name: String { get }
-swift.type.property PolygonContract.nodeType: static let nodeType: NodeType
 swift.type.property PolygonContract.points: static let points: ElementProperty<PolygonContract, [Point]>
-swift.type.property PolygonContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property PolygonContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Polyline.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PolylineContract.fillRule: static let fillRule: ElementProperty<PolylineContract, FillRule>
-swift.type.property PolylineContract.layer: static let layer: ElementLayer
-swift.type.property PolylineContract.layer: static var layer: ElementLayer { get }
-swift.type.property PolylineContract.members: static let members: [any ContractMember]
 swift.type.property PolylineContract.name: static var name: String { get }
-swift.type.property PolylineContract.nodeType: static let nodeType: NodeType
 swift.type.property PolylineContract.points: static let points: ElementProperty<PolylineContract, [Point]>
-swift.type.property PolylineContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property PolylineContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PopoverContract.isPresented: static let isPresented: ElementProperty<PopoverContract, Bool>
 swift.type.property PopoverContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PopoverContract, Bool>
-swift.type.property PopoverContract.layer: static let layer: ElementLayer
-swift.type.property PopoverContract.layer: static var layer: ElementLayer { get }
-swift.type.property PopoverContract.members: static let members: [any ContractMember]
 swift.type.property PopoverContract.name: static var name: String { get }
-swift.type.property PopoverContract.nodeType: static let nodeType: NodeType
-swift.type.property PopoverContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ProgressBar.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property ProgressBarContract.layer: static let layer: ElementLayer
-swift.type.property ProgressBarContract.layer: static var layer: ElementLayer { get }
-swift.type.property ProgressBarContract.members: static let members: [any ContractMember]
 swift.type.property ProgressBarContract.name: static var name: String { get }
-swift.type.property ProgressBarContract.nodeType: static let nodeType: NodeType
 swift.type.property ProgressBarContract.progress: static let progress: ElementProperty<ProgressBarContract, Double>
-swift.type.property ProgressBarContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ProgressBarContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Rect.zero: static let zero: Rect
-swift.type.property Rectangle.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property RectangleContract.cornerRadius: static let cornerRadius: ElementProperty<RectangleContract, CornerRadius>
-swift.type.property RectangleContract.layer: static let layer: ElementLayer
-swift.type.property RectangleContract.layer: static var layer: ElementLayer { get }
-swift.type.property RectangleContract.members: static let members: [any ContractMember]
 swift.type.property RectangleContract.name: static var name: String { get }
-swift.type.property RectangleContract.nodeType: static let nodeType: NodeType
-swift.type.property RectangleContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property RectangleContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property RefreshElementContract.isRefreshEnabled: static let isRefreshEnabled: ElementProperty<RefreshElementContract, Bool>
 swift.type.property RefreshElementContract.isRefreshing: static let isRefreshing: ElementProperty<RefreshElementContract, Bool>
-swift.type.property RefreshElementContract.members: static let members: [any ContractMember]
 swift.type.property RefreshElementContract.name: static let name: String
 swift.type.property RefreshElementContract.refreshRequested: static let refreshRequested: ElementEvent<RefreshElementContract, Void>
-swift.type.property RefreshElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SafeAreaEdges.all: static let all: SafeAreaEdges
 swift.type.property SafeAreaEdges.bottom: static let bottom: SafeAreaEdges
 swift.type.property SafeAreaEdges.end: static let end: SafeAreaEdges
@@ -14345,317 +13888,138 @@ swift.type.property SafeAreaEdges.top: static let top: SafeAreaEdges
 swift.type.property SafeAreaEdges.vertical: static let vertical: SafeAreaEdges
 swift.type.property SceneContract.activated: static let activated: ElementEvent<SceneContract, Void>
 swift.type.property SceneContract.deactivated: static let deactivated: ElementEvent<SceneContract, Void>
-swift.type.property SceneContract.layer: static let layer: ElementLayer
-swift.type.property SceneContract.layer: static var layer: ElementLayer { get }
-swift.type.property SceneContract.members: static let members: [any ContractMember]
 swift.type.property SceneContract.name: static var name: String { get }
-swift.type.property SceneContract.nodeType: static let nodeType: NodeType
 swift.type.property SceneContract.stopped: static let stopped: ElementEvent<SceneContract, Void>
-swift.type.property SceneContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SceneContract.windowClosed: static let windowClosed: ElementEvent<SceneContract, String>
 swift.type.property ScrollAxes.all: static let all: ScrollAxes
 swift.type.property ScrollAxes.horizontal: static let horizontal: ScrollAxes
 swift.type.property ScrollAxes.vertical: static let vertical: ScrollAxes
-swift.type.property ScrollView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ScrollViewContract.axes: static let axes: ElementProperty<ScrollViewContract, ScrollAxes>
 swift.type.property ScrollViewContract.horizontalScrollIndicator: static let horizontalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
-swift.type.property ScrollViewContract.layer: static let layer: ElementLayer
-swift.type.property ScrollViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property ScrollViewContract.members: static let members: [any ContractMember]
 swift.type.property ScrollViewContract.name: static var name: String { get }
-swift.type.property ScrollViewContract.nodeType: static let nodeType: NodeType
 swift.type.property ScrollViewContract.scrollOffset: static let scrollOffset: ElementProperty<ScrollViewContract, Point>
 swift.type.property ScrollViewContract.scrollStopped: static let scrollStopped: ElementEvent<ScrollViewContract, Void>
-swift.type.property ScrollViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ScrollViewContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ScrollViewContract.verticalScrollIndicator: static let verticalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
-swift.type.property SearchField.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property SearchFieldContract.layer: static let layer: ElementLayer
-swift.type.property SearchFieldContract.layer: static var layer: ElementLayer { get }
-swift.type.property SearchFieldContract.members: static let members: [any ContractMember]
 swift.type.property SearchFieldContract.name: static var name: String { get }
-swift.type.property SearchFieldContract.nodeType: static let nodeType: NodeType
 swift.type.property SearchFieldContract.submitLabel: static let submitLabel: ElementProperty<SearchFieldContract, SubmitLabel>
 swift.type.property SearchFieldContract.submitted: static let submitted: ElementEvent<SearchFieldContract, Void>
-swift.type.property SearchFieldContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SearchFieldContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Separator.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property SeparatorContract.layer: static let layer: ElementLayer
-swift.type.property SeparatorContract.layer: static var layer: ElementLayer { get }
-swift.type.property SeparatorContract.members: static let members: [any ContractMember]
 swift.type.property SeparatorContract.name: static var name: String { get }
-swift.type.property SeparatorContract.nodeType: static let nodeType: NodeType
-swift.type.property SeparatorContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SeparatorContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ShapeContract.contentMode: static let contentMode: ElementProperty<ShapeContract, ContentMode>
 swift.type.property ShapeContract.dash: static let dash: ElementProperty<ShapeContract, [Double]>
 swift.type.property ShapeContract.dashPhase: static let dashPhase: ElementProperty<ShapeContract, Double>
 swift.type.property ShapeContract.geometryTransform: static let geometryTransform: ElementProperty<ShapeContract, ViewTransform>
 swift.type.property ShapeContract.lineCap: static let lineCap: ElementProperty<ShapeContract, LineCap>
 swift.type.property ShapeContract.lineWidth: static let lineWidth: ElementProperty<ShapeContract, Double>
-swift.type.property ShapeContract.members: static let members: [any ContractMember]
 swift.type.property ShapeContract.name: static let name: String
 swift.type.property ShapeContract.stroke: static let stroke: ElementProperty<ShapeContract, Brush>
-swift.type.property ShapeContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ShapeContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SheetContract.isPresented: static let isPresented: ElementProperty<SheetContract, Bool>
 swift.type.property SheetContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<SheetContract, Bool>
-swift.type.property SheetContract.layer: static let layer: ElementLayer
-swift.type.property SheetContract.layer: static var layer: ElementLayer { get }
-swift.type.property SheetContract.members: static let members: [any ContractMember]
 swift.type.property SheetContract.name: static var name: String { get }
-swift.type.property SheetContract.nodeType: static let nodeType: NodeType
-swift.type.property SheetContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Slider.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property SliderContract.layer: static let layer: ElementLayer
-swift.type.property SliderContract.layer: static var layer: ElementLayer { get }
 swift.type.property SliderContract.maximum: static let maximum: ElementProperty<SliderContract, Double>
-swift.type.property SliderContract.members: static let members: [any ContractMember]
 swift.type.property SliderContract.minimum: static let minimum: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.name: static var name: String { get }
-swift.type.property SliderContract.nodeType: static let nodeType: NodeType
 swift.type.property SliderContract.pressed: static let pressed: ElementEvent<SliderContract, Void>
 swift.type.property SliderContract.released: static let released: ElementEvent<SliderContract, Void>
-swift.type.property SliderContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SliderContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SliderContract.value: static let value: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.valueChanged: static let valueChanged: ElementEvent<SliderContract, Double>
-swift.type.property Space.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property SpaceContract.layer: static let layer: ElementLayer
-swift.type.property SpaceContract.layer: static var layer: ElementLayer { get }
-swift.type.property SpaceContract.members: static let members: [any ContractMember]
 swift.type.property SpaceContract.name: static var name: String { get }
-swift.type.property SpaceContract.nodeType: static let nodeType: NodeType
-swift.type.property SpaceContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SpaceContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Spinner.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SpinnerContract.isAnimating: static let isAnimating: ElementProperty<SpinnerContract, Bool>
-swift.type.property SpinnerContract.layer: static let layer: ElementLayer
-swift.type.property SpinnerContract.layer: static var layer: ElementLayer { get }
-swift.type.property SpinnerContract.members: static let members: [any ContractMember]
 swift.type.property SpinnerContract.name: static var name: String { get }
-swift.type.property SpinnerContract.nodeType: static let nodeType: NodeType
-swift.type.property SpinnerContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SpinnerContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property SplitViewContract.layer: static let layer: ElementLayer
-swift.type.property SplitViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property SplitViewContract.members: static let members: [any ContractMember]
 swift.type.property SplitViewContract.name: static var name: String { get }
-swift.type.property SplitViewContract.nodeType: static let nodeType: NodeType
 swift.type.property SplitViewContract.showsSidebar: static let showsSidebar: ElementProperty<SplitViewContract, Bool>
 swift.type.property SplitViewContract.showsSidebarChanged: static let showsSidebarChanged: ElementEvent<SplitViewContract, Bool>
 swift.type.property SplitViewContract.showsSidebarToggle: static let showsSidebarToggle: ElementProperty<SplitViewContract, Bool>
 swift.type.property SplitViewContract.sidebarBackground: static let sidebarBackground: ElementProperty<SplitViewContract, Material>
 swift.type.property SplitViewContract.sidebarOverlayBackground: static let sidebarOverlayBackground: ElementProperty<SplitViewContract, Material>
 swift.type.property SplitViewContract.sidebarOverlays: static let sidebarOverlays: ElementProperty<SplitViewContract, Bool>
-swift.type.property SplitViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SplitViewContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property StackContract.members: static let members: [any ContractMember]
 swift.type.property StackContract.name: static let name: String
 swift.type.property StackContract.spacing: static let spacing: ElementProperty<StackContract, Double>
-swift.type.property StackContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property StackContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Stepper.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property StepperContract.layer: static let layer: ElementLayer
-swift.type.property StepperContract.layer: static var layer: ElementLayer { get }
 swift.type.property StepperContract.maximum: static let maximum: ElementProperty<StepperContract, Double>
-swift.type.property StepperContract.members: static let members: [any ContractMember]
 swift.type.property StepperContract.minimum: static let minimum: ElementProperty<StepperContract, Double>
 swift.type.property StepperContract.name: static var name: String { get }
-swift.type.property StepperContract.nodeType: static let nodeType: NodeType
 swift.type.property StepperContract.step: static let step: ElementProperty<StepperContract, Double>
-swift.type.property StepperContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property StepperContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property StepperContract.value: static let value: ElementProperty<StepperContract, Double>
 swift.type.property StepperContract.valueChanged: static let valueChanged: ElementEvent<StepperContract, Double>
 swift.type.property StyleKey.platform: static var platform: StyleKey<Target> { get }
-swift.type.property StyleTarget.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SwipeDirection.all: static let all: SwipeDirection
 swift.type.property SwipeDirection.down: static let down: SwipeDirection
 swift.type.property SwipeDirection.left: static let left: SwipeDirection
 swift.type.property SwipeDirection.right: static let right: SwipeDirection
 swift.type.property SwipeDirection.up: static let up: SwipeDirection
-swift.type.property Switch.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SwitchContract.isOn: static let isOn: ElementProperty<SwitchContract, Bool>
-swift.type.property SwitchContract.layer: static let layer: ElementLayer
-swift.type.property SwitchContract.layer: static var layer: ElementLayer { get }
-swift.type.property SwitchContract.members: static let members: [any ContractMember]
 swift.type.property SwitchContract.name: static var name: String { get }
-swift.type.property SwitchContract.nodeType: static let nodeType: NodeType
-swift.type.property SwitchContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property SwitchContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SwitchContract.toggled: static let toggled: ElementEvent<SwitchContract, Bool>
-swift.type.property TabViewContract.layer: static let layer: ElementLayer
-swift.type.property TabViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property TabViewContract.members: static let members: [any ContractMember]
 swift.type.property TabViewContract.name: static var name: String { get }
-swift.type.property TabViewContract.nodeType: static let nodeType: NodeType
 swift.type.property TabViewContract.selectedTab: static let selectedTab: ElementProperty<TabViewContract, Int>
 swift.type.property TabViewContract.selectedTabChanged: static let selectedTabChanged: ElementEvent<TabViewContract, Int>
-swift.type.property TabViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TabViewContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property Text.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextAlignmentElementContract.horizontalTextAlignment: static let horizontalTextAlignment: ElementProperty<TextAlignmentElementContract, TextAlignment>
-swift.type.property TextAlignmentElementContract.members: static let members: [any ContractMember]
 swift.type.property TextAlignmentElementContract.name: static let name: String
-swift.type.property TextAlignmentElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextAlignmentElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TextAndIconElementContract.members: static let members: [any ContractMember]
 swift.type.property TextAndIconElementContract.name: static let name: String
 swift.type.property TextAndIconElementContract.showsText: static let showsText: ElementProperty<TextAndIconElementContract, Bool>
-swift.type.property TextAndIconElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TextColorElementContract.members: static let members: [any ContractMember]
 swift.type.property TextColorElementContract.name: static let name: String
 swift.type.property TextColorElementContract.textColor: static let textColor: ElementProperty<TextColorElementContract, Color>
-swift.type.property TextColorElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TextContract.isSelectable: static let isSelectable: ElementProperty<TextContract, Bool>
-swift.type.property TextContract.layer: static let layer: ElementLayer
-swift.type.property TextContract.layer: static var layer: ElementLayer { get }
 swift.type.property TextContract.lineBreak: static let lineBreak: ElementProperty<TextContract, LineBreak>
 swift.type.property TextContract.maximumLines: static let maximumLines: ElementProperty<TextContract, Int>
-swift.type.property TextContract.members: static let members: [any ContractMember]
 swift.type.property TextContract.name: static var name: String { get }
-swift.type.property TextContract.nodeType: static let nodeType: NodeType
-swift.type.property TextContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TextContract.verticalTextAlignment: static let verticalTextAlignment: ElementProperty<TextContract, TextAlignment>
 swift.type.property TextDecorations.none: static let none: TextDecorations
 swift.type.property TextDecorations.strikethrough: static let strikethrough: TextDecorations
 swift.type.property TextDecorations.underline: static let underline: TextDecorations
-swift.type.property TextEditor.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextEditorContract.growsWithText: static let growsWithText: ElementProperty<TextEditorContract, Bool>
-swift.type.property TextEditorContract.layer: static let layer: ElementLayer
-swift.type.property TextEditorContract.layer: static var layer: ElementLayer { get }
-swift.type.property TextEditorContract.members: static let members: [any ContractMember]
 swift.type.property TextEditorContract.name: static var name: String { get }
-swift.type.property TextEditorContract.nodeType: static let nodeType: NodeType
-swift.type.property TextEditorContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextEditorContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TextField.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextFieldContract.isPassword: static let isPassword: ElementProperty<TextFieldContract, Bool>
-swift.type.property TextFieldContract.layer: static let layer: ElementLayer
-swift.type.property TextFieldContract.layer: static var layer: ElementLayer { get }
-swift.type.property TextFieldContract.members: static let members: [any ContractMember]
 swift.type.property TextFieldContract.name: static var name: String { get }
-swift.type.property TextFieldContract.nodeType: static let nodeType: NodeType
 swift.type.property TextFieldContract.showsClearButton: static let showsClearButton: ElementProperty<TextFieldContract, Bool>
 swift.type.property TextFieldContract.submitLabel: static let submitLabel: ElementProperty<TextFieldContract, SubmitLabel>
 swift.type.property TextFieldContract.submitted: static let submitted: ElementEvent<TextFieldContract, Void>
-swift.type.property TextFieldContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextFieldContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TextInputContract.cursorPosition: static let cursorPosition: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.inputPurpose: static let inputPurpose: ElementProperty<TextInputContract, InputPurpose>
 swift.type.property TextInputContract.isReadOnly: static let isReadOnly: ElementProperty<TextInputContract, Bool>
 swift.type.property TextInputContract.isSpellCheckEnabled: static let isSpellCheckEnabled: ElementProperty<TextInputContract, Bool>
 swift.type.property TextInputContract.isTextPredictionEnabled: static let isTextPredictionEnabled: ElementProperty<TextInputContract, Bool>
 swift.type.property TextInputContract.maximumLength: static let maximumLength: ElementProperty<TextInputContract, Int>
-swift.type.property TextInputContract.members: static let members: [any ContractMember]
 swift.type.property TextInputContract.name: static let name: String
 swift.type.property TextInputContract.placeholder: static let placeholder: ElementProperty<TextInputContract, String>
 swift.type.property TextInputContract.placeholderColor: static let placeholderColor: ElementProperty<TextInputContract, Color>
 swift.type.property TextInputContract.selectionLength: static let selectionLength: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.textChanged: static let textChanged: ElementEvent<TextInputContract, String>
-swift.type.property TextInputContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextInputContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TextSpanContract.background: static let background: ElementProperty<TextSpanContract, Material>
-swift.type.property TextSpanContract.layer: static let layer: ElementLayer
-swift.type.property TextSpanContract.layer: static var layer: ElementLayer { get }
-swift.type.property TextSpanContract.members: static let members: [any ContractMember]
 swift.type.property TextSpanContract.name: static var name: String { get }
-swift.type.property TextSpanContract.nodeType: static let nodeType: NodeType
-swift.type.property TextSpanContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextSpanContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TextSpansContract.layer: static let layer: ElementLayer
-swift.type.property TextSpansContract.layer: static var layer: ElementLayer { get }
-swift.type.property TextSpansContract.members: static let members: [any ContractMember]
 swift.type.property TextSpansContract.name: static var name: String { get }
-swift.type.property TextSpansContract.nodeType: static let nodeType: NodeType
-swift.type.property TextSpansContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TextualElementContract.members: static let members: [any ContractMember]
 swift.type.property TextualElementContract.name: static let name: String
 swift.type.property TextualElementContract.text: static let text: ElementProperty<TextualElementContract, String>
 swift.type.property TextualElementContract.textCase: static let textCase: ElementProperty<TextualElementContract, TextCase>
-swift.type.property TextualElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TextualElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TimePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TimePickerContract.closed: static let closed: ElementEvent<TimePickerContract, Void>
 swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeStyle>
 swift.type.property TimePickerContract.isOpen: static let isOpen: ElementProperty<TimePickerContract, Bool>
-swift.type.property TimePickerContract.layer: static let layer: ElementLayer
-swift.type.property TimePickerContract.layer: static var layer: ElementLayer { get }
-swift.type.property TimePickerContract.members: static let members: [any ContractMember]
 swift.type.property TimePickerContract.name: static var name: String { get }
-swift.type.property TimePickerContract.nodeType: static let nodeType: NodeType
 swift.type.property TimePickerContract.opened: static let opened: ElementEvent<TimePickerContract, Void>
-swift.type.property TimePickerContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property TimePickerContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TimePickerContract.time: static let time: ElementProperty<TimePickerContract, ClockTime>
 swift.type.property TimePickerContract.timeChanged: static let timeChanged: ElementEvent<TimePickerContract, ClockTime>
-swift.type.property TintElementContract.members: static let members: [any ContractMember]
 swift.type.property TintElementContract.name: static let name: String
-swift.type.property TintElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TintElementContract.tint: static let tint: ElementProperty<TintElementContract, Color>
-swift.type.property TitleViewContract.layer: static let layer: ElementLayer
-swift.type.property TitleViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property TitleViewContract.members: static let members: [any ContractMember]
 swift.type.property TitleViewContract.name: static var name: String { get }
-swift.type.property TitleViewContract.nodeType: static let nodeType: NodeType
-swift.type.property TitleViewContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ToolbarButton.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property ToolbarButtonContract.layer: static let layer: ElementLayer
-swift.type.property ToolbarButtonContract.layer: static var layer: ElementLayer { get }
-swift.type.property ToolbarButtonContract.members: static let members: [any ContractMember]
 swift.type.property ToolbarButtonContract.name: static var name: String { get }
-swift.type.property ToolbarButtonContract.nodeType: static let nodeType: NodeType
-swift.type.property ToolbarButtonContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ToolbarButtonContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ToolbarGroup.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarGroupContract.barEdge: static let barEdge: ElementProperty<ToolbarGroupContract, ToolbarEdge>
 swift.type.property ToolbarGroupContract.hidesWithSidebar: static let hidesWithSidebar: ElementProperty<ToolbarGroupContract, Bool>
 swift.type.property ToolbarGroupContract.isEnabled: static let isEnabled: ElementProperty<ToolbarGroupContract, Bool>
-swift.type.property ToolbarGroupContract.layer: static let layer: ElementLayer
-swift.type.property ToolbarGroupContract.layer: static var layer: ElementLayer { get }
-swift.type.property ToolbarGroupContract.members: static let members: [any ContractMember]
 swift.type.property ToolbarGroupContract.name: static var name: String { get }
-swift.type.property ToolbarGroupContract.nodeType: static let nodeType: NodeType
 swift.type.property ToolbarGroupContract.order: static let order: ElementProperty<ToolbarGroupContract, Int>
 swift.type.property ToolbarGroupContract.part: static let part: ElementProperty<ToolbarGroupContract, ToolbarPart>
 swift.type.property ToolbarGroupContract.position: static let position: ElementProperty<ToolbarGroupContract, ToolbarPosition>
 swift.type.property ToolbarGroupContract.spacing: static let spacing: ElementProperty<ToolbarGroupContract, Double>
 swift.type.property ToolbarGroupContract.standsAlone: static let standsAlone: ElementProperty<ToolbarGroupContract, Bool>
-swift.type.property ToolbarGroupContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ToolbarGroupContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ToolbarLabelContract.icon: static let icon: ElementProperty<ToolbarLabelContract, ImageSource>
-swift.type.property ToolbarLabelContract.layer: static let layer: ElementLayer
-swift.type.property ToolbarLabelContract.layer: static var layer: ElementLayer { get }
-swift.type.property ToolbarLabelContract.members: static let members: [any ContractMember]
 swift.type.property ToolbarLabelContract.name: static var name: String { get }
-swift.type.property ToolbarLabelContract.nodeType: static let nodeType: NodeType
 swift.type.property ToolbarLabelContract.text: static let text: ElementProperty<ToolbarLabelContract, String>
-swift.type.property ToolbarLabelContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property ToolbarToggle.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarToggleContract.isOn: static let isOn: ElementProperty<ToolbarToggleContract, Bool>
-swift.type.property ToolbarToggleContract.layer: static let layer: ElementLayer
-swift.type.property ToolbarToggleContract.layer: static var layer: ElementLayer { get }
-swift.type.property ToolbarToggleContract.members: static let members: [any ContractMember]
 swift.type.property ToolbarToggleContract.name: static var name: String { get }
-swift.type.property ToolbarToggleContract.nodeType: static let nodeType: NodeType
 swift.type.property ToolbarToggleContract.onIcon: static let onIcon: ElementProperty<ToolbarToggleContract, ImageSource>
-swift.type.property ToolbarToggleContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ToolbarToggleContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ToolbarToggleContract.toggled: static let toggled: ElementEvent<ToolbarToggleContract, Bool>
-swift.type.property TrackingElementContract.members: static let members: [any ContractMember]
 swift.type.property TrackingElementContract.name: static let name: String
-swift.type.property TrackingElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TrackingElementContract.tracking: static let tracking: ElementProperty<TrackingElementContract, Double>
-swift.type.property VStack.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property VStackContract.layer: static let layer: ElementLayer
-swift.type.property VStackContract.layer: static var layer: ElementLayer { get }
-swift.type.property VStackContract.members: static let members: [any ContractMember]
 swift.type.property VStackContract.name: static var name: String { get }
-swift.type.property VStackContract.nodeType: static let nodeType: NodeType
-swift.type.property VStackContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property VStackContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ViewContract.allowsDrop: static let allowsDrop: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.area: static let area: ElementProperty<ViewContract, Area>
 swift.type.property ViewContract.dragEnded: static let dragEnded: ElementEvent<ViewContract, Void>
@@ -14677,7 +14041,6 @@ swift.type.property ViewContract.horizontalAlignment: static let horizontalAlign
 swift.type.property ViewContract.isDraggable: static let isDraggable: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.layoutBody: static let layoutBody: ElementProperty<ViewContract, LayoutBody>
 swift.type.property ViewContract.margin: static let margin: ElementProperty<ViewContract, Insets>
-swift.type.property ViewContract.members: static let members: [any ContractMember]
 swift.type.property ViewContract.name: static let name: String
 swift.type.property ViewContract.panTouchCount: static let panTouchCount: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.panUpdated: static let panUpdated: ElementEvent<ViewContract, (GesturePhase, Point, Point, Point)>
@@ -14695,8 +14058,6 @@ swift.type.property ViewContract.swipeThreshold: static let swipeThreshold: Elem
 swift.type.property ViewContract.swiped: static let swiped: ElementEvent<ViewContract, SwipeDirection>
 swift.type.property ViewContract.tapCount: static let tapCount: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.tapped: static let tapped: ElementEvent<ViewContract, Void>
-swift.type.property ViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ViewContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ViewContract.verticalAlignment: static let verticalAlignment: ElementProperty<ViewContract, Alignment>
 swift.type.property ViewTransform.identity: static let identity: ViewTransform
 swift.type.property VisualElementContract.accessibilityActionPerformed: static let accessibilityActionPerformed: ElementEvent<VisualElementContract, String>
@@ -14718,7 +14079,6 @@ swift.type.property VisualElementContract.isVisible: static let isVisible: Eleme
 swift.type.property VisualElementContract.layoutDirection: static let layoutDirection: ElementProperty<VisualElementContract, LayoutDirection>
 swift.type.property VisualElementContract.maximumHeight: static let maximumHeight: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.maximumWidth: static let maximumWidth: ElementProperty<VisualElementContract, Double>
-swift.type.property VisualElementContract.members: static let members: [any ContractMember]
 swift.type.property VisualElementContract.minimumHeight: static let minimumHeight: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.minimumWidth: static let minimumWidth: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.name: static let name: String
@@ -14732,8 +14092,6 @@ swift.type.property VisualElementContract.scale: static let scale: ElementProper
 swift.type.property VisualElementContract.scaleX: static let scaleX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.scaleY: static let scaleY: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.style: static let style: ElementProperty<VisualElementContract, Name>
-swift.type.property VisualElementContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property VisualElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property VisualElementContract.tooltip: static let tooltip: ElementProperty<VisualElementContract, String>
 swift.type.property VisualElementContract.translationX: static let translationX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.translationY: static let translationY: ElementProperty<VisualElementContract, Double>
@@ -14749,24 +14107,17 @@ swift.type.property VisualState.on: static var on: VisualState<Switch> { get }
 swift.type.property VisualState.on: static var on: VisualState<ToolbarToggle> { get }
 swift.type.property VisualState.pointerOver: static var pointerOver: VisualState<Target> { get }
 swift.type.property VisualState.pressed: static var pressed: VisualState<Target> { get }
-swift.type.property WebView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property WebViewContract.canGoBackChanged: static let canGoBackChanged: ElementEvent<WebViewContract, Bool>
 swift.type.property WebViewContract.canGoForwardChanged: static let canGoForwardChanged: ElementEvent<WebViewContract, Bool>
 swift.type.property WebViewContract.evaluateJavaScript: static let evaluateJavaScript: ElementAct<WebViewContract, String, String?>
 swift.type.property WebViewContract.goBack: static let goBack: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.goForward: static let goForward: ElementAct<WebViewContract, Void, Void>
-swift.type.property WebViewContract.layer: static let layer: ElementLayer
-swift.type.property WebViewContract.layer: static var layer: ElementLayer { get }
-swift.type.property WebViewContract.members: static let members: [any ContractMember]
 swift.type.property WebViewContract.name: static var name: String { get }
 swift.type.property WebViewContract.navigated: static let navigated: ElementEvent<WebViewContract, (WebNavigationResult, WebNavigationType, String)>
 swift.type.property WebViewContract.navigating: static let navigating: ElementEvent<WebViewContract, (WebNavigationType, String)>
-swift.type.property WebViewContract.nodeType: static let nodeType: NodeType
 swift.type.property WebViewContract.processTerminated: static let processTerminated: ElementEvent<WebViewContract, Void>
 swift.type.property WebViewContract.reload: static let reload: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.source: static let source: ElementProperty<WebViewContract, WebViewSource>
-swift.type.property WebViewContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property WebViewContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property WebViewContract.userAgent: static let userAgent: ElementProperty<WebViewContract, String>
 swift.type.property WindowContract.activated: static let activated: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.background: static let background: ElementProperty<WindowContract, Material>
@@ -14778,17 +14129,12 @@ swift.type.property WindowContract.height: static let height: ElementProperty<Wi
 swift.type.property WindowContract.hidesWhenInactive: static let hidesWhenInactive: ElementProperty<WindowContract, Bool>
 swift.type.property WindowContract.isMaximizable: static let isMaximizable: ElementProperty<WindowContract, Bool>
 swift.type.property WindowContract.isMinimizable: static let isMinimizable: ElementProperty<WindowContract, Bool>
-swift.type.property WindowContract.layer: static let layer: ElementLayer
-swift.type.property WindowContract.layer: static var layer: ElementLayer { get }
 swift.type.property WindowContract.maximumHeight: static let maximumHeight: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.maximumWidth: static let maximumWidth: ElementProperty<WindowContract, Double>
-swift.type.property WindowContract.members: static let members: [any ContractMember]
 swift.type.property WindowContract.minimumHeight: static let minimumHeight: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.minimumWidth: static let minimumWidth: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.name: static var name: String { get }
-swift.type.property WindowContract.nodeType: static let nodeType: NodeType
 swift.type.property WindowContract.stopped: static let stopped: ElementEvent<WindowContract, Void>
-swift.type.property WindowContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property WindowContract.title: static let title: ElementProperty<WindowContract, String>
 swift.type.property WindowContract.width: static let width: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.windowType: static let windowType: ElementProperty<WindowContract, Name>
@@ -14796,14 +14142,7 @@ swift.type.property WindowContract.windowValue: static let windowValue: ElementP
 swift.type.property WindowContract.x: static let x: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.y: static let y: ElementProperty<WindowContract, Double>
 swift.type.property WindowType.debugInspector: static let debugInspector: WindowType<()>
-swift.type.property ZStack.nodeType: @MainActor static var nodeType: NodeType { get }
-swift.type.property ZStackContract.layer: static let layer: ElementLayer
-swift.type.property ZStackContract.layer: static var layer: ElementLayer { get }
-swift.type.property ZStackContract.members: static let members: [any ContractMember]
 swift.type.property ZStackContract.name: static var name: String { get }
-swift.type.property ZStackContract.nodeType: static let nodeType: NodeType
-swift.type.property ZStackContract.tiers: static let tiers: [any Contract.Type]
-swift.type.property ZStackContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.typealias @SwiftNever.Body: typealias Body = Never
 swift.typealias @SwiftNever.Modified: typealias Modified = Never
 swift.typealias Either.Modified: typealias Modified = ModifiedContent<Either<First, Second>>

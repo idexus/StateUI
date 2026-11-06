@@ -159,8 +159,12 @@ values. `StateUI.extending.txt` is what an author adding to StateUI writes - an
 element of the application's own, a value a state carries, the application's
 own acts and events: a contract and its members, a node and what is written
 on it by member (`setValue`, `onEvent`, `onHostEvent`, `modified`, `node`), the
-values a host is handed, a value's conversions, `application.call` and
-`HostEvents`. A protocol a control and its style wear - a control's
+values a host is handed, a value's conversions and wire codes (`rawValue`,
+`list(from:)`), what a kept value is handed to the store as, what a contract
+declares of its element (`nodeType`, `layer`, `tiers`, `members`),
+`application.call` and `HostEvents` - so the application's file names no
+`PropValue` and no existential but the key paths the language asks for. A
+protocol a control and its style wear - a control's
 `…Properties`, a tier's `…Element` - stands there as a declaration and as each
 conformance to it, while its members, the modifiers, are the application's.
 `APISurfaceTests` keeps the two lists, `extendingTypes` and `extendingMembers`,

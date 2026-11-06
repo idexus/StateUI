@@ -32,11 +32,15 @@ final class APISurfaceTests: XCTestCase {
     ]
 
     /// The members an author extending StateUI writes, on whatever type they stand: a view's own node, its values
-    /// and handlers by contract member, and a value's conversions.
+    /// and handlers by contract member, a value's conversions and wire codes, what a kept value is handed to the
+    /// store as, and what a contract declares of its element.
     static let extendingMembers: Set<String> = [
-        "carried", "init(carried:)", "init(propValue:)", "laneKind", "lanes", "modified", "moving",
+        "carried", "init(carried:)", "init(propValue:)", "laneKind", "lanes", "list(from:)", "modified", "moving",
         "node", "nodes", "onEvent", "onHostEvent", "propValue", "setValue",
-        "Aim.call", "ApplicationSession.call", "ApplicationSession.tell",
+        "rawValue", "init(rawValue:)", "persistentKind", "persistentValue", "init(persistentValue:)",
+        "nodeType", "layer", "tiers", "members",
+        "Aim.call", "ApplicationSession.call", "ApplicationSession.tell", "@SwiftArray.value",
+        "ApplicationContract.persistValue", "ApplicationContract.persistSceneValue",
     ]
 
     /// Whether a protocol's declaration is the extending surface's: a control's property half, a tier's, or what
@@ -59,7 +63,10 @@ final class APISurfaceTests: XCTestCase {
             let fields = line.split(separator: " ", maxSplits: 2)
             let kind = fields[0], path = fields[1].hasSuffix(":") ? fields[1].dropLast() : fields[1]
             let owner = String(path.prefix { $0 != "." }), member = path.dropFirst(owner.count).dropFirst()
-            let named = member.contains("(") ? member : member.split(separator: ".").last ?? ""
+            // A nested type's member is named by its own last step: `Thickness.init(propValue:)` is `init(propValue:)`.
+            let call = member.prefix { $0 != "(" }
+            let named = member.contains("(") ? member.dropFirst(call.lastIndex(of: ".").map { call.distance(
+                from: call.startIndex, to: $0) + 1 } ?? 0) : member.split(separator: ".").last ?? ""
             let bare = String(named.prefix { $0 != "(" })
             let isExtending: Bool
             if kind == "swift.conformance" {
@@ -117,6 +124,19 @@ final class APISurfaceTests: XCTestCase {
 
         XCTAssertGreaterThan(declared.count, 300, "the records hold almost no type")
         XCTAssertEqual(Set(declared).subtracting(words).sorted(), [], "public types no handbook page names")
+    }
+
+    /// What an application writes names no value as a host is handed it and no existential but the key paths the
+    /// language asks for: a wire code, a conversion, a contract's own declaration of its element stand on the
+    /// extending surface.
+    func testTheApplicationSurfaceNamesNoHostValue() throws {
+        let application = try String(contentsOf: Self.record, encoding: .utf8).split(separator: "\n")
+        let offenders = application.filter { line in
+            line.contains("PropValue") || line.replacing(/any (Reference)?WritableKeyPath/, with: "").contains(" any ")
+        }
+
+        XCTAssertGreaterThan(application.count, 5_000, "the record holds almost nothing")
+        XCTAssertEqual(offenders.map(String.init), [], "an application's surface names a host's value")
     }
 
     /// The module this run built says what the records say, each line in the record of its surface.
