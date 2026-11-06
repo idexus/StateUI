@@ -829,8 +829,8 @@ final class ControlTests: XCTestCase {
             "role",
             // Named rather than valued.
             "style", "fontFamily", "source", "userAgent", "data", "content",
-            // A value the host cannot be handed whole - a brush, a gradient among them.
-            "background", "fill", "stroke", "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
+            // A value the host cannot be handed whole - a gradient among them.
+            "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
             "followsLayout", "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
@@ -880,15 +880,16 @@ final class ControlTests: XCTestCase {
         // declaration's: no view wears them. The driven text goes per control, its direction differing (bindings.md,
         // driven text): the tier holds the value form.
         let tiersNoViewWears = [
-            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
-            "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
-            "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
+            "Views/Mixins/MenuItemElement.swift", "Views/Mixins/BarItemElement.swift", "Views/Menus/ToolbarButton.swift",
+            "Views/Menus/ToolbarGroup.swift", "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift",
+            "Views/Menus/Menu.swift", "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map, a text's runs with the text; a composed view's configuration
         // changes what it builds, which a state carried past the tree cannot - a gallery's shape, fading and its
         // cards' body, a list's layout, a layout's drag, its mirror and its world.
         let perControl = [
             "Views/Mixins/TextualElement.swift|text:String", "Views/Text/Text.swift|text:String",
+            "Views/Text/Text.swift|background:Color", "Views/Text/Text.swift|background:Material",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
             "Views/Controls/Map.swift|type:MarkerType",
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
@@ -903,7 +904,8 @@ final class ControlTests: XCTestCase {
             .filter { value in
                 let parts = value.split(separator: "|")
                 let name = parts[1].split(separator: ":")[0]
-                return !twins.contains(value) && !allowed.contains(String(name))
+                // A brush is handed whole only as a value: its stops are no lane a state rides.
+                return !twins.contains(value) && !allowed.contains(String(name)) && !value.hasSuffix(":Brush")
                     && !tiersNoViewWears.contains(String(parts[0])) && !perControl.contains(value)
             }
             .sorted()

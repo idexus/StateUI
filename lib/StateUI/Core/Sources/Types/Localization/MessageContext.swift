@@ -109,10 +109,12 @@ public struct MessageContext: Sendable {
         }
     }
 
-    /// A time of day: `07:30` on a 24-hour clock, `7:30 AM` on a twelve-hour one.
-    public func time(_ time: ClockTime) -> String {
-        let minutes = time.minute < 10 ? "0\(time.minute)" : "\(time.minute)"
-        guard !uses24HourClock else { return (time.hour < 10 ? "0\(time.hour)" : "\(time.hour)") + ":" + minutes }
+    /// A time of day: `07:30` on a 24-hour clock, `7:30 AM` on a twelve-hour one; `.medium` adds the seconds,
+    /// `07:30:05`.
+    public func time(_ time: ClockTime, style: TimeStyle = .short) -> String {
+        func twoDigits(_ value: Int) -> String { value < 10 ? "0\(value)" : "\(value)" }
+        let minutes = twoDigits(time.minute) + (style == .medium ? ":" + twoDigits(time.second) : "")
+        guard !uses24HourClock else { return twoDigits(time.hour) + ":" + minutes }
 
         let hour = time.hour % 12 == 0 ? 12 : time.hour % 12
         return "\(hour):\(minutes)\u{202F}" + (time.hour < 12 ? words.morning : words.evening)

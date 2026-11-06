@@ -111,6 +111,8 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.time(ClockTime(hour: 0, minute: 15)), "12:15\u{202F}AM")
         XCTAssertEqual(polish.time(morning), "07:30")
         XCTAssertEqual(polish.time(evening), "19:05")
+        XCTAssertEqual(english.time(ClockTime(hour: 19, minute: 5, second: 7), style: .medium), "7:05:07\u{202F}PM")
+        XCTAssertEqual(polish.time(ClockTime(hour: 7, minute: 30, second: 0), style: .medium), "07:30:00")
     }
 
     func testLists() {

@@ -45,6 +45,11 @@ extension BarElement {
         barBackground(.color(value))
     }
 
+    /// The bar in a gradient.
+    public func barBackground(_ value: Brush) -> Modified {
+        barBackground(.gradient(value))
+    }
+
     /// The bar's color from a state, `$x`: the host animates it to each new value.
     public func barBackground(_ state: Binding<Color>) -> Modified {
         twin(BarElementContract.barBackground, carrying: state)

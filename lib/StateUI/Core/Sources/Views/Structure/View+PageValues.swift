@@ -51,6 +51,11 @@ extension View {
         pageBackground(.color(value))
     }
 
+    /// The page's background in a gradient.
+    public func pageBackground(_ value: Brush) -> Modified {
+        pageBackground(.gradient(value))
+    }
+
     /// The page's background from a state, `$x`: the host animates its color to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
         pageSays { $0.twin(PageElementContract.background, carrying: state) }

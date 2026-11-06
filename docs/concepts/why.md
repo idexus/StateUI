@@ -429,7 +429,10 @@ public API keeps to these rules:
   second road to the same place - an alias, a shortcut, an event repeating
   what the application itself wrote - is removed, not kept beside the first;
   a control's event telling what the user did stands beside the state that
-  holds the value (`onToggled` beside `isOn`).
+  holds the value (`onToggled` beside `isOn`). A modifier taking a value in
+  each of the forms its type is made of is one road: whatever takes a
+  `Material` takes a `Color` and a `Brush` too, the same member written the
+  same way.
 - **Through the contract.** A property, an event and an act are written with
   the contract that declares them. What only a host needs - a key made from a
   name, the renderer, the lists of properties the hosts share - stands behind

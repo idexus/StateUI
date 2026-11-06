@@ -181,6 +181,29 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(styling.filter { $0.contains("Binding<") }.map(String.init), [], "a style modifier takes a state")
     }
 
+    /// Whatever takes a `Material` takes a `Color` and a `Brush` beside it, and a state of a color where it takes
+    /// one of a material: a background is written alike on a view, a page, a bar and a sidebar. A run of text is
+    /// painted by the platform's text in one color, so it takes no brush.
+    func testWhatTakesAMaterialTakesAColorAndABrush() throws {
+        let oneColor: Set = ["swift.method TextSpan.background(_:)"]
+        var overloads: [String: [String]] = [:]
+        for line in try Self.recorded().split(separator: "\n") {
+            guard let colon = line.range(of: ": ") else { continue }
+            overloads[String(line[..<colon.lowerBound]), default: []].append(String(line[colon.upperBound...]))
+        }
+
+        var missing: [String] = []
+        for (name, declarations) in overloads where declarations.contains(where: { $0.contains(/\(_ \w+: Material\)/) }) {
+            let takes = { (type: String) in declarations.contains { $0.contains("(_ ") && $0.contains(": \(type))") } }
+            var wanted = ["Color"] + (oneColor.contains(name) ? [] : ["Brush"])
+            if takes("Binding<Material>") { wanted.append("Binding<Color>") }
+            missing += wanted.filter { !takes($0) }.map { "\(name) takes no \($0)" }
+        }
+
+        XCTAssertGreaterThan(overloads.count, 1000, "the records hold almost nothing")
+        XCTAssertEqual(missing.sorted(), [], "a member taking a material leaves out its color or brush")
+    }
+
     /// The module this run built says what the records say, each line in the record of its surface.
     func testThePublicSurfaceIsTheRecordedOne() throws {
         let surface = try Self.surface()

@@ -1700,6 +1700,7 @@ swift.method @SwiftNever.opacity(_:): @MainActor func opacity(_ state: Binding<D
 swift.method @SwiftNever.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method @SwiftNever.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method @SwiftNever.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -1903,6 +1904,7 @@ swift.method AnyView.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method AnyView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method AnyView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method AnyView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -1954,6 +1956,7 @@ swift.method Arrival.arrived(): @discardableResult @MainActor func arrived() asy
 swift.method AutomationElement.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ value: Brush) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method BarElement.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
@@ -2162,6 +2165,7 @@ swift.method Button.padding(horizontal:vertical:): @MainActor func padding(horiz
 swift.method Button.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Button.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Button.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -2377,6 +2381,7 @@ swift.method Canvas.opacity(_:): @MainActor func opacity(_ state: Binding<Double
 swift.method Canvas.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Canvas.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -2587,6 +2592,7 @@ swift.method Capsule.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method Capsule.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Capsule.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -2795,6 +2801,7 @@ swift.method CheckBox.opacity(_:): @MainActor func opacity(_ state: Binding<Doub
 swift.method CheckBox.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method CheckBox.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -3013,6 +3020,7 @@ swift.method ColorPicker.opacity(_:): @MainActor func opacity(_ state: Binding<D
 swift.method ColorPicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ColorPicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -3241,6 +3249,7 @@ swift.method DatePicker.opacity(_:): @MainActor func opacity(_ state: Binding<Do
 swift.method DatePicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DatePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -3440,6 +3449,7 @@ swift.method DebugInspector.opacity(_:): @MainActor func opacity(_ state: Bindin
 swift.method DebugInspector.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DebugInspector.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DebugInspector.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -3631,6 +3641,7 @@ swift.method DebugInspectorButton.opacity(_:): @MainActor func opacity(_ state: 
 swift.method DebugInspectorButton.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method DebugInspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -3851,6 +3862,7 @@ swift.method Either.opacity(_:): @MainActor func opacity(_ value: Double) -> Sel
 swift.method Either.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Either.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Either.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -4072,6 +4084,7 @@ swift.method Ellipse.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method Ellipse.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Ellipse.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -4272,6 +4285,7 @@ swift.method Fill.opacity(_:): @MainActor func opacity(_ state: Binding<Double>)
 swift.method Fill.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Fill.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -4497,6 +4511,7 @@ swift.method GalleryView.opacity(_:): @MainActor func opacity(_ state: Binding<D
 swift.method GalleryView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GalleryView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method GalleryView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -4691,6 +4706,7 @@ swift.method GeometryReader.opacity(_:): @MainActor func opacity(_ state: Bindin
 swift.method GeometryReader.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method GeometryReader.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method GeometryReader.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -4900,6 +4916,7 @@ swift.method Grid.padding(horizontal:vertical:): @MainActor func padding(horizon
 swift.method Grid.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Grid.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Grid.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -5102,6 +5119,7 @@ swift.method Group.opacity(_:): @MainActor func opacity(_ state: Binding<Double>
 swift.method Group.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Group.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Group.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -5308,6 +5326,7 @@ swift.method HStack.padding(horizontal:vertical:): @MainActor func padding(horiz
 swift.method HStack.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method HStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method HStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -5517,6 +5536,7 @@ swift.method Image.opacity(_:): @MainActor func opacity(_ state: Binding<Double>
 swift.method Image.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Image.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -5743,6 +5763,7 @@ swift.method ItemsView.opacity(_:): @MainActor func opacity(_ state: Binding<Dou
 swift.method ItemsView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ItemsView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -5968,6 +5989,7 @@ swift.method Line.opacity(_:): @MainActor func opacity(_ state: Binding<Double>)
 swift.method Line.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Line.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -6178,6 +6200,7 @@ swift.method Link.opacity(_:): @MainActor func opacity(_ state: Binding<Double>)
 swift.method Link.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Link.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -6232,7 +6255,7 @@ swift.method Localization.percent(_:fractionDigits:): @MainActor func percent(_ 
 swift.method Localization.plural(_:zero:one:two:few:many:other:): @MainActor func plural(_ count: Int, zero: String? = nil, one: String? = nil, two: String? = nil, few: String? = nil, many: String? = nil, other: String) -> String
 swift.method Localization.speaking(_:): @MainActor func speaking(_ language: Catalog.CatalogLanguage) -> Localization<Catalog>
 swift.method Localization.text(_:_:): @MainActor func text<Arguments>(_ message: Message<Arguments>, _ arguments: Arguments) -> String
-swift.method Localization.time(_:): @MainActor func time(_ time: ClockTime) -> String
+swift.method Localization.time(_:style:): @MainActor func time(_ time: ClockTime, style: TimeStyle = .short) -> String
 swift.method Map.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6395,6 +6418,7 @@ swift.method Map.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) 
 swift.method Map.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Map.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -6493,7 +6517,7 @@ swift.method MessageContext.number(_:): func number(_ value: Int) -> String
 swift.method MessageContext.number(_:fractionDigits:): func number(_ value: Double, fractionDigits: Int? = nil) -> String
 swift.method MessageContext.percent(_:fractionDigits:): func percent(_ value: Double, fractionDigits: Int = 0) -> String
 swift.method MessageContext.plural(_:zero:one:two:few:many:other:): func plural(_ count: Int, zero: String? = nil, one: String? = nil, two: String? = nil, few: String? = nil, many: String? = nil, other: String) -> String
-swift.method MessageContext.time(_:): func time(_ time: ClockTime) -> String
+swift.method MessageContext.time(_:style:): func time(_ time: ClockTime, style: TimeStyle = .short) -> String
 swift.method ModifiableElement.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ModifiableElement.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiableElement.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified where Value : Equatable
@@ -6656,6 +6680,7 @@ swift.method ModifiedContent.opacity(_:): @MainActor func opacity(_ state: Bindi
 swift.method ModifiedContent.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ModifiedContent.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ModifiedContent.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -6869,6 +6894,7 @@ swift.method MotionLayout.opacity(_:): @MainActor func opacity(_ state: Binding<
 swift.method MotionLayout.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method MotionLayout.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -6944,6 +6970,7 @@ swift.method NavigationStack.background(_:): @MainActor func background(_ value:
 swift.method NavigationStack.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Brush) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method NavigationStack.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
@@ -7084,6 +7111,7 @@ swift.method NavigationStack.opacity(_:): @MainActor func opacity(_ state: Bindi
 swift.method NavigationStack.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method NavigationStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method NavigationStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -7301,6 +7329,7 @@ swift.method Path.opacity(_:): @MainActor func opacity(_ state: Binding<Double>)
 swift.method Path.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Path.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -7521,6 +7550,7 @@ swift.method Picker.opacity(_:): @MainActor func opacity(_ state: Binding<Double
 swift.method Picker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Picker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -7740,6 +7770,7 @@ swift.method Polygon.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method Polygon.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Polygon.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -7955,6 +7986,7 @@ swift.method Polyline.opacity(_:): @MainActor func opacity(_ state: Binding<Doub
 swift.method Polyline.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Polyline.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -8166,6 +8198,7 @@ swift.method PositionDots.opacity(_:): @MainActor func opacity(_ state: Binding<
 swift.method PositionDots.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method PositionDots.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method PositionDots.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -8363,6 +8396,7 @@ swift.method ProgressBar.opacity(_:): @MainActor func opacity(_ state: Binding<D
 swift.method ProgressBar.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ProgressBar.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -8579,6 +8613,7 @@ swift.method Rectangle.opacity(_:): @MainActor func opacity(_ state: Binding<Dou
 swift.method Rectangle.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Rectangle.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -8808,6 +8843,7 @@ swift.method ScrollView.padding(horizontal:vertical:): @MainActor func padding(h
 swift.method ScrollView.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ScrollView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ScrollView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9037,6 +9073,7 @@ swift.method SearchField.opacity(_:): @MainActor func opacity(_ state: Binding<D
 swift.method SearchField.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method SearchField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9250,6 +9287,7 @@ swift.method Separator.opacity(_:): @MainActor func opacity(_ state: Binding<Dou
 swift.method Separator.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Separator.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9476,6 +9514,7 @@ swift.method Slider.opacity(_:): @MainActor func opacity(_ state: Binding<Double
 swift.method Slider.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Slider.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9680,6 +9719,7 @@ swift.method Space.opacity(_:): @MainActor func opacity(_ state: Binding<Double>
 swift.method Space.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Space.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9881,6 +9921,7 @@ swift.method Spinner.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method Spinner.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Spinner.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -9945,6 +9986,7 @@ swift.method SplitView.background(_:): @MainActor func background(_ value: Color
 swift.method SplitView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Brush) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method SplitView.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
@@ -10085,6 +10127,7 @@ swift.method SplitView.opacity(_:): @MainActor func opacity(_ state: Binding<Dou
 swift.method SplitView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method SplitView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method SplitView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -10114,9 +10157,15 @@ swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggl
 swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggle(_ value: Bool) -> SplitView.Modified
 swift.method SplitView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
+swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ state: Binding<Color>) -> SplitView.Modified
 swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ state: Binding<Material>) -> SplitView.Modified
+swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ value: Brush) -> SplitView.Modified
+swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ value: Color) -> SplitView.Modified
 swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ value: Material) -> SplitView.Modified
+swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ state: Binding<Color>) -> SplitView.Modified
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ state: Binding<Material>) -> SplitView.Modified
+swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Brush) -> SplitView.Modified
+swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Color) -> SplitView.Modified
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Material) -> SplitView.Modified
 swift.method SplitView.sidebarOverlays(into:): @MainActor func sidebarOverlays(into state: Binding<Bool>) -> SplitView.Modified
 swift.method SplitView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
@@ -10305,6 +10354,7 @@ swift.method Stepper.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method Stepper.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Stepper.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -10657,6 +10707,7 @@ swift.method Switch.opacity(_:): @MainActor func opacity(_ state: Binding<Double
 swift.method Switch.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Switch.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -10723,6 +10774,7 @@ swift.method TabView.background(_:): @MainActor func background(_ value: Color) 
 swift.method TabView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Brush) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method TabView.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
@@ -10863,6 +10915,7 @@ swift.method TabView.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method TabView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TabView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TabView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -11076,6 +11129,7 @@ swift.method Text.padding(horizontal:vertical:): @MainActor func padding(horizon
 swift.method Text.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method Text.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method Text.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -11310,6 +11364,7 @@ swift.method TextEditor.opacity(_:): @MainActor func opacity(_ state: Binding<Do
 swift.method TextEditor.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TextEditor.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -11544,6 +11599,7 @@ swift.method TextField.opacity(_:): @MainActor func opacity(_ state: Binding<Dou
 swift.method TextField.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TextField.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -11833,6 +11889,7 @@ swift.method TimePicker.opacity(_:): @MainActor func opacity(_ state: Binding<Do
 swift.method TimePicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method TimePicker.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -12156,6 +12213,7 @@ swift.method VStack.padding(horizontal:vertical:): @MainActor func padding(horiz
 swift.method VStack.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method VStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method VStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -12302,6 +12360,7 @@ swift.method View.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ hand
 swift.method View.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method View.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method View.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -12600,6 +12659,7 @@ swift.method WebView.opacity(_:): @MainActor func opacity(_ state: Binding<Doubl
 swift.method WebView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method WebView.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -12836,6 +12896,7 @@ swift.method ZStack.padding(horizontal:vertical:): @MainActor func padding(horiz
 swift.method ZStack.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Brush) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
 swift.method ZStack.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method ZStack.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
@@ -14044,6 +14105,7 @@ swift.type.property VisualElementContract.zIndex: static let zIndex: ElementProp
 swift.type.property VisualState.disabled: static var disabled: VisualState<Target> { get }
 swift.type.property VisualState.focused: static var focused: VisualState<Target> { get }
 swift.type.property VisualState.normal: static var normal: VisualState<Target> { get }
+swift.type.property VisualState.off: static var off: VisualState<CheckBox> { get }
 swift.type.property VisualState.off: static var off: VisualState<Switch> { get }
 swift.type.property VisualState.off: static var off: VisualState<ToolbarToggle> { get }
 swift.type.property VisualState.on: static var on: VisualState<CheckBox> { get }

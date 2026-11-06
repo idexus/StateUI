@@ -130,6 +130,21 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(turned?.props["background"], green)
     }
 
+    /// A check box says which way it is as a switch does: Off while it is not on, On once it is.
+    func testACheckBoxIsOffUntilItIsOn() {
+        let on = State(wrappedValue: false)
+        let renders = Renders()
+        let first = render(renders, CheckBox("Remember", isOn: on.projectedValue)
+            .visualState(.off) { $0.background(.gray) }
+            .visualState(.on) { $0.background(.green) }
+            .id("c").node)
+        XCTAssertEqual(first?.props["background"], gray)
+
+        Renderer.shared.clearInvalidation()
+        on.wrappedValue = true
+        XCTAssertEqual(renders.revisit(changed: Renderer.shared.pendingChanges).child("c")?.props["background"], green)
+    }
+
     /// The user's turn of a bound switch, as the host reports it, enters On the same way.
     func testTheUsersTurnEntersTheStateItFollows() throws {
         let on = State(wrappedValue: false)

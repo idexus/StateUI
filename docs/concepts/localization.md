@@ -523,6 +523,7 @@ func written() -> [String] {
         localization.date(day, style: .long),               // 30 September 2026
         localization.date(day, style: .short),              // 30.09.2026
         localization.time(ClockTime(hour: 7, minute: 30)),  // 07:30
+        localization.time(ClockTime(hour: 7, minute: 30, second: 5), style: .medium),  // 07:30:05
         localization.list(["Ania", "Basia", "Celina"]),     // Ania, Basia, and Celina
     ]
 }

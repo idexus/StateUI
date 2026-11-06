@@ -119,7 +119,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
     public func date(_ day: CalendarDate, style: DateStyle) -> String { context.date(day, style: style) }
 
     /// A time of day - `MessageContext.time`.
-    public func time(_ time: ClockTime) -> String { context.time(time) }
+    public func time(_ time: ClockTime, style: TimeStyle = .short) -> String { context.time(time, style: style) }
 
     /// Items as a sentence lists them - `MessageContext.list`.
     public func list(_ items: [String]) -> String { context.list(items) }
