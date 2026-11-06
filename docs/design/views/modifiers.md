@@ -30,7 +30,13 @@ as in code. A state it borrows is named `state` - `isOn(_ state:)`,
 the thing handed over. A modifier of what carries properties - a control, a
 tier, a style, a run of text - gives back `Modified`, which for a control is
 the control itself and for a composed view a `ModifiedContent`, so a chain
-offers the same modifiers after it as before. What configures itself gives
+offers the same modifiers after it as before. The library's own composed
+views - a list, a gallery, a motion layout, position dots - give back
+themselves: each carries what every view's modifiers wrote on it
+(`WrittenOnView`), the placeholder its body is built under, so its own
+modifiers and every view's come in any order, as a control's do. The walk
+passes that by, as it never meets a `ModifiedContent`'s: what is written on
+the view is the differ's to compare, never a reason to build its body anew. What configures itself gives
 back `Self`: a composed view's own settings (a gallery's position, a list's
 selection), a list's `Section`, a scene's declaration, and an entry of a menu
 or a map that wears no tier (`Menu`, `MenuSeparator`, `Marker`).

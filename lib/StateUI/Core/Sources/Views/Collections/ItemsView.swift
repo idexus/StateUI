@@ -42,6 +42,9 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// What the list wears of the pull to refresh, in the order written.
     private var pull: [RefreshWorn] = []
 
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
+
     /// A list of `items`, each its own identity, each looking as `content` says.
     public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content
@@ -140,6 +143,25 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
         }
 
         return AnyView(RefreshWorn.wear(pull, on: element))
+    }
+}
+
+extension ItemsView {
+    /// What every view's modifiers give back: the list itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
     }
 }
 

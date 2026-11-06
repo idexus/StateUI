@@ -189,6 +189,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// What a target the run names is told to beside the parameters: a composed control's own value worked out from it.
     private var named: ((Parameters) -> Void)?
 
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
+
     /// A layout of views, one per item, placed by `placements` on the host's frames.
     ///
     /// - Parameters:
@@ -755,6 +758,25 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     }
 }
 
+extension MotionLayout {
+    /// What every view's modifiers give back: the layout itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
+    }
+}
+
 extension MotionLayout: WalkedView {
     /// The parts the walk reads, as a mirror would list them, with no mirror made: a mirror of a generic type works
     /// its fields' types out at every reading, and every render of a layout walks its engine
@@ -768,7 +790,7 @@ extension MotionLayout: WalkedView {
             ("followed", followed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
             ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("mirrors", mirrors),
-            ("named", named as Any),
+            ("named", named as Any), ("written", written),
         ]
     }
 }

@@ -72,6 +72,9 @@ Badge()
 Write a component-specific modifier before common view modifiers. A common
 modifier such as `margin` returns StateUI's modified wrapper, whose surface is
 the shared view contract rather than the original component's custom methods.
+The library's own composed views - `ItemsView`, `GalleryView`,
+`MotionLayout`, `PositionDots` - take their own modifiers and the common ones
+in any order, as a control does.
 
 ## What makes a composed view rebuild
 

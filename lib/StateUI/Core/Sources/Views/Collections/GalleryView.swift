@@ -89,6 +89,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How each card moves as a body of the gallery's world, where the author said. See `itemBody`.
     private var cardBody: LayoutBody?
 
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
+
     /// One card per item, the item its identity.
     ///
     ///     GalleryView(covers) { cover in
@@ -639,6 +642,25 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             self.path = path
             self.card = card
         }
+    }
+}
+
+extension GalleryView {
+    /// What every view's modifiers give back: the gallery itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
     }
 }
 

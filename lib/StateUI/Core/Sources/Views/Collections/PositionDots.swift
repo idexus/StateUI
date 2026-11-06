@@ -29,6 +29,9 @@ public struct PositionDots: View {
     private var dotShape: Given<DotShape> = .value(.circle)
     private var hidesForSinglePage: Given<Bool> = .value(true)
 
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
+
     /// A row with no dots yet - `count` gives it some.
     public init() {
         marks = nil
@@ -98,6 +101,25 @@ public struct PositionDots: View {
 
     /// How strongly a mark that is not the current one is drawn.
     static let faded = 0.4
+}
+
+extension PositionDots {
+    /// What every view's modifiers give back: the row of dots itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
+    }
 }
 
 extension PositionDots {

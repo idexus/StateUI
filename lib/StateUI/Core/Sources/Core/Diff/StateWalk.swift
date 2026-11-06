@@ -129,6 +129,9 @@ private struct StateParts {
     /// Design: docs/design/core/identity-and-diffing.md#a-type-learned-once
     enum Kind {
         case aim, box, slot, borrowed, node
+
+        /// What every view's modifiers wrote on a library view: the differ's to compare, never an input.
+        case written
         case value((Any) -> any Equatable)
         case reference
         case walked((Any) -> [(label: String, value: Any)])
@@ -181,6 +184,8 @@ private struct StateParts {
         case .node:
             // A built node is interface, never state, and cannot be compared.
             inputs.append((path: path, input: .opaque))
+        case .written:
+            break
         case .value(let comparable):
             inputs.append((path: path, input: .value(comparable(value))))
         case .reference:
@@ -275,6 +280,7 @@ private struct StateParts {
         if value is EnvironmentSlot { return .slot }
         if value is BorrowedState { return .borrowed }
         if value is Node { return .node }
+        if value is WrittenOnView { return .written }
         if let walked = Swift.type(of: value) as? any WalkedView.Type { return .walked(reader(walked)) }
         if let comparable = Swift.type(of: value) as? any Equatable.Type { return .value(opener(comparable)) }
 
