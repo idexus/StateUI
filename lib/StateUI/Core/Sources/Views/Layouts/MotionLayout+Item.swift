@@ -8,7 +8,7 @@
 /// Which ways letting a view go dismisses it, how far the hand must take it first, and what is told of its item.
 struct LayoutDismissal<Item> {
     let directions: SwipeDirection
-    let beyond: Double
+    let threshold: Double
     let handler: ValueHandler<Item>
 }
 
@@ -120,7 +120,7 @@ extension MotionLayout.Run {
         let down = hand.at.y - hand.from.y + Self.carried(velocity.y, by: throwing)
         let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
         return Set(dismissals.indices.filter { place in
-            ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].beyond }
+            ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].threshold }
         })
     }
 

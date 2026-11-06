@@ -2,7 +2,7 @@
 Button.holdDuration: ✅
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
-Canvas.swipeDirection: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+Canvas.swipeDirections: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.swipeThreshold: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.swiped: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.frameChanged: ✅
@@ -76,7 +76,7 @@ Polyline.tapped: ✓ tap on Polyline: handed to the host's recognizer or handler
 ProgressBar.holdDuration: ✅
 Rectangle.frameChanged: ✅
 Rectangle.margin: ✅
-Rectangle.swipeDirection: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.swipeDirections: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.frameChanged: ✅
@@ -121,7 +121,7 @@ Switch.held: ✓ hold on Switch: handed to the host's recognizer or handler, no 
 Switch.layoutBody: ✅
 Text.frameChanged: ✅
 Text.margin: ✅
-Text.swipeDirection: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.swipeDirections: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.swipeThreshold: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.swiped: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.panYChannel: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
@@ -137,7 +137,7 @@ TimePicker.tapped: ✓ tap on TimePicker: handed to the host's recognizer or han
 VStack.holdDuration: ✅
 WebView.frameChanged: ✅
 WebView.margin: ✅
-WebView.swipeDirection: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.swipeDirections: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swipeThreshold: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swiped: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.frameChanged: ✅

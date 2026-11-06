@@ -423,7 +423,7 @@ ZStack
   scale
   scaleX
   scaleY
-  swipeDirection
+  swipeDirections
   swipeThreshold
   tapCount
   tooltip

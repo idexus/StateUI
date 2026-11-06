@@ -257,7 +257,7 @@ enum PatchDump {
                 ("underline", TextDecorations.underline.rawValue),
                 ("strikethrough", TextDecorations.strikethrough.rawValue),
             ])
-        case Prop.swipeDirection.name:
+        case Prop.swipeDirections.name:
             return spelled(member, asBitsOf: [
                 ("right", SwipeDirection.right.rawValue),
                 ("left", SwipeDirection.left.rawValue),

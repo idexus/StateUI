@@ -75,7 +75,7 @@ final class WinUIDeclarationExportTests: XCTestCase {
         let register = WinUIDriver().register
         let gestures = [
             "panTouchCount", "panUpdated", "panXChannel", "panYChannel", "pinchUpdated", "pointerEntered",
-            "pointerExited", "pointerMoved", "pointerPressed", "pointerReleased", "swipeDirection", "swipeThreshold",
+            "pointerExited", "pointerMoved", "pointerPressed", "pointerReleased", "swipeDirections", "swipeThreshold",
             "swiped", "tapCount", "tapped",
         ]
         for gesture in gestures {

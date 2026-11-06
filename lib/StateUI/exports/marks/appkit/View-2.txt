@@ -21,7 +21,7 @@ ColorPicker.tapped: ✓ tap on ColorPicker: handed to the host's recognizer or h
 DatePicker.holdDuration: ✅
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
-Ellipse.swipeDirection: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.swipeDirections: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.swipeThreshold: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.swiped: ✓ pan on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Fill.frameChanged: ✅
@@ -94,7 +94,7 @@ SearchField.frameChanged: ✅
 SearchField.rotationUpdated: ✓ rotate on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Separator.frameChanged: ✅
 Separator.margin: ✅
-Separator.swipeDirection: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.swipeDirections: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Separator.swipeThreshold: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Separator.swiped: ✓ pan on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -110,7 +110,7 @@ Spinner.pinchUpdated: ✓ pinch on Spinner: handed to the host's recognizer or h
 Spinner.verticalAlignment: ✅
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
-Stepper.swipeDirection: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.swipeDirections: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.swipeThreshold: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.swiped: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.frameChanged: ✅

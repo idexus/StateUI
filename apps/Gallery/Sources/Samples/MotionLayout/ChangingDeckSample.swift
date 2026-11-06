@@ -133,7 +133,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)
-        .onItemDismissed(.up, beyond: 120) { name in remove(name) }
+        .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
         // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
         // where the parameters stand; `.dynamics` THE CARDS reaching their new
         // places after a card joins, leaves or the order changes.

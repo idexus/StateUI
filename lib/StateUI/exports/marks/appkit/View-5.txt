@@ -14,7 +14,7 @@ CheckBox.tapped: ✓ tap on CheckBox: handed to the host's recognizer or handler
 ColorPicker.holdDuration: ✅
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
-DatePicker.swipeDirection: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.swipeDirections: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.swipeThreshold: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.swiped: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.frameChanged: ✅
@@ -53,7 +53,7 @@ Line.tapped: ✓ tap on Line: handed to the host's recognizer or handler, no NSE
 Link.holdDuration: ✅
 Map.frameChanged: ✅
 Map.margin: ✅
-Map.swipeDirection: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
+Map.swipeDirections: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.swipeThreshold: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.swiped: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.area: ✅
@@ -99,7 +99,7 @@ Separator.pointerReleased: ✓ hover on Separator: handed to the host's recogniz
 Slider.holdDuration: ✅
 Space.frameChanged: ✅
 Space.margin: ✅
-Space.swipeDirection: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
+Space.swipeDirections: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.swipeThreshold: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.swiped: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag source and the window's drop routing told by the driver, no dragging session

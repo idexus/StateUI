@@ -449,7 +449,7 @@ private func itemLayout(
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             .parameterMotion(.eased(.milliseconds(200), curve: .linear))
             if dismissing {
-                layout.onItemDismissed(.down, beyond: 10) { told.values.append("\($0) dismissed") }
+                layout.onItemDismissed(directions: .down, threshold: 10) { told.values.append("\($0) dismissed") }
                     .width(100).height(40)
             } else {
                 layout.width(100).height(40)

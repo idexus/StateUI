@@ -66,7 +66,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 // high or fast, it flies off and the app closes - the others
                 // close up, the card in front staying in front.
                 .itemDrag(begins: .perpendicular)
-                .onItemDismissed(.up, beyond: 120) { name in close(name) }
+                .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
             }
             .gridRow(0)
             .clipsContent(true)

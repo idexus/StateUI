@@ -28,7 +28,7 @@ Ellipse.tapped: ✓ tap on Ellipse: handed to the host's recognizer or handler, 
 Fill.holdDuration: ✅
 Grid.frameChanged: ✅
 Grid.margin: ✅
-Grid.swipeDirection: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.swipeDirections: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.swipeThreshold: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.swiped: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 HStack.frameChanged: ✅
@@ -61,7 +61,7 @@ MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag source and t
 Path.holdDuration: ✅
 Picker.frameChanged: ✅
 Picker.margin: ✅
-Picker.swipeDirection: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.swipeDirections: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.swipeThreshold: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.swiped: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.frameChanged: ✅
@@ -117,7 +117,7 @@ Text.pinchUpdated: ✓ pinch on Text: handed to the host's recognizer or handler
 Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.margin: ✅
-TextEditor.swipeDirection: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.swipeDirections: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.swipeThreshold: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.swiped: ✓ pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.frameChanged: ✅

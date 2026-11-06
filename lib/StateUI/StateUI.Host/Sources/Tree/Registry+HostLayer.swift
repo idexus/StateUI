@@ -92,7 +92,7 @@ extension Registry {
         everyElementRealizes(ViewContract.panXChannel)
         everyElementRealizes(ViewContract.panYChannel)
         everyElementRealizes(ViewContract.panTouchCount)
-        everyElementRealizes(ViewContract.swipeDirection)
+        everyElementRealizes(ViewContract.swipeDirections)
         everyElementRealizes(ViewContract.swipeThreshold)
         everyElementRaises(ViewContract.panUpdated)
         everyElementRaises(ViewContract.pinchUpdated)

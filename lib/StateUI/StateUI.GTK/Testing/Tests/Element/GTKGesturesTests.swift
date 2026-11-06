@@ -69,7 +69,7 @@ private struct DragPage: View {
                 .height(100)
                 .panX($x)
                 .onPanUpdated { pan in said += "pan \(pan.phase.rawValue) \(Int(pan.total.x)); " }
-                .onSwiped(direction: [.left, .right]) { direction in said += "swiped \(direction.rawValue); " }
+                .onSwiped(directions: [.left, .right]) { direction in said += "swiped \(direction.rawValue); " }
                 .onPinchUpdated { pinch in said += "pinch \(pinch.scale) at \(pinch.pivot.x); " }
                 .onPointerMoved { point in said += "moved \(Int(point.x)),\(Int(point.y)); " }
                 .onPointerPressed { point in said += "pressed \(Int(point.x)); " }

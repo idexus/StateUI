@@ -39,7 +39,7 @@ Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's state
 HStack.holdDuration: ✅
 Image.frameChanged: ✅
 Image.margin: ✅
-Image.swipeDirection: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
+Image.swipeDirections: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 Image.swipeThreshold: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 Image.swiped: ✓ pan on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.frameChanged: ✅
@@ -78,7 +78,7 @@ Picker.tapped: ✓ tap on Picker: the view's listening handed the recognizer's s
 Polygon.holdDuration: ✅
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
-Polyline.swipeDirection: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
+Polyline.swipeDirections: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.swipeThreshold: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.swiped: ✓ pan on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.frameChanged: ✅
@@ -112,7 +112,7 @@ Space.held: ✓ hold on Space: the view's listening handed the recognizer's stat
 Space.layoutBody: ✅
 Spinner.frameChanged: ✅
 Spinner.margin: ✅
-Spinner.swipeDirection: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.swipeDirections: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Spinner.swipeThreshold: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Spinner.swiped: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.panYChannel: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
@@ -131,7 +131,7 @@ TextEditor.tapped: ✓ tap on TextEditor: the view's listening handed the recogn
 TextField.holdDuration: ✅
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
-TimePicker.swipeDirection: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.swipeDirections: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.swipeThreshold: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.swiped: ✓ pan on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.frameChanged: ✅

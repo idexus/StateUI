@@ -31,7 +31,7 @@ Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
 Button.rotationUpdated: ✅
-Button.swipeDirection: ✅
+Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
@@ -69,7 +69,7 @@ Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
 Canvas.rotationUpdated: ✅
-Canvas.swipeDirection: ✅
+Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
@@ -107,7 +107,7 @@ Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
 Capsule.rotationUpdated: ✅
-Capsule.swipeDirection: ✅
+Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
@@ -145,7 +145,7 @@ CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
 CheckBox.rotationUpdated: ✅
-CheckBox.swipeDirection: ✅
+CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
@@ -183,7 +183,7 @@ ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
 ColorPicker.pointerReleased: ✅
 ColorPicker.rotationUpdated: ✅
-ColorPicker.swipeDirection: ✅
+ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
@@ -221,7 +221,7 @@ DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
 DatePicker.rotationUpdated: ✅
-DatePicker.swipeDirection: ✅
+DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
@@ -259,7 +259,7 @@ Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
 Ellipse.rotationUpdated: ✅
-Ellipse.swipeDirection: ✅
+Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
@@ -297,7 +297,7 @@ Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
 Fill.rotationUpdated: ✅
-Fill.swipeDirection: ✅
+Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
@@ -335,7 +335,7 @@ Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
 Grid.rotationUpdated: ✅
-Grid.swipeDirection: ✅
+Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
@@ -373,7 +373,7 @@ HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
 HStack.rotationUpdated: ✅
-HStack.swipeDirection: ✅
+HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
@@ -411,7 +411,7 @@ Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
 Image.rotationUpdated: ✅
-Image.swipeDirection: ✅
+Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
@@ -449,7 +449,7 @@ ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
 ItemsView.rotationUpdated: ✅
-ItemsView.swipeDirection: ✅
+ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
@@ -487,7 +487,7 @@ Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
 Line.rotationUpdated: ✅
-Line.swipeDirection: ✅
+Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
@@ -525,7 +525,7 @@ Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
 Link.rotationUpdated: ✅
-Link.swipeDirection: ✅
+Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
@@ -563,7 +563,7 @@ Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 Map.rotationUpdated: 🧩
-Map.swipeDirection: 🧩
+Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
@@ -601,7 +601,7 @@ MotionLayout.pointerMoved: ✅
 MotionLayout.pointerPressed: ✅
 MotionLayout.pointerReleased: ✅
 MotionLayout.rotationUpdated: ✅
-MotionLayout.swipeDirection: ✅
+MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
@@ -639,7 +639,7 @@ Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.rotationUpdated: ✅
-Path.swipeDirection: ✅
+Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
@@ -677,7 +677,7 @@ Picker.pointerMoved: does not apply - its case covers Picker.pointerReleased too
 Picker.pointerPressed: does not apply - its case covers Picker.pointerReleased too, which this host never has
 Picker.pointerReleased: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.rotationUpdated: ✅
-Picker.swipeDirection: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.swipeDirections: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.swipeThreshold: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.swiped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.tapCount: does not apply - its case covers Picker.tapped too, which this host never has
@@ -715,7 +715,7 @@ Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
 Polygon.rotationUpdated: ✅
-Polygon.swipeDirection: ✅
+Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
@@ -753,7 +753,7 @@ Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
 Polyline.rotationUpdated: ✅
-Polyline.swipeDirection: ✅
+Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
@@ -791,7 +791,7 @@ ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
 ProgressBar.rotationUpdated: ✅
-ProgressBar.swipeDirection: ✅
+ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
@@ -829,7 +829,7 @@ Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
 Rectangle.rotationUpdated: ✅
-Rectangle.swipeDirection: ✅
+Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
@@ -867,7 +867,7 @@ ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
 ScrollView.rotationUpdated: ✅
-ScrollView.swipeDirection: ✅
+ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
@@ -905,7 +905,7 @@ SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
 SearchField.rotationUpdated: ✅
-SearchField.swipeDirection: ✅
+SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
@@ -943,7 +943,7 @@ Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
 Separator.pointerReleased: ✅
 Separator.rotationUpdated: ✅
-Separator.swipeDirection: ✅
+Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
@@ -981,7 +981,7 @@ Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
 Slider.rotationUpdated: ✅
-Slider.swipeDirection: ✅
+Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
@@ -1019,7 +1019,7 @@ Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
 Space.rotationUpdated: ✅
-Space.swipeDirection: ✅
+Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
@@ -1057,7 +1057,7 @@ Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
 Spinner.rotationUpdated: ✅
-Spinner.swipeDirection: ✅
+Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
@@ -1095,7 +1095,7 @@ Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
 Stepper.rotationUpdated: ✅
-Stepper.swipeDirection: ✅
+Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
@@ -1133,7 +1133,7 @@ Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
 Switch.rotationUpdated: ✅
-Switch.swipeDirection: ✅
+Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
@@ -1171,7 +1171,7 @@ Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
 Text.rotationUpdated: ✅
-Text.swipeDirection: ✅
+Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
@@ -1209,7 +1209,7 @@ TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
 TextEditor.rotationUpdated: ✅
-TextEditor.swipeDirection: ✅
+TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
@@ -1247,7 +1247,7 @@ TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
 TextField.rotationUpdated: ✅
-TextField.swipeDirection: ✅
+TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
@@ -1285,7 +1285,7 @@ TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
 TimePicker.rotationUpdated: ✅
-TimePicker.swipeDirection: ✅
+TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
@@ -1323,7 +1323,7 @@ VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
 VStack.rotationUpdated: ✅
-VStack.swipeDirection: ✅
+VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
@@ -1361,7 +1361,7 @@ WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
 WebView.rotationUpdated: ✅
-WebView.swipeDirection: ✅
+WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
@@ -1399,7 +1399,7 @@ ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
 ZStack.rotationUpdated: ✅
-ZStack.swipeDirection: ✅
+ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅

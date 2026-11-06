@@ -28,7 +28,7 @@ Ellipse.tapped: ✓ tap on Ellipse: the view's listening handed the recognizer's
 Fill.holdDuration: ✅
 Grid.frameChanged: ✅
 Grid.margin: ✅
-Grid.swipeDirection: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.swipeDirections: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.swipeThreshold: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.swiped: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.frameChanged: ✅
@@ -61,7 +61,7 @@ MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag and drop int
 Path.holdDuration: ✅
 Picker.frameChanged: ✅
 Picker.margin: ✅
-Picker.swipeDirection: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
+Picker.swipeDirections: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.swipeThreshold: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.swiped: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.frameChanged: ✅
@@ -117,7 +117,7 @@ Text.pinchUpdated: ✓ pinch on Text: the view's listening handed the recognizer
 Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.margin: ✅
-TextEditor.swipeDirection: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
+TextEditor.swipeDirections: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.swipeThreshold: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.swiped: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.frameChanged: ✅

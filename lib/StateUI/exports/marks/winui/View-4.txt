@@ -39,7 +39,7 @@ Ellipse.tapped: ✅
 Fill.frameChanged: ✅
 Fill.gridColumn: ✅
 Fill.gridRow: ✅
-Fill.swipeDirection: ✅
+Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -70,7 +70,7 @@ Line.tapped: ✅
 Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridRow: ✅
-Link.swipeDirection: ✅
+Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Map.allowsDrop: 🧩
@@ -118,7 +118,7 @@ ProgressBar.tapped: ✅
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
-Rectangle.swipeDirection: ✅
+Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -146,7 +146,7 @@ Space.isDraggable: ✓ dragAndDrop on Space: the relay's drag reports told by th
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅
 Spinner.gridRow: ✅
-Spinner.swipeDirection: ✅
+Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Stepper.frameChanged: ✅
@@ -174,7 +174,7 @@ TextEditor.tapped: ✅
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridRow: ✅
-TextField.swipeDirection: ✅
+TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

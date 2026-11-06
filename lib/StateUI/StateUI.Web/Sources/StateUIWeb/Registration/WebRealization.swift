@@ -206,7 +206,7 @@ enum WebRealization {
         let pressing: [any ContractMember] = [
             ViewContract.tapped, ViewContract.held, ViewContract.holdDuration, ViewContract.panUpdated,
             ViewContract.panTouchCount, ViewContract.panXChannel, ViewContract.panYChannel, ViewContract.swiped,
-            ViewContract.swipeDirection, ViewContract.swipeThreshold, ViewContract.pointerReleased,
+            ViewContract.swipeDirections, ViewContract.swipeThreshold, ViewContract.pointerReleased,
         ]
         return pressing.map { .notPlanned($0, on: PickerContract.self, reason: pressed) } + [
             .notPlanned(DatePickerContract.isOpen, reason: opens), .notPlanned(DatePickerContract.opened, reason: opened),

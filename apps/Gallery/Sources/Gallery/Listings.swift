@@ -789,7 +789,7 @@ enum Listings {
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
                     .itemDrag(begins: .perpendicular)
-                    .onItemDismissed(.up, beyond: 120) { name in close(name) }
+                    .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -1976,7 +1976,7 @@ enum Listings {
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
-            .onItemDismissed(.up, beyond: 120) { name in remove(name) }
+            .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
             // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
@@ -11494,7 +11494,7 @@ enum Listings {
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // A recognizer that listens for nothing recognizes nothing, so
-                // `direction` defaults to every way.
+                // `directions` defaults to every way.
                 .onSwiped { direction in
                     swipe = Self.name(of: direction)
                 }
@@ -11509,7 +11509,7 @@ enum Listings {
                 .lineWidth(1)
                 // Narrowed: two of the four ways, and a finger that must travel
                 // 150 device units before anything fires.
-                .onSwiped(direction: [.left, .right], threshold: 150) { direction in
+                .onSwiped(directions: [.left, .right], threshold: 150) { direction in
                     narrowed = Self.name(of: direction)
                 }
 

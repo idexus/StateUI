@@ -12,7 +12,7 @@ Capsule.tapped: ✓ tap on Capsule: the view's listening handed the recognizer's
 CheckBox.holdDuration: ✅
 ColorPicker.frameChanged: ✅
 ColorPicker.margin: ✅
-ColorPicker.swipeDirection: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
+ColorPicker.swipeDirections: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.swipeThreshold: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.swiped: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.frameChanged: ✅
@@ -46,7 +46,7 @@ ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the rec
 Line.holdDuration: ✅
 Link.frameChanged: ✅
 Link.margin: ✅
-Link.swipeDirection: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
+Link.swipeDirections: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Link.swipeThreshold: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Link.swiped: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Map.frameChanged: ✅
@@ -95,7 +95,7 @@ Separator.filesDropped: ✓ dropFiles on Separator: the drop interaction's handl
 Separator.tapped: ✓ pressDown on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.frameChanged: ✅
 Slider.margin: ✅
-Slider.swipeDirection: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.swipeDirections: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swipeThreshold: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swiped: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.frameChanged: ✅

@@ -21,7 +21,7 @@ ColorPicker.tapped: ✓ tap on ColorPicker: the view's listening handed the reco
 DatePicker.holdDuration: ✅
 Ellipse.frameChanged: ✅
 Ellipse.margin: ✅
-Ellipse.swipeDirection: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
+Ellipse.swipeDirections: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swipeThreshold: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.swiped: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Fill.frameChanged: ✅
@@ -94,7 +94,7 @@ SearchField.frameChanged: ✅
 SearchField.rotationUpdated: ✓ rotate on SearchField: the view's listening handed the recognizer's states, no touch sent
 Separator.frameChanged: ✅
 Separator.margin: ✅
-Separator.swipeDirection: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.swipeDirections: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.swipeThreshold: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.swiped: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -110,7 +110,7 @@ Spinner.pinchUpdated: ✓ pinch on Spinner: the view's listening handed the reco
 Spinner.verticalAlignment: ✅
 Stepper.frameChanged: ✅
 Stepper.margin: ✅
-Stepper.swipeDirection: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
+Stepper.swipeDirections: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.swipeThreshold: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.frameChanged: ✅

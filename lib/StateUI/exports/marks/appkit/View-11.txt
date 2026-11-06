@@ -11,7 +11,7 @@ Canvas.tapped: ✓ tap on Canvas: handed to the host's recognizer or handler, no
 Capsule.holdDuration: ✅
 CheckBox.frameChanged: ✅
 CheckBox.margin: ✅
-CheckBox.swipeDirection: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.swipeDirections: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.swipeThreshold: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.swiped: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.frameChanged: ✅
@@ -47,7 +47,7 @@ ItemsView.frameChanged: ✅
 ItemsView.rotationUpdated: ✓ rotate on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Line.frameChanged: ✅
 Line.margin: ✅
-Line.swipeDirection: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
+Line.swipeDirections: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.swipeThreshold: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.swiped: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Link.frameChanged: ✅
@@ -89,7 +89,7 @@ Rectangle.tapped: ✓ tap on Rectangle: handed to the host's recognizer or handl
 ScrollView.holdDuration: ✅
 SearchField.frameChanged: ✅
 SearchField.margin: ✅
-SearchField.swipeDirection: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.swipeDirections: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.swipeThreshold: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.swiped: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Separator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.

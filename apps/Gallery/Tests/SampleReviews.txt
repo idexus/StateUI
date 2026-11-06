@@ -7,7 +7,7 @@ AnalogClockSample.swift b812972d23ed6c3e
 AnimatedInputSample.swift c8318a56dc2830ce
 AnimatedPropertySample.swift 8f5793298a0bd27e
 AnimationSample.swift b7e179a1e38c7bf3
-AppSwitcherSample.swift eca2de522aece82d
+AppSwitcherSample.swift e50b50c8f06902b7
 AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift f66cbaf4c9a205ee
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
@@ -21,7 +21,7 @@ ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 1b07ddd7b73c31f5
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift b31634f0ee2057b2
-ChangingDeckSample.swift e1f41999f566a8a6
+ChangingDeckSample.swift 19eab639e8f59e9a
 CheckBoxSample.swift 8f6cafea9e0a162d
 ChoosingItemsSample.swift 1a8449147a34b6dc
 ClipboardSample.swift afdfd0a2d1c8f00e
@@ -128,7 +128,7 @@ StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
 StyleSample.swift 43ab66cb4f3728d4
-SwipeSample.swift 66a58baed064554c
+SwipeSample.swift 6e63a00e055bd605
 SwitchSample.swift e646ed7699a72afe
 TabsSample.swift 95153a385233c5c0
 TapSample.swift ecedf1892e5dde5c

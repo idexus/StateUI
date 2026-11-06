@@ -988,11 +988,11 @@ struct Board: View {
 }
 ```
 
-`.onItemDismissed(.up, beyond: 120) { id in … }` lets a view go for good:
+`.onItemDismissed(directions: .up, threshold: 120) { id in … }` lets a view go for good:
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
 removes the item it names. Short of it, the view goes back. A handler that
-awaits takes a policy, as an event's does - `.onItemDismissed(.up, beyond: 120,
+awaits takes a policy, as an event's does - `.onItemDismissed(directions: .up, threshold: 120,
 policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
 ends with the layout. Written more than once - `.up` to archive, `.down` to
 delete - a view let go runs every one whose way and distance it passed, in the

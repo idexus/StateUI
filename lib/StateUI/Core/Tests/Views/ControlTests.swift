@@ -372,7 +372,7 @@ final class ControlTests: XCTestCase {
                 .onItemActivated { _ in }
                 .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
-                .onItemDismissed(.up, beyond: 80) { _ in }
+                .onItemDismissed(directions: .up, threshold: 80) { _ in }
                 .node.built),
 
             // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
@@ -619,7 +619,7 @@ final class ControlTests: XCTestCase {
                 // own terms.
                 .onTapped(count: 2) {}
                 .onHeld(minimum: .milliseconds(800)) {}
-                .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
+                .onSwiped(directions: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
                 .onRotationUpdated { _ in }

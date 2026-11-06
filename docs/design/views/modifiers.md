@@ -242,7 +242,7 @@ A recognizer is added to the native view when the tree first carries a handler
 for it and kept for as long as it does, as a control's own events are
 subscribed once, so a render can change what a gesture does without anything
 being rebuilt. A recognizer's settings ride with its handler rather than
-becoming modifiers of their own: `.onSwiped(direction: .left)` says what it
+becoming modifiers of their own: `.onSwiped(directions: .left)` says what it
 listens for in the same breath as what it does, and there is no
 half-configured recognizer to leave lying about.
 

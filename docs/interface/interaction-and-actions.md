@@ -59,7 +59,7 @@ HStack {
 }
 .padding(12)
 .onTapped { path.append(.details) }
-.onSwiped(direction: [.left, .right], threshold: 40) { direction in
+.onSwiped(directions: [.left, .right], threshold: 40) { direction in
     if direction == .left {
         path.append(.next)
     }

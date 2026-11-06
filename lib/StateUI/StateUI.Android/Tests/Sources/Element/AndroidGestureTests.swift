@@ -73,7 +73,7 @@ final class AndroidGestureTests: XCTestCase {
         try onMainActor {
             let heard = Received<Int32>()
             let (host, box) = try Self.box {
-                $0.onSwiped(direction: [.left, .up], threshold: 40) { heard.values.append($0.rawValue) }
+                $0.onSwiped(directions: [.left, .up], threshold: 40) { heard.values.append($0.rawValue) }
             }
 
             for (fromX, fromY, toX, toY) in [(50, 150, 150, 150), (150, 150, 50, 150), (150, 150, 150, 90), (150, 150, 150, 50)] {

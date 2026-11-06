@@ -31,7 +31,7 @@ Fill.tapped: ✓ tap on Fill: handed to the host's recognizer or handler, no NSE
 Grid.holdDuration: ✅
 HStack.frameChanged: ✅
 HStack.margin: ✅
-HStack.swipeDirection: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.swipeDirections: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.swipeThreshold: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.swiped: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.frameChanged: ✅
@@ -68,7 +68,7 @@ Path.tapped: ✓ tap on Path: handed to the host's recognizer or handler, no NSE
 Picker.holdDuration: ✅
 Polygon.frameChanged: ✅
 Polygon.margin: ✅
-Polygon.swipeDirection: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.swipeDirections: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.swipeThreshold: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.swiped: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.frameChanged: ✅
@@ -125,7 +125,7 @@ Text.panXChannel: ✓ pan on Text: handed to the host's recognizer or handler, n
 TextEditor.holdDuration: ✅
 TextField.frameChanged: ✅
 TextField.margin: ✅
-TextField.swipeDirection: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.swipeDirections: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TextField.swipeThreshold: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TextField.swiped: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.frameChanged: ✅

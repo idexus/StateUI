@@ -8,7 +8,7 @@ Button.tapped: ✓ tap on Button: handed to the host's recognizer or handler, no
 Canvas.holdDuration: ✅
 Capsule.frameChanged: ✅
 Capsule.margin: ✅
-Capsule.swipeDirection: ✓ pan on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.swipeDirections: ✓ pan on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.swipeThreshold: ✓ pan on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.swiped: ✓ pan on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.frameChanged: ✅
@@ -64,7 +64,7 @@ Map.panUpdated: ✓ pan on Map: handed to the host's recognizer or handler, no N
 Map.panXChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.frameChanged: ✅
 MotionLayout.margin: ✅
-MotionLayout.swipeDirection: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.swipeDirections: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swiped: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
@@ -89,7 +89,7 @@ ProgressBar.tapped: ✓ tap on ProgressBar: handed to the host's recognizer or h
 Rectangle.holdDuration: ✅
 ScrollView.frameChanged: ✅
 ScrollView.margin: ✅
-ScrollView.swipeDirection: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.swipeDirections: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.swipeThreshold: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.swiped: ✓ pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.frameChanged: ✅
@@ -141,6 +141,6 @@ VStack.tapped: ✓ tap on VStack: handed to the host's recognizer or handler, no
 WebView.holdDuration: ✅
 ZStack.frameChanged: ✅
 ZStack.margin: ✅
-ZStack.swipeDirection: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.swipeDirections: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swipeThreshold: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swiped: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

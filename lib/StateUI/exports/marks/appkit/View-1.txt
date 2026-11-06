@@ -39,7 +39,7 @@ Grid.tapped: ✓ tap on Grid: handed to the host's recognizer or handler, no NSE
 HStack.holdDuration: ✅
 Image.frameChanged: ✅
 Image.margin: ✅
-Image.swipeDirection: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
+Image.swipeDirections: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeThreshold: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swiped: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.frameChanged: ✅
@@ -78,7 +78,7 @@ Picker.tapped: ✓ tap on Picker: handed to the host's recognizer or handler, no
 Polygon.holdDuration: ✅
 Polyline.frameChanged: ✅
 Polyline.margin: ✅
-Polyline.swipeDirection: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.swipeDirections: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.swipeThreshold: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.swiped: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.frameChanged: ✅
@@ -112,7 +112,7 @@ Space.held: ✓ hold on Space: handed to the host's recognizer or handler, no NS
 Space.layoutBody: ✅
 Spinner.frameChanged: ✅
 Spinner.margin: ✅
-Spinner.swipeDirection: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.swipeDirections: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.swipeThreshold: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.swiped: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.panYChannel: ✓ pan on Stepper: handed to the host's recognizer or handler, no NSEvent sent
@@ -131,7 +131,7 @@ TextEditor.tapped: ✓ tap on TextEditor: handed to the host's recognizer or han
 TextField.holdDuration: ✅
 TimePicker.frameChanged: ✅
 TimePicker.margin: ✅
-TimePicker.swipeDirection: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.swipeDirections: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.swipeThreshold: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.swiped: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 VStack.frameChanged: ✅

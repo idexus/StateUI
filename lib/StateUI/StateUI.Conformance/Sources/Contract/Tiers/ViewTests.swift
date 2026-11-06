@@ -549,7 +549,7 @@
     @MainActor
     static func swiped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanFarEnoughItsWayIsASwipe", proves: [
-            Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirection, on: element),
+            Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirections, on: element),
             Covered(ViewContract.swipeThreshold, on: element),
         ]) { s in
             let heard = Received<SwipeDirection>()
@@ -557,7 +557,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        Write(ViewContract.swipeDirection, [.left, .right]), Write(ViewContract.swipeThreshold, 50),
+                        Write(ViewContract.swipeDirections, [.left, .right]), Write(ViewContract.swipeThreshold, 50),
                         Hear(ViewContract.swiped) { heard.values.append($0) },
                     ])
                 }

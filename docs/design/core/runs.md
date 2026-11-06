@@ -85,7 +85,7 @@ The policy stands first and unlabelled where the modifier takes nothing else,
 and `policy:` follows the event's own arguments, which keep the step
 overload's spelling: a parameter after a variadic - `.onKeyPressed`'s keys -
 needs a label, and a parameter's label is fixed, so a modifier whose own
-arguments have defaults - `.onEndReached(within:)`, `.onSwiped(direction:
+arguments have defaults - `.onEndReached(within:)`, `.onSwiped(directions:
 threshold:)` - has one overload with none of them, the policy first, and
 others that name them, the policy after: one call, one spelling.
 `ModifierShapeTests` holds it: no argument that may be left out stands before

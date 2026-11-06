@@ -130,25 +130,25 @@ extension View {
     /// Runs when the view is swiped, with the one dominant direction it went.
     ///
     ///     VStack { … }
-    ///         .onSwiped(direction: [.left, .right]) { direction in
+    ///         .onSwiped(directions: [.left, .right]) { direction in
     ///             if direction == .left { items.removeLast() }
     ///         }
     ///
     /// - Parameters:
-    ///   - direction: which ways to listen for. A view that listens for nothing
+    ///   - directions: which ways to listen for. A view that listens for nothing
     ///     recognizes nothing, so the default is every direction.
     ///   - threshold: how far a swipe must travel to count, in device units.
     ///   - handler: what to run, given the direction the swipe went.
     public func onSwiped(
-        direction: SwipeDirection = .all,
+        directions: SwipeDirection = .all,
         threshold: Double? = nil,
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
+            $0.hearsSwipes(directions, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token) {
                 // A payload that does not read leaves the handler alone, and so does a direction it did not ask for.
-                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                if let went = SwipeDirection(EventBuffer.current.value()), directions.contains(went) {
                     try handler(went)
                 }
             }
@@ -164,26 +164,26 @@ extension View {
         }
     }
 
-    /// The same, for the ways `direction` names.
+    /// The same, for the ways `directions` names.
     public func onSwiped(
-        direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
+        directions: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: nil)
-            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(direction, handler))
+            $0.hearsSwipes(directions, threshold: nil)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(directions, handler))
         }
     }
 
-    /// The same, for the ways `direction` names, traveling `threshold` to count.
+    /// The same, for the ways `directions` names, traveling `threshold` to count.
     public func onSwiped(
-        direction: SwipeDirection,
+        directions: SwipeDirection,
         threshold: Double,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(direction, handler))
+            $0.hearsSwipes(directions, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(directions, handler))
         }
     }
 
@@ -199,14 +199,14 @@ extension View {
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSwiped(
-        direction: SwipeDirection = .all,
+        directions: SwipeDirection = .all,
         threshold: Double? = nil,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: .shared(gate), swiped(direction, handler))
+            $0.hearsSwipes(directions, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .shared(gate), swiped(directions, handler))
         }
     }
 
@@ -680,8 +680,8 @@ extension View {
 extension Node {
     /// Listens for `direction` beside the directions it listens for already; a second threshold is said.
     fileprivate mutating func hearsSwipes(_ direction: SwipeDirection, threshold: Double?) {
-        let heard = props[ViewContract.swipeDirection.token].flatMap(SwipeDirection.init(propValue:)) ?? []
-        write(ViewContract.swipeDirection, heard.union(direction))
+        let heard = props[ViewContract.swipeDirections.token].flatMap(SwipeDirection.init(propValue:)) ?? []
+        write(ViewContract.swipeDirections, heard.union(direction))
 
         guard let threshold else { return }
         if let said = props[ViewContract.swipeThreshold.token].flatMap(Double.init(propValue:)), said != threshold {

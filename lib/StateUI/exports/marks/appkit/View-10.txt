@@ -25,7 +25,7 @@ DatePicker.tapped: ✓ tap on DatePicker: handed to the host's recognizer or han
 Ellipse.holdDuration: ✅
 Fill.frameChanged: ✅
 Fill.margin: ✅
-Fill.swipeDirection: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.swipeDirections: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.swipeThreshold: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.swiped: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.frameChanged: ✅
@@ -60,7 +60,7 @@ MotionLayout.held: ✓ hold on MotionLayout: handed to the host's recognizer or 
 MotionLayout.layoutBody: ✅
 Path.frameChanged: ✅
 Path.margin: ✅
-Path.swipeDirection: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
+Path.swipeDirections: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swipeThreshold: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swiped: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.frameChanged: ✅
@@ -107,7 +107,7 @@ Spinner.panXChannel: ✓ pan on Spinner: handed to the host's recognizer or hand
 Stepper.holdDuration: ✅
 Switch.frameChanged: ✅
 Switch.margin: ✅
-Switch.swipeDirection: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.swipeDirections: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swipeThreshold: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.swiped: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.dragEnded: ✓ dragAndDrop on Text: the drag source and the window's drop routing told by the driver, no dragging session

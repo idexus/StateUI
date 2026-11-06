@@ -532,48 +532,48 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// A view the hand lets go of past `beyond` points `directions` from where it took it - or thrown far enough
+    /// A view the hand lets go of past `threshold` points `directions` from where it took it - or thrown far enough
     /// that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
     /// application removes the item then. Let go short of it, the view goes back to its place. Written again, each
     /// one the view passed runs, in the order written.
     ///
-    ///     .onItemDismissed(.up, beyond: 120) { id in cards.removeAll { $0.id == id } }
+    ///     .onItemDismissed(directions: .up, threshold: 120) { id in cards.removeAll { $0.id == id } }
     ///
     /// - Parameters:
     ///   - directions: the ways a view is dismissed.
-    ///   - beyond: how far the hand takes it, in device units, before letting go dismisses it.
+    ///   - threshold: how far the hand takes it, in device units, before letting go dismisses it.
     ///   - handler: what to run, given the item's identity, once its view has left the room.
     /// - Returns: the layout, dismissing a view let go far enough.
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor (ID) throws -> Void
+        directions: SwipeDirection, threshold: Double, _ handler: @escaping @MainActor (ID) throws -> Void
     ) -> Self {
         var copy = self
-        copy.dismissals.append(LayoutDismissal(directions: directions, beyond: beyond, handler: ValueHandler(step: handler)))
+        copy.dismissals.append(LayoutDismissal(directions: directions, threshold: threshold, handler: ValueHandler(step: handler)))
         return copy
     }
 
     /// The same, with a handler that awaits - an archive does: its `policy` says what another view dismissed does
     /// while a run is under way.
     ///
-    ///     .onItemDismissed(.up, beyond: 120, policy: .cancelPrevious) { id in try await archive(id) }
+    ///     .onItemDismissed(directions: .up, threshold: 120, policy: .cancelPrevious) { id in try await archive(id) }
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, policy: GatePolicy,
+        directions: SwipeDirection, threshold: Double, policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
         copy.dismissals.append(LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .own(policy))))
+            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .own(policy))))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, gate: Gate,
+        directions: SwipeDirection, threshold: Double, gate: Gate,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
         copy.dismissals.append(LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .shared(gate))))
+            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .shared(gate))))
         return copy
     }
 

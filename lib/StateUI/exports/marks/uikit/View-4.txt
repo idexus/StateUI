@@ -31,7 +31,7 @@ Fill.tapped: ✓ tap on Fill: the view's listening handed the recognizer's state
 Grid.holdDuration: ✅
 HStack.frameChanged: ✅
 HStack.margin: ✅
-HStack.swipeDirection: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.swipeDirections: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.swipeThreshold: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.swiped: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 Image.frameChanged: ✅
@@ -68,7 +68,7 @@ Path.tapped: ✓ tap on Path: the view's listening handed the recognizer's state
 Picker.holdDuration: ✅
 Polygon.frameChanged: ✅
 Polygon.margin: ✅
-Polygon.swipeDirection: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
+Polygon.swipeDirections: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.swipeThreshold: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.swiped: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polyline.frameChanged: ✅
@@ -125,7 +125,7 @@ Text.panXChannel: ✓ pan on Text: the view's listening handed the recognizer's 
 TextEditor.holdDuration: ✅
 TextField.frameChanged: ✅
 TextField.margin: ✅
-TextField.swipeDirection: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
+TextField.swipeDirections: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TextField.swipeThreshold: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TextField.swiped: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.frameChanged: ✅

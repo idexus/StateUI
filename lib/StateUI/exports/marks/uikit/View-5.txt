@@ -14,7 +14,7 @@ CheckBox.tapped: ✓ tap on CheckBox: the view's listening handed the recognizer
 ColorPicker.holdDuration: ✅
 DatePicker.frameChanged: ✅
 DatePicker.margin: ✅
-DatePicker.swipeDirection: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
+DatePicker.swipeDirections: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.swipeThreshold: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.swiped: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 Ellipse.frameChanged: ✅
@@ -53,7 +53,7 @@ Line.tapped: ✓ tap on Line: the view's listening handed the recognizer's state
 Link.holdDuration: ✅
 Map.frameChanged: ✅
 Map.margin: ✅
-Map.swipeDirection: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
+Map.swipeDirections: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.swipeThreshold: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.swiped: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.area: ✅
@@ -99,7 +99,7 @@ Separator.pointerReleased: ✓ hover on Separator: the view's listening handed t
 Slider.holdDuration: ✅
 Space.frameChanged: ✅
 Space.margin: ✅
-Space.swipeDirection: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
+Space.swipeDirections: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swipeThreshold: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swiped: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session

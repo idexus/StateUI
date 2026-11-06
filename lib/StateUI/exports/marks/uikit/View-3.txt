@@ -8,7 +8,7 @@ Button.tapped: ✓ tap on Button: the view's listening handed the recognizer's s
 Canvas.holdDuration: ✅
 Capsule.frameChanged: ✅
 Capsule.margin: ✅
-Capsule.swipeDirection: ✓ pan on Capsule: the view's listening handed the recognizer's states, no touch sent
+Capsule.swipeDirections: ✓ pan on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.swipeThreshold: ✓ pan on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.swiped: ✓ pan on Capsule: the view's listening handed the recognizer's states, no touch sent
 CheckBox.frameChanged: ✅
@@ -64,7 +64,7 @@ Map.panUpdated: ✓ pan on Map: the view's listening handed the recognizer's sta
 Map.panXChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.frameChanged: ✅
 MotionLayout.margin: ✅
-MotionLayout.swipeDirection: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.swipeDirections: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.dragEnded: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
@@ -89,7 +89,7 @@ ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the reco
 Rectangle.holdDuration: ✅
 ScrollView.frameChanged: ✅
 ScrollView.margin: ✅
-ScrollView.swipeDirection: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
+ScrollView.swipeDirections: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.swipeThreshold: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.swiped: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.frameChanged: ✅
@@ -141,6 +141,6 @@ VStack.tapped: ✓ tap on VStack: the view's listening handed the recognizer's s
 WebView.holdDuration: ✅
 ZStack.frameChanged: ✅
 ZStack.margin: ✅
-ZStack.swipeDirection: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.swipeDirections: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swipeThreshold: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swiped: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent

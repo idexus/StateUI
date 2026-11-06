@@ -267,7 +267,7 @@ extension NodeType {
     static let miterLimit = CorneredShapeContract.miterLimit.token
     static let lineWidth = ShapeContract.lineWidth.token
     static let style = VisualElementContract.style.token
-    static let swipeDirection = ViewContract.swipeDirection.token
+    static let swipeDirections = ViewContract.swipeDirections.token
     static let swipeThreshold = ViewContract.swipeThreshold.token
     static let tapCount = ViewContract.tapCount.token
     static let text = TextualElementContract.text.token

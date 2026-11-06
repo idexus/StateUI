@@ -124,8 +124,8 @@ public enum ViewContract: Contract {
     public static let pointerReleased = ElementEvent<Self, Point?>("pointerReleased", layer: .native)
 
     /// Which ways a swipe on the view is listened for.
-    public static let swipeDirection = ElementProperty<Self, SwipeDirection>(
-        "swipeDirection", layer: .structure, cleared: false)
+    public static let swipeDirections = ElementProperty<Self, SwipeDirection>(
+        "swipeDirections", layer: .structure, cleared: false)
 
     /// How far a swipe must travel to count, in device units.
     public static let swipeThreshold = ElementProperty<Self, Double>(
@@ -151,7 +151,7 @@ public enum ViewContract: Contract {
         dragExited, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
-        pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,
+        pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,
     ]
 }

@@ -1,7 +1,7 @@
 # revision 21.1
 Button.frameChanged: ✅
 Button.margin: ✅
-Button.swipeDirection: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.swipeDirections: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.swipeThreshold: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.swiped: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.frameChanged: ✅
@@ -44,7 +44,7 @@ HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no
 Image.holdDuration: ✅
 ItemsView.frameChanged: ✅
 ItemsView.margin: ✅
-ItemsView.swipeDirection: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.swipeDirections: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swiped: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
@@ -77,7 +77,7 @@ Polygon.tapped: ✓ tap on Polygon: handed to the host's recognizer or handler, 
 Polyline.holdDuration: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.margin: ✅
-ProgressBar.swipeDirection: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.swipeDirections: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swipeThreshold: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.swiped: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.frameChanged: ✅
@@ -131,7 +131,7 @@ TextField.tapped: ✓ tap on TextField: handed to the host's recognizer or handl
 TimePicker.holdDuration: ✅
 VStack.frameChanged: ✅
 VStack.margin: ✅
-VStack.swipeDirection: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.swipeDirections: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swipeThreshold: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swiped: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.frameChanged: ✅

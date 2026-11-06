@@ -43,12 +43,12 @@ final class LayoutItemDragTests: XCTestCase {
         .dynamics(.spring(response: .milliseconds(160)))
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
-            return layout.onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { name in
+            return layout.onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { name in
                 told.dismissed.append(name)
                 try await Task.sleep(for: .seconds(60))
             }.node
         }
-        return (dismissing ? layout.onItemDismissed(.up, beyond: 50) { told.dismissed.append($0) } : layout).node
+        return (dismissing ? layout.onItemDismissed(directions: .up, threshold: 50) { told.dismissed.append($0) } : layout).node
     }
 
     /// The run shown now.
@@ -174,9 +174,9 @@ final class LayoutItemDragTests: XCTestCase {
             .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
             .onItemDragged { told.drags.append($0) }
-            .onItemDismissed(.up, beyond: 50) { told.dismissed.append("up \($0)") }
-            .onItemDismissed(.down, beyond: 50) { told.dismissed.append("down \($0)") }
-            .onItemDismissed(.up, beyond: 20, policy: .runConcurrently) { told.dismissed.append("up again \($0)") }
+            .onItemDismissed(directions: .up, threshold: 50) { told.dismissed.append("up \($0)") }
+            .onItemDismissed(directions: .down, threshold: 50) { told.dismissed.append("down \($0)") }
+            .onItemDismissed(directions: .up, threshold: 20, policy: .runConcurrently) { told.dismissed.append("up again \($0)") }
             .node
         }
         _ = bench.laid(renders, tree)
@@ -229,11 +229,11 @@ final class LayoutItemDragTests: XCTestCase {
                 [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
-            .onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { _ in
+            .onItemDismissed(directions: .up, threshold: 50, policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
             }
-            .onItemDismissed(.up, beyond: 20, policy: .ignoreWhileRunning) { _ in heard.append(2) }
+            .onItemDismissed(directions: .up, threshold: 20, policy: .ignoreWhileRunning) { _ in heard.append(2) }
             .node
         }
         _ = bench.laid(renders, tree)
@@ -260,7 +260,7 @@ final class LayoutItemDragTests: XCTestCase {
             }
             .itemDrag(begins: .longPress)
             return (hears.wrappedValue
-                ? layout.onItemDismissed(.up, beyond: 50, gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                ? layout.onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
                 : layout).node
         }
         _ = bench.laid(renders, tree)
@@ -291,7 +291,7 @@ final class LayoutItemDragTests: XCTestCase {
                 [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
             }
             .itemDrag(begins: .longPress)
-            .onItemDismissed(.up, beyond: 50, gate: gate) { _ in
+            .onItemDismissed(directions: .up, threshold: 50, gate: gate) { _ in
                 heard += 1
                 try await Task.sleep(for: .seconds(60))
             }

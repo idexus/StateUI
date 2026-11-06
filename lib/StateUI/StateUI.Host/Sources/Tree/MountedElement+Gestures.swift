@@ -419,7 +419,7 @@ extension MountedElement {
         }
 
         guard phase == .ended, handler(.swiped) != nil else { return }
-        let listening = SwipeDirection(rawValue: value(.swipeDirection)?.enumeration ?? SwipeDirection.all.rawValue)
+        let listening = SwipeDirection(rawValue: value(.swipeDirections)?.enumeration ?? SwipeDirection.all.rawValue)
         if let direction = SwipeDirection.swiped(x: x, y: y, listening: listening, threshold: number(.swipeThreshold) ?? 40) {
             send(.swiped, [.enumeration(direction.rawValue)], in: runtime)
         }

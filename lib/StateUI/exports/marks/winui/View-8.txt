@@ -20,7 +20,7 @@ Capsule.tapped: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-CheckBox.swipeDirection: ✅
+CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -63,7 +63,7 @@ Image.tapped: ✅
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-ItemsView.swipeDirection: ✅
+ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 Line.area: ✅
@@ -91,7 +91,7 @@ Path.tapped: ✅
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Picker.swipeDirection: ✅
+Picker.swipeDirections: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -143,7 +143,7 @@ Slider.tapped: ✅
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
-Space.swipeDirection: ✅
+Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
@@ -198,6 +198,6 @@ WebView.tapped: – WebView2 gives the user's hand to its page: listened to by W
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
-ZStack.swipeDirection: ✅
+ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

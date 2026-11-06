@@ -2,7 +2,7 @@
 Button.holdDuration: ✅
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
-Canvas.swipeDirection: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
+Canvas.swipeDirections: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.swipeThreshold: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.swiped: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
 Capsule.frameChanged: ✅
@@ -76,7 +76,7 @@ Polyline.tapped: ✓ tap on Polyline: the view's listening handed the recognizer
 ProgressBar.holdDuration: ✅
 Rectangle.frameChanged: ✅
 Rectangle.margin: ✅
-Rectangle.swipeDirection: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.swipeDirections: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.swiped: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.frameChanged: ✅
@@ -121,7 +121,7 @@ Switch.held: ✓ hold on Switch: the view's listening handed the recognizer's st
 Switch.layoutBody: ✅
 Text.frameChanged: ✅
 Text.margin: ✅
-Text.swipeDirection: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
+Text.swipeDirections: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 Text.swipeThreshold: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 Text.swiped: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.panYChannel: ✓ pan on TextEditor: the view's listening handed the recognizer's states, no touch sent
@@ -137,7 +137,7 @@ TimePicker.tapped: ✓ tap on TimePicker: the view's listening handed the recogn
 VStack.holdDuration: ✅
 WebView.frameChanged: ✅
 WebView.margin: ✅
-WebView.swipeDirection: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.swipeDirections: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.swipeThreshold: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.swiped: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.frameChanged: ✅

@@ -2,7 +2,7 @@
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
-Button.swipeDirection: ✅
+Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -45,7 +45,7 @@ Fill.tapped: ✅
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
-Grid.swipeDirection: ✅
+Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -79,7 +79,7 @@ Link.tapped: ✅
 Map.frameChanged: 🧩
 Map.gridColumn: 🧩
 Map.gridRow: 🧩
-Map.swipeDirection: 🧩
+Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 MotionLayout.frameChanged: ✅
@@ -119,7 +119,7 @@ Rectangle.tapped: ✅
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridRow: ✅
-ScrollView.swipeDirection: ✅
+ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -180,7 +180,7 @@ TextField.tapped: ✅
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
-TimePicker.swipeDirection: ✅
+TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

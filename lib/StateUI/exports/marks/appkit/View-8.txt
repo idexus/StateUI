@@ -12,7 +12,7 @@ Capsule.tapped: ✓ tap on Capsule: handed to the host's recognizer or handler, 
 CheckBox.holdDuration: ✅
 ColorPicker.frameChanged: ✅
 ColorPicker.margin: ✅
-ColorPicker.swipeDirection: ✓ pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
+ColorPicker.swipeDirections: ✓ pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.swipeThreshold: ✓ pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.swiped: ✓ pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.frameChanged: ✅
@@ -46,7 +46,7 @@ ItemsView.panYChannel: ✓ pan on ItemsView: handed to the host's recognizer or 
 Line.holdDuration: ✅
 Link.frameChanged: ✅
 Link.margin: ✅
-Link.swipeDirection: ✓ pan on Link: handed to the host's recognizer or handler, no NSEvent sent
+Link.swipeDirections: ✓ pan on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.swipeThreshold: ✓ pan on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.swiped: ✓ pan on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.frameChanged: ✅
@@ -95,7 +95,7 @@ Separator.filesDropped: ✓ dropFiles on Separator: the window's drop routing to
 Separator.tapped: ✓ pressDown on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.frameChanged: ✅
 Slider.margin: ✅
-Slider.swipeDirection: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
+Slider.swipeDirections: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swipeThreshold: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.swiped: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.frameChanged: ✅

@@ -147,12 +147,12 @@ final class GestureTests: XCTestCase {
         var heard: [String] = []
 
         let patch = renders.render(Rectangle()
-            .onSwiped(direction: .left) { _ in heard.append("next") }
-            .onSwiped(direction: .right) { _ in heard.append("previous") }
+            .onSwiped(directions: .left) { _ in heard.append("next") }
+            .onSwiped(directions: .right) { _ in heard.append("previous") }
             .node)
         let id = patch.events?["swiped"] ?? -1
 
-        XCTAssertEqual(patch.props["swipeDirection"], .enumeration(SwipeDirection([.left, .right]).rawValue))
+        XCTAssertEqual(patch.props["swipeDirections"], .enumeration(SwipeDirection([.left, .right]).rawValue))
 
         renders.fire(id, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(id, with: [.enumeration(SwipeDirection.right.rawValue)])
@@ -227,14 +227,14 @@ final class GestureTests: XCTestCase {
 
         let patch = renders.render(
             Rectangle()
-                .onSwiped(direction: [.up, .down], threshold: 40) { _ in }
+                .onSwiped(directions: [.up, .down], threshold: 40) { _ in }
                 .onPanUpdated(touchCount: 2) { _ in }
                 .onTapped(count: 2) {}
                 .node)
 
         // The bits this library numbers them with - up 4, down 8 - as the one
         // number a bit set travels as.
-        XCTAssertEqual(patch.props["swipeDirection"], .enumeration(12))
+        XCTAssertEqual(patch.props["swipeDirections"], .enumeration(12))
         XCTAssertEqual(patch.props["swipeThreshold"], .number(40))
         XCTAssertEqual(patch.props["panTouchCount"], .number(2))
         XCTAssertEqual(patch.props["tapCount"], .number(2))
@@ -246,7 +246,7 @@ final class GestureTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(Rectangle().onSwiped { _ in }.node)
 
-        XCTAssertEqual(patch.props["swipeDirection"], .enumeration(15), "every bit there is")
+        XCTAssertEqual(patch.props["swipeDirections"], .enumeration(15), "every bit there is")
         XCTAssertNil(patch.props["swipeThreshold"], "a threshold nobody set is not sent")
     }
 

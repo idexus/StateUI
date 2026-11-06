@@ -242,7 +242,7 @@ enum WinUIRealization {
         .notPlanned(ViewContract.pointerPressed, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerReleased, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.rotationUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.swipeDirection, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(ViewContract.swipeDirections, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.swipeThreshold, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.swiped, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.tapCount, on: WebViewContract.self, reason: webViewTakesTheHand),

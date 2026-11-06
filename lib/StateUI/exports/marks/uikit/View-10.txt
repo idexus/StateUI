@@ -25,7 +25,7 @@ DatePicker.tapped: ✓ tap on DatePicker: the view's listening handed the recogn
 Ellipse.holdDuration: ✅
 Fill.frameChanged: ✅
 Fill.margin: ✅
-Fill.swipeDirection: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.swipeDirections: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.swipeThreshold: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.swiped: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.frameChanged: ✅
@@ -60,7 +60,7 @@ MotionLayout.held: ✓ hold on MotionLayout: the view's listening handed the rec
 MotionLayout.layoutBody: ✅
 Path.frameChanged: ✅
 Path.margin: ✅
-Path.swipeDirection: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
+Path.swipeDirections: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swipeThreshold: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.swiped: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.frameChanged: ✅
@@ -107,7 +107,7 @@ Spinner.panXChannel: ✓ pan on Spinner: the view's listening handed the recogni
 Stepper.holdDuration: ✅
 Switch.frameChanged: ✅
 Switch.margin: ✅
-Switch.swipeDirection: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Switch.swipeDirections: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swipeThreshold: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.swiped: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.dragEnded: ✓ dragAndDrop on Text: the drag and drop interactions' handlers called, no drag session

@@ -1,7 +1,7 @@
 # revision 21.1
 Button.frameChanged: ✅
 Button.margin: ✅
-Button.swipeDirection: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
+Button.swipeDirections: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swipeThreshold: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swiped: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.frameChanged: ✅
@@ -44,7 +44,7 @@ HStack.tapped: ✓ tap on HStack: the view's listening handed the recognizer's s
 Image.holdDuration: ✅
 ItemsView.frameChanged: ✅
 ItemsView.margin: ✅
-ItemsView.swipeDirection: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
+ItemsView.swipeDirections: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swiped: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
@@ -77,7 +77,7 @@ Polygon.tapped: ✓ tap on Polygon: the view's listening handed the recognizer's
 Polyline.holdDuration: ✅
 ProgressBar.frameChanged: ✅
 ProgressBar.margin: ✅
-ProgressBar.swipeDirection: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.swipeDirections: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.swipeThreshold: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.swiped: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 Rectangle.frameChanged: ✅
@@ -131,7 +131,7 @@ TextField.tapped: ✓ tap on TextField: the view's listening handed the recogniz
 TimePicker.holdDuration: ✅
 VStack.frameChanged: ✅
 VStack.margin: ✅
-VStack.swipeDirection: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.swipeDirections: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swipeThreshold: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swiped: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 WebView.frameChanged: ✅
