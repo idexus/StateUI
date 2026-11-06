@@ -109,7 +109,16 @@ final class WebDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            WebBrowser.pause()
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        renderer?.leave()
+        renderer = nil
     }
 
     func turn() {

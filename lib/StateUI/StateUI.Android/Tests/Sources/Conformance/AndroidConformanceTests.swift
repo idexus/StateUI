@@ -229,7 +229,7 @@ final class AndroidConformanceTests: XCTestCase {
             let driver = AndroidDriver()
             let verdicts = Conformance.run(
                 family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
-            driver.finish()
+            driver.close()
             let all = (Self.gathered.removeValue(forKey: family.name) ?? []) + verdicts
             guard part.number == part.count else { return Self.gathered[family.name] = all }
             try TestFiles.write(HostVerdict.text(HostVerdict.merged(all)), to: "marks/android/\(family.name).txt")

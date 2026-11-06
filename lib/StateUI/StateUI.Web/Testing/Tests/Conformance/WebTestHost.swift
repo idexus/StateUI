@@ -62,6 +62,8 @@ extension WebRenderer {
     func leave() {
         runtime.tree.root?.leave()
         runtime.presenter = nil
+        frameClock.held = false
+        if Self.shared === self { Self.shared = nil }
         for controller in roster.controllers { controller.close() }
         for listener in pageListeners { WebRelay.forget(listener) }
     }

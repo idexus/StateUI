@@ -25,6 +25,30 @@ file the page asks for is answered as a host answers an act it cannot
 perform. One window stands at a time, as the core runs one application; a new
 window closes the last (`HostDriver.close`), whose views are found no more.
 
+## Closing a window
+
+`TestWindow.close()` begins one teardown and waits for it. The renderer lets
+go of the application and its tree, cancels the runs owned by that tree and
+starts its disappearing and destroying handlers. The driver's window closes
+and its controls leave. Replacing a window and releasing the last window
+begin the same teardown; an explicit close can await it. A window records
+the application registration it started, so its late cleanup cannot close
+a later window, even when the tests reuse one driver.
+
+The wait follows that teardown's tasks, including cancelled owned runs and
+lifecycle work, rather than a global count of runs. Unrelated work does not
+hold it. A second close waits for the same teardown. The wait fails after
+ten seconds if cleanup has not finished, and respects cancellation of the
+waiting task; neither failure opens the closed window again. Deinitializing
+a window begins cleanup but cannot wait for asynchronous handlers. Tests
+that inspect their effects call `close()` explicitly.
+
+A driver keeps draining its toolkit and the UI thread's jobs after closure
+while the test waits, without rendering another page. A closed host offers
+no controls or new host acts to the handlers: an awaited host act fails
+with `StateUIError.notPerformed`, and one with no waiter is diagnosed and
+left out. Cleanup that needs those must finish before the host is closed.
+
 ## A view found as automation finds it
 
 A test finds a view by its `accessibilityIdentifier` - the handle automation

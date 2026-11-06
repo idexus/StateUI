@@ -37,6 +37,7 @@ private final class RegisterOnly: HostDriver {
     }
 
     func step() {}
+    func close() {}
     func turn() {}
     func frame() {}
     func perform(_ act: UserAct, on element: MountedElement) throws {}

@@ -32,18 +32,22 @@ extension Renderer {
     func start(_ registration: EventRegistration) {
         // Read now: a handler that suspends keeps the payload it started with.
         let payload = EventBuffer.current
-        HandlerRun.$current.withValue(nil) { registration.start(payload: payload) }
+        HostTeardown.$current.withValue(nil) {
+            HandlerRun.$current.withValue(nil) { registration.start(payload: payload) }
+        }
     }
 
     /// Runs a handler a render's walk found, with no payload, through its gate, outside every run, as an event's.
     /// Design: docs/design/core/runs.md#what-a-walk-runs
-    func run(_ fired: Fired) {
+    func run(_ fired: Fired, teardown: HostTeardown? = nil) {
         guard fired.owner?.isCurrent != false else { return }
-        HandlerRun.$current.withValue(nil) {
-            if let owner = fired.owner {
-                fired.gate.runs(for: owner).start(fired.run, fired.gate.policy, payload: nil, owner: owner)
-            } else {
-                begin(fired.run, payload: nil)
+        HostTeardown.$current.withValue(teardown) {
+            HandlerRun.$current.withValue(nil) {
+                if let owner = fired.owner {
+                    fired.gate.runs(for: owner).start(fired.run, fired.gate.policy, payload: nil, owner: owner)
+                } else {
+                    begin(fired.run, payload: nil)
+                }
             }
         }
     }
@@ -51,7 +55,7 @@ extension Renderer {
     /// Runs a handler on `MainActor` here and now, up to its first suspension.
     /// Design: docs/design/core/render.md#starting-a-handler
     private func begin(_ handler: @escaping EventHandler, payload: [PropValue]?) {
-        Task.immediate { @MainActor in
+        let task = Task.immediate { @MainActor in
             if let payload {
                 EventBuffer.current = payload
             }
@@ -62,6 +66,7 @@ extension Renderer {
                 Renderer.shared.report(error)
             }
         }
+        HostTeardown.record(task)
     }
 
     /// Starts what a render found with no settle pass left, in a later turn of `MainActor`.

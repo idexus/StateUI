@@ -10,6 +10,7 @@ final class RunSlot {
         let run = HandlerRun()
         let owner: ObjectIdentifier
         var task: Task<Void, Never>?
+        var teardown: HostTeardown?
         var turn: CheckedContinuation<Bool, Never>?
 
         init(owner: ObjectIdentifier) { self.owner = owner }
@@ -74,6 +75,9 @@ final class RunSlot {
         }
 
         entry.task = task
+        HostTeardown.record(task)
+        entry.teardown?.follow(task)
+        entry.teardown = nil
         // Superseded in its first step, before the task was in hand: cancelled as it comes to hand.
         if run.superseded { task.cancel() }
         return task
@@ -82,6 +86,13 @@ final class RunSlot {
     /// `owner`'s runs are superseded and its waiting ones end unrun; the other owners' stand.
     func orphan(_ owner: RunOwner) {
         let leaving = ObjectIdentifier(owner)
+        for entry in entries where entry.owner == leaving {
+            if let task = entry.task {
+                HostTeardown.record(task)
+            } else if entry.teardown == nil, let ending = HostTeardown.current, ending.reserve() {
+                entry.teardown = ending
+            }
+        }
         supersede { $0 == leaving }
         dropWaiting { $0.owner == leaving }
     }

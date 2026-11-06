@@ -14,7 +14,7 @@ final class AndroidTestWindowTests: XCTestCase {
     func testATestWindowWalksOnAndroid() throws {
         onMainActor {
             let driver = AndroidDriver()
-            defer { driver.finish() }
+            defer { driver.close() }
             XCTAssertEqual(TestWindowWalk.failures(on: driver), [])
         }
     }

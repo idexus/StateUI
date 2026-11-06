@@ -103,13 +103,21 @@ extension WinUIRenderer {
 
     /// A host in place of the one before it, which leaves; its window closes.
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> WinUIRenderer {
-        shared?.runtime.tree.root?.leave()
-        for controller in (shared?.windows ?? []).reversed() { controller.window.close() }
+        shared?.finish()
         WinUITestHost.window.show(nil)
 
         let renderer = WinUIRenderer(clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })
         shared = renderer
         return renderer
+    }
+
+    /// Ends this test host without changing its kept values or another host's windows.
+    func finish() {
+        runtime.tree.root?.leave()
+        runtime.presenter = nil
+        frameClock.held = false
+        if Self.shared === self { Self.shared = nil }
+        for controller in windows.reversed() { controller.window.close() }
     }
 
     /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.

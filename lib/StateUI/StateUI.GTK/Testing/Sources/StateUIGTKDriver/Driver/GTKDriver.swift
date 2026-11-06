@@ -166,7 +166,16 @@ final class GTKDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            GTKTestHost.pump(0.002)
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        renderer?.finish()
+        renderer = nil
     }
 
     func turn() {

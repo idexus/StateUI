@@ -25,6 +25,7 @@ let button = try window.element("counter.add")
 try await button.perform(.activate)
 
 assert(button.value(TextualElementContract.text) == "Clicked 1 times")
+try await window.close()
 ```
 
 A test target depends on the `StateUITesting` product of
@@ -38,6 +39,23 @@ put on. A view is found again each time it is used, so it stays the same view
 while the page builds again. Finding no view, or two, fails and names the
 view. One window stands at a time: a new one closes the last, whose views are
 found no more.
+
+## Closing a window
+
+`try await window.close()` removes the page, cancels the work it owns and
+waits for its disappearing and destroying handlers. Calling it again waits
+for the same cleanup; an old window never closes a newer one. The wait
+throws `TestFailure` if cleanup still runs after ten seconds, or
+`CancellationError` if the waiting task is cancelled. The window stays
+closed in either case.
+
+Replacing the window or releasing its last reference begins the same
+cleanup. Call `close()` explicitly when a test needs to read the effects
+of asynchronous cleanup before it finishes. The closed window has no
+controls to act on. A host act begun by its farewell throws
+`StateUIError.notPerformed`; host work needed by cleanup belongs before
+closure. This restriction concerns closing the whole test window, not a
+page leaving an application that keeps running.
 
 ## Acting and reading
 

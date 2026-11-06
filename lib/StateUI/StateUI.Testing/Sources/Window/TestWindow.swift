@@ -19,14 +19,21 @@
 ///     }
 ///
 /// The page stands over StateUI's core with no platform's toolkit, where `swift test` runs. One window stands at a
-/// time: a new one closes the last.
+/// time: a new one closes the last. `close()` waits for the page's lifecycle work; dropping the window begins the
+/// same cleanup without waiting for it.
 @MainActor
 public final class TestWindow {
     /// The driver the window acts and reads through.
     let driver: any HostDriver
 
-    /// The tree the page mounted; nil once another window took this one's place.
+    /// The tree the page mounted; nil once the window closed.
     private var tree: MountedTree?
+
+    /// The application this window started; an old window never closes a later registration.
+    private let registration: UInt64
+
+    /// The one teardown this window began, shared by every caller waiting for its end.
+    private var closing: HostTeardown?
 
     /// The window standing: one at a time.
     private static weak var standing: TestWindow?
@@ -35,6 +42,7 @@ public final class TestWindow {
     /// where a test reads what it changed with no waiting.
     public convenience init(motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View)
         async throws {
+        try await Self.standing?.close()
         self.init(driver: CoreDriver(), motion: motion, page)
         try await settle(since: nil)
     }
@@ -45,18 +53,69 @@ public final class TestWindow {
         driver: any HostDriver, motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor () -> some View
     ) {
         self.driver = driver
-        Self.standing?.close()
+        Self.standing?.beginClose()
         HostBoundary.application.motion = motion
         tree = driver.start(clock: nil, reducesMotion: false) { page() }
+        registration = Renderer.shared.applicationRegistration
         Self.standing = self
         // The page's own work - a service begun as it appears - is the page's, not an act's: a second of frames.
         try? settleNow(since: nil)
     }
 
-    /// Another window took this one's place: what it showed is gone, and a view found in it is found no more.
-    private func close() {
+    isolated deinit {
+        beginClose()
+    }
+
+    /// Closes the window, cancels the page's owned work and waits for its disappearing and destroying handlers to
+    /// finish. A closed window has no views to find. Calling this again waits for the same cleanup, without running
+    /// it twice; it never closes a later window.
+    ///
+    ///     try await window.close()
+    ///
+    /// - Throws: `TestFailure` if the page's cleanup is still under way after ten seconds; `CancellationError` if
+    ///   the task waiting for it is cancelled. The window remains closed in either case.
+    public func close() async throws {
+        try await close(until: .now + Self.patience)
+    }
+
+    /// Waits for this window's cleanup alone, with a bounded deadline.
+    func close(until deadline: ContinuousClock.Instant) async throws {
+        let ending = beginClose()
+        while !ending.isFinished {
+            try Task.checkCancellation()
+            try Self.checkCloseDeadline(deadline)
+            driver.step()
+            await Task.yield()
+        }
+    }
+
+    /// The same wait in a native host's own loop, whose steps run the UI thread's work.
+    @_spi(Host) public func closeNow() throws {
+        let ending = beginClose()
+        let deadline = ContinuousClock.now + Self.patience
+        while !ending.isFinished {
+            try Self.checkCloseDeadline(deadline)
+            driver.step()
+        }
+    }
+
+    /// One teardown for explicit closure, replacement and release, scoped to the application this window made.
+    /// Design: docs/design/host/testing.md#closing-a-window
+    @discardableResult
+    private func beginClose() -> HostTeardown {
+        if let closing { return closing }
         tree = nil
-        driver.close()
+        let ending = Renderer.shared.clearApplication(expected: registration)
+        closing = ending
+        if Renderer.shared.applicationRegistration == registration { driver.close() }
+        if Self.standing === self { Self.standing = nil }
+        return ending
+    }
+
+    private static func checkCloseDeadline(_ deadline: ContinuousClock.Instant) throws {
+        guard ContinuousClock.now < deadline else {
+            throw TestFailure(description: "the window closed, but its lifecycle work did not finish before the deadline")
+        }
     }
 
     /// The view automation knows by `identifier` - its `accessibilityIdentifier`; it fails where no view, or more

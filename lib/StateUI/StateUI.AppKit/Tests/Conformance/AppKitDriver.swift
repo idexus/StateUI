@@ -97,8 +97,7 @@ final class AppKitDriver: HostDriver {
 
     /// Ends the running host without the system keeping its windows, and empties the preferences.
     func forgetWhatIsKept() {
-        renderer?.closeForTesting()
-        renderer = nil
+        close()
         store.removePersistentDomain(forName: "StateUI.AppKitConformance")
         restorable = []
     }
@@ -111,7 +110,7 @@ final class AppKitDriver: HostDriver {
         clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
     ) -> MountedTree {
         restorable = renderer.map { Self.encoded($0.windowsForTesting) } ?? []
-        renderer?.closeForTesting()
+        close()
         Renderer.shared.setApplication(application())
         written.listen()
         let renderer = testRenderer(
@@ -160,14 +159,20 @@ final class AppKitDriver: HostDriver {
 
     /// One pass of the main loop, what AppKit autoreleases in it let go as it ends.
     func step() {
-        guard let renderer else { return }
         autoreleasepool {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-            _ = renderer.runtime.core.runJobs()
+            _ = HostBoundary.runJobs()
+            guard let renderer else { return }
             renderer.runtime.pump.turn()
             if renderer.frameClock.held { renderer.displayFrameForTesting() }
             layOutWindows()
         }
+    }
+
+    func close() {
+        renderer?.runtime.presenter = nil
+        renderer?.closeForTesting()
+        renderer = nil
     }
 
     /// Lays each window out as the display cycle does: the windows stand off the screen, where none runs. A user

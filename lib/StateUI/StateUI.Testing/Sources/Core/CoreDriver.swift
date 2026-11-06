@@ -36,6 +36,10 @@ final class CoreDriver: HostDriver {
     }
 
     func step() {
+        guard runtime != nil else {
+            _ = HostBoundary.runJobs()
+            return
+        }
         frame()
         turn()
     }
@@ -50,7 +54,11 @@ final class CoreDriver: HostDriver {
     }
 
     func close() {
+        runtime?.tree.root?.leave()
         runtime = nil
+        clock.held = false
+        clock.onFrame = nil
+        presentation = WindowPresentation()
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {

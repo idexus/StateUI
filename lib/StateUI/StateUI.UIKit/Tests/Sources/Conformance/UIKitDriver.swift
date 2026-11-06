@@ -75,7 +75,7 @@ final class UIKitDriver: HostDriver {
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
-        finish()
+        close()
         forgetWhatIsKept()
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
@@ -86,7 +86,7 @@ final class UIKitDriver: HostDriver {
 
     /// Runs `application` on a new host, as the next launch does: what the last kept stands.
     func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
-        finish()
+        close()
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, application: application)
         self.renderer = renderer
@@ -153,7 +153,7 @@ final class UIKitDriver: HostDriver {
     }
 
     /// Ends the host the driver started last.
-    func finish() {
+    func close() {
         renderer?.fileToolkit.showing?.chooseForTesting([])
         renderer?.finish()
         renderer = nil
@@ -202,10 +202,10 @@ final class UIKitDriver: HostDriver {
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
     /// process of its own takes on a busy Mac. What UIKit autoreleases in it is let go as it ends.
     func step() {
-        guard let renderer else { return }
         autoreleasepool {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
-            _ = renderer.runtime.core.runJobs()
+            _ = HostBoundary.runJobs()
+            guard let renderer else { return }
             renderer.runtime.pump.turn()
             renderer.layOut()
             if renderer.frameClock.held { renderer.frame() }

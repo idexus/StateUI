@@ -10,7 +10,7 @@ import XCTest
 final class UIKitTestWindowTests: XCTestCase {
     func testATestWindowWalksOnUIKit() {
         let driver = UIKitDriver()
-        defer { driver.finish() }
+        defer { driver.close() }
         XCTAssertEqual(TestWindowWalk.failures(on: driver), [])
     }
 }

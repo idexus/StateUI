@@ -29,10 +29,20 @@
                    "words typed and a switch turned")
 
             let page = AimedPage()
-            let aimed = TestWindow(driver: driver, motion: .none) { page }
+            var disappeared = false
+            var destroyed = 0
+            let aimed = TestWindow(driver: driver, motion: .none) {
+                page.onDisappearing { disappeared = true }.onDestroying { destroyed += 1 }
+            }
             let field = try aimed.element(page.name)
             try field.performNow(.type("Grace"))
             expect(field.value(TextualElementContract.text), "Grace", "a view found by its aim")
+
+            try aimed.closeNow()
+            try aimed.closeNow()
+            expect(disappeared, true, "the page heard its window closed")
+            expect(destroyed, 1, "the page was destroyed once")
+            if field.value(TextualElementContract.text) != nil { failures.append("a closed window still held a view") }
         } catch {
             failures.append("\(error)")
         }

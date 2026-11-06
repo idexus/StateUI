@@ -150,7 +150,7 @@ final class UIKitConformanceTests: XCTestCase {
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         guard !UIKitExports.skips(family.name, at: "marks/uikit/\(file).txt") else { return }
         let driver = UIKitDriver()
-        defer { driver.finish() }
+        defer { driver.close() }
         let verdicts = Conformance.run(
             family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         XCTAssertNoThrow(try UIKitExports.hold(

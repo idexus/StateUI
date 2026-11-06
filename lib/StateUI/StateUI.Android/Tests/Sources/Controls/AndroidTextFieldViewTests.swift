@@ -187,7 +187,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
                 }
             }
             defer {
-                driver.finish()
+                driver.close()
                 TestWindow.touchMode(true)
             }
             let renderer = try XCTUnwrap(driver.renderer)

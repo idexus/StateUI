@@ -117,7 +117,7 @@ final class AndroidFrameReportTests: XCTestCase {
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
-            defer { driver.finish() }
+            defer { driver.close() }
             let host = try XCTUnwrap(driver.renderer)
             Self.settleInTheWindow(host) { !heard.values.isEmpty }
             let before = try XCTUnwrap(heard.values.last)

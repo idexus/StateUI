@@ -113,7 +113,18 @@ final class WinUIDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            WinUITestHost.pump(0.002)
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        guard let renderer else { return }
+        closeFileDialogs()
+        renderer.finish()
+        self.renderer = nil
     }
 
     func turn() {

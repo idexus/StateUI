@@ -37,7 +37,7 @@ final class AndroidItemsViewTests: XCTestCase {
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
-            defer { driver.finish() }
+            defer { driver.close() }
             let host = try XCTUnwrap(driver.renderer)
             Self.settleInTheWindow(host)
             let list = try XCTUnwrap(host.views(AndroidItemsView.self).first)
@@ -66,7 +66,7 @@ final class AndroidItemsViewTests: XCTestCase {
                         .width(300).height(400)
                 }
             }
-            defer { driver.finish() }
+            defer { driver.close() }
             let host = try XCTUnwrap(driver.renderer)
             Self.settleInTheWindow(host)
             let list = try XCTUnwrap(host.views(AndroidItemsView.self).first)

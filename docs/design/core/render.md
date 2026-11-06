@@ -163,3 +163,37 @@ made, because the application is never walked like a view.
 Until an application registers, the tree is an application with one scene,
 one window and a page holding a label, in the shape a real one produces, so a
 host has one thing to read.
+
+## Ending an application
+
+Each application registration has a number. `clearApplication(expected:)`
+ends only that registration, so a host retained from an earlier test cannot
+remove the application standing now. It releases the rendered tree, root
+reads, application and pending factory, resets the open scenes and session,
+and immediately starts the disappearing and destroying handlers through the
+renderer's ordinary dispatch. Registering the next application uses this
+same teardown before recording its new factory.
+
+`HostTeardown` follows the tasks that end with that tree: the owned runs
+cancelled as elements leave, lifecycle handlers, and gated work started by
+those handlers. Its task-local collection scope also reaches cancellation
+inside composed lifecycle code; unrelated tasks and detached application
+work are outside it. Each task is followed to its actual completion, not
+just to cancellation. A repeated clear returns the same completion; stale
+clears finish without changing the current application.
+Completion is terminal once the initial collection has ended and every
+collected task has finished. A plain unawaited `Task` is not a lifecycle
+waiter; work it starts in the future cannot reopen a completed teardown.
+Lifecycle code awaits such work if its completion is part of cleanup.
+
+Only the farewell dispatch carries that scope. Ordinary host events and
+rendered handlers begin outside it: a lifecycle handler may open a new
+window, whose services belong to the new page and hold no old teardown.
+
+The teardown does not render a replacement page. A host closes its native
+windows and can drain its toolkit and jobs while waiting for completion;
+the test window owns its bounded waiting policy (host/testing.md).
+An act begun in that teardown has no standing host: an awaited call fails
+with `StateUIError.notPerformed`, a call with no waiter is diagnosed and
+left out. Lifecycle cleanup when only a page leaves a running application
+has no application-teardown scope and keeps its ordinary host access.
