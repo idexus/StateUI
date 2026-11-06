@@ -34,7 +34,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Name")
                 .placeholder("Type your name")
                 .showsClearButton(true)
-                .isFocused($editing)
+                .isFocused(into: $editing)
 
             Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                 .fontSize(17)

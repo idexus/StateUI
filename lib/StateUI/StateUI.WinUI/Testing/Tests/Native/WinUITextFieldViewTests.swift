@@ -22,7 +22,7 @@ final class WinUITextFieldViewTests: XCTestCase {
                     TextField(words.projectedValue)
                         .isPassword(hidden.wrappedValue)
                         .placeholder("Password")
-                        .isFocused(focused.projectedValue)
+                        .isFocused(into: focused.projectedValue)
                         .accessibilityIdentifier("secret")
                         .onTapped {}
                         .width(200)

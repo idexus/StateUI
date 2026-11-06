@@ -616,7 +616,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
         .motion(law)
-        .frame($room)
+        .frame(into: $room)
         .engine([$room.followed, run.parameters.followed, $held.followed, $item.followed] + followed,
                 priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)

@@ -248,11 +248,11 @@ final class ContractRoadsTests: XCTestCase {
             name: "the keyboard heard on a view that never takes it",
             closed: """
                 @State var focused = false
-                _ = Text("Name").isFocused($focused)
+                _ = Text("Name").isFocused(into: $focused)
                 """,
             open: """
                 @State var focused = false
-                _ = TextField("Name").isFocused($focused)
+                _ = TextField("Name").isFocused(into: $focused)
                 """),
         Road(
             name: "the keyboard put on a view that never takes it",

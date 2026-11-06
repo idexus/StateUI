@@ -63,7 +63,7 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .onFrameChanged(in: .global) { window = $0 }
                 .onFrameChanged(in: .safeArea) { safe = $0 }
                 // Fed one way into a state, with no body reading it.
-                .frame(feedsSecond ? $second : $first)
+                .frame(into: feedsSecond ? $second : $first)
             }
             .spacing(8)
             .padding(16)

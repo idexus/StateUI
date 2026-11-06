@@ -144,7 +144,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             .clipsContent(true)
             // THE GRID THE ROOM FITS: a turned phone or a window grown or
             // shrunk moves icons to other boards, or makes them larger.
-            .frame($room)
+            .frame(into: $room)
             .engine(following: $room) { _ in fitted() }
 
             // THE DOTS wear the same parameters - one state, so one motion: they go

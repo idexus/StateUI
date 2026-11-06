@@ -208,7 +208,7 @@ final class SplitViewTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.settled(
-            flyout(menu.projectedValue, section.projectedValue).sidebarOverlays(overlays.projectedValue).node)
+            flyout(menu.projectedValue, section.projectedValue).sidebarOverlays(into: overlays.projectedValue).node)
         let place = try XCTUnwrap(patch.driven?[.sidebarOverlays])
 
         XCTAssertEqual(place.mode, .in)

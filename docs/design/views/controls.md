@@ -107,7 +107,7 @@ page not navigated to.
 What a web view is told to do is an act - `goBack()`, `reload()`,
 `evaluateJavaScript(_:)` - because a description has no control to call a
 method on; what it reports travels the other way, into a binding
-(`.canGoBack($hasBack)`). Its source crosses as its kind and then what it is
+(`.canGoBack(into: $hasBack)`). Its source crosses as its kind and then what it is
 made of: an address as the kind and the address, a document as the kind, the
 document and its base address or nothing - three values whether or not there
 is a base address, so the host reads the same places every time and never tells

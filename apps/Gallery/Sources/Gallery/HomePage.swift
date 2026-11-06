@@ -311,7 +311,7 @@ struct HomePage: View {
         // difference between this and measuring a page with a `GeometryReader`:
         // the run's height would ride a render per settling pass, and
         // everything under it with it.
-        .frame($room)
+        .frame(into: $room)
         .engine(tracking: $room) { cycle in
             // NOTHING IS DECIDED FROM A ROOM NOBODY HAS MEASURED. Every render
             // arms every engine, so this runs once over the room as DECLARED -

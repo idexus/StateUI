@@ -418,8 +418,8 @@ final class ControlTests: XCTestCase {
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
                     .userAgent("StateUI/1.0")
-                    .canGoBack(hasBack.projectedValue)
-                    .canGoForward(hasForward.projectedValue)
+                    .canGoBack(into: hasBack.projectedValue)
+                    .canGoForward(into: hasForward.projectedValue)
                     .onNavigating { _ in }
                     .onNavigated { _ in }
                     .onProcessTerminated {}),

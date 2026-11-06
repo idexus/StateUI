@@ -329,7 +329,7 @@
                             .height(30)
                             .horizontalAlignment(.start)
                             .verticalAlignment(.start)
-                            .frame(room.projectedValue),
+                            .frame(into: room.projectedValue),
                         [
                             Write(VisualElementContract.layoutDirection, direction.wrappedValue),
                             Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),

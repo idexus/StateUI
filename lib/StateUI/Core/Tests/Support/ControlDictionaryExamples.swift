@@ -597,7 +597,7 @@ extension ControlDictionary {
                     .isEnabled(canGoBack)
                     .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
                 WebView("https://example.com")
-                    .canGoBack($canGoBack)
+                    .canGoBack(into: $canGoBack)
                     .aim(browser)
                     .gridRow(1)
             }
@@ -795,7 +795,7 @@ extension ControlDictionary {
             @State var editing = false
 
             TextField("Name")
-                .isFocused($editing)
+                .isFocused(into: $editing)
             """#),
 
         (RefreshElementContract.self, #"""

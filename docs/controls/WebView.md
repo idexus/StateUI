@@ -13,7 +13,7 @@ Grid {
         .isEnabled(canGoBack)
         .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
     WebView("https://example.com")
-        .canGoBack($canGoBack)
+        .canGoBack(into: $canGoBack)
         .aim(browser)
         .gridRow(1)
 }

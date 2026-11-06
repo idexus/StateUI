@@ -168,7 +168,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let room = State(Rect(0, 0, 0, 0))
 
-            renders.render(stack([Held().frame(room.projectedValue).node], id: "root"))
+            renders.render(stack([Held().frame(into: room.projectedValue).node], id: "root"))
             return room.storage
         })
     }

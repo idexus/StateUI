@@ -24,8 +24,8 @@ private struct Measured: View {
     var body: some View {
         let way = Measuring.way.wrappedValue
         var view = Rectangle().width(100).height(60)
-        if way == 0 { view = view.frame(Measuring.first.projectedValue) }
-        if way == 1 { view = view.frame(Measuring.second.projectedValue) }
+        if way == 0 { view = view.frame(into: Measuring.first.projectedValue) }
+        if way == 1 { view = view.frame(into: Measuring.second.projectedValue) }
         if way == 3 { view = view.onFrameChanged { Measuring.heard.append($0) } }
         return view
     }

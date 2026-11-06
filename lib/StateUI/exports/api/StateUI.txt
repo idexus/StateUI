@@ -1636,7 +1636,7 @@ swift.method @SwiftNever.engine(tracking:priority:_:): @MainActor func engine<ea
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
 swift.method @SwiftNever.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method @SwiftNever.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method @SwiftNever.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method @SwiftNever.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -1840,7 +1840,7 @@ swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method AnyView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method AnyView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method AnyView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method AnyView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method AnyView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method AnyView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2067,7 +2067,7 @@ swift.method Button.fontAttributes(_:): @MainActor func fontAttributes(_ state: 
 swift.method Button.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Button.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Button.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Button.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Button.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2084,7 +2084,7 @@ swift.method Button.isAccessibilityHidden(_:): @MainActor func isAccessibilityHi
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Button.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Button.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Button.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Button.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Button.Modified
@@ -2306,7 +2306,7 @@ swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Canvas.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Canvas.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Canvas.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Canvas.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Canvas.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2513,7 +2513,7 @@ swift.method Capsule.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modi
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Capsule.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Capsule.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Capsule.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Capsule.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Capsule.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -2715,7 +2715,7 @@ swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<Fi
 swift.method CheckBox.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method CheckBox.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method CheckBox.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method CheckBox.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method CheckBox.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method CheckBox.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2730,7 +2730,7 @@ swift.method CheckBox.isAccessibilityHidden(_:): @MainActor func isAccessibility
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method CheckBox.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method CheckBox.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> CheckBox.Modified
 swift.method CheckBox.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -2935,7 +2935,7 @@ swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine
 swift.method ColorPicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ColorPicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ColorPicker.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ColorPicker.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ColorPicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ColorPicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -2950,7 +2950,7 @@ swift.method ColorPicker.isAccessibilityHidden(_:): @MainActor func isAccessibil
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method ColorPicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method ColorPicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method ColorPicker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -3153,7 +3153,7 @@ swift.method DatePicker.fontFamily(_:): @MainActor func fontFamily(_ value: Stri
 swift.method DatePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
 swift.method DatePicker.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
-swift.method DatePicker.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method DatePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method DatePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3168,7 +3168,7 @@ swift.method DatePicker.isAccessibilityHidden(_:): @MainActor func isAccessibili
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method DatePicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> DatePicker.Modified
 swift.method DatePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -3375,7 +3375,7 @@ swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func eng
 swift.method DebugInspector.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspector.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method DebugInspector.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method DebugInspector.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method DebugInspector.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method DebugInspector.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -3578,7 +3578,7 @@ swift.method Either.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Either.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Either.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Either.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Either.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Either.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method Either.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3810,7 +3810,7 @@ swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modi
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Ellipse.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Ellipse.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Ellipse.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Ellipse.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Ellipse.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -4012,7 +4012,7 @@ swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Fill.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Fill.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Fill.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Fill.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Fill.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Fill.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4192,7 +4192,7 @@ swift.method FilledShape.fill(_:): @MainActor func fill(_ state: Binding<Materia
 swift.method FilledShapeProperties.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method FilledShapeProperties.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method FilledShapeProperties.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method FocusElement.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method FocusElement.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method FontElement.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method FontElement.fontAttributes(_:): @MainActor func fontAttributes(_ value: FontAttributes) -> Self.Modified
 swift.method FontElement.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
@@ -4234,7 +4234,7 @@ swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<ea
 swift.method GalleryView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GalleryView.fade(_:): @MainActor func fade(_ amount: Double) -> GalleryView<Items, ID>
 swift.method GalleryView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method GalleryView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method GalleryView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method GalleryView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4438,7 +4438,7 @@ swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func eng
 swift.method GeometryReader.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GeometryReader.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GeometryReader.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method GeometryReader.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method GeometryReader.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method GeometryReader.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4635,7 +4635,7 @@ swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Grid.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Grid.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Grid.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Grid.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Grid.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Grid.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -4851,7 +4851,7 @@ swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Group.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Group.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Group.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Group.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Group.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Group.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5044,7 +5044,7 @@ swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method HStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method HStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method HStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method HStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method HStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method HStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5263,7 +5263,7 @@ swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Image.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Image.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Image.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Image.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Image.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Image.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5465,7 +5465,7 @@ swift.method InspectorButton.engine(following:_:priority:_:): @MainActor func en
 swift.method InspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method InspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method InspectorButton.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method InspectorButton.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method InspectorButton.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method InspectorButton.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method InspectorButton.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method InspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5659,7 +5659,7 @@ swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each
 swift.method ItemsView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ItemsView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ItemsView.footer(_:): @MainActor func footer(_ view: some View) -> ItemsView<ID>
-swift.method ItemsView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ItemsView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ItemsView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -5675,7 +5675,7 @@ swift.method ItemsView.isAccessibilityHidden(_:): @MainActor func isAccessibilit
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ItemsView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method ItemsView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method ItemsView.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> ItemsView<ID>
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> ItemsView<ID>
 swift.method ItemsView.isRefreshing(_:): @MainActor func isRefreshing(_ state: Binding<Bool>) -> ItemsView<ID>
@@ -5901,7 +5901,7 @@ swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Line.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Line.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Line.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Line.from(_:): @MainActor func from(_ state: Binding<Point>) -> Line.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -6109,7 +6109,7 @@ swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Link.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Link.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Link.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Link.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Link.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Link.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6124,7 +6124,7 @@ swift.method Link.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidd
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Link.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Link.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Link.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Link.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Link.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -6327,7 +6327,7 @@ swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, 
 swift.method Map.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Map.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Map.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Map.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Map.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Map.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6598,7 +6598,7 @@ swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func en
 swift.method ModifiedContent.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiedContent.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ModifiedContent.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ModifiedContent.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ModifiedContent.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ModifiedContent.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -6793,7 +6793,7 @@ swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<e
 swift.method MotionLayout.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method MotionLayout.following(_:): @MainActor func following<each Value>(_ states: repeat Binding<each Value>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method MotionLayout.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method MotionLayout.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method MotionLayout.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -7023,7 +7023,7 @@ swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func en
 swift.method NavigationStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method NavigationStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method NavigationStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method NavigationStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method NavigationStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method NavigationStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -7230,7 +7230,7 @@ swift.method Path.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modifie
 swift.method Path.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Path.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Path.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Path.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Path.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Path.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Path.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7439,7 +7439,7 @@ swift.method Picker.fontAttributes(_:): @MainActor func fontAttributes(_ state: 
 swift.method Picker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Picker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Picker.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Picker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Picker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -7455,7 +7455,7 @@ swift.method Picker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHi
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Picker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Picker.Modified
 swift.method Picker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -7670,7 +7670,7 @@ swift.method Polygon.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modi
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polygon.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polygon.Modified
 swift.method Polygon.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Polygon.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Polygon.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Polygon.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polygon.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7886,7 +7886,7 @@ swift.method Polyline.fill(_:): @MainActor func fill(_ value: Color) -> Self.Mod
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polyline.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polyline.Modified
 swift.method Polyline.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Polyline.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Polyline.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Polyline.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polyline.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8103,7 +8103,7 @@ swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engin
 swift.method PositionDots.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method PositionDots.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method PositionDots.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method PositionDots.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method PositionDots.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method PositionDots.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8301,7 +8301,7 @@ swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine
 swift.method ProgressBar.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ProgressBar.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ProgressBar.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ProgressBar.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ProgressBar.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ProgressBar.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8512,7 +8512,7 @@ swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Mo
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Rectangle.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Rectangle.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Rectangle.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Rectangle.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Rectangle.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8728,7 +8728,7 @@ swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<
 swift.method ScrollView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ScrollView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ScrollView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ScrollView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ScrollView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ScrollView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8744,7 +8744,7 @@ swift.method ScrollView.isAccessibilityHidden(_:): @MainActor func isAccessibili
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method ScrollView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method ScrollView.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isRefreshing(_:): @MainActor func isRefreshing(_ state: Binding<Bool>) -> Self.Modified
@@ -8957,7 +8957,7 @@ swift.method SearchField.fontAttributes(_:): @MainActor func fontAttributes(_ st
 swift.method SearchField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method SearchField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method SearchField.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method SearchField.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method SearchField.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -8974,7 +8974,7 @@ swift.method SearchField.isAccessibilityHidden(_:): @MainActor func isAccessibil
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SearchField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method SearchField.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method SearchField.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isReadOnly(_:): @MainActor func isReadOnly(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9188,7 +9188,7 @@ swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<F
 swift.method Separator.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Separator.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Separator.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Separator.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Separator.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Separator.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9399,7 +9399,7 @@ swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Slider.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Slider.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Slider.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Slider.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Slider.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Slider.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9414,7 +9414,7 @@ swift.method Slider.isAccessibilityHidden(_:): @MainActor func isAccessibilityHi
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Slider.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Slider.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Slider.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Slider.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -9617,7 +9617,7 @@ swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First
 swift.method Space.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Space.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Space.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Space.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Space.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Space.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -9819,7 +9819,7 @@ swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method Spinner.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Spinner.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Spinner.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Spinner.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Spinner.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Spinner.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10026,7 +10026,7 @@ swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<F
 swift.method SplitView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SplitView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method SplitView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method SplitView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method SplitView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method SplitView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10184,7 +10184,7 @@ swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(
 swift.method SplitView.sidebarBackground(_:): @MainActor func sidebarBackground(_ value: Material) -> SplitView.Modified
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ state: Binding<Material>) -> SplitView.Modified
 swift.method SplitView.sidebarOverlayBackground(_:): @MainActor func sidebarOverlayBackground(_ value: Material) -> SplitView.Modified
-swift.method SplitView.sidebarOverlays(_:): @MainActor func sidebarOverlays(_ state: Binding<Bool>) -> SplitView.Modified
+swift.method SplitView.sidebarOverlays(into:): @MainActor func sidebarOverlays(into state: Binding<Bool>) -> SplitView.Modified
 swift.method SplitView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method SplitView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
@@ -10232,7 +10232,7 @@ swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method Stepper.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Stepper.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Stepper.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Stepper.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Stepper.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Stepper.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10247,7 +10247,7 @@ swift.method Stepper.isAccessibilityHidden(_:): @MainActor func isAccessibilityH
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Stepper.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Stepper.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Stepper.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Stepper.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -10601,7 +10601,7 @@ swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method Switch.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Switch.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Switch.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method Switch.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Switch.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Switch.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -10616,7 +10616,7 @@ swift.method Switch.isAccessibilityHidden(_:): @MainActor func isAccessibilityHi
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Switch.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method Switch.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> Switch.Modified
 swift.method Switch.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10818,7 +10818,7 @@ swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method TabView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TabView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method TabView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method TabView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method TabView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TabView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11017,7 +11017,7 @@ swift.method Text.fontAttributes(_:): @MainActor func fontAttributes(_ state: Bi
 swift.method Text.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Text.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method Text.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Text.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Text.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11243,7 +11243,7 @@ swift.method TextEditor.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method TextEditor.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextEditor.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TextEditor.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method TextEditor.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TextEditor.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11261,7 +11261,7 @@ swift.method TextEditor.isAccessibilityHidden(_:): @MainActor func isAccessibili
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextEditor.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method TextEditor.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextEditor.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isReadOnly(_:): @MainActor func isReadOnly(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11473,7 +11473,7 @@ swift.method TextField.fontAttributes(_:): @MainActor func fontAttributes(_ stat
 swift.method TextField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TextField.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method TextField.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TextField.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11490,7 +11490,7 @@ swift.method TextField.isAccessibilityHidden(_:): @MainActor func isAccessibilit
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method TextField.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextField.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isPassword(_:): @MainActor func isPassword(_ state: Binding<Bool>) -> TextField.Modified
 swift.method TextField.isReadOnly(_:): @MainActor func isReadOnly(_ state: Binding<Bool>) -> Self.Modified
@@ -11765,7 +11765,7 @@ swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: Stri
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
 swift.method TimePicker.format(_:): @MainActor func format(_ value: String) -> Self.Modified
-swift.method TimePicker.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method TimePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TimePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -11780,7 +11780,7 @@ swift.method TimePicker.isAccessibilityHidden(_:): @MainActor func isAccessibili
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method TimePicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> TimePicker.Modified
 swift.method TimePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -12092,7 +12092,7 @@ swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method VStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method VStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method VStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method VStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method VStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method VStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -12434,7 +12434,7 @@ swift.method VisualElement.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Sel
 swift.method VisualElement.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
 swift.method VisualElement.background(_:): @MainActor func background(_ state: Binding<Material>) -> Self.Modified
 swift.method VisualElement.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method VisualElement.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method VisualElement.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method VisualElement.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -12523,8 +12523,8 @@ swift.method WebView.background(_:): @MainActor func background(_ value: Brush) 
 swift.method WebView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method WebView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method WebView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
-swift.method WebView.canGoBack(_:): @MainActor func canGoBack(_ state: Binding<Bool>) -> WebView.Modified
-swift.method WebView.canGoForward(_:): @MainActor func canGoForward(_ state: Binding<Bool>) -> WebView.Modified
+swift.method WebView.canGoBack(into:): @MainActor func canGoBack(into state: Binding<Bool>) -> WebView.Modified
+swift.method WebView.canGoForward(into:): @MainActor func canGoForward(into state: Binding<Bool>) -> WebView.Modified
 swift.method WebView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method WebView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method WebView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
@@ -12533,7 +12533,7 @@ swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<Fir
 swift.method WebView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method WebView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method WebView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method WebView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method WebView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method WebView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
@@ -12548,7 +12548,7 @@ swift.method WebView.isAccessibilityHidden(_:): @MainActor func isAccessibilityH
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method WebView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method WebView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
+swift.method WebView.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method WebView.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -12775,7 +12775,7 @@ swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<Firs
 swift.method ZStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ZStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ZStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ZStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method ZStack.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ZStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified

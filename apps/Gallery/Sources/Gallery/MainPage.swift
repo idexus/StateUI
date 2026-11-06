@@ -76,7 +76,7 @@ struct MainPage: View {
         .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
-        .sidebarOverlays(nav.$menuOverlays)
+        .sidebarOverlays(into: nav.$menuOverlays)
         // Whether the bar offers the menu's button - the Split view
         // sample's switch takes it away.
         .showsSidebarToggle(nav.$showsMenuButton)

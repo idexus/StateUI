@@ -126,8 +126,8 @@ private struct BrowsingPage: View {
         return VStack {
             WebView().source(html: "<p>Written</p>")
                 .aim(browser)
-                .canGoBack($back)
-                .canGoForward($forward)
+                .canGoBack(into: $back)
+                .canGoForward(into: $forward)
                 .onNavigating { heard.values.append("navigating \($0.type) \($0.address)") }
                 .onNavigated { heard.values.append("navigated \($0.result) \($0.type) \($0.address)") }
                 .onProcessTerminated { heard.values.append("gone") }

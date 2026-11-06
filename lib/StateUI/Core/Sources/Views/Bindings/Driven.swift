@@ -65,7 +65,7 @@ extension VisualElement {
     ///     @State private var columns = 1.0
     ///
     ///     Grid { tiles }
-    ///         .frame($room)
+    ///         .frame(into: $room)
     ///         .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
     ///
     /// For arithmetic that lays views out; `GeometryReader` is for content built
@@ -76,7 +76,7 @@ extension VisualElement {
     ///
     /// - Parameter state: the state the frame is written into.
     /// - Returns: the element, reporting its frame there.
-    public func frame(_ state: Binding<Rect>) -> Modified {
+    public func frame(into state: Binding<Rect>) -> Modified {
         setValue(VisualElementContract.frame, on: state, mode: .in, kind: .feed)
     }
 }

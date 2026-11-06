@@ -75,7 +75,7 @@ extension AndroidInputTests {
             let focused = State(wrappedValue: false)
             let host = AndroidRenderer.running {
                 VStack {
-                    TextField("").isFocused(focused.projectedValue)
+                    TextField("").isFocused(into: focused.projectedValue)
                     TextField("")
                 }
             }

@@ -63,8 +63,8 @@ private struct WebBrowserPart: ExampleContent {
                 // What the view calls itself to the server. Left unwritten it
                 // is the platform's own browser string.
                 .userAgent("StateUI Gallery")
-                .canGoBack($hasBack)
-                .canGoForward($hasForward)
+                .canGoBack(into: $hasBack)
+                .canGoForward(into: $hasForward)
                 .onNavigating { report in
                     status = "fetching \(report.address)"
                 }

@@ -23,7 +23,7 @@ private struct FramesPage: View {
                 .fill(.steelBlue)
                 .width(wide ? 200 : 120)
                 .height(60)
-                .frame($room)
+                .frame(into: $room)
                 .onFrameChanged { frame in said = "\(Int(frame.width))x\(Int(frame.height))" }
             GeometryReader { frame in Text("reader \(Int(frame.width))") }
                 .width(90)

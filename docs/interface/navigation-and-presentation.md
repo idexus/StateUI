@@ -156,7 +156,7 @@ On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
 
-Where the sidebar stands is the host's to say: `.sidebarOverlays($over)`
+Where the sidebar stands is the host's to say: `.sidebarOverlays(into: $over)`
 writes into a state whether it lies over the detail now, as the platform
 places it for the room - true on a phone and in a narrow window, false
 beside the detail, changing as the window is resized or the device turned.
@@ -190,7 +190,7 @@ SplitView(sidebar: {
     MainPage()
 })
 .showsSidebar($menuOpen)
-.sidebarOverlays($menuOverlays)
+.sidebarOverlays(into: $menuOverlays)
 ```
 
 Nothing the application writes into the state reaches the host; it is the

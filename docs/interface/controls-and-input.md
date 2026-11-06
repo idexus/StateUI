@@ -86,6 +86,13 @@ closures - so every binding a control is handed is a storage the host
 carries. A part of a state, `$record.field`, reaches no control
 ([Two words and a part](../concepts/why.md#two-words-and-a-part-state-binding-statepart)).
 
+A state only the platform writes is handed with `into:`: the frame a layout
+settled on, `.frame(into: $room)`; whether a control has the focus,
+`.isFocused(into: $focused)`; whether a web view can go back or forward,
+`.canGoBack(into: $back)`; whether a sidebar lies over the page,
+`.sidebarOverlays(into: $over)`. The label gives the direction: writing such
+a state moves nothing on screen, and the platform's next report replaces it.
+
 ## Two-way input and event ordering
 
 Controls with an editable purpose value that crosses to the host as it is
@@ -667,7 +674,7 @@ Grid {
             .onClicked(.ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
     }
     WebView("https://example.com")
-        .canGoBack($canGoBack)
+        .canGoBack(into: $canGoBack)
         .aim(browser)
         .gridRow(1)
 }

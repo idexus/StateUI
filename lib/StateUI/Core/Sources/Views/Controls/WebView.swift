@@ -44,7 +44,7 @@ extension WebViewProperties {
 /// What the view is told to do is an act called through its aim -
 /// `browser.goBack()`, `browser.reload()`,
 /// `browser.evaluateJavaScript("…")`; what it reports arrives in a binding,
-/// `.canGoBack($hasBack)`.
+/// `.canGoBack(into: $hasBack)`.
 public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
@@ -64,7 +64,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Whether there is a page behind this one - what enables a Back button -
     /// written into the binding by the platform after every navigation.
-    public func canGoBack(_ state: Binding<Bool>) -> Modified {
+    public func canGoBack(into state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoBackChanged) { can in
             state.wrappedValue = can
         }
@@ -72,7 +72,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Whether there is a page ahead of this one - true only after going back,
     /// and what enables a Forward button - written into the binding.
-    public func canGoForward(_ state: Binding<Bool>) -> Modified {
+    public func canGoForward(into state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoForwardChanged) { can in
             state.wrappedValue = can
         }
@@ -290,7 +290,7 @@ extension Aim where Target == WebView {
     ///
     ///     WebView("https://example.com")
     ///         .aim(browser)
-    ///         .canGoBack($hasBack)
+    ///         .canGoBack(into: $hasBack)
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)

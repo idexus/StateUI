@@ -187,7 +187,7 @@ the old value. The payload carries the new value either way.
 ## Feeds
 
 A feed is a value only the platform knows, written into a state:
-`.frame($room)` writes the frame layout gave the view, and `.panX($turn)` and
+`.frame(into: $room)` writes the frame layout gave the view, and `.panX($turn)` and
 `.panY` write how far a drag has moved. Nothing this side writes reaches the
 platform through them. A pan feed writes the state's number onto the view, so
 the platform knows where to report, and reads nothing at build, so a drag

@@ -144,7 +144,7 @@
                     WideDetail(NarrowingButton())
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
-                .sidebarOverlays(over.projectedValue)
+                .sidebarOverlays(into: over.projectedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
             try s.settle { try s.held(SplitViewContract.sidebarOverlays, on: split) == over.wrappedValue }

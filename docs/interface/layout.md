@@ -440,7 +440,7 @@ There are three readings of the same native measurement:
 
 | Surface | Use |
 | --- | --- |
-| `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
+| `.frame(into: $room)` | a one-way host feed of the parent-space rectangle into state |
 | `.onFrameChanged(in:)` | a handler run after layout for one selected coordinate space |
 | `GeometryReader` | local content rebuilt from its last measured rectangle |
 
@@ -453,7 +453,7 @@ rectangle without making a body read it:
 let tiles = Text("Tiles")
 
 Grid { tiles }
-    .frame($room)
+    .frame(into: $room)
     .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
 ```
 

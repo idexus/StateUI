@@ -4602,7 +4602,7 @@ enum Listings {
                     .onFrameChanged(in: .global) { window = $0 }
                     .onFrameChanged(in: .safeArea) { safe = $0 }
                     // Fed one way into a state, with no body reading it.
-                    .frame(feedsSecond ? $second : $first)
+                    .frame(into: feedsSecond ? $second : $first)
                 }
 
                 Slider($width)
@@ -4974,7 +4974,7 @@ enum Listings {
                 .clipsContent(true)
                 // THE GRID THE ROOM FITS: a turned phone or a window grown or
                 // shrunk moves icons to other boards, or makes them larger.
-                .frame($room)
+                .frame(into: $room)
                 .engine(following: $room) { _ in fitted() }
 
                 // THE DOTS wear the same parameters - one state, so one motion: they go
@@ -7102,7 +7102,7 @@ enum Listings {
         .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
-        .sidebarOverlays(nav.$menuOverlays)
+        .sidebarOverlays(into: nav.$menuOverlays)
         // Whether the bar offers the menu's button - the Split view
         // sample's switch takes it away.
         .showsSidebarToggle(nav.$showsMenuButton)
@@ -11818,7 +11818,7 @@ enum Listings {
                 TextField($name)
                     .placeholder("Type your name")
                     .showsClearButton(true)
-                    .isFocused($editing)
+                    .isFocused(into: $editing)
 
                 Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
 
@@ -12892,8 +12892,8 @@ enum Listings {
                     // What the view calls itself to the server. Left unwritten it
                     // is the platform's own browser string.
                     .userAgent("StateUI Gallery")
-                    .canGoBack($hasBack)
-                    .canGoForward($hasForward)
+                    .canGoBack(into: $hasBack)
+                    .canGoForward(into: $hasForward)
                     .onNavigating { report in
                         status = "fetching \(report.address)"
                     }

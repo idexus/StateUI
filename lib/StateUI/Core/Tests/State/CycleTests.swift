@@ -806,7 +806,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// THE HOST'S WRITE IS A SIGNAL TOO, on a state the host carries as the
-    /// value itself - what `.frame($room)` makes of a rectangle. Carrying the
+    /// value itself - what `.frame(into: $room)` makes of a rectangle. Carrying the
     /// state wakes nothing (the image starts at nought and the storage's own
     /// count stops); a report told to the image does.
     func testAHostWriteWakesAnEngineFollowingAPlainState() {
@@ -814,7 +814,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
-        renders.render(Text("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
+        renders.render(Text("room").frame(into: room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
         }.node)
         board.cycle(now: 0, reducesMotion: false)

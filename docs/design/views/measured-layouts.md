@@ -64,7 +64,7 @@ standing short under it.
 
 ## A frame feed
 
-`.frame($room)` writes the same frame into a state with no render at all: the
+`.frame(into: $room)` writes the same frame into a state with no render at all: the
 arithmetic that lays views out has it, and no view is built for it - the
 difference from `GeometryReader`, whose answer is a value the tree can show. Only
 the host writes it; nothing this side writes reaches the platform, a view's

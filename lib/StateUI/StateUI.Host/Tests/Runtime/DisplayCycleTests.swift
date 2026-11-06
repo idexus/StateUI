@@ -247,7 +247,7 @@ private struct ReadTravelPage: View {
                 Slider($level).id("slider")
                 Button("Up").onClicked { level = 1 }.id("up")
             }
-            .frame($room)
+            .frame(into: $room)
             .id("read")
         }
     }

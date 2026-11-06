@@ -214,7 +214,7 @@ final class PlacedRunTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
         let renders = Renders()
 
-        let patch = renders.render(Rectangle().frame(room.projectedValue).id("box").node)
+        let patch = renders.render(Rectangle().frame(into: room.projectedValue).id("box").node)
 
         XCTAssertEqual(
             patch.driven?[.frame],
