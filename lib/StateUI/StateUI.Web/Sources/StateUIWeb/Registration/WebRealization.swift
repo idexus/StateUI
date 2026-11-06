@@ -199,7 +199,14 @@ enum WebRealization {
             + "user's hand alone."
         let opened = "The browser says nothing as a picker's list or calendar opens."
         let closed = "The browser says nothing as a picker's list or calendar closes."
-        return [
+        let pressed = "The browser's select opens its list at the user's press, and the list keeps the pointer until "
+            + "it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed."
+        let pressing: [any ContractMember] = [
+            ViewContract.tapped, ViewContract.held, ViewContract.holdDuration, ViewContract.panUpdated,
+            ViewContract.panTouchCount, ViewContract.panXChannel, ViewContract.panYChannel, ViewContract.swiped,
+            ViewContract.swipeDirection, ViewContract.swipeThreshold, ViewContract.pointerReleased,
+        ]
+        return pressing.map { .notPlanned($0, on: PickerContract.self, reason: pressed) } + [
             .notPlanned(DatePickerContract.isOpen, reason: opens), .notPlanned(DatePickerContract.opened, reason: opened),
             .notPlanned(DatePickerContract.closed, reason: closed), .notPlanned(PickerContract.isOpen, reason: opens),
             .notPlanned(PickerContract.opened, reason: opened), .notPlanned(PickerContract.closed, reason: closed),

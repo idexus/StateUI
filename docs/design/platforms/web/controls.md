@@ -192,7 +192,10 @@ user's own choice is never argued with; no choice stands as the title
 selected. The choice the user makes is heard on `change`. The browser opens
 a picker's list - and a day's calendar, a time's clock - at the user's press,
 closes it at the user's hand and says nothing of either, so a picker's
-opening is not the program's.
+opening is not the program's. The open list keeps the pointer from the
+press until it closes: the page hears no hold, drag or swipe over a
+picker, and its release only where it was pressed - so a press dragged away
+would tap. Those view members stand `–` on a Picker.
 
 ## A day and a time
 

@@ -660,28 +660,28 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
-Picker.held: ✅
-Picker.holdDuration: ✓ read holdDuration of Picker: the relay's own wait: a page holds no hold of the browser's
+Picker.held: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.holdDuration: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.horizontalAlignment: ✅
 Picker.isDraggable: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.layoutBody: ✅
 Picker.margin: ✅
-Picker.panTouchCount: ✅
-Picker.panUpdated: ✅
-Picker.panXChannel: ✅
-Picker.panYChannel: ✅
+Picker.panTouchCount: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panUpdated: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panXChannel: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panYChannel: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.pinchUpdated: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
-Picker.pointerMoved: ✅
-Picker.pointerPressed: ✅
-Picker.pointerReleased: ✅
+Picker.pointerEntered: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerExited: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerMoved: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerPressed: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerReleased: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.rotationUpdated: ✅
-Picker.swipeDirection: ✅
-Picker.swipeThreshold: ✅
-Picker.swiped: ✅
-Picker.tapCount: ✅
-Picker.tapped: ✅
+Picker.swipeDirection: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.swipeThreshold: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.swiped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.tapCount: does not apply - its case covers Picker.tapped too, which this host never has
+Picker.tapped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.area: ✅
