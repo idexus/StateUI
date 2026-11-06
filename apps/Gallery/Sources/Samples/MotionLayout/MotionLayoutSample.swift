@@ -239,7 +239,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             Rectangle()
                 .fill(Color(hex: 0x000000))
                 .cornerRadius(16))
-        .motion(.eased(.milliseconds(300), curve: .cubicOut))
+        .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
         // AT REST - the ring and every card still - it says where, once.
         .onSettled { turned in
             let count = Self.cards.count
@@ -411,7 +411,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "the card nearest where the throw would end, in one movement. It has no "
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the parameters themselves travel, under the layout's "
-                + "`.motion`. The parameters, `parameters: $turn`, are the card at the front; "
+                + "`.parameterMotion`. The parameters, `parameters: $turn`, are the card at the front; "
                 + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), periodic: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.throwMotion(_:)` takes any motion: eased, its length says how far a "

@@ -375,11 +375,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
     /// new place is the world's (`dynamics(_:)`).
     ///
-    ///     .motion(.spring(response: .milliseconds(240)))
+    ///     .parameterMotion(.spring(response: .milliseconds(240)))
     ///
     /// - Parameter motion: the law; the element's, the application's or the library's unless said.
     /// - Returns: the layout, traveling that way.
-    public func motion(_ motion: Motion) -> Self {
+    public func parameterMotion(_ motion: Motion) -> Self {
         var copy = self
         copy.law = motion
         return copy
@@ -407,7 +407,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .dynamics(.spring(response: .milliseconds(420), damping: 0.8))
     ///
     /// - Parameter dynamics: the layout's dynamics; `.standard` unless said, `.none` for views standing at their
-    ///   places at once - the parameters still travel under `motion(_:)`.
+    ///   places at once - the parameters still travel under `parameterMotion(_:)`.
     /// - Returns: the layout, its views moving by those dynamics.
     public func dynamics(_ dynamics: LayoutDynamics) -> Self {
         var copy = self

@@ -33,7 +33,7 @@ final class LayoutApproachTests: XCTestCase {
             return [Placement(Rect(0, 0, 10, 10))]
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-        .motion(motion)
+        .parameterMotion(motion)
         .node
     }
 

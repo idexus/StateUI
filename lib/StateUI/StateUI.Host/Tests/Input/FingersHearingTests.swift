@@ -151,7 +151,7 @@ private struct FingersPage: View {
         }
         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .motion(.eased(.milliseconds(200), curve: .linear))
+        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 

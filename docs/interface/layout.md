@@ -705,7 +705,7 @@ struct Carousel: View {
                 }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .motion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(response: .milliseconds(240)))
             .height(200)
 
             Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
@@ -718,7 +718,7 @@ The arithmetic is handed the parameters as they stand each frame, and each
 placement lands as written: what moves smoothly are the parameters, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap the run rests on: written by the
-program, the run travels there under `.motion(_:)` - with a hand or none -
+program, the run travels there under `.parameterMotion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap activates the view
@@ -773,11 +773,11 @@ the hand's speed; a spring carries it as far as its response and settles as
 springs do. A throw sets out at the hand's speed, and goes on as the parameters'
 journey does: `$turn.journey` says where the run is and how fast it goes while
 it does, as for any journey. The landing on the next snap is never slower
-than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
+than `.parameterMotion(_:)` moves a unit: a hand let go still, thrown back, or too slow
 to get there sooner, brings the run onto it under that motion over as much of
 its length as the way left is of a unit - the last tenth of a card takes a
 tenth of the motion. A mouse's wheel turned notch by notch steps
-the run a snap a notch, under `.motion(_:)`, however far apart the snaps
+the run a snap a notch, under `.parameterMotion(_:)`, however far apart the snaps
 stand - an axis with none, a hundred points' worth of the hand.
 
 A change of the layout where its parameters stand travels too. A view
@@ -787,7 +787,7 @@ switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
 go. `.dynamics(_:)` says how, a `LayoutDynamics`: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
-views standing at their places at once - the parameters still travel; `.motion(_:)`
+views standing at their places at once - the parameters still travel; `.parameterMotion(_:)`
 is the parameters' law alone, moving between the views' rests, and `.dynamics`
 the views reaching their new places:
 
@@ -821,7 +821,7 @@ struct Hand: View {
 Removing the card at the front brings the one behind it there, as the
 others close up. Where the front card was the last, the parameters themselves have to
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
-before it, under `.motion(_:)`.
+before it, under `.parameterMotion(_:)`.
 
 A view can be a body of its own: `.followsLayout(response:damping:)` on it - short for
 `.layoutBody(.followsLayout(response:damping:))` - makes it follow its place on a spring of its own - carried by the run, it
@@ -1030,7 +1030,7 @@ struct Ring: View {
 
 Parameters of several axes are a `LayoutParameters` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
-written by the program - and travels under the same `.motion(_:)`:
+written by the program - and travels under the same `.parameterMotion(_:)`:
 
 ```swift
 struct Orbit: LayoutParameters {
@@ -1058,7 +1058,7 @@ struct Planets: View {
                 }
             }
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .motion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(response: .milliseconds(240)))
             .height(160)
 
             Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }
@@ -1242,7 +1242,7 @@ struct Rearranged: View {
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
-            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
             .height(300)
 
             HStack {

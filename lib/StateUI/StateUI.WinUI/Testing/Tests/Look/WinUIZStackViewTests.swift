@@ -61,7 +61,7 @@ final class WinUIZStackViewTests: XCTestCase {
                             ? [Placement(room), Placement(room)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .motion(.none)
+                    .parameterMotion(.none)
                     .height(200)
 
                     Button("Place").onClicked { placed.wrappedValue = 1 }

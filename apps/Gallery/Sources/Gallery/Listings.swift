@@ -1974,10 +1974,10 @@ enum Listings {
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
             .onItemDismissed(.up, beyond: 120) { name in remove(name) }
-            // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
+            // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
-            .motion(.eased(.milliseconds(400), curve: .cubicOut))
+            .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
             .dynamics(.spring(response: .milliseconds(300), damping: 1))
         }
 
@@ -4968,7 +4968,7 @@ enum Listings {
                             }
                         }
                     }
-                    .motion(Self.turning)
+                    .parameterMotion(Self.turning)
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -4985,7 +4985,7 @@ enum Listings {
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
-                .motion(Self.turning)
+                .parameterMotion(Self.turning)
                 .height(16)
                 .gridRow(1)
             }
@@ -5919,7 +5919,7 @@ enum Listings {
                 .axis(\.round, input: hand, range: 0...4, periodic: true)
                 // ...and round and round, a card at a time.
                 .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-                .motion(.spring(response: .milliseconds(360), damping: 0.8))
+                .parameterMotion(.spring(response: .milliseconds(360), damping: 0.8))
             }
             .clipsContent(true)
         }
@@ -6076,7 +6076,7 @@ enum Listings {
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
         }
 
         /// How large a card is in every layout - the size the grid's cells allow -
@@ -6227,7 +6227,7 @@ enum Listings {
             .axis(
                 \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
                 range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-            .motion(.eased(.milliseconds(600), curve: .cubicOut))
+            .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6461,7 +6461,7 @@ enum Listings {
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
                 periodic: true)
-            .motion(.spring(response: .milliseconds(420), damping: 0.82))
+            .parameterMotion(.spring(response: .milliseconds(420), damping: 0.82))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -7839,7 +7839,7 @@ enum Listings {
             .shade(
                 Rectangle()
                     .fill(Color(hex: 0x000000)))
-            .motion(.eased(.milliseconds(300), curve: .cubicOut))
+            .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
             // AT REST - the ring and every card still - it says where, once.
             .onSettled { turned in
                 let count = Self.cards.count
@@ -12734,7 +12734,7 @@ enum Listings {
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                     periodic: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-                .motion(.spring(response: .milliseconds(420), damping: 0.8))
+                .parameterMotion(.spring(response: .milliseconds(420), damping: 0.8))
             }
             .clipsContent(true)
         }

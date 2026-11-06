@@ -138,7 +138,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         }
                     }
                 }
-                .motion(Self.turning)
+                .parameterMotion(Self.turning)
             }
             .gridRow(0)
             .clipsContent(true)
@@ -156,7 +156,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             } placements: { room, board in
                 (0..<boards).map { dot($0, of: boards, board, room) }
             }
-            .motion(Self.turning)
+            .parameterMotion(Self.turning)
             .height(16)
             .gridRow(1)
         }

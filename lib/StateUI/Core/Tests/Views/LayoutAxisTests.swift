@@ -45,7 +45,7 @@ final class LayoutAxisTests: XCTestCase {
                     handed.tables.append(table)
                     return [Placement(Rect(0, 0, 40, 40))]
                 }
-                .motion(motion)
+                .parameterMotion(motion)
             )
             .node
         }

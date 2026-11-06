@@ -366,7 +366,7 @@ final class ControlTests: XCTestCase {
                 .shade(
                     Rectangle()
                         .fill(.black))
-                .motion(.spring(response: .milliseconds(240)))
+                .parameterMotion(.spring(response: .milliseconds(240)))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
@@ -819,7 +819,7 @@ final class ControlTests: XCTestCase {
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody", "followsLayout", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody", "followsLayout", "id",
             "assign", "area",
             // Tiers no view wears.
             "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",

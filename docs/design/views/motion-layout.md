@@ -174,7 +174,7 @@ under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand
 lets go goes back onto its place as a body setting out at the hand's speed.
-`.motion` is the parameters' law alone: how a change, a join or a hand's let go
+`.parameterMotion` is the parameters' law alone: how a change, a join or a hand's let go
 comes onto a place is the world's. Under less motion, and in a world of none,
 no body stands: every view at its place.
 

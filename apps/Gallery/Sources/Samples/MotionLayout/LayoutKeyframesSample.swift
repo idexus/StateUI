@@ -97,7 +97,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-        .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+        .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
     }
 
     /// How large a card is in every layout - the size the grid's cells allow -

@@ -57,7 +57,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
                 \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                 periodic: true)
             .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-            .motion(.spring(response: .milliseconds(420), damping: 0.8))
+            .parameterMotion(.spring(response: .milliseconds(420), damping: 0.8))
         }
         .clipsContent(true)
     }

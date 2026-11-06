@@ -6822,7 +6822,7 @@ swift.method MotionLayout.menuBar(order:_:): @MainActor func menuBar(order: Int 
 swift.method MotionLayout.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.mirrorsRightToLeft(_:): @MainActor func mirrorsRightToLeft(_ mirrors: Bool) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.motion(_:): @MainActor func motion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
 swift.method MotionLayout.motion(_:_:): @MainActor func motion(_ motion: Motion, _ values: MotionValues) -> Self.Modified
 swift.method MotionLayout.onAccessibilityAdjusted(_:): @MainActor func onAccessibilityAdjusted(_ handler: @escaping @MainActor @Sendable (AccessibilityAdjustment) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onAccessibilityAdjusted(_:_:): @MainActor func onAccessibilityAdjusted(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>) -> Self.Modified
@@ -6939,6 +6939,7 @@ swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ v
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
 swift.method MotionLayout.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
+swift.method MotionLayout.parameterMotion(_:): @MainActor func parameterMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View

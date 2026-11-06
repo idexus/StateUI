@@ -184,7 +184,7 @@
                         laid.values.append(at)
                         return [Placement(Rect(at * 100, 0, 40, 40))]
                     }
-                    .motion(.none)
+                    .parameterMotion(.none)
                     .width(200).height(40)
                     // The place leaps a hundred on.
                     Button("Leap").onClicked { phase.wrappedValue = 1 }.id("leap")

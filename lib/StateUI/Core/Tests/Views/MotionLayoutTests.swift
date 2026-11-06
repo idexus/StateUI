@@ -35,6 +35,18 @@ final class MotionLayoutTests: XCTestCase {
         XCTAssertEqual(layout.walkedParts.map(\.label), Mirror(reflecting: layout).children.map { $0.label ?? "" })
     }
 
+    /// `.motion` ON THE LAYOUT IS EVERY VIEW'S OWN, before a common modifier or after it: the parameters' law is
+    /// `parameterMotion`'s alone.
+    func testMotionOnTheLayoutIsEveryViewsOwnInAnyOrder() {
+        let layout = MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+
+        let first = layout.motion(.none).height(200)
+        let last = layout.height(200).motion(.none)
+
+        XCTAssertEqual(first.node.motion?.base, .some(Motion.none), "the view's own motion, written first")
+        XCTAssertEqual(last.node.motion?.base, .some(Motion.none), "the view's own motion, written last")
+    }
+
     /// A SLOT IS ITS ITEM'S OWN IDENTITY, compared as the value it is and numbered by the layout: two identities
     /// that describe alike - a class prints its type's name - are two slots, an identity keeps its number while it
     /// stands, a new one takes a number never given, and naming one spells nothing.

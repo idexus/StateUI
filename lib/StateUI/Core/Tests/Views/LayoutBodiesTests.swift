@@ -103,7 +103,7 @@ final class LayoutFollowerTests: XCTestCase {
         } placements: { _, at in
             [Placement(Rect(at * 100, 0, 10, 10)), Placement(Rect(at * 100, 20, 10, 10))]
         }
-        .motion(.none)
+        .parameterMotion(.none)
         .node
     }
 
@@ -144,7 +144,7 @@ final class LayoutFollowerTests: XCTestCase {
             } placements: { _, at in
                 [Placement(Rect(at * 100, 0, 10, 10))]
             }
-            .motion(.none)
+            .parameterMotion(.none)
             return (shaded ? layout.shade(Rectangle()) : layout).node
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
