@@ -6,22 +6,6 @@
 public protocol TimePickerProperties: PropertyContainer {}
 
 extension TimePickerProperties {
-    /// Whether the clock face is showing.
-    ///
-    /// Settable, so a button elsewhere on the page can open it - and the
-    /// platform closes it by itself, which is what `onClosed` is for.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(TimePickerContract.isOpen, value)
-    }
-
-    /// The time the field is showing, on a 24-hour clock whatever `.format`
-    /// draws. Usually given in the initializer.
-    ///
-    ///     TimePicker().time(ClockTime(hour: 7, minute: 30))
-    public func time(_ value: ClockTime) -> Modified {
-        setValue(TimePickerContract.time, value)
-    }
-
     /// How much of the time is written out - hours and minutes, or seconds too.
     ///
     /// The host writes it in the user's locale, which decides between 13:00
@@ -66,6 +50,14 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     /// Two-way: shows the time and writes back the one that is chosen.
     public init(_ state: Binding<ClockTime>) {
         self = TimePicker().time(state)
+    }
+
+    /// The time the field is showing, on a 24-hour clock whatever `.format`
+    /// draws. Usually given in the initializer.
+    ///
+    ///     TimePicker().time(ClockTime(hour: 7, minute: 30))
+    public func time(_ value: ClockTime) -> Modified {
+        setValue(TimePickerContract.time, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -139,6 +131,14 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
 }
 
 extension TimePicker {
+    /// Whether the clock face is showing.
+    ///
+    /// Settable, so a button elsewhere on the page can open it - and the
+    /// platform closes it by itself, which is what `onClosed` is for.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(TimePickerContract.isOpen, value)
+    }
+
     /// `isOpen` from a state, `$x`, both ways: the host opens and closes the clock face as the state stands, and
     /// the user's opening and closing come back into it; no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {

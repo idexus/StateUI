@@ -5,12 +5,6 @@
 public protocol SliderProperties: PropertyContainer {}
 
 extension SliderProperties {
-    /// Where the thumb stands, between `minimum` and `maximum`. Usually given
-    /// in the initializer.
-    public func value(_ value: Double) -> Modified {
-        setValue(SliderContract.value, value)
-    }
-
     /// The value at the near end of the track, 0 until told otherwise.
     public func minimum(_ value: Double) -> Modified {
         setValue(SliderContract.minimum, value)
@@ -61,6 +55,12 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
     public init(_ state: Binding<Double>) {
         self = Slider().value(state)
+    }
+
+    /// Where the thumb stands, between `minimum` and `maximum`. Usually given
+    /// in the initializer.
+    public func value(_ value: Double) -> Modified {
+        setValue(SliderContract.value, value)
     }
 
     // Design: docs/design/views/bindings.md#a-finger-takes-a-moving-thumb

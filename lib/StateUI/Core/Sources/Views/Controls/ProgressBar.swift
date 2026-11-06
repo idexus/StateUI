@@ -1,18 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `ProgressBar`'s own properties, shared by the control and its
-/// `Style<ProgressBar>`.
-public protocol ProgressBarProperties: PropertyContainer {}
-
-extension ProgressBarProperties {
-    /// How far along, as a fraction from 0 to 1. The host clamps anything
-    /// outside that range.
-    public func progress(_ value: Double) -> Modified {
-        setValue(ProgressBarContract.progress, value)
-    }
-}
-
 /// How far along something is, from 0 to 1.
 ///
 ///     @State private var done = 0.0
@@ -25,7 +13,7 @@ extension ProgressBarProperties {
 /// `Spinner`.
 ///
 /// `ProgressBar($done)` carries it from a state, animated to each new value.
-public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
+public struct ProgressBar: ElementView, TintElement {
     /// The node this control describes.
     public var node: Node
 
@@ -51,6 +39,12 @@ public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
 }
 
 extension ProgressBar {
+    /// How far along, as a fraction from 0 to 1. The host clamps anything
+    /// outside that range.
+    public func progress(_ value: Double) -> Modified {
+        setValue(ProgressBarContract.progress, value)
+    }
+
     /// `progress` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func progress(_ state: Binding<Double>) -> Modified {

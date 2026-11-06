@@ -12,7 +12,7 @@
 ///
 /// A point left unsaid is the top left corner, so `Line().to(Point(240, 0))`
 /// runs from it across.
-public struct Line: Shape, LineProperties {
+public struct Line: Shape {
     /// The node this control describes.
     public var node: Node
 
@@ -29,23 +29,18 @@ public struct Line: Shape, LineProperties {
     }
 }
 
-/// `Line`'s own properties, shared by the control and its `Style<Line>`.
-public protocol LineProperties: PropertyContainer {}
-
-extension LineProperties {
+extension Line {
     /// Where it starts.
     public func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
 
-    /// Where it ends.
-    public func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
-}
-
-extension Line {
     /// `from` from a state, `$start`: the host animates the start to each new
     /// point, and no view is rebuilt for it.
     public func from(_ state: Binding<Point>) -> Modified {
         twin(LineContract.from, by: state)
     }
+
+    /// Where it ends.
+    public func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
 
     /// `to` from a state, `$end`: the host animates the end to each new point,
     /// and no view is rebuilt for it.

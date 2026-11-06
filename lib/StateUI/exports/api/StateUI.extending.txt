@@ -134,7 +134,6 @@ swift.conformance Capsule: StateUI.VisualElementProperties
 swift.conformance CapsuleContract: StateUI.Contract
 swift.conformance CapsuleContract: StateUI.ElementContract
 swift.conformance CheckBox: StateUI.AutomationElement
-swift.conformance CheckBox: StateUI.CheckBoxProperties
 swift.conformance CheckBox: StateUI.Element
 swift.conformance CheckBox: StateUI.ElementView
 swift.conformance CheckBox: StateUI.FocusElement
@@ -150,7 +149,6 @@ swift.conformance CheckBox: StateUI.VisualElement
 swift.conformance CheckBox: StateUI.VisualElementProperties
 swift.conformance CheckBoxContract: StateUI.Contract
 swift.conformance CheckBoxContract: StateUI.ElementContract
-swift.conformance CheckBoxProperties: StateUI.PropertyContainer
 swift.conformance ChosenFile: StateUI.HostRepresentable
 swift.conformance ClockTime: StateUI.HostRepresentable
 swift.conformance ClockTime: StateUI.LaneValue
@@ -493,7 +491,6 @@ swift.conformance LayoutProperties: StateUI.VisualElementProperties
 swift.conformance Line: StateUI.AutomationElement
 swift.conformance Line: StateUI.Element
 swift.conformance Line: StateUI.ElementView
-swift.conformance Line: StateUI.LineProperties
 swift.conformance Line: StateUI.ModifiableElement
 swift.conformance Line: StateUI.PropertyContainer
 swift.conformance Line: StateUI.ShapeProperties
@@ -517,7 +514,6 @@ swift.conformance LineJoin: StateUI.HostRepresentable
 swift.conformance LineJoin: StateUI.LaneValue
 swift.conformance LineJoin: StateUI.StateChoice
 swift.conformance LineJoin: StateUI.StateValue
-swift.conformance LineProperties: StateUI.PropertyContainer
 swift.conformance Link: StateUI.AutomationElement
 swift.conformance Link: StateUI.Element
 swift.conformance Link: StateUI.ElementView
@@ -647,7 +643,6 @@ swift.conformance Path: StateUI.Element
 swift.conformance Path: StateUI.ElementView
 swift.conformance Path: StateUI.FilledShapeProperties
 swift.conformance Path: StateUI.ModifiableElement
-swift.conformance Path: StateUI.PathProperties
 swift.conformance Path: StateUI.PropertyContainer
 swift.conformance Path: StateUI.ShapeProperties
 swift.conformance Path: StateUI.StyleTarget
@@ -656,7 +651,6 @@ swift.conformance Path: StateUI.VisualElement
 swift.conformance Path: StateUI.VisualElementProperties
 swift.conformance PathContract: StateUI.Contract
 swift.conformance PathContract: StateUI.ElementContract
-swift.conformance PathProperties: StateUI.PropertyContainer
 swift.conformance Picker: StateUI.AutomationElement
 swift.conformance Picker: StateUI.Element
 swift.conformance Picker: StateUI.ElementView
@@ -728,7 +722,6 @@ swift.conformance ProgressBar: StateUI.AutomationElement
 swift.conformance ProgressBar: StateUI.Element
 swift.conformance ProgressBar: StateUI.ElementView
 swift.conformance ProgressBar: StateUI.ModifiableElement
-swift.conformance ProgressBar: StateUI.ProgressBarProperties
 swift.conformance ProgressBar: StateUI.PropertyContainer
 swift.conformance ProgressBar: StateUI.StyleTarget
 swift.conformance ProgressBar: StateUI.TintElement
@@ -737,7 +730,6 @@ swift.conformance ProgressBar: StateUI.VisualElement
 swift.conformance ProgressBar: StateUI.VisualElementProperties
 swift.conformance ProgressBarContract: StateUI.Contract
 swift.conformance ProgressBarContract: StateUI.ElementContract
-swift.conformance ProgressBarProperties: StateUI.PropertyContainer
 swift.conformance Prop: Swift.Comparable
 swift.conformance Prop: Swift.CustomStringConvertible
 swift.conformance Prop: Swift.Equatable
@@ -965,7 +957,6 @@ swift.conformance Styling: StateUI.BorderElement where Target : BorderElement, T
 swift.conformance Styling: StateUI.ButtonMenuElement where Target : ButtonMenuElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ButtonProperties where Target == Button
 swift.conformance Styling: StateUI.CanvasProperties where Target == Canvas
-swift.conformance Styling: StateUI.CheckBoxProperties where Target == CheckBox
 swift.conformance Styling: StateUI.ColorPickerProperties where Target == ColorPicker
 swift.conformance Styling: StateUI.CorneredShapeProperties where Target : CorneredShape, Target : StyleTarget
 swift.conformance Styling: StateUI.DatePickerProperties where Target == DatePicker
@@ -979,14 +970,11 @@ swift.conformance Styling: StateUI.ImageProperties where Target == Image
 swift.conformance Styling: StateUI.LayoutProperties where Target : Layout, Target : StyleTarget
 swift.conformance Styling: StateUI.LayoutProperties where Target : Stack, Target : StyleTarget
 swift.conformance Styling: StateUI.LineHeightElement where Target : LineHeightElement, Target : StyleTarget
-swift.conformance Styling: StateUI.LineProperties where Target == Line
 swift.conformance Styling: StateUI.MapProperties where Target == Map
 swift.conformance Styling: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
-swift.conformance Styling: StateUI.PathProperties where Target == Path
 swift.conformance Styling: StateUI.PickerProperties where Target == Picker
 swift.conformance Styling: StateUI.PolygonProperties where Target == Polygon
 swift.conformance Styling: StateUI.PolylineProperties where Target == Polyline
-swift.conformance Styling: StateUI.ProgressBarProperties where Target == ProgressBar
 swift.conformance Styling: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : BorderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : ButtonMenuElement, Target : StyleTarget
@@ -1012,26 +1000,21 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget,
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : VisualElement
 swift.conformance Styling: StateUI.PropertyContainer where Target == Button
 swift.conformance Styling: StateUI.PropertyContainer where Target == Canvas
-swift.conformance Styling: StateUI.PropertyContainer where Target == CheckBox
 swift.conformance Styling: StateUI.PropertyContainer where Target == ColorPicker
 swift.conformance Styling: StateUI.PropertyContainer where Target == DatePicker
 swift.conformance Styling: StateUI.PropertyContainer where Target == Grid
 swift.conformance Styling: StateUI.PropertyContainer where Target == HStack
 swift.conformance Styling: StateUI.PropertyContainer where Target == Image
-swift.conformance Styling: StateUI.PropertyContainer where Target == Line
 swift.conformance Styling: StateUI.PropertyContainer where Target == Map
-swift.conformance Styling: StateUI.PropertyContainer where Target == Path
 swift.conformance Styling: StateUI.PropertyContainer where Target == Picker
 swift.conformance Styling: StateUI.PropertyContainer where Target == Polygon
 swift.conformance Styling: StateUI.PropertyContainer where Target == Polyline
-swift.conformance Styling: StateUI.PropertyContainer where Target == ProgressBar
 swift.conformance Styling: StateUI.PropertyContainer where Target == Rectangle
 swift.conformance Styling: StateUI.PropertyContainer where Target == ScrollView
 swift.conformance Styling: StateUI.PropertyContainer where Target == SearchField
 swift.conformance Styling: StateUI.PropertyContainer where Target == Slider
 swift.conformance Styling: StateUI.PropertyContainer where Target == Spinner
 swift.conformance Styling: StateUI.PropertyContainer where Target == Stepper
-swift.conformance Styling: StateUI.PropertyContainer where Target == Switch
 swift.conformance Styling: StateUI.PropertyContainer where Target == Text
 swift.conformance Styling: StateUI.PropertyContainer where Target == TextEditor
 swift.conformance Styling: StateUI.PropertyContainer where Target == TextField
@@ -1048,7 +1031,6 @@ swift.conformance Styling: StateUI.SliderProperties where Target == Slider
 swift.conformance Styling: StateUI.SpinnerProperties where Target == Spinner
 swift.conformance Styling: StateUI.StackProperties where Target : Stack, Target : StyleTarget
 swift.conformance Styling: StateUI.StepperProperties where Target == Stepper
-swift.conformance Styling: StateUI.SwitchProperties where Target == Switch
 swift.conformance Styling: StateUI.TextAlignmentElement where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
 swift.conformance Styling: StateUI.TextAndIconElement where Target : StyleTarget, Target : TextAndIconElement
 swift.conformance Styling: StateUI.TextColorElement where Target : StyleTarget, Target : TextColorElement
@@ -1092,7 +1074,6 @@ swift.conformance Switch: StateUI.KeyboardElement
 swift.conformance Switch: StateUI.ModifiableElement
 swift.conformance Switch: StateUI.PropertyContainer
 swift.conformance Switch: StateUI.StyleTarget
-swift.conformance Switch: StateUI.SwitchProperties
 swift.conformance Switch: StateUI.TextColorElement
 swift.conformance Switch: StateUI.TextualElement
 swift.conformance Switch: StateUI.TintElement
@@ -1101,7 +1082,6 @@ swift.conformance Switch: StateUI.VisualElement
 swift.conformance Switch: StateUI.VisualElementProperties
 swift.conformance SwitchContract: StateUI.Contract
 swift.conformance SwitchContract: StateUI.ElementContract
-swift.conformance SwitchProperties: StateUI.PropertyContainer
 swift.conformance TabView: StateUI.AutomationElement
 swift.conformance TabView: StateUI.BarElement
 swift.conformance TabView: StateUI.Element
@@ -3499,7 +3479,6 @@ swift.protocol BorderElement: @MainActor protocol BorderElement : PropertyContai
 swift.protocol ButtonMenuElement: @MainActor protocol ButtonMenuElement : PropertyContainer
 swift.protocol ButtonProperties: @MainActor protocol ButtonProperties : PropertyContainer
 swift.protocol CanvasProperties: @MainActor protocol CanvasProperties : PropertyContainer
-swift.protocol CheckBoxProperties: @MainActor protocol CheckBoxProperties : PropertyContainer
 swift.protocol ColorPickerProperties: @MainActor protocol ColorPickerProperties : PropertyContainer
 swift.protocol Contract: protocol Contract : Sendable
 swift.protocol ContractMember: protocol ContractMember : Sendable
@@ -3521,16 +3500,13 @@ swift.protocol KeyboardElement: @MainActor protocol KeyboardElement : View
 swift.protocol LaneValue: protocol LaneValue : StateValue
 swift.protocol LayoutProperties: @MainActor protocol LayoutProperties : ViewProperties
 swift.protocol LineHeightElement: @MainActor protocol LineHeightElement : PropertyContainer
-swift.protocol LineProperties: @MainActor protocol LineProperties : PropertyContainer
 swift.protocol MapProperties: @MainActor protocol MapProperties : PropertyContainer
 swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : AutomationElement
 swift.protocol ModifiableElement: @MainActor protocol ModifiableElement : Element, PropertyContainer where Self.Modified : Element
 swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyContainer
-swift.protocol PathProperties: @MainActor protocol PathProperties : PropertyContainer
 swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
 swift.protocol PolygonProperties: @MainActor protocol PolygonProperties : PropertyContainer
 swift.protocol PolylineProperties: @MainActor protocol PolylineProperties : PropertyContainer
-swift.protocol ProgressBarProperties: @MainActor protocol ProgressBarProperties : PropertyContainer
 swift.protocol PropertyContainer: @MainActor protocol PropertyContainer
 swift.protocol RectangleProperties: @MainActor protocol RectangleProperties : PropertyContainer
 swift.protocol RefreshElement: @MainActor protocol RefreshElement : View
@@ -3544,7 +3520,6 @@ swift.protocol StateChoice: protocol StateChoice : LaneValue, RawRepresentable w
 swift.protocol StateValue: protocol StateValue : Equatable, Sendable
 swift.protocol StepperProperties: @MainActor protocol StepperProperties : PropertyContainer
 swift.protocol StyleTarget: @MainActor protocol StyleTarget : PropertyContainer
-swift.protocol SwitchProperties: @MainActor protocol SwitchProperties : PropertyContainer
 swift.protocol TextAlignmentElement: @MainActor protocol TextAlignmentElement : VisualElementProperties
 swift.protocol TextAndIconElement: @MainActor protocol TextAndIconElement : PropertyContainer
 swift.protocol TextColorElement: @MainActor protocol TextColorElement : PropertyContainer

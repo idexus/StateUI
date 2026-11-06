@@ -5,12 +5,6 @@
 public protocol StepperProperties: PropertyContainer {}
 
 extension StepperProperties {
-    /// The number it is showing, between `minimum` and `maximum`. Usually given
-    /// in the initializer.
-    public func value(_ value: Double) -> Modified {
-        setValue(StepperContract.value, value)
-    }
-
     /// The lowest it goes - the minus button stops here.
     /// It is 0 until told otherwise.
     public func minimum(_ value: Double) -> Modified {
@@ -69,6 +63,12 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// `count` beside it, or a driven text an engine writes, which costs no render.
     public init(_ state: Binding<Double>) {
         self = Stepper().value(state)
+    }
+
+    /// The number it is showing, between `minimum` and `maximum`. Usually given
+    /// in the initializer.
+    public func value(_ value: Double) -> Modified {
+        setValue(StepperContract.value, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls

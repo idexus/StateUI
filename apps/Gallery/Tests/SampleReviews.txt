@@ -100,7 +100,7 @@ PointerSample.swift 3306b3b76379bc70
 PollSample.swift 29d40feb24ecaa77
 PopoverSample.swift 9066bd443c9189ec
 PositionDotsSample.swift 85b6d17adabdccb8
-ProgressBarSample.swift ab4452099069a51a
+ProgressBarSample.swift f791be1b52dbc323
 PropertyReadsSample.swift e16e08fd0fa40d8a
 ReaderSample.swift 778670ce97ad7532
 RebuildSample.swift 68155193fabdfebd

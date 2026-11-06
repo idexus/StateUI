@@ -29,24 +29,6 @@ extension TextInput {
 }
 
 extension TextInputProperties {
-    /// Where the caret sits, counted in characters from the start.
-    ///
-    /// Typing moves it by itself; write it to put the caret somewhere else,
-    /// such as the end of text just filled in. A position past the end lands
-    /// at the end.
-    public func cursorPosition(_ value: Int) -> Modified {
-        setValue(TextInputContract.cursorPosition, value)
-    }
-
-    /// How many characters from the caret are selected, 0 being none.
-    ///
-    ///     TextField($name).cursorPosition(0).selectionLength(name.count)
-    ///
-    /// selects the lot, for a field filled in for the user to replace.
-    public func selectionLength(_ value: Int) -> Modified {
-        setValue(TextInputContract.selectionLength, value)
-    }
-
     /// Whether the platform underlines what it thinks is misspelled.
     ///
     /// Worth turning off for anything that is not prose - a code, a name, a
@@ -92,6 +74,15 @@ extension TextInputProperties {
 }
 
 extension TextInput {
+    /// Where the caret sits, counted in characters from the start.
+    ///
+    /// Typing moves it by itself; write it to put the caret somewhere else,
+    /// such as the end of text just filled in. A position past the end lands
+    /// at the end.
+    public func cursorPosition(_ value: Int) -> Modified {
+        setValue(TextInputContract.cursorPosition, value)
+    }
+
     /// `cursorPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func cursorPosition(_ state: Binding<Int>) -> Modified {
@@ -138,6 +129,15 @@ extension TextInput {
     /// each new value, and no view is rebuilt for it.
     public func placeholderColor(_ state: Binding<Color>) -> Modified {
         twin(TextInputContract.placeholderColor, by: state)
+    }
+
+    /// How many characters from the caret are selected, 0 being none.
+    ///
+    ///     TextField($name).cursorPosition(0).selectionLength(name.count)
+    ///
+    /// selects the lot, for a field filled in for the user to replace.
+    public func selectionLength(_ value: Int) -> Modified {
+        setValue(TextInputContract.selectionLength, value)
     }
 
     /// `selectionLength` from a state, `$x`: the host sets each new value as it

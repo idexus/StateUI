@@ -155,16 +155,20 @@ extension Styling: RatingBarProperties where Target == RatingBar {}
 `PropertyContainer` is what holds properties: a control, or a style.
 `StyleTarget` is a control a style can be written for, named by the node
 type a style resolves by (`nodeType`, its contract's). `Styling` is the type
-behind `Style<Target>`. Every library control has a protocol of this kind:
-`ButtonProperties`, `CanvasProperties`, `CheckBoxProperties`,
-`ColorPickerProperties`, `DatePickerProperties`, `GridProperties`,
-`HStackProperties`, `ImageProperties`, `LineProperties`, `MapProperties`,
-`PathProperties`, `PickerProperties`, `PolygonProperties`,
-`PolylineProperties`, `ProgressBarProperties`, `RectangleProperties`,
+behind `Style<Target>`. A library control with settings a style may give has
+a protocol of this kind:
+`ButtonProperties`, `CanvasProperties`, `ColorPickerProperties`,
+`DatePickerProperties`, `GridProperties`, `HStackProperties`,
+`ImageProperties`, `MapProperties`, `PickerProperties`,
+`PolygonProperties`, `PolylineProperties`, `RectangleProperties`,
 `ScrollViewProperties`, `SearchFieldProperties`, `SliderProperties`,
-`SpinnerProperties`, `StepperProperties`, `SwitchProperties`,
-`TextEditorProperties`, `TextFieldProperties`, `TextProperties`,
-`TimePickerProperties`, `ToolbarGroupProperties` and `WebViewProperties`.
+`SpinnerProperties`, `StepperProperties`, `TextEditorProperties`,
+`TextFieldProperties`, `TextProperties`, `TimePickerProperties`,
+`ToolbarGroupProperties` and `WebViewProperties`. What a control is for -
+a switch's position, a slider's value, a field's words, the place of its
+cursor - and whether a picker stands open are the control's own, never a
+style's: a `Switch` has no such protocol, its style taking only what its
+tiers offer.
 What several controls share has one too: `ViewProperties`,
 `VisualElementProperties`, `LayoutProperties`, `StackProperties`,
 `ShapeProperties`, `FilledShapeProperties`, `CorneredShapeProperties` and

@@ -5,12 +5,6 @@
 public protocol PickerProperties: PropertyContainer {}
 
 extension PickerProperties {
-    /// Shows or dismisses the list of choices. The user may still close it by
-    /// choosing, clicking away or pressing Escape, which `onClosed` reports.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(PickerContract.isOpen, value)
-    }
-
     /// What the field says while nothing is chosen. A host can also reuse it
     /// as the heading of a separate native choice surface.
     public func placeholder(_ value: String) -> Modified {
@@ -147,6 +141,12 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
 }
 
 extension Picker {
+    /// Shows or dismisses the list of choices. The user may still close it by
+    /// choosing, clicking away or pressing Escape, which `onClosed` reports.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(PickerContract.isOpen, value)
+    }
+
     /// `isOpen` from a state, `$x`, both ways: the host opens and closes the list as the state stands, and the
     /// user's opening and closing come back into it; no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {

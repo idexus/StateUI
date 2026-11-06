@@ -112,6 +112,9 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
         node.write(TextualElementContract.text, text)
     }
 
+    /// What the run says: the same value the initializer takes, for a run built up by modifiers.
+    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+
     /// What is drawn behind this run - a highlight over part of a line; a blur
     /// or glass behind a run shows its color.
     public func background(_ value: Material) -> Modified {

@@ -1,17 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `CheckBox`'s own properties, shared by the control and its
-/// `Style<CheckBox>`.
-public protocol CheckBoxProperties: PropertyContainer {}
-
-extension CheckBoxProperties {
-    /// Whether the box is ticked. Usually given in the initializer.
-    public func isOn(_ value: Bool) -> Modified {
-        setValue(CheckBoxContract.isOn, value)
-    }
-}
-
 /// A box that is ticked or not, and the words it says beside it.
 ///
 ///     @State private var agreed = false
@@ -24,7 +13,7 @@ extension CheckBoxProperties {
 ///
 /// Its words are its own: a tap on them ticks the box, and a screen reader
 /// names the box by them.
-public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProperties, FocusElement {
+public struct CheckBox: ElementView, TextualElement, TintElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -43,6 +32,11 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
     /// Two-way: shows what the binding holds, and writes back what is ticked.
     public init(_ state: Binding<Bool>) {
         self = CheckBox().isOn(state)
+    }
+
+    /// Whether the box is ticked. Usually given in the initializer.
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(CheckBoxContract.isOn, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls

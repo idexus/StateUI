@@ -291,17 +291,13 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(renders.revisit(changed: Renderer.shared.pendingChanges).child("c")?.props["background"], gray)
     }
 
-    /// A bound value wins over one stated beside it - written on the control or by a style - for the state it
-    /// decides, as the host shows the bound one: the stated value stands only where no state is bound.
+    /// A bound value wins over one stated beside it on the control for the state it decides, as the host shows the
+    /// bound one: the stated value stands only where no state is bound.
     func testABoundValueWinsOverAStatedOneForItsState() {
         let on = State(wrappedValue: true)
         let stated = render(Renders(), Switch(on.projectedValue).isOn(false)
             .visualState(.on) { $0.background(.green) }.id("c").node)
         XCTAssertEqual(stated?.props["background"], green, "the bound value, not the stated one")
-
-        let sheet = StyleSheet { Style<Switch>().isOn(false).visualState(.on) { $0.background(.green) } }
-        let styled = Renders().render(stack([Switch(on.projectedValue).id("c").node], id: "root"), styles: sheet).child("c")
-        XCTAssertEqual(styled?.props["background"], green, "the bound value, not the style's")
     }
 
     /// A control in a disabled branch is in Disabled, as the host shows it: at its arrival, and as the branch turns

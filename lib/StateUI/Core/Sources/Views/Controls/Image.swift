@@ -33,7 +33,7 @@ public struct Image: ElementView, ImageElement, ImageProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An image with no picture source.
+    /// An image with no picture source: `.source(_:)` gives it one.
     public init() {
         node = Node(contract: ImageContract.self)
     }
@@ -44,10 +44,17 @@ public struct Image: ElementView, ImageElement, ImageProperties {
         node = Node(contract: ImageContract.self)
         node.write(ImageContract.source, source)
     }
-
 }
 
 extension Image {
+    /// The picture it shows: the same value the initializer takes, for an image made empty or one whose picture
+    /// changes.
+    ///
+    ///     Image().source("tab_list.png")
+    public func source(_ value: ImageSource) -> Modified {
+        setValue(ImageContract.source, value)
+    }
+
     /// `isAnimating` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isAnimating(_ state: Binding<Bool>) -> Modified {

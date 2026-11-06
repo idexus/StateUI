@@ -279,6 +279,22 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Button>().accessibilityIdentifier("save")"#,
             open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
         Road(
+            name: "a control's value given by a style",
+            closed: #"_ = Style<Slider>().value(0.5)"#,
+            open: #"_ = Slider().value(0.5)"#),
+        Road(
+            name: "a control's words given by a style",
+            closed: #"_ = Style<Button>().text("Save")"#,
+            open: #"_ = Button().text("Save")"#),
+        Road(
+            name: "a field's cursor placed by a style",
+            closed: #"_ = Style<TextField>().cursorPosition(3)"#,
+            open: #"_ = TextField("Name").cursorPosition(3)"#),
+        Road(
+            name: "a picker opened by a style",
+            closed: #"_ = Style<TimePicker>().isOpen(true)"#,
+            open: #"_ = TimePicker().isOpen(true)"#),
+        Road(
             name: "a field's words aligned down its box",
             closed: #"_ = TextField("Name").verticalTextAlignment(.center)"#,
             open: #"_ = Text("Name").verticalTextAlignment(.center)"#),

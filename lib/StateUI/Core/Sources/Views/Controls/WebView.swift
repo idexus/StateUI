@@ -13,22 +13,6 @@ extension WebViewProperties {
     public func userAgent(_ value: String) -> Modified {
         setValue(WebViewContract.userAgent, value)
     }
-
-    /// The page it shows, by its address.
-    public func source(_ address: String) -> Modified {
-        setValue(WebViewContract.source, .address(address))
-    }
-
-    /// The page it shows, written here rather than fetched.
-    ///
-    ///     WebView().source(html: "<h1>Offline</h1>")
-    ///
-    /// - Parameter html: The document itself, not a path to one.
-    /// - Parameter baseAddress: What relative links in it resolve against, when
-    ///   there are any.
-    public func source(html: String, baseAddress: String? = nil) -> Modified {
-        setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
-    }
 }
 
 /// A view showing web content - a page fetched from its address, or HTML written here.
@@ -58,6 +42,22 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     public init(_ address: String) {
         self.init()
         self = setValue(WebViewContract.source, .address(address))
+    }
+
+    /// The page it shows, by its address.
+    public func source(_ address: String) -> Modified {
+        setValue(WebViewContract.source, .address(address))
+    }
+
+    /// The page it shows, written here rather than fetched.
+    ///
+    ///     WebView().source(html: "<h1>Offline</h1>")
+    ///
+    /// - Parameter html: The document itself, not a path to one.
+    /// - Parameter baseAddress: What relative links in it resolve against, when
+    ///   there are any.
+    public func source(html: String, baseAddress: String? = nil) -> Modified {
+        setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
     }
 
     // MARK: What the platform reports

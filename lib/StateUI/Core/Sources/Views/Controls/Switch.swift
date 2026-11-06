@@ -1,16 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Switch`'s own properties, shared by the control and its `Style<Switch>`.
-public protocol SwitchProperties: PropertyContainer {}
-
-extension SwitchProperties {
-    /// Which way it is thrown - true for on. Usually given in the initializer.
-    public func isOn(_ value: Bool) -> Modified {
-        setValue(SwitchContract.isOn, value)
-    }
-}
-
 /// An on/off toggle, and the words it says beside it.
 ///
 ///     Switch($wifi).text("Wi-Fi")
@@ -25,7 +15,7 @@ extension SwitchProperties {
 /// form uses; a `Picker` presented as radio buttons
 /// (`.presentation(.radio)`) is what to reach for once there are more than two
 /// answers.
-public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties, FocusElement {
+public struct Switch: ElementView, TextualElement, TintElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -44,6 +34,11 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     /// Two-way: shows what the binding holds, and writes back what is flipped.
     public init(_ state: Binding<Bool>) {
         self = Switch().isOn(state)
+    }
+
+    /// Which way it is thrown - true for on. Usually given in the initializer.
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(SwitchContract.isOn, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls

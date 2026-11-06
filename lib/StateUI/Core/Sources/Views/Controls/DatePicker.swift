@@ -6,19 +6,6 @@
 public protocol DatePickerProperties: PropertyContainer {}
 
 extension DatePickerProperties {
-    /// Whether the calendar is showing.
-    ///
-    /// Settable, so a button elsewhere on the page can open it - and the
-    /// platform closes it by itself, which is what `onClosed` is for.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(DatePickerContract.isOpen, value)
-    }
-
-    /// The day the field shows. Usually given in the initializer.
-    public func date(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.date, value)
-    }
-
     /// The earliest day the calendar offers - everything before it is refused.
     public func minimumDate(_ value: CalendarDate) -> Modified {
         setValue(DatePickerContract.minimumDate, value)
@@ -72,6 +59,11 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     /// Two-way: shows the date and writes back the one that is chosen.
     public init(_ state: Binding<CalendarDate>) {
         self = DatePicker().date(state)
+    }
+
+    /// The day the field shows. Usually given in the initializer.
+    public func date(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.date, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -146,6 +138,14 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
 }
 
 extension DatePicker {
+    /// Whether the calendar is showing.
+    ///
+    /// Settable, so a button elsewhere on the page can open it - and the
+    /// platform closes it by itself, which is what `onClosed` is for.
+    public func isOpen(_ value: Bool) -> Modified {
+        setValue(DatePickerContract.isOpen, value)
+    }
+
     /// `isOpen` from a state, `$x`, both ways: the host opens and closes the calendar as the state stands, and
     /// the user's opening and closing come back into it; no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {

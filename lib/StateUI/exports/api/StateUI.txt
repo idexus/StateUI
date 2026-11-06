@@ -2740,6 +2740,7 @@ swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> CheckBox.Modified
+swift.method CheckBox.isOn(_:): @MainActor func isOn(_ value: Bool) -> CheckBox.Modified
 swift.method CheckBox.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method CheckBox.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -2907,7 +2908,6 @@ swift.method CheckBox.visualState(_:): @MainActor func visualState(_ state: Visu
 swift.method CheckBox.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method CheckBox.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method CheckBoxProperties.isOn(_:): @MainActor func isOn(_ value: Bool) -> Self.Modified
 swift.method ChosenFile.launch(): @discardableResult func launch() async throws -> Bool
 swift.method ChosenFile.read(): func read() async throws -> [UInt8]
 swift.method ChosenFile.read(atMost:): func read(atMost maximum: Int) async throws -> [UInt8]
@@ -2936,6 +2936,7 @@ swift.method ColorPicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Con
 swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.color(_:): @MainActor func color(_ state: Binding<Color>) -> ColorPicker.Modified
+swift.method ColorPicker.color(_:): @MainActor func color(_ value: Color) -> ColorPicker.Modified
 swift.method ColorPicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ColorPicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
@@ -3124,7 +3125,6 @@ swift.method ColorPicker.width(_:): @MainActor func width(_ state: Binding<Doubl
 swift.method ColorPicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPickerProperties.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPickerProperties.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
-swift.method ColorPickerProperties.color(_:): @MainActor func color(_ value: Color) -> Self.Modified
 swift.method CorneredShape.lineJoin(_:): @MainActor func lineJoin(_ state: Binding<LineJoin>) -> Self.Modified
 swift.method CorneredShape.miterLimit(_:): @MainActor func miterLimit(_ state: Binding<Double>) -> Self.Modified
 swift.method CorneredShapeProperties.lineJoin(_:): @MainActor func lineJoin(_ value: LineJoin) -> Self.Modified
@@ -3150,6 +3150,7 @@ swift.method DatePicker.background(_:): @MainActor func background(_ value: Mate
 swift.method DatePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DatePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method DatePicker.date(_:): @MainActor func date(_ state: Binding<CalendarDate>) -> DatePicker.Modified
+swift.method DatePicker.date(_:): @MainActor func date(_ value: CalendarDate) -> DatePicker.Modified
 swift.method DatePicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -3179,6 +3180,7 @@ swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Bindin
 swift.method DatePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> DatePicker.Modified
+swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> DatePicker.Modified
 swift.method DatePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method DatePicker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -3352,9 +3354,7 @@ swift.method DatePicker.visualState(_:): @MainActor func visualState(_ state: Vi
 swift.method DatePicker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method DatePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method DatePickerProperties.date(_:): @MainActor func date(_ value: CalendarDate) -> Self.Modified
 swift.method DatePickerProperties.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
-swift.method DatePickerProperties.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method DatePickerProperties.maximumDate(_:): @MainActor func maximumDate(_ value: CalendarDate) -> Self.Modified
 swift.method DatePickerProperties.minimumDate(_:): @MainActor func minimumDate(_ value: CalendarDate) -> Self.Modified
 swift.method DebugInspector.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -5427,6 +5427,7 @@ swift.method Image.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ 
 swift.method Image.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
+swift.method Image.source(_:): @MainActor func source(_ value: ImageSource) -> Image.Modified
 swift.method Image.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Image.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Image.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -5912,6 +5913,7 @@ swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: 
 swift.method Line.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Line.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Line.from(_:): @MainActor func from(_ state: Binding<Point>) -> Line.Modified
+swift.method Line.from(_:): @MainActor func from(_ value: Point) -> Line.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6076,6 +6078,7 @@ swift.method Line.title(_:): @MainActor func title(_ state: Binding<String>) -> 
 swift.method Line.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Line.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Line.to(_:): @MainActor func to(_ state: Binding<Point>) -> Line.Modified
+swift.method Line.to(_:): @MainActor func to(_ value: Point) -> Line.Modified
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
@@ -6089,8 +6092,6 @@ swift.method Line.width(_:): @MainActor func width(_ state: Binding<Double>) -> 
 swift.method Line.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ value: Double) -> Self.Modified
-swift.method LineProperties.from(_:): @MainActor func from(_ value: Point) -> Self.Modified
-swift.method LineProperties.to(_:): @MainActor func to(_ value: Point) -> Self.Modified
 swift.method Link.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7226,7 +7227,7 @@ swift.method Path.contentMode(_:): @MainActor func contentMode(_ state: Binding<
 swift.method Path.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Path.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Path.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.data(_:): @MainActor func data(_ value: String) -> Self.Modified
+swift.method Path.data(_:): @MainActor func data(_ value: String) -> Path.Modified
 swift.method Path.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Path.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Path.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -7416,7 +7417,6 @@ swift.method Path.visualState(_:): @MainActor func visualState(_ state: VisualSt
 swift.method Path.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Path.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PathProperties.data(_:): @MainActor func data(_ value: String) -> Self.Modified
 swift.method Picker.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7466,6 +7466,7 @@ swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bo
 swift.method Picker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Picker.Modified
+swift.method Picker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Picker.Modified
 swift.method Picker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Picker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -7640,7 +7641,6 @@ swift.method Picker.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Picker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Picker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PickerProperties.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method PickerProperties.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method PickerProperties.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -7819,7 +7819,7 @@ swift.method Polygon.panX(_:): @MainActor func panX(_ state: Binding<Double>) ->
 swift.method Polygon.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.points(_:): @MainActor func points(_ value: [Point]) -> Self.Modified
+swift.method Polygon.points(_:): @MainActor func points(_ value: [Point]) -> Polygon.Modified
 swift.method Polygon.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Polygon.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polygon.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
@@ -7858,7 +7858,6 @@ swift.method Polygon.visualState(_:_:): @MainActor func visualState(_ state: Vis
 swift.method Polygon.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method PolygonProperties.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
-swift.method PolygonProperties.points(_:): @MainActor func points(_ value: [Point]) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8035,7 +8034,7 @@ swift.method Polyline.panX(_:): @MainActor func panX(_ state: Binding<Double>) -
 swift.method Polyline.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.points(_:): @MainActor func points(_ value: [Point]) -> Self.Modified
+swift.method Polyline.points(_:): @MainActor func points(_ value: [Point]) -> Polyline.Modified
 swift.method Polyline.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Polyline.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polyline.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
@@ -8074,7 +8073,6 @@ swift.method Polyline.visualState(_:_:): @MainActor func visualState(_ state: Vi
 swift.method Polyline.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method PolylineProperties.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
-swift.method PolylineProperties.points(_:): @MainActor func points(_ value: [Point]) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8448,6 +8446,7 @@ swift.method ProgressBar.pivotY(_:): @MainActor func pivotY(_ state: Binding<Dou
 swift.method ProgressBar.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ProgressBar.progress(_:): @MainActor func progress(_ state: Binding<Double>) -> ProgressBar.Modified
+swift.method ProgressBar.progress(_:): @MainActor func progress(_ value: Double) -> ProgressBar.Modified
 swift.method ProgressBar.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
@@ -8483,7 +8482,6 @@ swift.method ProgressBar.visualState(_:): @MainActor func visualState(_ state: V
 swift.method ProgressBar.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ProgressBar.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method ProgressBarProperties.progress(_:): @MainActor func progress(_ value: Double) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8955,6 +8953,7 @@ swift.method SearchField.background(_:): @MainActor func background(_ value: Mat
 swift.method SearchField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SearchField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method SearchField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
+swift.method SearchField.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method SearchField.debugInfo(): @MainActor func debugInfo() -> String
 swift.method SearchField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -9131,6 +9130,7 @@ swift.method SearchField.scale(_:): @MainActor func scale(_ state: Binding<Doubl
 swift.method SearchField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.selectionLength(_:): @MainActor func selectionLength(_ state: Binding<Int>) -> Self.Modified
+swift.method SearchField.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method SearchField.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
 swift.method SearchField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method SearchField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
@@ -9591,6 +9591,7 @@ swift.method Slider.transform(_:): @MainActor func transform(_ transform: ViewTr
 swift.method Slider.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.value(_:): @MainActor func value(_ state: Binding<Double>) -> Slider.Modified
+swift.method Slider.value(_:): @MainActor func value(_ value: Double) -> Slider.Modified
 swift.method Slider.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Slider.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Slider.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -9598,7 +9599,6 @@ swift.method Slider.width(_:): @MainActor func width(_ state: Binding<Double>) -
 swift.method Slider.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method SliderProperties.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
 swift.method SliderProperties.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
-swift.method SliderProperties.value(_:): @MainActor func value(_ value: Double) -> Self.Modified
 swift.method Space.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10418,6 +10418,7 @@ swift.method Stepper.transform(_:): @MainActor func transform(_ transform: ViewT
 swift.method Stepper.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.value(_:): @MainActor func value(_ state: Binding<Double>) -> Stepper.Modified
+swift.method Stepper.value(_:): @MainActor func value(_ value: Double) -> Stepper.Modified
 swift.method Stepper.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Stepper.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Stepper.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -10426,7 +10427,6 @@ swift.method Stepper.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -
 swift.method StepperProperties.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
 swift.method StepperProperties.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
 swift.method StepperProperties.step(_:): @MainActor func step(_ value: Double) -> Self.Modified
-swift.method StepperProperties.value(_:): @MainActor func value(_ value: Double) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -10447,17 +10447,13 @@ swift.method Styling.basedOn(_:): @MainActor func basedOn(_ key: StyleKey<Target
 swift.method Styling.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method Styling.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
 swift.method Styling.clipsContent(_:): @MainActor func clipsContent(_ value: Bool) -> Self.Modified
-swift.method Styling.color(_:): @MainActor func color(_ value: Color) -> Self.Modified
 swift.method Styling.columnSpacing(_:): @MainActor func columnSpacing(_ value: Double) -> Self.Modified
 swift.method Styling.columns(_:): @MainActor func columns(_ runs: GridTracks...) -> Self.Modified
 swift.method Styling.contentMode(_:): @MainActor func contentMode(_ value: ContentMode) -> Self.Modified
 swift.method Styling.cornerRadius(_:): @MainActor func cornerRadius(_ value: Double) -> Self.Modified
 swift.method Styling.cornerRadius(topLeft:topRight:bottomLeft:bottomRight:): @MainActor func cornerRadius(topLeft: Double, topRight: Double, bottomLeft: Double, bottomRight: Double) -> Self.Modified
-swift.method Styling.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method Styling.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Styling.dashPhase(_:): @MainActor func dashPhase(_ value: Double) -> Self.Modified
-swift.method Styling.data(_:): @MainActor func data(_ value: String) -> Self.Modified
-swift.method Styling.date(_:): @MainActor func date(_ value: CalendarDate) -> Self.Modified
 swift.method Styling.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Self.Modified
 swift.method Styling.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Styling.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
@@ -10470,7 +10466,6 @@ swift.method Styling.fontSize(_:): @MainActor func fontSize(_ value: Double) -> 
 swift.method Styling.fontWeight(_:): @MainActor func fontWeight(_ value: FontWeight) -> Self.Modified
 swift.method Styling.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
 swift.method Styling.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
-swift.method Styling.from(_:): @MainActor func from(_ value: Point) -> Self.Modified
 swift.method Styling.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Styling.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method Styling.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ value: Int) -> Self.Modified
@@ -10492,8 +10487,6 @@ swift.method Styling.isAccessibilityHidden(_:): @MainActor func isAccessibilityH
 swift.method Styling.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
 swift.method Styling.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method Styling.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ value: Bool) -> Self.Modified
-swift.method Styling.isOn(_:): @MainActor func isOn(_ value: Bool) -> Self.Modified
-swift.method Styling.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method Styling.isPassword(_:): @MainActor func isPassword(_ value: Bool) -> Self.Modified
 swift.method Styling.isReadOnly(_:): @MainActor func isReadOnly(_ value: Bool) -> Self.Modified
 swift.method Styling.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ value: Bool) -> Self.Modified
@@ -10533,9 +10526,7 @@ swift.method Styling.pivotX(_:): @MainActor func pivotX(_ value: Double) -> Self
 swift.method Styling.pivotY(_:): @MainActor func pivotY(_ value: Double) -> Self.Modified
 swift.method Styling.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method Styling.placeholderColor(_:): @MainActor func placeholderColor(_ value: Color) -> Self.Modified
-swift.method Styling.points(_:): @MainActor func points(_ value: [Point]) -> Self.Modified
 swift.method Styling.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
-swift.method Styling.progress(_:): @MainActor func progress(_ value: Double) -> Self.Modified
 swift.method Styling.rotation(_:): @MainActor func rotation(_ value: Double) -> Self.Modified
 swift.method Styling.rotationX(_:): @MainActor func rotationX(_ value: Double) -> Self.Modified
 swift.method Styling.rotationY(_:): @MainActor func rotationY(_ value: Double) -> Self.Modified
@@ -10544,28 +10535,22 @@ swift.method Styling.rows(_:): @MainActor func rows(_ runs: GridTracks...) -> Se
 swift.method Styling.scale(_:): @MainActor func scale(_ value: Double) -> Self.Modified
 swift.method Styling.scaleX(_:): @MainActor func scaleX(_ value: Double) -> Self.Modified
 swift.method Styling.scaleY(_:): @MainActor func scaleY(_ value: Double) -> Self.Modified
-swift.method Styling.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method Styling.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
 swift.method Styling.showsClearButton(_:): @MainActor func showsClearButton(_ value: Bool) -> Self.Modified
 swift.method Styling.showsMenuArrow(_:): @MainActor func showsMenuArrow(_ value: Bool) -> Self.Modified
 swift.method Styling.showsText(_:): @MainActor func showsText(_ value: Bool) -> Self.Modified
 swift.method Styling.showsTraffic(_:): @MainActor func showsTraffic(_ value: Bool) -> Self.Modified
 swift.method Styling.showsUserLocation(_:): @MainActor func showsUserLocation(_ value: Bool) -> Self.Modified
-swift.method Styling.source(_:): @MainActor func source(_ address: String) -> Self.Modified
-swift.method Styling.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
 swift.method Styling.spacing(_:): @MainActor func spacing(_ value: Double) -> Self.Modified
 swift.method Styling.step(_:): @MainActor func step(_ value: Double) -> Self.Modified
 swift.method Styling.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
 swift.method Styling.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
 swift.method Styling.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
-swift.method Styling.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method Styling.textCase(_:): @MainActor func textCase(_ value: TextCase) -> Self.Modified
 swift.method Styling.textColor(_:): @MainActor func textColor(_ value: Color) -> Self.Modified
 swift.method Styling.textDecorations(_:): @MainActor func textDecorations(_ value: TextDecorations) -> Self.Modified
 swift.method Styling.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
-swift.method Styling.time(_:): @MainActor func time(_ value: ClockTime) -> Self.Modified
 swift.method Styling.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
-swift.method Styling.to(_:): @MainActor func to(_ value: Point) -> Self.Modified
 swift.method Styling.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Styling.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method Styling.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
@@ -10574,7 +10559,6 @@ swift.method Styling.translationX(_:): @MainActor func translationX(_ value: Dou
 swift.method Styling.translationY(_:): @MainActor func translationY(_ value: Double) -> Self.Modified
 swift.method Styling.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method Styling.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
-swift.method Styling.value(_:): @MainActor func value(_ value: Double) -> Self.Modified
 swift.method Styling.verticalAlignment(_:): @MainActor func verticalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Styling.verticalScrollIndicator(_:): @MainActor func verticalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
 swift.method Styling.verticalTextAlignment(_:): @MainActor func verticalTextAlignment(_ value: TextAlignment) -> Self.Modified
@@ -10626,6 +10610,7 @@ swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) 
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> Switch.Modified
+swift.method Switch.isOn(_:): @MainActor func isOn(_ value: Bool) -> Switch.Modified
 swift.method Switch.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Switch.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -10793,7 +10778,6 @@ swift.method Switch.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Switch.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Switch.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method SwitchProperties.isOn(_:): @MainActor func isOn(_ value: Bool) -> Self.Modified
 swift.method TabView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11241,6 +11225,7 @@ swift.method TextEditor.background(_:): @MainActor func background(_ value: Mate
 swift.method TextEditor.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextEditor.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextEditor.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
+swift.method TextEditor.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method TextEditor.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextEditor.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -11415,6 +11400,7 @@ swift.method TextEditor.scale(_:): @MainActor func scale(_ state: Binding<Double
 swift.method TextEditor.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.selectionLength(_:): @MainActor func selectionLength(_ state: Binding<Int>) -> Self.Modified
+swift.method TextEditor.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method TextEditor.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
 swift.method TextEditor.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method TextEditor.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
@@ -11471,6 +11457,7 @@ swift.method TextField.background(_:): @MainActor func background(_ value: Mater
 swift.method TextField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
+swift.method TextField.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method TextField.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -11648,6 +11635,7 @@ swift.method TextField.scale(_:): @MainActor func scale(_ state: Binding<Double>
 swift.method TextField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.selectionLength(_:): @MainActor func selectionLength(_ state: Binding<Int>) -> Self.Modified
+swift.method TextField.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method TextField.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
 swift.method TextField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method TextField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
@@ -11688,6 +11676,7 @@ swift.method TextFieldProperties.isPassword(_:): @MainActor func isPassword(_ va
 swift.method TextFieldProperties.showsClearButton(_:): @MainActor func showsClearButton(_ value: Bool) -> Self.Modified
 swift.method TextFieldProperties.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
 swift.method TextInput.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
+swift.method TextInput.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method TextInput.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
 swift.method TextInput.isReadOnly(_:): @MainActor func isReadOnly(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextInput.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11699,7 +11688,7 @@ swift.method TextInput.onTextChanged(gate:_:): @MainActor func onTextChanged(gat
 swift.method TextInput.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method TextInput.placeholderColor(_:): @MainActor func placeholderColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextInput.selectionLength(_:): @MainActor func selectionLength(_ state: Binding<Int>) -> Self.Modified
-swift.method TextInputProperties.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
+swift.method TextInput.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method TextInputProperties.inputPurpose(_:): @MainActor func inputPurpose(_ value: InputPurpose) -> Self.Modified
 swift.method TextInputProperties.isReadOnly(_:): @MainActor func isReadOnly(_ value: Bool) -> Self.Modified
 swift.method TextInputProperties.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnabled(_ value: Bool) -> Self.Modified
@@ -11707,13 +11696,12 @@ swift.method TextInputProperties.isTextPredictionEnabled(_:): @MainActor func is
 swift.method TextInputProperties.maximumLength(_:): @MainActor func maximumLength(_ value: Int) -> Self.Modified
 swift.method TextInputProperties.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method TextInputProperties.placeholderColor(_:): @MainActor func placeholderColor(_ value: Color) -> Self.Modified
-swift.method TextInputProperties.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
 swift.method TextProperties.isSelectable(_:): @MainActor func isSelectable(_ value: Bool) -> Self.Modified
 swift.method TextProperties.lineBreak(_:): @MainActor func lineBreak(_ value: LineBreak) -> Self.Modified
 swift.method TextProperties.maximumLines(_:): @MainActor func maximumLines(_ value: Int) -> Self.Modified
 swift.method TextProperties.verticalTextAlignment(_:): @MainActor func verticalTextAlignment(_ value: TextAlignment) -> Self.Modified
 swift.method TextSpan.background(_:): @MainActor func background(_ value: Color) -> TextSpan.Modified
-swift.method TextSpan.background(_:): @MainActor func background(_ value: Material) -> TextSpan
+swift.method TextSpan.background(_:): @MainActor func background(_ value: Material) -> TextSpan.Modified
 swift.method TextSpan.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextSpan.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextSpan.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -11730,7 +11718,7 @@ swift.method TextSpan.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_
 swift.method TextSpan.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method TextSpan.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextSpan.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextSpan.text(_:): @MainActor func text(_ value: String) -> Self.Modified
+swift.method TextSpan.text(_:): @MainActor func text(_ value: String) -> TextSpan
 swift.method TextSpan.textCase(_:): @MainActor func textCase(_ value: TextCase) -> Self.Modified
 swift.method TextSpan.textColor(_:): @MainActor func textColor(_ value: Color) -> Self.Modified
 swift.method TextSpan.textDecorations(_:): @MainActor func textDecorations(_ value: TextDecorations) -> Self.Modified
@@ -11791,6 +11779,7 @@ swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Bindin
 swift.method TimePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> TimePicker.Modified
+swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> TimePicker.Modified
 swift.method TimePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method TimePicker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -11949,6 +11938,7 @@ swift.method TimePicker.subtitle(_:): @MainActor func subtitle(_ value: String) 
 swift.method TimePicker.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TimePicker.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
 swift.method TimePicker.time(_:): @MainActor func time(_ state: Binding<ClockTime>) -> TimePicker.Modified
+swift.method TimePicker.time(_:): @MainActor func time(_ value: ClockTime) -> TimePicker.Modified
 swift.method TimePicker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TimePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
@@ -11964,8 +11954,6 @@ swift.method TimePicker.visualState(_:_:): @MainActor func visualState(_ state: 
 swift.method TimePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePickerProperties.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
-swift.method TimePickerProperties.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
-swift.method TimePickerProperties.time(_:): @MainActor func time(_ value: ClockTime) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
 swift.method ToolbarButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
@@ -12709,8 +12697,8 @@ swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method WebView.source(_:): @MainActor func source(_ address: String) -> Self.Modified
-swift.method WebView.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
+swift.method WebView.source(_:): @MainActor func source(_ address: String) -> WebView.Modified
+swift.method WebView.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> WebView.Modified
 swift.method WebView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -12729,8 +12717,6 @@ swift.method WebView.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method WebView.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method WebView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method WebViewProperties.source(_:): @MainActor func source(_ address: String) -> Self.Modified
-swift.method WebViewProperties.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
 swift.method WebViewProperties.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
 swift.method Window.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Window where Value : AnyObject
 swift.method Window.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject

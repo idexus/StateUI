@@ -33,7 +33,6 @@ extension Styling: TextInputProperties where Target: TextInput {}
 
 extension Styling: SpinnerProperties where Target == Spinner {}
 extension Styling: ButtonProperties where Target == Button {}
-extension Styling: CheckBoxProperties where Target == CheckBox {}
 extension Styling: ColorPickerProperties where Target == ColorPicker {}
 extension Styling: DatePickerProperties where Target == DatePicker {}
 extension Styling: TextEditorProperties where Target == TextEditor {}
@@ -42,19 +41,15 @@ extension Styling: CanvasProperties where Target == Canvas {}
 extension Styling: GridProperties where Target == Grid {}
 extension Styling: ImageProperties where Target == Image {}
 extension Styling: TextProperties where Target == Text {}
-extension Styling: LineProperties where Target == Line {}
 extension Styling: MapProperties where Target == Map {}
-extension Styling: PathProperties where Target == Path {}
 extension Styling: PickerProperties where Target == Picker {}
 extension Styling: PolygonProperties where Target == Polygon {}
 extension Styling: PolylineProperties where Target == Polyline {}
-extension Styling: ProgressBarProperties where Target == ProgressBar {}
 extension Styling: RectangleProperties where Target == Rectangle {}
 extension Styling: ScrollViewProperties where Target == ScrollView {}
 extension Styling: SearchFieldProperties where Target == SearchField {}
 extension Styling: SliderProperties where Target == Slider {}
 extension Styling: StepperProperties where Target == Stepper {}
-extension Styling: SwitchProperties where Target == Switch {}
 extension Styling: TimePickerProperties where Target == TimePicker {}
 extension Styling: WebViewProperties where Target == WebView {}
 extension Styling: ToolbarGroupProperties where Target == ToolbarGroup {}

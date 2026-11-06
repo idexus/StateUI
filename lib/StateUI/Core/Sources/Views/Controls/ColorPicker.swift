@@ -6,11 +6,6 @@
 public protocol ColorPickerProperties: PropertyContainer {}
 
 extension ColorPickerProperties {
-    /// The color the well shows. Usually given in the initializer.
-    public func color(_ value: Color) -> Modified {
-        setValue(ColorPickerContract.color, value)
-    }
-
     /// Whether the user chooses the color's opacity too; an opaque color only where false, the default.
     public func choosesOpacity(_ value: Bool) -> Modified {
         setValue(ColorPickerContract.choosesOpacity, value)
@@ -53,6 +48,11 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
     /// chooses.
     public init(_ state: Binding<Color>) {
         self = ColorPicker().color(state)
+    }
+
+    /// The color the well shows. Usually given in the initializer.
+    public func color(_ value: Color) -> Modified {
+        setValue(ColorPickerContract.color, value)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls

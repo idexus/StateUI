@@ -117,8 +117,8 @@ does; that is the state `.onVisualStateChanged` hears. What each follows:
 - On, Off: `isOn`.
 
 A fact is read as the host shows it: a bound state's value while the state is
-carried, the value stated beside it - on the control or by a style - only where
-no state is bound ([a stated value beside a driven one](bindings.md#a-stated-value-beside-a-driven-one)).
+carried, the value stated on the control only where no state is bound - a
+style states no switch's position, what a control is for being its own ([a stated value beside a driven one](bindings.md#a-stated-value-beside-a-driven-one)).
 The walk carries down what each element says of its enablement (`Enablement`),
 and the clean walk carries it again from the elements it passes, so a control
 deep in a branch hears the branch.

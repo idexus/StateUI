@@ -15,7 +15,7 @@
 ///
 /// Every platform accepts the same grammar: the host parses the path itself
 /// before drawing it.
-public struct Path: FilledShape, CorneredShape, PathProperties {
+public struct Path: FilledShape, CorneredShape {
     /// The node this control describes.
     public var node: Node
 
@@ -29,16 +29,8 @@ public struct Path: FilledShape, CorneredShape, PathProperties {
         node = Node(contract: PathContract.self)
         node.write(PathContract.data, data)
     }
-}
 
-/// `Path`'s own properties, shared by the control and its `Style<Path>`.
-public protocol PathProperties: PropertyContainer {}
-
-extension PathProperties {
-    /// The outline, in SVG path syntax - `"M 0,40 L 20,0 L 40,40 Z"`.
-    ///
-    /// The same value the initializer takes; write it here to give a
-    /// `Style<Path>` an outline, or to swap one on a path that already has
-    /// modifiers on it.
+    /// The outline, in SVG path syntax - `"M 0,40 L 20,0 L 40,40 Z"`: the same value the initializer takes, for a
+    /// path made empty or one whose outline changes.
     public func data(_ value: String) -> Modified { setValue(PathContract.data, value) }
 }
