@@ -233,6 +233,15 @@ Going somewhere is writing a state, and the user's own way back writes it too.
 state can be kept, restored, tested and read by any view; a command is gone the
 moment it runs.
 
+A question put to the user is the one exception, and it is one on purpose:
+`window.alert`, `confirm`, `prompt` and `chooseAction` are awaited -
+`let sure = try await window.confirm(…)` - because a question has an answer
+and nothing else: no page stands behind it to keep or restore, the handler
+that asks is the one that acts on the answer, and the platform's own alert
+leaves no state worth holding between the asking and the answer. A sheet or a
+popover the user works in is a page, and so is state
+([Dialogs](../interface/interaction-and-actions.md#dialogs)).
+
 ## A control's method goes through an aim
 
 An action on one control - focusing a field, scrolling a list to an item,
