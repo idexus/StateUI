@@ -204,7 +204,7 @@ final class ContractTests: XCTestCase {
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
             Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirection.all,
-            Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
+            Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase.uppercase,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollAxes.horizontal,
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
             AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,

@@ -82,7 +82,6 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(TextCase.uppercase.applied(to: "Mixed Words"), "MIXED WORDS")
         XCTAssertEqual(TextCase.lowercase.applied(to: "Mixed Words"), "mixed words")
         XCTAssertEqual(TextCase.none.applied(to: "Mixed Words"), "Mixed Words")
-        XCTAssertEqual(TextCase.default.applied(to: "Mixed Words"), "Mixed Words")
     }
 
     /// A stepper's step moves down only above the range's lower end and up only below its upper: at an end, the

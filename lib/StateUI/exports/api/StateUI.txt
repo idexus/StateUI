@@ -1286,7 +1286,6 @@ swift.enum.case SubmitLabel.send: case send
 swift.enum.case TextAlignment.center: case center
 swift.enum.case TextAlignment.end: case end
 swift.enum.case TextAlignment.start: case start
-swift.enum.case TextCase.default: case `default`
 swift.enum.case TextCase.lowercase: case lowercase
 swift.enum.case TextCase.none: case none
 swift.enum.case TextCase.uppercase: case uppercase

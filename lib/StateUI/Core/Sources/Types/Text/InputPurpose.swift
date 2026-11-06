@@ -7,7 +7,7 @@
 /// What a text input is for, which picks the on-screen keyboard the platform
 /// offers and what it fills the input in with.
 public enum InputPurpose: Int32, Sendable {
-    /// Whatever the platform offers, with its own correction and capitalization.
+    /// The platform's own keyboard, correction and capitals, as a field asking for nothing has them.
     case `default` = 0
 
     /// The default one with no correction, capitalization or suggestions.
@@ -25,7 +25,7 @@ public enum InputPurpose: Int32, Sendable {
     /// A phone dialler's keypad.
     case telephone = 5
 
-    /// General text, with the platform's spellcheck and capitalization.
+    /// Sentences: each begins with a capital, spell checked and predicted - a message, a note.
     case text = 6
 
     /// With / and .com to hand.

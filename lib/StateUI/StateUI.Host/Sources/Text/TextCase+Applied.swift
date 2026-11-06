@@ -10,7 +10,7 @@
         switch self {
         case .lowercase: text.lowercased()
         case .uppercase: text.uppercased()
-        case .none, .default: text
+        case .none: text
         }
     }
 }
