@@ -89,25 +89,24 @@ final class WebFrameView: WebDOMView {
         case .reload: !given.isEmpty || !shown.isEmpty
         }
         guard possible else { return state.reachable || (given.isEmpty && shown.isEmpty) }
-        if taken == .reload, let source = reloadSource.value {
-            cause.ask(.reload, if: true)
+        // The frame tells its load later, so what each road took is the step's admission (`WebNavigationCause`).
+        let source = taken == .reload ? reloadSource.value : nil
+        let stepped = source == nil && WebRelay.frameStep(frame.node, taken)
+        let fetched = source == nil && !stepped && taken == .reload && !given.isEmpty && !given.hasPrefix("data:")
+        guard cause.ask(step, if: source != nil || stepped || fetched) else { return false }
+        if let source {
             request(source, told: .reload)
-            return true
-        }
-        if WebRelay.frameStep(frame.node, taken) {
+        } else if stepped {
             if taken != .reload {
                 requestedLoad = false
                 reloadSource.takenOver()
             }
-            cause.ask(step, if: true)
             onNavigating(cause.begin(told: step), shown)
-            return true
+        } else {
+            frame.attribute("src", nil)
+            frame.attribute("src", given)
+            onNavigating(cause.begin(told: .reload), given)
         }
-        guard taken == .reload, !given.isEmpty, !given.hasPrefix("data:") else { return false }
-        cause.ask(.reload, if: true)
-        frame.attribute("src", nil)
-        frame.attribute("src", given)
-        onNavigating(cause.begin(told: .reload), given)
         return true
     }
 
