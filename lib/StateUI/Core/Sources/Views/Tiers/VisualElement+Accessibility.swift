@@ -55,13 +55,14 @@ extension VisualElementProperties {
     /// user has to act on.
     public func isAccessibilityHidden(_ value: Bool) -> Modified { setValue(VisualElementContract.isAccessibilityHidden, value) }
 
-    /// Whether a screen reader skips this view and everything inside it.
+    /// Whether a screen reader skips this view and everything inside it -
+    /// `isAccessibilityHidden` skips the view alone.
     ///
-    ///     VStack { … }.hidesChildrenFromAccessibility(true)
+    ///     VStack { … }.hidesFromAccessibility(true)
     ///
     /// For a panel on screen that is not the user's business - a decorative
     /// header, a card standing behind the one in front.
-    public func hidesChildrenFromAccessibility(_ value: Bool) -> Modified { setValue(VisualElementContract.hidesChildrenFromAccessibility, value) }
+    public func hidesFromAccessibility(_ value: Bool) -> Modified { setValue(VisualElementContract.hidesFromAccessibility, value) }
 
     /// That this view is a heading, and how deep.
     ///
@@ -79,10 +80,10 @@ extension VisualElement {
         words(AutomationElementContract.accessibilityIdentifier, by: state)
     }
 
-    /// `hidesChildrenFromAccessibility` from a state, `$x`: the host sets each
+    /// `hidesFromAccessibility` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
-    public func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Modified {
-        twin(VisualElementContract.hidesChildrenFromAccessibility, by: state)
+    public func hidesFromAccessibility(_ state: Binding<Bool>) -> Modified {
+        twin(VisualElementContract.hidesFromAccessibility, by: state)
     }
 
     /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value

@@ -29,7 +29,7 @@ Path.accessibilityRole: ✅
 Picker.height: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Picker.width: ✅
-Polygon.hidesChildrenFromAccessibility: ✅
+Polygon.hidesFromAccessibility: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.opacity: ✅
 ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform, checked against the layer it composed itself

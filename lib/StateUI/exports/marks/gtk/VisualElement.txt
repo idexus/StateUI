@@ -10,7 +10,7 @@ Button.accessibilityValue: – GTK says a value only of a range, a role a widget
 Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
-Button.hidesChildrenFromAccessibility: ✅
+Button.hidesFromAccessibility: ✅
 Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -46,7 +46,7 @@ Canvas.accessibilityValue: – GTK says a value only of a range, a role a widget
 Canvas.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
-Canvas.hidesChildrenFromAccessibility: ✅
+Canvas.hidesFromAccessibility: ✅
 Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -82,7 +82,7 @@ Capsule.accessibilityValue: – GTK says a value only of a range, a role a widge
 Capsule.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
-Capsule.hidesChildrenFromAccessibility: ✅
+Capsule.hidesFromAccessibility: ✅
 Capsule.ignoresInput: ✅
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -118,7 +118,7 @@ CheckBox.accessibilityValue: – GTK says a value only of a range, a role a widg
 CheckBox.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
-CheckBox.hidesChildrenFromAccessibility: ✅
+CheckBox.hidesFromAccessibility: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -154,7 +154,7 @@ ColorPicker.accessibilityValue: – GTK says a value only of a range, a role a w
 ColorPicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 ColorPicker.frame: ✅
 ColorPicker.height: ✅
-ColorPicker.hidesChildrenFromAccessibility: ✅
+ColorPicker.hidesFromAccessibility: ✅
 ColorPicker.ignoresInput: ✅
 ColorPicker.isAccessibilityHidden: ✅
 ColorPicker.isEnabled: ✅
@@ -190,7 +190,7 @@ DatePicker.accessibilityValue: – GTK says a value only of a range, a role a wi
 DatePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
-DatePicker.hidesChildrenFromAccessibility: ✅
+DatePicker.hidesFromAccessibility: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -226,7 +226,7 @@ Ellipse.accessibilityValue: – GTK says a value only of a range, a role a widge
 Ellipse.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
-Ellipse.hidesChildrenFromAccessibility: ✅
+Ellipse.hidesFromAccessibility: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -262,7 +262,7 @@ Fill.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Fill.background: ✅
 Fill.frame: ✅
 Fill.height: ✅
-Fill.hidesChildrenFromAccessibility: ✅
+Fill.hidesFromAccessibility: ✅
 Fill.ignoresInput: ✅
 Fill.isAccessibilityHidden: ✅
 Fill.isEnabled: ✅
@@ -298,7 +298,7 @@ Grid.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Grid.background: ✅
 Grid.frame: ✅
 Grid.height: ✅
-Grid.hidesChildrenFromAccessibility: ✅
+Grid.hidesFromAccessibility: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
@@ -334,7 +334,7 @@ HStack.accessibilityValue: – GTK says a value only of a range, a role a widget
 HStack.background: ✅
 HStack.frame: ✅
 HStack.height: ✅
-HStack.hidesChildrenFromAccessibility: ✅
+HStack.hidesFromAccessibility: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
@@ -370,7 +370,7 @@ Image.accessibilityValue: – GTK says a value only of a range, a role a widget 
 Image.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
-Image.hidesChildrenFromAccessibility: ✅
+Image.hidesFromAccessibility: ✅
 Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -406,7 +406,7 @@ ItemsView.accessibilityValue: – GTK says a value only of a range, a role a wid
 ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.frame: ✅
 ItemsView.height: ✅
-ItemsView.hidesChildrenFromAccessibility: ✅
+ItemsView.hidesFromAccessibility: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -442,7 +442,7 @@ Line.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Line.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
-Line.hidesChildrenFromAccessibility: ✅
+Line.hidesFromAccessibility: ✅
 Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -478,7 +478,7 @@ Link.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Link.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Link.frame: ✅
 Link.height: ✅
-Link.hidesChildrenFromAccessibility: ✅
+Link.hidesFromAccessibility: ✅
 Link.ignoresInput: ✅
 Link.isAccessibilityHidden: ✅
 Link.isEnabled: ✅
@@ -514,7 +514,7 @@ Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
-Map.hidesChildrenFromAccessibility: 🧩
+Map.hidesFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -550,7 +550,7 @@ MotionLayout.accessibilityValue: – GTK says a value only of a range, a role a 
 MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
-MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.hidesFromAccessibility: ✅
 MotionLayout.ignoresInput: ✅
 MotionLayout.isAccessibilityHidden: ✅
 MotionLayout.isEnabled: ✅
@@ -586,7 +586,7 @@ Path.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Path.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
-Path.hidesChildrenFromAccessibility: ✅
+Path.hidesFromAccessibility: ✅
 Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -622,7 +622,7 @@ Picker.accessibilityValue: – GTK says a value only of a range, a role a widget
 Picker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
-Picker.hidesChildrenFromAccessibility: ✅
+Picker.hidesFromAccessibility: ✅
 Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -658,7 +658,7 @@ Polygon.accessibilityValue: – GTK says a value only of a range, a role a widge
 Polygon.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
-Polygon.hidesChildrenFromAccessibility: ✅
+Polygon.hidesFromAccessibility: ✅
 Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -694,7 +694,7 @@ Polyline.accessibilityValue: – GTK says a value only of a range, a role a widg
 Polyline.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
-Polyline.hidesChildrenFromAccessibility: ✅
+Polyline.hidesFromAccessibility: ✅
 Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -730,7 +730,7 @@ ProgressBar.accessibilityValue: – GTK says a value only of a range, a role a w
 ProgressBar.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
-ProgressBar.hidesChildrenFromAccessibility: ✅
+ProgressBar.hidesFromAccessibility: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -766,7 +766,7 @@ Rectangle.accessibilityValue: – GTK says a value only of a range, a role a wid
 Rectangle.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
-Rectangle.hidesChildrenFromAccessibility: ✅
+Rectangle.hidesFromAccessibility: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -802,7 +802,7 @@ ScrollView.accessibilityValue: – GTK says a value only of a range, a role a wi
 ScrollView.background: ✅
 ScrollView.frame: ✅
 ScrollView.height: ✅
-ScrollView.hidesChildrenFromAccessibility: ✅
+ScrollView.hidesFromAccessibility: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -838,7 +838,7 @@ SearchField.accessibilityValue: – GTK says a value only of a range, a role a w
 SearchField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
-SearchField.hidesChildrenFromAccessibility: ✅
+SearchField.hidesFromAccessibility: ✅
 SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -874,7 +874,7 @@ Separator.accessibilityValue: – GTK says a value only of a range, a role a wid
 Separator.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Separator.frame: ✅
 Separator.height: ✅
-Separator.hidesChildrenFromAccessibility: ✅
+Separator.hidesFromAccessibility: ✅
 Separator.ignoresInput: ✅
 Separator.isAccessibilityHidden: ✅
 Separator.isEnabled: ✅
@@ -910,7 +910,7 @@ Slider.accessibilityValue: – GTK says a value only of a range, a role a widget
 Slider.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
-Slider.hidesChildrenFromAccessibility: ✅
+Slider.hidesFromAccessibility: ✅
 Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -946,7 +946,7 @@ Space.accessibilityValue: – GTK says a value only of a range, a role a widget 
 Space.background: ✅
 Space.frame: ✅
 Space.height: ✅
-Space.hidesChildrenFromAccessibility: ✅
+Space.hidesFromAccessibility: ✅
 Space.ignoresInput: ✅
 Space.isAccessibilityHidden: ✅
 Space.isEnabled: ✅
@@ -982,7 +982,7 @@ Spinner.accessibilityValue: – GTK says a value only of a range, a role a widge
 Spinner.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Spinner.frame: ✅
 Spinner.height: ✅
-Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.hidesFromAccessibility: ✅
 Spinner.ignoresInput: ✅
 Spinner.isAccessibilityHidden: ✅
 Spinner.isEnabled: ✅
@@ -1018,7 +1018,7 @@ Stepper.accessibilityValue: – GTK says a value only of a range, a role a widge
 Stepper.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
-Stepper.hidesChildrenFromAccessibility: ✅
+Stepper.hidesFromAccessibility: ✅
 Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -1054,7 +1054,7 @@ Switch.accessibilityValue: – GTK says a value only of a range, a role a widget
 Switch.background: – GTK's switch paints its own box as its track: a color there would recolor the track, not lie under it.
 Switch.frame: ✅
 Switch.height: ✅
-Switch.hidesChildrenFromAccessibility: ✅
+Switch.hidesFromAccessibility: ✅
 Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -1090,7 +1090,7 @@ Text.accessibilityValue: – GTK says a value only of a range, a role a widget t
 Text.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
-Text.hidesChildrenFromAccessibility: ✅
+Text.hidesFromAccessibility: ✅
 Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -1126,7 +1126,7 @@ TextEditor.accessibilityValue: – GTK says a value only of a range, a role a wi
 TextEditor.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
+TextEditor.hidesFromAccessibility: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -1162,7 +1162,7 @@ TextField.accessibilityValue: – GTK says a value only of a range, a role a wid
 TextField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
-TextField.hidesChildrenFromAccessibility: ✅
+TextField.hidesFromAccessibility: ✅
 TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -1198,7 +1198,7 @@ TimePicker.accessibilityValue: – GTK says a value only of a range, a role a wi
 TimePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
-TimePicker.hidesChildrenFromAccessibility: ✅
+TimePicker.hidesFromAccessibility: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -1234,7 +1234,7 @@ VStack.accessibilityValue: – GTK says a value only of a range, a role a widget
 VStack.background: ✅
 VStack.frame: ✅
 VStack.height: ✅
-VStack.hidesChildrenFromAccessibility: ✅
+VStack.hidesFromAccessibility: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
@@ -1270,7 +1270,7 @@ WebView.accessibilityValue: – GTK says a value only of a range, a role a widge
 WebView.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
-WebView.hidesChildrenFromAccessibility: ✅
+WebView.hidesFromAccessibility: ✅
 WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1306,7 +1306,7 @@ ZStack.accessibilityValue: – GTK says a value only of a range, a role a widget
 ZStack.background: ✅
 ZStack.frame: ✅
 ZStack.height: ✅
-ZStack.hidesChildrenFromAccessibility: ✅
+ZStack.hidesFromAccessibility: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅

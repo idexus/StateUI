@@ -12,7 +12,7 @@ CheckBox.style: ✅
 ColorPicker.accessibilityHint: ✅
 ColorPicker.scaleY: ✅
 DatePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Ellipse.hidesChildrenFromAccessibility: ✅
+Ellipse.hidesFromAccessibility: ✅
 Ellipse.opacity: ✅
 Fill.maximumHeight: ✅
 Fill.maximumWidth: ✅
@@ -70,7 +70,7 @@ Text.scaleX: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.scaleY: ✅
 TextField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-TimePicker.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+TimePicker.hidesFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 TimePicker.opacity: ✅
 VStack.ignoresInput: ✅
 VStack.pivotY: ✅

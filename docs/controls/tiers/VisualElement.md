@@ -35,7 +35,7 @@ How each of them realizes these members is on its own page.
 | `background` | property | `Material` | adaptive |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
-| `hidesChildrenFromAccessibility` | property | `Bool` | native |
+| `hidesFromAccessibility` | property | `Bool` | native |
 | `ignoresInput` | property | `Bool` | native |
 | `isAccessibilityHidden` | property | `Bool` | native |
 | `isEnabled` | property | `Bool` | native |

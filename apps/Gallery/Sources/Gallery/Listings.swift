@@ -10484,7 +10484,7 @@ enum Listings {
                         }
                     }
                     .style(.card)
-                    .hidesChildrenFromAccessibility(true)
+                    .hidesFromAccessibility(true)
                 }
                 .horizontalAlignment(.center)
 

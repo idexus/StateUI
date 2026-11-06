@@ -34,7 +34,7 @@ Rectangle.maximumWidth: ✅
 Rectangle.minimumHeight: ✅
 Rectangle.minimumWidth: ✅
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.hidesChildrenFromAccessibility: ✅
+ScrollView.hidesFromAccessibility: ✅
 SearchField.zIndex: ✅
 Separator.zIndex: ✅
 Slider.isVisible: ✅

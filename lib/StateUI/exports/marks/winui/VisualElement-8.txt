@@ -20,7 +20,7 @@ Grid.isVisible: ✅
 HStack.accessibilityHeading: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Image.tooltip: ✅
-ItemsView.hidesChildrenFromAccessibility: ✅
+ItemsView.hidesFromAccessibility: ✅
 ItemsView.opacity: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
 Line.zIndex: ✅
@@ -45,7 +45,7 @@ ScrollView.frame: ✅
 ScrollView.rotation: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.style: ✅
-Separator.hidesChildrenFromAccessibility: ✅
+Separator.hidesFromAccessibility: ✅
 Separator.opacity: ✅
 Slider.accessibilityHint: ✅
 Slider.scaleY: ✅

@@ -43,7 +43,7 @@ Polygon.scaleX: ✅
 Polyline.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Polyline.translationY: ✅
 ProgressBar.tooltip: ✅
-Rectangle.hidesChildrenFromAccessibility: ✅
+Rectangle.hidesFromAccessibility: ✅
 Rectangle.opacity: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅

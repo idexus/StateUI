@@ -835,7 +835,7 @@ Text("Order total")
 `accessibilityLabel` states what the element is, `accessibilityHint` explains the
 result of interacting with it, and heading level describes document structure.
 Use `isAccessibilityHidden` and
-`hidesChildrenFromAccessibility` to control exposure only when the composed
+`hidesFromAccessibility` to control exposure only when the composed
 semantics require it.
 
 A view composed of parts says what it is and holds with `accessibilityRole`

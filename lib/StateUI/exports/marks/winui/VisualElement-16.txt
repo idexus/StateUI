@@ -28,7 +28,7 @@ Image.rotation: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.scale: ✅
 Line.tooltip: ✅
-Link.hidesChildrenFromAccessibility: ✅
+Link.hidesFromAccessibility: ✅
 Link.opacity: ✅
 Map.ignoresInput: 🧩
 Map.pivotY: 🧩
@@ -51,7 +51,7 @@ ScrollView.isEnabled: ✅
 SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Separator.accessibilityHeading: ✅
 Separator.scale: ✅
-Slider.hidesChildrenFromAccessibility: ✅
+Slider.hidesFromAccessibility: ✅
 Slider.opacity: ✅
 Space.ignoresInput: ✅
 Space.pivotY: ✅

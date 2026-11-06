@@ -114,7 +114,7 @@ extension NodeType {
     static let pivotX = VisualElementContract.pivotX.token
     static let pivotY = VisualElementContract.pivotY.token
     static let contentMode = ShapeContract.contentMode.token
-    static let hidesChildrenFromAccessibility = VisualElementContract.hidesChildrenFromAccessibility.token
+    static let hidesFromAccessibility = VisualElementContract.hidesFromAccessibility.token
     static let growsWithText = TextEditorContract.growsWithText.token
     static let scrollEdge = BottomBarContract.scrollEdge.token
     static let background = VisualElementContract.background.token

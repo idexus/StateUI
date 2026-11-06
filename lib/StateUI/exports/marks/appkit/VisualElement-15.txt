@@ -6,7 +6,7 @@ Capsule.accessibilityRole: ✅
 CheckBox.height: ✅
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
 CheckBox.width: ✅
-ColorPicker.hidesChildrenFromAccessibility: ✅
+ColorPicker.hidesFromAccessibility: ✅
 DatePicker.accessibilityHint: ✅
 Ellipse.height: ✅
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
@@ -34,7 +34,7 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.hidesChildrenFromAccessibility: ✅
+ProgressBar.hidesFromAccessibility: ✅
 Rectangle.accessibilityLabel: ✅
 ScrollView.opacity: ✅
 ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
@@ -52,12 +52,12 @@ Switch.height: ✅
 Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
 Switch.width: ✅
 Text.accessibilityRole: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
+TextEditor.hidesFromAccessibility: ✅
 TextField.accessibilityHint: ✅
 TimePicker.height: ✅
 TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
 TimePicker.width: ✅
-VStack.hidesChildrenFromAccessibility: ✅
+VStack.hidesFromAccessibility: ✅
 WebView.ignoresInput: ✅
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.layoutDirection: ✅

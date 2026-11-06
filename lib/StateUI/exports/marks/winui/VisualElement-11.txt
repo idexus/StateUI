@@ -18,7 +18,7 @@ Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host l
 Grid.width: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.isEnabled: does not apply - read isEnabled of HStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Image.hidesChildrenFromAccessibility: ✅
+Image.hidesFromAccessibility: ✅
 Image.opacity: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
@@ -60,7 +60,7 @@ Space.isAccessibilityHidden: ✅
 Space.isVisible: ✅
 Spinner.accessibilityLabel: ✅
 Spinner.scaleX: ✅
-Stepper.hidesChildrenFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
+Stepper.hidesFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Stepper.opacity: ✅
 Switch.ignoresInput: ✅
 Switch.pivotY: ✅
@@ -74,7 +74,7 @@ TimePicker.accessibilityHeading: ✅
 VStack.height: ✅
 VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 VStack.width: ✅
-WebView.hidesChildrenFromAccessibility: ✅
+WebView.hidesFromAccessibility: ✅
 WebView.opacity: ✅
 ZStack.ignoresInput: ✅
 ZStack.pivotY: ✅

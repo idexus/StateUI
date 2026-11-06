@@ -1581,7 +1581,7 @@ swift.method @SwiftNever.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method @SwiftNever.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method @SwiftNever.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method @SwiftNever.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method @SwiftNever.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method @SwiftNever.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -1785,7 +1785,7 @@ swift.method AnyView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method AnyView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method AnyView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method AnyView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method AnyView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method AnyView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -2017,7 +2017,7 @@ swift.method Button.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Button.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Button.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Button.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Button.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Button.iconPosition(_:): @MainActor func iconPosition(_ state: Binding<IconPosition>) -> Button.Modified
@@ -2257,7 +2257,7 @@ swift.method Canvas.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Canvas.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Canvas.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Canvas.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Canvas.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Canvas.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -2466,7 +2466,7 @@ swift.method Capsule.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Capsule.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Capsule.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Capsule.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Capsule.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Capsule.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -2668,7 +2668,7 @@ swift.method CheckBox.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state
 swift.method CheckBox.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method CheckBox.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method CheckBox.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method CheckBox.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method CheckBox.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -2890,7 +2890,7 @@ swift.method ColorPicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method ColorPicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ColorPicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ColorPicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ColorPicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ColorPicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -3109,7 +3109,7 @@ swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method DatePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DatePicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DatePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DatePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -3331,7 +3331,7 @@ swift.method DebugInspector.gridColumnSpan(_:): @MainActor func gridColumnSpan(_
 swift.method DebugInspector.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspector.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspector.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspector.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspector.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -3523,7 +3523,7 @@ swift.method DebugInspectorButton.gridColumnSpan(_:): @MainActor func gridColumn
 swift.method DebugInspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspectorButton.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -3731,8 +3731,8 @@ swift.method Either.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method Either.gridRowSpan(_:): @MainActor func gridRowSpan(_ value: Int) -> Self.Modified
 swift.method Either.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method Either.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
-swift.method Either.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ value: Bool) -> Self.Modified
+swift.method Either.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Either.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Either.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -3959,7 +3959,7 @@ swift.method Ellipse.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Ellipse.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Ellipse.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Ellipse.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Ellipse.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Ellipse.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -4161,7 +4161,7 @@ swift.method Fill.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Fill.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Fill.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Fill.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Fill.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Fill.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -4383,7 +4383,7 @@ swift.method GalleryView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method GalleryView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method GalleryView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GalleryView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GalleryView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -4587,7 +4587,7 @@ swift.method GeometryReader.gridColumnSpan(_:): @MainActor func gridColumnSpan(_
 swift.method GeometryReader.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method GeometryReader.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method GeometryReader.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GeometryReader.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GeometryReader.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -4784,7 +4784,7 @@ swift.method Grid.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Grid.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Grid.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Grid.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Grid.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Grid.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -5000,7 +5000,7 @@ swift.method Group.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Group.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Group.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Group.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Group.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Group.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -5193,7 +5193,7 @@ swift.method HStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method HStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method HStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method HStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method HStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method HStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -5412,7 +5412,7 @@ swift.method Image.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Image.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Image.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Image.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Image.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Image.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -5619,7 +5619,7 @@ swift.method ItemsView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int
 swift.method ItemsView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.header(_:): @MainActor func header(_ view: some View) -> ItemsView<ID>
 swift.method ItemsView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ItemsView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ItemsView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ItemsView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ItemsView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -5864,7 +5864,7 @@ swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Line.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Line.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Line.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Line.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -6070,7 +6070,7 @@ swift.method Link.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Link.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Link.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Link.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Link.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Link.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -6289,7 +6289,7 @@ swift.method Map.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bin
 swift.method Map.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Map.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Map.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -6561,7 +6561,7 @@ swift.method ModifiedContent.gridColumnSpan(_:): @MainActor func gridColumnSpan(
 swift.method ModifiedContent.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ModifiedContent.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ModifiedContent.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ModifiedContent.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ModifiedContent.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -6756,7 +6756,7 @@ swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ s
 swift.method MotionLayout.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method MotionLayout.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method MotionLayout.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method MotionLayout.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -6991,7 +6991,7 @@ swift.method NavigationStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(
 swift.method NavigationStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method NavigationStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method NavigationStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method NavigationStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method NavigationStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -7201,7 +7201,7 @@ swift.method Path.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Path.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Path.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Path.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Path.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -7409,7 +7409,7 @@ swift.method Picker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Picker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Picker.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Picker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -7642,7 +7642,7 @@ swift.method Polygon.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Polygon.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polygon.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polygon.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polygon.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -7858,7 +7858,7 @@ swift.method Polyline.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state
 swift.method Polyline.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polyline.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polyline.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polyline.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -8074,9 +8074,9 @@ swift.method PositionDots.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ s
 swift.method PositionDots.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method PositionDots.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ state: Binding<Bool>) -> PositionDots
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ value: Bool) -> PositionDots
+swift.method PositionDots.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method PositionDots.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method PositionDots.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -8272,7 +8272,7 @@ swift.method ProgressBar.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method ProgressBar.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ProgressBar.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ProgressBar.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ProgressBar.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ProgressBar.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -8485,7 +8485,7 @@ swift.method Rectangle.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method Rectangle.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Rectangle.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Rectangle.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Rectangle.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Rectangle.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -8701,7 +8701,7 @@ swift.method ScrollView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method ScrollView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ScrollView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ScrollView.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> ScrollView.Modified
 swift.method ScrollView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -8931,7 +8931,7 @@ swift.method SearchField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method SearchField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method SearchField.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method SearchField.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SearchField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method SearchField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -9163,7 +9163,7 @@ swift.method Separator.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method Separator.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Separator.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Separator.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Separator.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Separator.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -9375,7 +9375,7 @@ swift.method Slider.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Slider.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Slider.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Slider.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Slider.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -9594,7 +9594,7 @@ swift.method Space.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Space.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Space.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Space.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Space.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Space.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -9796,7 +9796,7 @@ swift.method Spinner.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Spinner.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Spinner.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Spinner.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -10006,7 +10006,7 @@ swift.method SplitView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method SplitView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method SplitView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method SplitView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SplitView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SplitView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -10214,7 +10214,7 @@ swift.method Stepper.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Stepper.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Stepper.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Stepper.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Stepper.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -10442,7 +10442,7 @@ swift.method Styling.gridRow(_:): @MainActor func gridRow(_ value: Int) -> Self.
 swift.method Styling.gridRowSpan(_:): @MainActor func gridRowSpan(_ value: Int) -> Self.Modified
 swift.method Styling.growsWithText(_:): @MainActor func growsWithText(_ value: Bool) -> Self.Modified
 swift.method Styling.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method Styling.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ value: Bool) -> Self.Modified
+swift.method Styling.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method Styling.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Styling.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
 swift.method Styling.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ value: TextAlignment) -> Self.Modified
@@ -10569,7 +10569,7 @@ swift.method Switch.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Switch.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Switch.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Switch.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Switch.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Switch.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -10789,7 +10789,7 @@ swift.method TabView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method TabView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method TabView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TabView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TabView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -10990,7 +10990,7 @@ swift.method Text.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Text.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Text.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method Text.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Text.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Text.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -11219,7 +11219,7 @@ swift.method TextEditor.gridRow(_:): @MainActor func gridRow(_ state: Binding<In
 swift.method TextEditor.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.growsWithText(_:): @MainActor func growsWithText(_ state: Binding<Bool>) -> TextEditor.Modified
 swift.method TextEditor.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TextEditor.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextEditor.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextEditor.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method TextEditor.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -11450,7 +11450,7 @@ swift.method TextField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method TextField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TextField.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextField.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method TextField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
@@ -11743,7 +11743,7 @@ swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method TimePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TimePicker.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TimePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TimePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -12074,7 +12074,7 @@ swift.method VStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method VStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method VStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method VStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -12412,7 +12412,7 @@ swift.method VisualElement.background(_:): @MainActor func background(_ state: B
 swift.method VisualElement.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method VisualElement.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method VisualElement.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method VisualElement.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method VisualElement.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VisualElement.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
@@ -12451,7 +12451,7 @@ swift.method VisualElementProperties.background(_:): @MainActor func background(
 swift.method VisualElementProperties.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method VisualElementProperties.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method VisualElementProperties.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method VisualElementProperties.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ value: Bool) -> Self.Modified
+swift.method VisualElementProperties.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
@@ -12515,7 +12515,7 @@ swift.method WebView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method WebView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method WebView.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method WebView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method WebView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method WebView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -12756,7 +12756,7 @@ swift.method ZStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method ZStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ZStack.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method ZStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ZStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ZStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
@@ -14068,7 +14068,7 @@ swift.type.property VisualElementContract.accessibilityValue: static let accessi
 swift.type.property VisualElementContract.background: static let background: ElementProperty<VisualElementContract, Material>
 swift.type.property VisualElementContract.frame: static let frame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.height: static let height: ElementProperty<VisualElementContract, Double>
-swift.type.property VisualElementContract.hidesChildrenFromAccessibility: static let hidesChildrenFromAccessibility: ElementProperty<VisualElementContract, Bool>
+swift.type.property VisualElementContract.hidesFromAccessibility: static let hidesFromAccessibility: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.ignoresInput: static let ignoresInput: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isAccessibilityHidden: static let isAccessibilityHidden: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isEnabled: static let isEnabled: ElementProperty<VisualElementContract, Bool>

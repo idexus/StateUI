@@ -10,7 +10,7 @@ CheckBox.accessibilityHint: ✅
 ColorPicker.height: ✅
 ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform, checked against the layer it composed itself
 ColorPicker.width: ✅
-DatePicker.hidesChildrenFromAccessibility: ✅
+DatePicker.hidesFromAccessibility: ✅
 Ellipse.accessibilityHint: ✅
 Fill.isEnabled: ✅
 Fill.rotationY: ✓ read rotationY of Fill: the host's own transform, checked against the layer it composed itself
@@ -49,13 +49,13 @@ Slider.accessibilityActions: ✅
 Space.frame: ✅
 Space.translationX: ✓ read translationX of Space: the host's own transform, checked against the layer it composed itself
 Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform, checked against the layer it composed itself
-Stepper.hidesChildrenFromAccessibility: ✅
+Stepper.hidesFromAccessibility: ✅
 Switch.accessibilityHint: ✅
 Text.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 TextEditor.height: ✅
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform, checked against the layer it composed itself
 TextEditor.width: ✅
-TextField.hidesChildrenFromAccessibility: ✅
+TextField.hidesFromAccessibility: ✅
 TimePicker.accessibilityHint: ✅
 VStack.height: ✅
 VStack.scale: ✓ read scale of VStack: the host's own transform, checked against the layer it composed itself

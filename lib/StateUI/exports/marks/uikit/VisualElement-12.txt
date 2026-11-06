@@ -23,7 +23,7 @@ Line.accessibilityRole: ✅
 Link.height: ✅
 Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
 Link.width: ✅
-Map.hidesChildrenFromAccessibility: ✅
+Map.hidesFromAccessibility: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.height: ✅
@@ -42,7 +42,7 @@ Separator.accessibilityHint: ✅
 Slider.height: ✅
 Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
 Slider.width: ✅
-Space.hidesChildrenFromAccessibility: ✅
+Space.hidesFromAccessibility: ✅
 Spinner.accessibilityHint: ✅
 Stepper.zIndex: ✅
 Switch.isVisible: ✅

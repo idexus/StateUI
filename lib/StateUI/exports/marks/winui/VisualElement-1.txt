@@ -24,7 +24,7 @@ Image.accessibilityHeading: ✅
 Image.scale: ✅
 ItemsView.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 ItemsView.translationX: ✅
-Line.hidesChildrenFromAccessibility: ✅
+Line.hidesFromAccessibility: ✅
 Line.opacity: ✅
 Link.maximumHeight: ✅
 Link.maximumWidth: ✅
@@ -33,10 +33,10 @@ Link.minimumWidth: ✅
 Link.pivotX: ✅
 Map.rotationY: 🧩
 Map.zIndex: 🧩
-MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.hidesFromAccessibility: ✅
 MotionLayout.opacity: ✅
 Path.tooltip: ✅
-Picker.hidesChildrenFromAccessibility: ✅
+Picker.hidesFromAccessibility: ✅
 Picker.opacity: ✅
 Polygon.ignoresInput: ✅
 Polygon.pivotY: ✅

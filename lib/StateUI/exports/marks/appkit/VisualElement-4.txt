@@ -20,10 +20,10 @@ Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
-Link.hidesChildrenFromAccessibility: ✅
+Link.hidesFromAccessibility: ✅
 Map.accessibilityHint: ✅
 MotionLayout.tooltip: ✅
-Path.hidesChildrenFromAccessibility: ✅
+Path.hidesFromAccessibility: ✅
 Picker.accessibilityLabel: ✅
 Polygon.isEnabled: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
@@ -39,7 +39,7 @@ SearchField.width: ✅
 Separator.height: ✅
 Separator.scale: ✓ read scale of Separator: the host's own transform, checked against the layer it composed itself
 Separator.width: ✅
-Slider.hidesChildrenFromAccessibility: ✅
+Slider.hidesFromAccessibility: ✅
 Space.accessibilityHint: ✅
 Spinner.height: ✅
 Spinner.scale: ✓ read scale of Spinner: the host's own transform, checked against the layer it composed itself

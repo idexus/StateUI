@@ -1,6 +1,6 @@
 # revision 24.2
 Button.tooltip: ✅
-Canvas.hidesChildrenFromAccessibility: ✅
+Canvas.hidesFromAccessibility: ✅
 Canvas.opacity: ✅
 Capsule.ignoresInput: ✅
 Capsule.pivotY: ✅

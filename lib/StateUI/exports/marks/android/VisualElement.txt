@@ -10,7 +10,7 @@ Button.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
-Button.hidesChildrenFromAccessibility: ✅
+Button.hidesFromAccessibility: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -46,7 +46,7 @@ Canvas.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
-Canvas.hidesChildrenFromAccessibility: ✅
+Canvas.hidesFromAccessibility: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -82,7 +82,7 @@ Capsule.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
-Capsule.hidesChildrenFromAccessibility: ✅
+Capsule.hidesFromAccessibility: ✅
 Capsule.ignoresInput: not realized
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -118,7 +118,7 @@ CheckBox.accessibilityValue: ☑️ Before Android 11 a view says no value of it
 CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
-CheckBox.hidesChildrenFromAccessibility: ✅
+CheckBox.hidesFromAccessibility: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -154,7 +154,7 @@ ColorPicker.accessibilityValue: – Android has no color picker of its own: neit
 ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.hidesChildrenFromAccessibility: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.hidesFromAccessibility: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isAccessibilityHidden: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isEnabled: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -190,7 +190,7 @@ DatePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
-DatePicker.hidesChildrenFromAccessibility: ✅
+DatePicker.hidesFromAccessibility: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -226,7 +226,7 @@ Ellipse.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
-Ellipse.hidesChildrenFromAccessibility: ✅
+Ellipse.hidesFromAccessibility: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -262,7 +262,7 @@ Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Fill.frame: ✅
 Fill.height: ✅
-Fill.hidesChildrenFromAccessibility: ✅
+Fill.hidesFromAccessibility: ✅
 Fill.ignoresInput: ✅
 Fill.isAccessibilityHidden: ✅
 Fill.isEnabled: ✅
@@ -298,7 +298,7 @@ Grid.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.frame: ✅
 Grid.height: ✅
-Grid.hidesChildrenFromAccessibility: ✅
+Grid.hidesFromAccessibility: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
@@ -334,7 +334,7 @@ HStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.frame: ✅
 HStack.height: ✅
-HStack.hidesChildrenFromAccessibility: ✅
+HStack.hidesFromAccessibility: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
@@ -370,7 +370,7 @@ Image.accessibilityValue: ☑️ Before Android 11 a view says no value of its o
 Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
-Image.hidesChildrenFromAccessibility: ✅
+Image.hidesFromAccessibility: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -406,7 +406,7 @@ ItemsView.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.frame: ✅
 ItemsView.height: ✅
-ItemsView.hidesChildrenFromAccessibility: ✅
+ItemsView.hidesFromAccessibility: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -442,7 +442,7 @@ Line.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
-Line.hidesChildrenFromAccessibility: ✅
+Line.hidesFromAccessibility: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -478,7 +478,7 @@ Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Link.frame: ✅
 Link.height: ✅
-Link.hidesChildrenFromAccessibility: ✅
+Link.hidesFromAccessibility: ✅
 Link.ignoresInput: not realized
 Link.isAccessibilityHidden: ✅
 Link.isEnabled: ✅
@@ -514,7 +514,7 @@ Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
-Map.hidesChildrenFromAccessibility: 🧩
+Map.hidesFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -550,7 +550,7 @@ MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value o
 MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
-MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.hidesFromAccessibility: ✅
 MotionLayout.ignoresInput: ✅
 MotionLayout.isAccessibilityHidden: ✅
 MotionLayout.isEnabled: ✅
@@ -586,7 +586,7 @@ Path.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
-Path.hidesChildrenFromAccessibility: ✅
+Path.hidesFromAccessibility: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -622,7 +622,7 @@ Picker.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
-Picker.hidesChildrenFromAccessibility: ✅
+Picker.hidesFromAccessibility: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -658,7 +658,7 @@ Polygon.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
-Polygon.hidesChildrenFromAccessibility: ✅
+Polygon.hidesFromAccessibility: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -694,7 +694,7 @@ Polyline.accessibilityValue: ☑️ Before Android 11 a view says no value of it
 Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
-Polyline.hidesChildrenFromAccessibility: ✅
+Polyline.hidesFromAccessibility: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -730,7 +730,7 @@ ProgressBar.accessibilityValue: ☑️ Before Android 11 a view says no value of
 ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
-ProgressBar.hidesChildrenFromAccessibility: ✅
+ProgressBar.hidesFromAccessibility: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -766,7 +766,7 @@ Rectangle.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
-Rectangle.hidesChildrenFromAccessibility: ✅
+Rectangle.hidesFromAccessibility: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -802,7 +802,7 @@ ScrollView.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.frame: ✅
 ScrollView.height: ✅
-ScrollView.hidesChildrenFromAccessibility: ✅
+ScrollView.hidesFromAccessibility: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -838,7 +838,7 @@ SearchField.accessibilityValue: ☑️ Before Android 11 a view says no value of
 SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
-SearchField.hidesChildrenFromAccessibility: ✅
+SearchField.hidesFromAccessibility: ✅
 SearchField.ignoresInput: not realized
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -874,7 +874,7 @@ Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Separator.frame: ✅
 Separator.height: ✅
-Separator.hidesChildrenFromAccessibility: ✅
+Separator.hidesFromAccessibility: ✅
 Separator.ignoresInput: not realized
 Separator.isAccessibilityHidden: ✅
 Separator.isEnabled: ✅
@@ -910,7 +910,7 @@ Slider.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
-Slider.hidesChildrenFromAccessibility: ✅
+Slider.hidesFromAccessibility: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -946,7 +946,7 @@ Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its o
 Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Space.frame: ✅
 Space.height: ✅
-Space.hidesChildrenFromAccessibility: ✅
+Space.hidesFromAccessibility: ✅
 Space.ignoresInput: ✅
 Space.isAccessibilityHidden: ✅
 Space.isEnabled: ✅
@@ -982,7 +982,7 @@ Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Spinner.frame: ✅
 Spinner.height: ✅
-Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.hidesFromAccessibility: ✅
 Spinner.ignoresInput: not realized
 Spinner.isAccessibilityHidden: ✅
 Spinner.isEnabled: ✅
@@ -1018,7 +1018,7 @@ Stepper.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
-Stepper.hidesChildrenFromAccessibility: ✅
+Stepper.hidesFromAccessibility: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -1054,7 +1054,7 @@ Switch.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.frame: ✅
 Switch.height: ✅
-Switch.hidesChildrenFromAccessibility: ✅
+Switch.hidesFromAccessibility: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -1090,7 +1090,7 @@ Text.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
-Text.hidesChildrenFromAccessibility: ✅
+Text.hidesFromAccessibility: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -1126,7 +1126,7 @@ TextEditor.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
+TextEditor.hidesFromAccessibility: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -1162,7 +1162,7 @@ TextField.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
-TextField.hidesChildrenFromAccessibility: ✅
+TextField.hidesFromAccessibility: ✅
 TextField.ignoresInput: not realized
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -1198,7 +1198,7 @@ TimePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
-TimePicker.hidesChildrenFromAccessibility: ✅
+TimePicker.hidesFromAccessibility: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -1234,7 +1234,7 @@ VStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.frame: ✅
 VStack.height: ✅
-VStack.hidesChildrenFromAccessibility: ✅
+VStack.hidesFromAccessibility: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
@@ -1270,7 +1270,7 @@ WebView.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
-WebView.hidesChildrenFromAccessibility: ✅
+WebView.hidesFromAccessibility: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1306,7 +1306,7 @@ ZStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.frame: ✅
 ZStack.height: ✅
-ZStack.hidesChildrenFromAccessibility: ✅
+ZStack.hidesFromAccessibility: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅

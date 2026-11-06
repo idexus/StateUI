@@ -57,7 +57,7 @@ extension WinUIDriver {
         }
         guard let view else { throw cannot }
         if property.name == "layoutDirection" { return try direction(of: view, element) }
-        if property.name == "hidesChildrenFromAccessibility" { return excluded(view, element) }
+        if property.name == "hidesFromAccessibility" { return excluded(view, element) }
         if let held = try viewHolds(property.name, view) { return held }
         if let held = try wordsHold(property.name, view) { return held }
         if let held = try boxHolds(property.name, view) { return held }
@@ -183,7 +183,7 @@ extension WinUIDriver {
     private func excluded(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
         let facts = view.automationFacts
         let judgment = WinUIRealization.register.judgment(
-            of: "hidesChildrenFromAccessibility", on: element.type.name, from: "VisualElement")
+            of: "hidesFromAccessibility", on: element.type.name, from: "VisualElement")
         let partsStay = if case .partial? = judgment { true } else { false }
         return (!facts.isControl && !facts.isContent && (facts.children == 0 || partsStay)).propValue
     }

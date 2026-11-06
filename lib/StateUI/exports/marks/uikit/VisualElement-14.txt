@@ -4,7 +4,7 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.scaleX: ✓ read scaleX of Button: the host's own transform, checked against the layer it composed itself
-Canvas.hidesChildrenFromAccessibility: ✅
+Canvas.hidesFromAccessibility: ✅
 Capsule.accessibilityHint: ✅
 CheckBox.isEnabled: ✅
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
@@ -21,7 +21,7 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.hidesChildrenFromAccessibility: ✅
+ItemsView.hidesFromAccessibility: ✅
 Line.accessibilityActionPerformed: ✅
 Line.accessibilityActions: ✅
 Link.ignoresInput: ✅

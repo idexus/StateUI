@@ -398,7 +398,7 @@ ZStack
   gridRow
   gridRowSpan
   height
-  hidesChildrenFromAccessibility
+  hidesFromAccessibility
   holdDuration
   horizontalAlignment
   isAccessibilityHidden

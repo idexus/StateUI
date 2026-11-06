@@ -114,7 +114,7 @@ ScrollViewSample.swift 12abb5ee5b9ad52f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift ac141f1987df5139
+SemanticsSample.swift c4f8822d98d3f45a
 ShapesSample.swift da1878eaf2de52e6
 ShareSample.swift 5eff4f5bca43b92b
 SheetsSample.swift 761a45a6cd3b500a

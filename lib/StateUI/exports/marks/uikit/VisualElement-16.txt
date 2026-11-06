@@ -15,10 +15,10 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.hidesChildrenFromAccessibility: ✅
+Fill.hidesFromAccessibility: ✅
 Grid.isEnabled: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.zIndex: ✅
-HStack.hidesChildrenFromAccessibility: ✅
+HStack.hidesFromAccessibility: ✅
 Image.frame: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.layoutDirection: ✅

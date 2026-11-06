@@ -1,5 +1,5 @@
 # revision 24.1
-Button.hidesChildrenFromAccessibility: ✅
+Button.hidesFromAccessibility: ✅
 Canvas.accessibilityLabel: ✅
 Capsule.isEnabled: ✅
 Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform, checked against the layer it composed itself
@@ -13,7 +13,7 @@ Fill.zIndex: ✅
 Grid.layoutDirection: ✅
 HStack.isEnabled: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.zIndex: ✅
-Image.hidesChildrenFromAccessibility: ✅
+Image.hidesFromAccessibility: ✅
 ItemsView.accessibilityLabel: ✅
 Line.ignoresInput: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
@@ -58,6 +58,6 @@ TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, 
 TimePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 VStack.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 VStack.isEnabled: ✅
-WebView.hidesChildrenFromAccessibility: ✅
+WebView.hidesFromAccessibility: ✅
 ZStack.accessibilityHint: ✅
 ZStack.background: ✅

@@ -10,7 +10,7 @@ DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, chec
 Ellipse.accessibilityAdjusted: ✅
 Fill.frame: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform, checked against the layer it composed itself
-Grid.hidesChildrenFromAccessibility: ✅
+Grid.hidesFromAccessibility: ✅
 HStack.frame: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
 Image.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

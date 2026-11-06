@@ -33,13 +33,13 @@ ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform
 Rectangle.accessibilityAdjusted: ✅
 ScrollView.frame: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.hidesChildrenFromAccessibility: ✅
-Separator.hidesChildrenFromAccessibility: ✅
+SearchField.hidesFromAccessibility: ✅
+Separator.hidesFromAccessibility: ✅
 Slider.accessibilityHint: ✅
 Space.height: ✅
 Space.scale: ✓ read scale of Space: the host's own transform, checked against the layer it composed itself
 Space.width: ✅
-Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.hidesFromAccessibility: ✅
 Stepper.tooltip: ✅
 Switch.zIndex: ✅
 Text.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

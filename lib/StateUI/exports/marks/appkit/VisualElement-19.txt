@@ -16,7 +16,7 @@ HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked agai
 Image.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 ItemsView.isVisible: ✅
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.hidesChildrenFromAccessibility: ✅
+Line.hidesFromAccessibility: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself

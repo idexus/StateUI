@@ -337,7 +337,7 @@ WebView
   gridRow
   gridRowSpan
   height
-  hidesChildrenFromAccessibility
+  hidesFromAccessibility
   holdDuration
   horizontalAlignment
   ignoresInput

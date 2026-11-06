@@ -62,7 +62,7 @@ extension Registry {
         }
         everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
-        everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)
+        everyElementRealizes(VisualElementContract.hidesFromAccessibility)
     }
 
     /// The actions a screen reader offers on a view, and its steps of one that is adjustable, told to the element by

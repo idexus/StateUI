@@ -480,7 +480,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(element.spokenWords, "Shown", "neither the label nor the words of the hidden element")
 
         var whole = HostPatch(id: .manual("row"), type: .vStack)
-        whole.properties = [.hidesChildrenFromAccessibility: .bool(true)]
+        whole.properties = [.hidesFromAccessibility: .bool(true)]
         tree.apply(whole, complete: false)
         XCTAssertEqual(element.spokenWords, "", "hidden with all it holds")
     }
@@ -710,7 +710,7 @@ final class MountedTreeTests: XCTestCase {
                 .accessibilityValue: .string("3 of 5"),
             ]),
             label("kind", [.accessibilityRole: .enumeration(1)]),
-            label("both", [.isAccessibilityHidden: .bool(true), .hidesChildrenFromAccessibility: .bool(true)]),
+            label("both", [.isAccessibilityHidden: .bool(true), .hidesFromAccessibility: .bool(true)]),
             label("hidden", [.isAccessibilityHidden: .bool(true)]),
             label("silent", [:]),
         ])
