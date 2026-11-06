@@ -209,13 +209,11 @@ extension NodeType {
     static let location = MarkerContract.location.token
     static let margin = ViewContract.margin.token
     static let maximum = SliderContract.maximum.token
-    static let maximumDate = DatePickerContract.maximumDate.token
     static let maximumHeight = VisualElementContract.maximumHeight.token
     static let maximumWidth = VisualElementContract.maximumWidth.token
     static let maximumLength = TextInputContract.maximumLength.token
     static let maximumLines = TextContract.maximumLines.token
     static let minimum = SliderContract.minimum.token
-    static let minimumDate = DatePickerContract.minimumDate.token
     static let minimumHeight = VisualElementContract.minimumHeight.token
     static let minimumWidth = VisualElementContract.minimumWidth.token
     static let backButtonTitle = PageContract.backButtonTitle.token

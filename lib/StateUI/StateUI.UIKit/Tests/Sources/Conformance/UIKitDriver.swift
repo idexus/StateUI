@@ -535,8 +535,8 @@ final class UIKitDriver: HostDriver {
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
         case (.color, let picker as UIKitColorPickerView): return picker.selectedColor.map { Self.color($0).propValue }
         case (.choosesOpacity, let picker as UIKitColorPickerView): return picker.supportsAlpha.propValue
-        case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
-        case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
+        case (.minimum, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
+        case (.maximum, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
         case (.isRefreshEnabled, let pulled as any UIKitRefreshing):
             return (pulled.refresh.scroller?.refreshControl != nil).propValue
         case (.isRefreshing, let pulled as any UIKitRefreshing):

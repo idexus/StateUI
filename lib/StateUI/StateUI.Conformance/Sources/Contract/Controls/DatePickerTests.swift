@@ -93,11 +93,11 @@
             },
             ConformanceCase("aDayOutsideTheCalendarOrTheRangeIsHeldByTheRule", proves: [
                 Covered(DatePickerContract.date),
-            ], needs: [Covered(DatePickerContract.maximumDate), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(DatePickerContract.maximum), Covered(ButtonContract.clicked)]) { s in
                 let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
                 s.start {
                     VStack {
-                        DatePicker(due.projectedValue).maximumDate(CalendarDate(year: 2026, month: 6, day: 30))
+                        DatePicker(due.projectedValue).maximum(CalendarDate(year: 2026, month: 6, day: 30))
                             .id("picker")
                         Button("No such day").onClicked { due.wrappedValue = CalendarDate(year: 2026, month: 2, day: 31) }
                             .id("impossible")
@@ -123,11 +123,11 @@
                     "a day past the range stands at its end")
             },
             Aspects.holds(
-                DatePickerContract.minimumDate, on: "DatePicker", CalendarDate(year: 2026, month: 1, day: 1),
+                DatePickerContract.minimum, on: "DatePicker", CalendarDate(year: 2026, month: 1, day: 1),
                 then: CalendarDate(year: 2026, month: 6, day: 1),
                 with: [Write(DatePickerContract.date, CalendarDate(year: 2026, month: 9, day: 25))]),
             Aspects.holds(
-                DatePickerContract.maximumDate, on: "DatePicker", CalendarDate(year: 2026, month: 12, day: 31),
+                DatePickerContract.maximum, on: "DatePicker", CalendarDate(year: 2026, month: 12, day: 31),
                 then: CalendarDate(year: 2026, month: 10, day: 1),
                 with: [Write(DatePickerContract.date, CalendarDate(year: 2026, month: 9, day: 25))]),
             Aspects.holds(DatePickerContract.format, on: "DatePicker", DateStyle.long, then: .short,

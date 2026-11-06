@@ -20,8 +20,8 @@ extension AndroidRegistrations {
             return field
         }, members: { field in
             field.property(DatePickerContract.date) { view, date in view.setDate(date) }
-            field.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate) { view, values in
-                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+            field.applies(DatePickerContract.minimum, DatePickerContract.maximum) { view, values in
+                view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
             }
             field.property(DatePickerContract.format) { view, style in view.setFormat(style) }
             field.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }

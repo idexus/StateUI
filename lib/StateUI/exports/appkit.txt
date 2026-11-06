@@ -50,8 +50,8 @@ DatePicker
   fontFamily
   fontSize
   fontWeight
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   textColor
   textStyle
   dateChanged()

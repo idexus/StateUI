@@ -292,8 +292,8 @@ final class AppKitDriver: HostDriver {
         case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }
         case (.tint, let slider as AppKitSliderView): return slider.trackFillColor.map { Self.color($0).propValue }
         case (.date, let picker as AppKitDatePickerView): return picker.date.propValue
-        case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
-        case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
+        case (.minimum, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
+        case (.maximum, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.color, let picker as AppKitColorPickerView): return Self.color(picker.color).propValue
         case (.choosesOpacity, let picker as AppKitColorPickerView): return picker.supportsAlpha.propValue

@@ -51,8 +51,8 @@ extension WebDriver {
         case (.date, is WebDatePickerView): return .some(try day("e.value", on: e)?.propValue)
         case (.color, is WebColorPickerView):
             return .some(try WebBrowser.evaluate("e.value", on: e).flatMap { Color(parsing: $0) }?.propValue)
-        case (.minimumDate, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
-        case (.maximumDate, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
+        case (.minimum, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
+        case (.maximum, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
         case (.time, is WebTimePickerView):
             let parts = (try WebBrowser.evaluate("e.value", on: e) ?? "").split(separator: ":").compactMap { Int($0) }
             return .some(parts.count >= 2 ? ClockTime(hour: parts[0], minute: parts[1], second: parts.count > 2 ? parts[2] : 0).propValue : nil)

@@ -407,8 +407,8 @@ extension WinUIDriver {
         case ("date", let picker as WinUIDatePickerView): return picker.date?.propValue
         case ("color", let picker as WinUIColorPickerView): return picker.color.propValue
         case ("choosesOpacity", let picker as WinUIColorPickerView): return picker.choosesOpacity.propValue
-        case ("minimumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimumDate"))?.propValue
-        case ("maximumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximumDate"))?.propValue
+        case ("minimum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimum"))?.propValue
+        case ("maximum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximum"))?.propValue
         case ("format", let picker as WinUIDatePickerView):
             return (try read(picker, "longDate") == "1" ? DateStyle.long : .short).propValue
         case ("time", let picker as WinUITimePickerView): return picker.time?.propValue

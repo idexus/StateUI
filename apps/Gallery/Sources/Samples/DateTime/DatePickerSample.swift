@@ -22,8 +22,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
             DatePicker($due)
                 .accessibilityIdentifier("datePicker.due")
                 .accessibilityLabel("Due date")
-                .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
-                .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
+                .minimum(CalendarDate(year: 2020, month: 1, day: 1))
+                .maximum(CalendarDate(year: 2030, month: 12, day: 31))
                 .format(.long)
                 .onDateChanged { date in
                     chosen = date.text

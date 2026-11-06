@@ -5,8 +5,8 @@
 ///
 ///     CalendarDate(year: 2026, month: 8, day: 2)
 ///
-/// What a `DatePicker` shows and reports, and what its `.minimumDate` and
-/// `.maximumDate` take. No time of day, no zone: `ClockTime` is the other half.
+/// What a `DatePicker` shows and reports, and what its `.minimum` and
+/// `.maximum` take. No time of day, no zone: `ClockTime` is the other half.
 ///
 /// Design: docs/design/types/dates-and-time.md#without-foundation
 public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepresentable {

@@ -106,8 +106,8 @@ extension ControlDictionary {
             @State var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 
             DatePicker($birthday)
-                .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
-                .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+                .minimum(CalendarDate(year: 1900, month: 1, day: 1))
+                .maximum(CalendarDate(year: 2026, month: 12, day: 31))
             """#),
 
         (EllipseContract.self, #"""

@@ -53,9 +53,9 @@ extension UIKitRegistrations {
             return picker
         }, members: { picker in
             picker.applies(
-                DatePickerContract.date, DatePickerContract.minimumDate,
-                DatePickerContract.maximumDate) { view, values in
-                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+                DatePickerContract.date, DatePickerContract.minimum,
+                DatePickerContract.maximum) { view, values in
+                view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
                 if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }

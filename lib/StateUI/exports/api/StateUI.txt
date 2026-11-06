@@ -3130,11 +3130,11 @@ swift.method DatePicker.layoutDirection(_:): @MainActor func layoutDirection(_ s
 swift.method DatePicker.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method DatePicker.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method DatePicker.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
-swift.method DatePicker.maximumDate(_:): @MainActor func maximumDate(_ state: Binding<CalendarDate>) -> DatePicker.Modified
+swift.method DatePicker.maximum(_:): @MainActor func maximum(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
-swift.method DatePicker.minimumDate(_:): @MainActor func minimumDate(_ state: Binding<CalendarDate>) -> DatePicker.Modified
+swift.method DatePicker.minimum(_:): @MainActor func minimum(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
@@ -3299,8 +3299,8 @@ swift.method DatePicker.visualState(_:_:): @MainActor func visualState(_ state: 
 swift.method DatePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePickerProperties.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
-swift.method DatePickerProperties.maximumDate(_:): @MainActor func maximumDate(_ value: CalendarDate) -> Self.Modified
-swift.method DatePickerProperties.minimumDate(_:): @MainActor func minimumDate(_ value: CalendarDate) -> Self.Modified
+swift.method DatePickerProperties.maximum(_:): @MainActor func maximum(_ value: CalendarDate) -> Self.Modified
+swift.method DatePickerProperties.minimum(_:): @MainActor func minimum(_ value: CalendarDate) -> Self.Modified
 swift.method DebugInspector.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10479,14 +10479,14 @@ swift.method Styling.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -
 swift.method Styling.margin(_:): @MainActor func margin(_ value: Insets) -> Self.Modified
 swift.method Styling.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method Styling.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
+swift.method Styling.maximum(_:): @MainActor func maximum(_ value: CalendarDate) -> Self.Modified
 swift.method Styling.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
-swift.method Styling.maximumDate(_:): @MainActor func maximumDate(_ value: CalendarDate) -> Self.Modified
 swift.method Styling.maximumHeight(_:): @MainActor func maximumHeight(_ value: Double) -> Self.Modified
 swift.method Styling.maximumLength(_:): @MainActor func maximumLength(_ value: Int) -> Self.Modified
 swift.method Styling.maximumLines(_:): @MainActor func maximumLines(_ value: Int) -> Self.Modified
 swift.method Styling.maximumWidth(_:): @MainActor func maximumWidth(_ value: Double) -> Self.Modified
+swift.method Styling.minimum(_:): @MainActor func minimum(_ value: CalendarDate) -> Self.Modified
 swift.method Styling.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
-swift.method Styling.minimumDate(_:): @MainActor func minimumDate(_ value: CalendarDate) -> Self.Modified
 swift.method Styling.minimumHeight(_:): @MainActor func minimumHeight(_ value: Double) -> Self.Modified
 swift.method Styling.minimumWidth(_:): @MainActor func minimumWidth(_ value: Double) -> Self.Modified
 swift.method Styling.miterLimit(_:): @MainActor func miterLimit(_ value: Double) -> Self.Modified
@@ -13643,8 +13643,8 @@ swift.type.property DatePickerContract.date: static let date: ElementProperty<Da
 swift.type.property DatePickerContract.dateChanged: static let dateChanged: ElementEvent<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.format: static let format: ElementProperty<DatePickerContract, DateStyle>
 swift.type.property DatePickerContract.isOpen: static let isOpen: ElementProperty<DatePickerContract, Bool>
-swift.type.property DatePickerContract.maximumDate: static let maximumDate: ElementProperty<DatePickerContract, CalendarDate>
-swift.type.property DatePickerContract.minimumDate: static let minimumDate: ElementProperty<DatePickerContract, CalendarDate>
+swift.type.property DatePickerContract.maximum: static let maximum: ElementProperty<DatePickerContract, CalendarDate>
+swift.type.property DatePickerContract.minimum: static let minimum: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.name: static var name: String { get }
 swift.type.property DatePickerContract.opened: static let opened: ElementEvent<DatePickerContract, Void>
 swift.type.property DecorableTextElementContract.name: static let name: String

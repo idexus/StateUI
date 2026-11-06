@@ -183,8 +183,8 @@ final class ControlTests: XCTestCase {
             ControlCase("DatePicker", source: "DatePicker.swift",
                 DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
                     .date(CalendarDate(year: 2026, month: 8, day: 9))
-                    .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
-                    .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+                    .minimum(CalendarDate(year: 2026, month: 1, day: 1))
+                    .maximum(CalendarDate(year: 2026, month: 12, day: 31))
                     .format(.long)
                     .isOpen(false)
                     .onDateChanged { _ in }

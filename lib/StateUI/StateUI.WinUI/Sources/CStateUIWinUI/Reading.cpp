@@ -676,8 +676,8 @@ namespace {
             if (what == "contentAlignment") return number(static_cast<int32_t>(picker.HorizontalContentAlignment()));
         }
         if (auto picker = object.try_as<controls::CalendarDatePicker>()) {
-            if (what == "minimumDate") return day(picker.MinDate());
-            if (what == "maximumDate") return day(picker.MaxDate());
+            if (what == "minimum") return day(picker.MinDate());
+            if (what == "maximum") return day(picker.MaxDate());
             if (what == "dateFormat") return narrow(picker.DateFormat());
             if (what == "longDate") {
                 winrt::Windows::Globalization::DateTimeFormatting::DateTimeFormatter longDate(L"longdate");

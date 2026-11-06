@@ -614,7 +614,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Canvas](controls/Canvas.md) | `drawing` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
-| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 3 ☑️ | 4 ✅ · 3 – |
+| [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximum`, `minimum`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 3 ☑️ | 4 ✅ · 3 – |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [HStack](controls/HStack.md) | `lineAlignment`, `rowSpacing`, `wraps` | 3 | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -708,17 +708,17 @@ realizes the element and each of its members.
 `itemsLayout`, `keyboardShortcut`, `keysTaken`, `layoutBody`, `layoutDirection`,
 `letsInputThrough`, `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`,
 `lineJoin`, `lineWidth`, `location`, `magnifies`, `margin`, `maximum`,
-`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
-`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
-`mirrorsRightToLeft`, `miterLimit`, `onIcon`, `opacity`, `options`, `order`,
-`padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`,
-`part`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
-`position`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
-`showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
-`showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
+`maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`,
+`minimum`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`,
+`onIcon`, `opacity`, `options`, `order`, `padding`, `pans`, `panTouchCount`,
+`panXChannel`, `panYChannel`, `parameters`, `part`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `points`, `position`, `presentation`,
+`progress`, `region`, `role`, `rotates`, `rotation`, `rotationX`, `rotationY`,
+`rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollEdge`, `scrollOffset`,
+`selectedIndex`, `selectedItems`, `selectedTab`, `selectionLength`,
+`selectionMode`, `shape`, `showsBackButton`, `showsClearButton`,
+`showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`, `showsSidebar`,
+`showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,
 `sidebarOverlays`, `source`, `spacing`, `standsAlone`, `step`, `stroke`,
 `style`, `submitLabel`, `subtitle`, `swipeDirections`, `swipeThreshold`,

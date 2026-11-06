@@ -30,16 +30,16 @@ public enum DatePickerContract: ElementContract {
     public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)
 
     /// The latest day the calendar offers.
-    public static let maximumDate = ElementProperty<Self, CalendarDate>("maximumDate", layer: .native)
+    public static let maximum = ElementProperty<Self, CalendarDate>("maximum", layer: .native, travels: false)
 
     /// The earliest day the calendar offers.
-    public static let minimumDate = ElementProperty<Self, CalendarDate>("minimumDate", layer: .native)
+    public static let minimum = ElementProperty<Self, CalendarDate>("minimum", layer: .native, travels: false)
 
     /// The calendar has opened.
     public static let opened = ElementEvent<Self, Void>("opened", layer: .native)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        closed, date, dateChanged, format, isOpen, maximumDate, minimumDate, opened,
+        closed, date, dateChanged, format, isOpen, maximum, minimum, opened,
     ]
 }

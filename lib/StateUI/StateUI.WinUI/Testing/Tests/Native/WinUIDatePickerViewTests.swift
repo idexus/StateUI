@@ -15,7 +15,7 @@ final class WinUIDatePickerViewTests: XCTestCase {
         try onUIThread {
             let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
             let host = WinUIRenderer.running {
-                VStack { DatePicker(due.projectedValue).maximumDate(CalendarDate(year: 2026, month: 6, day: 30)) }
+                VStack { DatePicker(due.projectedValue).maximum(CalendarDate(year: 2026, month: 6, day: 30)) }
             }
             let picker = try XCTUnwrap(host.views(WinUIDatePickerView.self).first)
 

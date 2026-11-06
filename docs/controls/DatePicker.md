@@ -8,8 +8,8 @@ A day, chosen from the platform's own calendar.
 @State var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 
 DatePicker($birthday)
-    .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
-    .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+    .minimum(CalendarDate(year: 1900, month: 1, day: 1))
+    .maximum(CalendarDate(year: 2026, month: 12, day: 31))
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.
@@ -57,10 +57,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/DatePickerCont
 <tr><td colspan="9">AppKit: AppKit's date picker writes its day and time in the user's own way, whatever form is asked.<br>UIKit, Web: not realized<br>Android Views: only through the host's own: read format of DatePicker: the form the relay writes the field in<br>WinUI 3: WinUI writes the long and the short day in the user's own way, and the medium as the short.<br>GTK 4: GTK writes the long and the short day in the user's own way, and the medium as the short.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit: not realized<br>Web: The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: GtkCalendar offers every day: one the user picks past the range stands at its end.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>minimumDate</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: GtkCalendar offers every day: one the user picks past the range stands at its end.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>maximum</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read maximum of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: GtkCalendar offers every day: one the user picks past the range stands at its end.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>minimum</code></td><td>property</td><td><code>CalendarDate</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: read minimum of DatePicker: the bounds the relay hands its calendar as it opens<br>GTK 4: GtkCalendar offers every day: one the user picks past the range stands at its end.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit: not realized<br>Web: The browser says nothing as a picker's list or calendar opens.</td></tr></tbody>
 </table>

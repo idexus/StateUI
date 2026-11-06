@@ -54,12 +54,12 @@ extension AppKitRegistrations {
             return picker
         }, members: { picker in
             picker.applies(
-                DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
+                DatePickerContract.date, DatePickerContract.minimum, DatePickerContract.maximum,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
                 VisualElementContract.isEnabled) { view, values in
                 dress(view, values)
-                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+                view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
             picker.raises(DatePickerContract.dateChanged)

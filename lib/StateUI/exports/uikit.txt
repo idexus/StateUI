@@ -47,8 +47,8 @@ ColorPicker
   colorChanged()
 DatePicker
   date
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   dateChanged()
 Ellipse
   contentMode

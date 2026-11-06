@@ -7,19 +7,19 @@ public protocol DatePickerProperties: PropertyContainer {}
 
 extension DatePickerProperties {
     /// The earliest day the calendar offers - everything before it is refused.
-    public func minimumDate(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.minimumDate, value)
+    public func minimum(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.minimum, value)
     }
 
     /// The latest day the calendar offers - everything after it is refused.
     ///
     ///     DatePicker($birthday)
-    ///         .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+    ///         .maximum(CalendarDate(year: 2026, month: 12, day: 31))
     ///
     /// There is no `today` to hand: a page whose limit is the current day
     /// holds that day in state.
-    public func maximumDate(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.maximumDate, value)
+    public func maximum(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.maximum, value)
     }
 
     /// How much of the day is written out in the field - `.long`
@@ -35,7 +35,7 @@ extension DatePickerProperties {
 ///     @State private var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 ///     …
 ///     DatePicker($birthday)
-///         .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
+///         .minimum(CalendarDate(year: 1900, month: 1, day: 1))
 ///         .format(.long)
 ///
 /// The date is a `CalendarDate`: a year, a month and a day. The picker takes
@@ -74,7 +74,7 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     ///
     /// The host shows the state's day and writes back the one the user
     /// chooses, with no view rebuilt for it. A day outside
-    /// `minimumDate`…`maximumDate` is shown clamped while the state keeps the
+    /// `minimum`…`maximum` is shown clamped while the state keeps the
     /// day written.
     ///
     /// - Parameter state: the state shown, and written back into when a day is
@@ -138,14 +138,14 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
 }
 
 extension DatePicker {
-    /// `minimumDate` from a state, `$x`: the host sets each new earliest day as it stands.
-    public func minimumDate(_ state: Binding<CalendarDate>) -> Modified {
-        twin(DatePickerContract.minimumDate, by: state)
+    /// `minimum` from a state, `$x`: the host sets each new earliest day as it stands.
+    public func minimum(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.minimum, by: state)
     }
 
-    /// `maximumDate` from a state, `$x`: the host sets each new latest day as it stands.
-    public func maximumDate(_ state: Binding<CalendarDate>) -> Modified {
-        twin(DatePickerContract.maximumDate, by: state)
+    /// `maximum` from a state, `$x`: the host sets each new latest day as it stands.
+    public func maximum(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.maximum, by: state)
     }
 
     /// `format` from a state, `$x`: the host writes the day each new way as it stands.

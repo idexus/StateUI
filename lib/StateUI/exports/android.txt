@@ -50,8 +50,8 @@ DatePicker
   format
   isFontAutoScalingEnabled
   isOpen
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   textColor
   textStyle
   closed()
