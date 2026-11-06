@@ -5,7 +5,7 @@
 ///
 ///     @State private var agreed = false
 ///     …
-///     CheckBox($agreed).text("I agree to the terms")
+///     CheckBox("I agree to the terms", isOn: $agreed)
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.
 /// Given a plain `Bool` it only shows: `.onToggled` is then the one way
@@ -32,6 +32,18 @@ public struct CheckBox: ElementView, TextualElement, TintElement, FocusElement {
     /// Two-way: shows what the binding holds, and writes back what is ticked.
     public init(_ state: Binding<Bool>) {
         self = CheckBox().isOn(state)
+    }
+
+    /// A box with its words beside it, ticked or not. One-way: what is ticked goes nowhere without `.onToggled`.
+    public init(_ text: String, isOn: Bool) {
+        self = CheckBox(isOn).text(text)
+    }
+
+    /// A box with its words beside it, two-way: shows what the binding holds, and writes back what is ticked.
+    ///
+    ///     CheckBox("I agree to the terms", isOn: $agreed)
+    public init(_ text: String, isOn state: Binding<Bool>) {
+        self = CheckBox(state).text(text)
     }
 
     /// Whether the box is ticked. Usually given in the initializer.

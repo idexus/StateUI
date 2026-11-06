@@ -392,8 +392,7 @@ Choice controls follow the same binding rule:
 @State var size = "Medium"
 
 VStack {
-    CheckBox($accepted)
-        .text("I accept the terms")
+    CheckBox("I accept the terms", isOn: $accepted)
 
     Slider($level)
         .minimum(0)
@@ -451,8 +450,7 @@ VStack {
     Spinner($loading)
         .height(48)
 
-    Switch($loading)
-        .text("Working")
+    Switch("Working", isOn: $loading)
 
     ProgressBar(done / 5)
         .height(8)

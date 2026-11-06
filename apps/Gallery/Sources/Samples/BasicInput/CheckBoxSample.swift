@@ -17,8 +17,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
             // The ticks are read here, so every box builds this closure.
             DebugInfoLabel()
 
-            CheckBox($agreed)
-                .text("I have read the terms")
+            CheckBox("I have read the terms", isOn: $agreed)
                 .accessibilityIdentifier("checkBox.agreed")
                 .tint(Palette.accent)
 

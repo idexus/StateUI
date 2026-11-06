@@ -3,7 +3,7 @@
 
 /// An on/off toggle, and the words it says beside it.
 ///
-///     Switch($wifi).text("Wi-Fi")
+///     Switch("Wi-Fi", isOn: $wifi)
 ///         .tint(.green)
 ///
 /// Given a binding it shows the value and writes every flip back. Given a plain
@@ -34,6 +34,18 @@ public struct Switch: ElementView, TextualElement, TintElement, FocusElement {
     /// Two-way: shows what the binding holds, and writes back what is flipped.
     public init(_ state: Binding<Bool>) {
         self = Switch().isOn(state)
+    }
+
+    /// A switch with its words beside it, on or off. One-way: the flip goes nowhere without `.onToggled`.
+    public init(_ text: String, isOn: Bool) {
+        self = Switch(isOn).text(text)
+    }
+
+    /// A switch with its words beside it, two-way: shows what the binding holds, and writes back what is flipped.
+    ///
+    ///     Switch("Wi-Fi", isOn: $wifi)
+    public init(_ text: String, isOn state: Binding<Bool>) {
+        self = Switch(state).text(text)
     }
 
     /// Which way it is thrown - true for on. Usually given in the initializer.

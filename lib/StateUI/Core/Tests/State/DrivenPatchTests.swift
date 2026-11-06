@@ -519,6 +519,9 @@ final class DrivenPatchTests: XCTestCase {
              ProgressBar().progress(number.projectedValue).node, "ProgressBar.progress")
         same(Spinner(flag.projectedValue).node,
              Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
+        same(Switch("Sound", isOn: flag.projectedValue).node,
+             Switch(flag.projectedValue).text("Sound").node, "Switch's words")
+        same(CheckBox("Agree", isOn: true).node, CheckBox(true).text("Agree").node, "CheckBox's words")
     }
 
     /// A PROPERTY CROSSING AS IT IS TAKES A STATE: a map's settings, a picker's range and form, a bar's look and an

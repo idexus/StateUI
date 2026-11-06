@@ -2064,8 +2064,7 @@ enum Listings {
                 // The ticks are read here, so every box builds this closure.
                 DebugInfoLabel()
 
-                CheckBox($agreed)
-                    .text("I have read the terms")
+                CheckBox("I have read the terms", isOn: $agreed)
 
                 Text(agreed ? "Ticked" : "Not ticked")
 
@@ -11538,8 +11537,7 @@ enum Listings {
                 // The flag is read here, so every flip builds this closure.
                 DebugInfoLabel()
 
-                Switch($soundOn)
-                    .text("Sound")
+                Switch("Sound", isOn: $soundOn)
                     // Runs beside the binding's write-back, carrying what the
                     // switch NOW is rather than what this side guessed.
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
