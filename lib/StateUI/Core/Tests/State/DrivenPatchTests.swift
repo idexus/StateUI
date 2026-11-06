@@ -311,9 +311,10 @@ final class DrivenPatchTests: XCTestCase {
     func testAMotionLayoutRegistersOnTheLayoutAlone() throws {
         let page = try page(
             MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
-                .shade(
+                .shade {
                     Rectangle()
-                        .fill(.black))
+                        .fill(.black)
+                }
                 .node)
         let layout = try XCTUnwrap(page.subtree.first { $0.type == .motionLayout })
         let ties = layout.driven?.bindings ?? [:]

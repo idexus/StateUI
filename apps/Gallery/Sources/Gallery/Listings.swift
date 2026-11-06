@@ -4518,9 +4518,10 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(
+            return run.shade {
                 Rectangle()
-                    .fill(Color(hex: 0x000000)))
+                    .fill(Color(hex: 0x000000))
+            }
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -4782,11 +4783,15 @@ enum Listings {
                         Text(item)
                     }
                     .id(shelf.name)
-                    .header(Text(shelf.name)
-                        .fontWeight(.bold))
+                    .header {
+                        Text(shelf.name)
+                            .fontWeight(.bold)
+                    }
 
                     return counts
-                        ? section.footer(Text("\(shelf.items.count) items"))
+                        ? section.footer {
+                            Text("\(shelf.items.count) items")
+                        }
                         : section
                 })
                 .gridRow(1)
@@ -6938,9 +6943,13 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .header(Text("N and N², a thousand times")
-                    .fontWeight(.bold))
-                .footer(Text("That is all of them."))
+                .header {
+                    Text("N and N², a thousand times")
+                        .fontWeight(.bold)
+                }
+                .footer {
+                    Text("That is all of them.")
+                }
                 .selection($chosen)
                 .gridRow(1)
 
@@ -7880,9 +7889,10 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
-            .shade(
+            .shade {
                 Rectangle()
-                    .fill(Color(hex: 0x000000)))
+                    .fill(Color(hex: 0x000000))
+            }
             .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
             // AT REST - the ring and every card still - it says where, once.
             .onSettled { turned in
@@ -9860,7 +9870,7 @@ enum Listings {
                     Text(item)
                 }
                 // An empty list keeps its pull.
-                .emptyView(Text("Nothing yet").textColor(Palette.subtle))
+                .emptyView { Text("Nothing yet").textColor(Palette.subtle) }
                 .isRefreshing($refreshing)
                 .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
                 .gridRow(1)

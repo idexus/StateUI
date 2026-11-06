@@ -129,7 +129,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let days = State(wrappedValue: ["Yesterday"])
         let host = UIKitRenderer.running(reducesMotion: true) {
             ItemsView(sections: days.wrappedValue.map { day in
-                Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
+                Section([day + " note"]) { Text($0) }.id(day).header { Text(day) }
             })
             .width(300).height(400)
         }
@@ -293,7 +293,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let numbers = State(wrappedValue: Array(0..<1_000))
         let host = UIKitRenderer.running {
             ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
-                .header(Text("Rows").fontSize(11).padding(8))
+                .header { Text("Rows").fontSize(11).padding(8) }
                 .width(300).height(500)
         }
         defer { host.finish() }

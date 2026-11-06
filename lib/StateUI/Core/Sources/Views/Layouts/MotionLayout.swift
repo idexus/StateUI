@@ -361,19 +361,25 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// What to draw over a placed view to darken it, at the opacity its placement answers as `shade`.
     ///
-    ///     .shade(
+    ///     .shade {
     ///         Rectangle()
     ///             .fill(.black)
-    ///             .cornerRadius(14))
+    ///             .cornerRadius(14)
+    ///     }
     ///
     /// Give it the corners the views have. Where views overlap, a shade darkens a far view without showing the
     /// one behind it, as fading it would.
     ///
-    /// - Parameter view: what to draw over each placed view.
+    /// - Parameter content: what to draw over each placed view.
     /// - Returns: the layout, shaded.
-    public func shade(_ view: some View) -> Self {
+    public func shade<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
+        shading(content().node)
+    }
+
+    /// The layout with `mask` drawn over each placed view.
+    func shading(_ mask: Node) -> Self {
         var copy = self
-        copy.mask = view.node
+        copy.mask = mask
         return copy
     }
 

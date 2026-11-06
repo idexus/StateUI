@@ -18,7 +18,7 @@ final class ItemsIdentityTests: XCTestCase {
         let values = (0..<64).map { _ in Set(0..<16) }
         XCTAssertEqual(Set(values).count, 1)
         let entries = values.map { value in
-            source([Section([value]) { _ in Text("One") }.id(value).header(Text("Header"))]).entries
+            source([Section([value]) { _ in Text("One") }.id(value).header { Text("Header") }]).entries
         }
         XCTAssertTrue(entries.dropFirst().allSatisfy { $0 == entries[0] })
     }
@@ -26,8 +26,8 @@ final class ItemsIdentityTests: XCTestCase {
     func testTheDescriptionDoesNotChooseAnItemOrSectionToken() {
         let first = DescribedItemID(value: 1, words: "first")
         let second = DescribedItemID(value: 1, words: "second")
-        let one = source([Section([first]) { _ in Text("One") }.id(first).header(Text("Header"))]).entries
-        let other = source([Section([second]) { _ in Text("One") }.id(second).header(Text("Header"))]).entries
+        let one = source([Section([first]) { _ in Text("One") }.id(first).header { Text("Header") }]).entries
+        let other = source([Section([second]) { _ in Text("One") }.id(second).header { Text("Header") }]).entries
         XCTAssertEqual(one, other)
     }
 
@@ -81,7 +81,7 @@ final class ItemsIdentityTests: XCTestCase {
     func testItemSectionAndDecorationTokensHaveSeparateDomains() {
         let ids: [AnyHashable] = [Set([1, 2]), "\u{1D}i1", "\u{1D}s1", "\u{1E}header", "", "a\u{0}b"]
         let made = ItemsSource(sections: [
-            Section(ids) { _ in Text("One") }.id(Set([1, 2])).header(Text("Section")),
+            Section(ids) { _ in Text("One") }.id(Set([1, 2])).header { Text("Section") },
         ])
         made.finish(header: Text("List"), footer: Text("Footer"), book: ItemsBook<AnyHashable>())
         let entries = made.entries

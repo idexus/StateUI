@@ -342,7 +342,7 @@ final class ControlTests: XCTestCase {
             // end raise. A composed view, so the case is its body built.
             ControlCase("ItemsView", source: "ItemsView.swift",
                 ItemsView(["one", "two"]) { Text($0) }
-                    .header(Text("Words"))
+                    .header { Text("Words") }
                     .itemsLayout(.grid(minimumItemWidth: 120, spacing: 8))
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
@@ -363,9 +363,10 @@ final class ControlTests: XCTestCase {
                 }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
-                .shade(
+                .shade {
                     Rectangle()
-                        .fill(.black))
+                        .fill(.black)
+                }
                 .parameterMotion(.spring(response: .milliseconds(240)))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)

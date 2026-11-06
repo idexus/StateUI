@@ -221,6 +221,14 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(unmet.sorted(), [], "the application surface holds a type no application meets")
     }
 
+    /// A view slot - a header, a footer, what stands in for no items, a shade - is a builder, never a view handed
+    /// as a value, so a slot takes an `if` as every body does.
+    func testEveryViewSlotIsABuilder() throws {
+        let slots = try Self.recorded().split(separator: "\n").filter { $0.contains(/\w+: (some|any) View[,)]/) }
+
+        XCTAssertEqual(slots.map(String.init), [], "a declaration takes a view as a value")
+    }
+
     /// Whatever takes a `Material` takes a `Color` and a `Brush` beside it, and a state of a color where it takes
     /// one of a material: a background is written alike on a view, a page, a bar and a sidebar. A run of text is
     /// painted by the platform's text in one color, so it takes no brush.

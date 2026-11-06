@@ -446,10 +446,11 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(
+                .shade {
                     Rectangle()
                         .fill(Color(hex: 0x000000))
-                        .cornerRadius(16))
+                        .cornerRadius(16)
+                }
                 .node
         }
 
@@ -502,9 +503,9 @@ final class GalleryViewTests: XCTestCase {
             .fill(Color(hex: 0x000000))
             .cornerRadius(16)
 
-        let whole = farCard { $0.shade(mask) }
-        let half = farCard { $0.shade(mask, amount: 0.5) }
-        let none = farCard { $0.shade(mask).fade(0) }
+        let whole = farCard { $0.shade { mask } }
+        let half = farCard { $0.shade(amount: 0.5) { mask } }
+        let none = farCard { $0.shade { mask }.fade(0) }
 
         XCTAssertEqual(half.shade, whole.shade / 2, accuracy: 0.001, """
             the amount says how far the shade goes, and half of it is half as \
@@ -525,10 +526,10 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(
+                    .shade(amount: amount) {
                         Rectangle()
-                            .fill(Color(hex: 0x000000)),
-                        amount: amount)
+                            .fill(Color(hex: 0x000000))
+                    }
                     .node
             }).card(4)?.shade ?? -1
         }
@@ -911,7 +912,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             GalleryView([Int]()) { number in Text("\(number)") }
-                .emptyView(Text("nothing here"))
+                .emptyView { Text("nothing here") }
                 .node)
 
         XCTAssertNil(find(.zStack, in: patch))
@@ -958,9 +959,10 @@ final class GalleryViewTests: XCTestCase {
         let shaded = placements(
             laid(Renders(), {
                 self.gallery(3)
-                    .shade(
+                    .shade {
                         Rectangle()
-                            .fill(.black))
+                            .fill(.black)
+                    }
                     .node
             }).whole)
 

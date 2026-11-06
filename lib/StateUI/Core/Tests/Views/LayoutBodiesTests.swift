@@ -145,7 +145,7 @@ final class LayoutFollowerTests: XCTestCase {
                 [Placement(Rect(at * 100, 0, 10, 10))]
             }
             .parameterMotion(.none)
-            return (shaded ? layout.shade(Rectangle()) : layout).node
+            return (shaded ? layout.shade { Rectangle() } : layout).node
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
         let (worn, area) = (try XCTUnwrap(layout.driven?[.parameters]?.state), try XCTUnwrap(layout.driven?[.area]?.state))

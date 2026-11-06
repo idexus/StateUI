@@ -4332,7 +4332,7 @@ swift.method GalleryView.contextMenu(_:): @MainActor func contextMenu(@MenuBuild
 swift.method GalleryView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method GalleryView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
-swift.method GalleryView.emptyView(_:): @MainActor func emptyView(_ view: some View) -> GalleryView<Items, ID>
+swift.method GalleryView.emptyView(_:): @MainActor func emptyView<Content>(@ViewBuilder _ content: () -> Content) -> GalleryView<Items, ID> where Content : View
 swift.method GalleryView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GalleryView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -4490,7 +4490,7 @@ swift.method GalleryView.samples(_:into:_:): @MainActor func samples<Value>(_ so
 swift.method GalleryView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.shade(_:amount:): @MainActor func shade(_ view: some View, amount: Double = 1) -> GalleryView<Items, ID>
+swift.method GalleryView.shade(amount:_:): @MainActor func shade<Content>(amount: Double = 1, @ViewBuilder _ content: () -> Content) -> GalleryView<Items, ID> where Content : View
 swift.method GalleryView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method GalleryView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
@@ -5567,18 +5567,18 @@ swift.method ItemsView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder
 swift.method ItemsView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ItemsView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
-swift.method ItemsView.emptyView(_:): @MainActor func emptyView(_ view: some View) -> ItemsView<ID>
+swift.method ItemsView.emptyView(_:): @MainActor func emptyView<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
 swift.method ItemsView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ItemsView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method ItemsView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method ItemsView.footer(_:): @MainActor func footer(_ view: some View) -> ItemsView<ID>
+swift.method ItemsView.footer(_:): @MainActor func footer<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
 swift.method ItemsView.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method ItemsView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
-swift.method ItemsView.header(_:): @MainActor func header(_ view: some View) -> ItemsView<ID>
+swift.method ItemsView.header(_:): @MainActor func header<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
 swift.method ItemsView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
@@ -6873,7 +6873,7 @@ swift.method MotionLayout.samples(_:into:_:): @MainActor func samples<Value>(_ s
 swift.method MotionLayout.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.shade(_:): @MainActor func shade(_ view: some View) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.shade(_:): @MainActor func shade<Content>(@ViewBuilder _ content: () -> Content) -> MotionLayout<Items, ID, Parameters> where Content : View
 swift.method MotionLayout.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method MotionLayout.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
@@ -9089,8 +9089,8 @@ swift.method SearchField.visualState(_:_:): @MainActor func visualState(_ state:
 swift.method SearchField.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchFieldProperties.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
-swift.method Section.footer(_:): func footer(_ view: some View) -> Section<ID>
-swift.method Section.header(_:): func header(_ view: some View) -> Section<ID>
+swift.method Section.footer(_:): func footer<Content>(@ViewBuilder _ content: () -> Content) -> Section<ID> where Content : View
+swift.method Section.header(_:): func header<Content>(@ViewBuilder _ content: () -> Content) -> Section<ID> where Content : View
 swift.method Section.id(_:): func id(_ value: some Hashable) -> Section<ID>
 swift.method Separator.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified

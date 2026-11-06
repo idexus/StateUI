@@ -102,7 +102,7 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 ItemsView(sections: days.wrappedValue.map { day in
-                    Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
+                    Section([day + " note"]) { Text($0) }.id(day).header { Text(day) }
                 })
                 .width(300).height(400)
             }
@@ -140,7 +140,7 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 ItemsView(numbers.wrappedValue) { Text("Row \($0)").padding(10) }
-                    .header(Text("Rows").padding(8))
+                    .header { Text("Rows").padding(8) }
                     .width(300).height(500)
             }
         }
@@ -177,7 +177,7 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 let list = ItemsView(0..<3) { Text("Row \($0)") }
-                (headed.wrappedValue ? list.header(Text("Rows")) : list).width(300).height(400)
+                (headed.wrappedValue ? list.header { Text("Rows") } : list).width(300).height(400)
             }
         }
         defer { renderer.finish() }

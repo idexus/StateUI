@@ -32,7 +32,7 @@ private struct RefreshingList: ExampleContent {
                     .padding(horizontal: 14, vertical: 10)
             }
             // An empty list keeps its pull.
-            .emptyView(Text("Nothing yet").textColor(Palette.subtle))
+            .emptyView { Text("Nothing yet").textColor(Palette.subtle) }
             .isRefreshing($refreshing)
             .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
             .gridRow(1)

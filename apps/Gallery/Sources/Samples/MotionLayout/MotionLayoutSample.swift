@@ -235,10 +235,11 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
-        .shade(
+        .shade {
             Rectangle()
                 .fill(Color(hex: 0x000000))
-                .cornerRadius(16))
+                .cornerRadius(16)
+        }
         .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
         // AT REST - the ring and every card still - it says where, once.
         .onSettled { turned in

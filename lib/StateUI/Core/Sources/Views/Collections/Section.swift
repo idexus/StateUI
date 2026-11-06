@@ -7,7 +7,7 @@
 ///     ItemsView(sections: shelves.map { shelf in
 ///         Section(shelf.items) { Text($0) }
 ///             .id(shelf.name)
-///             .header(Text(shelf.name).fontWeight(.bold))
+///             .header { Text(shelf.name).fontWeight(.bold) }
 ///     })
 ///
 /// A section is known by the value `.id` gives it, as an item is by its own;
@@ -66,16 +66,16 @@ public struct Section<ID: Hashable> {
     }
 
     /// A view standing before the section's items.
-    public func header(_ view: some View) -> Self {
+    public func header<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.header = view
+        copy.header = content()
         return copy
     }
 
     /// A view standing after the section's items.
-    public func footer(_ view: some View) -> Self {
+    public func footer<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.footer = view
+        copy.footer = content()
         return copy
     }
 }

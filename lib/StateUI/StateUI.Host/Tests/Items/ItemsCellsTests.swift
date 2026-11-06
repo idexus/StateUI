@@ -56,7 +56,7 @@ private struct ChangingApplication: Application {
 private struct ChangingPage: View {
     var body: some View {
         var list = ItemsView(Changing.items) { Text("\($0)") }
-        if let header = Changing.header { list = list.header(Text(header)) }
+        if let header = Changing.header { list = list.header { Text(header) } }
         return list.onEndReached(within: 0) { Changing.ends += 1 }
     }
 }

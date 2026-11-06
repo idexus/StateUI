@@ -23,7 +23,7 @@ final class WinUIItemsViewTests: XCTestCase {
                         }
                         .padding(horizontal: 14, vertical: 10)
                     }
-                    .header(Text("N and N²").padding(horizontal: 14, vertical: 8))
+                    .header { Text("N and N²").padding(horizontal: 14, vertical: 8) }
                     .gridRow(0)
 
                     Text("Tap a row.").gridRow(1)

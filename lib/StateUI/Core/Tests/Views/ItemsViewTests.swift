@@ -60,7 +60,7 @@ final class ItemsViewTests: XCTestCase {
             built.counts[number, default: 0] += 1
             return Text("\(number)")
         }
-        .header(Text("Numbers")).node))
+        .header { Text("Numbers") }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.header, "\u{1E}header")
@@ -257,8 +257,8 @@ final class ItemsViewTests: XCTestCase {
     func testSectionsHoldTheirItemsUnderTheirValues() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
-            Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
-            Section(["Plum"]) { Text($0) }.id("Stone").footer(Text("1 item")),
+            Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header { Text("Fruit") },
+            Section(["Plum"]) { Text($0) }.id("Stone").footer { Text("1 item") },
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
@@ -379,7 +379,7 @@ final class ItemsViewTests: XCTestCase {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
             Section([Twin(raw: 1), Twin(raw: 2), Twin(raw: 1)]) { Text("\($0.raw)") }.id("shelf"),
-            Section([Twin(raw: 3)]) { Text("\($0.raw)") }.id("shelf").header(Text("Shelf")),
+            Section([Twin(raw: 3)]) { Text("\($0.raw)") }.id("shelf").header { Text("Shelf") },
             Section([Twin(raw: 4)]) { Text("\($0.raw)") }.id("a\u{0}b"),
             Section([Twin(raw: 5)]) { Text("\($0.raw)") }.id("a\u{0}c"),
         ]).node))
@@ -396,7 +396,7 @@ final class ItemsViewTests: XCTestCase {
     func testAnItemWhoseWordsReadAsTheHeadersNameIsNamedApart() throws {
         let renders = Renders()
         func tree(_ items: [String]) -> Node {
-            ItemsView(items) { CounterRow(name: "item \($0)") }.header(CounterRow(name: "header")).node
+            ItemsView(items) { CounterRow(name: "item \($0)") }.header { CounterRow(name: "header") }.node
         }
         let list = try list(in: renders.render(tree(["x"])))
         let before = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
@@ -416,8 +416,8 @@ final class ItemsViewTests: XCTestCase {
     func testASectionOfEmptyWordsKeepsItsHeaderApartFromTheLists() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
-            Section(["a"]) { Text($0) }.id("").header(Text("Section")),
-        ]).header(Text("List")).node))
+            Section(["a"]) { Text($0) }.id("").header { Text("Section") },
+        ]).header { Text("List") }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
         XCTAssertEqual(entries.header, "\u{1E}header", "the list's own header is named as with no section")
@@ -472,8 +472,8 @@ final class ItemsViewTests: XCTestCase {
     func testAnEmptyListIsItsEmptyView() throws {
         let renders = Renders()
         let patch = renders.render(ItemsView([Int]()) { Text("\($0)") }
-            .header(Text("Numbers"))
-            .emptyView(Text("Nothing yet")).node)
+            .header { Text("Numbers") }
+            .emptyView { Text("Nothing yet") }.node)
 
         XCTAssertNil(patch.subtree.first { $0.type == .itemsView })
         XCTAssertEqual(patch.subtree.first { $0.type == .text }?.props[.text], .string("Nothing yet"))
@@ -496,8 +496,8 @@ final class ItemsViewTests: XCTestCase {
         let base = ItemsView(["a"]) { Text($0) }
         let renders = Renders()
         let tree = renders.render(VStack {
-            base.header(Text("First"))
-            base.header(Text("Second"))
+            base.header { Text("First") }
+            base.header { Text("Second") }
         }.node)
 
         for list in tree.subtree.filter({ $0.type == .itemsView }) {
@@ -560,7 +560,7 @@ private struct TitledList: View {
     let list = ItemsView(["a"]) { Text($0) }
 
     var body: some View {
-        list.header(Text(title.wrappedValue))
+        list.header { Text(title.wrappedValue) }
     }
 }
 
@@ -617,8 +617,8 @@ private struct CountingShelf: View {
         ItemsView(sections: [
             Section(["a"]) { _ in CounterRow(name: "item") }
                 .id(which.wrappedValue)
-                .header(CounterRow(name: "header"))
-                .footer(CounterRow(name: "footer")),
+                .header { CounterRow(name: "header") }
+                .footer { CounterRow(name: "footer") },
         ])
     }
 }

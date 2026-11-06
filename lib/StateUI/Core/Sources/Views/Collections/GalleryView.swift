@@ -77,7 +77,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What stands in when there are no items at all.
     private var empty: (any View)?
 
-    /// What is drawn over a far card to darken it. See `shade(_:amount:)`.
+    /// What is drawn over a far card to darken it. See `shade(amount:_:)`.
     private var mask: (any View)?
 
     /// How far the shade goes, from 0 to 1.
@@ -276,21 +276,22 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// What the gallery shows while it has no items at all.
     ///
-    /// - Parameter view: what stands in for the cards.
+    /// - Parameter content: what stands in for the cards.
     /// - Returns: the gallery, showing that instead of nothing.
-    public func emptyView(_ view: some View) -> Self {
+    public func emptyView<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.empty = view
+        copy.empty = content()
         return copy
     }
 
     /// What to draw over a card to send it into the background, and how far.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(
+    ///         .shade {
     ///             Rectangle()
     ///                 .fill(Color(hex: 0x000000))
-    ///                 .cornerRadius(14))
+    ///                 .cornerRadius(14)
+    ///         }
     ///
     /// A shade darkens a far card without showing the card behind it, as
     /// fading would; the card in front wears none of it. Give the view the
@@ -298,26 +299,27 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// `fade(_:)` says otherwise.
     ///
     /// - Parameters:
-    ///   - view: what to draw over each card.
     ///   - amount: how dark the furthest card goes, from 0 (not at all) to 1
     ///     (as far as the shape says). The whole of it, unless said.
+    ///   - content: what to draw over each card.
     /// - Returns: the gallery, darkening its far cards.
-    public func shade(_ view: some View, amount: Double = 1) -> Self {
+    public func shade<Content: View>(amount: Double = 1, @ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.mask = view
-        copy.shades = Self.fraction(amount, "shade(_:amount:)")
+        copy.mask = content()
+        copy.shades = Self.fraction(amount, "shade(amount:_:)")
         return copy
     }
 
     /// How far the cards away from the middle fade, from 0 (not at all) to 1
-    /// (as far as the shape says): all of it unless a `shade(_:amount:)` is
+    /// (as far as the shape says): all of it unless a `shade(amount:_:)` is
     /// given, and then a quarter.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(
+    ///         .shade {
     ///             Rectangle()
     ///                 .fill(Color(hex: 0x000000))
-    ///                 .cornerRadius(14))
+    ///                 .cornerRadius(14)
+    ///         }
     ///         .fade(0)
     ///
     /// - Parameter amount: how far a far card fades.
@@ -417,7 +419,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
 
         // The shade sits beside the press: the card that dips wears none.
-        if let mask { layout = layout.shade(mask) }
+        if let mask { layout = layout.shading(mask.node) }
 
         // The activation, answered on the card in front: the press shows once, and the card is back at its size,
         // before the activation's own work - each handler's, in the order written, through its own gate.
