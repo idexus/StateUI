@@ -109,7 +109,7 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         XCTAssertEqual(buttons.count, 2)
 
@@ -126,7 +126,7 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
 
         buttons[1].clickForTesting()
@@ -144,7 +144,7 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         XCTAssertEqual(said(renderer), "-")
 
         StateUIEvents.raise(InteropTestContract.spoke, "hello")
@@ -161,7 +161,7 @@ final class AppKitInteropTests: XCTestCase {
     func testARunningHostSaysWhatItRealizesAndWhatTheApplicationRaises() {
         StateUIEvents.raises(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertTrue(HostBoundary.realizes(TextContract.self))
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))

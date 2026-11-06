@@ -15,7 +15,7 @@ final class AppKitContextMenuTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var duplicate = HostPatch(id: .manual("duplicate"), type: .menuItem)
         duplicate.properties[.text] = .string("Duplicate")
@@ -47,7 +47,7 @@ final class AppKitContextMenuTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var originalItem = HostPatch(id: .manual("item"), type: .menuItem)
         originalItem.properties[.text] = .string("Rename")
@@ -88,7 +88,7 @@ final class AppKitContextMenuTests: XCTestCase {
     @MainActor
     func testAnEntrysIconStateAndIdentifierReachItsNativeItem() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var delete = HostPatch(id: .manual("delete"), type: .menuItem)
         delete.properties = [
             .text: .string("Delete"),

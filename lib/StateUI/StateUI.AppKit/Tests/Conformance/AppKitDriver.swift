@@ -170,8 +170,7 @@ final class AppKitDriver: HostDriver {
     }
 
     func close() {
-        renderer?.runtime.presenter = nil
-        renderer?.closeForTesting()
+        renderer?.finish()
         renderer = nil
     }
 

@@ -47,7 +47,7 @@ final class AppKitWindowContentTests: XCTestCase {
     @MainActor
     func testWindowPatchPresentsOverlayAboveItsStablePage() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(withOverlay: true))
 
         let nativeWindow = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -68,7 +68,7 @@ final class AppKitWindowContentTests: XCTestCase {
     @MainActor
     func testTransparentOverlayLayoutLetsUnusedAreaReachThePage() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var action = HostPatch(id: .manual("action"), type: .button)
         action.properties = [

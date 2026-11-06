@@ -39,7 +39,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
     @MainActor
     func testASliderShowsItsRangeAndItsValue() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
         slider.properties[.minimum] = .number(0)
@@ -65,7 +65,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
     @MainActor
     func testASliderWhoseValueTheTreeLeavesAloneKeepsIts() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
         slider.properties[.minimum] = .number(0)
@@ -96,7 +96,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
                     .onValueChanged { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)
         native.doubleValue = 0.625
@@ -121,7 +121,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
                     .onValueChanged { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitStepperView.self).first)
         XCTAssertEqual(native.minValue, 0)

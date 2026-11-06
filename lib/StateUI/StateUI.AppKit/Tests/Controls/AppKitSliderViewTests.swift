@@ -123,7 +123,7 @@ final class AppKitSliderViewTests: XCTestCase {
                 .onPressed { moments.values.append("started") }
                 .onReleased { moments.values.append("completed") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let slider = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)
 
         slider.beginDrag()

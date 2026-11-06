@@ -164,7 +164,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testEveryPictureIsMadeOnce() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let dot = try XCTUnwrap(NSBitmapImageRep(
             bitmapDataPlanes: nil, pixelsWide: 1, pixelsHigh: 1, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
             isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
@@ -182,7 +182,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testAPictureStillShownOutlastsTheCache() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let shown = try XCTUnwrap(renderer.image(.icon(.add)))
 
         renderer.pictures.letGoOfKept()
@@ -218,7 +218,7 @@ final class AppKitImageViewTests: XCTestCase {
     /// A name the application has no file for resolves to nothing, as on every host: no picture stands in.
     func testANameWithNoFileResolvesToNothing() {
         let renderer = testRenderer(resourceDirectory: FileManager.default.temporaryDirectory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertNil(renderer.image(named: "no-such-picture-\(UUID().uuidString)"))
     }
@@ -247,7 +247,7 @@ final class AppKitImageViewTests: XCTestCase {
         try representation.write(to: directory.appendingPathComponent("picture.png"))
 
         let renderer = testRenderer(resourceDirectory: directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [
             .source: .string("picture.png"),
@@ -270,7 +270,7 @@ final class AppKitImageViewTests: XCTestCase {
     func testASecondWindowShowingSVGsCostsLittle() async throws {
         PicturesApplication.register()
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         Self.draw(renderer)
         let before = Self.footprint()
@@ -293,7 +293,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testADrawingKeepsNoPixelsOfTheSizesItWasDrawnAt() throws {
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let drawing = try XCTUnwrap(renderer.image(named: "test_wide.svg"))
         let before = Self.footprint()
 
@@ -339,7 +339,7 @@ final class AppKitImageViewTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
         let icon = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
         let words = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))

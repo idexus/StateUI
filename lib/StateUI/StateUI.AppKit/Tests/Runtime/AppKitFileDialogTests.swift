@@ -25,7 +25,7 @@ final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     func testASavePanelOffersEachKindUnderItsCaptionAndWritesWhereTheUserSays() throws {
         let renderer = AppKitRenderer.running { Saving() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
         settle(renderer) { renderer.fileToolkit.showing != nil }
@@ -52,7 +52,7 @@ final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     func testAnOpenPanelOffersEveryKindsFilesSeveralWhereAsked() throws {
         let renderer = AppKitRenderer.running { Opening() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
         settle(renderer) { renderer.fileToolkit.showing != nil }
         let panel = try XCTUnwrap(renderer.fileToolkit.showing?.panel as? NSOpenPanel)

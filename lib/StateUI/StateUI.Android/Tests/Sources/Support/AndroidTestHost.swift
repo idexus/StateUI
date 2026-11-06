@@ -238,6 +238,19 @@ extension AndroidRenderer {
         return renderer
     }
 
+    /// Ends the host: what it asked is dismissed, the keyboard and the focus let go, no presenter answers for it,
+    /// its tree leaves and its frames stop being held.
+    func finish() {
+        Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
+        AndroidRenderer.endActs()
+        _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root.reference))
+        Java.call(root.reference, AndroidDriver.clearFocus)
+        runtime.presenter = nil
+        runtime.tree.root?.leave()
+        frameClock.held = false
+        if AndroidRenderer.shared === self { AndroidRenderer.shared = nil }
+    }
+
     /// Applies `patch` as one whole message, as a render does.
     func apply(_ patch: HostPatch) {
         runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }

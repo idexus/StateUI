@@ -141,7 +141,7 @@ final class AppKitPickerViewTests: XCTestCase {
                 Picker(["A", "B", "C"], selection: size.projectedValue).presentation(.radio)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(renderer.nativeViews(AppKitPickerView.self).map(\.itemTitles), [["Small", "Medium", "Large"]])
         XCTAssertEqual(renderer.nativeViews(AppKitSegmentedPickerView.self).map(\.itemTitles), [["One", "Two"]])
@@ -158,7 +158,7 @@ final class AppKitPickerViewTests: XCTestCase {
                 Picker(["Small", "Medium", "Large"], selection: size.projectedValue).presentation(.radio)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first).chooseForTesting(index: 2)
         XCTAssertEqual(size.wrappedValue, "Large")
@@ -178,7 +178,7 @@ final class AppKitPickerViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Picker(["Small", "Medium", "Large"], selection: State<String?>(wrappedValue: nil).projectedValue).isOpen(true)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
 
         // The menu opens on a later turn of the main queue: turns of the run loop, not the time a busy machine takes.
@@ -202,7 +202,7 @@ final class AppKitPickerViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Picker(["Small", "Medium", "Large"], selection: State<String?>(wrappedValue: nil).projectedValue).isOpen(true)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
         for _ in 0..<300 {
             guard opened.isEmpty else { break }
@@ -224,7 +224,7 @@ final class AppKitPickerViewTests: XCTestCase {
     @MainActor
     func testAPickersTextAlignmentComesThroughTheHost() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var picker = HostPatch(id: .manual("picker"), type: .picker)
         picker.properties = [
             .options: .strings(["One", "Two"]),

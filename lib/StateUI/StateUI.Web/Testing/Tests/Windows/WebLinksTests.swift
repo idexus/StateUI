@@ -18,7 +18,7 @@ final class WebLinksTests: XCTestCase {
         let heard = Heard()
         let host = WebRenderer.running(application: { LinkedApplication(heard: heard) })
         defer {
-            host.leave()
+            host.finish()
             try? WebBrowser.run("history.replaceState(null, '', location.pathname + location.search)")
         }
         for _ in 0..<5 { host.step() }
@@ -43,7 +43,7 @@ final class WebLinksTests: XCTestCase {
         let listener = WebRelay.listener { back += 1 }
         defer {
             WebRelay.forget(listener)
-            host.leave()
+            host.finish()
             try? WebBrowser.run("history.replaceState(null, '', location.pathname + location.search)")
         }
         WebRelay.listenToHistory(listener)

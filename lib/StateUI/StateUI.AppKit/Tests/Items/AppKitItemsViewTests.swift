@@ -47,7 +47,7 @@ final class AppKitItemsViewTests: XCTestCase {
     @MainActor
     func testAChosenItemShowsTheAccentOverThePage() throws {
         let renderer = autoreleasepool { AppKitRenderer.running { ChoosingPage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         for _ in 0..<100 {
             guard items.collection.visibleItems().isEmpty else { break }
@@ -69,7 +69,7 @@ final class AppKitItemsViewTests: XCTestCase {
     @MainActor
     func testEveryRowsWordsStandInTheListsAccessibility() throws {
         let renderer = autoreleasepool { AppKitRenderer.running { ChoresPage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         for _ in 0..<100 {
             guard items.collection.visibleItems().isEmpty else { break }
@@ -107,7 +107,7 @@ final class AppKitItemsViewTests: XCTestCase {
                 .width(300).height(400)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func texts(in view: NSView) -> [String] {
             ((view as? AppKitTextView)?.stringValue).map { [$0] } ?? view.subviews.flatMap(texts)
@@ -144,7 +144,7 @@ final class AppKitItemsViewTests: XCTestCase {
                     .width(300).height(500)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func header() -> AppKitItemSupplement? {
             items.collection.visibleSupplementaryViews(ofKind: AppKitItemsLayout.listHeader).first as? AppKitItemSupplement
@@ -180,7 +180,7 @@ final class AppKitItemsViewTests: XCTestCase {
                 (headed.wrappedValue ? list.header(Text("Rows")) : list).width(300).height(400)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func texts(in view: NSView) -> [String] {
             ((view as? AppKitTextView)?.stringValue).map { [$0] } ?? view.subviews.flatMap(texts)
@@ -221,7 +221,7 @@ final class AppKitItemsViewTests: XCTestCase {
                 ItemsView(numbers.wrappedValue) { Text("Row \($0)").padding(10) }.width(300).height(500)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func drawn() -> [String: CGFloat] {
             Dictionary(uniqueKeysWithValues: items.collection.visibleItems().compactMap { item in

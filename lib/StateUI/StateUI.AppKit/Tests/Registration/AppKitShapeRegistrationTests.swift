@@ -62,7 +62,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     @MainActor
     func testAFigureMadeOfABlurStandsAppKitsEffectUnderItsOutline() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var capsule = HostPatch(id: .manual("capsule"), type: .capsule)
         capsule.properties[.fill] = Material.blur(.thin).propValue
@@ -88,7 +88,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     @MainActor
     func testAnEllipseIsMadeAndDrawnFromItsTierAlone() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)
         ellipse.properties[.fill] = Material.color(Color(red: 51, green: 102, blue: 153)).propValue

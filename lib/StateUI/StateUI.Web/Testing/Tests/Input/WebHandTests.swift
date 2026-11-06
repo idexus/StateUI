@@ -144,7 +144,7 @@ final class WebHandTests: XCTestCase {
 
         XCTAssertTrue(try asksForTheMenu(steps: 0, of: 0), "a finger held still")
         XCTAssertFalse(try asksForTheMenu(steps: 10, of: 3), "a finger dragged 30 points, 3 a step")
-        host.leave()
+        host.finish()
     }
 
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the

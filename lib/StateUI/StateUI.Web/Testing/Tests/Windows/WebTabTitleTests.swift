@@ -53,7 +53,7 @@ final class WebTabTitleTests: XCTestCase {
     /// What the tab says once a host shows `page`.
     private func tab(@ViewBuilder _ page: @escaping @MainActor () -> any View) throws -> String? {
         let host = WebRenderer.running(page)
-        defer { host.leave() }
+        defer { host.finish() }
         for _ in 0..<3 { host.step() }
         return try WebBrowser.evaluate("document.title", on: 0)
     }

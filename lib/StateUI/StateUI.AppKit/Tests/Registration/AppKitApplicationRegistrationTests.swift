@@ -144,7 +144,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
         XCTAssertTrue(lamp.lit, "the registration put the described value on the view")
@@ -157,7 +157,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
 
         lamp.pull()
@@ -173,7 +173,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         XCTAssertEqual(lamp.flashes, 0)

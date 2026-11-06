@@ -16,13 +16,13 @@ final class WebRequestTests: XCTestCase {
 
     override func setUp() async throws {
         WebTestLoop.started
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         host = WebRenderer.running { Text("Requests") }
         host?.step()
     }
 
     override func tearDown() async throws {
-        host?.leave()
+        host?.finish()
         host = nil
         try? WebBrowser.run("""
             if (globalThis.__fetch) { globalThis.fetch = globalThis.__fetch; delete globalThis.__fetch; }

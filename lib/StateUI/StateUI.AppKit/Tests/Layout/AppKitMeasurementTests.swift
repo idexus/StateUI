@@ -22,7 +22,7 @@ final class AppKitMeasurementTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(samplePage())
         let scroll = try XCTUnwrap(
@@ -51,7 +51,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testAPresentationOnlyJourneyFrameArrangesAndMeasuresNothing() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.width] = .number(120)
@@ -99,7 +99,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testChangedNestedTextStillGrowsEveryAncestor() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(samplePage())
         let scroll = try XCTUnwrap(
@@ -129,7 +129,7 @@ final class AppKitMeasurementTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var span = HostPatch(id: .manual("span"), type: .textSpan)
         span.properties[.text] = .string("Sold out")
@@ -171,7 +171,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testReapplyingAnUnchangedImageSourceKeepsTheNativeImage() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var image = HostPatch(id: .manual("image"), type: .image)
         image.properties[.source] = .string("picture.png")
@@ -195,7 +195,7 @@ final class AppKitMeasurementTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)
@@ -241,7 +241,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testAPlacementRunFrameMovesItsChildrenAndMeasuresNothingElse() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)

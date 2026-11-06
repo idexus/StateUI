@@ -63,7 +63,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAScrollViewTakesItsMembersAndRestsAtItsContractsDefault() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let bare = HostPatch(id: .manual("bare"), type: .scrollView)
         renderer.applyForTesting(tree(bare))
@@ -92,7 +92,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAStackTakesItsSpacingAndPadding() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties[.spacing] = .number(12)
@@ -118,7 +118,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAGridTakesItsRowsColumnsAndSpacings() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var grid = HostPatch(id: .manual("grid"), type: .grid)
         // An auto length carries a 1 rather than nothing, so every length

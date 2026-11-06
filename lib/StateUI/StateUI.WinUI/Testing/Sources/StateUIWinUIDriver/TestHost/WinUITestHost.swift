@@ -24,6 +24,15 @@ enum WinUITestHost {
         return path + "/Tests/Resources/Images"
     }()
 
+    /// Answers every file dialog still asking with nothing, as its user's cancel does.
+    static func closeFileDialogs() {
+        for _ in 0..<50 {
+            guard stateui_winui_file_dialog() >= 0 else { break }
+            _ = stateui_winui_answer_file_dialog(0, nil, 0)
+            pump(0.05)
+        }
+    }
+
     /// Runs the thread's messages for `seconds`: a window's first frame, and the layout WinUI asks for.
     static func pump(_ seconds: Double = 0.2) {
         stateui_winui_pump(seconds)
@@ -111,8 +120,10 @@ extension WinUIRenderer {
         return renderer
     }
 
-    /// Ends this test host without changing its kept values or another host's windows.
+    /// Ends this test host without changing its kept values or another host's windows; a file dialog still asking is
+    /// answered with nothing.
     func finish() {
+        WinUITestHost.closeFileDialogs()
         runtime.tree.root?.leave()
         runtime.presenter = nil
         frameClock.held = false

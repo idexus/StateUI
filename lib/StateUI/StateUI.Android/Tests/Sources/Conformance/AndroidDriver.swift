@@ -151,17 +151,8 @@ final class AndroidDriver: HostDriver {
     /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
     /// an activity's end does: each case starts in a window as a new activity's.
     func close() {
-        guard let renderer else { return }
-        Java.callStatic(Self.dialogs, Self.dismissAll)
-        AndroidRenderer.endActs()
-        let root = renderer.root.reference
-        _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
-        Java.call(root, Self.clearFocus)
-        renderer.runtime.presenter = nil
-        renderer.runtime.tree.root?.leave()
-        renderer.frameClock.held = false
-        if AndroidRenderer.shared === renderer { AndroidRenderer.shared = nil }
-        self.renderer = nil
+        renderer?.finish()
+        renderer = nil
     }
 
     func step() {

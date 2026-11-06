@@ -19,7 +19,7 @@ final class AppKitTypingTests: XCTestCase {
         let form = TypingForm()
         Renderer.shared.setApplication(TypingApp(form: form))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
 
         let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)

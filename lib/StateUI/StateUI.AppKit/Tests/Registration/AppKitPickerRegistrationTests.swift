@@ -46,7 +46,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
         due.properties[.date] = .numbers([2026, 9, 16])
@@ -67,7 +67,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var alarm = HostPatch(id: .manual("alarm"), type: .timePicker)
         alarm.properties[.time] = .numbers([9, 30, 0])
@@ -87,7 +87,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     @MainActor
     func testADatePickersRangeComesFromItsOwnMembers() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
         due.properties[.date] = .numbers([2026, 9, 16])

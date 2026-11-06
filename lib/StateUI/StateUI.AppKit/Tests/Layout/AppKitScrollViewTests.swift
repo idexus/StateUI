@@ -144,7 +144,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
             .axes: .enumeration(ScrollAxes.horizontal.rawValue),
@@ -284,7 +284,7 @@ final class AppKitScrollViewTests: XCTestCase {
                 ScrollView { Text("Always") }.verticalScrollIndicator(.visible)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let scrollers = renderer.nativeViews(AppKitScrollView.self)
 
         XCTAssertEqual(scrollers.map { $0.hasVerticalScroller }, [true, false, true])
@@ -307,7 +307,7 @@ final class AppKitScrollViewTests: XCTestCase {
                     .horizontalScrollIndicator(.visible)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let scrollers = renderer.nativeViews(AppKitScrollView.self)
 
         XCTAssertEqual(scrollers.map { $0.hasHorizontalScroller }, [true, false, true])
@@ -325,7 +325,7 @@ final class AppKitScrollViewTests: XCTestCase {
             GalleryView(0..<7) { number in Text("\(number)") }
                 .onPositionChanged { positions.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let layout = try XCTUnwrap(Self.layout(in: renderer))
         // The cards drawn, as a window has them before a hand reaches them: the run knows its room.
         layout.window?.contentView?.layoutSubtreeIfNeeded()
@@ -358,7 +358,7 @@ final class AppKitScrollViewTests: XCTestCase {
     @MainActor
     func testAGestureAcrossTheRunIsLeftToWhatHoldsIt() throws {
         let renderer = AppKitRenderer.running { GalleryView(0..<7) { number in Text("\(number)") } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let layout = try XCTUnwrap(Self.layout(in: renderer))
         let reader = try XCTUnwrap(layout.hand)
 
@@ -406,7 +406,7 @@ final class AppKitScrollViewTests: XCTestCase {
     @MainActor
     func testAUsersScrollIsNotWrittenBackToItsScroller() throws {
         let renderer = AppKitRenderer.running { BoundStrip() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
         scroller.window?.contentView?.layoutSubtreeIfNeeded()
         let moves = scroller.programmaticMovesForTesting
@@ -427,7 +427,7 @@ final class AppKitScrollViewTests: XCTestCase {
     @MainActor
     func testWhatAMovingScrollerReportsIsTakenOnTheNextDisplayFrame() throws {
         let renderer = AppKitRenderer.running { BoundStrip() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
         let reading = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         scroller.window?.contentView?.layoutSubtreeIfNeeded()

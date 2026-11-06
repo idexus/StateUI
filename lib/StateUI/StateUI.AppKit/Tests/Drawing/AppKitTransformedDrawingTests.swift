@@ -44,7 +44,7 @@ final class AppKitTransformedDrawingTests: XCTestCase {
             .width(200)
             .height(200)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let shapes = try placed(renderer)
         let (turned, straight) = (shapes[0], shapes[1])

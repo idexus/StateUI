@@ -91,7 +91,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let element = Canvas {
             Draw.fillColor(.blue)
             Draw.fillEllipse(x: 0, y: 0, width: 20, height: 20)

@@ -117,7 +117,7 @@ final class WebDriver: HostDriver {
     }
 
     func close() {
-        renderer?.leave()
+        renderer?.finish()
         renderer = nil
     }
 

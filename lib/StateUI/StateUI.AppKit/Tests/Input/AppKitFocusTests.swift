@@ -28,7 +28,7 @@ final class AppKitFocusTests: XCTestCase {
     @MainActor
     func testAFieldReportsTheFocusWhateverMovesIt() throws {
         let renderer = AppKitRenderer.running { Watching() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         let field = try XCTUnwrap(renderer.nativeViews(NSTextField.self).first { $0.isEditable })
         let window = try XCTUnwrap(field.window)
@@ -62,7 +62,7 @@ final class AppKitFocusTests: XCTestCase {
                 Text("Under").sheet(isPresented: State(wrappedValue: true).projectedValue) { TwoFields() }
             }),
         ] {
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             let shown = {
                 let window = renderer.windowsForTesting.first
                 let content = (window?.modals.last?.window ?? window?.window)?.contentView

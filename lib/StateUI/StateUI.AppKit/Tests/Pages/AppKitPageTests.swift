@@ -17,7 +17,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var home = page("home", title: "Home")
         home.properties[.backButtonTitle] = .string("Start")
@@ -54,7 +54,7 @@ final class AppKitPageTests: XCTestCase {
             language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
             firstDayOfWeek: before.firstDayOfWeek, isMetric: true, layoutDirection: .leftToRight))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var delete = HostPatch(id: .manual("delete"), type: .toolbarButton)
         delete.properties = [.text: .string("Delete")]
@@ -82,7 +82,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(navigation([page("home", title: "Home")])))
 
@@ -113,7 +113,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -158,7 +158,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
@@ -181,7 +181,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -212,7 +212,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = Material.gradient(.linearGradient(
@@ -252,7 +252,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -285,7 +285,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(windowTree(page("home", title: "Home"), translucent: true))
 
@@ -314,7 +314,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -358,7 +358,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -384,7 +384,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(red: 81, green: 43, blue: 212, alpha: 255)
@@ -422,7 +422,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = .color(
@@ -462,7 +462,7 @@ final class AppKitPageTests: XCTestCase {
     func testAColumnsPageRunsUnderTheBarWhereItIgnoresTheSafeArea() throws {
         func top(ignoring edges: SafeAreaEdges) throws -> CGFloat {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var column = HostPatch(id: .manual("column"), type: .vStack)
             column.properties[.ignoresSafeArea] = edges.propValue
             var home = page("home", title: "Home")
@@ -487,7 +487,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(tabbed([
             page("home", title: "Home", events: 100),
@@ -511,7 +511,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let pages = [
             page("home", title: "Home", events: 100),
             page("browse", title: "Browse", events: 200),
@@ -555,7 +555,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var unbound = tabbed([
             page("home", title: "Home", events: 100),
@@ -585,7 +585,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let menu = page("menu", title: "Menu", events: 100)
         let home = page("home", title: "Home", events: 200)
@@ -632,7 +632,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -678,7 +678,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(tabbed([
             tabbed([
@@ -733,7 +733,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: TestPictures.directory,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var library = navigation([page("shelf", title: "Shelf", events: 100)])
         library.properties[.title] = .string("Library")
@@ -772,7 +772,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = navigation([page("shelf", title: "Shelf", events: 100)])
         stack.properties[.accessibilityIdentifier] = .string("arrangement.stack")
@@ -803,7 +803,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var painted = HostPatch(id: .manual("painted"), type: .page)
         painted.properties = [.background: .color(red: 51, green: 102, blue: 153, alpha: 255)]
@@ -824,7 +824,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(flyout(
             presented: false,
@@ -844,7 +844,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(flyout(
             presented: false,
@@ -880,7 +880,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(flyout(
             presented: false,
@@ -904,7 +904,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(flyout(
             presented: false,
@@ -932,7 +932,7 @@ final class AppKitPageTests: XCTestCase {
                 }
             } destination: { _ in Text("Pushed") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
         let search = try XCTUnwrap(renderer.viewForTesting(id: .manual("query")) as? AppKitSearchFieldView)
 
@@ -951,7 +951,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var title = HostPatch(id: .manual("title-label"), type: .text)
         title.properties[.text] = .string("Search title")
@@ -993,7 +993,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testALayoutInTheToolbarSaysItsSize() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func details(_ words: [String]) -> HostPatch {
             var row = HostPatch(id: .manual("row"), type: .hStack)
@@ -1029,7 +1029,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: TestPictures.directory,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func toolbarButton(
             _ id: String,
@@ -1100,7 +1100,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var save = HostPatch(id: .manual("save"), type: .menuItem)
         save.menuKey = .name("save")
@@ -1144,7 +1144,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(page("root", events: 100)))
 
@@ -1168,7 +1168,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first?.window)
         XCTAssertEqual(sheet.contentLayoutRect.size, NSSize(width: 320, height: 180))
 
@@ -1177,7 +1177,7 @@ final class AppKitPageTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
             }
         }
-        defer { stacked.closeForTesting() }
+        defer { stacked.finish() }
         let stackSheet = try XCTUnwrap(stacked.windowsForTesting.first?.modalsForTesting.first?.window)
         let around = try XCTUnwrap(stacked.windowsForTesting.first?.window).contentLayoutRect.size
         XCTAssertEqual(
@@ -1200,7 +1200,7 @@ final class AppKitPageTests: XCTestCase {
                 }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
         let toolbar = sheet.toolbarForTesting
         XCTAssertTrue(sheet.window?.toolbar === toolbar.toolbar, "the stack's bar")
@@ -1243,7 +1243,7 @@ final class AppKitPageTests: XCTestCase {
                 } destination: { _ in Text("Pushed") }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
         let window = try XCTUnwrap(sheet.window)
         window.layoutIfNeeded()
@@ -1279,7 +1279,7 @@ final class AppKitPageTests: XCTestCase {
                 ToolbarButton("Sort").placement(.sidebar)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
         window.layoutIfNeeded()
@@ -1306,7 +1306,7 @@ final class AppKitPageTests: XCTestCase {
                 ChromePage(route: route)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
 
         path.wrappedValue = [.plain]
@@ -1331,7 +1331,7 @@ final class AppKitPageTests: XCTestCase {
                 ChromePage(route: route)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
 
         path.wrappedValue = [.plain]

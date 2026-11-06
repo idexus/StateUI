@@ -17,7 +17,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
     @MainActor
     func testReapplyingTheTypedTextKeepsTheUsersCaret() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("")
         entry.properties[.cursorPosition] = .number(0)
@@ -211,7 +211,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
     @MainActor
     func testATextFieldsFontFamilyComesThroughTheHost() throws {
         let renderer = AppKitRenderer.running { TextField("Ada").fontFamily("Menlo") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
 
         XCTAssertEqual(field.textField.font?.familyName, "Menlo")
@@ -231,7 +231,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
                 TextField("Unchecked").isSpellCheckEnabled(false).isTextPredictionEnabled(false)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let fields = renderer.nativeViews(AppKitTextFieldView.self).map { $0.textField }
         XCTAssertEqual(fields.count, 4)
         guard fields.count == 4 else { return }
@@ -252,7 +252,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             TextField("Ada").onSubmitted { submitted.values.append("submitted") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
 
         try pressReturn(in: field.textField)
@@ -268,7 +268,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             TextField("").onTextChanged { texts.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
 
         field.typeForTesting("a")

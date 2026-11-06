@@ -18,7 +18,7 @@ final class AppKitIntegerBoundsTests: XCTestCase {
                 Text("Truncated").lineBreak(.tailTruncation).maximumLines(Int.max)
             }
         }
-        defer { host.closeForTesting() }
+        defer { host.finish() }
         let fields = host.nativeViews(AppKitTextView.self).compactMap {
             $0.subviews.compactMap { $0 as? NSTextField }.first
         }

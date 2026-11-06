@@ -154,7 +154,6 @@ final class UIKitDriver: HostDriver {
 
     /// Ends the host the driver started last.
     func close() {
-        renderer?.fileToolkit.showing?.chooseForTesting([])
         renderer?.finish()
         renderer = nil
     }

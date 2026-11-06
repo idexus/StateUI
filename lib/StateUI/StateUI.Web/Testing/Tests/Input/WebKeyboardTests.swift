@@ -23,7 +23,7 @@ final class WebKeyboardTests: XCTestCase {
     /// An Enter that commits an input method's words submits nothing - Safari tells it as the key of number 229 -
     /// and an Enter after it submits the field.
     func testAnEnterEndingACompositionSubmitsNothing() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var submitted = 0
         let words = State(wrappedValue: "")
         let host = WebRenderer.running { TextField(words.projectedValue).onSubmitted { submitted += 1 } }
@@ -38,12 +38,12 @@ final class WebKeyboardTests: XCTestCase {
         try WebBrowser.run("e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))", on: field.node)
         for _ in 0..<3 { host.step() }
         XCTAssertEqual(submitted, 1)
-        host.leave()
+        host.finish()
     }
 
     /// A menu that closes gives the keyboard back to what held it as the menu opened, not to the page's body.
     func testAClosedMenuGivesTheKeyboardBack() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let host = WebRenderer.running { Button("Share").menu { MenuItem("Mail") } }
         host.step()
         let button = try XCTUnwrap(host.views(WebButtonView.self).first)
@@ -54,7 +54,7 @@ final class WebKeyboardTests: XCTestCase {
         try WebBrowser.run("document.querySelector('.stateui-menu:popover-open').hidePopover()")
         for _ in 0..<3 { host.step() }
         XCTAssertTrue(try WebBrowser.truth("document.activeElement === e", on: button.node), "the keyboard back on the button")
-        host.leave()
+        host.finish()
     }
 
     private func focused() throws -> String {
@@ -111,7 +111,7 @@ final class WebKeyboardTests: XCTestCase {
     /// An open menu holds the keyboard though the page takes the arrows, Enter and Escape itself: the page's keys are
     /// for the page, not for a menu standing over it.
     func testAMenuKeepsItsKeysFromAPageTakingThem() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var taken: [Key] = []
         let host = WebRenderer.running {
             VStack {
@@ -132,6 +132,6 @@ final class WebKeyboardTests: XCTestCase {
         press("ArrowDown", host)
         XCTAssertEqual(try focused(), "Paste")
         XCTAssertEqual(taken, [], "the page took the menu's keys")
-        host.leave()
+        host.finish()
     }
 }

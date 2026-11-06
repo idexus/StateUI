@@ -38,7 +38,7 @@ final class AppKitFrameTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         settle(renderer) { !heard.values.isEmpty }
 
         XCTAssertEqual(heard.values.first.map { Array($0.prefix(4)) }, [0, 0, 120, 60])
@@ -64,7 +64,7 @@ final class AppKitFrameTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         shown.wrappedValue = true
         settle(renderer) { heard.values.count >= 2 || heard.values.first?[2] == 120 }
 
@@ -90,7 +90,7 @@ final class AppKitFrameTests: XCTestCase {
                 .verticalAlignment(.start)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modals.first?.window?.contentView)
 
         sheet.layoutSubtreeIfNeeded()
@@ -118,7 +118,7 @@ final class AppKitFrameTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         settle(renderer) { !heard.values.isEmpty }
         let before = try XCTUnwrap(heard.values.last)
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first?.collection.enclosingScrollView)
@@ -149,7 +149,7 @@ final class AppKitFrameTests: XCTestCase {
             }
             .showsSidebar(shown.projectedValue)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let split = try XCTUnwrap(renderer.nativeViews(AppKitSplitView.self).first)
         settle(renderer) { split.isEffectivelyPresentedForTesting && !heard.values.isEmpty }
         renderer.displayFrameForTesting()
@@ -165,7 +165,7 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var patch = HostPatch(id: .manual("measured"), type: .text)
         patch.properties = [.text: .string("Measured")]
@@ -192,7 +192,7 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testAnAncestorMoveQueuesAFrameReportForAStationaryChild() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var patch = HostPatch(id: .manual("measured"), type: .text)
         patch.events = .replace([.frameChanged: 51])

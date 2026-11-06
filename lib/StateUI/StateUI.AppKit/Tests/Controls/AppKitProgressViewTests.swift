@@ -16,7 +16,7 @@ final class AppKitProgressViewTests: XCTestCase {
     @MainActor
     func testASpinnerIsShownOnlyWhileVisibleAndRunning() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var stopped = HostPatch(id: .manual("activity"), type: .spinner)
         stopped.properties[.isAnimating] = .bool(false)
         renderer.applyForTesting(tree(stopped))

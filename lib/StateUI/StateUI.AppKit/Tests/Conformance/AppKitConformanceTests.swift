@@ -151,7 +151,7 @@ final class AppKitConformanceTests: XCTestCase {
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         guard !AppKitExports.skips(family.name, at: "marks/appkit/\(file).txt") else { return }
         let driver = AppKitDriver()
-        defer { driver.renderer?.closeForTesting() }
+        defer { driver.renderer?.finish() }
         let verdicts = Conformance.run(
             family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         XCTAssertNoThrow(try AppKitExports.hold(

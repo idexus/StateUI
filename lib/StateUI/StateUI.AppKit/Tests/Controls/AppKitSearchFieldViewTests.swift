@@ -105,7 +105,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
                 TextField("Ada").background(.red)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
         let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
 
@@ -125,7 +125,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
     @MainActor
     func testASearchFieldsFontFamilyComesThroughTheHost() throws {
         let renderer = AppKitRenderer.running { SearchField("Ada").fontFamily("Menlo") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
 
         XCTAssertEqual(search.font?.familyName, "Menlo")
@@ -145,7 +145,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
                 SearchField("Unchecked").isSpellCheckEnabled(false).isTextPredictionEnabled(false)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let fields = renderer.nativeViews(AppKitSearchFieldView.self)
         XCTAssertEqual(fields.count, 4)
         guard fields.count == 4 else { return }
@@ -166,7 +166,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             SearchField("Ada").onSubmitted { submitted.values.append("submitted") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
 
         try pressReturn(in: search)
@@ -182,7 +182,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             SearchField("").onTextChanged { texts.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
 
         search.typeForTesting("a")

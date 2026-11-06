@@ -39,7 +39,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testASwitchShowsWhatTheTreeSays() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var on = HostPatch(id: .manual("toggle"), type: .switch)
         on.properties[.isOn] = .bool(true)
@@ -71,7 +71,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
                 CheckBox(true).text("agree").textCase(.uppercase)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
 
@@ -97,7 +97,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
             }
             .motion(.none)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
         layOut()
@@ -125,7 +125,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         })
         let renderer = testRenderer(clock: { now })
         renderer.startForTesting()
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
         layOut()
@@ -150,7 +150,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack { CheckBox(false).text("WWWWWW").tint(Color(hex: 0xFF0000)) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
         box.frame = NSRect(origin: .zero, size: box.fittingSize)
 
@@ -169,7 +169,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testACheckBoxTakesItsValueAndItsTint() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var checked = HostPatch(id: .manual("box"), type: .checkBox)
         checked.properties[.isOn] = .bool(true)
@@ -197,7 +197,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
                     .onToggled { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         native.toggleForTesting()
@@ -213,7 +213,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testAToggleNobodyTakesKeepsTheUsersValueUntilTheTreeSaysOtherwise() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var off = HostPatch(id: .manual("toggle"), type: .switch)
         off.properties[.isOn] = .bool(false)

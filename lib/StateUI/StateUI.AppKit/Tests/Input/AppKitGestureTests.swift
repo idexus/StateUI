@@ -14,7 +14,7 @@ final class AppKitGestureTests: XCTestCase {
     @MainActor
     func testRemovingPointerEventsDetachesTheNativeRecognizer() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.events = .replace([.pointerEntered: 20])
         renderer.applyForTesting(tree(box))
@@ -49,7 +49,7 @@ final class AppKitGestureTests: XCTestCase {
                 .onTapped { taps.values.append("row") }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         for controller in renderer.windowsForTesting { controller.window?.layoutIfNeeded() }
         let row = try XCTUnwrap(renderer.nativeViews(NSView.self).first { view in
             view.gestureRecognizers.contains { $0 is AppKitPressRecognizer }
@@ -89,7 +89,7 @@ final class AppKitGestureTests: XCTestCase {
                     .onPanUpdated(touchCount: 2) { totals.values.append($0.total.x) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let boxes = renderer.nativeViews(AppKitShapeView.self)
         XCTAssertEqual(boxes.count, 2)
         guard boxes.count == 2 else { return }
@@ -116,7 +116,7 @@ final class AppKitGestureTests: XCTestCase {
             }
             .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let mirrored = try XCTUnwrap(
             renderer.nativeViews(AppKitZStackView.self).lazy
                 .compactMap { $0.gestureRecognizers.compactMap { $0 as? AppKitMirroredRecognizer }.first }.first)
@@ -149,7 +149,7 @@ final class AppKitGestureTests: XCTestCase {
                 HStack { Text("Plain") }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let stacks = renderer.nativeViews(AppKitStackView.self)
         XCTAssertEqual(stacks.count, 3)
 

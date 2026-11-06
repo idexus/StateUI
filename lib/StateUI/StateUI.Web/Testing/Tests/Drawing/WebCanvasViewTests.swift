@@ -35,6 +35,6 @@ final class WebCanvasViewTests: XCTestCase {
         for _ in 0..<10 { host.step() }
 
         XCTAssertEqual(try WebBrowser.number(pixels, on: canvas), 200, "the canvas kept the density it was drawn at")
-        host.leave()
+        host.finish()
     }
 }

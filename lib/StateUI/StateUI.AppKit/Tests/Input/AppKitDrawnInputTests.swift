@@ -41,7 +41,7 @@ final class AppKitDrawnInputTests: XCTestCase {
             }
             .width(240).height(100)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         for controller in renderer.windowsForTesting { controller.window?.layoutIfNeeded() }
         let moved = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         let press = try XCTUnwrap(moved.gestureRecognizers.compactMap { $0 as? AppKitPressRecognizer }.first)

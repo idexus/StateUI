@@ -15,7 +15,7 @@ final class AppKitColorTests: XCTestCase {
     @MainActor
     func testAnAuthoredColorReachesAppKitInSRGB() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var box = HostPatch(id: .manual("box"), type: .rectangle)
         box.properties[.fill] = .color(red: 128, green: 64, blue: 32, alpha: 255)
         renderer.applyForTesting(tree(box))

@@ -15,7 +15,7 @@ final class WebHeldMenuTests: XCTestCase {
     }
 
     func testAMenuAHeldFingerOpensStaysAsTheFingerLifts() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let host = WebRenderer.running {
             VStack {
                 Text("Weekly notes").padding(20).contextMenu { MenuItem("Archive") }
@@ -43,7 +43,7 @@ final class WebHeldMenuTests: XCTestCase {
         touch("touchEnd", [])
         settle(host) { !self.menuShows }
         XCTAssertFalse(menuShows, "a touch beside it closes it")
-        host.leave()
+        host.finish()
     }
 
     /// Whether a menu stands over the page.

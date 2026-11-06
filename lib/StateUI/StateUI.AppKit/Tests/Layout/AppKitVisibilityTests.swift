@@ -34,7 +34,7 @@ final class AppKitVisibilityTests: XCTestCase {
     func testHidingAViewFadesItAndOnlyThenHidesIt() throws {
         var now = 0.0
         let renderer = renderer { now }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(label(visible: true))
         let view = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")) as? AppKitHitTestView)
 
@@ -60,7 +60,7 @@ final class AppKitVisibilityTests: XCTestCase {
     func testShowingAViewBringsItUpFromNothing() throws {
         var now = 0.0
         let renderer = renderer { now }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(label(visible: false))
         let view = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertTrue(view.isHidden, "a first description has nothing to cross from")
@@ -80,7 +80,7 @@ final class AppKitVisibilityTests: XCTestCase {
     func testAViewShownAgainWithoutTravelingAnswersInput() throws {
         var now = 0.0
         let renderer = renderer { now }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(label(visible: true))
         let view = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")) as? AppKitHitTestView)
 
@@ -101,7 +101,7 @@ final class AppKitVisibilityTests: XCTestCase {
     func testAStackClosesOverARowOnceItsFadeLands() throws {
         var now = 0.0
         let renderer = renderer { now }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func rows(firstVisible: Bool) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -150,7 +150,7 @@ final class AppKitVisibilityTests: XCTestCase {
     func testAViewShownAgainMidFadeComesBackFromWhereItStands() throws {
         var now = 0.0
         let renderer = renderer { now }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(label(visible: true))
         let view = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")) as? AppKitHitTestView)
 

@@ -84,7 +84,7 @@ final class AppKitMenuBarTests: XCTestCase {
                 Menu("Format") { MenuItem("Pogrub") }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let main = StateUIAppKit.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
@@ -109,7 +109,7 @@ final class AppKitMenuBarTests: XCTestCase {
                 Menu("Format") { MenuItem("Save As").keyboardShortcut("s", modifiers: [.primary, .shift]) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let main = StateUIAppKit.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 

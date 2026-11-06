@@ -17,7 +17,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testAWindowSayingNoTitleIsNamedByTheApplication() throws {
         let renderer = AppKitRenderer.running { Text("Untitled") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
 
         XCTAssertFalse(renderer.runtime.core.applicationName.isEmpty)
@@ -30,7 +30,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColors() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(background: nil), menu: menu()))
 
@@ -60,7 +60,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTakingTheBarAwayLeavesThePlainNativeWindowChrome() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu(), line: "Today"))
         renderer.applyForTesting(flyoutTree(
@@ -83,7 +83,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testADeclaredBarColorPaintsTheBandAndColorsTheTitleArea() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 
@@ -102,7 +102,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTheTitleAreaUpdatesInPlace() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Notes", subtitle: "Personal"), line: "Today"))
 
@@ -127,7 +127,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testADeclaredBarKeepsThePageInsideTheNativeContentLayout() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree([:]))
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -154,7 +154,7 @@ final class AppKitBarTests: XCTestCase {
                 ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content").title("Under")
             } destination: { _ in Text("Next") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let page = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
@@ -181,7 +181,7 @@ final class AppKitBarTests: XCTestCase {
                     .title("Rows")
             } destination: { _ in Text("Next") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let scroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
@@ -218,7 +218,7 @@ final class AppKitBarTests: XCTestCase {
             } destination: { _ in Text("Next") }
             .barScrollEdge(edge.wrappedValue)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let settle = { (done: () -> Bool) in
@@ -250,7 +250,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testASplitViewDeclaringTheBarKeepsItsScrollInsideNativeContent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 

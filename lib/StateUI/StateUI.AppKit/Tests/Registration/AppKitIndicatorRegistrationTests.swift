@@ -30,7 +30,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testAProgressBarShowsItsProgressAndNoneOnceCleared() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var bar = HostPatch(id: .manual("bar"), type: .progressBar)
         bar.properties[.progress] = .number(0.4)
@@ -51,7 +51,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testASpinnerSpinsWhileItRuns() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var running = HostPatch(id: .manual("activity"), type: .spinner)
         running.properties[.isAnimating] = .bool(true)
@@ -75,7 +75,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testAnIndicatorMadeStillStartsWhenTheTreeSaysItRuns() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .spinner)))
 
