@@ -667,6 +667,19 @@ final class ControlTests: XCTestCase {
         XCTAssertFalse(showing.wrappedValue, "the user's close came back")
     }
 
+    /// A button can say it has no role of its own: `.normal` takes the main action's role off it in one spelling,
+    /// with no `if` around the modifier to change what the button is.
+    func testAButtonSaysItHasNoRole() {
+        let renders = Renders()
+
+        let first = renders.render(Button("Save").role(.primary).id("save").node)
+        let then = renders.render(Button("Save").role(.normal).id("save").node)
+
+        XCTAssertEqual(first.props["role"], ButtonRole.primary.propValue)
+        XCTAssertEqual(then.props["role"], ButtonRole.normal.propValue, "the same button, its role changed")
+        XCTAssertFalse(then.replace, "no new button")
+    }
+
     /// Runs written on a text replace the runs it had and nothing else: a menu written on it first stays.
     func testRunsWrittenAfterAMenuLeaveTheMenu() {
         let node = Text().contextMenu { MenuItem("Copy") }.spans { TextSpan("let ") }.node

@@ -9,7 +9,7 @@ struct StyleVariant: Equatable {
     let member: Prop
     let value: PropValue
 
-    /// What a control saying none of the member holds - a picker is a menu; nil for none, as a button's role.
+    /// What a control saying none of the member holds - a picker is a menu, a button an ordinary one.
     let unsaid: PropValue?
 
     init<Owner: ElementContract, Value>(_ member: ElementProperty<Owner, Value>, _ value: Value, unsaid: Value? = nil) {

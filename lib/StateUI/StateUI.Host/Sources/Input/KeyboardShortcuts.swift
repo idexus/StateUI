@@ -43,7 +43,7 @@
         switch role {
         case .primary: return KeyboardShortcut(.return, modifiers: [])
         case .cancel: return KeyboardShortcut(.escape, modifiers: [])
-        case .destructive, nil: return nil
+        case .normal, .destructive, nil: return nil
         }
     }
 

@@ -18,7 +18,7 @@ BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift 9bcd94f7f88fe7af
 BuilderSample.swift eda47ffd0dda692b
 ButtonMenuSample.swift d4e17af0531f4452
-ButtonRoleSample.swift 36d33f316a462966
+ButtonRoleSample.swift 1b07ddd7b73c31f5
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift b31634f0ee2057b2
 ChangingDeckSample.swift e1f41999f566a8a6

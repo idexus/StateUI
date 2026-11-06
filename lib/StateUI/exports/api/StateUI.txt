@@ -1075,6 +1075,7 @@ swift.enum.case ButtonMenuKind.held: case held
 swift.enum.case ButtonMenuKind.split: case split
 swift.enum.case ButtonRole.cancel: case cancel
 swift.enum.case ButtonRole.destructive: case destructive
+swift.enum.case ButtonRole.normal: case normal
 swift.enum.case ButtonRole.primary: case primary
 swift.enum.case Cadence.always: case always
 swift.enum.case Cadence.every(_:): case every(Duration)

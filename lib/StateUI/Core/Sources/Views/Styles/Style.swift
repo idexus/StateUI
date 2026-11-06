@@ -87,7 +87,7 @@ extension Styling where Scope == StyleScope.Whole, Target == Button {
     ///     Style<Button>(role: .destructive).background(AppColors.danger)
     public init(role: ButtonRole) {
         self.init(key: nil)
-        variant = StyleVariant(ButtonContract.role, role)
+        variant = StyleVariant(ButtonContract.role, role, unsaid: .normal)
     }
 }
 

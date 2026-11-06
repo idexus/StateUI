@@ -711,8 +711,11 @@ struct Rename: View {
 }
 ```
 
-`.primary` is the window's main action: filled in the platform's accent and
-pressed by Return. `.cancel` is the way out, pressed by Escape, and stands as
+`.normal`, what a button saying no role is, is an ordinary action: the
+platform's plain button, with no key of its own - so `.role(main ? .primary :
+.normal)` changes what the button stands for in one spelling. `.primary` is
+the window's main action: filled in the platform's accent and pressed by
+Return. `.cancel` is the way out, pressed by Escape, and stands as
 the platform's plain button. `.destructive` marks an action that destroys
 something: its words stand in the platform's color for one - the red its
 alerts and menus give such an action. A fill or a color of words the button

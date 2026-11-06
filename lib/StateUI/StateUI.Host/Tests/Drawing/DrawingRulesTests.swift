@@ -284,7 +284,8 @@ final class DrawingRulesTests: XCTestCase {
     }
 
     /// A role draws where the tree draws nothing of its own: the main action fills in the accent, a destructive
-    /// one's words stand in the critical color, the way out and no role stand plain - and what the tree states wins.
+    /// one's words stand in the critical color, the way out, an ordinary action and no role stand plain - and what
+    /// the tree states wins.
     func testARoleDrawsWhereTheTreeDrawsNothing() {
         XCTAssertEqual(ButtonRoleLook(.primary, fills: false, colorsWords: false).fillsInAccent, true)
         XCTAssertEqual(ButtonRoleLook(.primary, fills: true, colorsWords: false).fillsInAccent, false, "a fill stated")
@@ -292,7 +293,7 @@ final class DrawingRulesTests: XCTestCase {
         XCTAssertEqual(
             ButtonRoleLook(.destructive, fills: false, colorsWords: true).wordsInCritical, false, "a color stated")
         XCTAssertEqual(ButtonRoleLook(.destructive, fills: false, colorsWords: false).fillsInAccent, false)
-        for role in [ButtonRole.cancel, nil] {
+        for role in [ButtonRole.cancel, .normal, nil] {
             let look = ButtonRoleLook(role, fills: false, colorsWords: false)
             XCTAssertFalse(look.fillsInAccent || look.wordsInCritical, "\(String(describing: role)) stands plain")
         }

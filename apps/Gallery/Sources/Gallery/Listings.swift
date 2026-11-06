@@ -1739,6 +1739,7 @@ enum Listings {
         @State private var name = ""
         @State private var last = "nothing yet"
         @State private var platformLook = false
+        @State private var saveIsMain = true
 
         var body: some View {
             // The gallery's style for each role, or the platform's own look.
@@ -1764,12 +1765,14 @@ enum Listings {
                         .role(.cancel)
                         .onClicked { last = "Cancel" }
 
-                    // Return presses the main action.
+                    // Return presses the main action; an ordinary button has no key.
                     Button("Save")
                         .style(look)
-                        .role(.primary)
+                        .role(saveIsMain ? .primary : .normal)
                         .onClicked { last = "Save" }
                 }
+
+                Switch("Save is the main action", isOn: $saveIsMain)
 
                 Switch($platformLook)
                     .text("Platform look")

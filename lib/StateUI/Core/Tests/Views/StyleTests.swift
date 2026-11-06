@@ -608,6 +608,22 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(plain.props["textColor"], Color.black.propValue)
     }
 
+    /// A style for the ordinary role is worn by a button saying `.normal` and by one saying no role: the two are one.
+    func testAButtonSayingNoRoleWearsTheOrdinaryRolesStyle() {
+        let sheet = StyleSheet {
+            Style<Button>(role: .normal).textColor(.gray)
+            Style<Button>().textColor(.black)
+        }
+
+        let said = Renders().render(Button("Open").role(.normal).node, styles: sheet)
+        let unsaid = Renders().render(Button("Open").node, styles: sheet)
+        let main = Renders().render(Button("Save").role(.primary).node, styles: sheet)
+
+        XCTAssertEqual(said.props["textColor"], Color.gray.propValue)
+        XCTAssertEqual(unsaid.props["textColor"], Color.gray.propValue, "no role is the ordinary one")
+        XCTAssertEqual(main.props["textColor"], Color.black.propValue, "another role wears the implicit style")
+    }
+
     /// A style for a picker's presentation stands over the one every picker wears, worn by every picker of that
     /// presentation - a picker saying none is a menu - and by no other.
     func testAStyleForAPresentationStandsOverTheOneEveryPickerWears() {

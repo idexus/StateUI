@@ -85,14 +85,14 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 
-    /// What the button stands for in its window: `.primary`, its main action, drawn with the platform's emphasis and
-    /// pressed by Return; `.cancel`, the way out, pressed by Escape; `.destructive`, an action that destroys
-    /// something. A shortcut the button states takes the place of its role's key, and a field being typed into
+    /// What the button stands for in its window: `.normal`, an ordinary action, as a button of no role is; `.primary`,
+    /// its main action, drawn with the platform's emphasis and pressed by Return; `.cancel`, the way out, pressed by
+    /// Escape; `.destructive`, an action that destroys something. A shortcut the button states takes the place of its role's key, and a field being typed into
     /// keeps Return. Said where the button is written, it takes no state: the window hands its keys to the buttons
     /// it shows.
     ///
     ///     Button("Cancel").role(.cancel)
-    ///     Button("Save").role(.primary)
+    ///     Button("Save").role(isDefault ? .primary : .normal)
     public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
     }
