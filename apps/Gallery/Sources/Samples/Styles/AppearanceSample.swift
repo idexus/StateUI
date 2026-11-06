@@ -30,7 +30,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     /// How the bars' buttons may stand, in the order they are offered.
     private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
-        ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+        ("The Web's own", .automatic), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
     ]
 
     /// The accents the application may hold, the platform's first.

@@ -29,7 +29,7 @@ private struct TodoRow: View {
                 .accessibilityLabel("Todo")
                 .gridColumn(1)
         }
-        .columns(.auto, .fill)
+        .columns(.automatic, .fill)
         .columnSpacing(8)
     }
 }
@@ -101,7 +101,7 @@ private struct KeptChores: View {
             .spacing(8)
             .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
 
@@ -134,7 +134,7 @@ struct RecordEditingSample: SampleContent, ExampleContent {
             KeptChores()
                 .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(16)
     }
     // listing: end

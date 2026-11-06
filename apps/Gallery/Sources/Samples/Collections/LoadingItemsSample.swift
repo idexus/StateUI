@@ -52,7 +52,7 @@ private struct LoadingList: ExampleContent {
             }
             .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(10)
     }
     // listing: end

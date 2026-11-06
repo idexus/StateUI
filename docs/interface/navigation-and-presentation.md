@@ -766,7 +766,7 @@ look. What the window shows around the bars is its own background
 Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
 how they stand: `.glass`, each on a round glass; `.plain`, no background until
 the pointer is over one; `.rounded`, a flat rounded rectangle; or the
-platform's own, `.system`, unless said - plain on the Web. It is found along
+platform's own, `.automatic`, unless said - plain on the Web. It is found along
 the path as the bar's colors are, and native bars keep their platform's
 buttons:
 

@@ -193,7 +193,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(4)
         }
-        .rows(.fill, .auto, .auto, .auto, .auto)
+        .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         .rowSpacing(10)
     }
 

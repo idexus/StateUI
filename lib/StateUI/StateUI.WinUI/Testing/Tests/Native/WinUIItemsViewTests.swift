@@ -28,7 +28,7 @@ final class WinUIItemsViewTests: XCTestCase {
 
                     Text("Tap a row.").gridRow(1)
                 }
-                .rows(.fill, .auto)
+                .rows(.fill, .automatic)
             }
             let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
             let window = try XCTUnwrap(host.window)

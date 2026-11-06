@@ -4,14 +4,14 @@
 /// How much room one grid row or column takes.
 ///
 ///     Grid { … }
-///         .rows(.auto, .fill, .proportional(2), .fixed(100))
+///         .rows(.automatic, .fill, .proportional(2), .fixed(100))
 ///
-/// Three kinds: `.auto` fits the content, `.proportional` shares what is left
+/// Three kinds: `.automatic` fits the content, `.proportional` shares what is left
 /// in proportion, and `.fixed` is device units. The proportional rows are
-/// settled last, out of whatever the auto and fixed rows leave.
+/// settled last, out of whatever the automatic and fixed rows leave.
 public enum GridLength: Equatable, Sendable, HostRepresentable {
     /// As much as the content needs, and no more.
-    case auto
+    case automatic
 
     /// A share of what is left over, in proportion to the other shares: two
     /// columns of `.fill` and `.proportional(2)` split it one to two.
@@ -28,15 +28,15 @@ public enum GridLength: Equatable, Sendable, HostRepresentable {
     enum Kind: Int32, Sendable {
         case fixed = 0
         case proportional = 1
-        case auto = 2
+        case automatic = 2
     }
 
-    /// The kind, then its number; `.auto` carries 1, so every length has both
+    /// The kind, then its number; `.automatic` carries 1, so every length has both
     /// parts.
     public var propValue: PropValue {
         switch self {
-        case .auto:
-            return .values([.enumeration(Kind.auto.rawValue), .number(1)])
+        case .automatic:
+            return .values([.enumeration(Kind.automatic.rawValue), .number(1)])
         case .proportional(let share):
             return .values([.enumeration(Kind.proportional.rawValue), .number(share)])
         case .fixed(let length):
@@ -53,7 +53,7 @@ public enum GridLength: Equatable, Sendable, HostRepresentable {
         else { return nil }
 
         switch kind {
-        case .auto: self = .auto
+        case .automatic: self = .automatic
         case .proportional: self = .proportional(amount)
         case .fixed: self = .fixed(amount)
         }

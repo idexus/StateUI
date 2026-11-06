@@ -99,7 +99,7 @@ private struct IdentityRow: View {
                 }
                 .gridColumn(2)
         }
-        .columns(.fixed(90), .fill, .auto)
+        .columns(.fixed(90), .fill, .automatic)
         .columnSpacing(10)
     }
 }

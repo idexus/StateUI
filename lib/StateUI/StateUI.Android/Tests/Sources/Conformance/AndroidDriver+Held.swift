@@ -99,7 +99,7 @@ extension AndroidDriver {
             case 4: .send
             case 5: .next
             case 6: .done
-            default: .default
+            default: .automatic
             }
             return key.propValue
         // Read only: the field offers a keyboard nothing to edit.

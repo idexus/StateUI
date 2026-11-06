@@ -102,7 +102,7 @@ struct BottomBarSample: SampleContent, ExampleContent {
                         .verticalAlignment(.end)
                         .gridColumn(1)
                 }
-                .columns(.fill, .auto)
+                .columns(.fill, .automatic)
                 .columnSpacing(10)
                 .padding(12)
             }

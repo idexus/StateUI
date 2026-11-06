@@ -17,7 +17,7 @@ Grid {
         .aim(browser)
         .gridRow(1)
 }
-.rows(.auto, .fill)
+.rows(.automatic, .fill)
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.

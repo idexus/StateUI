@@ -1128,7 +1128,7 @@ swift.enum.case GesturePhase.changed: case changed
 swift.enum.case GesturePhase.ended: case ended
 swift.enum.case Glass.Clarity.clear: case clear
 swift.enum.case Glass.Clarity.regular: case regular
-swift.enum.case GridLength.auto: case auto
+swift.enum.case GridLength.automatic: case automatic
 swift.enum.case GridLength.fixed(_:): case fixed(Double)
 swift.enum.case GridLength.proportional(_:): case proportional(Double)
 swift.enum.case Icon.add: case add
@@ -1167,8 +1167,8 @@ swift.enum.case IconPosition.bottom: case bottom
 swift.enum.case IconPosition.end: case end
 swift.enum.case IconPosition.start: case start
 swift.enum.case IconPosition.top: case top
+swift.enum.case InputPurpose.automatic: case automatic
 swift.enum.case InputPurpose.chat: case chat
-swift.enum.case InputPurpose.default: case `default`
 swift.enum.case InputPurpose.email: case email
 swift.enum.case InputPurpose.newPassword: case newPassword
 swift.enum.case InputPurpose.numeric: case numeric
@@ -1241,7 +1241,7 @@ swift.enum.case StateUIError.noItem(_:): case noItem(String)
 swift.enum.case StateUIError.notPerformed(act:reason:): case notPerformed(act: String, reason: String)
 swift.enum.case StateUIError.unreadableAnswer(act:answered:declared:): case unreadableAnswer(act: String, answered: String, declared: String)
 swift.enum.case StateUIError.writesWhileBuilding: case writesWhileBuilding
-swift.enum.case SubmitLabel.default: case `default`
+swift.enum.case SubmitLabel.automatic: case automatic
 swift.enum.case SubmitLabel.done: case done
 swift.enum.case SubmitLabel.go: case go
 swift.enum.case SubmitLabel.next: case next
@@ -1268,10 +1268,10 @@ swift.enum.case ToolbarPart.sidebar: case sidebar
 swift.enum.case ToolbarPosition.end: case end
 swift.enum.case ToolbarPosition.overflow: case overflow
 swift.enum.case ToolbarPosition.start: case start
+swift.enum.case ToolbarStyle.automatic: case automatic
 swift.enum.case ToolbarStyle.glass: case glass
 swift.enum.case ToolbarStyle.plain: case plain
 swift.enum.case ToolbarStyle.rounded: case rounded
-swift.enum.case ToolbarStyle.system: case system
 swift.enum.case WebNavigationResult.cancelled: case cancelled
 swift.enum.case WebNavigationResult.failure: case failure
 swift.enum.case WebNavigationResult.success: case success
@@ -12684,7 +12684,7 @@ swift.method WindowSession.hideOnScreenKeyboard(): @discardableResult @MainActor
 swift.method WindowSession.openDebugInspector(_:): @MainActor func openDebugInspector(_ place: DebugInspector.Place? = nil)
 swift.method WindowSession.openFile(types:): @MainActor func openFile(types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.openFiles(types:): @MainActor func openFiles(types: [FileType] = []) async throws -> [ChosenFile]
-swift.method WindowSession.prompt(_:message:accept:cancel:placeholder:initialValue:maximumLength:inputPurpose:): @MainActor func prompt(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil, placeholder: String? = nil, initialValue: String = "", maximumLength: Int? = nil, inputPurpose: InputPurpose = .default) async throws -> String?
+swift.method WindowSession.prompt(_:message:accept:cancel:placeholder:initialValue:maximumLength:inputPurpose:): @MainActor func prompt(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil, placeholder: String? = nil, initialValue: String = "", maximumLength: Int? = nil, inputPurpose: InputPurpose = .automatic) async throws -> String?
 swift.method WindowSession.saveFile(_:name:types:): @discardableResult @MainActor func saveFile(_ contents: [UInt8], name: String, types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.share(address:): @discardableResult @MainActor func share(address: String) async throws -> Bool
 swift.method WindowSession.share(text:): @discardableResult @MainActor func share(text: String) async throws -> Bool
@@ -13389,7 +13389,7 @@ swift.type.method DrawingBuilder.buildEither(second:): static func buildEither(s
 swift.type.method DrawingBuilder.buildExpression(_:): static func buildExpression(_ expression: DrawCommand) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildExpression(_:): static func buildExpression(_ expression: [DrawCommand]) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildOptional(_:): static func buildOptional(_ component: [DrawCommand]?) -> [DrawCommand]
-swift.type.method GridTracks.auto(count:): static func auto(count: Int) -> GridTracks
+swift.type.method GridTracks.automatic(count:): static func automatic(count: Int) -> GridTracks
 swift.type.method GridTracks.fill(count:): static func fill(count: Int) -> GridTracks
 swift.type.method GridTracks.fixed(_:count:): static func fixed(_ length: Double, count: Int = 1) -> GridTracks
 swift.type.method GridTracks.proportional(_:count:): static func proportional(_ share: Double, count: Int = 1) -> GridTracks
@@ -13641,7 +13641,7 @@ swift.type.property GridContract.name: static var name: String { get }
 swift.type.property GridContract.rowSpacing: static let rowSpacing: ElementProperty<GridContract, Double>
 swift.type.property GridContract.rows: static let rows: ElementProperty<GridContract, [GridLength]>
 swift.type.property GridLength.fill: static var fill: GridLength { get }
-swift.type.property GridTracks.auto: static var auto: GridTracks { get }
+swift.type.property GridTracks.automatic: static var automatic: GridTracks { get }
 swift.type.property GridTracks.fill: static var fill: GridTracks { get }
 swift.type.property HStackContract.lineAlignment: static let lineAlignment: ElementProperty<HStackContract, TextAlignment>
 swift.type.property HStackContract.name: static var name: String { get }

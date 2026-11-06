@@ -5,7 +5,7 @@
 /// says nothing.
 ///
 ///     Grid { … }
-///         .rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))
+///         .rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))
 ///
 /// A count below one writes no row or column.
 public struct GridTracks: Equatable, Sendable {
@@ -22,13 +22,13 @@ public struct GridTracks: Equatable, Sendable {
     }
 
     /// One row or column as tall or wide as what it holds.
-    public static var auto: GridTracks { GridTracks(.auto) }
+    public static var automatic: GridTracks { GridTracks(.automatic) }
 
     /// One row or column taking one share of what is left over.
     public static var fill: GridTracks { GridTracks(.fill) }
 
     /// `count` rows or columns, each as tall or wide as what it holds.
-    public static func auto(count: Int) -> GridTracks { GridTracks(.auto, count: count) }
+    public static func automatic(count: Int) -> GridTracks { GridTracks(.automatic, count: count) }
 
     /// `count` rows or columns, each taking one share of what is left over.
     public static func fill(count: Int) -> GridTracks { GridTracks(.fill, count: count) }

@@ -38,7 +38,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }
-                    .columns(.fill, .auto)
+                    .columns(.fill, .automatic)
                     .padding(horizontal: 14, vertical: 6)
                     .background(Palette.raised)
                     .height(46)

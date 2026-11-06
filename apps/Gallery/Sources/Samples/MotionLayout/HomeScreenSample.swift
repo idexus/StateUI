@@ -160,7 +160,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             .height(16)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(8)
     }
 

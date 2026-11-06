@@ -765,7 +765,7 @@ extension WinUIDriver {
     /// The purpose a text box's input scope is given for.
     static func purpose(_ scope: WinUIInputScope) -> InputPurpose {
         switch scope {
-        case .default: .default
+        case .default: .automatic
         case .text: .text
         case .chat: .chat
         case .email: .email

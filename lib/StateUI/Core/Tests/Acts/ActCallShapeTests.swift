@@ -147,7 +147,7 @@ final class ActCallShapeTests: XCTestCase {
 
         try await check("prompt", Self.usersWindow + [
             .string("Rename"), .string(""), .string("OK"), .string("Anuluj"), .nothing, .nothing,
-            InputPurpose.default.propValue, .string(""),
+            InputPurpose.automatic.propValue, .string(""),
         ]) {
             _ = try await WindowSession().prompt("Rename")
         }

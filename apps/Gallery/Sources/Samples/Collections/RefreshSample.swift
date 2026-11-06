@@ -37,7 +37,7 @@ private struct RefreshingList: ExampleContent {
             .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
             .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(10)
     }
 

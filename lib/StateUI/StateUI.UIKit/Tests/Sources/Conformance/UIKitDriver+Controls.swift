@@ -174,7 +174,7 @@ extension UIKitDriver {
         case .URL: .url
         case .phonePad: .telephone
         case .decimalPad: .numeric
-        default: spelling == .no ? .plain : .default
+        default: spelling == .no ? .plain : .automatic
         }
     }
 }

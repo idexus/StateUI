@@ -69,7 +69,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
 

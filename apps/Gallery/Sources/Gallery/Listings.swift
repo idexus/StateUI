@@ -801,7 +801,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The app `name` closed: the others close up; one before the card in front keeps
@@ -879,7 +879,7 @@ enum Listings {
                         .clipsContent(true)
                         .gridRow(1)
                 }
-                .rows(.auto, .fill)
+                .rows(.automatic, .fill)
                 .engine(following: turn) { _ in
                     named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)
                 }
@@ -927,7 +927,7 @@ enum Listings {
 
         /// How the bars' buttons may stand, in the order they are offered.
         private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
-            ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+            ("The Web's own", .automatic), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
         ]
 
         /// The accents the application may hold, the platform's first.
@@ -1224,7 +1224,7 @@ enum Listings {
                 Text(caption)
                     .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
         """#,
         "BatterySample": #"""
@@ -1414,7 +1414,7 @@ enum Listings {
                             .verticalAlignment(.end)
                             .gridColumn(1)
                     }
-                    .columns(.fill, .auto)
+                    .columns(.fill, .automatic)
                 }
             } destination: { _ in
                 Text("")
@@ -1930,7 +1930,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(2)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .automatic, .automatic)
         }
 
         /// The next card not in the deck, if any is left.
@@ -4185,7 +4185,7 @@ enum Listings {
                 #if WEB
                 .glass
                 #else
-                .system
+                .automatic
                 #endif
             }
 
@@ -4480,7 +4480,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(4)
             }
-            .rows(.fill, .auto, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         }
 
         /// The next card not in the gallery, if any is left.
@@ -4703,7 +4703,7 @@ enum Listings {
                 Text(opened.map { "Tile \($0) opened." } ?? "Open a tile.")
                     .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
         """#,
         "GridPlacement": #"""
@@ -4733,7 +4733,7 @@ enum Listings {
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(64, count: 2), .auto)
+                .rows(.fixed(64, count: 2), .automatic)
                 .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
 
                 // Changing a definition patches the grid in place: the cells keep
@@ -4800,7 +4800,7 @@ enum Listings {
                     .gridRow(2)
                     .horizontalAlignment(.end)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "GrowingWords": #"""
@@ -5038,7 +5038,7 @@ enum Listings {
                 .height(16)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The grid the room fits now, written where it changed - the board in
@@ -5320,7 +5320,7 @@ enum Listings {
                     }
                 }
                 .columns(.fill(count: 4))
-                .rows(.auto(count: 8))
+                .rows(.automatic(count: 8))
 
                 SectionTitle("In the button's color")
 
@@ -5418,7 +5418,7 @@ enum Listings {
                         }
                         .gridColumn(2)
                 }
-                .columns(.fixed(90), .fill, .auto)
+                .columns(.fixed(90), .fill, .automatic)
             }
         }
         """#,
@@ -6106,7 +6106,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .gridRow(3)
             }
-            .rows(.fill, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic)
         }
 
         /// The cards: one arithmetic, asked at the keyframes alone.
@@ -6261,7 +6261,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The cards, placed from both axes of the parameters.
@@ -6487,7 +6487,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .gridRow(2)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .automatic, .automatic)
         }
 
         /// The photos, placed from every axis of the table.
@@ -6719,7 +6719,7 @@ enum Listings {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "LocaleInfoSample": #"""
@@ -6961,7 +6961,7 @@ enum Listings {
                 Text(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
                     .gridRow(2)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "MailFilters": #"""
@@ -7011,7 +7011,7 @@ enum Listings {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "MainPage.bar": #"""
@@ -7849,7 +7849,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(4)
             }
-            .rows(.fill, .auto, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         }
 
         /// The ring of cards and its dots, placed by the arithmetic below.
@@ -8447,7 +8447,7 @@ enum Listings {
                     spelling("a get in these braces")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8485,7 +8485,7 @@ enum Listings {
                     spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8518,7 +8518,7 @@ enum Listings {
                     spelling("$offset.journey.convert { … }")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8567,7 +8567,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// Puts all three strips at the same offset, one after another.
@@ -9038,7 +9038,7 @@ enum Listings {
                 Text("\(chosen.count) chosen")
                     .gridRow(2)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "PickerSample": #"""
@@ -9757,7 +9757,7 @@ enum Listings {
                     TextField($title)
                         .gridColumn(1)
                 }
-                .columns(.auto, .fill)
+                .columns(.automatic, .fill)
             }
         }
 
@@ -9823,7 +9823,7 @@ enum Listings {
                     }
                     .gridRow(2)
                 }
-                .rows(.auto, .fill, .auto)
+                .rows(.automatic, .fill, .automatic)
             }
 
             /// The chore of `id`, changed in place - found by its identity, never by
@@ -9841,7 +9841,7 @@ enum Listings {
                 KeptChores()
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "RefreshingList": #"""
@@ -9875,7 +9875,7 @@ enum Listings {
                 .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
 
         /// Fetches what is new, the spinner showing until it is in.
@@ -9919,7 +9919,7 @@ enum Listings {
                                 .gridColumn(1)
                                 .onClicked { remove(row) }
                         }
-                        .columns(.fill, .auto)
+                        .columns(.fill, .automatic)
                         .height(46)
                         .isVisible(!gone.contains(row) && !atOnce.contains(row))
                         // The other half of the sample: a row told to travel at no
@@ -9999,7 +9999,7 @@ enum Listings {
                 Text("the platform's own rest")
                     .gridRow(4)
             }
-            .rows(.auto, .auto, .auto, .auto, .auto)
+            .rows(.automatic, .automatic, .automatic, .automatic, .automatic)
             // The bands are as tall as they need to be, so the pair sits in the
             // middle of whatever height the window gave the cell.
             .verticalAlignment(.center)
@@ -12973,7 +12973,7 @@ enum Listings {
                 Text(answer)
                     .gridRow(4)
             }
-            .rows(.auto, .fill, .auto(count: 3))
+            .rows(.automatic, .fill, .automatic(count: 3))
         }
         """#,
         "WindowBarSample": #"""

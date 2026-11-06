@@ -980,7 +980,7 @@ final class PagesTests: XCTestCase {
         let menu = try XCTUnwrap(root.first(id: .manual("menu")))
         XCTAssertEqual(menu.barColors.foreground, .string("split"), "the sidebar wears its split view's bar")
         XCTAssertNil(menu.barColors.background, "and nothing from around the split view")
-        XCTAssertEqual(menu.toolbarStyle, .system, "nor the buttons' look")
+        XCTAssertEqual(menu.toolbarStyle, .automatic, "nor the buttons' look")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
         XCTAssertEqual(sheet.barColors.background, .string("stack"), "a sheet wears the presenting view's look")

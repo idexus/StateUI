@@ -137,7 +137,7 @@ final class WinUITextFieldViewTests: XCTestCase {
             XCTAssertEqual(Self.checkedAndPredicted(field), [0, 0], "plain words")
 
             let scopes: [(InputPurpose, WinUIInputScope)] = [
-                (.text, .text), (.chat, .chat), (.email, .email), (.numeric, .number), (.default, .default),
+                (.text, .text), (.chat, .chat), (.email, .email), (.numeric, .number), (.automatic, .default),
             ]
             for (written, scope) in scopes {
                 purpose.wrappedValue = written

@@ -41,7 +41,7 @@ private struct PickList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end

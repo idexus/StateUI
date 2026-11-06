@@ -77,7 +77,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .gridRow(3)
         }
-        .rows(.fill, .auto, .auto, .auto)
+        .rows(.fill, .automatic, .automatic, .automatic)
         .rowSpacing(10)
     }
 

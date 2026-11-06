@@ -8,7 +8,7 @@
 /// offers and what it fills the input in with.
 public enum InputPurpose: Int32, Sendable {
     /// The platform's own keyboard, correction and capitals, as a field asking for nothing has them.
-    case `default` = 0
+    case automatic = 0
 
     /// The default one with no correction, capitalization or suggestions.
     case plain = 1

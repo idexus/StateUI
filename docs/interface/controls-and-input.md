@@ -677,7 +677,7 @@ Grid {
         .aim(browser)
         .gridRow(1)
 }
-.rows(.auto, .fill)
+.rows(.automatic, .fill)
 ```
 
 A script answers what it evaluated to as text: words as they are, a number as
@@ -815,7 +815,7 @@ struct ContactsPage: View {
                 .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
     }
 }
 ```

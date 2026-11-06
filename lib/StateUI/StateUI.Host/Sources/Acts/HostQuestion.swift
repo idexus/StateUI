@@ -97,7 +97,7 @@
         placeholder = kind == .prompt ? text(4) : nil
         maximumLength = kind == .prompt && arguments.count > 5
             ? Int(propValue: arguments[5]).flatMap { $0 > 0 ? $0 : nil } : nil
-        purpose = kind == .prompt && arguments.count > 6 ? InputPurpose(propValue: arguments[6]) ?? .default : .default
+        purpose = kind == .prompt && arguments.count > 6 ? InputPurpose(propValue: arguments[6]) ?? .automatic : .automatic
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 

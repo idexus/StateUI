@@ -132,7 +132,7 @@ extension GTKDriver {
             default:
                 has(GTK_INPUT_HINT_EMOJI) ? .chat
                     : has(GTK_INPUT_HINT_UPPERCASE_SENTENCES) ? .text
-                    : has(GTK_INPUT_HINT_NO_SPELLCHECK) && !has(GTK_INPUT_HINT_WORD_COMPLETION) ? .plain : .default
+                    : has(GTK_INPUT_HINT_NO_SPELLCHECK) && !has(GTK_INPUT_HINT_WORD_COMPLETION) ? .plain : .automatic
             }
             return read.propValue
         }

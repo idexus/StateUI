@@ -118,7 +118,7 @@ extension AndroidDriver {
         case (_, 0x10): return .url
         default:
             if type & 0x4000 != 0 { return .text }
-            return type & 0x80000 != 0 ? .plain : .default
+            return type & 0x80000 != 0 ? .plain : .automatic
         }
     }
 

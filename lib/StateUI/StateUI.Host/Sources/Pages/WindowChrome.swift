@@ -47,8 +47,8 @@
     /// The color of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
 
-    /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
-    public var toolbarStyle = ToolbarStyle.system
+    /// How the bars' buttons stand: the nearest declared on the visible page's path, `.automatic` where none is.
+    public var toolbarStyle = ToolbarStyle.automatic
 
     /// How what scrolls under the bars shows at their edge: the nearest declared on the visible page's path.
     public var barScrollEdge = ScrollEdge.automatic
@@ -82,7 +82,7 @@
         titleArea = area?.isEmpty == false ? area : nil
         (background, foreground) = page?.barColors ?? (nil, nil)
         material = page?.barMaterial ?? HostMaterial(nil)
-        toolbarStyle = page?.toolbarStyle ?? .system
+        toolbarStyle = page?.toolbarStyle ?? .automatic
         toolbarSpacing = page?.toolbarSpacing
         barScrollEdge = page?.barScrollEdge ?? .automatic
         if let page { menus = page.chromeMenus }

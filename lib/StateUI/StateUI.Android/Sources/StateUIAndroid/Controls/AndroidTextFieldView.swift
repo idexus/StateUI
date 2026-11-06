@@ -131,7 +131,7 @@ final class AndroidTextFieldView: AndroidTextualView {
     func setReturnKey(_ key: SubmitLabel?) {
         // EditorInfo.IME_ACTION_UNSPECIFIED, _GO, _SEARCH, _SEND, _NEXT and _DONE.
         let action: Int32 = switch InputTraits.submitLabel(key, searching: kind == .search) {
-        case .default: 0
+        case .automatic: 0
         case .go: 2
         case .search: 3
         case .send: 4

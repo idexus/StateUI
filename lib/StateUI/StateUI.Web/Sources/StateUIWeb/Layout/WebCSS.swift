@@ -90,7 +90,7 @@ enum WebCSS {
     /// nothing still a sliver.
     private static func track(_ length: GridLength) -> String {
         switch length {
-        case .auto: "auto"
+        case .automatic: "auto"
         case .fixed(let length): pixels(length)!
         case .proportional(let share): "minmax(0, \(number(max(share, 0.0001)))fr)"
         }

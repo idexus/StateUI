@@ -105,7 +105,7 @@ struct ListRow: View {
             .columnSpacing(12)
             // The TEXT is the star column: a star column is given what the
             // others left, and a Text given a width wraps to it.
-            .columns(.auto, .fill, .auto)
+            .columns(.automatic, .fill, .automatic)
             .padding(horizontal: 16, vertical: 11)
         }
         .style(.listRow)

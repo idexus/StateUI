@@ -43,7 +43,7 @@ struct InspectorStrip: View {
             .verticalAlignment(.center)
             .gridColumn(1)
         }
-        .columns(.fill, .auto)
+        .columns(.fill, .automatic)
         .padding(horizontal: 2, vertical: 4)
     }
 }

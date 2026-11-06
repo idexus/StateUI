@@ -100,7 +100,7 @@ struct SampleTabPage: View {
                 .gridRow(1)
             }
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(16)
         .padding(24)
     }

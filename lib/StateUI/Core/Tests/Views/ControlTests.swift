@@ -285,7 +285,7 @@ final class ControlTests: XCTestCase {
                         .gridRow(1)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(70), .auto)
+                .rows(.fixed(70), .automatic)
                 .columns(.fill, .proportional(2))
                 .rowSpacing(12)
                 .columnSpacing(8)),

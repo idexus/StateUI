@@ -135,8 +135,8 @@ extension ControlDictionary {
                     .gridRow(1)
                     .gridColumnSpan(2)
             }
-            .rows(.auto, .auto)
-            .columns(.auto, .fill)
+            .rows(.automatic, .automatic)
+            .columns(.automatic, .fill)
             .columnSpacing(12)
             """#),
 
@@ -601,7 +601,7 @@ extension ControlDictionary {
                     .aim(browser)
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             """#),
 
         (WindowContract.self, #"""

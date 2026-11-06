@@ -10,19 +10,19 @@ import XCTest
 final class GridTracksTests: XCTestCase {
     func testARunReachesTheHostOneLengthARowOrColumn() {
         let node = Grid {}
-            .rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))
+            .rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))
             .columns(.proportional(2, count: 2), .fixed(40, count: 3))
             .node
 
-        let rows: [GridLength] = [.fill, .auto, .auto] + Array(repeating: .fill, count: 5) + [.fixed(80)]
+        let rows: [GridLength] = [.fill, .automatic, .automatic] + Array(repeating: .fill, count: 5) + [.fixed(80)]
         let columns: [GridLength] = [.proportional(2), .proportional(2), .fixed(40), .fixed(40), .fixed(40)]
         XCTAssertEqual(node.props[GridContract.rows.token], rows.propValue)
         XCTAssertEqual(node.props[GridContract.columns.token], columns.propValue)
     }
 
     func testACountBelowOneWritesNone() {
-        let node = Grid {}.rows(.fill(count: 0), .auto, .fixed(10, count: -2)).node
+        let node = Grid {}.rows(.fill(count: 0), .automatic, .fixed(10, count: -2)).node
 
-        XCTAssertEqual(node.props[GridContract.rows.token], ([.auto] as [GridLength]).propValue)
+        XCTAssertEqual(node.props[GridContract.rows.token], ([.automatic] as [GridLength]).propValue)
     }
 }

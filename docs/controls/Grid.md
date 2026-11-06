@@ -15,8 +15,8 @@ Grid {
         .gridRow(1)
         .gridColumnSpan(2)
 }
-.rows(.auto, .auto)
-.columns(.auto, .fill)
+.rows(.automatic, .automatic)
+.columns(.automatic, .fill)
 .columnSpacing(12)
 ```
 

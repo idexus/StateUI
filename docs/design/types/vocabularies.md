@@ -48,7 +48,7 @@ kind is made of.
 
 ```text
   GridLength.proportional(2)       [1, 2]
-  GridLength.auto                  [2, 1]      every length carries both parts
+  GridLength.automatic                  [2, 1]      every length carries both parts
   ContainerShape.roundedRectangle(12) [1, 12]
   ContainerShape.ellipse              [2]
   ContainerShape.capsule              [3]
@@ -58,7 +58,7 @@ kind is made of.
 Each type numbers its kinds in an internal `Kind` enum, written out by the
 rule above - except `Material`, whose blur and glass continue the brush's
 numbers as 4 and 5. `Brush.Kind` numbers from 1 rather than 0: the contract asks
-only that both sides say the same number. A grid length's `.auto` carries a
+only that both sides say the same number. A grid length's `.automatic` carries a
 1, so every length is the same two parts and a host reads each one the same
 way.
 

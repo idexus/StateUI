@@ -42,7 +42,7 @@
                                 .onEvent(ViewContract.frameChanged) { c.values.append($0) }
                         }
                         .columns(.fixed(100), .fill)
-                        .rows(.auto, .auto)
+                        .rows(.automatic, .automatic)
                         .rowSpacing(10)
                         .columnSpacing(5)
                         .padding(10)
@@ -76,7 +76,7 @@
                                 .height(20)
                                 .gridRow(2)
                         }
-                        .rows(.auto, .fill, .auto)
+                        .rows(.automatic, .fill, .automatic)
                         .width(100)
                         .height(200)
                     }
@@ -109,7 +109,7 @@
                                 .gridColumn(1)
                         }
                         .columns(.fixed(20), .fill)
-                        .rows(.auto, .auto)
+                        .rows(.automatic, .automatic)
                         .rowSpacing(10)
                         .width(100)
                     }
@@ -141,7 +141,7 @@
                                 .onEvent(ViewContract.frameChanged) { box.values.append($0) }
                         }
                         .columns(.fixed(20), .fixed(20))
-                        .rows(.auto, .auto)
+                        .rows(.automatic, .automatic)
                         .columnSpacing(wide.wrappedValue ? 15 : 5)
                         .rowSpacing(wide.wrappedValue ? 25 : 5)
                         Button("Wider").onClicked { wide.wrappedValue = true }.id("change")

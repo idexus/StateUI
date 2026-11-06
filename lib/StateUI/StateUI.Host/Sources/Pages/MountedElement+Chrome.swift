@@ -122,9 +122,9 @@ extension MountedElement {
         HostMaterial(barValue(.barBackground))
     }
 
-    /// How this element's bar's buttons stand, found as its bar's colors; `.system` where none is declared.
+    /// How this element's bar's buttons stand, found as its bar's colors; `.automatic` where none is declared.
     public var toolbarStyle: ToolbarStyle {
-        barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system
+        barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .automatic
     }
 
     /// How what scrolls under this element's bar shows at its edge, found as its bar's colors; `.automatic` where

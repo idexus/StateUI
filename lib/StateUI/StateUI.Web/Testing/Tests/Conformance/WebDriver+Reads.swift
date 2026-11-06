@@ -405,7 +405,7 @@ extension WebDriver {
             case "next": .next
             case "search": .search
             case "send": .send
-            default: .default
+            default: .automatic
             }
             return label.propValue
         case .inputPurpose:
@@ -419,7 +419,7 @@ extension WebDriver {
             case "url": .url
             case "tel": .telephone
             case "decimal", "numeric": .numeric
-            default: .default
+            default: .automatic
             }
             return purpose.propValue
         case .growsWithText: return try WebBrowser.truth("e.hasAttribute('data-grows')", on: e).propValue

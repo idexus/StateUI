@@ -7,7 +7,7 @@
 /// The label on the keyboard's return key.
 public enum SubmitLabel: Int32, Sendable {
     /// Whatever the platform calls it.
-    case `default` = 0
+    case automatic = 0
 
     /// "Done".
     case done = 1

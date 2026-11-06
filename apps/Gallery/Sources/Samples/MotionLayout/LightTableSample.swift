@@ -70,7 +70,7 @@ struct LightTableSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .gridRow(2)
         }
-        .rows(.fill, .auto, .auto)
+        .rows(.fill, .automatic, .automatic)
         .rowSpacing(10)
     }
 

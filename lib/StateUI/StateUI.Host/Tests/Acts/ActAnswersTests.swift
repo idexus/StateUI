@@ -78,7 +78,7 @@ final class ActAnswersTests: XCTestCase {
                 act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .nothing, .nothing,
                                           purpose.propValue], completion: 1)))
         }
-        for purpose in [InputPurpose.default, .plain, .email, .numeric] {
+        for purpose in [InputPurpose.automatic, .plain, .email, .numeric] {
             XCTAssertEqual(try prompt(purpose).traits, InputTraits(spellChecked: true, predicted: true, purpose: purpose))
         }
         XCTAssertFalse(try prompt(.plain).traits.checksSpelling)

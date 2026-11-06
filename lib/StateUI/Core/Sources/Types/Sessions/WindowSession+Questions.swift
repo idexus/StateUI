@@ -117,7 +117,7 @@ extension WindowSession {
         _ title: String, message: String = "",
         accept: String? = nil, cancel: String? = nil,
         placeholder: String? = nil, initialValue: String = "",
-        maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
+        maximumLength: Int? = nil, inputPurpose: InputPurpose = .automatic
     ) async throws -> String? {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage

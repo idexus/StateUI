@@ -77,8 +77,8 @@
         checksSpelling = spellChecked
         corrects = predicted
         predicts = predicted
-        switch purpose ?? .default {
-        case .default: break
+        switch purpose ?? .automatic {
+        case .automatic: break
         case .text: capitals = .sentences
         case .plain: (checksSpelling, corrects, predicts, capitals) = (false, false, false, .none)
         case .chat: offersEmoji = true
@@ -123,6 +123,6 @@
     /// The return key a field asks the keyboard for: the one the tree wrote, else a search's for a search field and
     /// the platform's own for any other.
     public static func submitLabel(_ written: SubmitLabel?, searching: Bool) -> SubmitLabel {
-        written ?? (searching ? .search : .default)
+        written ?? (searching ? .search : .automatic)
     }
 }

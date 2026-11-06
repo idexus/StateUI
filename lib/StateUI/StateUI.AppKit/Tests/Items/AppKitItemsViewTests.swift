@@ -24,7 +24,7 @@ private struct ChoresPage: View {
             .onRefreshRequested { refreshing = false }
             .gridRow(1)
         }
-        .rows(.auto, .fixed(300))
+        .rows(.automatic, .fixed(300))
         .width(300)
     }
 }

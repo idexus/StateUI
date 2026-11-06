@@ -19,7 +19,7 @@ final class GTKGridViewTests: XCTestCase {
                     Text("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
                 }
                 .columns(.fixed(100), .fill)
-                .rows(.auto, .auto)
+                .rows(.automatic, .automatic)
                 .rowSpacing(10)
                 .columnSpacing(5)
                 .padding(10)
@@ -63,7 +63,7 @@ final class GTKGridViewTests: XCTestCase {
                         .gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
-                .rows(.auto, .fill, .auto)
+                .rows(.automatic, .fill, .automatic)
             }
             let grid = try XCTUnwrap(host.views(GTKGridView.self).first).frame
 
@@ -84,7 +84,7 @@ final class GTKGridViewTests: XCTestCase {
                     Text("two").height(30).gridRow(1).gridColumn(1)
                 }
                 .columns(.fixed(20), .fill)
-                .rows(.auto, .auto)
+                .rows(.automatic, .automatic)
                 .rowSpacing(10)
             }
             let box = try XCTUnwrap(host.views(GTKShapeView.self).first)

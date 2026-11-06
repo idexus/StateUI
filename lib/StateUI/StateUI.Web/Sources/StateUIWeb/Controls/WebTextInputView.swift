@@ -153,7 +153,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// What the keyboard's Return key says.
     func setSubmitLabel(_ label: SubmitLabel) {
         let hint: String? = switch label {
-        case .default: nil
+        case .automatic: nil
         case .done: "done"
         case .go: "go"
         case .next: "next"

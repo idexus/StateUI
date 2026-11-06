@@ -129,7 +129,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(ContainerShape.ellipse.propValue, .values([.enumeration(2)]))
         XCTAssertEqual(ContainerShape.capsule.propValue, .values([.enumeration(3)]))
         XCTAssertEqual(
-            [GridLength.auto, .fixed(100)].propValue,
+            [GridLength.automatic, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
         XCTAssertEqual(
             WebViewSource.address("https://example.com").propValue,
@@ -197,7 +197,7 @@ final class ContractTests: XCTestCase {
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
             ContainerShape.capsule,
-            [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
+            [GridLength.automatic, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
             ButtonMenuKind.held, ToolbarStyle.rounded,

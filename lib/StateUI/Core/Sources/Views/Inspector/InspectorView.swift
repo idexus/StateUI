@@ -63,7 +63,7 @@ struct InspectorView: View {
                     .gridRow(2)
             }
         }
-        .rows(.auto, .auto, .fill)
+        .rows(.automatic, .automatic, .fill)
         .rowSpacing(6)
         .padding(horizontal: 10, vertical: 8)
     }
@@ -166,7 +166,7 @@ struct InspectorView: View {
                 .verticalAlignment(.start)
                 .gridColumn(1)
             }
-            .columns(.fill, .auto)
+            .columns(.fill, .automatic)
         } else {
             actions
         }
@@ -274,7 +274,7 @@ struct InspectorView: View {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             .rowSpacing(8)
         } else {
             Text("Choose a render to see what it built.")

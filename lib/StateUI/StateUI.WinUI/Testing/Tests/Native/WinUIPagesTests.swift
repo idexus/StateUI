@@ -146,7 +146,7 @@ final class WinUIPagesTests: XCTestCase {
                         }
                         Text("footer").gridRow(1)
                     }
-                    .rows(.fill, .auto)
+                    .rows(.fill, .automatic)
                 } detail: {
                     Text("detail")
                 }
@@ -176,7 +176,7 @@ final class WinUIPagesTests: XCTestCase {
                         }
                         Text("footer").gridRow(1)
                     }
-                    .rows(.fill, .auto)
+                    .rows(.fill, .automatic)
                 } detail: {
                     Text("detail")
                 }

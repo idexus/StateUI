@@ -564,7 +564,7 @@ final class UIKitDriver: HostDriver {
             case .send: .send
             case .next: .next
             case .done: .done
-            case .default: .default
+            case .default: .automatic
             default: nil
             }
             return key?.propValue

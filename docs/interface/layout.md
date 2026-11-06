@@ -254,8 +254,8 @@ Grid {
         .gridRow(1)
         .gridColumnSpan(2)
 }
-.rows(.auto, .fill)
-.columns(.auto, .fill)
+.rows(.automatic, .fill)
+.columns(.automatic, .fill)
 .rowSpacing(8)
 .columnSpacing(12)
 ```
@@ -265,12 +265,12 @@ Grid {
 | Value | Meaning |
 | --- | --- |
 | `.fixed(100)` | 100 device-independent units |
-| `.auto` | enough room for measured content |
+| `.automatic` | enough room for measured content |
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
 Rows or columns alike are written once, with their count:
-`.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
+`.rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
 `.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`,
 and each is a `GridTracks`: a run of tracks as long as one `GridLength` says.
 
@@ -617,7 +617,7 @@ struct AlbumsPage: View {
             Text("\(opened) · card \(shown + 1) of \(albums.count)")
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
     }
 }
 ```

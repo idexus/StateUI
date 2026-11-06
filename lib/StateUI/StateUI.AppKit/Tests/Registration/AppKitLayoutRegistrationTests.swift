@@ -136,7 +136,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("grid")) as? AppKitGridView)
 
-        XCTAssertEqual(native.rows, [.fixed(40), .auto])
+        XCTAssertEqual(native.rows, [.fixed(40), .automatic])
         XCTAssertEqual(native.columns, [.proportional(1)])
         XCTAssertEqual(native.rowSpacing, 6)
         XCTAssertEqual(native.columnSpacing, 9)

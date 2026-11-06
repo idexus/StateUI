@@ -65,7 +65,7 @@ private struct LongList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end
@@ -156,7 +156,7 @@ private struct GridList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end
@@ -224,7 +224,7 @@ private struct GroupedList: ExampleContent {
                 .gridRow(2)
                 .horizontalAlignment(.end)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end

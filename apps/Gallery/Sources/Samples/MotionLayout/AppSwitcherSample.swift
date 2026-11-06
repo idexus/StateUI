@@ -78,7 +78,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
 
@@ -162,7 +162,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                     .clipsContent(true)
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             .rowSpacing(8)
             .engine(following: turn) { _ in
                 named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)

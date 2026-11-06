@@ -97,7 +97,7 @@ extension AppKitDriver {
             switch traits.capitals {
             case .none: return .plain
             case .sentences: return .text
-            case .platform: return .default
+            case .platform: return .automatic
             }
         }
     }

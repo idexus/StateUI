@@ -82,7 +82,7 @@ extension BarElement {
 
     /// How the bar's buttons stand where the host draws them itself - the
     /// Web: `.glass`, `.plain`, `.rounded`, or the platform's own,
-    /// `.system`, unless said - the look a `Style<ToolbarButton>` writes
+    /// `.automatic`, unless said - the look a `Style<ToolbarButton>` writes
     /// over. Native bars keep their platform's buttons.
     ///
     ///     .toolbarStyle(.plain)

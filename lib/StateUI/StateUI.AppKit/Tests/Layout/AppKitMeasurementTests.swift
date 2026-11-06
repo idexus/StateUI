@@ -422,8 +422,8 @@ final class AppKitMeasurementTests: XCTestCase {
     func testAGridMeasuredAgainAsksItsChildrenNothing() {
         let child = CountingView()
         let grid = AppKitGridView()
-        grid.rows = [.auto]
-        grid.columns = [.auto]
+        grid.rows = [.automatic]
+        grid.columns = [.automatic]
         grid.setItems([AppKitLayoutItem(view: child)])
 
         let first = AppKitLayoutItem(view: grid).fittingSize()

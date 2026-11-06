@@ -179,7 +179,7 @@
 
         // Fewest tracks first, a child with no proportional track shares its lack alike among its automatic ones.
         for (item, tracks, _) in shown.sorted(by: { ($0.tracks.count, $0.order) < ($1.tracks.count, $1.order) }) {
-            let automatic = tracks.filter { definitions[$0] == .auto }
+            let automatic = tracks.filter { definitions[$0] == .automatic }
             guard !automatic.isEmpty, !tracks.contains(where: { share($0) != nil }) else { continue }
             let lacking = lack(item, in: tracks)
             guard lacking > 0 else { continue }

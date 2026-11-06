@@ -302,7 +302,7 @@ final class SessionStyle {
         #if WEB
         .glass
         #else
-        .system
+        .automatic
         #endif
     }
 
