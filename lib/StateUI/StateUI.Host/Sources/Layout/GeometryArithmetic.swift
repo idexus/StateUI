@@ -11,6 +11,15 @@
         value.isFinite ? value : 0
     }
 
+    /// `points` at `density`, rounded as `rounding` says, as a toolkit's 32-bit pixels; nil where the result is no
+    /// finite whole number `Int32` holds, or the density no finite positive number.
+    public static func pixels(
+        _ points: Double, density: Double = 1, rounding: FloatingPointRoundingRule = .toNearestOrAwayFromZero
+    ) -> Int32? {
+        guard density.isFinite, density > 0 else { return nil }
+        return Int32(exactly: (points * density).rounded(rounding))
+    }
+
     static func value(_ value: HostValue?, for property: Prop) -> HostValue? {
         guard property == .padding || property == .margin, let numbers = value?.numbers,
               !numbers.allSatisfy(\.isFinite)

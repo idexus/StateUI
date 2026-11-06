@@ -100,6 +100,18 @@ A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of
 the viewport before it goes itself.
 
+## Whole pixels
+
+GTK measures, allocates and places in 32-bit whole pixels, and keeps a
+widget's margin in 16: `gtk_widget_set_margin_*` refuses a margin past
+32767 with a critical and keeps the one before. `GTKPixels` converts every
+distance through the host layer's `GeometryArithmetic.pixels`
+([finite distances](../../host/layout.md#finite-distances)). A size outside
+32 bits, or negative, is empty; a coordinate outside them stands at zero; a
+margin past 16 bits is none. These are GTK's representation bounds, not
+limits on StateUI's shared distances: a view asked 3e9 points wide stands
+empty, and the rest of the page stands around it.
+
 ## Right to left
 
 A layout mirrors its children by the host layer's arithmetic, never by GTK's

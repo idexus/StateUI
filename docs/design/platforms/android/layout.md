@@ -30,7 +30,7 @@ stood as "Layou"). A text's size is in scaled pixels, so the user's font
 scale applies to it as it does to every application's text.
 
 `AndroidPixels` checks the scaled and rounded number before an integer
-conversion. Signed coordinates use Android's `int` range; a measured size
+conversion, through the host layer's `GeometryArithmetic.pixels`. Signed coordinates use Android's `int` range; a measured size
 uses `View.MEASURED_SIZE_MASK`, the size bits `getMeasuredWidth` and
 `getMeasuredHeight` return. A distance outside that representation
 contributes zero. A rectangle's unrepresentable extent is empty on that

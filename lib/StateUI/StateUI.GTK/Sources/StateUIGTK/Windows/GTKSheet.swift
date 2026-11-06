@@ -43,7 +43,7 @@ final class GTKSheet {
 
     /// Asks the dialog for `size`, written only where it differs.
     func stand(at size: LayoutSize) {
-        let (width, height) = (Int32(size.width.rounded()), Int32(size.height.rounded()))
+        let (width, height) = (GTKPixels.size(size.width), GTKPixels.size(size.height))
         if adw_dialog_get_content_width(dialog) != width { adw_dialog_set_content_width(dialog, width) }
         if adw_dialog_get_content_height(dialog) != height { adw_dialog_set_content_height(dialog, height) }
     }

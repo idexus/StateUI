@@ -33,7 +33,7 @@ enum GTKPanel {
                     GTKPanel.view(number)?.measure(across: orientation == GTK_ORIENTATION_HORIZONTAL, forSize: forSize) ?? 0
                 }
                 least?.pointee = 0
-                natural?.pointee = Int32(size.rounded(.up))
+                natural?.pointee = GTKPixels.size(size, rounding: .up)
                 leastBaseline?.pointee = -1
                 naturalBaseline?.pointee = -1
             }

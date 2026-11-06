@@ -12,8 +12,7 @@ enum AndroidPixels {
     static func distance(
         _ points: Double, density: Double = 1, rounding: FloatingPointRoundingRule = .toNearestOrAwayFromZero
     ) -> Int32 {
-        guard density.isFinite, density > 0 else { return 0 }
-        return whole(GeometryArithmetic.distance(points) * density, rounding: rounding) ?? 0
+        GeometryArithmetic.pixels(GeometryArithmetic.distance(points), density: density, rounding: rounding) ?? 0
     }
 
     static func size(
@@ -33,13 +32,11 @@ enum AndroidPixels {
         guard density.isFinite, density > 0 else { return (0, 0) }
         let origin = GeometryArithmetic.distance(origin)
         let length = max(0, GeometryArithmetic.distance(length))
-        guard let start = whole(origin * density, rounding: .down) else { return (0, 0) }
-        guard length > 0, let end = whole((origin + length) * density, rounding: .up) else { return (start, start) }
+        guard let start = GeometryArithmetic.pixels(origin, density: density, rounding: .down) else { return (0, 0) }
+        guard length > 0, let end = GeometryArithmetic.pixels(origin + length, density: density, rounding: .up) else {
+            return (start, start)
+        }
         let size = Int64(end) - Int64(start)
         return size >= 0 && size <= Int64(maximumSize) ? (start, end) : (start, start)
-    }
-
-    private static func whole(_ pixels: Double, rounding: FloatingPointRoundingRule) -> Int32? {
-        Int32(exactly: pixels.rounded(rounding))
     }
 }

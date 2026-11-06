@@ -49,7 +49,11 @@ validated by the core: a nonfinite image is refused, leaving the described
 fallback and no destination. The state itself keeps its authored value.
 Finite values have no toolkit's pixel limit in this layer.
 An adapter checks the range of its own coordinate and size representation
-when it converts these distances to native units.
+when it converts these distances to native units. The 32-bit whole pixels
+most toolkits take come from one rule, `GeometryArithmetic.pixels`: the
+distance at the density, rounded as the adapter asks, or nothing where
+`Int32` cannot hold the result; the adapter decides what nothing stands as
+in its own representation.
 
 ## One axis of a slot
 

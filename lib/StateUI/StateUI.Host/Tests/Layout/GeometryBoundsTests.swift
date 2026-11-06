@@ -86,4 +86,19 @@ final class GeometryBoundsTests: XCTestCase {
         XCTAssertEqual(element.destination(.padding)?.numbers, [7, -8, 9, 10])
         withExtendedLifetime(runtime) {}
     }
+
+    func testPixelsAreWholeNumbersInt32HoldsOrNothing() {
+        XCTAssertEqual(GeometryArithmetic.pixels(-3.5, density: 2), -7)
+        XCTAssertEqual(GeometryArithmetic.pixels(2.2, rounding: .up), 3)
+        XCTAssertEqual(GeometryArithmetic.pixels(-2.2, rounding: .down), -3)
+        XCTAssertEqual(GeometryArithmetic.pixels(Double(Int32.max)), Int32.max)
+        XCTAssertEqual(GeometryArithmetic.pixels(Double(Int32.min)), Int32.min)
+        for points in [Double(Int32.max) + 1, Double(Int32.min) - 1, 3e9, 1e100, .infinity, -.infinity, .nan] {
+            XCTAssertNil(GeometryArithmetic.pixels(points), "\(points)")
+        }
+        XCTAssertNil(GeometryArithmetic.pixels(Double(Int32.max), density: 2))
+        for density in [0, -1, Double.nan, .infinity] {
+            XCTAssertNil(GeometryArithmetic.pixels(1, density: density), "density \(density)")
+        }
+    }
 }
