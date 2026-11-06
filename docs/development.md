@@ -499,12 +499,12 @@ records anything while it is off.
 The inspector shows the renders inside the running application: each one's
 cause, its road, the time Swift took to describe it and the host to apply it,
 and the composed views it built and carried; a render chosen shows its tree of
-composed views, each with its time. `ToolbarButton.inspector(window)` - `window`
+composed views, each with its time. `ToolbarButton.debugInspector(window)` - `window`
 the session a view reads with `@Environment(\.window)` - puts its ⓘ in a
-page's bar, and `InspectorButton()` stands anywhere a view goes. The ⓘ
+page's bar, and `DebugInspectorButton()` stands anywhere a view goes. The ⓘ
 opens its scene's inspector along the bottom of its window, folded to one line;
 opened out, it can dock at the side on a desktop or a tablet.
-`window.openInspector(.side)` opens it from code. A scene that declares
+`window.openDebugInspector(.side)` opens it from code. A scene that declares
 `Window(.debugInspector) { DebugInspector() }` can show it in a window of its
 own, where the platform opens windows.
 

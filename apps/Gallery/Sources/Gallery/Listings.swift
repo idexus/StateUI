@@ -6973,7 +6973,7 @@ enum Listings {
         // for accessibility and for bars that show words.
         .toolbar {
             ToolbarGroup {
-                ToolbarButton.inspector(window)
+                ToolbarButton.debugInspector(window)
                     .text("Inspector")
                     .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 

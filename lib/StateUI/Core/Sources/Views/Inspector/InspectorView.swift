@@ -8,7 +8,7 @@ struct InspectorView: View {
     let scene: String
 
     /// Where it shows.
-    let place: Inspector.Place
+    let place: DebugInspector.Place
 
     /// Whether there is room for the renders and the chosen one side by side.
     let wide: Bool

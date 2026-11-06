@@ -479,13 +479,13 @@ final class InspectionTests: XCTestCase {
         let second = OpenScenes.shared.list[1]
         let window = second.windowSession(second.windows[0].key)
 
-        window.toggleInspector()
+        window.toggleDebugInspector()
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
-        XCTAssertTrue(window.isInspectorOpen)
+        XCTAssertTrue(window.isDebugInspectorOpen)
         let other = OpenScenes.shared.list[0]
-        XCTAssertFalse(other.windowSession(other.windows[0].key).isInspectorOpen)
+        XCTAssertFalse(other.windowSession(other.windows[0].key).isDebugInspectorOpen)
 
-        window.toggleInspector()
+        window.toggleDebugInspector()
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
     }
 
@@ -500,15 +500,15 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(scene.windows.count, 2)
         let (first, second) = (scene.windowSession(scene.windows[0].key), scene.windowSession(scene.windows[1].key))
 
-        second.toggleInspector()
+        second.toggleDebugInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [false, true], "in the window it was pressed in")
 
-        first.toggleInspector()
+        first.toggleDebugInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [true, false], "moved, and open")
-        XCTAssertTrue(second.isInspectorOpen, "open in every window's sense")
+        XCTAssertTrue(second.isDebugInspectorOpen, "open in every window's sense")
 
-        first.toggleInspector()
-        XCTAssertFalse(second.isInspectorOpen, "pressed where it stands, it closes")
+        first.toggleDebugInspector()
+        XCTAssertFalse(second.isDebugInspectorOpen, "pressed where it stands, it closes")
     }
 
     /// A scene that ends takes its docked inspector with it - and the record
@@ -563,13 +563,13 @@ final class InspectionTests: XCTestCase {
 
         let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
 
-        first.toggleInspector()
+        first.toggleDebugInspector()
 
         XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
         XCTAssertEqual(InspectorModel.shared.collapsed, ["1"])
         XCTAssertEqual(Array(docked()[0].suffix(2)), ["Expand", "Close"])
 
-        first.openInspector(.bottom)
+        first.openDebugInspector(.bottom)
 
         XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty)
         XCTAssertEqual(pair(from: "Collapse", in: docked()[0]), ["Collapse", "Close"])

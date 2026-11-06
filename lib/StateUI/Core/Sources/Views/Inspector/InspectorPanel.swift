@@ -8,7 +8,7 @@ struct InspectorPanel: View {
     let scene: String
 
     /// Where it docks.
-    let place: Inspector.Place
+    let place: DebugInspector.Place
 
     @Environment(\.device) private var device
 

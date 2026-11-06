@@ -376,7 +376,7 @@ struct EditorPage: View {
 
     var body: some View {
         TextEditor()
-            .toolbar { ToolbarButton.inspector(window) }
+            .toolbar { ToolbarButton.debugInspector(window) }
     }
 }
 

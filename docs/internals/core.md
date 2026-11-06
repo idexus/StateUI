@@ -181,7 +181,7 @@ turns the nodes into the patch.
   (`Styles/`) are resolved before the patch: a node reaches the host already
   styled. *Application*; the merge (`styled`, `DeclaredState`) is internal.
   ([Styles](../design/views/styles.md); [styles and drawing](../interface/styles-and-drawing.md))
-- **`Inspector`**, **`InspectorButton`** and **`DebugInspector`**
+- **`DebugInspector`** and **`DebugInspectorButton`**
   (`Inspector/`) show what each render costs and builds, inside the
   application, as a tree whose own views are muted. *Application*; its views
   and model are internal. ([Inspector](../design/views/inspector.md);

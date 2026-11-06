@@ -8,7 +8,7 @@ extension Node {
     /// Design: docs/design/views/pages.md#a-window-is-a-placeholder
     static func window(
         showing page: @escaping () -> Node, session: WindowSession,
-        inspector: (() -> Inspector.Place?)? = nil
+        inspector: (() -> DebugInspector.Place?)? = nil
     ) -> Node {
         var window = composed(Shown(docks: inspector != nil), type: windowType) {
             let overlay = Node.overlay(inspector: inspector?(), of: session.record?.id)
@@ -37,7 +37,7 @@ extension Node {
 
     /// The scene's inspector docked at `place`, laid over every overlay a page declares; nil where none is.
     /// Design: docs/design/views/pages.md#the-children-of-a-window
-    static func overlay(inspector place: Inspector.Place?, of scene: String?) -> Node? {
+    static func overlay(inspector place: DebugInspector.Place?, of scene: String?) -> Node? {
         guard let place, let scene else { return nil }
 
         var layer = ZStack().letsInputThrough(true).node

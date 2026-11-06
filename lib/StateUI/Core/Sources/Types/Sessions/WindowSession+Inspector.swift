@@ -6,7 +6,7 @@
 
 extension WindowSession {
     /// Whether the inspector of this window's scene shows, in whichever window.
-    public var isInspectorOpen: Bool {
+    public var isDebugInspectorOpen: Bool {
         record.map(Inspector.showing(in:)) ?? false
     }
 
@@ -15,18 +15,18 @@ extension WindowSession {
     ///
     ///     @Environment(\.window) private var window
     ///
-    ///     Button("Inspect").onClicked { window.openInspector(.side) }
+    ///     Button("Inspect").onClicked { window.openDebugInspector(.side) }
     ///
     /// - Parameter place: where it shows, whole - or, left out, along the bottom and folded to its last render,
     ///   which is what the ⓘ does.
-    public func openInspector(_ place: Inspector.Place? = nil) {
+    public func openDebugInspector(_ place: DebugInspector.Place? = nil) {
         guard let record else { return }
 
         Inspector.show(in: record, place ?? .bottom, folded: place == nil, window: key)
     }
 
     /// Hides the inspector of this window's scene, wherever it shows.
-    public func closeInspector() {
+    public func closeDebugInspector() {
         guard let record else { return }
 
         Inspector.hide(in: record)
@@ -34,14 +34,14 @@ extension WindowSession {
 
     /// Shows the inspector of this window's scene docked in this window - moving it there from another window of
     /// the scene - and hides it where it shows here already.
-    public func toggleInspector() {
+    public func toggleDebugInspector() {
         guard let record else { return }
 
         if let docking = record.dockedInspector, docking.window != key {
             let folded = InspectorModel.shared.collapsed.contains(record.id)
             Inspector.show(in: record, docking.place, folded: folded, window: key)
         } else {
-            Inspector.showing(in: record) ? Inspector.hide(in: record) : openInspector()
+            Inspector.showing(in: record) ? Inspector.hide(in: record) : openDebugInspector()
         }
     }
 }

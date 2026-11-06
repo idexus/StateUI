@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The button that shows its scene's inspector docked in its window and hides
-/// it again, for anywhere a view goes. See `Inspector`; in a bar,
-/// `ToolbarButton.inspector`.
+/// it again, for anywhere a view goes. See `DebugInspector`; in a bar,
+/// `ToolbarButton.debugInspector`.
 ///
-///     VStack { InspectorButton() }
-public struct InspectorButton: View {
+///     VStack { DebugInspectorButton() }
+public struct DebugInspectorButton: View {
     /// The window the button is in, where its scene's inspector docks.
     @Environment(\.window) private var window
 
@@ -22,6 +22,6 @@ public struct InspectorButton: View {
             .padding(horizontal: 10, vertical: 2)
             .accessibilityIdentifier("stateui.inspector")
             .accessibilityLabel("Inspector")
-            .onClicked { window.toggleInspector() }
+            .onClicked { window.toggleDebugInspector() }
     }
 }

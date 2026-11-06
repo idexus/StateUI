@@ -180,9 +180,15 @@ swift.conformance DateStyle: Swift.Equatable
 swift.conformance DateStyle: Swift.Hashable
 swift.conformance DateStyle: Swift.RawRepresentable
 swift.conformance DateStyle: Swift.Sendable
+swift.conformance DebugInspector.Place: Swift.Equatable
+swift.conformance DebugInspector.Place: Swift.Hashable
+swift.conformance DebugInspector.Place: Swift.Sendable
 swift.conformance DebugInspector: StateUI.View
 swift.conformance DebugInspector: StateUI.Views
 swift.conformance DebugInspector: Swift.Sendable
+swift.conformance DebugInspectorButton: StateUI.View
+swift.conformance DebugInspectorButton: StateUI.Views
+swift.conformance DebugInspectorButton: Swift.Sendable
 swift.conformance DecorableTextElementContract: Swift.Sendable
 swift.conformance Device: Swift.Sendable
 swift.conformance DeviceDisplay: Swift.Sendable
@@ -340,13 +346,6 @@ swift.conformance Insets: Swift.Equatable
 swift.conformance Insets: Swift.ExpressibleByFloatLiteral
 swift.conformance Insets: Swift.ExpressibleByIntegerLiteral
 swift.conformance Insets: Swift.Sendable
-swift.conformance Inspector.Place: Swift.Equatable
-swift.conformance Inspector.Place: Swift.Hashable
-swift.conformance Inspector.Place: Swift.Sendable
-swift.conformance Inspector: Swift.Sendable
-swift.conformance InspectorButton: StateUI.View
-swift.conformance InspectorButton: StateUI.Views
-swift.conformance InspectorButton: Swift.Sendable
 swift.conformance ItemDrag: Swift.Equatable where ID : Hashable
 swift.conformance ItemDrag: Swift.Sendable where ID : Hashable, ID : Sendable
 swift.conformance ItemDragStart: Swift.Equatable
@@ -883,6 +882,7 @@ swift.enum CornerRadius: enum CornerRadius
 swift.enum CorneredShapeContract: enum CorneredShapeContract
 swift.enum DatePickerContract: enum DatePickerContract
 swift.enum DateStyle: enum DateStyle
+swift.enum DebugInspector.Place: enum Place
 swift.enum DecorableTextElementContract: enum DecorableTextElementContract
 swift.enum DisplayOrientation: enum DisplayOrientation
 swift.enum DisplayRotation: enum DisplayRotation
@@ -912,8 +912,6 @@ swift.enum IconPosition: enum IconPosition
 swift.enum ImageContract: enum ImageContract
 swift.enum ImageElementContract: enum ImageElementContract
 swift.enum InputPurpose: enum InputPurpose
-swift.enum Inspector.Place: enum Place
-swift.enum Inspector: @MainActor enum Inspector
 swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
 swift.enum ItemsViewContract: enum ItemsViewContract
@@ -1103,6 +1101,9 @@ swift.enum.case CornerRadius.uniform(_:): case uniform(Double)
 swift.enum.case DateStyle.long: case long
 swift.enum.case DateStyle.medium: case medium
 swift.enum.case DateStyle.short: case short
+swift.enum.case DebugInspector.Place.bottom: case bottom
+swift.enum.case DebugInspector.Place.side: case side
+swift.enum.case DebugInspector.Place.window: case window
 swift.enum.case DisplayOrientation.landscape: case landscape
 swift.enum.case DisplayOrientation.portrait: case portrait
 swift.enum.case DisplayOrientation.unknown: case unknown
@@ -1203,9 +1204,6 @@ swift.enum.case InputPurpose.telephone: case telephone
 swift.enum.case InputPurpose.text: case text
 swift.enum.case InputPurpose.url: case url
 swift.enum.case InputPurpose.username: case username
-swift.enum.case Inspector.Place.bottom: case bottom
-swift.enum.case Inspector.Place.side: case side
-swift.enum.case Inspector.Place.window: case window
 swift.enum.case ItemDragStart.longPress: case longPress
 swift.enum.case ItemDragStart.perpendicular: case perpendicular
 swift.enum.case ItemsLayout.grid(minimumItemWidth:spacing:): case grid(minimumItemWidth: Double, spacing: Double = 0)
@@ -1376,6 +1374,7 @@ swift.init DatePicker.init(): @MainActor init()
 swift.init DatePicker.init(_:): @MainActor init(_ date: CalendarDate)
 swift.init DatePicker.init(_:): @MainActor init(_ state: Binding<CalendarDate>)
 swift.init DebugInspector.init(): @MainActor init()
+swift.init DebugInspectorButton.init(): @MainActor init()
 swift.init Device.init(info:display:battery:connectivity:accessibility:): @MainActor init(info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(), connectivity: Connectivity = Connectivity(), accessibility: AccessibilitySettings = AccessibilitySettings())
 swift.init DeviceDisplay.init(width:height:density:orientation:rotation:refreshRate:): @MainActor init(width: Double? = nil, height: Double? = nil, density: Double? = nil, orientation: DisplayOrientation = .unknown, rotation: DisplayRotation = .unknown, refreshRate: Double? = nil)
 swift.init DeviceInfo.init(formFactor:platform:model:manufacturer:name:versionString:isVirtual:): @MainActor init(formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "", name: String = "", versionString: String = "", isVirtual: Bool? = nil)
@@ -1418,7 +1417,6 @@ swift.init Insets.init(floatLiteral:): init(floatLiteral value: Double)
 swift.init Insets.init(horizontal:vertical:): init(horizontal: Double, vertical: Double)
 swift.init Insets.init(integerLiteral:): init(integerLiteral value: Int)
 swift.init Insets.init(start:top:end:bottom:): init(start: Double, top: Double, end: Double, bottom: Double)
-swift.init InspectorButton.init(): @MainActor init()
 swift.init ItemsView.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Items : RandomAccessCollection, Content : View
 swift.init ItemsView.init(_:id:content:): @MainActor init<Items, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
 swift.init ItemsView.init(sections:): @MainActor init(sections: [Section<ID>])
@@ -3493,6 +3491,198 @@ swift.method DebugInspector.translationY(_:): @MainActor func translationY(_ sta
 swift.method DebugInspector.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspector.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityHeading(_:): @MainActor func accessibilityHeading(_ state: Binding<AccessibilityHeadingLevel>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
+swift.method DebugInspectorButton.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
+swift.method DebugInspectorButton.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
+swift.method DebugInspectorButton.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
+swift.method DebugInspectorButton.background(_:): @MainActor func background(_ state: Binding<Material>) -> Self.Modified
+swift.method DebugInspectorButton.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
+swift.method DebugInspectorButton.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
+swift.method DebugInspectorButton.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
+swift.method DebugInspectorButton.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspectorButton.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
+swift.method DebugInspectorButton.debugInfo(): @MainActor func debugInfo() -> String
+swift.method DebugInspectorButton.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
+swift.method DebugInspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
+swift.method DebugInspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
+swift.method DebugInspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
+swift.method DebugInspectorButton.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
+swift.method DebugInspectorButton.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
+swift.method DebugInspectorButton.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
+swift.method DebugInspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
+swift.method DebugInspectorButton.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
+swift.method DebugInspectorButton.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
+swift.method DebugInspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
+swift.method DebugInspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
+swift.method DebugInspectorButton.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
+swift.method DebugInspectorButton.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
+swift.method DebugInspectorButton.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
+swift.method DebugInspectorButton.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
+swift.method DebugInspectorButton.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
+swift.method DebugInspectorButton.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
+swift.method DebugInspectorButton.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
+swift.method DebugInspectorButton.motion(_:_:): @MainActor func motion(_ motion: Motion, _ values: MotionValues) -> Self.Modified
+swift.method DebugInspectorButton.onAccessibilityAdjusted(_:): @MainActor func onAccessibilityAdjusted(_ handler: @escaping @MainActor @Sendable (AccessibilityAdjustment) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onAccessibilityAdjusted(_:_:): @MainActor func onAccessibilityAdjusted(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>) -> Self.Modified
+swift.method DebugInspectorButton.onAccessibilityAdjusted(gate:_:): @MainActor func onAccessibilityAdjusted(gate: Gate, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>) -> Self.Modified
+swift.method DebugInspectorButton.onAppearing(_:): @MainActor func onAppearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onAppearing(_:_:): @MainActor func onAppearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onAppearing(gate:_:): @MainActor func onAppearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable (Value, Value) throws -> Void) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
+swift.method DebugInspectorButton.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDisappearing(_:_:): @MainActor func onDisappearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDragEnded(_:_:): @MainActor func onDragEnded(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragEntered(_:): @MainActor func onDragEntered(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDragEntered(_:_:): @MainActor func onDragEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragEntered(gate:_:): @MainActor func onDragEntered(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragExited(_:): @MainActor func onDragExited(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDragExited(_:_:): @MainActor func onDragExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspectorButton.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(_:): @MainActor func onHeld(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(_:_:): @MainActor func onHeld(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(gate:_:): @MainActor func onHeld(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onLinkOpened(_:_:): @MainActor func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedFrom(_:_:): @MainActor func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedTo(_:): @MainActor func onNavigatedTo(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedTo(_:_:): @MainActor func onNavigatedTo(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatedTo(gate:_:): @MainActor func onNavigatedTo(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatingFrom(_:): @MainActor func onNavigatingFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatingFrom(_:_:): @MainActor func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onNavigatingFrom(gate:_:): @MainActor func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onPanUpdated(_:_:): @MainActor func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onPanUpdated(touchCount:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, _ handler: @escaping @MainActor @Sendable (PanUpdate) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPanUpdated(touchCount:gate:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onPanUpdated(touchCount:policy:_:): @MainActor func onPanUpdated(touchCount: Int, policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onPinchUpdated(_:): @MainActor func onPinchUpdated(_ handler: @escaping @MainActor @Sendable (PinchUpdate) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPinchUpdated(_:_:): @MainActor func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onPinchUpdated(gate:_:): @MainActor func onPinchUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerEntered(_:): @MainActor func onPointerEntered(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPointerEntered(_:_:): @MainActor func onPointerEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onPointerEntered(gate:_:): @MainActor func onPointerEntered(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onPointerExited(_:): @MainActor func onPointerExited(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPointerExited(_:_:): @MainActor func onPointerExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onPointerExited(gate:_:): @MainActor func onPointerExited(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onPointerMoved(_:): @MainActor func onPointerMoved(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPointerMoved(_:_:): @MainActor func onPointerMoved(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerMoved(gate:_:): @MainActor func onPointerMoved(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerPressed(_:): @MainActor func onPointerPressed(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPointerPressed(_:_:): @MainActor func onPointerPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerPressed(gate:_:): @MainActor func onPointerPressed(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerReleased(_:): @MainActor func onPointerReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onPointerReleased(_:_:): @MainActor func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onPointerReleased(gate:_:): @MainActor func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
+swift.method DebugInspectorButton.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(directions:policy:_:): @MainActor func onSwiped(directions: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(directions:threshold:_:): @MainActor func onSwiped(directions: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(directions:threshold:gate:_:): @MainActor func onSwiped(directions: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(directions:threshold:policy:_:): @MainActor func onSwiped(directions: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspectorButton.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(count:_:): @MainActor func onTapped(count: Int, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspectorButton.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
+swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
+swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
+swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
+swift.method DebugInspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
+swift.method DebugInspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
+swift.method DebugInspectorButton.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspectorButton.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method DebugInspectorButton.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
+swift.method DebugInspectorButton.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspectorButton.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method DebugInspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
+swift.method DebugInspectorButton.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.showsCloseButton(_:): @MainActor func showsCloseButton(_ value: Bool) -> Self.Modified
+swift.method DebugInspectorButton.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
+swift.method DebugInspectorButton.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspectorButton.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
+swift.method DebugInspectorButton.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
+swift.method DebugInspectorButton.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.title(_:): @MainActor func title(_ value: String) -> Self.Modified
+swift.method DebugInspectorButton.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspectorButton.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
+swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
+swift.method DebugInspectorButton.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
+swift.method DebugInspectorButton.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
+swift.method DebugInspectorButton.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
+swift.method DebugInspectorButton.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method DecorableTextElement.textDecorations(_:): @MainActor func textDecorations(_ state: Binding<TextDecorations>) -> Self.Modified
 swift.method DecorableTextElement.textDecorations(_:): @MainActor func textDecorations(_ value: TextDecorations) -> Self.Modified
 swift.method Device.honors(_:): @MainActor func honors<Owner, Arguments, Answer>(_ act: ElementAct<Owner, Arguments, Answer>) -> Bool where Owner : Contract
@@ -5394,198 +5584,6 @@ swift.method Image.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> 
 swift.method ImageElement.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method ImageElement.contentMode(_:): @MainActor func contentMode(_ value: ContentMode) -> Self.Modified
 swift.method ImageProperties.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.accessibilityHeading(_:): @MainActor func accessibilityHeading(_ state: Binding<AccessibilityHeadingLevel>) -> Self.Modified
-swift.method InspectorButton.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
-swift.method InspectorButton.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
-swift.method InspectorButton.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
-swift.method InspectorButton.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
-swift.method InspectorButton.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
-swift.method InspectorButton.background(_:): @MainActor func background(_ state: Binding<Material>) -> Self.Modified
-swift.method InspectorButton.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
-swift.method InspectorButton.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
-swift.method InspectorButton.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method InspectorButton.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
-swift.method InspectorButton.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
-swift.method InspectorButton.debugInfo(): @MainActor func debugInfo() -> String
-swift.method InspectorButton.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
-swift.method InspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
-swift.method InspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
-swift.method InspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method InspectorButton.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
-swift.method InspectorButton.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
-swift.method InspectorButton.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
-swift.method InspectorButton.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
-swift.method InspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
-swift.method InspectorButton.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
-swift.method InspectorButton.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.hidesChildrenFromAccessibility(_:): @MainActor func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method InspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
-swift.method InspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
-swift.method InspectorButton.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
-swift.method InspectorButton.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
-swift.method InspectorButton.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
-swift.method InspectorButton.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
-swift.method InspectorButton.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
-swift.method InspectorButton.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
-swift.method InspectorButton.motion(_:_:): @MainActor func motion(_ motion: Motion, _ values: MotionValues) -> Self.Modified
-swift.method InspectorButton.onAccessibilityAdjusted(_:): @MainActor func onAccessibilityAdjusted(_ handler: @escaping @MainActor @Sendable (AccessibilityAdjustment) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onAccessibilityAdjusted(_:_:): @MainActor func onAccessibilityAdjusted(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>) -> Self.Modified
-swift.method InspectorButton.onAccessibilityAdjusted(gate:_:): @MainActor func onAccessibilityAdjusted(gate: Gate, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>) -> Self.Modified
-swift.method InspectorButton.onAppearing(_:): @MainActor func onAppearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onAppearing(_:_:): @MainActor func onAppearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onAppearing(gate:_:): @MainActor func onAppearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable (Value, Value) throws -> Void) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method InspectorButton.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDisappearing(_:_:): @MainActor func onDisappearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDisappearing(gate:_:): @MainActor func onDisappearing(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragEnded(_:): @MainActor func onDragEnded(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDragEnded(_:_:): @MainActor func onDragEnded(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragEnded(gate:_:): @MainActor func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragEntered(_:): @MainActor func onDragEntered(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDragEntered(_:_:): @MainActor func onDragEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragEntered(gate:_:): @MainActor func onDragEntered(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragExited(_:): @MainActor func onDragExited(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDragExited(_:_:): @MainActor func onDragExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method InspectorButton.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method InspectorButton.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method InspectorButton.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method InspectorButton.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method InspectorButton.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method InspectorButton.onFrameChanged(in:policy:_:): @MainActor func onFrameChanged(in space: CoordinateSpace, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
-swift.method InspectorButton.onHeld(_:): @MainActor func onHeld(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onHeld(_:_:): @MainActor func onHeld(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onHeld(gate:_:): @MainActor func onHeld(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onHeld(minimum:_:): @MainActor func onHeld(minimum: Duration, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onHeld(minimum:gate:_:): @MainActor func onHeld(minimum: Duration, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onHeld(minimum:policy:_:): @MainActor func onHeld(minimum: Duration, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onLinkOpened(_:_:): @MainActor func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method InspectorButton.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method InspectorButton.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onNavigatedFrom(_:_:): @MainActor func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onNavigatedTo(_:): @MainActor func onNavigatedTo(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onNavigatedTo(_:_:): @MainActor func onNavigatedTo(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onNavigatedTo(gate:_:): @MainActor func onNavigatedTo(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onNavigatingFrom(_:): @MainActor func onNavigatingFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onNavigatingFrom(_:_:): @MainActor func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onNavigatingFrom(gate:_:): @MainActor func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onPanUpdated(_:_:): @MainActor func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
-swift.method InspectorButton.onPanUpdated(touchCount:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, _ handler: @escaping @MainActor @Sendable (PanUpdate) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPanUpdated(touchCount:gate:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
-swift.method InspectorButton.onPanUpdated(touchCount:policy:_:): @MainActor func onPanUpdated(touchCount: Int, policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
-swift.method InspectorButton.onPinchUpdated(_:): @MainActor func onPinchUpdated(_ handler: @escaping @MainActor @Sendable (PinchUpdate) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPinchUpdated(_:_:): @MainActor func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Self.Modified
-swift.method InspectorButton.onPinchUpdated(gate:_:): @MainActor func onPinchUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Self.Modified
-swift.method InspectorButton.onPointerEntered(_:): @MainActor func onPointerEntered(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPointerEntered(_:_:): @MainActor func onPointerEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onPointerEntered(gate:_:): @MainActor func onPointerEntered(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onPointerExited(_:): @MainActor func onPointerExited(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPointerExited(_:_:): @MainActor func onPointerExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onPointerExited(gate:_:): @MainActor func onPointerExited(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onPointerMoved(_:): @MainActor func onPointerMoved(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPointerMoved(_:_:): @MainActor func onPointerMoved(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onPointerMoved(gate:_:): @MainActor func onPointerMoved(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onPointerPressed(_:): @MainActor func onPointerPressed(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPointerPressed(_:_:): @MainActor func onPointerPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onPointerPressed(gate:_:): @MainActor func onPointerPressed(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onPointerReleased(_:): @MainActor func onPointerReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onPointerReleased(_:_:): @MainActor func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onPointerReleased(gate:_:): @MainActor func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method InspectorButton.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
-swift.method InspectorButton.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
-swift.method InspectorButton.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onSwiped(directions:policy:_:): @MainActor func onSwiped(directions: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onSwiped(directions:threshold:_:): @MainActor func onSwiped(directions: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
-swift.method InspectorButton.onSwiped(directions:threshold:gate:_:): @MainActor func onSwiped(directions: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onSwiped(directions:threshold:policy:_:): @MainActor func onSwiped(directions: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onTapped(count:_:): @MainActor func onTapped(count: Int, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method InspectorButton.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method InspectorButton.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
-swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
-swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Material>) -> Self.Modified
-swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Color) -> Self.Modified
-swift.method InspectorButton.pageBackground(_:): @MainActor func pageBackground(_ value: Material) -> Self.Modified
-swift.method InspectorButton.pageIcon(_:): @MainActor func pageIcon(_ value: ImageSource) -> Self.Modified
-swift.method InspectorButton.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
-swift.method InspectorButton.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
-swift.method InspectorButton.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
-swift.method InspectorButton.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
-swift.method InspectorButton.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
-swift.method InspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.showsCloseButton(_:): @MainActor func showsCloseButton(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
-swift.method InspectorButton.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method InspectorButton.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method InspectorButton.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.title(_:): @MainActor func title(_ value: String) -> Self.Modified
-swift.method InspectorButton.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
-swift.method InspectorButton.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
-swift.method InspectorButton.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
-swift.method InspectorButton.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
-swift.method InspectorButton.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
-swift.method InspectorButton.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
-swift.method InspectorButton.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12712,18 +12710,18 @@ swift.method WindowGroup.hidesWhenInactive(_:): @MainActor func hidesWhenInactiv
 swift.method WindowSession.alert(_:message:accept:): @MainActor func alert(_ title: String, message: String = "", accept: String? = nil) async throws
 swift.method WindowSession.chooseAction(_:among:caption:destructive:cancel:): @MainActor func chooseAction<Choice>(_ title: String, among choices: [Choice], caption: (Choice) -> String = { "\($0)" }, destructive: Choice? = nil, cancel: String? = nil) async throws -> Choice? where Choice : Equatable
 swift.method WindowSession.close(): @MainActor func close() async throws
-swift.method WindowSession.closeInspector(): @MainActor func closeInspector()
+swift.method WindowSession.closeDebugInspector(): @MainActor func closeDebugInspector()
 swift.method WindowSession.confirm(_:message:accept:cancel:): @MainActor func confirm(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil) async throws -> Bool
 swift.method WindowSession.hideOnScreenKeyboard(): @discardableResult @MainActor func hideOnScreenKeyboard() async throws -> Bool
+swift.method WindowSession.openDebugInspector(_:): @MainActor func openDebugInspector(_ place: DebugInspector.Place? = nil)
 swift.method WindowSession.openFile(types:): @MainActor func openFile(types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.openFiles(types:): @MainActor func openFiles(types: [FileType] = []) async throws -> [ChosenFile]
-swift.method WindowSession.openInspector(_:): @MainActor func openInspector(_ place: Inspector.Place? = nil)
 swift.method WindowSession.prompt(_:message:accept:cancel:placeholder:initialValue:maximumLength:inputPurpose:): @MainActor func prompt(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil, placeholder: String? = nil, initialValue: String = "", maximumLength: Int? = nil, inputPurpose: InputPurpose = .default) async throws -> String?
 swift.method WindowSession.saveFile(_:name:types:): @discardableResult @MainActor func saveFile(_ contents: [UInt8], name: String, types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.share(address:): @discardableResult @MainActor func share(address: String) async throws -> Bool
 swift.method WindowSession.share(text:): @discardableResult @MainActor func share(text: String) async throws -> Bool
 swift.method WindowSession.share(text:address:): @discardableResult @MainActor func share(text: String, address: String) async throws -> Bool
-swift.method WindowSession.toggleInspector(): @MainActor func toggleInspector()
+swift.method WindowSession.toggleDebugInspector(): @MainActor func toggleDebugInspector()
 swift.method Windows.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
 swift.method ZStack.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12993,6 +12991,7 @@ swift.property Connectivity.connectionProfiles: @MainActor var connectionProfile
 swift.property Connectivity.networkAccess: @MainActor var networkAccess: NetworkAccess { get }
 swift.property DatePicker.body: @MainActor var body: Never { get }
 swift.property DebugInspector.body: @MainActor var body: some View { get }
+swift.property DebugInspectorButton.body: @MainActor var body: some View { get }
 swift.property Device.accessibility: @MainActor let accessibility: AccessibilitySettings
 swift.property Device.battery: @MainActor let battery: Battery
 swift.property Device.connectivity: @MainActor let connectivity: Connectivity
@@ -13059,7 +13058,6 @@ swift.property Insets.bottom: var bottom: Double
 swift.property Insets.end: var end: Double
 swift.property Insets.start: var start: Double
 swift.property Insets.top: var top: Double
-swift.property InspectorButton.body: @MainActor var body: some View { get }
 swift.property ItemDrag.at: let at: Point
 swift.property ItemDrag.id: let id: ID
 swift.property ItemDrag.over: let over: ID?
@@ -13202,7 +13200,7 @@ swift.property WindowSession.$x: @MainActor var $x: Binding<Double?> { get }
 swift.property WindowSession.$y: @MainActor var $y: Binding<Double?> { get }
 swift.property WindowSession.background: @State @MainActor var background: Material? { get set }
 swift.property WindowSession.height: @State @MainActor var height: Double? { get set }
-swift.property WindowSession.isInspectorOpen: @MainActor var isInspectorOpen: Bool { get }
+swift.property WindowSession.isDebugInspectorOpen: @MainActor var isDebugInspectorOpen: Bool { get }
 swift.property WindowSession.isMaximizable: @State @MainActor var isMaximizable: Bool? { get set }
 swift.property WindowSession.isMinimizable: @State @MainActor var isMinimizable: Bool? { get set }
 swift.property WindowSession.maximumHeight: @State @MainActor var maximumHeight: Double? { get set }
@@ -13253,6 +13251,7 @@ swift.struct Color: struct Color
 swift.struct ColorPicker: @MainActor struct ColorPicker
 swift.struct DatePicker: @MainActor struct DatePicker
 swift.struct DebugInspector: @MainActor struct DebugInspector
+swift.struct DebugInspectorButton: @MainActor struct DebugInspectorButton
 swift.struct DrawCommand: struct DrawCommand
 swift.struct Ellipse: @MainActor struct Ellipse
 swift.struct EngineCycle: struct EngineCycle
@@ -13276,7 +13275,6 @@ swift.struct HTTPResponse: struct HTTPResponse
 swift.struct Image: @MainActor struct Image
 swift.struct ImageSource: struct ImageSource
 swift.struct Insets: struct Insets
-swift.struct InspectorButton: @MainActor struct InspectorButton
 swift.struct ItemDrag: struct ItemDrag<ID> where ID : Hashable
 swift.struct ItemsView: @MainActor struct ItemsView<ID> where ID : Hashable
 swift.struct Journey: @MainActor struct Journey<Value> where Value : Walked
@@ -13500,7 +13498,7 @@ swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func bui
 swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [some ToolbarItem]) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarContent?) -> ToolbarContent
-swift.type.method ToolbarButton.inspector(_:): @MainActor static func inspector(_ window: WindowSession) -> ToolbarButton
+swift.type.method ToolbarButton.debugInspector(_:): @MainActor static func debugInspector(_ window: WindowSession) -> ToolbarButton
 swift.type.method ToolbarGroupBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarGroupContent...) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarGroupContent) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarGroupContent) -> ToolbarGroupContent
