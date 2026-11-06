@@ -28,8 +28,11 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
     /// Why the navigation under way began, and why the next begins where the program said so.
     private var cause = WebNavigationCause()
 
-    /// The page last asked for by its address.
-    private var shown: URLRequest?
+    // HTML with a base keeps its own bytes for reload; native navigation takes over when it leaves that document.
+    // Design: docs/design/platforms/apple/web.md#a-web-view
+    private var reloadSource = WebReloadSource()
+    private var requestedNavigation: ObjectIdentifier?
+    private var requested: Set<ObjectIdentifier> = []
 
     /// The way back and forward as last said.
     private var history = StateUIHost.WebHistory()
@@ -51,37 +54,45 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
     /// address (`WebDocument`).
     public func show(_ source: WebViewSource?, userAgent agent: String?) {
         customUserAgent = agent
+        if let source { request(source) }
+    }
+
+    private func request(_ source: WebViewSource) {
+        let navigation: WKNavigation?
         switch source {
-        case .address(let address)?:
+        case .address(let address):
             guard let url = URL(string: address) else { return }
-            shown = URLRequest(url: url)
-            load(URLRequest(url: url))
-        case .html(let document, let base?)?:
-            loadHTMLString(document, baseURL: URL(string: base))
-        case .html(let document, nil)?:
+            navigation = load(URLRequest(url: url))
+        case .html(let document, let base?):
+            navigation = loadHTMLString(document, baseURL: URL(string: base))
+        case .html(let document, nil):
             guard let url = URL(string: WebDocument.address(of: document)) else { return }
-            shown = URLRequest(url: url)
-            load(URLRequest(url: url))
-        case nil:
-            break
+            navigation = load(URLRequest(url: url))
+        }
+        if let navigation {
+            requestedNavigation = ObjectIdentifier(navigation)
+            reloadSource.requested(source)
+            requested.insert(ObjectIdentifier(navigation))
         }
     }
 
     /// Steps back or forward in the page's history, or loads the page again - the navigation's cause said as the
     /// program's.
     public func step(_ event: StateUI.WebNavigationType) {
-        cause.ask(event)
+        let possible: Bool = switch event {
+        case .back: canGoBack
+        case .forward: canGoForward
+        default: reloadSource.value != nil || url != nil || isLoading
+        }
+        guard cause.ask(event, if: possible) else { return }
         switch event {
         case .back: _ = goBack()
         case .forward: _ = goForward()
         default:
-            // A page still coming WebKit reloads without asking: it is asked for again instead, and heard.
-            if isLoading, let shown {
-                stopLoading()
-                load(shown)
-            } else if reload() == nil, let shown {
-                load(shown)
-            }
+            if let source = reloadSource.value {
+                if isLoading { stopLoading() }
+                request(source)
+            } else { _ = reload() }
         }
     }
 
@@ -125,13 +136,26 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
             landingOn: address?.absoluteString ?? "", behind: backForwardList.backList.map(\.url.absoluteString))
     }
 
-    /// A navigation committed: the way back and forward as it stands now.
+    /// A navigation started outside `show`: the native page takes over from the authored reload source.
+    public func webView(_ web: WKWebView, didStartProvisionalNavigation navigation: WKNavigation?) {
+        if let navigation, !requested.contains(ObjectIdentifier(navigation)) {
+            requestedNavigation = nil
+            reloadSource.takenOver()
+        }
+    }
+
+    /// A navigation committed: a fetched source is no longer needed; authored HTML with a base keeps its bytes.
     public func webView(_ web: WKWebView, didCommit navigation: WKNavigation?) {
+        if let navigation, requestedNavigation == ObjectIdentifier(navigation) { reloadSource.committed() }
         sayHistory()
     }
 
     /// A navigation landed.
     public func webView(_ web: WKWebView, didFinish navigation: WKNavigation?) {
+        if let navigation {
+            requested.remove(ObjectIdentifier(navigation))
+            if requestedNavigation == ObjectIdentifier(navigation) { reloadSource.committed() }
+        }
         sayHistory()
         onNavigated?(.success, cause.current, url?.absoluteString ?? "")
     }
@@ -145,16 +169,19 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
 
     /// A navigation failed once committed.
     public func webView(_ web: WKWebView, didFail navigation: WKNavigation?, withError error: any Error) {
+        if let navigation { requested.remove(ObjectIdentifier(navigation)) }
         onNavigated?(Self.result(error), cause.current, url?.absoluteString ?? "")
     }
 
     /// A navigation failed before it committed.
     public func webView(_ web: WKWebView, didFailProvisionalNavigation navigation: WKNavigation?, withError error: any Error) {
+        if let navigation { requested.remove(ObjectIdentifier(navigation)) }
         onNavigated?(Self.result(error), cause.current, url?.absoluteString ?? "")
     }
 
     /// The web process died, leaving the view blank.
     public func webViewWebContentProcessDidTerminate(_ web: WKWebView) {
+        requested.removeAll()
         onProcessGone?()
     }
 

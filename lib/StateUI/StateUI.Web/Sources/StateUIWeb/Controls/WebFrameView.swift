@@ -26,6 +26,10 @@ final class WebFrameView: WebDOMView {
     private var shown = ""
     private var history = WebHistory()
     private var cause = WebNavigationCause()
+    private var reloadSource = WebReloadSource()
+
+    /// Whether the frame's next load is the source the page asked for, not a navigation of the frame's own.
+    private var requestedLoad = false
     private let frame = WebDOMView(tag: "iframe")
 
     init() {
@@ -41,16 +45,29 @@ final class WebFrameView: WebDOMView {
     /// Shows `source` where it changed.
     func show(_ source: WebViewSource?) {
         guard let source else { return }
+        request(source, told: .newPage)
+    }
+
+    /// Loads `source` whole, its navigation told as `told`; the complete source stands for a reload until it loads.
+    private func request(_ source: WebViewSource, told: WebNavigationType) {
+        reloadSource.requested(source)
+        requestedLoad = true
         given = switch source {
         case .address(let address): address
         case .html(let document, _): WebDocument.address(of: document)
         }
-        onNavigating(cause.begin(told: .newPage), given)
+        onNavigating(cause.begin(told: told), given)
         if let made = WebRelay.showInFrame(frame.node, source) { written[made] = given }
     }
 
     /// The frame's document loaded: where it is, as far as the page can know, and its history.
     private func loaded() {
+        if requestedLoad {
+            requestedLoad = false
+            reloadSource.committed()
+        } else {
+            reloadSource.takenOver()
+        }
         let state = WebRelay.frameState(frame.node)
         let address = state.reachable ? WebRelay.frameAddress(frame.node) : ""
         shown = written[address] ?? (address.isEmpty ? given : address)
@@ -61,15 +78,33 @@ final class WebFrameView: WebDOMView {
     }
 
     /// Takes a step of the frame's own - back, forward, the page again - its navigation beginning for it; a document
-    /// of another site takes none but the page again, which loads the address the page gave it. Whether it took one.
+    /// of another site takes none but the page again, which loads the address the page gave it. Whether the act can
+    /// be answered here; a reachable history with no destination is an ordinary no-op.
     func step(_ step: WebNavigationType) -> Bool {
-        cause.ask(step)
         let taken: WebRelay.FrameStep = step == .back ? .back : step == .forward ? .forward : .reload
+        let state = WebRelay.frameState(frame.node)
+        let possible: Bool = switch taken {
+        case .back: state.back
+        case .forward: state.forward
+        case .reload: !given.isEmpty || !shown.isEmpty
+        }
+        guard possible else { return state.reachable || (given.isEmpty && shown.isEmpty) }
+        if taken == .reload, let source = reloadSource.value {
+            cause.ask(.reload, if: true)
+            request(source, told: .reload)
+            return true
+        }
         if WebRelay.frameStep(frame.node, taken) {
+            if taken != .reload {
+                requestedLoad = false
+                reloadSource.takenOver()
+            }
+            cause.ask(step, if: true)
             onNavigating(cause.begin(told: step), shown)
             return true
         }
         guard taken == .reload, !given.isEmpty, !given.hasPrefix("data:") else { return false }
+        cause.ask(.reload, if: true)
         frame.attribute("src", nil)
         frame.attribute("src", given)
         onNavigating(cause.begin(told: .reload), given)

@@ -92,7 +92,7 @@ Polygon 2
 ProgressBar 3
 TabView 2
 VStack 3
-WebView 3
+WebView 4
 ZStack 2
 Popover 5
 TextualElement 2

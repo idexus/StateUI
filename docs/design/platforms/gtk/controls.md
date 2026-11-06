@@ -363,6 +363,14 @@ process. A script's answer is the JSON WebKit writes its value in, read by
 the host layer's rule. WebKit's calls are declared by the backend itself
 over untyped pointers, as GTK's headers belong to the host's own module.
 
+`WebReloadSource` keeps the complete requested source for a reload before
+WebKit commits it, and keeps authored HTML with a base while that document
+stands. A reload uses those bytes and the base together. The backend records
+its requested load before calling WebKit; the next `load-changed` start
+consumes that record. A start without a request, or an accepted step back or
+forward, gives reload back to native history. `load-changed` commit applies
+the shared source rule. Redirects continue the same load.
+
 ## A text style
 
 Words in a text style stand at the size and weight libadwaita gives its style

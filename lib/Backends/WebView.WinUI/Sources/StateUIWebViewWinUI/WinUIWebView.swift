@@ -106,7 +106,9 @@ final class WinUIWebView: WinUIControl {
     /// Steps back or forward, or loads the page again - the navigation's cause the program's step. A page still
     /// coming WebView2 does not load again: it is asked for again instead.
     func step(_ step: WebNavigationType) {
-        cause.ask(step)
+        let pendingReload = step == .reload && loading && asked != nil
+        let possible = pendingReload || stateui_webview_winui_can_step(element, step.rawValue)
+        guard cause.ask(step, if: possible) else { return }
         if step == .reload, loading, let asked { return go(asked) }
         stateui_webview_winui_step(element, step.rawValue)
     }

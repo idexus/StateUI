@@ -135,6 +135,83 @@
                 s.settle(for: Self.pageSeconds) { heard.values.count >= 2 }
                 s.expect(heard.values.last, .reload)
             },
+            ConformanceCase("aReplacementReloadsItsOwnDocument", proves: [
+                Covered(WebViewContract.source), Covered(WebViewContract.reload),
+            ], needs: [
+                Covered(WebViewContract.navigated), Covered(WebViewContract.evaluateJavaScript), Covered(ButtonContract.clicked),
+            ]) { s in
+                let web = Aim(WebView.self)
+                let second = State(wrappedValue: false)
+                let arrived = Received<Bool>()
+                let said = Received<String>()
+                s.start {
+                    VStack {
+                        WebView().source(
+                            html: Self.page(second.wrappedValue ? "Current" : "Previous"),
+                            baseAddress: second.wrappedValue ? "https://stateui.invalid/" : nil)
+                            .aim(web).onNavigated { result in
+                                if result.result == .success { arrived.values.append(true) }
+                            }.height(200).id("web")
+                        Button("Replace and reload").onClicked(.ignoreWhileRunning) {
+                            second.wrappedValue = true
+                            try await web.reload()
+                        }.id("replace")
+                        Button("Read").onClicked(.ignoreWhileRunning) {
+                            said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
+                        }.id("read")
+                    }
+                }
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
+                s.expect(arrived.values.isEmpty, false, "the preceding page arrived")
+                let count = arrived.values.count
+                try s.perform(.activate, on: s.element("replace"))
+                s.settle(for: Self.pageSeconds) { arrived.values.count > count }
+                s.expect(arrived.values.count > count, true, "the replacement arrived")
+                try s.perform(.activate, on: s.element("read"))
+                s.settle(for: Self.pageSeconds) { !said.values.isEmpty }
+                s.expect(said.values.last, "Current", "the source changed before the reload act")
+            },
+            ConformanceCase("aStepWithNoDestinationDoesNotNameANewPage", proves: [
+                Covered(WebViewContract.goBack), Covered(WebViewContract.goForward), Covered(WebViewContract.reload),
+                Covered(WebViewContract.navigating), Covered(WebViewContract.navigated),
+            ], needs: [Covered(WebViewContract.source), Covered(WebViewContract.evaluateJavaScript), Covered(ButtonContract.clicked)]) { s in
+                for step in [WebNavigationType.back, .forward, .reload] {
+                    let web = Aim(WebView.self)
+                    let given = State(wrappedValue: false)
+                    let began = Received<WebNavigationType>()
+                    let arrived = Received<WebNavigationType>()
+                    let said = Received<String>()
+                    s.start {
+                        VStack {
+                            (given.wrappedValue ? WebView().source(html: Self.page("New page")) : WebView())
+                                .aim(web).onNavigating { began.values.append($0.type) }
+                                .onNavigated { result in
+                                    if result.result == .success { arrived.values.append(result.type) }
+                                }.height(200).id("web")
+                            Button("Step").onClicked(.ignoreWhileRunning) {
+                                switch step {
+                                case .back: try await web.goBack()
+                                case .forward: try await web.goForward()
+                                default: try await web.reload()
+                                }
+                            }.id("step")
+                            Button("Show").onClicked { given.wrappedValue = true }.id("show")
+                            Button("Read").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
+                            }.id("read")
+                        }
+                    }
+                    try s.perform(.activate, on: s.element("step"))
+                    let count = arrived.values.count
+                    try s.perform(.activate, on: s.element("show"))
+                    s.settle(for: Self.pageSeconds) { arrived.values.count > count }
+                    try s.perform(.activate, on: s.element("read"))
+                    s.settle(for: Self.pageSeconds) { !said.values.isEmpty }
+                    s.expect(said.values.last, "New page")
+                    s.expect(began.values.last, .newPage, "the new source after \(step)")
+                    s.expect(arrived.values.last, .newPage, "the new source keeps its cause")
+                }
+            },
             ConformanceCase("theEndOfItsContentIsHeard", proves: [Covered(WebViewContract.processTerminated)]) { s in
                 let heard = Received<String>()
                 s.start {

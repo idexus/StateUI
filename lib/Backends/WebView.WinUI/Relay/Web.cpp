@@ -232,6 +232,19 @@ extern "C" void stateui_webview_winui_set_agent(WebViewObjectRef handle, int64_t
     }
 }
 
+extern "C" bool stateui_webview_winui_can_step(WebViewObjectRef handle, int32_t step) {
+    try {
+        auto web = as<controls::WebView2>(handle);
+        auto page = web.CoreWebView2();
+        if (!page) return false;
+        if (step == 1) return web.CanGoBack();
+        if (step == 2) return web.CanGoForward();
+        return !page.Source().empty();
+    } catch (...) {
+        return false;
+    }
+}
+
 extern "C" void stateui_webview_winui_step(WebViewObjectRef handle, int32_t step) {
     try {
         auto web = as<controls::WebView2>(handle);

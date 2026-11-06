@@ -52,6 +52,7 @@ void stateui_webview_winui_release(WebViewObjectRef web, int64_t view);
 void stateui_webview_winui_show(
     WebViewObjectRef web, int64_t view, char const *address, char const *document, char const *agent);
 void stateui_webview_winui_set_agent(WebViewObjectRef web, int64_t view, char const *agent);
+bool stateui_webview_winui_can_step(WebViewObjectRef web, int32_t step);
 void stateui_webview_winui_step(WebViewObjectRef web, int32_t step);
 void stateui_webview_winui_evaluate(WebViewObjectRef web, char const *script, int64_t ticket);
 

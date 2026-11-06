@@ -16,9 +16,13 @@
     /// No step asked, and no navigation under way.
     public init() {}
 
-    /// The program asked the view for `step`: the next navigation to begin is its.
-    public mutating func ask(_ step: WebNavigationType) {
+    /// Records `step` only where the toolkit can take it. A refused step leaves an earlier request intact.
+    /// Call this between reading the native capability and invoking a toolkit that may report synchronously.
+    @discardableResult
+    public mutating func ask(_ step: WebNavigationType, if possible: Bool) -> Bool {
+        guard possible else { return false }
         asked = step
+        return true
     }
 
     /// A navigation began, which the platform tells as `told`: why it began.
