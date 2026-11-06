@@ -685,6 +685,19 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(props[.scaleY]?.number ?? 0, 1.2649110640674, accuracy: 0.000001)
     }
 
+    /// A TRANSFORM WRITTEN OVER ONE OF ITS FIVE STANDS, and the library says so: `.transform` writes the rotation a
+    /// `.rotation` before it wrote.
+    func testATransformWrittenOverOneOfItsFiveStandsAndSaysSo() throws {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Text("x").rotation(10).transform(.rotate(30)).id("one").node,
+        ], id: "root"))
+
+        XCTAssertEqual(try XCTUnwrap(patch.child("one")?.props[.rotation]?.number), 30, accuracy: 0.000001)
+        XCTAssertTrue(hasComplained("`.transform` writes the view's `rotation` too"))
+    }
+
     /// EVERY PART IS ALSO A STARTING POINT, and it has to mean the same thing
     /// as the part written onto a view as it was drawn - seven one-line statics
     /// beside seven instance methods of the same names being exactly where a

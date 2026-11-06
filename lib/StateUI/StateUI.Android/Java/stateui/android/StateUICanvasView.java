@@ -45,7 +45,7 @@ final class StateUICanvasView extends View {
     private float[] numbers = new float[0];
     private String[] strings = new String[0];
 
-    /** What an instruction may change, kept and put back by `saveState` and `restoreState`. */
+    /** What an instruction may change, kept and put back by `saveGraphics` and `restoreGraphics`. */
     private static final class State {
         int fill = 0xFF000000, stroke = 0xFF000000, text = 0xFF000000;
         // The words' size until a drawing sets one: the drawing's first record, the host's own body text.

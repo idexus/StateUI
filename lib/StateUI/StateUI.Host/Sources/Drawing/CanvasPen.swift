@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// What a canvas draws with: each setting holds until the next of its kind, `saveState` remembers them all and
-/// `restoreState` puts them back - the same on every host drawing in Swift.
+/// What a canvas draws with: each setting holds until the next of its kind, `saveGraphics` remembers them all and
+/// `restoreGraphics` puts them back - the same on every host drawing in Swift.
 /// Design: docs/design/types/drawing.md#settings-hold-until-changed
 @_spi(Host) public struct CanvasPen: Equatable, Sendable {
     /// The color fills are drawn in: black until set.
@@ -39,8 +39,8 @@
         case .lineWidth(let width): lineWidth = max(0, width)
         case .fontSize(let size): fontSize = max(0, size)
         case .opacity(let value): alpha = min(max(value, 0), 1)
-        case .saveState: saved.append(self)
-        case .restoreState:
+        case .saveGraphics: saved.append(self)
+        case .restoreGraphics:
             guard let last = saved.popLast() else { return true }
             let stack = saved
             self = last

@@ -17,7 +17,7 @@ final class CanvasRulesTests: XCTestCase {
             Draw.fillRoundedRectangle(x: 1, y: 2, width: 30, height: 40, cornerRadius: 5),
             Draw.text("Go", x: 0, y: 0, width: 90, height: 30, horizontalAlignment: .center),
             Draw.strokeArc(x: 0, y: 0, width: 10, height: 10, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
-            broken, Draw.saveState(), Draw.rotate(by: 45), Draw.restoreState(),
+            broken, Draw.saveGraphics(), Draw.rotate(45), Draw.restoreGraphics(),
         ]
 
         XCTAssertEqual(CanvasInstruction.instructions(drawing), [
@@ -25,7 +25,7 @@ final class CanvasRulesTests: XCTestCase {
             .fillRoundedRectangle(Rect(x: 1, y: 2, width: 30, height: 40), radius: 5),
             .text("Go", in: Rect(x: 0, y: 0, width: 90, height: 30), horizontal: .center, vertical: .start),
             .strokeArc(Rect(x: 0, y: 0, width: 10, height: 10), start: 0, end: 90, clockwise: true, closed: false),
-            .saveState, .rotate(degrees: 45), .restoreState,
+            .saveGraphics, .rotate(degrees: 45), .restoreGraphics,
         ])
     }
 
@@ -35,11 +35,11 @@ final class CanvasRulesTests: XCTestCase {
         XCTAssertTrue(pen.take(.fillColor(Color.red.propValue)))
         XCTAssertTrue(pen.take(.lineWidth(-2)))
         XCTAssertEqual(pen.lineWidth, 0, "never below nothing")
-        XCTAssertTrue(pen.take(.saveState))
+        XCTAssertTrue(pen.take(.saveGraphics))
         XCTAssertTrue(pen.take(.opacity(2)))
         XCTAssertTrue(pen.take(.fillColor(Color.blue.propValue)))
         XCTAssertEqual(pen.alpha, 1, "never past whole")
-        XCTAssertTrue(pen.take(.restoreState))
+        XCTAssertTrue(pen.take(.restoreGraphics))
         XCTAssertEqual(pen.fill, Color.red.propValue)
         XCTAssertEqual(pen.savedDepth, 0)
         XCTAssertFalse(pen.take(.strokeEllipse(Rect(x: 0, y: 0, width: 1, height: 1))), "a drawing is no setting")
@@ -87,8 +87,8 @@ final class CanvasRulesTests: XCTestCase {
     func testAReplayDrawsWithThePenAsItStands() {
         var told: [String] = []
         CanvasPen.replay(
-            [.lineWidth(3), .saveState, .lineWidth(5), .strokeLine(from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)),
-             .restoreState, .restoreState, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
+            [.lineWidth(3), .saveGraphics, .lineWidth(5), .strokeLine(from: Point(x: 0, y: 0), to: Point(x: 1, y: 1)),
+             .restoreGraphics, .restoreGraphics, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
             save: { told.append("save") }, restore: { told.append("restore") },
             draw: { instruction, pen in told.append("draw \(pen.lineWidth)") })
         XCTAssertEqual(told, ["save", "draw 5.0", "restore", "draw 3.0"])
@@ -99,7 +99,7 @@ final class CanvasRulesTests: XCTestCase {
     func testAReplayPutsBackEveryStateLeftSaved() {
         var told: [String] = []
         CanvasPen.replay(
-            [.saveState, .rotate(degrees: 45), .saveState, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
+            [.saveGraphics, .rotate(degrees: 45), .saveGraphics, .strokeEllipse(Rect(x: 0, y: 0, width: 4, height: 4))],
             save: { told.append("save") }, restore: { told.append("restore") },
             draw: { _, _ in told.append("draw") })
         XCTAssertEqual(told, ["save", "draw", "save", "draw", "restore", "restore"])

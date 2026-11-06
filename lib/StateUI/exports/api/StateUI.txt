@@ -13404,10 +13404,10 @@ swift.type.method Draw.fillRoundedRectangle(x:y:width:height:cornerRadius:): sta
 swift.type.method Draw.fontSize(_:): static func fontSize(_ value: Double) -> DrawCommand
 swift.type.method Draw.lineWidth(_:): static func lineWidth(_ value: Double) -> DrawCommand
 swift.type.method Draw.opacity(_:): static func opacity(_ value: Double) -> DrawCommand
-swift.type.method Draw.restoreState(): static func restoreState() -> DrawCommand
-swift.type.method Draw.rotate(by:): static func rotate(by degrees: Double) -> DrawCommand
-swift.type.method Draw.saveState(): static func saveState() -> DrawCommand
-swift.type.method Draw.scaleBy(x:y:): static func scaleBy(x: Double, y: Double) -> DrawCommand
+swift.type.method Draw.restoreGraphics(): static func restoreGraphics() -> DrawCommand
+swift.type.method Draw.rotate(_:): static func rotate(_ degrees: Double) -> DrawCommand
+swift.type.method Draw.saveGraphics(): static func saveGraphics() -> DrawCommand
+swift.type.method Draw.scale(x:y:): static func scale(x: Double, y: Double) -> DrawCommand
 swift.type.method Draw.strokeArc(x:y:width:height:startAngle:endAngle:clockwise:closed:): static func strokeArc(x: Double, y: Double, width: Double, height: Double, startAngle: Double, endAngle: Double, clockwise: Bool, closed: Bool) -> DrawCommand
 swift.type.method Draw.strokeColor(_:): static func strokeColor(_ value: Color) -> DrawCommand
 swift.type.method Draw.strokeEllipse(x:y:width:height:): static func strokeEllipse(x: Double, y: Double, width: Double, height: Double) -> DrawCommand
@@ -13417,7 +13417,7 @@ swift.type.method Draw.strokeRectangle(x:y:width:height:): static func strokeRec
 swift.type.method Draw.strokeRoundedRectangle(x:y:width:height:cornerRadius:): static func strokeRoundedRectangle(x: Double, y: Double, width: Double, height: Double, cornerRadius: Double) -> DrawCommand
 swift.type.method Draw.text(_:x:y:width:height:horizontalAlignment:verticalAlignment:): static func text(_ text: String, x: Double, y: Double, width: Double, height: Double, horizontalAlignment: TextAlignment = .start, verticalAlignment: TextAlignment = .start) -> DrawCommand
 swift.type.method Draw.textColor(_:): static func textColor(_ value: Color) -> DrawCommand
-swift.type.method Draw.translateBy(x:y:): static func translateBy(x: Double, y: Double) -> DrawCommand
+swift.type.method Draw.translate(_:_:): static func translate(_ x: Double, _ y: Double) -> DrawCommand
 swift.type.method DrawingBuilder.buildArray(_:): static func buildArray(_ components: [[DrawCommand]]) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildBlock(_:): static func buildBlock(_ components: [DrawCommand]...) -> [DrawCommand]
 swift.type.method DrawingBuilder.buildEither(first:): static func buildEither(first component: [DrawCommand]) -> [DrawCommand]

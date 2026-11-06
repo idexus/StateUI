@@ -491,11 +491,11 @@ final class ControlTests: XCTestCase {
                         "Hello, world", x: 10, y: 20, width: 80, height: 16,
                         horizontalAlignment: .center, verticalAlignment: .end)
 
-                    Draw.saveState()
-                    Draw.translateBy(x: 4, y: 4)
-                    Draw.rotate(by: 45)
-                    Draw.scaleBy(x: 2, y: 2)
-                    Draw.restoreState()
+                    Draw.saveGraphics()
+                    Draw.translate(4, 4)
+                    Draw.rotate(45)
+                    Draw.scale(x: 2, y: 2)
+                    Draw.restoreGraphics()
                 }),
 
             // The protocol tiers, once, on the four controls it takes to reach all

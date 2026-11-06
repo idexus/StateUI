@@ -498,8 +498,8 @@ Canvas {
 
 Commands execute in order. The color commands, `lineWidth`, `fontSize`,
 `opacity` and the transform commands (`translateBy`, `rotate(by:)`,
-`scaleBy`) change the state used by later drawing commands. `saveState` and
-`restoreState` bound temporary transform or paint changes.
+`scaleBy`) change the state used by later drawing commands. `saveGraphics` and
+`restoreGraphics` bound temporary transform or paint changes.
 
 A canvas hears a press as every view does, in its own points - the ones its
 drawing uses: `onPointerPressed`, the pan's `at` as the press moves

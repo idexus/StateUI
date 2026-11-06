@@ -22,10 +22,10 @@ final class HostDrawingTests: XCTestCase {
             Draw.strokeArc(x: 0, y: 0, width: 10, height: 20, startAngle: 0, endAngle: 90, clockwise: true, closed: false),
             Draw.fillArc(x: 0, y: 0, width: 10, height: 20, startAngle: 90, endAngle: 0, clockwise: false),
             Draw.text("one", x: 0, y: 0, width: 50, height: 20, horizontalAlignment: .center),
-            Draw.saveState(),
-            Draw.translateBy(x: 3, y: 4),
+            Draw.saveGraphics(),
+            Draw.translate(3, 4),
             Draw.text("two", x: 5, y: 6, width: 7, height: 8, verticalAlignment: .end),
-            Draw.restoreState(),
+            Draw.restoreGraphics(),
         ], wordsSize: 14)
 
         XCTAssertEqual(drawing.ints, [
@@ -62,7 +62,7 @@ final class HostDrawingTests: XCTestCase {
             short,
             Draw.fillRectangle(x: .infinity, y: 0, width: 1, height: 1),
             untold,
-            Draw.rotate(by: 45),
+            Draw.rotate(45),
         ], wordsSize: nil)
 
         XCTAssertEqual(drawing.ints, [19])

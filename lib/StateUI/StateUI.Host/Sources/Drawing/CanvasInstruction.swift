@@ -51,9 +51,9 @@
     /// Scales what is drawn from here along each axis.
     case scale(x: Double, y: Double)
     /// Remembers the settings and the movement as they are.
-    case saveState
+    case saveGraphics
     /// Puts back the settings and the movement remembered last.
-    case restoreState
+    case restoreGraphics
 
     /// The instructions of `drawing`, in order.
     public static func instructions(_ drawing: [DrawCommand]?) -> [CanvasInstruction] {
@@ -110,8 +110,8 @@
         case 18: guard let n = numbers(2) else { return nil }; self = .translate(x: n[0], y: n[1])
         case 19: guard let n = numbers(1) else { return nil }; self = .rotate(degrees: n[0])
         case 20: guard let n = numbers(2) else { return nil }; self = .scale(x: n[0], y: n[1])
-        case 21: self = .saveState
-        case 22: self = .restoreState
+        case 21: self = .saveGraphics
+        case 22: self = .restoreGraphics
         default: return nil
         }
     }

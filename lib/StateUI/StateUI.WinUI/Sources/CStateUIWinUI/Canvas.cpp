@@ -108,7 +108,7 @@ namespace {
         }
     };
 
-    /// What an instruction may change, kept by saveState and put back by restoreState.
+    /// What an instruction may change, kept by saveGraphics and put back by restoreGraphics.
     struct Pen {
         D2D1_COLOR_F fill = D2D1::ColorF(D2D1::ColorF::Black);
         D2D1_COLOR_F stroke = D2D1::ColorF(D2D1::ColorF::Black);

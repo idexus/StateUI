@@ -86,18 +86,25 @@ extension VisualElementProperties {
     ///
     /// The parts apply in the order written, each to what the parts before it
     /// made; see `ViewTransform`. It writes `translationX`, `translationY`,
-    /// `rotation`, `scaleX` and `scaleY`, so use it or those five, not both.
+    /// `rotation`, `scaleX` and `scaleY`, so use it or those five, not both:
+    /// written over one of them, it stands, and the library says so once.
     ///
     /// - Parameter transform: how the view is moved, turned and sized - a value
     ///   that can be held in `@State`.
     /// - Returns: the view, transformed.
     public func transform(_ transform: ViewTransform) -> Modified {
-        modified {
-            $0.write(VisualElementContract.translationX, transform.x)
-            $0.write(VisualElementContract.translationY, transform.y)
-            $0.write(VisualElementContract.rotation, transform.rotation)
-            $0.write(VisualElementContract.scaleX, transform.width)
-            $0.write(VisualElementContract.scaleY, transform.height)
+        modified { node in
+            let five = [VisualElementContract.translationX, VisualElementContract.translationY,
+                        VisualElementContract.rotation, VisualElementContract.scaleX, VisualElementContract.scaleY]
+            if let said = five.first(where: { node.props[$0.token] != nil }) {
+                complain("`.transform` writes the view's `\(said.name)` too: written after `.\(said.name)`, the "
+                    + "transform stands - use one or the other.")
+            }
+            node.write(VisualElementContract.translationX, transform.x)
+            node.write(VisualElementContract.translationY, transform.y)
+            node.write(VisualElementContract.rotation, transform.rotation)
+            node.write(VisualElementContract.scaleX, transform.width)
+            node.write(VisualElementContract.scaleY, transform.height)
         }
     }
 

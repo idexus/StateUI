@@ -26,7 +26,7 @@ final class WebCanvasStrokeTests: XCTestCase {
 
     /// The states saved are put back in turn; one more put back has nothing to put back.
     func testARestoreWithNothingSavedDoesNothing() {
-        let drawn = stroke([.saveState, .translate(x: 4, y: 2), .restoreState, .restoreState])
+        let drawn = stroke([.saveGraphics, .translate(x: 4, y: 2), .restoreGraphics, .restoreGraphics])
         XCTAssertEqual(drawn.numbers, [0, 2, 4, 2, 1])
     }
 
