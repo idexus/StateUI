@@ -28,11 +28,6 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElem
         node.write(ToolbarToggleContract.isOn, isOn)
     }
 
-    /// A toolbar toggle with no caption or state binding supplied.
-    public init() {
-        node = Node(contract: ToolbarToggleContract.self)
-    }
-
     /// An item captioned `text`, standing on as the state holds; choosing it
     /// turns the state over.
     public init(_ text: String, isOn: Binding<Bool>) {

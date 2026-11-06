@@ -736,7 +736,8 @@ final class StyleTests: XCTestCase {
             (TextField.nodeType, TextField().node.type), (Slider.nodeType, Slider().node.type),
             (Grid.nodeType, Grid().node.type), (VStack.nodeType, VStack().node.type),
             (HStack.nodeType, HStack().node.type), (ZStack.nodeType, ZStack().node.type),
-            (ToolbarButton.nodeType, ToolbarButton().node.type), (ToolbarToggle.nodeType, ToolbarToggle().node.type),
+            (ToolbarButton.nodeType, ToolbarButton().node.type),
+            (ToolbarToggle.nodeType, ToolbarToggle("Grid", isOn: false).node.type),
             (ToolbarGroup.nodeType, ToolbarGroup().node.type), (Rectangle.nodeType, Rectangle().node.type),
             (ItemsView<String>.nodeType, Renders().render(ItemsView(["one"]) { Text($0) }.node).type),
             (MotionLayout<[Int], Int, Double>.nodeType, Renders().render(
