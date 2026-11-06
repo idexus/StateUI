@@ -26,8 +26,8 @@ public struct Menu: Element {
 
     /// A menu captioned `text`, holding whatever the closure lists.
     ///
-    /// What goes inside is a `MenuItem`, a `Menu` or a `Separator`, with an
-    /// `if` or an array of items among them.
+    /// What goes inside is a `MenuItem`, a `MenuToggle`, a `Menu` or a
+    /// `MenuSeparator`, with an `if` or an array of items among them.
     ///
     /// - Parameter text: the caption - "File", "Edit", "View" on the bar, or the
     ///   row that opens it inside another menu.

@@ -153,7 +153,7 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
     }
 
-    /// Runs when the application is asked to open a link - one the user chose elsewhere, of a scheme the
+    /// Runs when a link is opened into the application - one the user chose elsewhere, of a scheme the
     /// application's head registers - and gives it to the window the page this view stands on stands in: its
     /// address. Said of the page, as its title is: on a view the page shows, or on an arrangement where a page
     /// stands.

@@ -14,7 +14,7 @@ public enum PageElementContract: Contract {
     /// stands on.
     public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
-    /// The application was asked to open a link - one chosen elsewhere, its scheme the application's - and gave it
+    /// A link was opened into the application - one chosen elsewhere, its scheme the application's - and given
     /// to the window this page or arrangement stands in: its address.
     public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
 
