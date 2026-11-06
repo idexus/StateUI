@@ -28,7 +28,8 @@ extension AndroidDriver {
             return .some(style?.propValue)
         case .format:
             let format = Java.frame { objectField(field, Self.format).map { Java.text($0) } ?? "" }
-            return .some(format.isEmpty ? nil : format.propValue)
+            let style = [TimeStyle.short, .medium].first { AndroidDateFieldView.letter(of: $0) == format }
+            return .some(style?.propValue)
         case .isOpen:
             let showing = Java.frame { objectField(field, Self.dialog).map { Java.callBool($0, Self.isShowing) } }
             return .some((showing ?? false).propValue)
