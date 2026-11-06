@@ -138,6 +138,21 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
 }
 
 extension DatePicker {
+    /// `minimumDate` from a state, `$x`: the host sets each new earliest day as it stands.
+    public func minimumDate(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.minimumDate, by: state)
+    }
+
+    /// `maximumDate` from a state, `$x`: the host sets each new latest day as it stands.
+    public func maximumDate(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.maximumDate, by: state)
+    }
+
+    /// `format` from a state, `$x`: the host writes the day each new way as it stands.
+    public func format(_ state: Binding<DateStyle>) -> Modified {
+        twin(DatePickerContract.format, by: state)
+    }
+
     /// Whether the calendar is showing.
     ///
     /// Settable, so a button elsewhere on the page can open it - and the

@@ -10,3 +10,5 @@ public enum TimeStyle: Int32, Hashable, Sendable, HostRepresentable {
     /// Hours, minutes and seconds.
     case medium = 1
 }
+
+extension TimeStyle: StateChoice {}

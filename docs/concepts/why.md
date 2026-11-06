@@ -45,7 +45,11 @@ travels to each new one ([Motion and journeys](motion-and-journeys.md)); and
 what the platform reports lands on the same state. Every property that crosses
 to the host as it is offers both paths, because each has the same shape; one
 the library translates to the host's shape takes the state alone
-([Two words and a part](#two-words-and-a-part-state-binding-statepart)).
+([Two words and a part](#two-words-and-a-part-state-binding-statepart)). The
+value alone stays where no host can be handed it as it is - a brush's
+gradient, a picture - where a change makes the native control anew, and for a
+button's role, which hands the window's Return and Escape to the buttons it
+shows and is said where the button is written.
 
 **Deliberately rejected:** a modifier without an argument that sets one value
 of a property - `.bold()`, `.italic()`, `.center()`, `.leading()` and their

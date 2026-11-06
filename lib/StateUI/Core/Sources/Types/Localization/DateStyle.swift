@@ -13,3 +13,5 @@ public enum DateStyle: Int32, Hashable, Sendable, HostRepresentable {
     /// The month written out.
     case long = 2
 }
+
+extension DateStyle: StateChoice {}

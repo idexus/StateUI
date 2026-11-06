@@ -302,6 +302,33 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
 
 // MARK: - The acts
 
+extension Map {
+    /// `type` from a state, `$x`: the host shows each new kind of map as it stands, and no view is rebuilt for it.
+    public func type(_ state: Binding<MapType>) -> Modified {
+        twin(MapContract.type, by: state)
+    }
+
+    /// `isScrollEnabled` from a state, `$x`: the host sets each new value as it stands.
+    public func isScrollEnabled(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.isScrollEnabled, by: state)
+    }
+
+    /// `isZoomEnabled` from a state, `$x`: the host sets each new value as it stands.
+    public func isZoomEnabled(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.isZoomEnabled, by: state)
+    }
+
+    /// `showsTraffic` from a state, `$x`: the host sets each new value as it stands.
+    public func showsTraffic(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.showsTraffic, by: state)
+    }
+
+    /// `showsUserLocation` from a state, `$x`: the host sets each new value as it stands.
+    public func showsUserLocation(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.showsUserLocation, by: state)
+    }
+}
+
 extension Aim where Target == Map {
     /// Slides the map until it shows `region`.
     ///

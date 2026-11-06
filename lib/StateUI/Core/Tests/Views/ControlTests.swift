@@ -802,30 +802,26 @@ final class ControlTests: XCTestCase {
     /// added without its twin is named here.
     ///
     /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
-    /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
+    /// gives: a value it cannot be handed whole (a brush, a picture, a
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
-    /// lanes where a plain value is one - the tiers no view wears: a page,
-    /// a bar, a menu item, a map's own flags - and a value that makes its
-    /// element anew, which a state the host carries past the tree cannot.
+    /// lanes where a plain value is one - the tiers no view wears: a bar's
+    /// item, a run of text, a map's marker - a button's role, said where it
+    /// is written - and a value that makes its element anew, which a state
+    /// the host carries past the tree cannot.
     func testEveryValueModifierHasABindingTwin() throws {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
             // A button's purpose in its window, said where it is written.
             "role",
             // Named rather than valued.
-            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
-            // A value the host cannot be handed whole.
-            "background", "pageBackground", "fill", "stroke", "icon", "pageIcon",
-            "maximumDate",
-            "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody", "followsLayout", "id",
-            "assign", "area",
-            // Tiers no view wears.
-            "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",
-            "isScrollEnabled",
-            "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
-            "type", "ignoresSafeArea",
+            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content",
+            // A value the host cannot be handed whole - a brush, a gradient among them.
+            "background", "fill", "stroke", "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
+            "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
+            "followsLayout", "id", "assign", "area",
+            // Tiers no view wears: a bar's item, a run of text, a map's marker.
+            "title", "ignoresSafeArea",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []

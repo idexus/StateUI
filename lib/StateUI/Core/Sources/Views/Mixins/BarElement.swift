@@ -55,6 +55,26 @@ extension BarElement {
         twin(BarElementContract.barBackground, by: state)
     }
 
+    /// `toolbarStyle` from a state, `$x`: the host shows each new look as it stands.
+    public func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Modified {
+        twin(BarElementContract.toolbarStyle, by: state)
+    }
+
+    /// `toolbarSpacing` from a state, `$x`: the host sets each new room, and no view is rebuilt for it.
+    public func toolbarSpacing(_ state: Binding<Double>) -> Modified {
+        twin(BarElementContract.toolbarSpacing, by: state)
+    }
+
+    /// `barScrollEdge` from a state, `$x`: the host shows each new edge as it stands.
+    public func barScrollEdge(_ state: Binding<ScrollEdge>) -> Modified {
+        twin(BarElementContract.barScrollEdge, by: state)
+    }
+
+    /// `barForegroundColor` from a state, `$x`: the host animates the color to each new value.
+    public func barForegroundColor(_ state: Binding<Color>) -> Modified {
+        twin(BarElementContract.barForegroundColor, by: state)
+    }
+
     /// How the bar's buttons stand where the host draws them itself - the
     /// Web: `.glass`, `.plain`, `.rounded`, or the platform's own,
     /// `.system`, unless said - the look a `Style<ToolbarButton>` writes

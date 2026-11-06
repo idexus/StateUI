@@ -2027,9 +2027,13 @@ swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
+swift.method BarElement.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
 swift.method BarElement.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
+swift.method BarElement.barScrollEdge(_:): @MainActor func barScrollEdge(_ state: Binding<ScrollEdge>) -> Self.Modified
 swift.method BarElement.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
+swift.method BarElement.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
 swift.method BarElement.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ value: Double) -> Self.Modified
+swift.method BarElement.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method BarElement.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
@@ -2041,6 +2045,7 @@ swift.method Blur.tint(_:): func tint(_ color: Color) -> Blur
 swift.method BorderElement.lineWidth(_:): @MainActor func lineWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method BorderElement.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -> Self.Modified
 swift.method BorderElement.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
+swift.method BorderElement.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method BorderElement.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
 swift.method BorderElement.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
 swift.method Button.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -2257,8 +2262,7 @@ swift.method Button.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method Button.showsText(_:): @MainActor func showsText(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Button.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method Button.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method Button.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -3162,7 +3166,7 @@ swift.method DatePicker.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method DatePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method DatePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method DatePicker.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
+swift.method DatePicker.format(_:): @MainActor func format(_ state: Binding<DateStyle>) -> DatePicker.Modified
 swift.method DatePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method DatePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3187,11 +3191,11 @@ swift.method DatePicker.layoutDirection(_:): @MainActor func layoutDirection(_ s
 swift.method DatePicker.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method DatePicker.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method DatePicker.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
-swift.method DatePicker.maximumDate(_:): @MainActor func maximumDate(_ value: CalendarDate) -> Self.Modified
+swift.method DatePicker.maximumDate(_:): @MainActor func maximumDate(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
-swift.method DatePicker.minimumDate(_:): @MainActor func minimumDate(_ value: CalendarDate) -> Self.Modified
+swift.method DatePicker.minimumDate(_:): @MainActor func minimumDate(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
@@ -4177,8 +4181,7 @@ swift.method Fill.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ s
 swift.method Fill.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Fill.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Fill.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method Fill.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method Fill.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Fill.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Fill.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -4810,8 +4813,7 @@ swift.method Grid.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ s
 swift.method Grid.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Grid.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Grid.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method Grid.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method Grid.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Grid.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Grid.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -5220,8 +5222,7 @@ swift.method HStack.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method HStack.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method HStack.spacing(_:): @MainActor func spacing(_ state: Binding<Double>) -> Self.Modified
-swift.method HStack.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method HStack.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method HStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method HStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method HStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -6351,9 +6352,9 @@ swift.method Map.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidde
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Map.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Map.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ value: Bool) -> Self.Modified
+swift.method Map.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
-swift.method Map.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
+swift.method Map.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Map.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method Map.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
@@ -6497,8 +6498,8 @@ swift.method Map.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ st
 swift.method Map.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Map.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Map.showsTraffic(_:): @MainActor func showsTraffic(_ value: Bool) -> Self.Modified
-swift.method Map.showsUserLocation(_:): @MainActor func showsUserLocation(_ value: Bool) -> Self.Modified
+swift.method Map.showsTraffic(_:): @MainActor func showsTraffic(_ state: Binding<Bool>) -> Map.Modified
+swift.method Map.showsUserLocation(_:): @MainActor func showsUserLocation(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Map.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Map.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -6511,7 +6512,7 @@ swift.method Map.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Mo
 swift.method Map.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Map.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
+swift.method Map.type(_:): @MainActor func type(_ state: Binding<MapType>) -> Map.Modified
 swift.method Map.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Map.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -7022,7 +7023,9 @@ swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ 
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
+swift.method NavigationStack.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
 swift.method NavigationStack.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
+swift.method NavigationStack.barScrollEdge(_:): @MainActor func barScrollEdge(_ state: Binding<ScrollEdge>) -> Self.Modified
 swift.method NavigationStack.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
 swift.method NavigationStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method NavigationStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
@@ -7190,7 +7193,9 @@ swift.method NavigationStack.title(_:): @MainActor func title(_ state: Binding<S
 swift.method NavigationStack.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method NavigationStack.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method NavigationStack.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
+swift.method NavigationStack.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ value: Double) -> Self.Modified
+swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method NavigationStack.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method NavigationStack.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
@@ -8909,8 +8914,7 @@ swift.method ScrollView.showsNavigationBar(_:): @MainActor func showsNavigationB
 swift.method ScrollView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method ScrollView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method ScrollView.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method ScrollView.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method ScrollView.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method ScrollView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method ScrollView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -9142,8 +9146,7 @@ swift.method SearchField.showsNavigationBar(_:): @MainActor func showsNavigation
 swift.method SearchField.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method SearchField.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method SearchField.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method SearchField.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method SearchField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method SearchField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> SearchField.Modified
 swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
@@ -9782,8 +9785,7 @@ swift.method Space.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ 
 swift.method Space.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Space.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Space.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method Space.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method Space.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method Space.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Space.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Space.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -10024,7 +10026,9 @@ swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ state:
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
+swift.method SplitView.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
 swift.method SplitView.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
+swift.method SplitView.barScrollEdge(_:): @MainActor func barScrollEdge(_ state: Binding<ScrollEdge>) -> Self.Modified
 swift.method SplitView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
 swift.method SplitView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SplitView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
@@ -10200,7 +10204,9 @@ swift.method SplitView.title(_:): @MainActor func title(_ state: Binding<String>
 swift.method SplitView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method SplitView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SplitView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
+swift.method SplitView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ value: Double) -> Self.Modified
+swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method SplitView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method SplitView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
@@ -10800,7 +10806,9 @@ swift.method TabView.barBackground(_:): @MainActor func barBackground(_ state: B
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ state: Binding<Material>) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Color) -> Self.Modified
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
+swift.method TabView.barForegroundColor(_:): @MainActor func barForegroundColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TabView.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
+swift.method TabView.barScrollEdge(_:): @MainActor func barScrollEdge(_ state: Binding<ScrollEdge>) -> Self.Modified
 swift.method TabView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
 swift.method TabView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TabView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
@@ -10969,7 +10977,9 @@ swift.method TabView.title(_:): @MainActor func title(_ state: Binding<String>) 
 swift.method TabView.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TabView.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TabView.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
+swift.method TabView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.toolbarSpacing(_:): @MainActor func toolbarSpacing(_ value: Double) -> Self.Modified
+swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ state: Binding<ToolbarStyle>) -> Self.Modified
 swift.method TabView.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: ToolbarStyle) -> Self.Modified
 swift.method TabView.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
@@ -11412,8 +11422,7 @@ swift.method TextEditor.showsNavigationBar(_:): @MainActor func showsNavigationB
 swift.method TextEditor.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method TextEditor.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method TextEditor.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method TextEditor.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method TextEditor.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method TextEditor.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -11648,8 +11657,7 @@ swift.method TextField.showsNavigationBar(_:): @MainActor func showsNavigationBa
 swift.method TextField.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method TextField.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method TextField.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method TextField.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method TextField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method TextField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> TextField.Modified
 swift.method TextField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
@@ -11761,7 +11769,7 @@ swift.method TimePicker.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TimePicker.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
+swift.method TimePicker.format(_:): @MainActor func format(_ state: Binding<TimeStyle>) -> TimePicker.Modified
 swift.method TimePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TimePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -12254,8 +12262,7 @@ swift.method VStack.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method VStack.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method VStack.spacing(_:): @MainActor func spacing(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method VStack.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method VStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method VStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method VStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -12934,8 +12941,7 @@ swift.method ZStack.showsNavigationBar(_:): @MainActor func showsNavigationBar(_
 swift.method ZStack.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method ZStack.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method ZStack.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
-swift.method ZStack.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method ZStack.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method ZStack.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method ZStack.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified

@@ -30,3 +30,5 @@ public enum ToolbarStyle: Int32, Sendable, CaseIterable {
 }
 
 extension ToolbarStyle: HostRepresentable {}
+
+extension ToolbarStyle: StateChoice {}

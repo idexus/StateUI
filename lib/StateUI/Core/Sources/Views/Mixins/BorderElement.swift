@@ -33,6 +33,12 @@ extension BorderElement {
 }
 
 extension BorderElement where Self: VisualElement {
+    /// `stroke` from a color state, `$x`: the host animates the color to each new value, and no view is rebuilt
+    /// for it.
+    public func stroke(_ state: Binding<Color>) -> Modified {
+        twin(BorderElementContract.stroke, carrying: state)
+    }
+
     /// `lineWidth` from a state, `$x`: the host animates the outline to each new width, and no view is
     /// rebuilt for it.
     public func lineWidth(_ state: Binding<Double>) -> Modified {

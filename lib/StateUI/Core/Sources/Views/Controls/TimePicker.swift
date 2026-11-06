@@ -131,6 +131,11 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
 }
 
 extension TimePicker {
+    /// `format` from a state, `$x`: the host writes the time each new way as it stands.
+    public func format(_ state: Binding<TimeStyle>) -> Modified {
+        twin(TimePickerContract.format, by: state)
+    }
+
     /// Whether the clock face is showing.
     ///
     /// Settable, so a button elsewhere on the page can open it - and the

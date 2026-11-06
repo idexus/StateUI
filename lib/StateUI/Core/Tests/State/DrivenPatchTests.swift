@@ -521,6 +521,43 @@ final class DrivenPatchTests: XCTestCase {
              Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
     }
 
+    /// A PROPERTY CROSSING AS IT IS TAKES A STATE: a map's settings, a picker's range and form, a bar's look and an
+    /// outline's color each drive the member they set from `$x`, with nothing built again for it.
+    func testEveryPropertyCrossingAsItIsTakesAState() {
+        let flag = State(wrappedValue: true)
+        let number = State(wrappedValue: 8.0)
+        let color = State(wrappedValue: Color.red)
+        let day = State(wrappedValue: CalendarDate(year: 2026, month: 1, day: 1))
+        let look = State(wrappedValue: ToolbarStyle.plain)
+        let edge = State(wrappedValue: ScrollEdge.hard)
+        let split = SplitView { Text("x") } detail: { Text("y") }
+        let driven: [(Node, Prop, String)] = [
+            (Map().type(State(wrappedValue: MapType.satellite).projectedValue).node, MapContract.type.token, "type"),
+            (Map().isScrollEnabled(flag.projectedValue).node, MapContract.isScrollEnabled.token, "isScrollEnabled"),
+            (Map().isZoomEnabled(flag.projectedValue).node, MapContract.isZoomEnabled.token, "isZoomEnabled"),
+            (Map().showsTraffic(flag.projectedValue).node, MapContract.showsTraffic.token, "showsTraffic"),
+            (Map().showsUserLocation(flag.projectedValue).node, MapContract.showsUserLocation.token, "userLocation"),
+            (DatePicker().minimumDate(day.projectedValue).node, DatePickerContract.minimumDate.token, "minimumDate"),
+            (DatePicker().maximumDate(day.projectedValue).node, DatePickerContract.maximumDate.token, "maximumDate"),
+            (DatePicker().format(State(wrappedValue: DateStyle.long).projectedValue).node,
+             DatePickerContract.format.token, "DatePicker.format"),
+            (TimePicker().format(State(wrappedValue: TimeStyle.medium).projectedValue).node,
+             TimePickerContract.format.token, "TimePicker.format"),
+            (Button("Go").stroke(color.projectedValue).node, BorderElementContract.stroke.token, "stroke"),
+            (split.barForegroundColor(color.projectedValue).node, BarElementContract.barForegroundColor.token,
+             "barForegroundColor"),
+            (split.toolbarSpacing(number.projectedValue).node, BarElementContract.toolbarSpacing.token,
+             "toolbarSpacing"),
+            (split.toolbarStyle(look.projectedValue).node, BarElementContract.toolbarStyle.token, "toolbarStyle"),
+            (split.barScrollEdge(edge.projectedValue).node, BarElementContract.barScrollEdge.token, "barScrollEdge"),
+        ]
+
+        for (node, property, what) in driven {
+            XCTAssertNotNil(node.driven[property], "\(what) drives its member")
+            XCTAssertNil(node.props[property], "\(what) is carried, not described")
+        }
+    }
+
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
     /// `Slider().value($level)` says - over a `Journey`, and over a
     /// plain `Double`, which the host carries as a journey too. An author

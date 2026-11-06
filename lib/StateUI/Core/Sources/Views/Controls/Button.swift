@@ -88,7 +88,8 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// What the button stands for in its window: `.primary`, its main action, drawn with the platform's emphasis and
     /// pressed by Return; `.cancel`, the way out, pressed by Escape; `.destructive`, an action that destroys
     /// something. A shortcut the button states takes the place of its role's key, and a field being typed into
-    /// keeps Return.
+    /// keeps Return. Said where the button is written, it takes no state: the window hands its keys to the buttons
+    /// it shows.
     ///
     ///     Button("Cancel").role(.cancel)
     ///     Button("Save").role(.primary)
