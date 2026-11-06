@@ -64,7 +64,7 @@ extension UIKitRegistrations {
                 case .primary: .primary
                 case .cancel: .cancel
                 case .destructive: .destructive
-                case nil: .normal
+                case .normal, nil: .normal
                 }
             }
             button.raises(ButtonContract.clicked)

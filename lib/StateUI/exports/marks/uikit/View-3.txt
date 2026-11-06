@@ -1,7 +1,7 @@
 # revision 21.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Button.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Button.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.tapCount: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent
 Button.tapped: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent
@@ -43,8 +43,8 @@ Image.area: ✅
 Image.frameChanged: ✅
 Image.rotationUpdated: ✓ rotate on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ItemsView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ItemsView.tapCount: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapped: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -81,8 +81,8 @@ Polyline.area: ✅
 Polyline.frameChanged: ✅
 Polyline.rotationUpdated: ✓ rotate on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ProgressBar.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ProgressBar.tapCount: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -133,8 +133,8 @@ TimePicker.area: ✅
 TimePicker.frameChanged: ✅
 TimePicker.rotationUpdated: ✓ rotate on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 VStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 VStack.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 VStack.tapCount: ✓ tap on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.tapped: ✓ tap on VStack: the view's listening handed the recognizer's states, no touch sent

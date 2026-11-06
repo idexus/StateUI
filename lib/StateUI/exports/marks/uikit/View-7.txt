@@ -20,8 +20,8 @@ DatePicker.area: ✅
 DatePicker.frameChanged: ✅
 DatePicker.rotationUpdated: ✓ rotate on DatePicker: the view's listening handed the recognizer's states, no touch sent
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Ellipse.tapCount: ✓ tap on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.tapped: ✓ tap on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -92,8 +92,8 @@ ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the drag and drop interac
 SearchField.held: ✓ hold on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.layoutBody: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Separator.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Separator.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Separator.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Separator.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Separator.tapCount: ✓ tap on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.tapped: ✓ tap on Separator: the view's listening handed the recognizer's states, no touch sent
@@ -105,8 +105,8 @@ Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the drop interaction's handl
 Spinner.filesDropped: ✓ dropFiles on Spinner: the drop interaction's handler told the driver's files, no drag session
 Spinner.tapped: ✓ pressDown on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Stepper.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Stepper.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Stepper.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Stepper.tapCount: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.tapped: ✓ tap on Stepper: the view's listening handed the recognizer's states, no touch sent
