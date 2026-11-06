@@ -6,8 +6,8 @@ Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Canvas.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Canvas.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.frameChanged: ✅
 Canvas.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -49,8 +49,8 @@ Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-HStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+HStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 HStack.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 HStack.frameChanged: ✅
 HStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -123,15 +123,15 @@ ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-SearchField.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+SearchField.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.frameChanged: ✅
 SearchField.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 SearchField.margin: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Separator.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Separator.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Separator.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Separator.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Separator.frameChanged: ✅
 Separator.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -184,8 +184,8 @@ TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-VStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 VStack.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+VStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 VStack.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 VStack.frameChanged: ✅
 VStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.

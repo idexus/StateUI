@@ -1,6 +1,6 @@
 # revision 24.2
 Button.accessibilityHeading: ✅
-Canvas.background: ✓ read background of Canvas: the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush
+Canvas.background: ☑️ A brush fills the canvas with its first color alone.
 Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Capsule.frame: ✅
 Capsule.rotation: ✅

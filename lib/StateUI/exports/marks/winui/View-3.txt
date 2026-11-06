@@ -29,8 +29,8 @@ ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.frameChanged: ✅
 DatePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -78,8 +78,8 @@ Map.dragText: 🧩
 Map.held: 🧩
 Map.isDraggable: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.frameChanged: ✅
 MotionLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -105,8 +105,8 @@ Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polyline.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.frameChanged: ✅
 Polyline.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
@@ -156,8 +156,8 @@ Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Switch.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.frameChanged: ✅
 Switch.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
