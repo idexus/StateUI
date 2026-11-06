@@ -601,6 +601,19 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.replies[3], [.bytes([])], "none")
     }
 
+    func testAReadLimitIsBoundedBeforeItsCheckedIntegerConversion() {
+        let (files, answers) = (Files(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), files: files, answers: answers, tree: { nil })
+        files.contents = [report: [1, 2, 3]]
+        for (index, number) in [Double.nan, .infinity, -.infinity, .greatestFiniteMagnitude].enumerated() {
+            acts.perform(HostActCall(act: .readFile, arguments: [report.propValue, .number(number)], completion: index + 1))
+        }
+        let bound = Int(exactly: 0x1p52 as Double) ?? 0
+        XCTAssertEqual(files.maxima, [0, bound, 0, bound])
+        XCTAssertEqual(answers.replies[1], [.bytes([])])
+        XCTAssertEqual(answers.replies[3], [.bytes([])])
+    }
+
     /// A host with no toolkit for files fails every act for files by name and the host's.
     func testAHostWithNoFilesFailsTheirActsByName() {
         let answers = Answers()

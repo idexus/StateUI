@@ -64,7 +64,7 @@ final class AndroidImageView: AndroidView {
     }
 
     override func layout(_ place: Rect) {
-        show(at: (pixels(place.width), pixels(place.height)))
+        show(at: (AndroidPixels.size(place.width, density: density), AndroidPixels.size(place.height, density: density)))
         super.layout(place)
     }
 

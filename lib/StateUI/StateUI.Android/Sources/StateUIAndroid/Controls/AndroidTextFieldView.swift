@@ -211,7 +211,7 @@ final class AndroidTextFieldView: AndroidTextualView {
                 + Java.callInt(reference, JavaAPI.getCompoundPaddingRight)
             return (measured, Double(padding))
         }
-        let least = Int32(FieldWidth.width(own: Double(own), measured: measured, chrome: chrome).rounded(.up))
+        let least = AndroidPixels.size(FieldWidth.width(own: Double(own), measured: measured, chrome: chrome), rounding: .up)
         return ViewConstants.mode(width) == ViewConstants.atMost ? min(least, ViewConstants.size(width)) : least
     }
 

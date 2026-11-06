@@ -237,11 +237,6 @@ extension AppKitElement {
         value(property)?.enumeration
     }
 
-    func whole(_ property: Prop) -> Int? {
-        guard let number = value(property)?.number, number.isFinite else { return nil }
-        return Int(number.rounded())
-    }
-
     /// A label's words: its spans as runs over the label's own look (`MountedElement.textRuns`), else its own words
     /// in its case.
     /// Design: docs/design/host/tree.md#runs-of-words
@@ -262,7 +257,7 @@ extension AppKitElement {
 
     /// The most lines a label's words stand on, by the host layer's rule; none for no bound.
     func maximumLines() -> Int {
-        lineBreak.lines(maximum: whole(.maximumLines)) ?? 0
+        lineBreak.lines(maximum: element.whole(.maximumLines)) ?? 0
     }
 
     func color(_ property: Prop) -> NSColor? {

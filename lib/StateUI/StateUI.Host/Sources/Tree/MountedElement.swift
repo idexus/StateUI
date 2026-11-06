@@ -695,11 +695,13 @@
 
     /// The value `property` presents: a running animation's, else the described or bound one.
     public func value(_ property: Prop) -> HostValue? {
+        let shown: HostValue?
         if driven[property].map({ $0.mode != .in }) == true {
-            return resolvedValue(property)
+            shown = resolvedValue(property)
+        } else {
+            shown = tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
         }
-
-        return tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
+        return GeometryArithmetic.value(shown, for: property)
     }
 
     /// The text value of `property`.
@@ -710,6 +712,9 @@
 
     /// The number value of `property`.
     public func number(_ property: Prop) -> Double? { value(property)?.number }
+
+    /// The whole number a property presents, rounded as its contract says; nil for another kind or a number outside Int.
+    public func whole(_ property: Prop) -> Int? { value(property).flatMap(Int.init(propValue:)) }
 
     /// The Boolean value of `property`.
     public func bool(_ property: Prop) -> Bool? { value(property)?.bool }
@@ -763,11 +768,6 @@
     private func stated(_ property: Prop) -> Double? {
         guard let value = number(property), value.isFinite, value >= 0 else { return nil }
         return value
-    }
-
-    private func whole(_ property: Prop) -> Int? {
-        guard let number = value(property)?.number, number.isFinite else { return nil }
-        return Int(number.rounded())
     }
 
     /// The bound state's value for `property`, as the last frame carried it or the core holds it.
@@ -882,7 +882,7 @@
         case .boolean:
             return Bool(carried: .lanes(lanes))?.propValue
         case .choice:
-            return .enumeration(Int32(lanes[0].rounded()))
+            return Int32(exactly: lanes[0].rounded()).map(HostValue.enumeration)
         case .color:
             return Color(carried: .lanes(lanes))?.propValue
         case .material:

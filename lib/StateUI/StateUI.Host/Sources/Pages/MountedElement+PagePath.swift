@@ -115,7 +115,7 @@ extension MountedElement {
         let tabs = arrangedChildren
         guard !tabs.isEmpty else { return nil }
 
-        let chosen = native.chosenTab ?? Int(value(.selectedTab)?.number ?? 0)
+        let chosen = native.chosenTab ?? whole(.selectedTab) ?? 0
         return tabs[min(max(chosen, 0), tabs.count - 1)]
     }
 

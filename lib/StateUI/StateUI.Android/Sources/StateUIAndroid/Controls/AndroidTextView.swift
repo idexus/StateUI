@@ -57,7 +57,7 @@ final class AndroidTextView: AndroidTextualView {
         let runScales = look.scales && scales
         let (ownSize, weight) = look.standing(styleSize: look.style?.androidSize, styleWeight: look.style?.androidWeight)
         if let size = ownSize ?? (runScales == scales ? nil : labelPoints) {
-            let held = runScales ? Int32((size * points.scaled).rounded()) : Int32(size.rounded())
+            let held = AndroidPixels.size(size, density: runScales ? points.scaled : 1)
             spans.append(Java.new(JavaAPI.sizeSpan, JavaAPI.newSizeSpan, .int(held), .bool(!runScales)))
         }
         let italic = look.attributes.contains(.italic)

@@ -78,7 +78,7 @@ extension AndroidElement {
             row.color = .color(red: 255, green: 255, blue: 255, alpha: 170)
         }
         if let written = colors.foreground { row.chosenColor = written }
-        tabs.show(row, requested: value(.selectedTab)?.number.map { Int($0) })
+        tabs.show(row, requested: element.whole(.selectedTab))
         tabs.onSelection = { [weak self] previous, selected in self?.selectTab(from: previous, to: selected) }
     }
 

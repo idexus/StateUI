@@ -634,7 +634,9 @@ enum ViewConstants {
     static func size(_ spec: Int32) -> Int32 { spec & 0x3FFF_FFFF }
 
     /// A spec of `mode` and `size`.
-    static func spec(_ mode: Int32, _ size: Int32) -> Int32 { mode | (max(0, size) & 0x3FFF_FFFF) }
+    static func spec(_ mode: Int32, _ size: Int32) -> Int32 {
+        mode | (size >= 0 && size <= 0x3FFF_FFFF ? size : 0)
+    }
 
     /// `spec` where it is exact, else unspecified: a plain view takes all the room a spec offers at most, so one
     /// that asks for none is offered none.

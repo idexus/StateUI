@@ -275,7 +275,7 @@
         runtime.frames.laidOut()
         guard element.handler(.endReached) != nil else { return }
         let last = inView.compactMap { itemPositions[$0] }.max() ?? -1
-        let within = element.value(.endReachedWithin)?.number.map { Int($0) } ?? 0
+        let within = element.whole(.endReachedWithin) ?? 0
         guard endWatch.reached(count: itemPositions.count, last: last, within: within) else { return }
         element.send(.endReached, [], in: runtime)
     }

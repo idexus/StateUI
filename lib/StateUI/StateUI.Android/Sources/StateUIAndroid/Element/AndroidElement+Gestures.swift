@@ -12,7 +12,7 @@ extension AndroidElement {
     func configureGestures() {
         guard let view else { return }
         let hearing = element.hearing
-        let count = max(1, Int(value(.tapCount)?.number ?? 1))
+        let count = max(1, element.whole(.tapCount) ?? 1)
         let heard: (HeardInput) -> Bool = { [weak self] heard in
             guard let self, let host else { return false }
             return element.hear(heard, in: host.runtime)

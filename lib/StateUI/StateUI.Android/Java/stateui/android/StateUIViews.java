@@ -50,9 +50,14 @@ final class StateUIViews {
     static void place(View view, int left, int top, int right, int bottom) {
         if (view.isLaidOut() && !view.isLayoutRequested()
                 && view.getWidth() == right - left && view.getHeight() == bottom - top) {
-            view.offsetLeftAndRight(left - view.getLeft());
-            view.offsetTopAndBottom(top - view.getTop());
-            return;
+            long across = (long) left - view.getLeft();
+            long down = (long) top - view.getTop();
+            if (across >= Integer.MIN_VALUE && across <= Integer.MAX_VALUE
+                    && down >= Integer.MIN_VALUE && down <= Integer.MAX_VALUE) {
+                view.offsetLeftAndRight((int) across);
+                view.offsetTopAndBottom((int) down);
+                return;
+            }
         }
 
         view.measure(

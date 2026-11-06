@@ -50,8 +50,9 @@ final class AndroidSliderView: AndroidView {
         (self.minimum, self.maximum) = ValueArithmetic.range(minimum, maximum)
 
         let span = self.maximum - self.minimum
-        let clamped = Swift.min(Swift.max(value, self.minimum), self.maximum)
-        let progress = span > 0 ? Int32(((clamped - self.minimum) / span * Double(Self.steps)).rounded()) : 0
+        let clamped = ValueArithmetic.clamped(value, lower: self.minimum, upper: self.maximum)
+        let share = span > 0 ? ValueArithmetic.share((clamped - self.minimum) / span) : 0
+        let progress = Int32((share * Double(Self.steps)).rounded())
         if progress != Java.callInt(reference, JavaAPI.getProgress) {
             Java.call(reference, JavaAPI.setProgress, .int(progress), .bool(false))
         }

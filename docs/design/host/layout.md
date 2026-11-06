@@ -38,6 +38,19 @@ width it is offered - a label wraps, an image keeps its ratio. The arithmetic
 is pure, so a host calls it from its own layout pass - `layout()` on AppKit, a
 `ViewGroup`'s layout on Android - and a test calls it with plain values.
 
+## Finite distances
+
+A distance is finite and may be negative. A padding or margin component
+that is not a number or is infinite contributes zero (`GeometryArithmetic`).
+The mounted element applies this rule when a host reads a described value
+or one carried by a plain channel, so typed registrations and layout
+arithmetic see the same sides. A journey's complete image is already
+validated by the core: a nonfinite image is refused, leaving the described
+fallback and no destination. The state itself keeps its authored value.
+Finite values have no toolkit's pixel limit in this layer.
+An adapter checks the range of its own coordinate and size representation
+when it converts these distances to native units.
+
 ## One axis of a slot
 
 Along each axis a child has a slot: the room its layout offers it, less its

@@ -92,7 +92,9 @@ final class AndroidTabView: AndroidLayoutView {
     }
 
     private func rowHeight(width: Double?) -> Double {
-        let widthSpec = width.map { ViewConstants.spec(ViewConstants.exactly, pixels($0)) } ?? ViewConstants.unspecified
+        let widthSpec = width.map {
+            ViewConstants.spec(ViewConstants.exactly, AndroidPixels.size($0, density: density))
+        } ?? ViewConstants.unspecified
         return Double(row.measure(width: widthSpec, height: ViewConstants.unspecified).height) / density
     }
 

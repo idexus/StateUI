@@ -79,7 +79,7 @@ extension MountedElement {
             let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
             pressed(phase, over: over, waits: byFinger && standsInAScroller, in: runtime)
         case .tap(let run):
-            let count = max(1, Int(number(.tapCount) ?? 1))
+            let count = max(1, whole(.tapCount) ?? 1)
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
         case .hold:
             // A held press is the hold's: no tap.
@@ -363,7 +363,7 @@ extension MountedElement {
             switch said {
             case .lit: send(.pressed, [], in: runtime)
             case .out: send(.released, [], in: runtime)
-            case .tapped: if Int(number(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
+            case .tapped: if (whole(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
             }
         }
     }

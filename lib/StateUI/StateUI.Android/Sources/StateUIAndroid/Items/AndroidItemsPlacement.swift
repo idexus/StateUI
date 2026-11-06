@@ -32,9 +32,9 @@ struct AndroidItemsPlacement: Equatable {
         }
         columns = placement.columns
         kinds = placement.edges.map { ($0 ? AndroidItemKind.edge : .item).rawValue }
-        spans = placement.spans.map { Int32($0) }
+        spans = placement.spans.map { Int32(exactly: $0) ?? 1 }
         insets = placement.rooms.flatMap { room in
-            [room.start, room.top, room.end, 0].map { Int32(($0 * density).rounded()) }
+            [room.start, room.top, room.end, 0].map { AndroidPixels.distance($0, density: density) }
         }
     }
 }

@@ -166,7 +166,9 @@ final class AndroidBarView: AndroidView {
 
     /// The bar's own height for `width` points - unbounded where nil - in points.
     func height(width: Double?) -> Double {
-        let widthSpec = width.map { ViewConstants.spec(ViewConstants.exactly, pixels($0)) } ?? ViewConstants.unspecified
+        let widthSpec = width.map {
+            ViewConstants.spec(ViewConstants.exactly, AndroidPixels.size($0, density: density))
+        } ?? ViewConstants.unspecified
         return Double(measure(width: widthSpec, height: ViewConstants.unspecified).height) / density
     }
 

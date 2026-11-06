@@ -27,7 +27,9 @@ struct AndroidLayoutItem: LayoutChild {
     func size(offered width: Double?) -> LayoutSize {
         if let held = view.heldWords { return held }
         let widthSpec = values.offer(width).map {
-            ViewConstants.spec(values.width == nil ? ViewConstants.atMost : ViewConstants.exactly, view.pixels($0))
+            ViewConstants.spec(
+                values.width == nil ? ViewConstants.atMost : ViewConstants.exactly,
+                AndroidPixels.size($0, density: view.density))
         } ?? ViewConstants.unspecified
         let measured = view.measure(width: widthSpec, height: ViewConstants.unspecified)
         return values.sized(

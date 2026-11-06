@@ -21,7 +21,7 @@
         var joined: [[Placed]] = []
         var byId: [ElementID: Int] = [:]
         for (index, declaration) in declared.enumerated() {
-            let order = Int(declaration.element.value(.order)?.number ?? 0)
+            let order = declaration.element.whole(.order) ?? 0
             for (position, menu) in declaration.element.children.filter({ $0.type == .menu }).enumerated() {
                 let placed = Placed(menu: menu, key: (order, declaration.level, index, position))
                 if menu.id.isManual, let at = byId[menu.id] {

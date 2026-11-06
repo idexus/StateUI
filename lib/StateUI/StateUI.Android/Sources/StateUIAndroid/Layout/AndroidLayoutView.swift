@@ -224,8 +224,8 @@ class AndroidLayoutView: AndroidView {
     private func resolve(_ spec: Int32, _ natural: Double) -> Int32 {
         switch ViewConstants.mode(spec) {
         case ViewConstants.exactly: ViewConstants.size(spec)
-        case ViewConstants.atMost: min(pixels(natural), ViewConstants.size(spec))
-        default: pixels(natural)
+        case ViewConstants.atMost: min(AndroidPixels.size(natural, density: density), ViewConstants.size(spec))
+        default: AndroidPixels.size(natural, density: density)
         }
     }
 }

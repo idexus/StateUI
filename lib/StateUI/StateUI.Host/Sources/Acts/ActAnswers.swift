@@ -62,7 +62,7 @@ extension MountedTree {
     private static func key(_ value: HostValue) -> ElementID? {
         switch value {
         case .string(let name): .manual(name)
-        case .number(let number): .auto(Int(number))
+        case .number: Int(propValue: value).map(ElementID.auto)
         default: nil
         }
     }
