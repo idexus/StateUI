@@ -214,6 +214,12 @@ The Swift callback's ticket remains until the UI answer arrives
 (`AndroidNetwork`): it owns the answer, not a native request still running.
 The common act performer decides whether that answer still has a caller.
 
+The method goes to `HttpURLConnection.setRequestMethod` as written. Android's
+implementation takes OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE and PATCH
+and refuses any other token ("Expected one of [...] but was ReadRecord"),
+which fails the request with that reason: `sendRequest` stands ☑️ in the
+register with what is missing.
+
 ## The clipboard
 
 The clipboard is the `ClipboardManager`'s primary clip: words are written as

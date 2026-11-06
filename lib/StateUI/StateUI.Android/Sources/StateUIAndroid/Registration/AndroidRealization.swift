@@ -174,6 +174,8 @@ enum AndroidRealization {
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's."),
         .complete(ApplicationContract.useColorScheme),
+        .partial(ApplicationContract.sendRequest,
+            missing: "Android's HttpURLConnection sends OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE and PATCH only: a request with another method fails with that reason."),
         .complete(WindowContract.activated),
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),

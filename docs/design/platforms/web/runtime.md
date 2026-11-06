@@ -161,6 +161,9 @@ not know has none, and the act fails. A word for a screen reader goes to one
 polite live region of the page's, emptied first so the same words are told
 again. The on-screen keyboard goes down with the focus of the field holding
 it. The focus goes to an element's view, or the first in it that takes it.
+A request is the browser's `fetch`, its method as written; fetch refuses
+CONNECT, TRACE and TRACK ("HTTP method is unsupported"), which fails the
+request with that reason: `sendRequest` stands ☑️ in the register.
 
 A kept value stands in the browser's storage for the page's site, under the
 application's name, in the host layer's text (`KeptValuesText`): a key read

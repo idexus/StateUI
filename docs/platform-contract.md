@@ -525,7 +525,7 @@ Every control, and every part an application, its windows and its pages are made
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Application](controls/Application.md) | 23 | 11 ✅ · 11 ✓ · 1 – | 13 ✅ · 10 ✓ | 11 ✅ · 11 ✓ · 1 – | 18 ✅ · 4 ✓ · 1 – | 15 ✅ · 6 ✓ · 1 – | 17 ✅ · 6 ✓ |
+| [Application](controls/Application.md) | 23 | 11 ✅ · 11 ✓ · 1 – | 13 ✅ · 10 ✓ | 10 ✅ · 1 ☑️ · 11 ✓ · 1 – | 18 ✅ · 4 ✓ · 1 – | 15 ✅ · 6 ✓ · 1 – | 16 ✅ · 1 ☑️ · 6 ✓ |
 | [BottomBar](controls/BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -551,10 +551,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 2 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
-| ✅ |  | 110 | 116 | 95 | 140 | 102 | 171 |
+| ✅ |  | 110 | 116 | 94 | 140 | 102 | 170 |
 | ✓ |  | 26 | 24 | 22 | 9 | 16 | 13 |
 | – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 213 | **191** | **201** | **189** | **201** | **191** | **200** |
+| **Met** | 213 | **191** | **201** | **188** | **201** | **191** | **199** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 

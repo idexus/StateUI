@@ -40,7 +40,8 @@ public struct HTTPMethod: Hashable, Sendable {
     /// The case-sensitive method name: `GET`, `POST`, or a custom token.
     public let name: String
 
-    /// The method with exactly the given name. HTTP method names are case-sensitive.
+    /// The method with exactly the given name. HTTP method names are case-sensitive; a platform's networking may
+    /// refuse a method, and the request then fails with its reason.
     ///
     /// - Parameter name: the method's name.
     public init(_ name: String) {

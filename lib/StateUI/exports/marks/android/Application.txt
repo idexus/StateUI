@@ -17,7 +17,7 @@ Application.prompt: ✓ read a question: what the relay keeps of the dialog it s
 Application.readClipboard: ✅
 Application.readFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.saveFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
-Application.sendRequest: ✅
+Application.sendRequest: ☑️ Android's HttpURLConnection sends OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE and PATCH only: a request with another method fails with that reason.
 Application.share: ✓ read a share sheet: what the host holds of a chooser a test never shows
 Application.useAccentColor: – Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's.
 Application.useColorScheme: ✅

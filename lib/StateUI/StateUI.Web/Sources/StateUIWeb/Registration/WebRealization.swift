@@ -182,6 +182,8 @@ enum WebRealization {
             reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned(WindowContract.x, reason: "A page places no browser window: the system does."),
         .notPlanned(WindowContract.y, reason: "A page places no browser window: the system does."),
+        .partial(ApplicationContract.sendRequest,
+            missing: "A page's fetch refuses the methods CONNECT, TRACE and TRACK: a request with one fails with that reason."),
         .notPlanned(ColorPickerContract.choosesOpacity,
             reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
     ] + pickerOpening + dayFields + HostRecord.motionLayout + BarItemLook.realized
