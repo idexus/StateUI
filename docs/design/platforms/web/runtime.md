@@ -120,7 +120,10 @@ a 24-hour clock where that language's hours run from 0, the week's first day
 where the browser says it (Sunday where not), and the writing's direction.
 The browser says nothing of measures: they are metric but in the three
 countries of none - the United States, Liberia and Myanmar. The relay hands
-over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
+over the browser's words; Swift decides (`WebEnvironment.locale`). A browser
+that names no language leaves the locale untold: the clock, the week and
+the writing's direction are the language's, and none is invented in its
+place; an empty entry in the list of languages is none. Swift tells
 the locale again as the user's languages change, and as the page comes back
 to the front, since the browser tells no change of the zone ([facts read again
 at the front](../../host/runtime.md#facts-read-again-at-the-front)). So the

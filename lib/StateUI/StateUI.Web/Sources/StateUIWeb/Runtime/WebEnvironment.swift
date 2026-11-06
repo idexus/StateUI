@@ -56,6 +56,6 @@ enum WebEnvironment {
             uses24HourClock: words[3] == "h23" || words[3] == "h24", firstDayOfWeek: firstDay,
             isMetric: !["US", "LR", "MM"].contains(region),
             layoutDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight,
-            languages: words.dropFirst(6).map { LocaleTag($0) })
+            languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }

@@ -33,7 +33,7 @@ final class HostLocalePayloadTests: XCTestCase {
         let invalid = try XCTUnwrap(HostLocaleInfo(words: ["not??", "", "0", "0", "1", "0", "not??", ""]))
         XCTAssertEqual(invalid.language, "not??")
         XCTAssertEqual(invalid.language?.isValid, false)
-        XCTAssertEqual(invalid.languages, ["not??", ""])
+        XCTAssertEqual(invalid.languages, ["not??"], "an empty entry is no language")
         XCTAssertNil(invalid.timeZone)
         XCTAssertNil(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1"]))
     }

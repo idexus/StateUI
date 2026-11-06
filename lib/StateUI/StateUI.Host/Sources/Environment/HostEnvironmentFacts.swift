@@ -9,7 +9,7 @@ extension HostLocaleInfo {
     /// The locale as six words - its full language tag, its time zone, "1" for a 24-hour clock, the
     /// first day of the week as a number from Sunday's 0, "1" for metric measures and "1" for a language written
     /// right to left - and then the user's languages as tags, most wanted first; nil for fewer words.
-    /// Empty tag and zone fields are unavailable; nonempty invalid tags remain values.
+    /// Empty tag, zone and language fields are unavailable; nonempty invalid tags remain values.
     public init?(words: [String]) {
         guard words.count >= 6 else { return nil }
         let day = Double(words[3]).flatMap { Int32(exactly: $0.rounded(.towardZero)) } ?? 0
@@ -18,7 +18,7 @@ extension HostLocaleInfo {
             timeZone: words[1].isEmpty ? nil : TimeZoneName(words[1]), uses24HourClock: words[2] == "1",
             firstDayOfWeek: Weekday(rawValue: day) ?? .sunday,
             isMetric: words[4] == "1", layoutDirection: words[5] == "1" ? .rightToLeft : .leftToRight,
-            languages: words.dropFirst(6).map { LocaleTag($0) })
+            languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }
 
