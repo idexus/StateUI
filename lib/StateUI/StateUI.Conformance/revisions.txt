@@ -40,7 +40,7 @@ FontElement 5
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 5
-TimePicker 4
+TimePicker 5
 Picker 4
 Image 3
 Page 9

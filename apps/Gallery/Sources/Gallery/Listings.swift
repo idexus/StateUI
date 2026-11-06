@@ -12139,7 +12139,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 TimePicker($alarm)
-                    .format("t")
+                    .format(.short)
 
                 Text("Alarm at \(alarm.text)")
 
@@ -12161,7 +12161,7 @@ enum Listings {
                 // and the write back is by hand.
                 TimePicker()
                     .time(alarm)
-                    .format("t")
+                    .format(.short)
                     .onTimeChanged { time in
                         alarm = time
                         picks += 1

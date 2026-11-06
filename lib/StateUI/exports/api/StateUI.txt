@@ -742,6 +742,10 @@ swift.conformance TimePicker: StateUI.View
 swift.conformance TimePicker: StateUI.Views
 swift.conformance TimePicker: Swift.Sendable
 swift.conformance TimePickerContract: Swift.Sendable
+swift.conformance TimeStyle: Swift.Equatable
+swift.conformance TimeStyle: Swift.Hashable
+swift.conformance TimeStyle: Swift.RawRepresentable
+swift.conformance TimeStyle: Swift.Sendable
 swift.conformance TimeZoneName: Swift.CustomStringConvertible
 swift.conformance TimeZoneName: Swift.Equatable
 swift.conformance TimeZoneName: Swift.ExpressibleByExtendedGraphemeClusterLiteral
@@ -997,6 +1001,7 @@ swift.enum TextSpansContract: enum TextSpansContract
 swift.enum TextStyle: enum TextStyle
 swift.enum TextualElementContract: enum TextualElementContract
 swift.enum TimePickerContract: enum TimePickerContract
+swift.enum TimeStyle: enum TimeStyle
 swift.enum TintElementContract: enum TintElementContract
 swift.enum TitleViewContract: enum TitleViewContract
 swift.enum ToolbarBuilder: @MainActor @resultBuilder enum ToolbarBuilder
@@ -1292,6 +1297,8 @@ swift.enum.case TextStyle.display: case display
 swift.enum.case TextStyle.headline: case headline
 swift.enum.case TextStyle.subtitle: case subtitle
 swift.enum.case TextStyle.title: case title
+swift.enum.case TimeStyle.medium: case medium
+swift.enum.case TimeStyle.short: case short
 swift.enum.case ToolbarEdge.bottom: case bottom
 swift.enum.case ToolbarEdge.top: case top
 swift.enum.case ToolbarPart.detail: case detail
@@ -1577,6 +1584,7 @@ swift.init Ticker.init(every:isRepeating:limit:onTick:): @MainActor init(every i
 swift.init TimePicker.init(): @MainActor init()
 swift.init TimePicker.init(_:): @MainActor init(_ state: Binding<ClockTime>)
 swift.init TimePicker.init(_:): @MainActor init(_ time: ClockTime)
+swift.init TimeStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init TimeZoneName.init(_:): init(_ identifier: String)
 swift.init TimeZoneName.init(stringLiteral:): init(stringLiteral value: String)
 swift.init ToolbarButton.init(): @MainActor init()
@@ -10461,7 +10469,7 @@ swift.method Styling.fontFamily(_:): @MainActor func fontFamily(_ value: String)
 swift.method Styling.fontSize(_:): @MainActor func fontSize(_ value: Double) -> Self.Modified
 swift.method Styling.fontWeight(_:): @MainActor func fontWeight(_ value: FontWeight) -> Self.Modified
 swift.method Styling.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
-swift.method Styling.format(_:): @MainActor func format(_ value: String) -> Self.Modified
+swift.method Styling.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
 swift.method Styling.from(_:): @MainActor func from(_ value: Point) -> Self.Modified
 swift.method Styling.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Styling.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
@@ -11765,7 +11773,7 @@ swift.method TimePicker.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TimePicker.format(_:): @MainActor func format(_ value: String) -> Self.Modified
+swift.method TimePicker.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
 swift.method TimePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TimePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -11955,7 +11963,7 @@ swift.method TimePicker.visualState(_:): @MainActor func visualState(_ state: Vi
 swift.method TimePicker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method TimePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method TimePickerProperties.format(_:): @MainActor func format(_ value: String) -> Self.Modified
+swift.method TimePickerProperties.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
 swift.method TimePickerProperties.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method TimePickerProperties.time(_:): @MainActor func time(_ value: ClockTime) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
@@ -13605,6 +13613,7 @@ swift.type.method TextSpanBuilder.buildExpression(_:): static func buildExpressi
 swift.type.method TextSpanBuilder.buildExpression(_:): static func buildExpression(_ expression: [TextSpan]) -> [TextSpan]
 swift.type.method TextSpanBuilder.buildOptional(_:): static func buildOptional(_ component: [TextSpan]?) -> [TextSpan]
 swift.type.method TextStyle.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method TimeStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ToolbarBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarContent...) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarContent) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarContent) -> ToolbarContent
@@ -14530,7 +14539,7 @@ swift.type.property TextualElementContract.tiers: static let tiers: [any Contrac
 swift.type.property TextualElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TimePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TimePickerContract.closed: static let closed: ElementEvent<TimePickerContract, Void>
-swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, String>
+swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeStyle>
 swift.type.property TimePickerContract.isOpen: static let isOpen: ElementProperty<TimePickerContract, Bool>
 swift.type.property TimePickerContract.layer: static let layer: ElementLayer
 swift.type.property TimePickerContract.layer: static var layer: ElementLayer { get }

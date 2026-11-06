@@ -8,7 +8,7 @@ A time of day, chosen from the platform's own clock.
 @State var alarm = ClockTime(hour: 7, minute: 0)
 
 TimePicker($alarm)
-    .format("t")
+    .format(.short)
 ```
 
 Layer: `native`. Every base host presents it with its native toolkit.
@@ -34,11 +34,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 3 ☑️ · 37 ✓ · 7 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 13 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 14 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>58 ✅ · 3 ☑️ · 25 ✓ · 6 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 21 ✓ · 7 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>37 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>64 ✅ · 5 ☑️ · 12 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>64 ✅ · 3 ☑️ · 14 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>54 ✅ · 3 ☑️ · 24 ✓ · 6 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>61 ✅ · 1 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -47,17 +47,17 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerCont
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser says nothing as a picker's list or calendar closes.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✓</td><td align="center">·</td><td align="center">·</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker writes its day and time in the user's own way, whatever form is asked.<br>UIKit, Web: not realized<br>Android Views: only through the host's own: read format of TimePicker: the pattern the relay writes the field in<br>WinUI 3: cannot read format of TimePicker - WinUI's time picker holds no format: it writes hours and minutes in the user's own clock<br>GTK 4: cannot read format of TimePicker - GTK's clock holds no format: it writes hours and minutes in the user's own clock</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center"></td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.<br>UIKit, WinUI 3: not realized<br>Web: The browser says nothing as a picker's list or calendar opens.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action<br>GTK 4: only through the host's own: pickTime on TimePicker: the clock set at once through the host's own, its minute's wheel telling it; a user moves each</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>format</code></td><td>property</td><td><code>TimeStyle</code></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker writes its day and time in the user's own way, whatever form is asked.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit's date picker opens no calendar for the program, nor says when the user opens one.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>time</code></td><td>property</td><td><code>ClockTime</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onTimeChanged</code> (<code>timeChanged</code>)</td><td>event</td><td><code>ClockTime</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pickTime on TimePicker: the host's change handler called, not the picker's action</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

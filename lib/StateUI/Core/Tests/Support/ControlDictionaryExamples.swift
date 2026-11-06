@@ -523,7 +523,7 @@ extension ControlDictionary {
             @State var alarm = ClockTime(hour: 7, minute: 0)
 
             TimePicker($alarm)
-                .format("t")
+                .format(.short)
             """#),
 
         (BottomBarContract.self, #"""

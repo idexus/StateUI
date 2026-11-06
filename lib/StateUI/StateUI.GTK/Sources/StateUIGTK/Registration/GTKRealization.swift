@@ -204,7 +204,7 @@ enum GTKRealization {
         .partial(VisualElementContract.layoutDirection, on: TextEditorContract.self,
             missing: "Its placeholder stands at the left edge whichever way the words are written."),
         .partial(TimePickerContract.format,
-            missing: "GTK writes hours and minutes in the user's own clock, whatever the format asks: no seconds, no pattern."),
+            missing: "GTK writes hours and minutes in the user's own clock, whatever the style asks: no seconds."),
         .complete(ActionElementContract.role, on: ToolbarButtonContract.self),
         .complete(MenuItemElementContract.keyboardShortcut, on: ToolbarButtonContract.self),
         .complete(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self),

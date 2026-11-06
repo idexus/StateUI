@@ -194,7 +194,7 @@ final class ControlTests: XCTestCase {
             ControlCase("TimePicker", source: "TimePicker.swift",
                 TimePicker(ClockTime(hour: 9, minute: 30))
                     .time(ClockTime(hour: 21, minute: 5, second: 30))
-                    .format("t")
+                    .format(.short)
                     .isOpen(false)
                     .onTimeChanged { _ in }
                     .onOpened {}

@@ -211,6 +211,7 @@ final class ContractTests: XCTestCase {
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, DotShape(rawValue: 1)!, ToolbarPosition.overflow, ToolbarPart.sidebar,
             SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
+            TimeStyle.medium,
             [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             Orientation.vertical,

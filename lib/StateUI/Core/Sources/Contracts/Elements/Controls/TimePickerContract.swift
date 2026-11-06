@@ -17,8 +17,8 @@ public enum TimePickerContract: ElementContract {
     /// The clock face has closed.
     public static let closed = ElementEvent<Self, Void>("closed", layer: .native)
 
-    /// How the time is written, as a format string.
-    public static let format = ElementProperty<Self, String>("format", layer: .native)
+    /// How much of the time is written out.
+    public static let format = ElementProperty<Self, TimeStyle>("format", layer: .native)
 
     /// Whether the clock face is showing.
     public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)

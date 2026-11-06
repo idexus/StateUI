@@ -22,13 +22,14 @@ extension TimePickerProperties {
         setValue(TimePickerContract.time, value)
     }
 
-    /// How the time is written - "t" for the short form, "T" for the long one,
-    /// or a pattern like "HH:mm".
+    /// How much of the time is written out - hours and minutes, or seconds too.
     ///
-    /// The host formats it in the user's locale, which decides between 13:00
+    /// The host writes it in the user's locale, which decides between 13:00
     /// and 1:00 PM.
-    public func format(_ value: String) -> Modified {
-        setValue(TimePickerContract.format, value)
+    ///
+    ///     TimePicker($alarm).format(.medium)
+    public func format(_ style: TimeStyle) -> Modified {
+        setValue(TimePickerContract.format, style)
     }
 }
 
@@ -37,7 +38,7 @@ extension TimePickerProperties {
 ///     @State private var alarm = ClockTime(hour: 7, minute: 0)
 ///
 ///     TimePicker($alarm)
-///         .format("t")
+///         .format(.short)
 ///
 /// Given a binding it shows the time and writes back whatever is chosen; given
 /// a plain `ClockTime` it shows that, and `.onTimeChanged` is how the choice

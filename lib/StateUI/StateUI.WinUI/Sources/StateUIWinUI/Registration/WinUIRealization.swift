@@ -211,7 +211,7 @@ enum WinUIRealization {
         .partial(TextFieldContract.isPassword, missing: "A PasswordBox has no read-only state, alignment, case, caret "
             + "or selection: a password field keeps none of these."),
         .partial(TimePickerContract.format,
-            missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
+            missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the style asks: no seconds."),
         .complete(ToolbarGroupContract.barEdge),
         .complete(ToolbarGroupContract.order),
         .complete(ToolbarGroupContract.part),

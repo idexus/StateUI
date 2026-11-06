@@ -1246,6 +1246,7 @@ swift.conformance TimePicker: StateUI.VisualElementProperties
 swift.conformance TimePickerContract: StateUI.Contract
 swift.conformance TimePickerContract: StateUI.ElementContract
 swift.conformance TimePickerProperties: StateUI.PropertyContainer
+swift.conformance TimeStyle: StateUI.HostRepresentable
 swift.conformance TintElement: StateUI.PropertyContainer
 swift.conformance TintElementContract: StateUI.Contract
 swift.conformance TitleViewContract: StateUI.Contract
@@ -1540,6 +1541,7 @@ swift.init TextDecorations.init(carried:): init?(carried: StateCarried)
 swift.init TextDecorations.init(propValue:): init?(propValue: PropValue)
 swift.init TextStyle.init(carried:): init?(carried: StateCarried)
 swift.init TextStyle.init(propValue:): init?(propValue: PropValue)
+swift.init TimeStyle.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarEdge.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarPart.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarPosition.init(propValue:): init?(propValue: PropValue)
@@ -3464,6 +3466,7 @@ swift.property TextStyle.carried: var carried: StateCarried { get }
 swift.property TextStyle.propValue: var propValue: PropValue { get }
 swift.property TimePicker.node: @MainActor var node: Node
 swift.property TimePicker.nodes: @MainActor var nodes: [Node] { get }
+swift.property TimeStyle.propValue: var propValue: PropValue { get }
 swift.property ToolbarButton.node: @MainActor var node: Node
 swift.property ToolbarEdge.propValue: var propValue: PropValue { get }
 swift.property ToolbarGroup.node: @MainActor var node: Node
@@ -3667,6 +3670,7 @@ swift.type.method TextAlignment.propValue(of:): static func propValue(of list: [
 swift.type.method TextCase.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method TextDecorations.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method TextStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method TimeStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarEdge.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarPart.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarPosition.propValue(of:): static func propValue(of list: [Self]) -> PropValue

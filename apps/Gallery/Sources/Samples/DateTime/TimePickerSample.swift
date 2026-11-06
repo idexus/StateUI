@@ -21,7 +21,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
             TimePicker($alarm)
                 .accessibilityIdentifier("timePicker.alarm")
                 .accessibilityLabel("Alarm")
-                .format("t")
+                .format(.short)
 
             Text("Alarm at \(alarm.text)")
                 .fontSize(17)
@@ -48,7 +48,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("timePicker.alarm.oneWay")
                 .accessibilityLabel("Alarm, written back by hand")
                 .time(alarm)
-                .format("t")
+                .format(.short)
                 .onTimeChanged { time in
                     alarm = time
                     picks += 1

@@ -13,7 +13,6 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -63,7 +62,7 @@ final class StateUIDateField extends TextView
         latest = to;
     }
 
-    /** "D", "M" or "d" for the long, medium or short day, "T" or "t" for the long or short time, else a pattern. */
+    /** "D", "M" or "d" for the long, medium or short day, "T" or "t" for the medium or short time; empty for the platform's. */
     void setFormat(String pattern) {
         format = pattern;
         show();
@@ -139,16 +138,9 @@ final class StateUIDateField extends TextView
             case "d": return DateFormat.getDateInstance(DateFormat.SHORT, locale);
             case "T": return DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
             case "t": return android.text.format.DateFormat.getTimeFormat(getContext());
-            case "":
+            default:
                 return time ? android.text.format.DateFormat.getTimeFormat(getContext())
                         : DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-            default:
-                try {
-                    return new SimpleDateFormat(format, locale);
-                } catch (IllegalArgumentException malformed) {
-                    return time ? android.text.format.DateFormat.getTimeFormat(getContext())
-                            : DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-                }
         }
     }
 }
