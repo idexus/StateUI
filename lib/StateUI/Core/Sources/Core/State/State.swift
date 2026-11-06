@@ -153,7 +153,7 @@ extension State where Value: Walked {
     ///         .translationY($ball)
     ///         .engine(tracking: $ball) { cycle in
     ///             let journey = $ball.journey
-    ///             let seconds = cycle.elapsed / 1000
+    ///             let seconds = cycle.elapsedSeconds
     ///             // A spring towards the destination, damped by the speed.
     ///             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 24
     ///             journey.velocity += pull * seconds

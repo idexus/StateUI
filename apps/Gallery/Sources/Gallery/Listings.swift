@@ -3192,7 +3192,7 @@ enum Listings {
                 }
 
                 // A spring towards the destination, damped by the speed.
-                let seconds = cycle.elapsed / 1000
+                let seconds = cycle.elapsedSeconds
                 let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
                 journey.velocity += pull * seconds
                 journey.value += journey.velocity * seconds
@@ -3220,7 +3220,7 @@ enum Listings {
         /// wakes the engine.
         @State private var running = false   // followed by the engine, read by no view
 
-        /// How long the clock has run, in milliseconds - the engine's own to
+        /// How long the clock has run, in seconds - the engine's own to
         /// count up, read by no view: the reading is worked out FROM it, so
         /// nothing outside this page ever needs the number itself.
         @State private var elapsed = 0.0   // the engine's own count
@@ -3273,9 +3273,9 @@ enum Listings {
             .engine(tracking: $running) { cycle in
                 guard running else { return .wait }
 
-                elapsed += cycle.elapsed
+                elapsed += cycle.elapsedSeconds
 
-                let tenths = Int(elapsed / 100)
+                let tenths = Int(elapsed * 10)
                 reading = "\(tenths / 10).\(tenths % 10) s"
 
                 return .again

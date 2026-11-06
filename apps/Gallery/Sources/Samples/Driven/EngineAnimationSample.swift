@@ -41,7 +41,7 @@ struct EngineAnimationSample: SampleContent, ExampleContent {
             }
 
             // A spring towards the destination, damped by the speed.
-            let seconds = cycle.elapsed / 1000
+            let seconds = cycle.elapsedSeconds
             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
             journey.velocity += pull * seconds
             journey.value += journey.velocity * seconds

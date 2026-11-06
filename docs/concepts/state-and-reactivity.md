@@ -645,7 +645,7 @@ struct SpringDot: View {
                         return .wait
                     }
 
-                    let seconds = cycle.elapsed / 1_000
+                    let seconds = cycle.elapsedSeconds
                     let displacement = journey.destination - journey.value
                     journey.velocity += (
                         displacement * 40 - journey.velocity * 10
@@ -676,9 +676,10 @@ The engine contract is deliberately narrow:
 - a write made by the engine itself does not wake that same engine;
 - `.again` requests the next display cycle, while `.wait` sleeps until a
   tracked state is written or a render rearms the declaration;
-- `EngineCycle.elapsed` is milliseconds since this engine last ran, capped at
-  `EngineCycle.mostElapsed`; `now`, `count`, `sync`, and `reducesMotion`
-  describe the same display board;
+- `EngineCycle.elapsedSeconds` is the seconds since this engine last ran,
+  capped at `EngineCycle.mostElapsedSeconds`, as a journey's velocity is per
+  second; `nowSeconds`, `count` and `reducesMotion` describe the same display
+  board;
 - engines run by ascending `priority`, with stable registration order breaking
   ties;
 - anything remembered between runs belongs in `@State` that the engine reads

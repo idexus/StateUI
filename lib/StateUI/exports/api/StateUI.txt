@@ -12983,8 +12983,8 @@ swift.property Either.body: @MainActor var body: Never { get }
 swift.property ElementView.body: @MainActor var body: Never { get }
 swift.property Ellipse.body: @MainActor var body: Never { get }
 swift.property EngineCycle.count: let count: UInt64
-swift.property EngineCycle.elapsed: let elapsed: Double
-swift.property EngineCycle.now: let now: Double
+swift.property EngineCycle.elapsedSeconds: var elapsedSeconds: Double { get }
+swift.property EngineCycle.nowSeconds: var nowSeconds: Double { get }
 swift.property EngineCycle.reducesMotion: let reducesMotion: Bool
 swift.property Environment.wrappedValue: @MainActor var wrappedValue: Value { get }
 swift.property EnvironmentValues.application: @MainActor var application: ApplicationSession { get }
@@ -13611,7 +13611,7 @@ swift.type.property DatePickerContract.opened: static let opened: ElementEvent<D
 swift.type.property DecorableTextElementContract.name: static let name: String
 swift.type.property DecorableTextElementContract.textDecorations: static let textDecorations: ElementProperty<DecorableTextElementContract, TextDecorations>
 swift.type.property EllipseContract.name: static var name: String { get }
-swift.type.property EngineCycle.mostElapsed: static let mostElapsed: Double
+swift.type.property EngineCycle.mostElapsedSeconds: static let mostElapsedSeconds: Double
 swift.type.property FillContract.name: static var name: String { get }
 swift.type.property FilledShapeContract.fill: static let fill: ElementProperty<FilledShapeContract, Material>
 swift.type.property FilledShapeContract.name: static let name: String

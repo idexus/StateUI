@@ -16,10 +16,12 @@ import XCTest
 private final class Ran {
     var order: [String] = []
     var elapsed: [String: [Double]] = [:]
+    var seconds: [String: [(now: Double, elapsed: Double)]] = [:]
 
     func note(_ name: String, _ cycle: EngineCycle) {
         order.append(name)
         elapsed[name, default: []].append(cycle.elapsed)
+        seconds[name, default: []].append((cycle.nowSeconds, cycle.elapsedSeconds))
     }
 }
 
@@ -945,8 +947,24 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.elapsed["ticking"], [0, 16, 90])
 
         for elapsed in ran.elapsed["ticking"] ?? [] {
-            XCTAssertLessThanOrEqual(elapsed, EngineCycle.mostElapsed)
+            XCTAssertLessThanOrEqual(elapsed, EngineCycle.mostElapsedMilliseconds)
         }
+    }
+
+    /// An engine is told its clock in seconds, as a journey's velocity is per second: the host's milliseconds
+    /// divided once, here.
+    func testAnEngineIsToldItsClockInSeconds() throws {
+        let ran = Ran()
+        let renders = Renders()
+
+        renders.render(Ticking(ran: ran, stopAfter: 99).node)
+        board.cycle(now: 1000, reducesMotion: false)
+        board.cycle(now: 1050, reducesMotion: false)
+
+        let last = try XCTUnwrap(ran.seconds["ticking"]?.last)
+        XCTAssertEqual(last.now, 1.05, accuracy: 1e-12)
+        XCTAssertEqual(last.elapsed, 0.05, accuracy: 1e-12)
+        XCTAssertEqual(EngineCycle.mostElapsedSeconds, 0.1, accuracy: 1e-12)
     }
 
     /// The same cycle over the same image answers the same bytes, whatever

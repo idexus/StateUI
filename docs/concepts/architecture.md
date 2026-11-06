@@ -277,7 +277,7 @@ struct FallingDot: View {
                 .translationY($y)
                 .engine(tracking: $y) { cycle in
                     let journey = $y.journey
-                    let elapsed = cycle.elapsed / 1000
+                    let elapsed = cycle.elapsedSeconds
                     let pull = (journey.destination - journey.value) * 180
                     journey.velocity += (pull - journey.velocity * 24) * elapsed
                     journey.value += journey.velocity * elapsed

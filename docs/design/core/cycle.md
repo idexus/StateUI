@@ -127,7 +127,7 @@ law (journeys.md).
 ## A start is a gap
 
 The first cycle, and any cycle after a silence longer than
-`EngineCycle.mostElapsed` (100 ms), is a start. An application that was
+`EngineCycle.mostElapsedSeconds` (a tenth of a second), is a start. An application that was
 asleep has a pile of reports and no elapsed time anybody can act on, and an
 engine handed a gap of minutes would move whatever it moves through the wall.
 The start moves every engine's clock to now, and an engine with a reason to

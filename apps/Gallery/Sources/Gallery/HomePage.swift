@@ -99,11 +99,11 @@ struct HomePage: View {
     /// still" is measured against.
     @State private var held = Rect(0, 0, 0, 0)
 
-    /// How long the room has held still, in milliseconds - started over by
+    /// How long the room has held still, in seconds - started over by
     /// every cycle that sees it move.
     @State private var still = 0.0
 
-    /// How long the entrance has waited altogether, in milliseconds.
+    /// How long the entrance has waited altogether, in seconds.
     ///
     /// COUNTED ACROSS EVERY MOVE, where `still` counts since the last one: a
     /// room that moves starts that clock over, so it alone could never run
@@ -332,7 +332,7 @@ struct HomePage: View {
 
             guard phase == .measuring else { return .wait }
 
-            waited += cycle.elapsed
+            waited += cycle.elapsedSeconds
 
             // THE ROOM MOVING STARTS THE CLOCK OVER: what is being waited for
             // is a measurement that has HELD STILL, not one that has merely
@@ -341,7 +341,7 @@ struct HomePage: View {
                 held = room
                 still = 0
             } else {
-                still += cycle.elapsed
+                still += cycle.elapsedSeconds
             }
 
             let settled = room.height > 0 && still >= Self.steady
@@ -523,13 +523,13 @@ struct HomePage: View {
     }
 
     /// How long the measurement has to hold still before the page takes it
-    /// as settled, in milliseconds on the cycle's own clock.
-    private static var steady: Double { 240 }
+    /// as settled, in seconds on the cycle's own clock.
+    private static var steady: Double { 0.24 }
 
-    /// How long it is worth waiting for a measurement at all, in milliseconds
-    /// - past which the page simply arrives, an entrance being worth less than
-    /// a page nobody can see.
-    private static var patience: Double { 1500 }
+    /// How long it is worth waiting for a measurement at all, in seconds -
+    /// past which the page simply arrives, an entrance being worth less than a
+    /// page nobody can see.
+    private static var patience: Double { 1.5 }
 
     /// How long the page takes to come in, in milliseconds.
     private static var entrance: Duration { .milliseconds(700) }
