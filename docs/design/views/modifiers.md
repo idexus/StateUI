@@ -34,7 +34,11 @@ offers the same modifiers after it as before. What configures itself gives
 back `Self`: a composed view's own settings (a gallery's position, a list's
 selection), a list's `Section`, a scene's declaration, and an entry of a menu
 or a map that wears no tier (`Menu`, `MenuSeparator`, `Marker`).
-`ModifierShapeTests` holds both rules, its list of what configures itself
+A state only the platform writes - a frame, the focus, a web view's history,
+a sidebar's place - is handed `into:` (`frame(into:)`), the one label that
+gives the direction: writing such a state moves nothing, so its spelling
+cannot look like a property's two-way `$x`.
+`ModifierShapeTests` holds these rules, its list of what configures itself
 saying why for each.
 
 ## Setting a property

@@ -29,6 +29,30 @@ final class ModifierShapeTests: XCTestCase {
         XCTAssertEqual(offenders, [], "a binding a view borrows is named `state`")
     }
 
+    /// A state only the platform writes - registered `.in`, or set from an event - is handed `into:`, and a state
+    /// handed `into:` is one only the platform writes: the label gives the direction.
+    func testAStateOnlyThePlatformWritesIsHandedInto() throws {
+        var offenders: [String] = []
+        var feeds = 0
+
+        for source in try Self.views() {
+            let lines = source.text.split(separator: "\n", omittingEmptySubsequences: false)
+            for (index, line) in lines.enumerated() {
+                guard let declared = line.firstMatch(of: /public func (\w+)\((_|into) state: Binding</) else { continue }
+                let body = lines[(index + 1)...].prefix { !$0.hasPrefix("    }") }.joined(separator: "\n")
+                let platformWrites = body.contains("mode: .in)") || body.contains("mode: .in,")
+                    || (body.contains("onEvent(") && body.contains("state.wrappedValue = "))
+                if platformWrites { feeds += 1 }
+                if platformWrites != (declared.2 == "into") {
+                    offenders.append("\(source.path):\(index + 1) \(declared.1)")
+                }
+            }
+        }
+
+        XCTAssertGreaterThanOrEqual(feeds, 5, "the walk found almost no feed")
+        XCTAssertEqual(offenders, [], "a state only the platform writes is handed `into:`, and no other")
+    }
+
     /// A public modifier gives back `Modified` - its own type, for a control - where what it modifies carries
     /// properties; what configures itself gives back `Self` and is listed with why, and a type listed that gives back
     /// nothing so is said.
