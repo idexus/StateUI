@@ -17,7 +17,7 @@ extension MotionLayout.Run {
     /// second, having stood still `still` milliseconds: taken where it presses, told as it moves and stands, let go
     /// back or dismissed.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) throws {
+    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) {
         switch gesture {
         case .began:
             guard states.item.wrappedValue?.velocity != nil || states.item.wrappedValue == nil,
@@ -26,14 +26,14 @@ extension MotionLayout.Run {
 
             let hand = LayoutItemHand(identity: identity, taken: placement, from: point, at: point)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
+            tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
 
         case .changed:
             guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
 
             hand.at = point
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, velocity: velocity)
+            tell(hand, gesture, still: still, velocity: velocity)
 
         case .ended, .cancelled:
             guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
@@ -42,7 +42,7 @@ extension MotionLayout.Run {
             hand.velocity = gesture == .ended ? velocity : Point(x: 0, y: 0)
             hand.dismissed = gesture == .ended && dismisses(hand)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
+            tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
         }
     }
 
@@ -83,7 +83,7 @@ extension MotionLayout.Run {
     /// going at `speed` - and the item whose place stands under it: where a view rests, not where it is drawn on its
     /// way, so a view travelling off from under the hand after it made room answers no second time.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) throws {
+    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) {
         guard !dragged.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
         let room = states.room.wrappedValue
@@ -93,7 +93,7 @@ extension MotionLayout.Run {
         let drag = ItemDrag(
             phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(0, 0, room.width, room.height),
             still: .milliseconds(still), velocity: velocity, over: over)
-        for dragged in dragged { try dragged(drag) }
+        states.drags.starting(dragged.map { $0.given(drag) })()
     }
 
     /// Where each view rests by this description, at the parameters the run last showed: the arithmetic asked again, so

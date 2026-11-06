@@ -191,6 +191,35 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(told.dismissed, ["up B", "up again B"])
     }
 
+    /// A DRAG THAT AWAITS GOES THROUGH ITS GATE: under `.ignoreWhileRunning` the moves while its first run awaits are
+    /// heard by nobody, while a step written beside it hears every one.
+    func testADragThatAwaitsGoesThroughItsGate() async {
+        let told = Told()
+        let renders = Renders()
+        var awaited: [GesturePhase] = []
+        func tree() -> Node {
+            MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+            }
+            .itemDrag(begins: .longPress)
+            .onItemDragged { told.drags.append($0) }
+            .onItemDragged(.ignoreWhileRunning) { drag in
+                awaited.append(drag.phase)
+                try await Task.sleep(for: .seconds(60))
+            }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .changed, at: Point(80, 50))
+        bench.item(renders, tree, .changed, at: Point(85, 50))
+        _ = await settle()
+
+        XCTAssertEqual(told.drags.map(\.phase), [.began, .changed, .changed], "the step hears every move")
+        XCTAssertEqual(awaited, [.began], "the moves while it awaits are ignored")
+    }
+
     /// EACH DISMISSAL GOES THROUGH A GATE OF ITS OWN: one held under `.ignoreWhileRunning` keeps no other from running.
     func testEachDismissalHasAGateOfItsOwn() async {
         var heard: [Int] = []

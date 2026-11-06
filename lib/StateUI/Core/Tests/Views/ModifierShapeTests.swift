@@ -53,6 +53,30 @@ final class ModifierShapeTests: XCTestCase {
         XCTAssertEqual(offenders, [], "a state only the platform writes is handed `into:`, and no other")
     }
 
+    /// A handler's own policy stands first with no label, or labelled after the event's own arguments, none of which
+    /// may be left out there: an event whose argument may be left out says its policy both ways, as `onEndReached`
+    /// does, so a policy is never spelled two ways for one event.
+    func testAPolicyNeedsNoWordWhereItStandsFirst() throws {
+        var offenders: [String] = []
+        var policies = 0
+
+        for source in try Self.views() {
+            let text = source.text
+            for found in text.matches(of: /public func (on\w+)(?:<[^>]*>)?\(([^{]*?)\)\s*->/) {
+                let parameters = found.2.split(separator: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+                    .joined(separator: " ")
+                guard let policy = parameters.range(of: "policy: GatePolicy") else { continue }
+                policies += 1
+                if parameters[..<policy.lowerBound].contains("=") {
+                    offenders.append("\(source.path) \(found.1)(\(parameters.prefix(80)))")
+                }
+            }
+        }
+
+        XCTAssertGreaterThan(policies, 10, "the walk found almost no labelled policy")
+        XCTAssertEqual(offenders, [], "an argument that may be left out stands before `policy:`")
+    }
+
     /// A public modifier gives back `Modified` - its own type, for a control - where what it modifies carries
     /// properties; what configures itself gives back `Self` and is listed with why, and a type listed that gives back
     /// nothing so is said.

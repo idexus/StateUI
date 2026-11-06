@@ -67,6 +67,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The runs of the handlers told the run came to rest, each its own.
     @State private var settledRuns = EventRegistration([])
 
+    /// The runs of the handlers told the hand moves a view, each its own.
+    @State private var dragRuns = EventRegistration([])
+
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
     private let source: Source
@@ -168,7 +171,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
     /// dismisses it.
     private var itemStart: ItemDragStart?
-    private var dragged: [@MainActor (ItemDrag<ID>) throws -> Void] = []
+    private var dragged: [ValueHandler<ItemDrag<ID>>] = []
     private var dismissals: [LayoutDismissal<ID>] = []
 
     /// How the run travels to where the program or the hand's throw sends it.
@@ -511,7 +514,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, telling the drag.
     public func onItemDragged(_ handler: @escaping @MainActor (ItemDrag<ID>) throws -> Void) -> Self {
         var copy = self
-        copy.dragged.append(handler)
+        copy.dragged.append(ValueHandler(step: handler))
+        return copy
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what a move of the hand does while a run is under way.
+    public func onItemDragged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
+        var copy = self
+        copy.dragged.append(ValueHandler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemDragged(gate: Gate, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
+        var copy = self
+        copy.dragged.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -575,6 +592,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         // A handler no longer written ends its runs now, as an element's does.
         dismissalRuns.keep(dismissals.count)
         settledRuns.keep(settled.count)
+        dragRuns.keep(dragged.count)
 
         if Parameters.axes.isEmpty {
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
@@ -591,6 +609,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             // What a dismissal asked for ends with the layout.
             element.destroying.append { run.states.dismissals.orphan() }
             element.destroying.append { run.states.settles.orphan() }
+            element.destroying.append { run.states.drags.orphan() }
             if run.moves {
                 element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
                     run.translationUpdated(gesture, moved: moved, velocity: velocity)
@@ -612,7 +631,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
-                    try run.item(gesture, at: at, velocity: velocity, still: still)
+                    run.item(gesture, at: at, velocity: velocity, still: still)
                 }
             }
         }
@@ -733,7 +752,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             parameters: parameters,
             states: States(
                 held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
-                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns),
+                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
             law: law,
@@ -755,6 +774,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let item: State<LayoutItemHand?>
         let dismissals: EventRegistration
         let settles: EventRegistration
+        let drags: EventRegistration
     }
 }
 
@@ -785,7 +805,7 @@ extension MotionLayout: WalkedView {
         [
             ("_held", _held), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
-            ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns),
+            ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("activated", activated),
             ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),

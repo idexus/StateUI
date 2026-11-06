@@ -1754,9 +1754,10 @@ swift.method @SwiftNever.onRotationUpdated(_:): @MainActor func onRotationUpdate
 swift.method @SwiftNever.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method @SwiftNever.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method @SwiftNever.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method @SwiftNever.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method @SwiftNever.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method @SwiftNever.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method @SwiftNever.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method @SwiftNever.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method @SwiftNever.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -1957,9 +1958,10 @@ swift.method AnyView.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method AnyView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method AnyView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method AnyView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method AnyView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method AnyView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method AnyView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method AnyView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method AnyView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method AnyView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method AnyView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2209,9 +2211,10 @@ swift.method Button.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method Button.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Button.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Button.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Button.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Button.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Button.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Button.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Button.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Button.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Button.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2219,9 +2222,10 @@ swift.method Button.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method Button.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Button.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Button.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Button.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Button.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Button.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Button.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -2426,9 +2430,10 @@ swift.method Canvas.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method Canvas.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Canvas.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Canvas.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Canvas.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Canvas.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Canvas.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Canvas.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Canvas.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Canvas.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Canvas.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2436,9 +2441,10 @@ swift.method Canvas.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method Canvas.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Canvas.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Canvas.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Canvas.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Canvas.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Canvas.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Canvas.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Canvas.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -2635,9 +2641,10 @@ swift.method Capsule.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method Capsule.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Capsule.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Capsule.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Capsule.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Capsule.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Capsule.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Capsule.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Capsule.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Capsule.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Capsule.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2645,9 +2652,10 @@ swift.method Capsule.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method Capsule.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Capsule.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Capsule.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Capsule.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Capsule.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Capsule.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Capsule.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Capsule.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -2839,9 +2847,10 @@ swift.method CheckBox.onRotationUpdated(_:): @MainActor func onRotationUpdated(_
 swift.method CheckBox.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method CheckBox.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method CheckBox.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method CheckBox.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method CheckBox.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method CheckBox.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method CheckBox.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method CheckBox.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method CheckBox.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method CheckBox.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -2852,9 +2861,10 @@ swift.method CheckBox.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ 
 swift.method CheckBox.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> CheckBox.Modified
 swift.method CheckBox.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> CheckBox.Modified
 swift.method CheckBox.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> CheckBox.Modified
+swift.method CheckBox.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method CheckBox.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method CheckBox.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method CheckBox.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method CheckBox.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method CheckBox.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method CheckBox.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -3060,9 +3070,10 @@ swift.method ColorPicker.onRotationUpdated(_:): @MainActor func onRotationUpdate
 swift.method ColorPicker.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ColorPicker.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ColorPicker.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ColorPicker.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ColorPicker.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ColorPicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ColorPicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ColorPicker.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ColorPicker.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3070,9 +3081,10 @@ swift.method ColorPicker.onTapped(count:_:): @MainActor func onTapped(count: Int
 swift.method ColorPicker.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ColorPicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ColorPicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ColorPicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ColorPicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ColorPicker.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ColorPicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -3288,9 +3300,10 @@ swift.method DatePicker.onRotationUpdated(_:): @MainActor func onRotationUpdated
 swift.method DatePicker.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method DatePicker.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method DatePicker.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DatePicker.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DatePicker.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method DatePicker.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method DatePicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DatePicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DatePicker.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DatePicker.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3298,9 +3311,10 @@ swift.method DatePicker.onTapped(count:_:): @MainActor func onTapped(count: Int,
 swift.method DatePicker.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method DatePicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method DatePicker.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method DatePicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method DatePicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method DatePicker.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method DatePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -3490,9 +3504,10 @@ swift.method DebugInspector.onRotationUpdated(_:): @MainActor func onRotationUpd
 swift.method DebugInspector.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method DebugInspector.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method DebugInspector.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspector.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DebugInspector.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method DebugInspector.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method DebugInspector.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method DebugInspector.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DebugInspector.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method DebugInspector.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3709,9 +3724,10 @@ swift.method Either.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method Either.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Either.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Either.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Either.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Either.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Either.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Either.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Either.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Either.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Either.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3926,9 +3942,10 @@ swift.method Ellipse.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method Ellipse.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Ellipse.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Ellipse.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Ellipse.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Ellipse.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Ellipse.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Ellipse.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Ellipse.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Ellipse.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Ellipse.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -3936,9 +3953,10 @@ swift.method Ellipse.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method Ellipse.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Ellipse.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Ellipse.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Ellipse.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Ellipse.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Ellipse.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Ellipse.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Ellipse.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -4125,9 +4143,10 @@ swift.method Fill.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Fill.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Fill.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Fill.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Fill.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Fill.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Fill.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Fill.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Fill.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Fill.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Fill.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4135,9 +4154,10 @@ swift.method Fill.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Fill.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Fill.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Fill.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Fill.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Fill.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Fill.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Fill.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Fill.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -4353,9 +4373,10 @@ swift.method GalleryView.onRotationUpdated(_:): @MainActor func onRotationUpdate
 swift.method GalleryView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method GalleryView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method GalleryView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method GalleryView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GalleryView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method GalleryView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method GalleryView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method GalleryView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GalleryView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GalleryView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4547,9 +4568,10 @@ swift.method GeometryReader.onRotationUpdated(_:): @MainActor func onRotationUpd
 swift.method GeometryReader.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method GeometryReader.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method GeometryReader.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method GeometryReader.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GeometryReader.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method GeometryReader.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method GeometryReader.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method GeometryReader.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GeometryReader.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method GeometryReader.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4749,9 +4771,10 @@ swift.method Grid.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Grid.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Grid.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Grid.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Grid.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Grid.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Grid.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Grid.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Grid.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Grid.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Grid.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4759,9 +4782,10 @@ swift.method Grid.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Grid.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Grid.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Grid.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Grid.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Grid.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Grid.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Grid.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Grid.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -4957,9 +4981,10 @@ swift.method Group.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ ha
 swift.method Group.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Group.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Group.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Group.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Group.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Group.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Group.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Group.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Group.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Group.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5156,9 +5181,10 @@ swift.method HStack.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method HStack.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method HStack.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method HStack.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method HStack.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method HStack.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method HStack.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method HStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method HStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method HStack.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method HStack.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5166,9 +5192,10 @@ swift.method HStack.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method HStack.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method HStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method HStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method HStack.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method HStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method HStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method HStack.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method HStack.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -5367,9 +5394,10 @@ swift.method Image.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ ha
 swift.method Image.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Image.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Image.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Image.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Image.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Image.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Image.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Image.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Image.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Image.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5377,9 +5405,10 @@ swift.method Image.onTapped(count:_:): @MainActor func onTapped(count: Int, _ ha
 swift.method Image.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Image.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Image.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Image.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Image.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Image.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Image.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Image.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -5568,9 +5597,10 @@ swift.method InspectorButton.onRotationUpdated(_:): @MainActor func onRotationUp
 swift.method InspectorButton.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method InspectorButton.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method InspectorButton.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method InspectorButton.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method InspectorButton.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method InspectorButton.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method InspectorButton.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method InspectorButton.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method InspectorButton.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method InspectorButton.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method InspectorButton.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5783,9 +5813,10 @@ swift.method ItemsView.onSelectionChanged(_:): @MainActor func onSelectionChange
 swift.method ItemsView.onSelectionChanged(_:_:): @MainActor func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Set<ID>>) -> ItemsView<ID>
 swift.method ItemsView.onSelectionChanged(gate:_:): @MainActor func onSelectionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Set<ID>>) -> ItemsView<ID>
 swift.method ItemsView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ItemsView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ItemsView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ItemsView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ItemsView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ItemsView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ItemsView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ItemsView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -5793,9 +5824,10 @@ swift.method ItemsView.onTapped(count:_:): @MainActor func onTapped(count: Int, 
 swift.method ItemsView.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ItemsView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ItemsView.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ItemsView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ItemsView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ItemsView.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -6007,9 +6039,10 @@ swift.method Line.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Line.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Line.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Line.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Line.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Line.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Line.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Line.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Line.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Line.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Line.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6017,9 +6050,10 @@ swift.method Line.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Line.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Line.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Line.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Line.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Line.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Line.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Line.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Line.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -6216,9 +6250,10 @@ swift.method Link.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Link.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Link.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Link.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Link.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Link.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Link.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Link.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Link.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Link.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Link.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6226,9 +6261,10 @@ swift.method Link.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Link.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Link.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Link.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Link.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Link.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Link.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Link.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -6432,9 +6468,10 @@ swift.method Map.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ hand
 swift.method Map.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Map.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Map.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Map.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Map.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Map.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Map.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Map.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Map.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Map.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6442,9 +6479,10 @@ swift.method Map.onTapped(count:_:): @MainActor func onTapped(count: Int, _ hand
 swift.method Map.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Map.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Map.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Map.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Map.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Map.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Map.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Map.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -6696,9 +6734,10 @@ swift.method ModifiedContent.onRotationUpdated(_:): @MainActor func onRotationUp
 swift.method ModifiedContent.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ModifiedContent.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ModifiedContent.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ModifiedContent.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ModifiedContent.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ModifiedContent.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ModifiedContent.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ModifiedContent.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ModifiedContent.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6862,6 +6901,8 @@ swift.method MotionLayout.onItemDismissed(_:beyond:_:): @MainActor func onItemDi
 swift.method MotionLayout.onItemDismissed(_:beyond:gate:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemDismissed(_:beyond:policy:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onItemDragged(_:): @MainActor func onItemDragged(_ handler: @escaping @MainActor @Sendable (ItemDrag<ID>) throws -> Void) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDragged(_:_:): @MainActor func onItemDragged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDragged(gate:_:): @MainActor func onItemDragged(gate: Gate, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(_:_:): @MainActor func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
@@ -6903,9 +6944,10 @@ swift.method MotionLayout.onSettled(_:): @MainActor func onSettled(_ handler: @e
 swift.method MotionLayout.onSettled(_:_:): @MainActor func onSettled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onSettled(gate:_:): @MainActor func onSettled(gate: Gate, _ handler: @escaping ValueEventHandler<Parameters>) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method MotionLayout.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method MotionLayout.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method MotionLayout.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method MotionLayout.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method MotionLayout.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method MotionLayout.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6913,9 +6955,10 @@ swift.method MotionLayout.onTapped(count:_:): @MainActor func onTapped(count: In
 swift.method MotionLayout.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method MotionLayout.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method MotionLayout.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method MotionLayout.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method MotionLayout.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -7121,9 +7164,10 @@ swift.method NavigationStack.onRotationUpdated(_:): @MainActor func onRotationUp
 swift.method NavigationStack.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method NavigationStack.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method NavigationStack.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method NavigationStack.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method NavigationStack.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method NavigationStack.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method NavigationStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method NavigationStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method NavigationStack.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method NavigationStack.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7334,9 +7378,10 @@ swift.method Path.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Path.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Path.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Path.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Path.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Path.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Path.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Path.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Path.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Path.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Path.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7344,9 +7389,10 @@ swift.method Path.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Path.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Path.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Path.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Path.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Path.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Path.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Path.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Path.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -7553,9 +7599,10 @@ swift.method Picker.onSelectedIndexChanged(_:): @MainActor func onSelectedIndexC
 swift.method Picker.onSelectedIndexChanged(_:_:): @MainActor func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Picker.Modified
 swift.method Picker.onSelectedIndexChanged(gate:_:): @MainActor func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Picker.Modified
 swift.method Picker.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Picker.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Picker.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Picker.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Picker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Picker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Picker.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Picker.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7563,9 +7610,10 @@ swift.method Picker.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method Picker.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Picker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Picker.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Picker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Picker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Picker.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Picker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -7771,9 +7819,10 @@ swift.method Polygon.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method Polygon.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Polygon.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Polygon.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Polygon.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polygon.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Polygon.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Polygon.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Polygon.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polygon.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polygon.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7781,9 +7830,10 @@ swift.method Polygon.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method Polygon.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polygon.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Polygon.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Polygon.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Polygon.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Polygon.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Polygon.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Polygon.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -7985,9 +8035,10 @@ swift.method Polyline.onRotationUpdated(_:): @MainActor func onRotationUpdated(_
 swift.method Polyline.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Polyline.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Polyline.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Polyline.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polyline.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Polyline.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Polyline.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Polyline.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polyline.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Polyline.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7995,9 +8046,10 @@ swift.method Polyline.onTapped(count:_:): @MainActor func onTapped(count: Int, _
 swift.method Polyline.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polyline.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Polyline.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Polyline.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Polyline.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Polyline.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Polyline.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Polyline.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -8199,9 +8251,10 @@ swift.method PositionDots.onRotationUpdated(_:): @MainActor func onRotationUpdat
 swift.method PositionDots.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method PositionDots.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method PositionDots.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method PositionDots.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method PositionDots.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method PositionDots.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method PositionDots.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method PositionDots.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method PositionDots.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method PositionDots.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8392,9 +8445,10 @@ swift.method ProgressBar.onRotationUpdated(_:): @MainActor func onRotationUpdate
 swift.method ProgressBar.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ProgressBar.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ProgressBar.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ProgressBar.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ProgressBar.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ProgressBar.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ProgressBar.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ProgressBar.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ProgressBar.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8402,9 +8456,10 @@ swift.method ProgressBar.onTapped(count:_:): @MainActor func onTapped(count: Int
 swift.method ProgressBar.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ProgressBar.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ProgressBar.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ProgressBar.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ProgressBar.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ProgressBar.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ProgressBar.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -8607,9 +8662,10 @@ swift.method Rectangle.onRotationUpdated(_:): @MainActor func onRotationUpdated(
 swift.method Rectangle.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Rectangle.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Rectangle.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Rectangle.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Rectangle.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Rectangle.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Rectangle.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Rectangle.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Rectangle.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Rectangle.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8617,9 +8673,10 @@ swift.method Rectangle.onTapped(count:_:): @MainActor func onTapped(count: Int, 
 swift.method Rectangle.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Rectangle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Rectangle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Rectangle.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Rectangle.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Rectangle.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Rectangle.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Rectangle.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -8832,9 +8889,10 @@ swift.method ScrollView.onScrollStopped(_:): @MainActor func onScrollStopped(_ h
 swift.method ScrollView.onScrollStopped(_:_:): @MainActor func onScrollStopped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> ScrollView.Modified
 swift.method ScrollView.onScrollStopped(gate:_:): @MainActor func onScrollStopped(gate: Gate, _ handler: @escaping EventHandler) -> ScrollView.Modified
 swift.method ScrollView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ScrollView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ScrollView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ScrollView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ScrollView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ScrollView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ScrollView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ScrollView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -8842,9 +8900,10 @@ swift.method ScrollView.onTapped(count:_:): @MainActor func onTapped(count: Int,
 swift.method ScrollView.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ScrollView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ScrollView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ScrollView.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ScrollView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ScrollView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ScrollView.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ScrollView.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -9060,9 +9119,10 @@ swift.method SearchField.onSubmitted(_:): @MainActor func onSubmitted(_ handler:
 swift.method SearchField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> SearchField.Modified
 swift.method SearchField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> SearchField.Modified
 swift.method SearchField.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method SearchField.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SearchField.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method SearchField.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method SearchField.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method SearchField.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SearchField.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SearchField.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9073,9 +9133,10 @@ swift.method SearchField.onTapped(gate:_:): @MainActor func onTapped(gate: Gate,
 swift.method SearchField.onTextChanged(_:): @MainActor func onTextChanged(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method SearchField.onTextChanged(_:_:): @MainActor func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SearchField.onTextChanged(gate:_:): @MainActor func onTextChanged(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SearchField.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method SearchField.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method SearchField.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method SearchField.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method SearchField.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method SearchField.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method SearchField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -9275,9 +9336,10 @@ swift.method Separator.onRotationUpdated(_:): @MainActor func onRotationUpdated(
 swift.method Separator.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Separator.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Separator.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Separator.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Separator.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Separator.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Separator.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Separator.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Separator.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Separator.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9285,9 +9347,10 @@ swift.method Separator.onTapped(count:_:): @MainActor func onTapped(count: Int, 
 swift.method Separator.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Separator.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Separator.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Separator.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Separator.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Separator.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Separator.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Separator.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -9497,9 +9560,10 @@ swift.method Slider.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method Slider.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Slider.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Slider.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Slider.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Slider.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Slider.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Slider.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Slider.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Slider.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Slider.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9510,9 +9574,10 @@ swift.method Slider.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ ha
 swift.method Slider.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Slider.Modified
 swift.method Slider.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Slider.Modified
 swift.method Slider.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Slider.Modified
+swift.method Slider.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Slider.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Slider.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Slider.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Slider.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Slider.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Slider.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -9703,9 +9768,10 @@ swift.method Space.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ ha
 swift.method Space.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Space.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Space.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Space.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Space.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Space.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Space.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Space.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Space.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Space.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9713,9 +9779,10 @@ swift.method Space.onTapped(count:_:): @MainActor func onTapped(count: Int, _ ha
 swift.method Space.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Space.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Space.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Space.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Space.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Space.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Space.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Space.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -9903,9 +9970,10 @@ swift.method Spinner.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method Spinner.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Spinner.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Spinner.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Spinner.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Spinner.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Spinner.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Spinner.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Spinner.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Spinner.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Spinner.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9913,9 +9981,10 @@ swift.method Spinner.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method Spinner.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Spinner.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Spinner.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Spinner.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Spinner.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Spinner.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Spinner.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Spinner.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -10110,9 +10179,10 @@ swift.method SplitView.onRotationUpdated(_:): @MainActor func onRotationUpdated(
 swift.method SplitView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method SplitView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method SplitView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method SplitView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SplitView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method SplitView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method SplitView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method SplitView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SplitView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SplitView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10323,9 +10393,10 @@ swift.method Stepper.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method Stepper.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Stepper.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Stepper.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Stepper.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Stepper.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Stepper.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Stepper.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Stepper.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Stepper.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Stepper.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10336,9 +10407,10 @@ swift.method Stepper.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ h
 swift.method Stepper.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Stepper.Modified
 swift.method Stepper.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Stepper.Modified
 swift.method Stepper.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Stepper.Modified
+swift.method Stepper.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Stepper.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Stepper.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Stepper.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Stepper.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Stepper.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Stepper.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -10392,9 +10464,10 @@ swift.method Stepper.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -
 swift.method StepperProperties.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
 swift.method StepperProperties.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
 swift.method StepperProperties.step(_:): @MainActor func step(_ value: Double) -> Self.Modified
+swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method StyleTarget.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method StyleTarget.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method StyleTarget.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method StyleTarget.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method StyleTarget.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -10675,9 +10748,10 @@ swift.method Switch.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method Switch.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Switch.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Switch.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Switch.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Switch.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Switch.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Switch.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Switch.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Switch.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Switch.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10688,9 +10762,10 @@ swift.method Switch.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ ha
 swift.method Switch.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Switch.Modified
 swift.method Switch.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Switch.Modified
 swift.method Switch.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Switch.Modified
+swift.method Switch.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Switch.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Switch.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Switch.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Switch.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Switch.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Switch.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -10887,9 +10962,10 @@ swift.method TabView.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method TabView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TabView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TabView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TabView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TabView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method TabView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method TabView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TabView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TabView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TabView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11093,9 +11169,10 @@ swift.method Text.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method Text.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Text.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Text.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Text.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Text.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Text.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method Text.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method Text.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Text.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Text.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11103,9 +11180,10 @@ swift.method Text.onTapped(count:_:): @MainActor func onTapped(count: Int, _ han
 swift.method Text.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Text.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Text.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Text.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method Text.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method Text.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Text.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method Text.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -11326,9 +11404,10 @@ swift.method TextEditor.onRotationUpdated(_:): @MainActor func onRotationUpdated
 swift.method TextEditor.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TextEditor.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TextEditor.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TextEditor.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextEditor.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method TextEditor.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method TextEditor.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TextEditor.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextEditor.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextEditor.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11339,9 +11418,10 @@ swift.method TextEditor.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, 
 swift.method TextEditor.onTextChanged(_:): @MainActor func onTextChanged(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextEditor.onTextChanged(_:_:): @MainActor func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextEditor.onTextChanged(gate:_:): @MainActor func onTextChanged(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextEditor.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TextEditor.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method TextEditor.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method TextEditor.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method TextEditor.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TextEditor.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TextEditor.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -11559,9 +11639,10 @@ swift.method TextField.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @
 swift.method TextField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> TextField.Modified
 swift.method TextField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> TextField.Modified
 swift.method TextField.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TextField.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextField.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method TextField.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method TextField.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TextField.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextField.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextField.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11572,9 +11653,10 @@ swift.method TextField.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _
 swift.method TextField.onTextChanged(_:): @MainActor func onTextChanged(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextField.onTextChanged(_:_:): @MainActor func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextField.onTextChanged(gate:_:): @MainActor func onTextChanged(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextField.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TextField.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method TextField.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method TextField.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method TextField.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TextField.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TextField.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -11847,9 +11929,10 @@ swift.method TimePicker.onRotationUpdated(_:): @MainActor func onRotationUpdated
 swift.method TimePicker.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TimePicker.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TimePicker.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TimePicker.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TimePicker.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method TimePicker.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method TimePicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method TimePicker.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TimePicker.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TimePicker.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11860,9 +11943,10 @@ swift.method TimePicker.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, 
 swift.method TimePicker.onTimeChanged(_:): @MainActor func onTimeChanged(_ handler: @escaping @MainActor @Sendable (ClockTime) throws -> Void) -> TimePicker.Modified
 swift.method TimePicker.onTimeChanged(_:_:): @MainActor func onTimeChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ClockTime>) -> TimePicker.Modified
 swift.method TimePicker.onTimeChanged(gate:_:): @MainActor func onTimeChanged(gate: Gate, _ handler: @escaping ValueEventHandler<ClockTime>) -> TimePicker.Modified
+swift.method TimePicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TimePicker.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method TimePicker.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method TimePicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method TimePicker.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method TimePicker.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method TimePicker.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -11937,9 +12021,10 @@ swift.method ToolbarButton.menu(_:_:): @MainActor func menu(_ kind: ButtonMenuKi
 swift.method ToolbarButton.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ToolbarButton.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ToolbarButton.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ToolbarButton.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarButton.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ToolbarButton.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ToolbarButton.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ToolbarButton.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarButton.padding(_:): @MainActor func padding(_ value: Insets) -> Self.Modified
 swift.method ToolbarButton.padding(horizontal:vertical:): @MainActor func padding(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method ToolbarButton.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -11963,9 +12048,10 @@ swift.method ToolbarGroup.hidesWithSidebar(_:): @MainActor func hidesWithSidebar
 swift.method ToolbarGroup.id(_:): @MainActor func id(_ value: some Hashable) -> ToolbarGroup
 swift.method ToolbarGroup.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> ToolbarGroup
 swift.method ToolbarGroup.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -> Self.Modified
+swift.method ToolbarGroup.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarGroup.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ToolbarGroup.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ToolbarGroup.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ToolbarGroup.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarGroup.padding(_:): @MainActor func padding(_ value: Insets) -> Self.Modified
 swift.method ToolbarGroup.padding(horizontal:vertical:): @MainActor func padding(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method ToolbarGroup.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -12003,9 +12089,10 @@ swift.method ToolbarToggle.lineWidth(_:): @MainActor func lineWidth(_ value: Dou
 swift.method ToolbarToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> ToolbarToggle
 swift.method ToolbarToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> ToolbarToggle.Modified
 swift.method ToolbarToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> ToolbarToggle.Modified
+swift.method ToolbarToggle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarToggle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ToolbarToggle.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ToolbarToggle.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ToolbarToggle.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarToggle.padding(_:): @MainActor func padding(_ value: Insets) -> Self.Modified
 swift.method ToolbarToggle.padding(horizontal:vertical:): @MainActor func padding(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method ToolbarToggle.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -12166,9 +12253,10 @@ swift.method VStack.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method VStack.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method VStack.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method VStack.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method VStack.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method VStack.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method VStack.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method VStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method VStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method VStack.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method VStack.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12176,9 +12264,10 @@ swift.method VStack.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method VStack.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method VStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method VStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method VStack.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method VStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method VStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method VStack.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method VStack.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
@@ -12319,9 +12408,10 @@ swift.method View.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ han
 swift.method View.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method View.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method View.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method View.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method View.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method View.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method View.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method View.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method View.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method View.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12611,9 +12701,10 @@ swift.method WebView.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ 
 swift.method WebView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method WebView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method WebView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method WebView.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method WebView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method WebView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method WebView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method WebView.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method WebView.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method WebView.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12621,9 +12712,10 @@ swift.method WebView.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method WebView.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method WebView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method WebView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method WebView.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method WebView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method WebView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method WebView.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method WebView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -12843,9 +12935,10 @@ swift.method ZStack.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ h
 swift.method ZStack.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ZStack.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ZStack.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ZStack.onSwiped(direction:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ZStack.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ZStack.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
-swift.method ZStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
+swift.method ZStack.onSwiped(direction:threshold:policy:_:): @MainActor func onSwiped(direction: SwipeDirection, threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ZStack.onSwiped(threshold:policy:_:): @MainActor func onSwiped(threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ZStack.onTapped(_:): @MainActor func onTapped(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onTapped(_:_:): @MainActor func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -12853,9 +12946,10 @@ swift.method ZStack.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method ZStack.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ZStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ZStack.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ZStack.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
-swift.method ZStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ZStack.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ZStack.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ZStack.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified

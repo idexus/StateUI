@@ -88,6 +88,8 @@ needs a label, and a parameter's label is fixed, so a modifier whose own
 arguments have defaults - `.onEndReached(within:)`, `.onSwiped(direction:
 threshold:)` - has one overload with none of them, the policy first, and
 others that name them, the policy after: one call, one spelling.
+`ModifierShapeTests` holds it: no argument that may be left out stands before
+`policy:`.
 
 There is no default. Each event modifier comes as a step, `() throws ->
 Void`, which Swift picks for a closure with no `await`, and the same with a

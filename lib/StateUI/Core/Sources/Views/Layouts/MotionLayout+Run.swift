@@ -60,7 +60,7 @@ extension MotionLayout {
         let activated: [ValueHandler<ID>]
         let named: ((Parameters) -> Void)?
         let itemStart: ItemDragStart?
-        let dragged: [@MainActor (ItemDrag<ID>) throws -> Void]
+        let dragged: [ValueHandler<ItemDrag<ID>>]
         let dismissals: [LayoutDismissal<ID>]
 
         /// The parameters the element wears: the author's, or the layout's own.

@@ -164,10 +164,20 @@ extension View {
         }
     }
 
+    /// The same, for the ways `direction` names.
+    public func onSwiped(
+        direction: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
+    ) -> Modified {
+        modified {
+            $0.hearsSwipes(direction, threshold: nil)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(direction, handler))
+        }
+    }
+
     /// The same, for the ways `direction` names, traveling `threshold` to count.
     public func onSwiped(
         direction: SwipeDirection,
-        threshold: Double? = nil,
+        threshold: Double,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
