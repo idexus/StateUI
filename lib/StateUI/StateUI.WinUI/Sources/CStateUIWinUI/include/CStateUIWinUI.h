@@ -115,13 +115,12 @@ typedef enum STATEUI_CLOSED_ENUM {
 // Swift: TextAlignment
 typedef enum { StateUITextAlignmentStart, StateUITextAlignmentCenter, StateUITextAlignmentEnd } StateUITextAlignment;
 
-/// The case typed letters are put in: as typed, the platform's own, lower, upper.
+/// The case typed letters are put in: as typed, lower, upper.
 // Swift: TextCase
 typedef enum {
-    StateUITextCaseNone,
-    StateUITextCaseDefault,
-    StateUITextCaseLowercase,
-    StateUITextCaseUppercase,
+    StateUITextCaseNone = 0,
+    StateUITextCaseLowercase = 2,
+    StateUITextCaseUppercase = 3,
 } StateUITextCase;
 
 /// How a picker shows its choices: in a menu, as segments, as radio buttons.
@@ -219,8 +218,8 @@ typedef enum {
     StateUIDrawingTranslate = 18,
     StateUIDrawingRotate = 19,
     StateUIDrawingScale = 20,
-    StateUIDrawingSaveState = 21,
-    StateUIDrawingRestoreState = 22,
+    StateUIDrawingSaveGraphics = 21,
+    StateUIDrawingRestoreGraphics = 22,
 } StateUIDrawing;
 
 /// A shape's figure: a rectangle, an ellipse, or a geometry of its own.

@@ -309,10 +309,10 @@ namespace {
                 pen.transform = D2D1::Matrix3x2F::Scale(static_cast<float>(at[0]), static_cast<float>(at[1])) * pen.transform;
                 place();
                 break;
-            case StateUIDrawingSaveState:
+            case StateUIDrawingSaveGraphics:
                 kept.push_back(pen);
                 break;
-            case StateUIDrawingRestoreState:
+            case StateUIDrawingRestoreGraphics:
                 if (kept.empty()) break;
                 pen = kept.back();
                 kept.pop_back();

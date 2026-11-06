@@ -71,7 +71,7 @@ final class WinUICanvasViewTests: XCTestCase {
 
     /// A transform moves what is drawn after it, and restoreGraphics puts back what saveGraphics kept: the color and
     /// the transform alike.
-    func testRestoreStatePutsBackTheColorAndTheTransform() throws {
+    func testRestoreGraphicsPutsBackTheColorAndTheTransform() throws {
         let colors = try drawn(width: 100, height: 20, at: [(5, 10), (45, 10), (85, 10), (25, 10)]) {
             Draw.fillColor(Color(hex: 0xFF0000))
             Draw.saveGraphics()

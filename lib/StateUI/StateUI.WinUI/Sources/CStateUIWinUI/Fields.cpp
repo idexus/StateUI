@@ -73,8 +73,7 @@ namespace {
         switch (static_cast<StateUITextCase>(textCase)) {
         case StateUITextCaseUppercase: return controls::CharacterCasing::Upper;
         case StateUITextCaseLowercase: return controls::CharacterCasing::Lower;
-        case StateUITextCaseNone:
-        case StateUITextCaseDefault: return controls::CharacterCasing::Normal;
+        case StateUITextCaseNone: return controls::CharacterCasing::Normal;
         }
         return controls::CharacterCasing::Normal;
     }
