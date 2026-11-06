@@ -24,7 +24,8 @@ extension TextProperties {
     }
 
     /// Whether the user can select the words and copy them - an address, a
-    /// code, an error to report. Off unless said.
+    /// code, an error to report. Off unless said. It takes no state: the
+    /// platform makes the text anew to change it.
     ///
     ///     Text(address).isSelectable(true)
     public func isSelectable(_ value: Bool) -> Modified {

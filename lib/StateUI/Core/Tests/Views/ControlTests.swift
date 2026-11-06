@@ -828,13 +828,14 @@ final class ControlTests: XCTestCase {
             // A button's purpose in its window, said where it is written.
             "role",
             // Named rather than valued.
-            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content",
+            "style", "fontFamily", "source", "userAgent", "data", "content",
             // A value the host cannot be handed whole - a brush, a gradient among them.
             "background", "fill", "stroke", "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
             "followsLayout", "id", "assign", "area",
-            // Tiers no view wears: a bar's item, a run of text, a map's marker.
-            "title", "ignoresSafeArea",
+            // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
+            // whose twin a view's tier carries.
+            "title", "ignoresSafeArea", "accessibilityIdentifier",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []

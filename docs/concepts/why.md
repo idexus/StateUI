@@ -331,8 +331,11 @@ struct Toolbar: View {
 ```
 
 - **The compiler asks the question, and only where there is one.** An
-  awaiting handler without a policy does not compile, and the message says
-  what to write; a handler with no `await` takes none.
+  awaiting handler without a policy does not compile - the compiler says it
+  meets no synchronous handler, the cue to name a policy or a gate - and a
+  handler with no `await` takes none. `onCreated` and `onDestroying` come
+  once in an element's life, so nothing can come again behind them: they
+  take an awaiting handler with no gate.
 - **One gate for everything that touches one thing.** A policy given alone is
   the handler's own gate; a `Gate` is shared by every handler and task written
   with it - two buttons, an autosave - and its `isBusy` is a state a body
@@ -423,8 +426,10 @@ public API keeps to these rules:
 - **One road.** A concept has one spelling and one way in: a property its
   member's modifier, several states read together `.multi`, a scroller's
   offset `.scrollOffset($offset)`, the application `NotesApp.register()`. A
-  second road to the same place - an alias, a shortcut, an event repeating a
-  state - is removed, not kept beside the first.
+  second road to the same place - an alias, a shortcut, an event repeating
+  what the application itself wrote - is removed, not kept beside the first;
+  a control's event telling what the user did stands beside the state that
+  holds the value (`onToggled` beside `isOn`).
 - **Through the contract.** A property, an event and an act are written with
   the contract that declares them. What only a host needs - a key made from a
   name, the renderer, the lists of properties the hosts share - stands behind
@@ -433,7 +438,8 @@ public API keeps to these rules:
 - **Typed values.** A value's type says what it is: a color is
   `Color(hex: 0x512BD4)`, and text read as one is `Color(parsing:)`, which may
   fail; insets name their edges `start` and `end`, which follow the reading
-  direction; a button's purpose is an `ActionRole`. No string, number or flag
+  direction; a button's role is a `ButtonRole`, a menu entry's and a bar
+  item's an `ActionRole`. No string, number or flag
   stands for something that has a type of its own.
 - **One shape for one kind.** A modifier gives back `Modified` - a composed
   view's configures the view and gives it back - and names a state it borrows

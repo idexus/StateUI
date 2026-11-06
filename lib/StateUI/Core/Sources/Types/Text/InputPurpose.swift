@@ -22,7 +22,7 @@ public enum InputPurpose: Int32, Sendable {
     /// Digits only.
     case numeric = 4
 
-    /// A phone dialler's keypad.
+    /// A phone dialer's keypad.
     case telephone = 5
 
     /// Sentences: each begins with a capital, spell checked and predicted - a message, a note.

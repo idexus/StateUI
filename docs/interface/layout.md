@@ -44,7 +44,8 @@ Without either, `.fill` takes the whole slot.
 Down a row, `.firstBaseline` rests a view's first line of words on one line
 with the row's other views aligned so - a label and a value of other sizes
 read as one line; a view with no words rests its foot there, and a stack its
-first child's line. Anywhere else it is the near edge:
+first child's line. Anywhere else - across a column, and as a
+`horizontalAlignment` - it is the near edge, as `.start`:
 
 ```swift
 HStack {

@@ -81,7 +81,7 @@ extension MotionLayout.Run {
 
     /// Tells the application the view `hand` holds at the parameters, having stood still `still` milliseconds, the hand
     /// going at `speed` - and the item whose place stands under it: where a view rests, not where it is drawn on its
-    /// way, so a view travelling off from under the hand after it made room answers no second time.
+    /// way, so a view traveling off from under the hand after it made room answers no second time.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
     func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) {
         guard !dragged.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }

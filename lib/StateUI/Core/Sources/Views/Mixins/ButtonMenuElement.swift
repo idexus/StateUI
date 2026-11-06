@@ -16,7 +16,8 @@ public protocol ButtonMenuElement: PropertyContainer {}
 extension ButtonMenuElement {
     /// Whether a button whose click opens its menu shows the arrow saying so -
     /// true unless said; a button standing for its picture alone may leave it
-    /// out. A split button's arrow is its menu's, and a held one has none.
+    /// out. A split button's arrow is its menu's, and a held one has none. It
+    /// takes no state: the platform makes the button anew to show or hide it.
     public func showsMenuArrow(_ value: Bool) -> Modified {
         setValue(ButtonMenuElementContract.showsMenuArrow, value)
     }

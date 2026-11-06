@@ -344,7 +344,7 @@ a scene of its own - and a scene's body its windows.
 `WindowGroup { MainPage() }`, one in the application, is what launch and
 *File ▸ New Window* make a window of; `WindowGroup(.kind)` makes as many
 windows of a kind as are opened, `Window(.kind)` one, and
-`WindowGroup(.kind, for:)` one per value. Each scene stands at most once, from
+`WindowGroup(.kind) { $value in … }` one per value. Each scene stands at most once, from
 its first window to its last, and its windows share its `@State`; no window is
 a main one. `application.openWindow(.kind)` opens a window in the scene
 declaring the kind, which opens with it where it does not stand

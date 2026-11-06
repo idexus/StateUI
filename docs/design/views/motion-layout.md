@@ -143,7 +143,7 @@ follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
 the transform's five drawn numbers apart - its move, its turn the short way,
-its width and its height - each travelling on its own, as a view's own
+its width and its height - each traveling on its own, as a view's own
 transform does: a blend of the matrices would squash a turned view, and a
 slant no view draws would be carried for nothing (types/transforms.md, the
 shear limit). A shift at nought is the pose itself. The order is the pose's
@@ -572,7 +572,7 @@ finger. The core tells which item that is (`ItemDrag.over`): the one whose
 place stands under the hand, on top there, the held view passed over - the
 places the arithmetic gives by the description as it stands, at the parameters
 the run last showed, not where the views are drawn on their way, so the view
-that made room, still travelling off from under the hand, never answers a
+that made room, still traveling off from under the hand, never answers a
 second time and swings the order back. An application reorders by the item
 it is over and never works its own arithmetic backwards to a slot.
 

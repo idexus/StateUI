@@ -81,7 +81,7 @@ parent. So a test acting from a task through a gate still waits on the
 handlers its act raised, and a run superseded around the call refuses nothing
 they write.
 
-The policy stands first and unlabelled where the modifier takes nothing else,
+The policy stands first and unlabeled where the modifier takes nothing else,
 and `policy:` follows the event's own arguments, which keep the step
 overload's spelling: a parameter after a variadic - `.onKeyPressed`'s keys -
 needs a label, and a parameter's label is fixed, so a modifier whose own

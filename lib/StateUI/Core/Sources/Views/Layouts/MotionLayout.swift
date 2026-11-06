@@ -532,8 +532,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// A view the hand lets go of past `threshold` points `directions` from where it took it - or thrown far enough
-    /// that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
+    /// A view the hand lets go of past `threshold` device units `directions` from where it took it - or thrown far
+    /// enough that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
     /// application removes the item then. Let go short of it, the view goes back to its place. Written again, each
     /// one the view passed runs, in the order written.
     ///

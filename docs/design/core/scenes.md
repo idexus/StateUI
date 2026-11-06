@@ -71,7 +71,7 @@ more window of that group.
 ## Opening windows
 
 `ApplicationSession.openWindow` opens a window by its kind, in the scene that
-declares it: a `Window(.kind)` once, a window of a `WindowGroup(.kind, for:)`
+declares it: a `Window(.kind)` once, a window of a `WindowGroup(.kind) { $value in … }`
 once a value, and one more window of a `WindowGroup` each time it is asked.
 Opening checks the kind is declared and the value's type matches. Whether a
 window may open beside another is the platform's: a desktop and an iPad do; a

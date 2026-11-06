@@ -139,6 +139,38 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(offenders.map(String.init), [], "an application's surface names a host's value")
     }
 
+    /// An initializer the handbook spells in its text with labels - `WindowGroup(.kind) { $value in … }`, not a
+    /// label the type never had - is one the records declare with those labels: the prose is not compiled, so this
+    /// holds what a reader copies out of it.
+    func testTheHandbookSpellsInitializersWithTheirLabels() throws {
+        let record = try Self.recorded()
+        var labels: [String: [Set<String>]] = [:]
+        for found in record.matches(of: /swift\.init (?:\w+\.)*(\w+)\.init\(([^)]*)\):/) {
+            let named = Set(found.2.split(separator: ":").map(String.init).filter { $0 != "_" })
+            labels[String(found.1), default: []].append(named)
+        }
+        let root = SourceTree.repository
+        let handbook = try SourceTree.files(under: root, entering: { relative in
+            SourceTree.entersSources(relative) && !["node_modules", "exports", "artifacts", "design", "internals"]
+                .contains(relative.split(separator: "/").last.map(String.init) ?? "")
+        }).filter { $0.hasSuffix(".md") && ($0.hasPrefix("docs/") || $0 == "README.md") }
+        var unknown: [String] = []
+
+        for document in handbook {
+            let text = try String(contentsOf: root.appendingPathComponent(document), encoding: .utf8)
+            for span in text.matches(of: /`([^`\n]+)`/) {
+                for call in span.1.matches(of: /(?:^|[^\w.])([A-Z]\w*)\(([^()]*)\)/) {
+                    let written = Set(call.2.matches(of: /(?:^|[,(]\s*)([a-z]\w*):/).map { String($0.1) })
+                    guard !written.isEmpty, let declared = labels[String(call.1)] else { continue }
+                    if !declared.contains(where: { written.isSubset(of: $0) }) { unknown.append("\(document): \(span.1)") }
+                }
+            }
+        }
+
+        XCTAssertGreaterThan(handbook.count, 20, "the walk read almost no page")
+        XCTAssertEqual(unknown, [], "the handbook spells an initializer with a label it does not have")
+    }
+
     /// A style carries values and states alone: no modifier of `Styling` takes a binding, which the sheet could not
     /// carry and would drop without a word.
     func testAStyleTakesNoState() throws {

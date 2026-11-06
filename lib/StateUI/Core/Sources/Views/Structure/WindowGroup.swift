@@ -4,7 +4,7 @@
 /// A factory of windows, each showing one view, made as they are asked for - in the scene that declares it, which
 /// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New Window* make
 /// one more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)`
-/// asks; with a name and `for:`, one window per value - the kind's.
+/// asks; with a name and a closure taking the value's state, one window per value - the kind's.
 ///
 ///     WindowGroup { MainPage() }
 ///     WindowGroup(.editor) { EditorPage() }

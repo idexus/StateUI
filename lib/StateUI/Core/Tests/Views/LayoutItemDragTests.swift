@@ -395,7 +395,7 @@ final class LayoutItemDragTests: XCTestCase {
     }
 
     /// A VIEW MAKING ROOM IS NOT OVER THE HAND AGAIN: the hand is over the item whose place stands under it, so the
-    /// view that gave the held one its place, still travelling off from under the hand, answers no second time.
+    /// view that gave the held one its place, still traveling off from under the hand, answers no second time.
     func testAViewMakingRoomIsNotOverTheHandAgain() {
         let told = Told()
         let order = State(wrappedValue: ["A", "B", "C"])

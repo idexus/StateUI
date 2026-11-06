@@ -51,7 +51,7 @@ way: a lean along an unturned view changes nothing, and a lean down reads back
 as a turn and a sizing. A geometry is redrawn rather than carried by view
 properties, so `.geometryTransform(_:)` on a shape draws the whole matrix,
 lean included. A motion layout's placements cross as the same five numbers,
-and a change travelling or a pose blended between keyframes moves those five
+and a change traveling or a pose blended between keyframes moves those five
 alone, as does a view's hit test (`ViewTransform.drawn`): what travels and
 what is hit is what is drawn.
 

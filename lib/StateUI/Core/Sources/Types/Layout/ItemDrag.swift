@@ -25,7 +25,7 @@ public struct ItemDrag<ID: Hashable> {
     /// How long the hand has stood still; nought as it moves.
     public let still: Duration
 
-    /// How fast the hand goes, in points a second, in the room - at an end, as fast as it lifted; nought as it takes
+    /// How fast the hand goes, in device units a second, in the room - at an end, as fast as it lifted; nought as it takes
     /// the view.
     public let velocity: Point
 
