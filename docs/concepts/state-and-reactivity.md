@@ -601,7 +601,7 @@ struct SampledProgress: View {
 
     var body: some View {
         VStack {
-            ProgressBar().progress($progress)
+            ProgressBar($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
                 $progress.journey.move(to: 1, .eased(.seconds(1), curve: .cubicOut))

@@ -17,8 +17,8 @@ public struct CheckBox: ElementView, TextualElement, TintElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// A checkbox with no state binding. Use `.isOn(_:)` to set or bind its value.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: CheckBoxContract.self)
     }
 
@@ -46,19 +46,13 @@ public struct CheckBox: ElementView, TextualElement, TintElement, FocusElement {
         self = CheckBox(state).text(text)
     }
 
-    /// Whether the box is ticked. Usually given in the initializer.
-    public func isOn(_ value: Bool) -> Modified {
+    /// Whether it is checked.
+    func isOn(_ value: Bool) -> Modified {
         setValue(CheckBoxContract.isOn, value)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// Two-way: shows what the state holds and writes back what is ticked,
-    /// with no view rebuilt for it.
-    ///
-    /// - Parameter state: the state shown, and written back into as the user
-    ///   ticks it.
-    /// - Returns: the box, wearing and reporting that value.
-    public func isOn(_ state: Binding<Bool>) -> Modified {
+    /// Whether it is checked, from a state carried both ways.
+    func isOn(_ state: Binding<Bool>) -> Modified {
         plain(CheckBoxContract.isOn.token, by: state, mode: .inOut)
     }
 

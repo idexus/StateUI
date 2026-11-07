@@ -22,6 +22,9 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// Words the host writes.
     @State private var hint = "Type here"   // words: the host writes them
 
+    /// What the user types into that field - its own text, which no row here reads.
+    @State private var typed = ""
+
     /// A value the host sets AND reports: the slider is handed `$level`
     /// both ways, and nothing here reads it.
     @State private var level = 0.25   // a value: set and reported
@@ -79,7 +82,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             SwitchRow("Shown", $shown)
 
             row("4 · words the host writes - placeholder($hint)") {
-                TextField()
+                TextField($typed)
                     .accessibilityIdentifier("boundProperties.hint")
                     .accessibilityLabel("A field whose placeholder the host writes")
                     .placeholder($hint)

@@ -44,8 +44,8 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     /// The node this control describes.
     public var node: Node
 
-    /// A date picker with no date supplied. Use `.date(_:)` to set or bind it.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: DatePickerContract.self)
     }
 
@@ -61,26 +61,13 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
         self = DatePicker().date(state)
     }
 
-    /// The day the field shows. Usually given in the initializer.
-    public func date(_ value: CalendarDate) -> Modified {
+    /// The day it shows.
+    func date(_ value: CalendarDate) -> Modified {
         setValue(DatePickerContract.date, value)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way date as `DatePicker($due)`, written as a modifier.
-    ///
-    ///     DatePicker($due)
-    ///     DatePicker().date($due)
-    ///
-    /// The host shows the state's day and writes back the one the user
-    /// chooses, with no view rebuilt for it. A day outside
-    /// `minimum`…`maximum` is shown clamped while the state keeps the
-    /// day written.
-    ///
-    /// - Parameter state: the state shown, and written back into when a day is
-    ///   chosen.
-    /// - Returns: the control, wearing and reporting that day.
-    public func date(_ state: Binding<CalendarDate>) -> Modified {
+    /// The day from a state carried both ways.
+    func date(_ state: Binding<CalendarDate>) -> Modified {
         plain(.date, by: state, mode: .inOut)
     }
 

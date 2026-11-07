@@ -40,8 +40,8 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// A stepper with its default value and range, configured by modifiers.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: StepperContract.self)
     }
 
@@ -65,22 +65,13 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
         self = Stepper().value(state)
     }
 
-    /// The number it is showing, between `minimum` and `maximum`. Usually given
-    /// in the initializer.
-    public func value(_ value: Double) -> Modified {
+    /// The value it holds.
+    func value(_ value: Double) -> Modified {
         setValue(StepperContract.value, value)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way value as `Stepper($value)`, written as a modifier.
-    ///
-    ///     Stepper($count)
-    ///     Stepper().value($count)
-    ///
-    /// - Parameter state: the state the stepper shows and writes back into,
-    ///   carried by the host as a journey.
-    /// - Returns: the control, wearing and reporting that value.
-    public func value(_ state: Binding<Double>) -> Modified {
+    /// The value from a state, carried by the host as a journey.
+    func value(_ state: Binding<Double>) -> Modified {
         journey(StepperContract.value.token, by: state)
     }
 

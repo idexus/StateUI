@@ -299,6 +299,7 @@ of its own:
 
 ```swift
 @State var code = ""
+@State var password = ""
 @State var email = ""
 @State var hidden = true
 @State var done = 0
@@ -310,7 +311,7 @@ VStack {
         .isSpellCheckEnabled(false)
         .isTextPredictionEnabled(false)
 
-    TextField()
+    TextField($password)
         .placeholder("a password")
         .isPassword(hidden)
         .submitLabel(.done)
@@ -468,7 +469,7 @@ spinner is invisible on most platforms, so `Spinner($loading)` shows it only
 while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
-same property as the modifier: `ProgressBar().progress(0.4)` sets what
+same property as the modifier: `ProgressBar(0.4)` sets what
 `ProgressBar(0.4)` sets, `ProgressBar($done)` carries a state the host animates
 to each new value, and `Spinner($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
@@ -645,7 +646,7 @@ A document written in place shows without the network. Its relative links
 resolve against the address given beside it, where one is:
 
 ```swift
-WebView().source(html: "<h1>Offline</h1><p>Written in place.</p>")
+WebView(html: "<h1>Offline</h1><p>Written in place.</p>")
 ```
 
 A document given no address travels as an address of its own, which on

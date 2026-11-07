@@ -436,9 +436,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Capsule", source: "Capsule.swift", Capsule()),
 
             ControlCase("Line", source: "Line.swift",
-                Line()
-                    .from(Point(0, 0))
-                    .to(Point(240, 40))),
+                Line(from: Point(0, 0), to: Point(240, 40))),
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")

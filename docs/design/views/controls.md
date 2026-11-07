@@ -20,10 +20,10 @@ and acts it declares, and the binding twins of its values.
 
 What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
-a modifier (composition.md, what goes in the initializer). A two-way control
-whose bound value is its purpose takes its binding in the initializer and in a
-modifier of the same name; a picker takes its values and the state holding the
-chosen one together, in its initializer alone (bindings.md, both spellings).
+a modifier (composition.md, what goes in the initializer). A control's purpose
+value, a value or a state, goes in its initializer alone; a picker takes its
+values and the state holding the chosen one together
+(bindings.md, the purpose value is the initializer's).
 
 ## Closed vocabularies are numbered here
 

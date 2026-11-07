@@ -6,6 +6,9 @@ struct AimSample: SampleContent, ExampleContent {
     // listing: AimSample
     @State private var text = ""
 
+    /// What the second field holds.
+    @State private var second = ""
+
     /// The control an act is about. `.aim` puts the element's own identity in
     /// here as the differ walks, so nothing is named and nothing collides.
     @Aim(TextField.self) private var field
@@ -43,7 +46,7 @@ struct AimSample: SampleContent, ExampleContent {
             // carried - and keeps the aim on its field all the same.
             AimedField(aim: field, text: $text)
 
-            TextField()
+            TextField($second)
                 .accessibilityIdentifier("aim.second")
                 .accessibilityLabel("The second field")
                 .placeholder("The second field")

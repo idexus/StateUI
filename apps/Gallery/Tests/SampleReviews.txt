@@ -2,9 +2,9 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift b3a4338417a32f56
-AimSample.swift 0dd87d843f89ee88
+AimSample.swift f8032e3b2f5f3098
 AnalogClockSample.swift b812972d23ed6c3e
-AnimatedInputSample.swift c8318a56dc2830ce
+AnimatedInputSample.swift d4fd457db2dbc162
 AnimatedPropertySample.swift 8f5793298a0bd27e
 AnimationSample.swift b7e179a1e38c7bf3
 AppSwitcherSample.swift faff60f7c46b4641
@@ -12,9 +12,9 @@ AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift ec8fdfa689ba07de
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
 BatterySample.swift 128720d18b4dffd2
-BindingReaderSample.swift 73dcef2911b104df
+BindingReaderSample.swift 9e6445333d09f1a3
 BottomBarSample.swift cacd9f70509e0781
-BoundPropertiesSample.swift 52240d3e367abe61
+BoundPropertiesSample.swift 402926dee36da563
 BrushSample.swift d2d891c981a4703d
 BuilderSample.swift eda47ffd0dda692b
 ButtonMenuSample.swift d4e17af0531f4452
@@ -31,18 +31,18 @@ ConcurrentAnimationSample.swift eeb950bcd885f641
 ConcurrentStateSample.swift 4a0fb787dddb59d7
 ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 3e5f2705df54f438
-ConverterSample.swift 2d08101fe627c444
-Cube3DSample.swift 135119576379091d
+ConverterSample.swift 6416f68a5bddf4e8
+Cube3DSample.swift 769d40536465b8e5
 DatePickerSample.swift 82ff486bed5d3d98
 DeviceDisplaySample.swift 9a655416aa476cd0
 DeviceInfoSample.swift cb6c33fedbd844cf
 DialogsSample.swift 9bf9ea34d83c5136
 DragAndDropSample.swift b3705c71085ccf60
 DrawnAwaySample.swift 7b9524abf7e874ab
-DrivenReadingSample.swift c55fe07af6a7855c
-DrivenSample.swift 0fdb09b8eedbaae5
+DrivenReadingSample.swift 6a61547b31769284
+DrivenSample.swift d4e2fe22ebd26b2d
 EngineAnimationSample.swift 5fac5333741ffd93
-EngineSample.swift dc73eaf27e3e70cd
+EngineSample.swift 6046ed07f4c5d8e9
 EnvironmentSample.swift cb3fd389ce8ef814
 FilesSample.swift 9956ec0e9bf1b2d4
 FillSample.swift 16318f8118642298
@@ -57,7 +57,7 @@ HomeScreenSample.swift f289960bc846bd6b
 HostTimeSample.swift 5d3479731742a1f9
 IconButtonSample.swift 3becb5bca84feb1e
 IconSample.swift b1a186070a9f38de
-IdentitySample.swift b78ea8e98b7a4c77
+IdentitySample.swift c04f03fc953533f1
 ImageSample.swift 798ac3475ce4ff0a
 InteropActsSample.swift 79f28ec98d316859
 InteropControlSample.swift b139c0a32f33f926
@@ -92,7 +92,7 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
 OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift b1ea4d499122b858
-PanSample.swift 08349554ebc29a65
+PanSample.swift 2caac445cc49d841
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PickerSample.swift 86c5cbb290e05823
 PinchSample.swift e56e5f964acfbeee
@@ -101,9 +101,9 @@ PointerSample.swift 3306b3b76379bc70
 PollSample.swift 76ecb0076e0aa5e7
 PopoverSample.swift 9066bd443c9189ec
 PositionDotsSample.swift 85b6d17adabdccb8
-ProgressBarSample.swift f791be1b52dbc323
+ProgressBarSample.swift 37bc1e09a569cf35
 PropertyReadsSample.swift e16e08fd0fa40d8a
-ReaderSample.swift 778670ce97ad7532
+ReaderSample.swift ceca8c7001a22ce6
 RebuildSample.swift 68155193fabdfebd
 RecordEditingSample.swift ab65c66d0e641045
 RefreshSample.swift 1852b35610fe51d7
@@ -135,12 +135,12 @@ TabsSample.swift ed6e1048b5882531
 TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift e39db2a57b3c73ab
 TextEditorSample.swift 9cc806f939101a0a
-TextFieldSample.swift 2879b475804f7b12
+TextFieldSample.swift 043772b4777e0946
 TextSample.swift 96027a4daae86bbf
 TextSpanSample.swift d8a6a8c6c203ffa9
 TextStyleSample.swift bc3431302b799de2
 TickerSample.swift ecca16670e47a404
-TimePickerSample.swift 0163495d499bf35c
+TimePickerSample.swift fe7196bbae55642d
 ToolbarLayersSample.swift 4b02c24858d329d1
 ToolbarSample.swift 627d390b9c5688fa
 TooltipSample.swift 2482095fe75dc4cf
@@ -149,7 +149,7 @@ TransformSample.swift 42f89ce8b8c4c513
 TwoFingersSample.swift 28512e2bcf1a915d
 TwoLayersSample.swift 80cbb745c5e4b044
 VisualStateSample.swift cc801f94ff4a6291
-WebViewSample.swift 6f252352ca633b59
+WebViewSample.swift 7f82281c94fb7107
 WindowBarSample.swift b26f9a14eaad1822
 WindowOverlaySample.swift 8981ce550b77648d
 WindowPhaseSample.swift f5aeb0c8a83c4455

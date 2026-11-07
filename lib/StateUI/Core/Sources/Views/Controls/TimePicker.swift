@@ -35,8 +35,8 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     /// The node this control describes.
     public var node: Node
 
-    /// A time picker with no time supplied. Use `.time(_:)` to set or bind it.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: TimePickerContract.self)
     }
 
@@ -52,28 +52,13 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
         self = TimePicker().time(state)
     }
 
-    /// The time the field is showing, on a 24-hour clock whatever `.format`
-    /// draws. Usually given in the initializer.
-    ///
-    ///     TimePicker().time(ClockTime(hour: 7, minute: 30))
-    public func time(_ value: ClockTime) -> Modified {
+    /// The time it shows.
+    func time(_ value: ClockTime) -> Modified {
         setValue(TimePickerContract.time, value)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way time as `TimePicker($alarm)`, written as a modifier.
-    ///
-    ///     TimePicker($alarm)
-    ///     TimePicker().time($alarm)
-    ///
-    /// The host shows the state's time and writes back the one the user
-    /// chooses, with no view rebuilt for it. A time of more than a day is shown
-    /// folded into one day while the state keeps what was written.
-    ///
-    /// - Parameter state: the state shown, and written back into when a time
-    ///   is chosen.
-    /// - Returns: the control, wearing and reporting that time.
-    public func time(_ state: Binding<ClockTime>) -> Modified {
+    /// The time from a state carried both ways.
+    func time(_ state: Binding<ClockTime>) -> Modified {
         plain(.time, by: state, mode: .inOut)
     }
 

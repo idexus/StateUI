@@ -64,8 +64,7 @@ struct DrivenSample: SampleContent, ExampleContent {
             // A CONVERSION of the same driven value: the host works the words
             // out on its own frames, from where the marker HAS GOT TO, and
             // nothing here reads anything.
-            Text()
-                .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+            Text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontWeight(.bold)
                 .horizontalAlignment(.center)

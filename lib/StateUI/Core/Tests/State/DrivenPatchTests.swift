@@ -229,7 +229,7 @@ final class DrivenPatchTests: XCTestCase {
     func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
+        let page = try page(VStack { Text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
@@ -275,8 +275,8 @@ final class DrivenPatchTests: XCTestCase {
         let steps = State(wrappedValue: 3.0)
 
         let page = try page(VStack {
-            Slider().value(level.projectedValue)
-            Stepper().value(steps.projectedValue)
+            Slider(level.projectedValue)
+            Stepper(steps.projectedValue)
         }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
@@ -293,7 +293,7 @@ final class DrivenPatchTests: XCTestCase {
         let level = State(wrappedValue: 0.5)
 
         let page = try page(VStack {
-            Slider().value(level.projectedValue)
+            Slider(level.projectedValue)
             Rectangle().width(level.projectedValue)
         }.node)
 
@@ -380,8 +380,11 @@ final class DrivenPatchTests: XCTestCase {
 
                 values.formUnion(written.occurrences(between: "public func ", and: "(_ value:"))
 
-                // Each declaration starts afresh, so a body is never read as an earlier signature's.
-                if let name = written.occurrences(between: "public func ", and: "(").first {
+                // Each declaration starts afresh, so a body is never read as an earlier signature's - an internal
+                // one's included, which no application meets.
+                if written.contains("func "), !written.contains("public func ") {
+                    signature = nil
+                } else if let name = written.occurrences(between: "public func ", and: "(").first {
                     let type = written.occurrences(between: "Binding<", and: ">").first
                     signature = type.map { (name, $0) }
                 } else if let property = written.occurrences(between: "journey(", and: ",").first,
@@ -485,7 +488,7 @@ final class DrivenPatchTests: XCTestCase {
 
     /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
     ///
-    /// `Slider($v)` and `Slider().value($v)` are one thing said twice - the
+    /// `Slider($v)` and `Slider($v)` are one thing said twice - the
     /// initializer is the short way to say what gives a control its purpose,
     /// the modifier is how every other property is written, and neither is the
     /// real one. What this holds is that they describe the SAME NODE: the
@@ -509,15 +512,15 @@ final class DrivenPatchTests: XCTestCase {
         let flag = State(wrappedValue: true)
 
         same(Slider(number.projectedValue).node,
-             Slider().value(number.projectedValue).node, "Slider.value")
+             Slider(number.projectedValue).node, "Slider.value")
         same(Stepper(number.projectedValue).node,
-             Stepper().value(number.projectedValue).node, "Stepper.value")
+             Stepper(number.projectedValue).node, "Stepper.value")
         same(Switch(flag.projectedValue).node,
-             Switch().isOn(flag.projectedValue).node, "Switch.isOn")
+             Switch(flag.projectedValue).node, "Switch.isOn")
         same(CheckBox(flag.projectedValue).node,
-             CheckBox().isOn(flag.projectedValue).node, "CheckBox.isOn")
+             CheckBox(flag.projectedValue).node, "CheckBox.isOn")
         same(ProgressBar(number.projectedValue).node,
-             ProgressBar().progress(number.projectedValue).node, "ProgressBar.progress")
+             ProgressBar(number.projectedValue).node, "ProgressBar.progress")
         same(Spinner(flag.projectedValue).node,
              Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
         same(Switch("Sound", isOn: flag.projectedValue).node,
@@ -563,7 +566,7 @@ final class DrivenPatchTests: XCTestCase {
     }
 
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
-    /// `Slider().value($level)` says - over a `Journey`, and over a
+    /// `Slider($level)` says - over a `Journey`, and over a
     /// plain `Double`, which the host carries as a journey too. An author
     /// writes `Slider($x)` and the host walks it either way; what the
     /// declaration says is what can be read back.
@@ -598,27 +601,27 @@ final class DrivenPatchTests: XCTestCase {
         }
 
         registers(Slider(level.projectedValue),
-                  Slider().value(level.projectedValue), "Slider")
+                  Slider(level.projectedValue), "Slider")
         registers(Stepper(steps.projectedValue),
-                  Stepper().value(steps.projectedValue), "Stepper")
+                  Stepper(steps.projectedValue), "Stepper")
 
         // And over a plain `Double`, which the host walks as a journey too.
         let plain = State(wrappedValue: 0.5)
 
         registers(Slider(plain.projectedValue),
-                  Slider().value(plain.projectedValue), "Slider over a Double")
+                  Slider(plain.projectedValue), "Slider over a Double")
         registers(Stepper(plain.projectedValue),
-                  Stepper().value(plain.projectedValue), "Stepper over a Double")
+                  Stepper(plain.projectedValue), "Stepper over a Double")
 
         // The fields and the pickers, which the host carries both ways too.
         let text = State(wrappedValue: "a")
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
 
-        registers(TextField(text.projectedValue), TextField().text(text.projectedValue), "TextField")
-        registers(TextEditor(text.projectedValue), TextEditor().text(text.projectedValue), "TextEditor")
-        registers(SearchField(text.projectedValue), SearchField().text(text.projectedValue), "SearchField")
-        registers(DatePicker(due.projectedValue), DatePicker().date(due.projectedValue), "DatePicker")
-        registers(TimePicker(alarm.projectedValue), TimePicker().time(alarm.projectedValue), "TimePicker")
+        registers(TextField(text.projectedValue), TextField(text.projectedValue), "TextField")
+        registers(TextEditor(text.projectedValue), TextEditor(text.projectedValue), "TextEditor")
+        registers(SearchField(text.projectedValue), SearchField(text.projectedValue), "SearchField")
+        registers(DatePicker(due.projectedValue), DatePicker(due.projectedValue), "DatePicker")
+        registers(TimePicker(alarm.projectedValue), TimePicker(alarm.projectedValue), "TimePicker")
     }
 }

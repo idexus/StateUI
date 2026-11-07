@@ -260,7 +260,7 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = try await Aim(TextField.self).focus()"),
         Road(
             name: "a fill inside a line",
-            closed: "_ = Line().to(Point(40, 0)).fill(.red)",
+            closed: "_ = Line(from: Point(0, 0), to: Point(40, 0)).fill(.red)",
             open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
         Road(
             name: "a corner's join on an ellipse",
@@ -299,9 +299,17 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = State(wrappedValue: 0.0, motion: .custom)"#,
             open: #"_ = State(wrappedValue: 0.0, animatedBy: .engine)"#),
         Road(
+            name: "a purpose value given by a modifier",
+            closed: #"_ = CheckBox(State(wrappedValue: false).projectedValue).isOn(true)"#,
+            open: #"_ = CheckBox(State(wrappedValue: false).projectedValue)"#),
+        Road(
+            name: "a control made with no purpose value",
+            closed: #"_ = Slider()"#,
+            open: #"_ = Slider(0.5)"#),
+        Road(
             name: "a control's value given by a style",
             closed: #"_ = Style<Slider>().value(0.5)"#,
-            open: #"_ = Slider().value(0.5)"#),
+            open: #"_ = Slider(0.5)"#),
         Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,
@@ -313,7 +321,7 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "a picker opened by a style",
             closed: #"_ = Style<TimePicker>().isOpen(true)"#,
-            open: #"_ = TimePicker().isOpen(true)"#),
+            open: #"_ = TimePicker(ClockTime(hour: 7, minute: 30)).isOpen(true)"#),
         Road(
             name: "a field's words aligned down its box",
             closed: #"_ = TextField("Name").verticalTextAlignment(.center)"#,

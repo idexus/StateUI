@@ -7,26 +7,14 @@
 // Design: docs/design/views/bindings.md#driven-text
 
 extension Text {
-    /// What the label says, carried from a state: the host writes the text as
-    /// it changes, with no view rebuilt - only the label measured again.
-    ///
-    ///     @State private var caption = ""
-    ///
-    ///     Text().text($caption)
-    ///     …
-    ///     .engine(following: $level) { _ in
-    ///         caption = "\(Int($level.journey.value * 100))%"
-    ///     }
-    ///
-    /// - Parameter state: the state the words are read from.
-    /// - Returns: the label, with its text carried from that state.
-    public func text(_ state: Binding<String>) -> Text {
+    /// The words carried from a state - what `Text(_:)` of a state writes.
+    func text(_ state: Binding<String>) -> Text {
         setValue(TextualElementContract.text, on: state, mode: .out)
     }
 }
 
 extension Button {
-    /// What the button says, carried from a state; see `Text.text(_:)`.
+    /// What the button says, carried from a state: the host writes the text as it changes, with no view rebuilt.
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption carried from that state.

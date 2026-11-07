@@ -44,7 +44,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     /// The node this control describes.
     public var node: Node
 
-    /// Text with no words supplied. Use `.text(_:)` to set or bind them.
+    /// Text with no words of its own, which `.spans` gives it.
     public init() {
         node = Node(contract: TextContract.self)
     }
@@ -56,7 +56,11 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     }
 
     /// Words carried from a state, written by the host as it
-    /// changes, at no render.
+    /// changes, at no render - only the label measured again.
+    ///
+    ///     @State private var caption = ""
+    ///
+    ///     Text($caption)
     ///
     /// - Parameter state: the state the words are read from.
     public init(_ state: Binding<String>) {
@@ -102,19 +106,11 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
     /// The node this run describes.
     public var node: Node
 
-    /// An empty one, for a run built up by modifiers.
-    public init() {
-        node = Node(contract: TextSpanContract.self)
-    }
-
     /// A run showing `text`.
     public init(_ text: String) {
         node = Node(contract: TextSpanContract.self)
         node.write(TextualElementContract.text, text)
     }
-
-    /// What the run says: the same value the initializer takes, for a run built up by modifiers.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
 
     /// What is drawn behind this run - a highlight over part of a line; a blur
     /// or glass behind a run shows its color.

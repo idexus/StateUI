@@ -57,8 +57,7 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             row("3 · a caption from the conversion") {
                 // A caption from the conversion: words the host writes.
-                Text()
-                    .text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
+                Text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
                     .fontSize(17)
                 DebugInfoLabel()
             }
@@ -77,8 +76,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                         .step(5)
                         .minimum(-20)
                         .maximum(60)
-                    Text()
-                        .text($celsius.convert { "\(Int($0)) °C" })
+                    Text($celsius.convert { "\(Int($0)) °C" })
                         .fontSize(15)
                 }
                 .spacing(10)
@@ -89,8 +87,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                         .step(9)
                         .minimum(-4)
                         .maximum(140)
-                    Text()
-                        .text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
+                    Text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
                         .fontSize(15)
                 }
                 .spacing(10)
@@ -109,13 +106,12 @@ struct ConverterSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Height")
                     .minimum(20)
                     .maximum(200)
-                Text()
-                    // The sides as they are shown, whole, and their product - not the product of what
-                    // the sliders hold, which would disagree with the sides it names.
-                    .text(.multi($width, $height).convert { w, h in
-                        let (across, down) = (Int(w.rounded()), Int(h.rounded()))
-                        return "\(across) × \(down) = \(across * down)"
-                    })
+                // The sides as they are shown, whole, and their product - not the product of what
+                // the sliders hold, which would disagree with the sides it names.
+                Text(.multi($width, $height).convert { w, h in
+                    let (across, down) = (Int(w.rounded()), Int(h.rounded()))
+                    return "\(across) × \(down) = \(across * down)"
+                })
                     .fontSize(17)
                 DebugInfoLabel()
             }
@@ -137,8 +133,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 // two to ten of them, of any types the host carries. Nothing
                 // is read here, so typing above rewrites this caption without
                 // building it.
-                Text()
-                    .text(.multi($named, $width, $height)
+                Text(.multi($named, $width, $height)
                         .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
                     .fontSize(17)
                 DebugInfoLabel()

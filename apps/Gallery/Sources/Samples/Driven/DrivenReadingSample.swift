@@ -37,8 +37,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
             // The two readings, off ONE journey: `destination` is where the
             // value is going and `value` where it has got to.
-            Text()
-                .text($width.journey.convert {
+            Text($width.journey.convert {
                     "going to \(Int($0.destination)) — showing \(Int($0.value))"
                 })
                 .fontSize(17)

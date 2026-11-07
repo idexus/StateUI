@@ -673,10 +673,11 @@ A value the body computes is said again whenever the body is built again:
 
 ```swift
 struct EditorPage: View {
+    @State private var text = ""
     @State private var dirty = false
 
     var body: some View {
-        TextEditor()
+        TextEditor($text)
             .toolbar {
                 ToolbarButton("Save")
                     .isEnabled(dirty)

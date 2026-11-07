@@ -5,9 +5,10 @@
 A group of actions a page or a split view declares for its bar - one shared background where the platform draws one - and where it stands: a lone item stands in a group of its own.
 
 ```swift
+@State var notes = ""
 @State var edited = false
 
-TextEditor()
+TextEditor($notes)
     .onTextChanged { _ in edited = true }
     .toolbar {
         ToolbarButton("New").placement(at: .start)

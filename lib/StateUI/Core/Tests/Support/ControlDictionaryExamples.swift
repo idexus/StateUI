@@ -561,9 +561,10 @@ extension ControlDictionary {
             """#),
 
         (ToolbarGroupContract.self, #"""
+            @State var notes = ""
             @State var edited = false
 
-            TextEditor()
+            TextEditor($notes)
                 .onTextChanged { _ in edited = true }
                 .toolbar {
                     ToolbarButton("New").placement(at: .start)
@@ -700,8 +701,7 @@ extension ControlDictionary {
             """#),
 
         (ShapeContract.self, #"""
-            Line()
-                .to(Point(120, 0))
+            Line(from: Point(0, 0), to: Point(120, 0))
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])

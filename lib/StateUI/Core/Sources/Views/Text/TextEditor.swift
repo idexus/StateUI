@@ -36,8 +36,8 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
     /// The node this control describes.
     public var node: Node
 
-    /// An editor with no text supplied. Use `.text(_:)` to set or bind its text.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: TextEditorContract.self)
     }
 
@@ -53,20 +53,8 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
         self = TextEditor().text(state)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way text as `TextEditor($text)`, written as a modifier.
-    ///
-    ///     TextEditor($query)
-    ///     TextEditor().text($query)
-    ///
-    /// The host shows the state's text and writes back what the user types,
-    /// with no view rebuilt for it: a keystroke costs a render only in a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state shown, and written back into as the user
-    ///   types.
-    /// - Returns: the control, wearing and reporting that text.
-    public func text(_ state: Binding<String>) -> Modified {
+    /// Its text from a state carried both ways.
+    func text(_ state: Binding<String>) -> Modified {
         words(TextualElementContract.text.token, by: state, mode: .inOut)
     }
 

@@ -19,8 +19,8 @@ public struct Path: FilledShape, CorneredShape {
     /// The node this control describes.
     public var node: Node
 
-    /// A path with no outline. Use `.data(_:)` to supply its SVG path data.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: PathContract.self)
     }
 
@@ -30,7 +30,6 @@ public struct Path: FilledShape, CorneredShape {
         node.write(PathContract.data, data)
     }
 
-    /// The outline, in SVG path syntax - `"M 0,40 L 20,0 L 40,40 Z"`: the same value the initializer takes, for a
-    /// path made empty or one whose outline changes.
-    public func data(_ value: String) -> Modified { setValue(PathContract.data, value) }
+    /// Its outline, as SVG path data.
+    func data(_ value: String) -> Modified { setValue(PathContract.data, value) }
 }

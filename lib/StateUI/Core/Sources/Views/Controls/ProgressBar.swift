@@ -17,8 +17,8 @@ public struct ProgressBar: ElementView, TintElement {
     /// The node this control describes.
     public var node: Node
 
-    /// A progress bar with no fraction supplied. Use `.progress(_:)` to set or bind it.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: ProgressBarContract.self)
     }
 
@@ -39,15 +39,13 @@ public struct ProgressBar: ElementView, TintElement {
 }
 
 extension ProgressBar {
-    /// How far along, as a fraction from 0 to 1. The host clamps anything
-    /// outside that range.
-    public func progress(_ value: Double) -> Modified {
+    /// How far along it is.
+    func progress(_ value: Double) -> Modified {
         setValue(ProgressBarContract.progress, value)
     }
 
-    /// `progress` from a state, `$x`: the host animates the property to each
-    /// new value, and no view is rebuilt for it.
-    public func progress(_ state: Binding<Double>) -> Modified {
+    /// How far along, from a state carried by the host as a journey.
+    func progress(_ state: Binding<Double>) -> Modified {
         twin(ProgressBarContract.progress, by: state)
     }
 }

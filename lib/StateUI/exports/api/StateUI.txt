@@ -1335,7 +1335,6 @@ swift.init CalendarDate.init(year:month:day:): init(year: Int, month: Int, day: 
 swift.init Canvas.init(): @MainActor init()
 swift.init Canvas.init(drawing:): @MainActor init(@DrawingBuilder drawing: () -> [DrawCommand])
 swift.init Capsule.init(): @MainActor init()
-swift.init CheckBox.init(): @MainActor init()
 swift.init CheckBox.init(_:): @MainActor init(_ isOn: Bool)
 swift.init CheckBox.init(_:): @MainActor init(_ state: Binding<Bool>)
 swift.init CheckBox.init(_:isOn:): @MainActor init(_ text: String, isOn state: Binding<Bool>)
@@ -1346,11 +1345,9 @@ swift.init Color.init(hex:opacity:): init(hex: UInt32, opacity: Double = 1)
 swift.init Color.init(light:dark:): init(light: Color, dark: Color)
 swift.init Color.init(parsing:): init?(parsing text: String)
 swift.init Color.init(red:green:blue:opacity:): init(red: Int, green: Int, blue: Int, opacity: Double = 1)
-swift.init ColorPicker.init(): @MainActor init()
 swift.init ColorPicker.init(_:): @MainActor init(_ color: Color)
 swift.init ColorPicker.init(_:): @MainActor init(_ state: Binding<Color>)
 swift.init Connectivity.init(networkAccess:connectionProfiles:): @MainActor init(networkAccess: NetworkAccess = .unknown, connectionProfiles: [ConnectionProfile] = [])
-swift.init DatePicker.init(): @MainActor init()
 swift.init DatePicker.init(_:): @MainActor init(_ date: CalendarDate)
 swift.init DatePicker.init(_:): @MainActor init(_ state: Binding<CalendarDate>)
 swift.init DebugInspector.init(): @MainActor init()
@@ -1386,7 +1383,6 @@ swift.init HStack.init(content:): @MainActor init<Content>(@ViewBuilder content:
 swift.init HTTPMethod.init(_:): init(_ name: String)
 swift.init HTTPRequest.init(_:method:headers:body:): init(_ address: String, method: HTTPMethod = .get, headers: [String : String] = [:], body: [UInt8] = [])
 swift.init HTTPResponse.init(status:headers:body:): init(status: Int, headers: [String : String] = [:], body: [UInt8] = [])
-swift.init Image.init(): @MainActor init()
 swift.init Image.init(_:): @MainActor init(_ source: ImageSource)
 swift.init ImageSource.init(_:): init(_ file: String)
 swift.init ImageSource.init(bytes:): init(bytes: [UInt8])
@@ -1404,7 +1400,7 @@ swift.init Key.init(_:): init(_ character: Character)
 swift.init Key.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClusterLiteral value: Character)
 swift.init KeyPress.init(_:modifiers:): init(_ key: Key, modifiers: KeyModifiers = [])
 swift.init LayoutParameters.init(): init()
-swift.init Line.init(): @MainActor init()
+swift.init Line.init(from:to:): @MainActor init(from start: Binding<Point>, to end: Binding<Point>)
 swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: String)
@@ -1429,7 +1425,6 @@ swift.init MotionLayout.init(_:id:parameters:content:placements:): @MainActor in
 swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters) -> [Placement]) where ID == Items.Element, Content : View
 swift.init MotionLayout.init(_:parameters:content:placements:): @MainActor init<Content>(_ items: Items, parameters: Binding<Parameters>, @ViewBuilder content: @escaping (Items.Element) -> Content, placements: @escaping @MainActor @Sendable (Rect, Parameters, Parameters) -> [Placement]) where ID == Items.Element, Content : View
 swift.init NavigationStack.init(_:root:destination:): @MainActor init<Route, Root, Destination>(_ path: Binding<[Route]>, @ViewBuilder root: () -> Root, @ViewBuilder destination: @escaping (Route) -> Destination) where Route : Hashable, Root : View, Destination : View
-swift.init Path.init(): @MainActor init()
 swift.init Path.init(_:): @MainActor init(_ data: String)
 swift.init PersistentKey.init(_:): init(_ name: String)
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
@@ -1437,13 +1432,10 @@ swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [It
 swift.init Placement.init(_:transform:opacity:shade:zIndex:): init(_ bounds: Rect, transform: ViewTransform = .identity, opacity: Double = 1, shade: Double = 0, zIndex: Int = 0)
 swift.init Point.init(_:_:): init(_ x: Double, _ y: Double)
 swift.init Point.init(x:y:): init(x: Double, y: Double)
-swift.init Polygon.init(): @MainActor init()
 swift.init Polygon.init(_:): @MainActor init(_ points: [Point])
-swift.init Polyline.init(): @MainActor init()
 swift.init Polyline.init(_:): @MainActor init(_ points: [Point])
 swift.init PositionDots.init(): @MainActor init()
 swift.init PositionDots.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
-swift.init ProgressBar.init(): @MainActor init()
 swift.init ProgressBar.init(_:): @MainActor init(_ progress: Double)
 swift.init ProgressBar.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Rect.init(_:_:_:_:): init(_ x: Double, _ y: Double, _ width: Double, _ height: Double)
@@ -1453,13 +1445,11 @@ swift.init SceneKey.init(_:): init(_ name: String)
 swift.init SceneSession.init(): @MainActor convenience init()
 swift.init ScrollView.init(): @MainActor init()
 swift.init ScrollView.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
-swift.init SearchField.init(): @MainActor init()
 swift.init SearchField.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init SearchField.init(_:): @MainActor init(_ text: String)
 swift.init Section.init(_:content:): init<Items, Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Items : RandomAccessCollection, Content : View
 swift.init Section.init(_:id:content:): init<Items, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
 swift.init Separator.init(): @MainActor init()
-swift.init Slider.init(): @MainActor init()
 swift.init Slider.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Slider.init(_:): @MainActor init(_ value: Double)
 swift.init Space.init(): @MainActor init()
@@ -1475,7 +1465,6 @@ swift.init State.init(wrappedValue:animatedBy:): @MainActor convenience init(wra
 swift.init State.init(wrappedValue:motion:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, motion: Motion)
 swift.init State.init(wrappedValue:persistentKey:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, persistentKey key: PersistentKey<Value>)
 swift.init State.init(wrappedValue:sceneKey:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value, sceneKey key: SceneKey<Value>)
-swift.init Stepper.init(): @MainActor init()
 swift.init Stepper.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Stepper.init(_:): @MainActor init(_ value: Double)
 swift.init StyleKey.init(_:): init(_ name: String)
@@ -1485,7 +1474,6 @@ swift.init Styling.init(_:): @MainActor init(_ key: StyleKey<Target>)
 swift.init Styling.init(presentation:): @MainActor init(presentation: PickerPresentation)
 swift.init Styling.init(role:): @MainActor init(role: ButtonRole)
 swift.init SwipeDirections.init(_:): init(_ direction: SwipeDirection)
-swift.init Switch.init(): @MainActor init()
 swift.init Switch.init(_:): @MainActor init(_ isOn: Bool)
 swift.init Switch.init(_:): @MainActor init(_ state: Binding<Bool>)
 swift.init Switch.init(_:isOn:): @MainActor init(_ text: String, isOn state: Binding<Bool>)
@@ -1494,16 +1482,12 @@ swift.init TabView.init(_:destination:): @MainActor init<Tabs, Destination>(_ ta
 swift.init Text.init(): @MainActor init()
 swift.init Text.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init Text.init(_:): @MainActor init(_ text: String)
-swift.init TextEditor.init(): @MainActor init()
 swift.init TextEditor.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init TextEditor.init(_:): @MainActor init(_ text: String)
-swift.init TextField.init(): @MainActor init()
 swift.init TextField.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init TextField.init(_:): @MainActor init(_ text: String)
-swift.init TextSpan.init(): @MainActor init()
 swift.init TextSpan.init(_:): @MainActor init(_ text: String)
 swift.init Ticker.init(every:limit:onTick:): @MainActor init(every interval: Duration, limit: Int? = nil, onTick: Ticker.Tick? = nil)
-swift.init TimePicker.init(): @MainActor init()
 swift.init TimePicker.init(_:): @MainActor init(_ state: Binding<ClockTime>)
 swift.init TimePicker.init(_:): @MainActor init(_ time: ClockTime)
 swift.init TimeZoneName.init(_:): init(_ identifier: String)
@@ -1518,8 +1502,9 @@ swift.init ToolbarToggle.init(_:isOn:): @MainActor init(_ text: String, isOn: Bo
 swift.init VStack.init(): @MainActor init()
 swift.init VStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.init ViewTransform.init(): init()
-swift.init WebView.init(): @MainActor init()
 swift.init WebView.init(_:): @MainActor init(_ address: String)
+swift.init WebView.init(html:): @MainActor init(html: String)
+swift.init WebView.init(html:baseAddress:): @MainActor init(html: String, baseAddress: String?)
 swift.init Window.init(_:content:): @MainActor init<Content>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowGroup.init(_:content:): @MainActor init<Content>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ kind: WindowKind<Value>, @ViewBuilder content: @escaping (Binding<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
@@ -2176,6 +2161,7 @@ swift.method Button.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> 
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Button.text(_:): @MainActor func text(_ state: Binding<String>) -> Button
+swift.method Button.text(_:): @MainActor func text(_ value: String) -> Button
 swift.method Button.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Button.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
@@ -2647,8 +2633,6 @@ swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ state: Bind
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
-swift.method CheckBox.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> CheckBox.Modified
-swift.method CheckBox.isOn(_:): @MainActor func isOn(_ value: Bool) -> CheckBox.Modified
 swift.method CheckBox.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method CheckBox.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -2801,6 +2785,7 @@ swift.method CheckBox.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -
 swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method CheckBox.text(_:): @MainActor func text(_ state: Binding<String>) -> CheckBox
+swift.method CheckBox.text(_:): @MainActor func text(_ value: String) -> CheckBox
 swift.method CheckBox.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method CheckBox.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method CheckBox.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
@@ -2844,8 +2829,6 @@ swift.method ColorPicker.background(_:): @MainActor func background(_ value: Col
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method ColorPicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> ColorPicker
-swift.method ColorPicker.color(_:): @MainActor func color(_ state: Binding<Color>) -> ColorPicker.Modified
-swift.method ColorPicker.color(_:): @MainActor func color(_ value: Color) -> ColorPicker.Modified
 swift.method ColorPicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ColorPicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
@@ -3056,8 +3039,6 @@ swift.method DatePicker.background(_:): @MainActor func background(_ value: Colo
 swift.method DatePicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method DatePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DatePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
-swift.method DatePicker.date(_:): @MainActor func date(_ state: Binding<CalendarDate>) -> DatePicker.Modified
-swift.method DatePicker.date(_:): @MainActor func date(_ value: CalendarDate) -> DatePicker.Modified
 swift.method DatePicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -5505,7 +5486,6 @@ swift.method Image.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ 
 swift.method Image.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method Image.source(_:): @MainActor func source(_ value: ImageSource) -> Image.Modified
 swift.method Image.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Image.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Image.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -5796,8 +5776,6 @@ swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First,
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Line.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
-swift.method Line.from(_:): @MainActor func from(_ state: Binding<Point>) -> Line.Modified
-swift.method Line.from(_:): @MainActor func from(_ value: Point) -> Line.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -5961,8 +5939,6 @@ swift.method Line.subtitle(_:): @MainActor func subtitle(_ value: String) -> Sel
 swift.method Line.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
 swift.method Line.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Line.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
-swift.method Line.to(_:): @MainActor func to(_ state: Binding<Point>) -> Line.Modified
-swift.method Line.to(_:): @MainActor func to(_ value: Point) -> Line.Modified
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Line.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
@@ -6166,7 +6142,7 @@ swift.method Link.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> S
 swift.method Link.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Link.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Link.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Link.text(_:): @MainActor func text(_ value: String) -> Self.Modified
+swift.method Link.text(_:): @MainActor func text(_ value: String) -> Link.Modified
 swift.method Link.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Link.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Link.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
@@ -7112,7 +7088,6 @@ swift.method Path.contentMode(_:): @MainActor func contentMode(_ state: Binding<
 swift.method Path.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Path.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Path.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.data(_:): @MainActor func data(_ value: String) -> Path.Modified
 swift.method Path.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Path.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Path.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
@@ -7701,7 +7676,6 @@ swift.method Polygon.panX(_:): @MainActor func panX(_ state: Binding<Double>) ->
 swift.method Polygon.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.points(_:): @MainActor func points(_ value: [Point]) -> Polygon.Modified
 swift.method Polygon.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Polygon.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polygon.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
@@ -7915,7 +7889,6 @@ swift.method Polyline.panX(_:): @MainActor func panX(_ state: Binding<Double>) -
 swift.method Polyline.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.points(_:): @MainActor func points(_ value: [Point]) -> Polyline.Modified
 swift.method Polyline.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Polyline.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polyline.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
@@ -8323,8 +8296,6 @@ swift.method ProgressBar.pivotX(_:): @MainActor func pivotX(_ state: Binding<Dou
 swift.method ProgressBar.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
-swift.method ProgressBar.progress(_:): @MainActor func progress(_ state: Binding<Double>) -> ProgressBar.Modified
-swift.method ProgressBar.progress(_:): @MainActor func progress(_ value: Double) -> ProgressBar.Modified
 swift.method ProgressBar.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
@@ -9021,7 +8992,6 @@ swift.method SearchField.style(_:): @MainActor func style(_ key: StyleKey<Self>?
 swift.method SearchField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> SearchField.Modified
 swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method SearchField.text(_:): @MainActor func text(_ state: Binding<String>) -> SearchField.Modified
 swift.method SearchField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method SearchField.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
@@ -9460,8 +9430,6 @@ swift.method Slider.tooltip(_:): @MainActor func tooltip(_ state: Binding<String
 swift.method Slider.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Slider.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.value(_:): @MainActor func value(_ state: Binding<Double>) -> Slider.Modified
-swift.method Slider.value(_:): @MainActor func value(_ value: Double) -> Slider.Modified
 swift.method Slider.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Slider.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Slider.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -10292,8 +10260,6 @@ swift.method Stepper.tooltip(_:): @MainActor func tooltip(_ state: Binding<Strin
 swift.method Stepper.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Stepper.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.value(_:): @MainActor func value(_ state: Binding<Double>) -> Stepper.Modified
-swift.method Stepper.value(_:): @MainActor func value(_ value: Double) -> Stepper.Modified
 swift.method Stepper.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Stepper.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Stepper.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -10480,8 +10446,6 @@ swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ state: Bindin
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
-swift.method Switch.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> Switch.Modified
-swift.method Switch.isOn(_:): @MainActor func isOn(_ value: Bool) -> Switch.Modified
 swift.method Switch.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Switch.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -10634,6 +10598,7 @@ swift.method Switch.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> 
 swift.method Switch.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method Switch.text(_:): @MainActor func text(_ state: Binding<String>) -> Switch
+swift.method Switch.text(_:): @MainActor func text(_ value: String) -> Switch
 swift.method Switch.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Switch.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Switch.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
@@ -11052,7 +11017,6 @@ swift.method Text.spans(_:): @MainActor func spans(@TextSpanBuilder _ spans: () 
 swift.method Text.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Text.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Text.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Text.text(_:): @MainActor func text(_ state: Binding<String>) -> Text
 swift.method Text.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Text.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Text.textDecorations(_:): @MainActor func textDecorations(_ state: Binding<TextDecorations>) -> Self.Modified
@@ -11290,7 +11254,6 @@ swift.method TextEditor.stroke(_:): @MainActor func stroke(_ state: Binding<Colo
 swift.method TextEditor.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method TextEditor.text(_:): @MainActor func text(_ state: Binding<String>) -> TextEditor.Modified
 swift.method TextEditor.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method TextEditor.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextEditor.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
@@ -11525,7 +11488,6 @@ swift.method TextField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) 
 swift.method TextField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> TextField.Modified
 swift.method TextField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method TextField.text(_:): @MainActor func text(_ state: Binding<String>) -> TextField.Modified
 swift.method TextField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method TextField.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
@@ -11571,7 +11533,7 @@ swift.method TextProperties.lineBreak(_:): @MainActor func lineBreak(_ value: Li
 swift.method TextProperties.maximumLines(_:): @MainActor func maximumLines(_ value: Int) -> Self.Modified
 swift.method TextProperties.verticalTextAlignment(_:): @MainActor func verticalTextAlignment(_ value: TextAlignment) -> Self.Modified
 swift.method TextSpan.background(_:): @MainActor func background(_ value: Color) -> TextSpan.Modified
-swift.method TextSpan.background(_:): @MainActor func background(_ value: Material) -> TextSpan.Modified
+swift.method TextSpan.background(_:): @MainActor func background(_ value: Material) -> TextSpan
 swift.method TextSpan.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TextSpan.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextSpan.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -11588,13 +11550,11 @@ swift.method TextSpan.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_
 swift.method TextSpan.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method TextSpan.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextSpan.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextSpan.text(_:): @MainActor func text(_ value: String) -> TextSpan
 swift.method TextSpan.textCase(_:): @MainActor func textCase(_ value: TextCase) -> Self.Modified
 swift.method TextSpan.textColor(_:): @MainActor func textColor(_ value: Color) -> Self.Modified
 swift.method TextSpan.textDecorations(_:): @MainActor func textDecorations(_ value: TextDecorations) -> Self.Modified
 swift.method TextSpan.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
 swift.method TextSpan.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
-swift.method TextualElement.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method TextualElement.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method TextualElement.textCase(_:): @MainActor func textCase(_ value: TextCase) -> Self.Modified
 swift.method Ticker.reset(): @MainActor func reset()
@@ -11807,8 +11767,6 @@ swift.method TimePicker.subtitle(_:): @MainActor func subtitle(_ state: Binding<
 swift.method TimePicker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method TimePicker.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TimePicker.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
-swift.method TimePicker.time(_:): @MainActor func time(_ state: Binding<ClockTime>) -> TimePicker.Modified
-swift.method TimePicker.time(_:): @MainActor func time(_ value: ClockTime) -> TimePicker.Modified
 swift.method TimePicker.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method TimePicker.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
@@ -12565,8 +12523,6 @@ swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method WebView.source(_:): @MainActor func source(_ address: String) -> WebView.Modified
-swift.method WebView.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> WebView.Modified
 swift.method WebView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified

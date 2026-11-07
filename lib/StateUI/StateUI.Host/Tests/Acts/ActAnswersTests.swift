@@ -179,8 +179,8 @@ private struct TwoEditorsApplication: Application {
     var body: some Scene {
         WindowGroup {
             HStack {
-                VStack { TextField().text("left").id("editor").aim(TwoEditors.left) }
-                VStack { TextField().text("right").id("editor").aim(TwoEditors.right) }
+                VStack { TextField("left").id("editor").aim(TwoEditors.left) }
+                VStack { TextField("right").id("editor").aim(TwoEditors.right) }
             }
         }
     }

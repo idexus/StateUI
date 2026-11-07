@@ -150,7 +150,7 @@ final class WebLeaveTests: XCTestCase {
     func testAWebViewLetsGoOfItsDocumentsAddresses() throws {
         WebRenderer.shared?.finish()
         let document = State(wrappedValue: "<p>One</p>")
-        let host = WebRenderer.running { WebView().source(html: document.wrappedValue) }
+        let host = WebRenderer.running { WebView(html: document.wrappedValue) }
         host.step()
         let frame = try XCTUnwrap(host.views(WebFrameView.self).first?.named.node)
         let address = { try XCTUnwrap(WebBrowser.evaluate("e.src", on: frame)) }

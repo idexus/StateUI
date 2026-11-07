@@ -290,8 +290,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Text()
-                .text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
+            Text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
@@ -318,8 +317,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Text()
-                .text(volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" })
+            Text(volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)

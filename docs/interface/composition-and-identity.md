@@ -124,9 +124,10 @@ itself. Siblings sharing one identity are said once, naming which it is.
 ```swift
 struct FileRow: View {
     let path: String
+    @State private var name = ""
 
     var body: some View {
-        TextField()
+        TextField($name)
             .placeholder(path)
             .id(path)
     }
@@ -373,9 +374,10 @@ its own inspector window:
 ```swift
 struct EditorPage: View {
     @Environment(\.window) private var window
+    @State private var text = ""
 
     var body: some View {
-        TextEditor()
+        TextEditor($text)
             .toolbar { ToolbarButton.debugInspector(window) }
     }
 }

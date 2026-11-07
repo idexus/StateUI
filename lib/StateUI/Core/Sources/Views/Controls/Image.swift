@@ -33,8 +33,8 @@ public struct Image: ElementView, ImageElement, ImageProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An image with no picture source: `.source(_:)` gives it one.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: ImageContract.self)
     }
 
@@ -47,11 +47,8 @@ public struct Image: ElementView, ImageElement, ImageProperties {
 }
 
 extension Image {
-    /// The picture it shows: the same value the initializer takes, for an image made empty or one whose picture
-    /// changes.
-    ///
-    ///     Image().source("tab_list.png")
-    public func source(_ value: ImageSource) -> Modified {
+    /// Where its picture comes from.
+    func source(_ value: ImageSource) -> Modified {
         setValue(ImageContract.source, value)
     }
 

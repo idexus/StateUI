@@ -33,8 +33,8 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// A web view with no page loaded. Use `.source(_:)` or `.source(html:baseAddress:)` to supply one.
-    public init() {
+    /// A web view with no page, which a host's driver and the conformance cases make to prove what no source does.
+    @_spi(Host) public init() {
         node = Node(contract: WebViewContract.self)
     }
 
@@ -44,19 +44,23 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         self = setValue(WebViewContract.source, .address(address))
     }
 
-    /// The page it shows, by its address.
-    public func source(_ address: String) -> Modified {
+    /// A view on a document of its own.
+    public init(html: String) {
+        self = WebView().source(html: html)
+    }
+
+    /// A view on a document of its own, its relative addresses read against `baseAddress`.
+    public init(html: String, baseAddress: String?) {
+        self = WebView().source(html: html, baseAddress: baseAddress)
+    }
+
+    /// The page at an address.
+    func source(_ address: String) -> Modified {
         setValue(WebViewContract.source, .address(address))
     }
 
-    /// The page it shows, written here rather than fetched.
-    ///
-    ///     WebView().source(html: "<h1>Offline</h1>")
-    ///
-    /// - Parameter html: The document itself, not a path to one.
-    /// - Parameter baseAddress: What relative links in it resolve against, when
-    ///   there are any.
-    public func source(html: String, baseAddress: String? = nil) -> Modified {
+    /// A document of its own.
+    func source(html: String, baseAddress: String? = nil) -> Modified {
         setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
     }
 

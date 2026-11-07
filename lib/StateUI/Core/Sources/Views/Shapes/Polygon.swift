@@ -27,8 +27,8 @@ public struct Polygon: FilledShape, CorneredShape, PolygonProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A polygon with no points. Use `.points(_:)` to supply its corners.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: PolygonContract.self)
     }
 
@@ -40,13 +40,8 @@ public struct Polygon: FilledShape, CorneredShape, PolygonProperties {
 }
 
 extension Polygon {
-    /// The corners, in order, joined last back to first.
-    ///
-    ///     Polygon().points([Point(20, 0), Point(40, 40), Point(0, 40)])
-    ///
-    /// The numbers are device units in the shape's own space, which `.contentMode`
-    /// fits to the room the layout gives it.
-    public func points(_ value: [Point]) -> Modified {
+    /// Its corners.
+    func points(_ value: [Point]) -> Modified {
         setValue(PolygonContract.points, value)
     }
 

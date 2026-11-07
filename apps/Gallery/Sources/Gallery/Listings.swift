@@ -84,6 +84,9 @@ enum Listings {
         // Sources/Samples/State/AimSample.swift
         @State private var text = ""
 
+        /// What the second field holds.
+        @State private var second = ""
+
         /// The control an act is about. `.aim` puts the element's own identity in
         /// here as the differ walks, so nothing is named and nothing collides.
         @Aim(TextField.self) private var field
@@ -113,7 +116,7 @@ enum Listings {
                 // carried - and keeps the aim on its field all the same.
                 AimedField(aim: field, text: $text)
 
-                TextField()
+                TextField($second)
                     .placeholder("The second field")
                     .aim(both ? field : note)
 
@@ -407,8 +410,7 @@ enum Listings {
                     // A CONVERTED TEXT: an engine works it out from the same image
                     // the thumb is walking, on the display's frames, so the words
                     // keep up with the movement and cost no render.
-                    Text()
-                        .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                    Text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
 
                     // THE SAME DECLARATION as above, and the same spelling: what
                     // differs is that nothing here reads `level` at build.
@@ -425,8 +427,7 @@ enum Listings {
                 VStack {
                     DebugInfoLabel()
 
-                    Text()
-                        .text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                    Text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
 
                     Stepper($count)
                         .minimum(0)
@@ -1300,8 +1301,7 @@ enum Listings {
 
                 return VStack {
                     // A GET: this meter is a reader, and every report rebuilds it.
-                    ProgressBar()
-                        .progress(level)
+                    ProgressBar(level)
 
                     Text("a bar that reads the value — \(count)")
                 }
@@ -1319,8 +1319,7 @@ enum Listings {
                 return VStack {
                     // The words are the host's own arithmetic over the state, worked
                     // out on its frames - handing a conversion on reads nothing here.
-                    Text()
-                        .text($level.convert { "\(Int(($0 * 100).rounded()))%" })
+                    Text($level.convert { "\(Int(($0 * 100).rounded()))%" })
 
                     Text("a conversion of the same state — \(count)")
                 }
@@ -1452,6 +1451,9 @@ enum Listings {
         /// Words the host writes.
         @State private var hint = "Type here"   // words: the host writes them
 
+        /// What the user types into that field - its own text, which no row here reads.
+        @State private var typed = ""
+
         /// A value the host sets AND reports: the slider is handed `$level`
         /// both ways, and nothing here reads it.
         @State private var level = 0.25   // a value: set and reported
@@ -1498,7 +1500,7 @@ enum Listings {
                 SwitchRow("Shown", $shown)
 
                 row("4 · words the host writes - placeholder($hint)") {
-                    TextField()
+                    TextField($typed)
                         .placeholder($hint)
                     DebugInfoLabel()
                 }
@@ -2531,8 +2533,7 @@ enum Listings {
 
                 row("3 · a caption from the conversion") {
                     // A caption from the conversion: words the host writes.
-                    Text()
-                        .text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
+                    Text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
                     DebugInfoLabel()
                 }
 
@@ -2548,16 +2549,14 @@ enum Listings {
                             .step(5)
                             .minimum(-20)
                             .maximum(60)
-                        Text()
-                            .text($celsius.convert { "\(Int($0)) °C" })
+                        Text($celsius.convert { "\(Int($0)) °C" })
                     }
                     HStack {
                         Stepper($celsius.convert { $0 * 9 / 5 + 32 } back: { ($0 - 32) * 5 / 9 })
                             .step(9)
                             .minimum(-4)
                             .maximum(140)
-                        Text()
-                            .text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
+                        Text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
                     }
                     DebugInfoLabel()
                 }
@@ -2570,13 +2569,12 @@ enum Listings {
                     Slider($height)
                         .minimum(20)
                         .maximum(200)
-                    Text()
-                        // The sides as they are shown, whole, and their product - not the product of what
-                        // the sliders hold, which would disagree with the sides it names.
-                        .text(.multi($width, $height).convert { w, h in
-                            let (across, down) = (Int(w.rounded()), Int(h.rounded()))
-                            return "\(across) × \(down) = \(across * down)"
-                        })
+                    // The sides as they are shown, whole, and their product - not the product of what
+                    // the sliders hold, which would disagree with the sides it names.
+                    Text(.multi($width, $height).convert { w, h in
+                        let (across, down) = (Int(w.rounded()), Int(h.rounded()))
+                        return "\(across) × \(down) = \(across * down)"
+                    })
                     DebugInfoLabel()
                 }
 
@@ -2595,8 +2593,7 @@ enum Listings {
                     // two to ten of them, of any types the host carries. Nothing
                     // is read here, so typing above rewrites this caption without
                     // building it.
-                    Text()
-                        .text(.multi($named, $width, $height)
+                    Text(.multi($named, $width, $height)
                             .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
                     DebugInfoLabel()
                 }
@@ -2726,8 +2723,7 @@ enum Listings {
                     .isSpinning($spinning)
                     .horizontalAlignment(.center)
 
-                Text()
-                    .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
+                Text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
 
                 Slider($size)
                     .minimum(0.2)
@@ -3034,8 +3030,7 @@ enum Listings {
 
                 // The two readings, off ONE journey: `destination` is where the
                 // value is going and `value` where it has got to.
-                Text()
-                    .text($width.journey.convert {
+                Text($width.journey.convert {
                         "going to \(Int($0.destination)) — showing \(Int($0.value))"
                     })
 
@@ -3123,8 +3118,7 @@ enum Listings {
                 // A CONVERSION of the same driven value: the host works the words
                 // out on its own frames, from where the marker HAS GOT TO, and
                 // nothing here reads anything.
-                Text()
-                    .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                Text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                     .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
@@ -3235,8 +3229,7 @@ enum Listings {
 
                 ZStack {
                     // Off a driven state: written ten times a second, never described.
-                    Text()
-                        .text($reading)
+                    Text($reading)
                         .fontWeight(.bold)
                         .horizontalAlignment(.center)
                 }
@@ -5401,6 +5394,7 @@ enum Listings {
         private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
+            @State private var typed = ""
 
             var body: some View {
                 // The field takes what the name and the button leave.
@@ -5408,7 +5402,7 @@ enum Listings {
                     Text(item)
                         .verticalAlignment(.center)
 
-                    TextField()
+                    TextField($typed)
                         .placeholder("type here")
                         .gridColumn(1)
 
@@ -8895,8 +8889,7 @@ enum Listings {
 
                 // Two states into one conversion: the host works the words out
                 // from where the box HAS GOT TO, on its own frames.
-                Text()
-                    .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
+                Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
 
@@ -9431,13 +9424,10 @@ enum Listings {
                     .step(1)
                     .horizontalAlignment(.center)
 
-                SectionTitle("The same property, as a modifier")
+                SectionTitle("What is left")
 
-                // A bar built empty carries no value at all, so `.progress` is
-                // how one reaches it. This one shows what is LEFT, so the two
-                // move opposite ways.
-                ProgressBar()
-                    .progress(1 - done / steps)
+                // This one shows what is LEFT, so the two move opposite ways.
+                ProgressBar(1 - done / steps)
                     .height(8)
 
             }
@@ -9551,8 +9541,7 @@ enum Listings {
                 }
 
                 row("4 · a converted text") {
-                    Text()
-                        .text($value.convert { percent($0) })
+                    Text($value.convert { percent($0) })
                     DebugInfoLabel()
                 }
 
@@ -9655,8 +9644,7 @@ enum Listings {
                 ZStack {
                     VStack {
                         Text("1 · a state by binding")
-                        Text()
-                            .text($said)
+                        Text($said)
                         DebugInfoLabel()
                     }
                 }
@@ -11854,6 +11842,7 @@ enum Listings {
         @State private var email = ""
         @State private var done = 0
         @State private var hidden = true
+        @State private var password = ""
         @State private var user = ""
         @State private var newPassword = ""
         @State private var signInCode = ""
@@ -11902,7 +11891,7 @@ enum Listings {
                 TextField("read only")
                     .isReadOnly(true)
 
-                TextField()
+                TextField($password)
                     .placeholder("a password")
                     .isPassword(hidden)
                     .submitLabel(.done)
@@ -12209,10 +12198,9 @@ enum Listings {
 
                 SectionTitle("One-way, written back by hand")
 
-                // The same time, one-way: `.time` is what puts it in the field,
-                // and the write back is by hand.
-                TimePicker()
-                    .time(alarm)
+                // The same time, one-way: the plain value is what puts it in the
+                // field, and the write back is by hand.
+                TimePicker(alarm)
                     .format(.short)
                     .onTimeChanged { time in
                         alarm = time
@@ -13279,8 +13267,7 @@ enum Listings {
         "WrittenInPlacePart": #"""
         // Sources/Samples/Media/WebViewSample.swift
         var body: some View {
-            WebView()
-                .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
+            WebView(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
         }
         """#,
         "extending.md.properties": #"""

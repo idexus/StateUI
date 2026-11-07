@@ -127,8 +127,7 @@ private struct WrittenInPlacePart: ExampleContent {
 
     // listing: WrittenInPlacePart
     var body: some View {
-        WebView()
-            .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
+        WebView(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }
     // listing: end
 

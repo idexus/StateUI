@@ -124,7 +124,7 @@ private struct BrowsingPage: View {
         let browser = self.browser
         let heard = self.heard
         return VStack {
-            WebView().source(html: "<p>Written</p>")
+            WebView(html: "<p>Written</p>")
                 .aim(browser)
                 .canGoBack(into: $back)
                 .canGoForward(into: $forward)

@@ -160,20 +160,17 @@ layer holds it - a day past an end of the range at that end, a time added up
 from midnight round the day (`CalendarArithmetic`) - while the state keeps what
 was written; the user's next choice lands the value shown.
 
-## Both spellings
+## The purpose value is the initializer's
 
-A two-way control whose bound value is its purpose takes its binding in the
-initializer - the short way to say what gives the control its purpose - and in
-a modifier of the same name, the way every other property is written:
-`TextField($name)` and `TextField().text($name)`: `Switch($wifi)` and
-`Switch().isOn($wifi)`. A picker takes its values and the state holding the
-chosen one together, in its initializer alone:
-`Picker(sizes, selection: $size)`. The initializer
-delegates to the modifier, so there is one body and neither is the real one. A
-value modifier written beside the initializer's binding is a value beside a
-driven one: while the state is carried the control shows the state's value,
-the stated one standing only where the state has none - `Switch($wifi)
-.isOn(false)` shows `wifi` - and a visual state follows the same value.
+A control's purpose value - a switch's state, a slider's value, a field's text,
+a picker's choice - is given in its initializer alone, as a value or as a
+state: `Switch($wifi)`, `TextField($name)`, `Slider(0.5)`,
+`Picker(sizes, selection: $size)`. No modifier writes it a second way, and no
+control is made without it but `Text()` of runs, `Fill()` and `Map()`, which
+have a meaning of their own; `CheckBox($a).isOn($b)` does not compile. The
+initializer of a state builds on an internal modifier, so there is one body.
+Everything else about a control is a modifier - a switch's or a button's
+caption among them.
 
 ## A report lands before its handler
 

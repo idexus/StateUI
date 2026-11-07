@@ -31,8 +31,8 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// A slider with its default value and range, configured by modifiers.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: SliderContract.self)
     }
 
@@ -57,25 +57,13 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         self = Slider().value(state)
     }
 
-    /// Where the thumb stands, between `minimum` and `maximum`. Usually given
-    /// in the initializer.
-    public func value(_ value: Double) -> Modified {
+    /// Where the thumb stands.
+    func value(_ value: Double) -> Modified {
         setValue(SliderContract.value, value)
     }
 
-    // Design: docs/design/views/bindings.md#a-finger-takes-a-moving-thumb
-    /// The same two-way value as `Slider($value)`, written as a modifier.
-    ///
-    ///     Slider($volume)
-    ///     Slider().value($volume)
-    ///
-    /// A finger that takes a moving thumb stops its animation where the user
-    /// holds it, and an awaiting move resumes with `false`.
-    ///
-    /// - Parameter state: the state the thumb shows and writes back into,
-    ///   carried by the host as a journey.
-    /// - Returns: the control, wearing and reporting that value.
-    public func value(_ state: Binding<Double>) -> Modified {
+    /// The thumb's value from a state, carried by the host as a journey.
+    func value(_ state: Binding<Double>) -> Modified {
         journey(SliderContract.value.token, by: state)
     }
 

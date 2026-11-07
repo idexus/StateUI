@@ -192,7 +192,7 @@ final class ElementReleaseTests: XCTestCase {
             let fade = State(1.0)
 
             renders.render(stack([
-                Text().text(fade.projectedValue.convert { "\($0)" }).node,
+                Text(fade.projectedValue.convert { "\($0)" }).node,
             ], id: "root"))
             return fade.storage
         })
@@ -205,7 +205,7 @@ final class ElementReleaseTests: XCTestCase {
             let count = State(1)
 
             renders.render(stack([
-                Text().text(Binding.multi(name.projectedValue, count.projectedValue)
+                Text(Binding.multi(name.projectedValue, count.projectedValue)
                     .convert { "\($0) \($1)" }).node,
             ], id: "root"))
             return name.storage

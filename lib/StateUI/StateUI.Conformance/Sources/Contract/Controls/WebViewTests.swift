@@ -20,7 +20,7 @@
                 let heard = Received<String>()
                 s.start {
                     VStack {
-                        WebView().source(html: Self.page("First"))
+                        WebView(html: Self.page("First"))
                             .onNavigating { heard.values.append("navigating \($0.kind)") }
                             .onNavigated { heard.values.append("navigated \($0.result)") }
                             .height(200).id("web")
@@ -39,7 +39,7 @@
                 let arrived = Received<Bool>()
                 s.start {
                     VStack {
-                        WebView().source(html: Self.page("First")).aim(web)
+                        WebView(html: Self.page("First")).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Ask").onClicked(.ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
                     }
@@ -58,7 +58,7 @@
                 let arrived = Received<Bool>()
                 s.start {
                     VStack {
-                        WebView().userAgent("StateUI conformance").source(html: Self.page("First")).aim(web)
+                        WebView(html: Self.page("First")).userAgent("StateUI conformance").aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Ask").onClicked(.ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("navigator.userAgent"))
@@ -82,7 +82,7 @@
                 let arrived = Received<Bool>()
                 s.start {
                     VStack {
-                        WebView().source(html: Self.page(second.wrappedValue ? "Second" : "First")).aim(web)
+                        WebView(html: Self.page(second.wrappedValue ? "Second" : "First")).aim(web)
                             .onEvent(WebViewContract.canGoBackChanged) { heard.values.append("back \($0)") }
                             .onEvent(WebViewContract.canGoForwardChanged) { heard.values.append("forward \($0)") }
                             .onNavigated { _ in arrived.values.append(true) }
@@ -122,7 +122,7 @@
                 let arrived = Received<Bool>()
                 s.start {
                     VStack {
-                        WebView().source(html: Self.page("First")).aim(web)
+                        WebView(html: Self.page("First")).aim(web)
                             .onNavigating { heard.values.append($0.kind) }
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Reload").onClicked(.ignoreWhileRunning) { try await web.reload() }.id("reload")
@@ -146,7 +146,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        WebView().source(
+                        WebView(
                             html: Self.page(second.wrappedValue ? "Current" : "Previous"),
                             baseAddress: second.wrappedValue ? "https://stateui.invalid/" : nil)
                             .aim(web).onNavigated { result in
@@ -183,7 +183,7 @@
                     let said = Received<String>()
                     s.start {
                         VStack {
-                            (given.wrappedValue ? WebView().source(html: Self.page("New page")) : WebView())
+                            (given.wrappedValue ? WebView(html: Self.page("New page")) : WebView())
                                 .aim(web).onNavigating { began.values.append($0.kind) }
                                 .onNavigated { result in
                                     if result.result == .success { arrived.values.append(result.kind) }
@@ -216,7 +216,7 @@
                 let heard = Received<String>()
                 s.start {
                     VStack {
-                        WebView().source(html: Self.page("First"))
+                        WebView(html: Self.page("First"))
                             .onProcessTerminated { heard.values.append("ended") }.height(200).id("web")
                     }
                 }
@@ -235,7 +235,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        (given.wrappedValue ? WebView().source(html: Self.page("First")) : WebView()).aim(web)
+                        (given.wrappedValue ? WebView(html: Self.page("First")) : WebView()).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Change").onClicked(.ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText = 'Changed'"))

@@ -70,6 +70,7 @@
                 Covered(FocusElementContract.isFocusedChanged, on: "TextField"),
             ]) { s in
                 let order = State(wrappedValue: ["a", "b", "c"])
+                let typed = Dictionary(uniqueKeysWithValues: order.wrappedValue.map { ($0, State(wrappedValue: "")) })
                 let aim = FocusAim()
                 let heard = Received<Bool>()
                 let took = Received<Bool>()
@@ -79,12 +80,12 @@
                         VStack {
                             ForEach(order.wrappedValue) { name in
                                 if name == "a" {
-                                    Opened.aimed(TextField().placeholder(name), by: aim)
+                                    Opened.aimed(TextField(typed[name]!.projectedValue).placeholder(name), by: aim)
                                         .onEvent(FocusElementContract.isFocusedChanged) { heard.values.append($0) }
                                         .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 } else {
-                                    TextField().placeholder(name)
+                                    TextField(typed[name]!.projectedValue).placeholder(name)
                                         .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 }

@@ -121,7 +121,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostRefusesAReportThroughAnOutOnlyAttachment() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Text().text(caption.projectedValue).node)
+        let patch = renders.render(Text(caption.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the Text's state attachment")
@@ -137,7 +137,7 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostCyclePublishesAnApplicationStateWrite() throws {
         let caption = State("Waiting")
         let renders = Renders()
-        let patch = renders.render(Text().text(caption.projectedValue).node)
+        let patch = renders.render(Text(caption.projectedValue).node)
 
         guard case .replace(let driven)? = patch.driven else {
             return XCTFail("expected the Text's state attachment")

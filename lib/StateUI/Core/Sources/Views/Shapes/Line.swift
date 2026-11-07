@@ -16,8 +16,8 @@ public struct Line: Shape {
     /// The node this control describes.
     public var node: Node
 
-    /// A line whose endpoints are both the origin. Use `.from(_:)` and `.to(_:)` to set them.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: LineContract.self)
     }
 
@@ -27,24 +27,28 @@ public struct Line: Shape {
         node.write(LineContract.from, start)
         node.write(LineContract.to, end)
     }
+
+    /// A line between two states' points, carried by the host as journeys: a write sends an end there under the
+    /// element's motion, and no view is rebuilt for it.
+    public init(from start: Binding<Point>, to end: Binding<Point>) {
+        self = Line().from(start).to(end)
+    }
 }
 
 extension Line {
-    /// Where it starts.
-    public func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
+    /// Where the line starts.
+    func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
 
-    /// `from` from a state, `$start`: the host animates the start to each new
-    /// point, and no view is rebuilt for it.
-    public func from(_ state: Binding<Point>) -> Modified {
+    /// Where it starts, from a state carried by the host as a journey.
+    func from(_ state: Binding<Point>) -> Modified {
         twin(LineContract.from, by: state)
     }
 
-    /// Where it ends.
-    public func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
+    /// Where the line ends.
+    func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
 
-    /// `to` from a state, `$end`: the host animates the end to each new point,
-    /// and no view is rebuilt for it.
-    public func to(_ state: Binding<Point>) -> Modified {
+    /// Where it ends, from a state carried by the host as a journey.
+    func to(_ state: Binding<Point>) -> Modified {
         twin(LineContract.to, by: state)
     }
 }

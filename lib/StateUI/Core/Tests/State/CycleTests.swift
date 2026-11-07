@@ -841,7 +841,7 @@ final class CycleTests: XCTestCase {
         let source = State(wrappedValue: 1.0)
         let words = source.projectedValue.convert { "\(Int($0))" }
 
-        renders.render(stack([Slider(source.projectedValue).node, Text().text(words).node]))
+        renders.render(stack([Slider(source.projectedValue).node, Text(words).node]))
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(words.wrappedValue, "1")

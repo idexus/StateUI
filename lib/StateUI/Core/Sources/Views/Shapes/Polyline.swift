@@ -30,8 +30,8 @@ public struct Polyline: FilledShape, CorneredShape, PolylineProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// A polyline with no points. Use `.points(_:)` to supply its vertices.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: PolylineContract.self)
     }
 
@@ -43,14 +43,8 @@ public struct Polyline: FilledShape, CorneredShape, PolylineProperties {
 }
 
 extension Polyline {
-    /// The points, in order, left open - the last is not joined back to the
-    /// first.
-    ///
-    ///     Polyline().points([Point(0, 30), Point(20, 5), Point(40, 25)])
-    ///
-    /// The numbers are device units in the shape's own space, which `.contentMode`
-    /// fits to the room the layout gives it.
-    public func points(_ value: [Point]) -> Modified {
+    /// Its vertices.
+    func points(_ value: [Point]) -> Modified {
         setValue(PolylineContract.points, value)
     }
 

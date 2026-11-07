@@ -47,8 +47,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
             ZStack {
                 // Off a driven state: written ten times a second, never described.
-                Text()
-                    .text($reading)
+                Text($reading)
                     .fontSize(44)
                     .fontWeight(.bold)
                     .horizontalTextAlignment(.center)
@@ -124,7 +123,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.text($reading)` takes its words off a driven state the engine writes "
+            Text("`Text($reading)` takes its words off a driven state the engine writes "
                 + "on the display's own frame, and the button's caption is driven the same "
                 + "way by the handler that toggles the clock: one tap starts the clock and "
                 + "renames the button, and neither is a render. Driven text is written onto "

@@ -135,8 +135,8 @@ final class IdentityTests: XCTestCase {
         let left = Aim(TextField.self), right = Aim(TextField.self)
         func page() -> Node {
             HStack {
-                VStack { TextField().text("left").id("editor").aim(left) }
-                VStack { TextField().text("right").id("editor").aim(right) }
+                VStack { TextField("left").id("editor").aim(left) }
+                VStack { TextField("right").id("editor").aim(right) }
             }.node
         }
 

@@ -102,8 +102,7 @@ private struct ReadingMeter: View {
 
         return VStack {
             // A GET: this meter is a reader, and every report rebuilds it.
-            ProgressBar()
-                .progress(level)
+            ProgressBar(level)
                 .tint(Palette.accent)
 
             Text("a bar that reads the value — \(count)")
@@ -127,8 +126,7 @@ private struct ConvertedMeter: View {
         return VStack {
             // The words are the host's own arithmetic over the state, worked
             // out on its frames - handing a conversion on reads nothing here.
-            Text()
-                .text($level.convert { "\(Int(($0 * 100).rounded()))%" })
+            Text($level.convert { "\(Int(($0 * 100).rounded()))%" })
                 .fontSize(17)
 
             Text("a conversion of the same state — \(count)")
