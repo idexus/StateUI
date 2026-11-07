@@ -44,8 +44,8 @@ extension Device {
     /// Whether the platform the application runs on honors `member` - its host realizes it. Where it does not,
     /// writing the member changes nothing, so a view may leave out what asks for it; the platform contract says why.
     ///
-    ///     if device.honors(PickerContract.isOpen) {
-    ///         Button("Open the list").onClicked { showing = true }
+    ///     if device.honors(MapContract.showsTraffic) {
+    ///         Switch("Traffic", isOn: $traffic)
     ///     }
     public func honors<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
         HostRealizations.honors(member.token.key, of: member.owner)
@@ -54,6 +54,25 @@ extension Device {
     /// Whether the platform the application runs on raises `event` - its host realizes it.
     public func honors<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) -> Bool {
         HostRealizations.honors(event.token.key, of: event.owner)
+    }
+
+    /// Whether the platform the application runs on honors a tier's `member` on `element` - its host realizes it
+    /// there; another element wearing the tier may differ.
+    ///
+    ///     if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
+    ///         Button("Open the list").onClicked { showing = true }
+    ///     }
+    public func honors<Owner: Tier, Value, Element: ElementContract>(
+        _ member: ElementProperty<Owner, Value>, on element: Element.Type
+    ) -> Bool {
+        HostRealizations.honors(member.name, of: Owner.name, on: Element.name)
+    }
+
+    /// Whether the platform the application runs on raises a tier's `event` on `element`.
+    public func honors<Owner: Tier, Payload, Element: ElementContract>(
+        _ event: ElementEvent<Owner, Payload>, on element: Element.Type
+    ) -> Bool {
+        HostRealizations.honors(event.name, of: Owner.name, on: Element.name)
     }
 
     /// Whether the platform the application runs on performs `act` - its host realizes it.

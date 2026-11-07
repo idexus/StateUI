@@ -38,59 +38,6 @@
                 s.expect(try s.held(DatePickerContract.date, on: picker), CalendarDate(year: 2027, month: 1, day: 1))
                 s.expect(heard.values.count, 1, "the program's day heard by nobody")
             },
-            ConformanceCase("theCalendarTheUserOpensAndClosesIsHeard", proves: [
-                Covered(DatePickerContract.isOpen), Covered(DatePickerContract.opened), Covered(DatePickerContract.closed),
-            ]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        DatePicker(CalendarDate(year: 2026, month: 9, day: 25))
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed { heard.values.append("closed") }
-                            .id("picker")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.open, on: picker)
-                s.settle { heard.values == ["opened"] }
-                s.expect(try s.held(DatePickerContract.isOpen, on: picker), true)
-                try s.perform(.close, on: picker)
-                s.settle { heard.values.count == 2 }
-
-                s.expect(heard.values, ["opened", "closed"])
-                s.expect(try s.held(DatePickerContract.isOpen, on: picker), false)
-            },
-            ConformanceCase("theCalendarTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
-                Covered(DatePickerContract.isOpen), Covered(DatePickerContract.closed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let showing = State(wrappedValue: false)
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        DatePicker(CalendarDate(year: 2026, month: 9, day: 25))
-                            .isOpen(showing.wrappedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed {
-                                heard.values.append("closed")
-                                showing.wrappedValue = false
-                            }
-                            .id("picker")
-                        Button("Open").onClicked { showing.wrappedValue = true }.id("open")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.activate, on: s.element("open"))
-                try s.settle { try s.held(DatePickerContract.isOpen, on: picker) == true }
-                s.expect(try s.held(DatePickerContract.isOpen, on: picker), true)
-                s.turn()
-                s.expect(heard.values, [], "the program's opening heard by nobody")
-
-                try s.perform(.close, on: picker)
-                s.settle { heard.values == ["closed"] }
-                s.expect(heard.values, ["closed"], "the user closing what the program opened")
-            },
             ConformanceCase("aDayOutsideTheCalendarOrTheRangeIsHeldByTheRule", proves: [
                 Covered(DatePickerContract.date),
             ], needs: [Covered(DatePickerContract.maximum), Covered(ButtonContract.clicked)]) { s in

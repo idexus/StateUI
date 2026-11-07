@@ -9064,7 +9064,7 @@ enum Listings {
                     .onOpened { opened += 1 }
 
                 // Only where the platform opens a list at the program's asking.
-                if device.honors(PickerContract.isOpen) {
+                if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
                     Button("Open the list")
                         .onClicked { showing = true }
                         .horizontalAlignment(.center)
@@ -9155,8 +9155,8 @@ enum Listings {
 
         var body: some View {
             VStack {
-                supported("Opening a picker's list", device.honors(PickerContract.isOpen))
-                supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+                supported("Opening a picker's list", device.honors(PopupElementContract.isOpen, on: PickerContract.self))
+                supported("Hearing a picker's list open", device.honors(PopupElementContract.opened, on: PickerContract.self))
                 supported("A tooltip", device.honors(VisualElementContract.tooltip))
                 supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
             }

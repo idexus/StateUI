@@ -14,7 +14,7 @@ Picker(["Small", "Medium", "Large"], selection: $size)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [PopupElement](tiers/PopupElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,11 +35,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (96)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 4 ☑️ · 41 ✓ · 5 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>ComboBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 4 ☑️ · 24 ✓ · 12 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 20 ✓ · 17 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>42 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>65 ✅ · 5 ☑️ · 12 ✓ · 4 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>66 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>ComboBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>52 ✅ · 4 ☑️ · 24 ✓ · 8 –</td><td><code>GtkDropDown</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>46 ✅ · 1 ☑️ · 20 ✓ · 14 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -48,22 +48,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">⏸</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet<br>UIKit: waits on Picker.isOpen, not realized yet<br>Android Views: cannot open on Picker - Android's driver has no path for it yet<br>GTK 4: GTK's drop-down tells no one its list opened or closed.<br>Web: The browser says nothing as a picker's list or calendar closes.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center"></td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet<br>UIKit: not realized<br>Android Views: cannot open on Picker - Android's driver has no path for it yet<br>GTK 4: GTK's drop-down tells no one its list opened or closed.<br>Web: The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">⏸</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet<br>UIKit: waits on Picker.isOpen, not realized yet<br>Android Views: cannot open on Picker - Android's driver has no path for it yet<br>GTK 4: GTK's drop-down tells no one its list opened or closed.<br>Web: The browser says nothing as a picker's list or calendar opens.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>options</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: read options of Picker: the host's own choice, not the menu's<br>Android Views: only through the host's own: read options of Picker: the rows the relay keeps, not the spinner's</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: GTK's drop-down shows a choice or nothing: it has no words standing for none.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>presentation</code></td><td>property</td><td><code>PickerPresentation</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit has no radio buttons: <code>.radio</code> is a column of its buttons, each marked by a filled or an empty circle.<br>Android Views: Android has no segmented control: <code>.segmented</code> is a radio group in a row.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onSelectionChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: choose on Picker: the host's action called, not the pop-up's<br>UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>options</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>presentation</code></td><td>property</td><td><code>PickerPresentation</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onSelectionChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: choose on Picker: the host's action called, not the pop-up's</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -211,6 +201,20 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Picker: the view's listening handed the recognizer's states, no touch sent<br>Web: The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [PopupElement](tiers/PopupElement.md)
+
+What a control whose choices open in a list of their own holds and reports: a picker, a date's and a time's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>isOpen</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onOpened</code> (<code>opened</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onClosed</code> (<code>closed</code>)</td><td>event</td><td></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read isOpen of Picker - AppKit's driver has no path for it yet</td></tr></tbody>
 </table>
 
 ## From [TextColorElement](tiers/TextColorElement.md)

@@ -214,6 +214,7 @@ swift.conformance DatePicker: StateUI.FocusElement
 swift.conformance DatePicker: StateUI.FontElement
 swift.conformance DatePicker: StateUI.KeyboardElement
 swift.conformance DatePicker: StateUI.ModifiableElement
+swift.conformance DatePicker: StateUI.PopupElement
 swift.conformance DatePicker: StateUI.PropertyContainer
 swift.conformance DatePicker: StateUI.StyleTarget
 swift.conformance DatePicker: StateUI.TextColorElement
@@ -667,6 +668,7 @@ swift.conformance Picker: StateUI.FontElement
 swift.conformance Picker: StateUI.KeyboardElement
 swift.conformance Picker: StateUI.ModifiableElement
 swift.conformance Picker: StateUI.PickerProperties
+swift.conformance Picker: StateUI.PopupElement
 swift.conformance Picker: StateUI.PropertyContainer
 swift.conformance Picker: StateUI.StyleTarget
 swift.conformance Picker: StateUI.TextAlignmentElement
@@ -719,6 +721,15 @@ swift.conformance PolylineContract: StateUI.ElementContract
 swift.conformance PolylineProperties: StateUI.PropertyContainer
 swift.conformance PopoverContract: StateUI.Contract
 swift.conformance PopoverContract: StateUI.ElementContract
+swift.conformance PopupElement: StateUI.AutomationElement
+swift.conformance PopupElement: StateUI.Element
+swift.conformance PopupElement: StateUI.ElementView
+swift.conformance PopupElement: StateUI.ModifiableElement
+swift.conformance PopupElement: StateUI.PropertyContainer
+swift.conformance PopupElement: StateUI.ViewProperties
+swift.conformance PopupElement: StateUI.VisualElement
+swift.conformance PopupElement: StateUI.VisualElementProperties
+swift.conformance PopupElementContract: StateUI.Contract
 swift.conformance PositionDots: StateUI.AutomationElement
 swift.conformance PositionDots: StateUI.Element
 swift.conformance PositionDots: StateUI.ModifiableElement
@@ -1227,6 +1238,7 @@ swift.conformance TimePicker: StateUI.FocusElement
 swift.conformance TimePicker: StateUI.FontElement
 swift.conformance TimePicker: StateUI.KeyboardElement
 swift.conformance TimePicker: StateUI.ModifiableElement
+swift.conformance TimePicker: StateUI.PopupElement
 swift.conformance TimePicker: StateUI.PropertyContainer
 swift.conformance TimePicker: StateUI.StyleTarget
 swift.conformance TimePicker: StateUI.TextColorElement
@@ -2519,6 +2531,7 @@ swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyCont
 swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
 swift.protocol PolygonProperties: @MainActor protocol PolygonProperties : PropertyContainer
 swift.protocol PolylineProperties: @MainActor protocol PolylineProperties : PropertyContainer
+swift.protocol PopupElement: @MainActor protocol PopupElement : ElementView
 swift.protocol PropertyContainer: @MainActor protocol PropertyContainer
 swift.protocol RectangleProperties: @MainActor protocol RectangleProperties : PropertyContainer
 swift.protocol RefreshElement: @MainActor protocol RefreshElement : View
@@ -3107,6 +3120,8 @@ swift.type.property PopoverContract.layer: static var layer: ElementLayer { get 
 swift.type.property PopoverContract.members: static let members: [any ContractMember]
 swift.type.property PopoverContract.nodeType: static let nodeType: NodeType
 swift.type.property PopoverContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property PopupElementContract.members: static let members: [any ContractMember]
+swift.type.property PopupElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ProgressBar.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ProgressBarContract.layer: static let layer: ElementLayer
 swift.type.property ProgressBarContract.layer: static var layer: ElementLayer { get }

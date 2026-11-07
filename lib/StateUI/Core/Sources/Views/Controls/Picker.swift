@@ -37,7 +37,7 @@ extension PickerProperties {
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
 public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties, FocusElement {
+    PickerProperties, FocusElement, PopupElement {
     /// The node this control describes.
     public var node: Node
 
@@ -105,53 +105,9 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         onEvent(PickerContract.selectedIndexChanged, gate: gate) { (_: Int) in try await handler() }
     }
 
-    /// The user has opened the list of choices. Opening it with `isOpen(true)`
-    /// raises nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(PickerContract.opened, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.opened, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.opened, gate: gate, handler)
-    }
-
-    /// The user has closed it - by a choice, a click outside or the platform's
-    /// own dismissal.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(PickerContract.closed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.closed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.closed, gate: gate, handler)
-    }
 }
 
 extension Picker {
-    /// Shows or dismisses the list of choices. The user may still close it by
-    /// choosing, clicking away or pressing Escape, which `onClosed` reports.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(PickerContract.isOpen, value)
-    }
-
-    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the list as the state stands, and the
-    /// user's opening and closing come back into it; no view is rebuilt for it.
-    public func isOpen(_ state: Binding<Bool>) -> Modified {
-        opening(PickerContract.isOpen, by: state, opened: PickerContract.opened, closed: PickerContract.closed)
-    }
 
     /// `placeholder` from a state, `$x`: the host writes each new text, and no
     /// view is rebuilt for it.

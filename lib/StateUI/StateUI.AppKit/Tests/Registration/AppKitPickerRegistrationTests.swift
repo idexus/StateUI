@@ -28,14 +28,14 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Picker", owner: "Picker", member: "selectedIndex")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Picker", owner: "Picker", member: "opened")))
+            HostRealizedMember(element: "Picker", owner: "PopupElement", member: "opened")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "DatePicker", owner: "DatePicker", member: "date")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TimePicker", owner: "TimePicker", member: "timeChanged")))
 
         XCTAssertFalse(realization.members.contains(
-            HostRealizedMember(element: "DatePicker", owner: "DatePicker", member: "opened")),
+            HostRealizedMember(element: "DatePicker", owner: "PopupElement", member: "opened")),
             "a native date picker has no moment of opening, so the host claims none")
     }
 

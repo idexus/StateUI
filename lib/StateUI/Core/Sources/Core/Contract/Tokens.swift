@@ -179,7 +179,7 @@ extension NodeType {
     static let isEnabled = VisualElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
     static let isMinimizable = WindowContract.isMinimizable.token
-    static let isOpen = DatePickerContract.isOpen.token
+    static let isOpen = PopupElementContract.isOpen.token
     static let isPassword = TextFieldContract.isPassword.token
     static let showsSidebar = SplitViewContract.showsSidebar.token
     static let showsSidebarToggle = SplitViewContract.showsSidebarToggle.token
@@ -301,7 +301,7 @@ extension NodeType {
     static let canGoBackChanged = WebViewContract.canGoBackChanged.token
     static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
     static let clicked = ActionElementContract.clicked.token
-    static let closed = DatePickerContract.closed.token
+    static let closed = PopupElementContract.closed.token
     static let dateChanged = DatePickerContract.dateChanged.token
     static let endReached = ItemsViewContract.endReached.token
     static let itemActivated = ItemsViewContract.itemActivated.token
@@ -337,7 +337,7 @@ extension NodeType {
     static let navigatedTo = PageContract.navigatedTo.token
     static let navigating = WebViewContract.navigating.token
     static let navigatingFrom = PageContract.navigatingFrom.token
-    static let opened = DatePickerContract.opened.token
+    static let opened = PopupElementContract.opened.token
     static let held = ViewContract.held.token
     static let colorChanged = ColorPickerContract.colorChanged.token
     static let panUpdated = ViewContract.panUpdated.token

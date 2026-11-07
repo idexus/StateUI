@@ -82,6 +82,19 @@ enum HostRealizations {
         honored.contains(Owned(owner: owner, member: member))
     }
 
+    /// Whether the host realizes `member` of the tier `tier` on `element` - in full or in part - by its register,
+    /// else by what it said it realizes.
+    /// Design: docs/design/core/contracts.md#what-a-platform-honors
+    static func honors(_ member: String, of tier: String, on element: String) -> Bool {
+        guard let register else {
+            return realized.contains(Owned(owner: KeyName(tier), member: KeyName(member)))
+        }
+        switch register.judgment(of: member, on: element, from: tier) {
+        case .complete?, .partial?: return true
+        default: return false
+        }
+    }
+
     /// Whether the host said it realizes `member` of the contract `owner`, on any element.
     static func realizes(_ member: KeyName, of owner: KeyName) -> Bool {
         realized.contains(Owned(owner: owner, member: member))

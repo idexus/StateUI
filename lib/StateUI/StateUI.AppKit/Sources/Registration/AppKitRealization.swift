@@ -298,11 +298,13 @@ enum AppKitRealization {
     private static let dayPickers: [HostRecord] = {
         let opens = "AppKit's date picker opens no calendar for the program, nor says when the user opens one."
         let opening: [any ContractMember] = [
-            DatePickerContract.isOpen, DatePickerContract.opened, DatePickerContract.closed,
-            TimePickerContract.isOpen, TimePickerContract.opened, TimePickerContract.closed,
+            PopupElementContract.isOpen, PopupElementContract.opened, PopupElementContract.closed,
         ]
+        let pickers: [any Contract.Type] = [DatePickerContract.self, TimePickerContract.self]
         let written = "AppKit's date picker writes its day and time in the user's own way, whatever form is asked."
-        return opening.map { member -> HostRecord in .notPlanned(member, reason: opens) } + [
+        return pickers.flatMap { picker in
+            opening.map { member -> HostRecord in .notPlanned(member, on: picker, reason: opens) }
+        } + [
             .notPlanned(DatePickerContract.format, reason: written), .notPlanned(TimePickerContract.format, reason: written),
         ]
     }()

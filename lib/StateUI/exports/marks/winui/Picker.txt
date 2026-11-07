@@ -1,8 +1,5 @@
 # revision 4.1
 Picker: ✅
-Picker.closed: ✅
-Picker.isOpen: ✅
-Picker.opened: ✅
 Picker.options: ✅
 Picker.placeholder: ✅
 Picker.presentation: ✅

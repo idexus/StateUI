@@ -18,6 +18,7 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
+        PopupElementContract.self,
         ToggleElementContract.self,
         TextColorElementContract.self,
         FontElementContract.self,

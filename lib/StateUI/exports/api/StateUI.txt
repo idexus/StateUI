@@ -617,6 +617,11 @@ swift.conformance PolylineContract: StateUI.WornContract
 swift.conformance PolylineContract: Swift.Sendable
 swift.conformance PopoverContract: StateUI.WornContract
 swift.conformance PopoverContract: Swift.Sendable
+swift.conformance PopupElement: StateUI.View
+swift.conformance PopupElement: StateUI.Views
+swift.conformance PopupElementContract: StateUI.Tier
+swift.conformance PopupElementContract: StateUI.WornContract
+swift.conformance PopupElementContract: Swift.Sendable
 swift.conformance PositionDots: StateUI.View
 swift.conformance PositionDots: StateUI.Views
 swift.conformance PositionDots: Swift.Sendable
@@ -1079,6 +1084,7 @@ swift.enum PickerPresentation: enum PickerPresentation
 swift.enum PolygonContract: enum PolygonContract
 swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
+swift.enum PopupElementContract: enum PopupElementContract
 swift.enum ProgressBarContract: enum ProgressBarContract
 swift.enum RectangleContract: enum RectangleContract
 swift.enum RefreshElementContract: enum RefreshElementContract
@@ -3200,8 +3206,8 @@ swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bo
 swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> DatePicker.Modified
-swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> DatePicker.Modified
+swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method DatePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method DatePicker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -3229,9 +3235,9 @@ swift.method DatePicker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_
 swift.method DatePicker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method DatePicker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
 swift.method DatePicker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method DatePicker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> DatePicker.Modified
-swift.method DatePicker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> DatePicker.Modified
-swift.method DatePicker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> DatePicker.Modified
+swift.method DatePicker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DatePicker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDateChanged(_:): @MainActor func onDateChanged(_ handler: @escaping @MainActor @Sendable (CalendarDate) throws -> Void) -> DatePicker.Modified
 swift.method DatePicker.onDateChanged(_:_:): @MainActor func onDateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<CalendarDate>) -> DatePicker.Modified
@@ -3283,9 +3289,9 @@ swift.method DatePicker.onNavigatedTo(gate:_:): @MainActor func onNavigatedTo(ga
 swift.method DatePicker.onNavigatingFrom(_:): @MainActor func onNavigatingFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onNavigatingFrom(_:_:): @MainActor func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onNavigatingFrom(gate:_:): @MainActor func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DatePicker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> DatePicker.Modified
-swift.method DatePicker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> DatePicker.Modified
-swift.method DatePicker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> DatePicker.Modified
+swift.method DatePicker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DatePicker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onPanUpdated(_:_:): @MainActor func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
 swift.method DatePicker.onPanUpdated(touchCount:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, _ handler: @escaping @MainActor @Sendable (PanUpdate) throws -> Void) -> Self.Modified
 swift.method DatePicker.onPanUpdated(touchCount:gate:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
@@ -3764,6 +3770,8 @@ swift.method DecorableTextElement.textDecorations(_:): @MainActor func textDecor
 swift.method Device.honors(_:): @MainActor func honors<Owner, Arguments, Answer>(_ act: ElementAct<Owner, Arguments, Answer>) -> Bool where Owner : Contract
 swift.method Device.honors(_:): @MainActor func honors<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) -> Bool where Owner : Contract
 swift.method Device.honors(_:): @MainActor func honors<Owner, Value>(_ member: ElementProperty<Owner, Value>) -> Bool where Owner : Contract, Value : HostRepresentable
+swift.method Device.honors(_:on:): @MainActor func honors<Owner, Payload, Element>(_ event: ElementEvent<Owner, Payload>, on element: Element.Type) -> Bool where Owner : Tier, Element : ElementContract
+swift.method Device.honors(_:on:): @MainActor func honors<Owner, Value, Element>(_ member: ElementProperty<Owner, Value>, on element: Element.Type) -> Bool where Owner : Tier, Value : HostRepresentable, Element : ElementContract
 swift.method Either.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7457,8 +7465,8 @@ swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) 
 swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method Picker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Picker.Modified
-swift.method Picker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Picker.Modified
+swift.method Picker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method Picker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Picker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -7484,9 +7492,9 @@ swift.method Picker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ val
 swift.method Picker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method Picker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
 swift.method Picker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method Picker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Picker.Modified
-swift.method Picker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Picker.Modified
-swift.method Picker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Picker.Modified
+swift.method Picker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Picker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -7535,9 +7543,9 @@ swift.method Picker.onNavigatedTo(gate:_:): @MainActor func onNavigatedTo(gate: 
 swift.method Picker.onNavigatingFrom(_:): @MainActor func onNavigatingFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onNavigatingFrom(_:_:): @MainActor func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onNavigatingFrom(gate:_:): @MainActor func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Picker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Picker.Modified
-swift.method Picker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Picker.Modified
-swift.method Picker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Picker.Modified
+swift.method Picker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Picker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onPanUpdated(_:_:): @MainActor func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
 swift.method Picker.onPanUpdated(touchCount:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, _ handler: @escaping @MainActor @Sendable (PanUpdate) throws -> Void) -> Self.Modified
 swift.method Picker.onPanUpdated(touchCount:gate:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
@@ -8062,6 +8070,14 @@ swift.method Polyline.visualState(_:_:): @MainActor func visualState(_ state: Vi
 swift.method Polyline.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method PolylineProperties.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
+swift.method PopupElement.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Self.Modified
+swift.method PopupElement.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
+swift.method PopupElement.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PopupElement.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PopupElement.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PopupElement.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PopupElement.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PopupElement.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11739,8 +11755,8 @@ swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bo
 swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
-swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> TimePicker.Modified
-swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> TimePicker.Modified
+swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method TimePicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method TimePicker.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -11766,9 +11782,9 @@ swift.method TimePicker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_
 swift.method TimePicker.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method TimePicker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
 swift.method TimePicker.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method TimePicker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> TimePicker.Modified
-swift.method TimePicker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> TimePicker.Modified
-swift.method TimePicker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> TimePicker.Modified
+swift.method TimePicker.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TimePicker.onClosed(_:_:): @MainActor func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onClosed(gate:_:): @MainActor func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -11817,9 +11833,9 @@ swift.method TimePicker.onNavigatedTo(gate:_:): @MainActor func onNavigatedTo(ga
 swift.method TimePicker.onNavigatingFrom(_:): @MainActor func onNavigatingFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onNavigatingFrom(_:_:): @MainActor func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onNavigatingFrom(gate:_:): @MainActor func onNavigatingFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TimePicker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> TimePicker.Modified
-swift.method TimePicker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> TimePicker.Modified
-swift.method TimePicker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> TimePicker.Modified
+swift.method TimePicker.onOpened(_:): @MainActor func onOpened(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TimePicker.onOpened(_:_:): @MainActor func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onOpened(gate:_:): @MainActor func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onPanUpdated(_:_:): @MainActor func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
 swift.method TimePicker.onPanUpdated(touchCount:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, _ handler: @escaping @MainActor @Sendable (PanUpdate) throws -> Void) -> Self.Modified
 swift.method TimePicker.onPanUpdated(touchCount:gate:_:): @MainActor func onPanUpdated(touchCount: Int? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Self.Modified
@@ -13582,15 +13598,12 @@ swift.type.property ContextMenuContract.name: static var name: String { get }
 swift.type.property CorneredShapeContract.lineJoin: static let lineJoin: ElementProperty<CorneredShapeContract, LineJoin>
 swift.type.property CorneredShapeContract.miterLimit: static let miterLimit: ElementProperty<CorneredShapeContract, Double>
 swift.type.property CorneredShapeContract.name: static let name: String
-swift.type.property DatePickerContract.closed: static let closed: ElementEvent<DatePickerContract, Void>
 swift.type.property DatePickerContract.date: static let date: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.dateChanged: static let dateChanged: ElementEvent<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.format: static let format: ElementProperty<DatePickerContract, DateFormat>
-swift.type.property DatePickerContract.isOpen: static let isOpen: ElementProperty<DatePickerContract, Bool>
 swift.type.property DatePickerContract.maximum: static let maximum: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.minimum: static let minimum: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.name: static var name: String { get }
-swift.type.property DatePickerContract.opened: static let opened: ElementEvent<DatePickerContract, Void>
 swift.type.property DecorableTextElementContract.name: static let name: String
 swift.type.property DecorableTextElementContract.textDecorations: static let textDecorations: ElementProperty<DecorableTextElementContract, TextDecorations>
 swift.type.property EllipseContract.name: static var name: String { get }
@@ -13784,10 +13797,7 @@ swift.type.property PageElementContract.name: static let name: String
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>
 swift.type.property PathContract.data: static let data: ElementProperty<PathContract, String>
 swift.type.property PathContract.name: static var name: String { get }
-swift.type.property PickerContract.closed: static let closed: ElementEvent<PickerContract, Void>
-swift.type.property PickerContract.isOpen: static let isOpen: ElementProperty<PickerContract, Bool>
 swift.type.property PickerContract.name: static var name: String { get }
-swift.type.property PickerContract.opened: static let opened: ElementEvent<PickerContract, Void>
 swift.type.property PickerContract.options: static let options: ElementProperty<PickerContract, [String]>
 swift.type.property PickerContract.placeholder: static let placeholder: ElementProperty<PickerContract, String>
 swift.type.property PickerContract.presentation: static let presentation: ElementProperty<PickerContract, PickerPresentation>
@@ -13803,6 +13813,10 @@ swift.type.property PolylineContract.points: static let points: ElementProperty<
 swift.type.property PopoverContract.isPresented: static let isPresented: ElementProperty<PopoverContract, Bool>
 swift.type.property PopoverContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PopoverContract, Bool>
 swift.type.property PopoverContract.name: static var name: String { get }
+swift.type.property PopupElementContract.closed: static let closed: ElementEvent<PopupElementContract, Void>
+swift.type.property PopupElementContract.isOpen: static let isOpen: ElementProperty<PopupElementContract, Bool>
+swift.type.property PopupElementContract.name: static let name: String
+swift.type.property PopupElementContract.opened: static let opened: ElementEvent<PopupElementContract, Void>
 swift.type.property ProgressBarContract.name: static var name: String { get }
 swift.type.property ProgressBarContract.progress: static let progress: ElementProperty<ProgressBarContract, Double>
 swift.type.property Rect.zero: static let zero: Rect
@@ -13920,11 +13934,8 @@ swift.type.property TextSpansContract.name: static var name: String { get }
 swift.type.property TextualElementContract.name: static let name: String
 swift.type.property TextualElementContract.text: static let text: ElementProperty<TextualElementContract, String>
 swift.type.property TextualElementContract.textCase: static let textCase: ElementProperty<TextualElementContract, TextCase>
-swift.type.property TimePickerContract.closed: static let closed: ElementEvent<TimePickerContract, Void>
 swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeFormat>
-swift.type.property TimePickerContract.isOpen: static let isOpen: ElementProperty<TimePickerContract, Bool>
 swift.type.property TimePickerContract.name: static var name: String { get }
-swift.type.property TimePickerContract.opened: static let opened: ElementEvent<TimePickerContract, Void>
 swift.type.property TimePickerContract.time: static let time: ElementProperty<TimePickerContract, ClockTime>
 swift.type.property TimePickerContract.timeChanged: static let timeChanged: ElementEvent<TimePickerContract, ClockTime>
 swift.type.property TintElementContract.name: static let name: String

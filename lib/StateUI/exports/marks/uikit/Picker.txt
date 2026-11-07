@@ -1,8 +1,5 @@
 # revision 4.1
 Picker: ✅
-Picker.closed: waits on Picker.isOpen
-Picker.isOpen: not realized
-Picker.opened: waits on Picker.isOpen
 Picker.options: ✓ read options of Picker: the host's own choice, not the menu's
 Picker.placeholder: ✅
 Picker.presentation: ☑️ UIKit has no radio buttons: `.radio` is a column of its buttons, each marked by a filled or an empty circle.

@@ -20,8 +20,8 @@ extension UIKitRegistrations {
             picker.onChosen = { place in
                 reports.report(PickerContract.selectedIndex, place, as: PickerContract.selectedIndexChanged)
             }
-            picker.onOpened = { reports.raise(PickerContract.opened) }
-            picker.onClosed = { reports.raise(PickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { (picker: Registration<PickerContract, UIView>) in
             picker.applies(
@@ -43,8 +43,8 @@ extension UIKitRegistrations {
                 (view as! any UIKitChoosing).isEnabled = enabled ?? true
             }
             picker.declares(PickerContract.selectedIndexChanged)
-            picker.declares(PickerContract.opened)
-            picker.declares(PickerContract.closed)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
 
         registry.add(DatePickerContract.self, create: { reports in

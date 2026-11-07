@@ -114,7 +114,7 @@ enum AndroidRealization {
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),
-        .partial(PickerContract.isOpen,
+        .partial(PopupElementContract.isOpen, on: PickerContract.self,
             missing: "Android closes the list only when the user does: `false` does not close it."),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),

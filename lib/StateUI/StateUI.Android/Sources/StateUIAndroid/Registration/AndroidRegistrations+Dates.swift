@@ -15,8 +15,8 @@ extension AndroidRegistrations {
                     DatePickerContract.date, CalendarDate(year: year, month: month, day: day),
                     as: DatePickerContract.dateChanged)
             }
-            field.onOpened = { reports.raise(DatePickerContract.opened) }
-            field.onClosed = { reports.raise(DatePickerContract.closed) }
+            field.onOpened = { reports.raise(PopupElementContract.opened) }
+            field.onClosed = { reports.raise(PopupElementContract.closed) }
             return field
         }, members: { field in
             field.property(DatePickerContract.date) { view, date in view.setDate(date) }
@@ -24,12 +24,12 @@ extension AndroidRegistrations {
                 view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
             }
             field.property(DatePickerContract.format) { view, style in view.setFormat(style) }
-            field.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            field.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.declares(DatePickerContract.dateChanged)
-            field.declares(DatePickerContract.opened)
-            field.declares(DatePickerContract.closed)
+            field.declares(PopupElementContract.opened)
+            field.declares(PopupElementContract.closed)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
@@ -38,18 +38,18 @@ extension AndroidRegistrations {
                 reports.report(
                     TimePickerContract.time, ClockTime(hour: hour, minute: minute), as: TimePickerContract.timeChanged)
             }
-            field.onOpened = { reports.raise(TimePickerContract.opened) }
-            field.onClosed = { reports.raise(TimePickerContract.closed) }
+            field.onOpened = { reports.raise(PopupElementContract.opened) }
+            field.onClosed = { reports.raise(PopupElementContract.closed) }
             return field
         }, members: { field in
             field.property(TimePickerContract.time) { view, time in view.setTime(time) }
             field.property(TimePickerContract.format) { view, format in view.setFormat(format) }
-            field.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            field.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.declares(TimePickerContract.timeChanged)
-            field.declares(TimePickerContract.opened)
-            field.declares(TimePickerContract.closed)
+            field.declares(PopupElementContract.opened)
+            field.declares(PopupElementContract.closed)
         })
     }
 

@@ -365,17 +365,37 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker", "Map"],
             members: [
-                HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen"),
+                HostRealizedMember(element: "Picker", owner: "PopupElement", member: "isOpen"),
                 HostRealizedMember(element: "Map", owner: "Map", member: "moveToRegion"),
             ]))
         defer { HostBoundary.setRealization(HostRealization()) }
         let device = Device()
 
-        XCTAssertTrue(device.honors(PickerContract.isOpen))
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen))
         XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
-        XCTAssertFalse(device.honors(PickerContract.opened), "an event its host raises not")
+        XCTAssertFalse(device.honors(PopupElementContract.opened), "an event its host raises not")
         XCTAssertTrue(device.honors(MapContract.moveToRegion), "an act its host performs")
         XCTAssertFalse(device.honors(WebViewContract.goBack), "and one it does not")
+    }
+
+    /// A tier's member is honored element by element: one wearer realizes it, another's family never has it.
+    func testTheDeviceSaysWhatThePlatformHonorsOnOneElement() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Picker", "DatePicker"],
+            members: [HostRealizedMember(element: "Picker", owner: "PopupElement", member: "isOpen")]))
+        HostBoundary.setRegister(HostRegister(records: [
+            .complete(PopupElementContract.isOpen, on: PickerContract.self),
+            .notPlanned(PopupElementContract.isOpen, on: DatePickerContract.self, reason: "no calendar opens"),
+        ]))
+        defer {
+            HostBoundary.setRegister(nil)
+            HostBoundary.setRealization(HostRealization())
+        }
+        let device = Device()
+
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen, on: PickerContract.self))
+        XCTAssertFalse(device.honors(PopupElementContract.isOpen, on: DatePickerContract.self), "never on its family")
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen), "honored by the tier, on one wearer at least")
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
@@ -386,7 +406,7 @@ final class HostEnvironmentTests: XCTestCase {
             members: [HostRealizedMember(element: "Picker", owner: "VisualElement", member: "tooltip")]))
         HostBoundary.setRegister(HostRegister(records: [
             .notPlanned(VisualElementContract.tooltip, reason: "no pointer"),
-            .partial(PickerContract.isOpen, missing: "its closing"),
+            .partial(PopupElementContract.isOpen, missing: "its closing"),
         ]))
         defer {
             HostBoundary.setRegister(nil)
@@ -395,7 +415,7 @@ final class HostEnvironmentTests: XCTestCase {
         let device = Device()
 
         XCTAssertFalse(device.honors(VisualElementContract.tooltip), "never on this family")
-        XCTAssertTrue(device.honors(PickerContract.isOpen), "in part")
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen), "in part")
         XCTAssertFalse(device.honors(PickerContract.placeholder), "said nowhere")
     }
 

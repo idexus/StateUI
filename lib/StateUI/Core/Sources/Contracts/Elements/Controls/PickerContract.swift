@@ -13,16 +13,8 @@ public enum PickerContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextColorElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, TintElementContract.self, FocusElementContract.self,
+        PopupElementContract.self,
     ]
-
-    /// The user has closed the list of choices.
-    public static let closed = ElementEvent<Self, Void>("closed", layer: .native)
-
-    /// Whether the list of choices is showing.
-    public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)
-
-    /// The user has opened the list of choices.
-    public static let opened = ElementEvent<Self, Void>("opened", layer: .native)
 
     /// The list to choose from, in the order it is offered.
     public static let options = ElementProperty<Self, [String]>("options", layer: .structure, cleared: false)
@@ -43,7 +35,5 @@ public enum PickerContract: ElementContract {
     public static let selectedIndexChanged = ElementEvent<Self, Int>("selectedIndexChanged", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        closed, isOpen, opened, options, placeholder, presentation, selectedIndex, selectedIndexChanged,
-    ]
+    public static let members: [any ContractMember] = [options, placeholder, presentation, selectedIndex, selectedIndexChanged]
 }

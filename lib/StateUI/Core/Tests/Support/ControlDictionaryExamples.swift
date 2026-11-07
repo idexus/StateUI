@@ -798,6 +798,15 @@ extension ControlDictionary {
                 .onToggled { on in print("Wi-Fi \(on)") }
             """#),
 
+        (PopupElementContract.self, #"""
+            @State var due = CalendarDate(year: 2026, month: 11, day: 7)
+            @State var choosing = false
+
+            DatePicker($due)
+                .isOpen($choosing)
+                .onClosed { print("chosen") }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

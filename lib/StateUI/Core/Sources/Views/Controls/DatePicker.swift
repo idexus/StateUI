@@ -40,7 +40,7 @@ extension DatePickerProperties {
 ///
 /// The date is a `CalendarDate`: a year, a month and a day. The picker takes
 /// `.textColor` but has no `.text`, the field showing the formatted date.
-public struct DatePicker: ElementView, TextColorElement, FontElement, DatePickerProperties, FocusElement {
+public struct DatePicker: ElementView, TextColorElement, FontElement, DatePickerProperties, FocusElement, PopupElement {
     /// The node this control describes.
     public var node: Node
 
@@ -90,38 +90,6 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
         onEvent(DatePickerContract.dateChanged, gate: gate, handler)
     }
 
-    /// The user has opened the calendar. Opening it with `isOpen(true)` raises
-    /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(DatePickerContract.opened, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.opened, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.opened, gate: gate, handler)
-    }
-
-    /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(DatePickerContract.closed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.closed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.closed, gate: gate, handler)
-    }
 }
 
 extension DatePicker {
@@ -140,17 +108,4 @@ extension DatePicker {
         twin(DatePickerContract.format, by: state)
     }
 
-    /// Whether the calendar is showing.
-    ///
-    /// Settable, so a button elsewhere on the page can open it - and the
-    /// platform closes it by itself, which is what `onClosed` is for.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(DatePickerContract.isOpen, value)
-    }
-
-    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the calendar as the state stands, and
-    /// the user's opening and closing come back into it; no view is rebuilt for it.
-    public func isOpen(_ state: Binding<Bool>) -> Modified {
-        opening(DatePickerContract.isOpen, by: state, opened: DatePickerContract.opened, closed: DatePickerContract.closed)
-    }
 }

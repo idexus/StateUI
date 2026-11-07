@@ -209,11 +209,11 @@ enum WebRealization {
             ViewContract.swipeDirections, ViewContract.swipeThreshold, ViewContract.pointerReleased,
         ]
         return pressing.map { .notPlanned($0, on: PickerContract.self, reason: pressed) } + [
-            .notPlanned(DatePickerContract.isOpen, reason: opens), .notPlanned(DatePickerContract.opened, reason: opened),
-            .notPlanned(DatePickerContract.closed, reason: closed), .notPlanned(PickerContract.isOpen, reason: opens),
-            .notPlanned(PickerContract.opened, reason: opened), .notPlanned(PickerContract.closed, reason: closed),
-            .notPlanned(TimePickerContract.isOpen, reason: opens), .notPlanned(TimePickerContract.opened, reason: opened),
-            .notPlanned(TimePickerContract.closed, reason: closed),
+            .notPlanned(PopupElementContract.isOpen, on: DatePickerContract.self, reason: opens), .notPlanned(PopupElementContract.opened, reason: opened),
+            .notPlanned(PopupElementContract.closed, on: DatePickerContract.self, reason: closed), .notPlanned(PopupElementContract.isOpen, reason: opens),
+            .notPlanned(PopupElementContract.opened, on: PickerContract.self, reason: opened), .notPlanned(PopupElementContract.closed, reason: closed),
+            .notPlanned(PopupElementContract.isOpen, on: TimePickerContract.self, reason: opens), .notPlanned(PopupElementContract.opened, reason: opened),
+            .notPlanned(PopupElementContract.closed, on: TimePickerContract.self, reason: closed),
         ]
     }()
 

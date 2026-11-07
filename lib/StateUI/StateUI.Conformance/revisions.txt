@@ -39,9 +39,9 @@ MenuItemElement 6
 FontElement 5
 winui MenuItemElement 2
 winui PageElement 2
-DatePicker 5
-TimePicker 5
-Picker 4
+DatePicker 6
+TimePicker 6
+Picker 5
 Image 3
 Page 9
 PageElement 4

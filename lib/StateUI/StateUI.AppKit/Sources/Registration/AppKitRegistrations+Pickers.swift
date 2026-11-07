@@ -19,12 +19,12 @@ extension AppKitRegistrations {
             picker.onSelectionChanged = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }
-            picker.onOpened = { reports.raise(PickerContract.opened) }
-            picker.onClosed = { reports.raise(PickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { (picker: Registration<PickerContract, NSView>) in
             picker.applies(
-                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder, PickerContract.isOpen,
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder, PopupElementContract.isOpen,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
@@ -40,12 +40,12 @@ extension AppKitRegistrations {
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     enabled: values[VisualElementContract.isEnabled] ?? true,
-                    open: values[PickerContract.isOpen] ?? false,
-                    writeOpen: values.changed(PickerContract.isOpen))
+                    open: values[PopupElementContract.isOpen] ?? false,
+                    writeOpen: values.changed(PopupElementContract.isOpen))
             }
             picker.declares(PickerContract.selectedIndexChanged)
-            picker.declares(PickerContract.opened)
-            picker.declares(PickerContract.closed)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
 
         registry.add(DatePickerContract.self, create: { reports in

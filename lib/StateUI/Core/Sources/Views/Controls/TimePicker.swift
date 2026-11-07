@@ -31,7 +31,7 @@ extension TimePickerProperties {
 /// The time is a `ClockTime`: hours, minutes and seconds since midnight. The
 /// picker takes `.textColor` but has no `.text`, the field showing the
 /// formatted time.
-public struct TimePicker: ElementView, TextColorElement, FontElement, TimePickerProperties, FocusElement {
+public struct TimePicker: ElementView, TextColorElement, FontElement, TimePickerProperties, FocusElement, PopupElement {
     /// The node this control describes.
     public var node: Node
 
@@ -81,38 +81,6 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
         onEvent(TimePickerContract.timeChanged, gate: gate, handler)
     }
 
-    /// The user has opened the clock face. Opening it with `isOpen(true)` raises
-    /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(TimePickerContract.opened, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(TimePickerContract.opened, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(TimePickerContract.opened, gate: gate, handler)
-    }
-
-    /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(TimePickerContract.closed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(TimePickerContract.closed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(TimePickerContract.closed, gate: gate, handler)
-    }
 }
 
 extension TimePicker {
@@ -121,17 +89,4 @@ extension TimePicker {
         twin(TimePickerContract.format, by: state)
     }
 
-    /// Whether the clock face is showing.
-    ///
-    /// Settable, so a button elsewhere on the page can open it - and the
-    /// platform closes it by itself, which is what `onClosed` is for.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(TimePickerContract.isOpen, value)
-    }
-
-    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the clock face as the state stands, and
-    /// the user's opening and closing come back into it; no view is rebuilt for it.
-    public func isOpen(_ state: Binding<Bool>) -> Modified {
-        opening(TimePickerContract.isOpen, by: state, opened: TimePickerContract.opened, closed: TimePickerContract.closed)
-    }
 }

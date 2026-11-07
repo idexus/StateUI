@@ -34,7 +34,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Capsule](Capsule.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 41 ✅ · 4 ☑️ · 36 ✓ · 1 – | 64 ✅ · 6 ☑️ · 10 ✓ · 1 – | 58 ✅ · 2 ☑️ · 15 ✓ · 7 – | 49 ✅ · 5 ☑️ · 22 ✓ · 6 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [CheckBox](CheckBox.md) | 85 | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 37 ✅ · 3 ☑️ · 38 ✓ · 5 – | 61 ✅ · 5 ☑️ · 12 ✓ · 4 – | 61 ✅ · 2 ☑️ · 14 ✓ · 6 – | 48 ✅ · 4 ☑️ · 25 ✓ · 6 – | 58 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ColorPicker](ColorPicker.md) | 82 | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 36 ✅ · 3 ☑️ · 38 ✓ · 5 – | 82 – | 60 ✅ · 2 ☑️ · 14 ✓ · 6 – | 48 ✅ · 4 ☑️ · 24 ✓ · 6 – | 56 ✅ · 1 ☑️ · 21 ✓ · 4 – |
-| [DatePicker](DatePicker.md) | 94 | 47 ✅ · 3 ☑️ · 37 ✓ · 7 – | 37 ✅ · 2 ☑️ · 38 ✓ · 13 – | 68 ✅ · 5 ☑️ · 15 ✓ · 4 – | 70 ✅ · 4 ☑️ · 14 ✓ · 6 – | 57 ✅ · 7 ☑️ · 24 ✓ · 6 – | 64 ✅ · 1 ☑️ · 21 ✓ · 7 – |
+| [DatePicker](DatePicker.md) | 94 | 47 ✅ · 3 ☑️ · 37 ✓ · 7 – | 33 ✅ · 2 ☑️ · 38 ✓ · 13 – | 63 ✅ · 5 ☑️ · 12 ✓ · 4 – | 63 ✅ · 3 ☑️ · 14 ✓ · 6 – | 52 ✅ · 4 ☑️ · 24 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 4 – |
 | [Ellipse](Ellipse.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 41 ✅ · 4 ☑️ · 36 ✓ · 1 – | 64 ✅ · 6 ☑️ · 10 ✓ · 1 – | 58 ✅ · 2 ☑️ · 15 ✓ · 7 – | 49 ✅ · 5 ☑️ · 22 ✓ · 6 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Fill](Fill.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 37 ✅ · 3 ☑️ · 36 ✓ · 1 – | 61 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 15 ✓ · 4 – | 46 ✅ · 3 ☑️ · 22 ✓ · 6 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Grid](Grid.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ | 43 ✅ · 4 ☑️ · 38 ✓ · 1 – | 69 ✅ · 5 ☑️ · 12 ✓ · 1 – | 65 ✅ · 2 ☑️ · 14 ✓ · 5 – | 53 ✅ · 3 ☑️ · 24 ✓ · 7 – | 62 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -46,7 +46,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Map](Map.md) | 82 | 41 ✅ · 3 ☑️ · 37 ✓ · 1 – | 40 ✅ · 3 ☑️ · 37 ✓ · 2 – | 82 🧩 | 82 🧩 | 82 🧩 | 82 🧩 |
 | [MotionLayout](MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 39 ✅ · 4 ☑️ · 47 ✓ · 2 – | 68 ✅ · 5 ☑️ · 16 ✓ · 2 – | 55 ✅ · 2 ☑️ · 27 ✓ · 9 – | 48 ✅ · 3 ☑️ · 31 ✓ · 8 – | 63 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Path](Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 44 ✅ · 4 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 1 – | 61 ✅ · 2 ☑️ · 15 ✓ · 7 – | 52 ✅ · 5 ☑️ · 22 ✓ · 6 – | 59 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Picker](Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 43 ✅ · 4 ☑️ · 41 ✓ · 5 – | 68 ✅ · 6 ☑️ · 13 ✓ · 4 – | 74 ✅ · 2 ☑️ · 14 ✓ · 6 – | 56 ✅ · 4 ☑️ · 24 ✓ · 12 – | 51 ✅ · 1 ☑️ · 20 ✓ · 17 – |
+| [Picker](Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 42 ✅ · 3 ☑️ · 38 ✓ · 5 – | 65 ✅ · 5 ☑️ · 12 ✓ · 4 – | 66 ✅ · 2 ☑️ · 14 ✓ · 6 – | 52 ✅ · 4 ☑️ · 24 ✓ · 8 – | 46 ✅ · 1 ☑️ · 20 ✓ · 14 – |
 | [Polygon](Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 45 ✅ · 4 ☑️ · 36 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 15 ✓ · 7 – | 53 ✅ · 5 ☑️ · 22 ✓ · 6 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Polyline](Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 45 ✅ · 4 ☑️ · 36 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 15 ✓ · 7 – | 53 ✅ · 5 ☑️ · 22 ✓ · 6 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [ProgressBar](ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 54 ✅ · 1 ☑️ · 14 ✓ · 7 – | 43 ✅ · 4 ☑️ · 23 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -62,14 +62,14 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Text](Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 52 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 ✅ · 5 ☑️ · 10 ✓ · 1 – | 70 ✅ · 2 ☑️ · 14 ✓ · 6 – | 59 ✅ · 4 ☑️ · 23 ✓ · 6 – | 67 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TextEditor](TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 60 ✅ · 3 ☑️ · 38 ✓ · 2 – | 82 ✅ · 5 ☑️ · 12 ✓ · 2 – | 80 ✅ · 3 ☑️ · 14 ✓ · 6 – | 63 ✅ · 6 ☑️ · 28 ✓ · 6 – | 78 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TextField](TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 63 ✅ · 3 ☑️ · 38 ✓ · 2 – | 84 ✅ · 5 ☑️ · 12 ✓ · 3 – | 80 ✅ · 5 ☑️ · 14 ✓ · 6 – | 65 ✅ · 6 ☑️ · 28 ✓ · 7 – | 80 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [TimePicker](TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 38 ✅ · 2 ☑️ · 38 ✓ · 10 – | 68 ✅ · 5 ☑️ · 13 ✓ · 4 – | 65 ✅ · 3 ☑️ · 14 ✓ · 6 – | 56 ✅ · 4 ☑️ · 25 ✓ · 6 – | 62 ✅ · 1 ☑️ · 21 ✓ · 7 – |
+| [TimePicker](TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 36 ✅ · 2 ☑️ · 38 ✓ · 10 – | 63 ✅ · 5 ☑️ · 12 ✓ · 4 – | 63 ✅ · 3 ☑️ · 14 ✓ · 6 – | 52 ✅ · 4 ☑️ · 24 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 4 – |
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 4 ☑️ · 37 ✓ · 1 – | 67 ✅ · 5 ☑️ · 11 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 5 – | 51 ✅ · 3 ☑️ · 23 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 46 ✅ · 3 ☑️ · 39 ✓ · 2 – | 68 ✅ · 5 ☑️ · 12 ✓ · 4 – | 49 ✅ · 13 ✓ · 27 – | 56 ✅ · 4 ☑️ · 24 ✓ · 6 – | 59 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 39 ✅ · 4 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 1 – | 61 ✅ · 2 ☑️ · 14 ✓ · 5 – | 49 ✅ · 3 ☑️ · 24 ✓ · 7 – | 58 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1665 | 1563 | 2329 | 2248 | 1868 | 2162 |
-| ✓ |  | 1355 | 1396 | 402 | 530 | 862 | 761 |
-| – |  | 57 | 106 | 161 | 250 | 238 | 145 |
-| **Met** | 3210 | **3077** | **3065** | **2892** | **3028** | **2968** | **3068** |
+| ✅ |  | 1665 | 1556 | 2316 | 2231 | 1855 | 2151 |
+| ✓ |  | 1355 | 1393 | 397 | 530 | 861 | 761 |
+| – |  | 57 | 106 | 161 | 250 | 234 | 136 |
+| **Met** | 3210 | **3077** | **3055** | **2874** | **3011** | **2950** | **3048** |
 | 🧩 |  | 0 | 0 | 82 | 82 | 82 | 82 |
 <!-- controls:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [PopupElement](tiers/PopupElement.md) - What a control whose choices open in a list of their own holds and reports: a picker, a date's and a time's.
 - [ToggleElement](tiers/ToggleElement.md) - What a control turned on and off holds and reports: a check box, a switch, a menu's and a toolbar's toggle.
 - [TextColorElement](tiers/TextColorElement.md) - The color of text, wherever it is drawn.
 - [FontElement](tiers/FontElement.md) - The font text is drawn in: its step of the platform's type ramp, its family, its size, its weight and slant, and whether it follows the user's text-size setting.

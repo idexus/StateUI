@@ -222,7 +222,7 @@ struct SizeChooser: View {
         VStack {
             Picker([1, 2, 3], selection: $size) { "\($0)" }
                 .isOpen($showing)
-            if device.honors(PickerContract.isOpen) {
+            if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
                 Button("Open the list").onClicked { showing = true }
             }
         }
@@ -233,7 +233,10 @@ struct SizeChooser: View {
 The answer is the host's own judgment, the one the
 [platform contract](../platform-contract.md) shows: in full or in part is
 honored, never or not realized is not. A property, an event and an act are
-asked alike - `device.honors(MapContract.moveToRegion)`.
+asked alike - `device.honors(MapContract.moveToRegion)`. A tier's member may
+stand on one element and not another - a picker's list opens where a date's
+does not - so it is asked of the element, `on: PickerContract.self`; asked
+alone, it is honored where any element wearing the tier honors it.
 
 `device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,

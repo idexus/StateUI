@@ -11,8 +11,8 @@ extension GTKRegistrations {
         registry.add(DatePickerContract.self, create: { reports in
             let picker = GTKDatePickerView()
             picker.onChosen = { date in reports.report(DatePickerContract.date, date, as: DatePickerContract.dateChanged) }
-            picker.onOpened = { reports.raise(DatePickerContract.opened) }
-            picker.onClosed = { reports.raise(DatePickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
             picker.applies(DatePickerContract.minimum, DatePickerContract.maximum, DatePickerContract.date) {
@@ -23,28 +23,28 @@ extension GTKRegistrations {
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
-            picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(DatePickerContract.dateChanged)
-            picker.declares(DatePickerContract.opened)
-            picker.declares(DatePickerContract.closed)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = GTKTimePickerView()
             picker.onChosen = { time in reports.report(TimePickerContract.time, time, as: TimePickerContract.timeChanged) }
-            picker.onOpened = { reports.raise(TimePickerContract.opened) }
-            picker.onClosed = { reports.raise(TimePickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(TimePickerContract.format) { _, _ in }
-            picker.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(TimePickerContract.timeChanged)
-            picker.declares(TimePickerContract.opened)
-            picker.declares(TimePickerContract.closed)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
     }
 

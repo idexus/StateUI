@@ -11,8 +11,8 @@ extension WinUIRegistrations {
         registry.add(DatePickerContract.self, create: { reports in
             let picker = WinUIDatePickerView()
             picker.onChosen = { date in reports.report(DatePickerContract.date, date, as: DatePickerContract.dateChanged) }
-            picker.onOpened = { reports.raise(DatePickerContract.opened) }
-            picker.onClosed = { reports.raise(DatePickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
             picker.property(DatePickerContract.date) { view, date in view.setDate(date) }
@@ -20,12 +20,12 @@ extension WinUIRegistrations {
                 view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
-            picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(DatePickerContract.dateChanged)
-            picker.declares(DatePickerContract.opened)
-            picker.declares(DatePickerContract.closed)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = WinUITimePickerView()

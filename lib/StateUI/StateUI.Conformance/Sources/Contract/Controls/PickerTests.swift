@@ -90,60 +90,6 @@
                 try s.settle { try s.held(PickerContract.options, on: picker) == ["S", "M", "L", "XL"] }
                 s.expect(try s.held(PickerContract.options, on: picker), ["S", "M", "L", "XL"])
             },
-            ConformanceCase("theListTheUserOpensAndClosesIsHeard", proves: [
-                Covered(PickerContract.isOpen), Covered(PickerContract.opened), Covered(PickerContract.closed),
-            ]) { s in
-                let heard = Received<String>()
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed { heard.values.append("closed") }
-                            .id("picker")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.open, on: picker)
-                s.settle { heard.values == ["opened"] }
-                s.expect(try s.held(PickerContract.isOpen, on: picker), true)
-                try s.perform(.close, on: picker)
-                s.settle { heard.values.count == 2 }
-
-                s.expect(heard.values, ["opened", "closed"])
-                s.expect(try s.held(PickerContract.isOpen, on: picker), false)
-            },
-            ConformanceCase("theListTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
-                Covered(PickerContract.isOpen), Covered(PickerContract.closed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let showing = State(wrappedValue: false)
-                let heard = Received<String>()
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .isOpen(showing.wrappedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed {
-                                heard.values.append("closed")
-                                showing.wrappedValue = false
-                            }
-                            .id("picker")
-                        Button("Open").onClicked { showing.wrappedValue = true }.id("open")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.activate, on: s.element("open"))
-                try s.settle { try s.held(PickerContract.isOpen, on: picker) == true }
-                s.turn()
-                s.expect(heard.values, [], "the program's opening heard by nobody")
-
-                try s.perform(.close, on: picker)
-                s.settle { heard.values == ["closed"] }
-                s.expect(heard.values, ["closed"], "the user closing what the program opened")
-            },
             offersItsValues(as: .segmented),
             takesTheUsersChoice(as: .segmented),
             offersItsValues(as: .radio),
