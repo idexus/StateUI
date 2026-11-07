@@ -124,7 +124,7 @@ public enum ViewContract: Contract {
     public static let pointerReleased = ElementEvent<Self, Point?>("pointerReleased", layer: .native)
 
     /// Which ways a swipe on the view is listened for.
-    public static let swipeDirections = ElementProperty<Self, SwipeDirection>(
+    public static let swipeDirections = ElementProperty<Self, SwipeDirections>(
         "swipeDirections", layer: .structure, cleared: false)
 
     /// How far a swipe must travel to count, in device units.

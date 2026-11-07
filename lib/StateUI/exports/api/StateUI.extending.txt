@@ -1092,6 +1092,7 @@ swift.conformance SubmitLabel: StateUI.LaneValue
 swift.conformance SubmitLabel: StateUI.StateChoice
 swift.conformance SubmitLabel: StateUI.StateValue
 swift.conformance SwipeDirection: StateUI.HostRepresentable
+swift.conformance SwipeDirections: StateUI.HostRepresentable
 swift.conformance Switch: StateUI.AutomationElement
 swift.conformance Switch: StateUI.Element
 swift.conformance Switch: StateUI.ElementView
@@ -1622,7 +1623,9 @@ swift.init SubmitLabel.init(carried:): init?(carried: StateCarried)
 swift.init SubmitLabel.init(propValue:): init?(propValue: PropValue)
 swift.init SubmitLabel.init(rawValue:): init?(rawValue: Int32)
 swift.init SwipeDirection.init(propValue:): init?(propValue: PropValue)
-swift.init SwipeDirection.init(rawValue:): init(rawValue: Int32)
+swift.init SwipeDirection.init(rawValue:): init?(rawValue: Int32)
+swift.init SwipeDirections.init(propValue:): init?(propValue: PropValue)
+swift.init SwipeDirections.init(rawValue:): init(rawValue: Int32)
 swift.init TextAlignment.init(carried:): init?(carried: StateCarried)
 swift.init TextAlignment.init(propValue:): init?(propValue: PropValue)
 swift.init TextAlignment.init(rawValue:): init?(rawValue: Int32)
@@ -3566,7 +3569,8 @@ swift.property Styling.node: @MainActor var node: Node
 swift.property SubmitLabel.carried: var carried: StateCarried { get }
 swift.property SubmitLabel.propValue: var propValue: PropValue { get }
 swift.property SwipeDirection.propValue: var propValue: PropValue { get }
-swift.property SwipeDirection.rawValue: let rawValue: Int32
+swift.property SwipeDirections.propValue: var propValue: PropValue { get }
+swift.property SwipeDirections.rawValue: let rawValue: Int32
 swift.property Switch.node: @MainActor var node: Node
 swift.property Switch.nodes: @MainActor var nodes: [Node] { get }
 swift.property TabView.node: @MainActor var node: Node
@@ -3861,6 +3865,8 @@ swift.type.method SubmitLabel.list(from:): static func list(from value: PropValu
 swift.type.method SubmitLabel.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method SwipeDirection.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method SwipeDirection.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method SwipeDirections.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method SwipeDirections.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method TextAlignment.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method TextAlignment.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method TextCase.list(from:): static func list(from value: PropValue) -> [Self]?

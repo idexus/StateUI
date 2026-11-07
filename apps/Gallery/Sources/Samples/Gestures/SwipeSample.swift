@@ -84,7 +84,6 @@ struct SwipeSample: SampleContent, ExampleContent {
         case .right: return "right"
         case .up: return "up"
         case .down: return "down"
-        default: return "somewhere"
         }
     }
     // listing: end

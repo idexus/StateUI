@@ -11575,7 +11575,6 @@ enum Listings {
             case .right: return "right"
             case .up: return "up"
             case .down: return "down"
-            default: return "somewhere"
             }
         }
         """#,

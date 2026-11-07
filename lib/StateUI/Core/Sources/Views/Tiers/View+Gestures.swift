@@ -140,7 +140,7 @@ extension View {
     ///   - threshold: how far a swipe must travel to count, in device units.
     ///   - handler: what to run, given the direction the swipe went.
     public func onSwiped(
-        directions: SwipeDirection = .all,
+        directions: SwipeDirections = .all,
         threshold: Double? = nil,
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
@@ -148,7 +148,7 @@ extension View {
             $0.hearsSwipes(directions, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token) {
                 // A payload that does not read leaves the handler alone, and so does a direction it did not ask for.
-                if let went = SwipeDirection(EventBuffer.current.value()), directions.contains(went) {
+                if let went = EventBuffer.current.value().flatMap(SwipeDirection.init(propValue:)), directions.contains(went) {
                     try handler(went)
                 }
             }
@@ -166,7 +166,7 @@ extension View {
 
     /// The same, for the ways `directions` names.
     public func onSwiped(
-        directions: SwipeDirection, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
+        directions: SwipeDirections, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
             $0.hearsSwipes(directions, threshold: nil)
@@ -176,7 +176,7 @@ extension View {
 
     /// The same, for the ways `directions` names, traveling `threshold` to count.
     public func onSwiped(
-        directions: SwipeDirection,
+        directions: SwipeDirections,
         threshold: Double,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
@@ -199,7 +199,7 @@ extension View {
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSwiped(
-        directions: SwipeDirection = .all,
+        directions: SwipeDirections = .all,
         threshold: Double? = nil,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
@@ -678,10 +678,10 @@ extension View {
 // What one view hears of a gesture is the sum of what its handlers asked, each hearing its own.
 // Design: docs/design/views/modifiers.md#gestures
 extension Node {
-    /// Listens for `direction` beside the directions it listens for already; a second threshold is said.
-    fileprivate mutating func hearsSwipes(_ direction: SwipeDirection, threshold: Double?) {
-        let heard = props[ViewContract.swipeDirections.token].flatMap(SwipeDirection.init(propValue:)) ?? []
-        write(ViewContract.swipeDirections, heard.union(direction))
+    /// Listens for `directions` beside the directions it listens for already; a second threshold is said.
+    fileprivate mutating func hearsSwipes(_ directions: SwipeDirections, threshold: Double?) {
+        let heard = props[ViewContract.swipeDirections.token].flatMap(SwipeDirections.init(propValue:)) ?? []
+        write(ViewContract.swipeDirections, heard.union(directions))
 
         guard let threshold else { return }
         if let said = props[ViewContract.swipeThreshold.token].flatMap(Double.init(propValue:)), said != threshold {
@@ -742,13 +742,15 @@ extension ChosenFile {
     }
 }
 
-/// What an awaiting swipe's handler runs: `handler`, given the way the swipe went, where `direction` names it.
+/// What an awaiting swipe's handler runs: `handler`, given the way the swipe went, where `directions` names it.
 @MainActor
 private func swiped(
-    _ direction: SwipeDirection, _ handler: @escaping ValueEventHandler<SwipeDirection>
+    _ directions: SwipeDirections, _ handler: @escaping ValueEventHandler<SwipeDirection>
 ) -> EventHandler {
     {
-        if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) { try await handler(went) }
+        if let went = EventBuffer.current.value().flatMap(SwipeDirection.init(propValue:)), directions.contains(went) {
+            try await handler(went)
+        }
     }
 }
 

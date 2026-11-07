@@ -132,8 +132,8 @@ final class GestureTests: XCTestCase {
         let id = patch.events?["swiped"] ?? -1
 
         // What the platform sent, and the same thing spelled tidily.
-        renders.fire(id, with: [.enumeration(SwipeDirection.all.rawValue)])
-        renders.fire(id, with: [.enumeration(SwipeDirection([.left, .right]).rawValue)])
+        renders.fire(id, with: [.enumeration(SwipeDirections.all.rawValue)])
+        renders.fire(id, with: [.enumeration(SwipeDirections([.left, .right]).rawValue)])
 
         XCTAssertEqual(swipes, [], "a set of directions does not answer 'which way'")
 
@@ -152,7 +152,7 @@ final class GestureTests: XCTestCase {
             .node)
         let id = patch.events?["swiped"] ?? -1
 
-        XCTAssertEqual(patch.props["swipeDirections"], .enumeration(SwipeDirection([.left, .right]).rawValue))
+        XCTAssertEqual(patch.props["swipeDirections"], .enumeration(SwipeDirections([.left, .right]).rawValue))
 
         renders.fire(id, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(id, with: [.enumeration(SwipeDirection.right.rawValue)])

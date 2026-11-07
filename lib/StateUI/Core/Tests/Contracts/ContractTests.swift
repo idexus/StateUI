@@ -203,7 +203,7 @@ final class ContractTests: XCTestCase {
             ButtonMenuKind.held, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
-            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirection.all,
+            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirections.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase.uppercase,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollAxes.horizontal,
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,

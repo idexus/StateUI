@@ -7,7 +7,7 @@
 
 /// Which ways letting a view go dismisses it, how far the hand must take it first, and what is told of its item.
 struct LayoutDismissal<Item> {
-    let directions: SwipeDirection
+    let directions: SwipeDirections
     let threshold: Double
     let handler: ValueHandler<Item>
 }

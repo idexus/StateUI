@@ -263,7 +263,7 @@ enum PatchDump {
                 ("left", SwipeDirection.left.rawValue),
                 ("up", SwipeDirection.up.rawValue),
                 ("down", SwipeDirection.down.rawValue),
-                ("all", SwipeDirection.all.rawValue),
+                ("all", SwipeDirections.all.rawValue),
             ])
         case Prop.ignoresSafeArea.name:
             return spelled(member, asBitsOf: [

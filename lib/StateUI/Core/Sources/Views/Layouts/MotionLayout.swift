@@ -551,7 +551,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///   - handler: what to run, given the item's identity, once its view has left the room.
     /// - Returns: the layout, dismissing a view let go far enough.
     public func onItemDismissed(
-        directions: SwipeDirection, threshold: Double, _ handler: @escaping @MainActor (ID) throws -> Void
+        directions: SwipeDirections, threshold: Double, _ handler: @escaping @MainActor (ID) throws -> Void
     ) -> Self {
         var copy = self
         copy.dismissals.append(LayoutDismissal(directions: directions, threshold: threshold, handler: ValueHandler(step: handler)))
@@ -563,7 +563,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///
     ///     .onItemDismissed(directions: .up, threshold: 120, policy: .cancelPrevious) { id in try await archive(id) }
     public func onItemDismissed(
-        directions: SwipeDirection, threshold: Double, policy: GatePolicy,
+        directions: SwipeDirections, threshold: Double, policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
@@ -574,7 +574,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemDismissed(
-        directions: SwipeDirection, threshold: Double, gate: Gate,
+        directions: SwipeDirections, threshold: Double, gate: Gate,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self

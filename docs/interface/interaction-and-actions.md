@@ -78,9 +78,9 @@ Style<ZStack>()
 ```
 
 Use `onTapped(count:_:)` for a double or higher tap, which keeps the
-platform's own run of taps. A swipe handler receives one dominant
-`SwipeDirection`; the option set on the modifier defines which directions are
-recognized.
+platform's own run of taps. A swipe handler receives the one dominant
+`SwipeDirection`; the `SwipeDirections` on the modifier say which directions
+are recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an

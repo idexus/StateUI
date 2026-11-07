@@ -208,7 +208,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `WallClock`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
-| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `RotationUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
+| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `RotationUpdate`, `SwipeDirection`, `SwipeDirections` | [gestures](../design/types/gestures.md) |
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `ApplicationInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
 | `Controls/` | the vocabularies one control takes: `ScrollAxes`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |

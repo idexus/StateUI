@@ -55,7 +55,7 @@ How each of them realizes these members is on its own page.
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
 | `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
-| `swipeDirections` | property | `SwipeDirection` | structure |
+| `swipeDirections` | property | `SwipeDirections` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |
 | `tapCount` | property | `Int` | structure |
