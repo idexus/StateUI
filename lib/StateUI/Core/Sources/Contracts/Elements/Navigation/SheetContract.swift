@@ -10,12 +10,9 @@ public enum SheetContract: ElementContract {
     /// Every base host presents it by its platform's conventions, keeping StateUI's state contract.
     public static let layer: ElementLayer = .adaptive
 
-    /// Whether the sheet shows: the application presents it, and the user's dismissal writes false.
-    public static let isPresented = ElementProperty<Self, Bool>("isPresented", layer: .adaptive)
-
-    /// The user dismissed the sheet - a swipe, Escape, the way back.
-    public static let isPresentedChanged = ElementEvent<Self, Bool>("isPresentedChanged", layer: .adaptive)
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [PresentedElementContract.self]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isPresented, isPresentedChanged]
+    public static let members: [any ContractMember] = []
 }

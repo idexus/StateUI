@@ -115,7 +115,7 @@
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysInASheetsStack", proves: [
             Covered(member),
-        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
@@ -136,7 +136,7 @@
     static var closesItsSheet: ConformanceCase {
         ConformanceCase("Page.showsCloseButton.closesTheSheetOntoItsState", proves: [
             Covered(PageContract.showsCloseButton),
-        ], needs: [Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let shows = State(wrappedValue: true)
             s.start {
                 Text("Beneath").sheet(isPresented: shows.projectedValue) {

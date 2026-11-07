@@ -182,7 +182,7 @@
     static var groundsItsSheets: ConformanceCase {
         ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
             Covered(WindowContract.background),
-        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             let value = State(wrappedValue: first)
             s.start {

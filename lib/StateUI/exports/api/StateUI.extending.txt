@@ -737,6 +737,7 @@ swift.conformance PositionDots: StateUI.PropertyContainer
 swift.conformance PositionDots: StateUI.ViewProperties
 swift.conformance PositionDots: StateUI.VisualElement
 swift.conformance PositionDots: StateUI.VisualElementProperties
+swift.conformance PresentedElementContract: StateUI.Contract
 swift.conformance ProgressBar: StateUI.AutomationElement
 swift.conformance ProgressBar: StateUI.Element
 swift.conformance ProgressBar: StateUI.ElementView
@@ -3119,9 +3120,12 @@ swift.type.property PopoverContract.layer: static let layer: ElementLayer
 swift.type.property PopoverContract.layer: static var layer: ElementLayer { get }
 swift.type.property PopoverContract.members: static let members: [any ContractMember]
 swift.type.property PopoverContract.nodeType: static let nodeType: NodeType
+swift.type.property PopoverContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property PopoverContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property PopupElementContract.members: static let members: [any ContractMember]
 swift.type.property PopupElementContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property PresentedElementContract.members: static let members: [any ContractMember]
+swift.type.property PresentedElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ProgressBar.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ProgressBarContract.layer: static let layer: ElementLayer
 swift.type.property ProgressBarContract.layer: static var layer: ElementLayer { get }
@@ -3186,6 +3190,7 @@ swift.type.property SheetContract.layer: static let layer: ElementLayer
 swift.type.property SheetContract.layer: static var layer: ElementLayer { get }
 swift.type.property SheetContract.members: static let members: [any ContractMember]
 swift.type.property SheetContract.nodeType: static let nodeType: NodeType
+swift.type.property SheetContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property SheetContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Slider.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SliderContract.layer: static let layer: ElementLayer

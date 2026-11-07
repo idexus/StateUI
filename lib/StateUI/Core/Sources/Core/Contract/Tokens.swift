@@ -187,7 +187,7 @@ extension NodeType {
     static let sidebarOverlayBackground = SplitViewContract.sidebarOverlayBackground.token
     static let sidebarOverlays = SplitViewContract.sidebarOverlays.token
     static let isReadOnly = TextInputContract.isReadOnly.token
-    static let isPresented = SheetContract.isPresented.token
+    static let isPresented = PresentedElementContract.isPresented.token
     static let isRefreshEnabled = RefreshElementContract.isRefreshEnabled.token
     static let isRefreshing = RefreshElementContract.isRefreshing.token
     static let isScrollEnabled = MapContract.isScrollEnabled.token
@@ -325,7 +325,7 @@ extension NodeType {
     static let translationUpdated = MotionLayoutContract.translationUpdated.token
     static let wheelStepped = MotionLayoutContract.wheelStepped.token
     static let isFocusedChanged = FocusElementContract.isFocusedChanged.token
-    static let isPresentedChanged = SheetContract.isPresentedChanged.token
+    static let isPresentedChanged = PresentedElementContract.isPresentedChanged.token
     static let itemDragUpdated = MotionLayoutContract.itemDragUpdated.token
     static let pinchRotationUpdated = MotionLayoutContract.pinchRotationUpdated.token
     static let keyPressed = KeyboardElementContract.keyPressed.token

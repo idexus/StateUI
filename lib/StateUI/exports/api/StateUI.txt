@@ -625,6 +625,9 @@ swift.conformance PopupElementContract: Swift.Sendable
 swift.conformance PositionDots: StateUI.View
 swift.conformance PositionDots: StateUI.Views
 swift.conformance PositionDots: Swift.Sendable
+swift.conformance PresentedElementContract: StateUI.Tier
+swift.conformance PresentedElementContract: StateUI.WornContract
+swift.conformance PresentedElementContract: Swift.Sendable
 swift.conformance ProgressBar: StateUI.View
 swift.conformance ProgressBar: StateUI.Views
 swift.conformance ProgressBar: Swift.Sendable
@@ -1085,6 +1088,7 @@ swift.enum PolygonContract: enum PolygonContract
 swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
 swift.enum PopupElementContract: enum PopupElementContract
+swift.enum PresentedElementContract: enum PresentedElementContract
 swift.enum ProgressBarContract: enum ProgressBarContract
 swift.enum RectangleContract: enum RectangleContract
 swift.enum RefreshElementContract: enum RefreshElementContract
@@ -13810,13 +13814,14 @@ swift.type.property PolygonContract.points: static let points: ElementProperty<P
 swift.type.property PolylineContract.fillRule: static let fillRule: ElementProperty<PolylineContract, FillRule>
 swift.type.property PolylineContract.name: static var name: String { get }
 swift.type.property PolylineContract.points: static let points: ElementProperty<PolylineContract, [Point]>
-swift.type.property PopoverContract.isPresented: static let isPresented: ElementProperty<PopoverContract, Bool>
-swift.type.property PopoverContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PopoverContract, Bool>
 swift.type.property PopoverContract.name: static var name: String { get }
 swift.type.property PopupElementContract.closed: static let closed: ElementEvent<PopupElementContract, Void>
 swift.type.property PopupElementContract.isOpen: static let isOpen: ElementProperty<PopupElementContract, Bool>
 swift.type.property PopupElementContract.name: static let name: String
 swift.type.property PopupElementContract.opened: static let opened: ElementEvent<PopupElementContract, Void>
+swift.type.property PresentedElementContract.isPresented: static let isPresented: ElementProperty<PresentedElementContract, Bool>
+swift.type.property PresentedElementContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PresentedElementContract, Bool>
+swift.type.property PresentedElementContract.name: static let name: String
 swift.type.property ProgressBarContract.name: static var name: String { get }
 swift.type.property ProgressBarContract.progress: static let progress: ElementProperty<ProgressBarContract, Double>
 swift.type.property Rect.zero: static let zero: Rect
@@ -13859,8 +13864,6 @@ swift.type.property ShapeContract.lineCap: static let lineCap: ElementProperty<S
 swift.type.property ShapeContract.lineWidth: static let lineWidth: ElementProperty<ShapeContract, Double>
 swift.type.property ShapeContract.name: static let name: String
 swift.type.property ShapeContract.stroke: static let stroke: ElementProperty<ShapeContract, Brush>
-swift.type.property SheetContract.isPresented: static let isPresented: ElementProperty<SheetContract, Bool>
-swift.type.property SheetContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<SheetContract, Bool>
 swift.type.property SheetContract.name: static var name: String { get }
 swift.type.property SliderContract.maximum: static let maximum: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.minimum: static let minimum: ElementProperty<SliderContract, Double>

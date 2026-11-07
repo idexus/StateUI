@@ -46,7 +46,7 @@
     static func crossesASheet(on element: String) -> ConformanceCase {
         ConformanceCase("\(element).barBackground.crossesASheetItsViewPresents", proves: [
             Covered(BarElementContract.barBackground, on: element),
-        ], needs: [Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             s.start {
                 declaring(element, [Write(BarElementContract.barBackground, Material.color(.steelBlue))], beside: [
                     Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {

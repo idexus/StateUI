@@ -807,6 +807,16 @@ extension ControlDictionary {
                 .onClosed { print("chosen") }
             """#),
 
+        (PresentedElementContract.self, #"""
+            @State var editing = false
+
+            Button("Edit")
+                .onClicked { editing = true }
+                .sheet(isPresented: $editing) {
+                    Text("Editing").padding(16)
+                }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 
