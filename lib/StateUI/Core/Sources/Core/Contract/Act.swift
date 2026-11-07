@@ -12,7 +12,7 @@
 /// case is consulted first, so a registration can never shadow one of these.
 /// Prefixing an application's names with its own (`"Gallery.BatteryLevel"`) is
 /// what keeps the two sets from meeting at all.
-public struct Act: Hashable, Sendable, CustomStringConvertible {
+@_spi(Host) public struct Act: Hashable, Sendable, CustomStringConvertible {
     /// The act's name - the library's own, or the application's registered
     /// one.
     public var name: String { key.name }

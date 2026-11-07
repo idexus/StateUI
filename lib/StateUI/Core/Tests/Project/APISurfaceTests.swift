@@ -25,13 +25,12 @@ final class APISurfaceTests: XCTestCase {
     /// node, the values a host is handed, a value of a state's own, and an application's acts and events.
     /// Design: docs/design/architecture.md#two-surfaces
     static let extendingTypes: Set<String> = [
-        "Act", "AppliedProperties", "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct",
-        "ControlChild", "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event",
-        "HostEventSubscription", "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name",
-        "Node", "NodeType", "Prop", "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue",
-        "Walked",
+        "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct", "ControlChild",
+        "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "HostEventSubscription",
+        "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name", "Node", "NodeType",
+        "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue", "Walked",
         // Values only a contract's member, a host or a kept value's store takes.
-        "CornerRadius", "KeyboardShortcut", "MotionLanes", "PersistentKind", "SelectionMode", "WebViewSource",
+        "CornerRadius", "KeyboardShortcut", "PersistentKind", "SelectionMode", "WebViewSource",
     ]
 
     /// The members an author extending StateUI writes, on whatever type they stand: a view's own node, its values

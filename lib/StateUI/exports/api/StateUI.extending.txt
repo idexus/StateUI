@@ -35,10 +35,6 @@ swift.conformance AccessibilityRole: StateUI.HostRepresentable
 swift.conformance AccessibilityRole: StateUI.LaneValue
 swift.conformance AccessibilityRole: StateUI.StateChoice
 swift.conformance AccessibilityRole: StateUI.StateValue
-swift.conformance Act: Swift.CustomStringConvertible
-swift.conformance Act: Swift.Equatable
-swift.conformance Act: Swift.Hashable
-swift.conformance Act: Swift.Sendable
 swift.conformance ActionElement: StateUI.AutomationElement
 swift.conformance ActionElement: StateUI.PropertyContainer
 swift.conformance ActionElementContract: StateUI.Contract
@@ -264,7 +260,6 @@ swift.conformance ElementEvent: Swift.Sendable
 swift.conformance ElementLayer: Swift.Equatable
 swift.conformance ElementLayer: Swift.Hashable
 swift.conformance ElementLayer: Swift.Sendable
-swift.conformance ElementProperty: StateUI.AppliedProperties where Owner : Contract, Value : HostRepresentable
 swift.conformance ElementProperty: StateUI.ContractMember
 swift.conformance ElementProperty: Swift.Sendable
 swift.conformance ElementView: StateUI.AutomationElement
@@ -287,11 +282,6 @@ swift.conformance Ellipse: StateUI.VisualElement
 swift.conformance Ellipse: StateUI.VisualElementProperties
 swift.conformance EllipseContract: StateUI.Contract
 swift.conformance EllipseContract: StateUI.ElementContract
-swift.conformance Event: Swift.Comparable
-swift.conformance Event: Swift.CustomStringConvertible
-swift.conformance Event: Swift.Equatable
-swift.conformance Event: Swift.Hashable
-swift.conformance Event: Swift.Sendable
 swift.conformance FileType: StateUI.HostRepresentable
 swift.conformance Fill: StateUI.AutomationElement
 swift.conformance Fill: StateUI.BorderElement
@@ -600,12 +590,6 @@ swift.conformance ModifiedContent: StateUI.PropertyContainer
 swift.conformance ModifiedContent: StateUI.ViewProperties
 swift.conformance ModifiedContent: StateUI.VisualElement
 swift.conformance ModifiedContent: StateUI.VisualElementProperties
-swift.conformance MotionLanes: Swift.Equatable
-swift.conformance MotionLanes: Swift.ExpressibleByArrayLiteral
-swift.conformance MotionLanes: Swift.OptionSet
-swift.conformance MotionLanes: Swift.RawRepresentable
-swift.conformance MotionLanes: Swift.Sendable
-swift.conformance MotionLanes: Swift.SetAlgebra
 swift.conformance MotionLayout: StateUI.AutomationElement
 swift.conformance MotionLayout: StateUI.Element
 swift.conformance MotionLayout: StateUI.ModifiableElement
@@ -751,11 +735,6 @@ swift.conformance ProgressBar: StateUI.VisualElement
 swift.conformance ProgressBar: StateUI.VisualElementProperties
 swift.conformance ProgressBarContract: StateUI.Contract
 swift.conformance ProgressBarContract: StateUI.ElementContract
-swift.conformance Prop: Swift.Comparable
-swift.conformance Prop: Swift.CustomStringConvertible
-swift.conformance Prop: Swift.Equatable
-swift.conformance Prop: Swift.Hashable
-swift.conformance Prop: Swift.Sendable
 swift.conformance PropValue: StateUI.HostRepresentable
 swift.conformance PropValue: Swift.Equatable
 swift.conformance PropValue: Swift.Sendable
@@ -1442,9 +1421,7 @@ swift.enum.case StateMode.out: case out
 swift.enum.case WebViewSource.address(_:): case address(String)
 swift.enum.case WebViewSource.html(_:baseAddress:): case html(String, baseAddress: String?)
 swift.func.op ControlChild.==(_:_:): static func == (lhs: ControlChild<Child>, rhs: ControlChild<Child>) -> Bool
-swift.func.op Event.<(_:_:): static func < (lhs: Event, rhs: Event) -> Bool
 swift.func.op NodeType.<(_:_:): static func < (lhs: NodeType, rhs: NodeType) -> Bool
-swift.func.op Prop.<(_:_:): static func < (lhs: Prop, rhs: Prop) -> Bool
 swift.init @SwiftArray.init(propValue:): init?(propValue: PropValue)
 swift.init @SwiftBool.init(carried:): init?(carried: StateCarried)
 swift.init @SwiftBool.init(persistentValue:): init?(persistentValue: PropValue)
@@ -1513,7 +1490,7 @@ swift.init DrawCommand.init(propValue:): init?(propValue: PropValue)
 swift.init Easing.init(rawValue:): init?(rawValue: Int32)
 swift.init ElementAct.init(_:): init(_ name: String)
 swift.init ElementEvent.init(_:layer:): init(_ name: String, layer: ElementLayer = .provider)
-swift.init ElementProperty.init(_:layer:travels:cleared:moves:remakes:unsaid:writtenByStateUI:): init(_ name: String, layer: ElementLayer = .provider, travels: Bool = true, cleared: Bool = true, moves: MotionValues = [], remakes: Bool = false, unsaid: Value? = nil, writtenByStateUI: Bool = false)
+swift.init ElementProperty.init(_:layer:travels:cleared:moves:remakes:unsaid:): init(_ name: String, layer: ElementLayer = .provider, travels: Bool = true, cleared: Bool = true, moves: MotionValues = [], remakes: Bool = false, unsaid: Value? = nil)
 swift.init EnergySaverStatus.init(rawValue:): init?(rawValue: Int32)
 swift.init FileType.init(propValue:): init?(propValue: PropValue)
 swift.init FillRule.init(carried:): init?(carried: StateCarried)
@@ -1577,7 +1554,6 @@ swift.init MarkerKind.init(propValue:): init?(propValue: PropValue)
 swift.init MarkerKind.init(rawValue:): init?(rawValue: Int32)
 swift.init Material.init(carried:): init?(carried: StateCarried)
 swift.init Material.init(propValue:): init?(propValue: PropValue)
-swift.init MotionLanes.init(rawValue:): init(rawValue: UInt8)
 swift.init MotionValues.init(rawValue:): init(rawValue: Int)
 swift.init Name.init(_:): init(_ text: String)
 swift.init Name.init(propValue:): init?(propValue: PropValue)
@@ -3329,8 +3305,6 @@ swift.property AccessibilityPresence.carried: var carried: StateCarried { get }
 swift.property AccessibilityPresence.propValue: var propValue: PropValue { get }
 swift.property AccessibilityRole.carried: var carried: StateCarried { get }
 swift.property AccessibilityRole.propValue: var propValue: PropValue { get }
-swift.property Act.description: var description: String { get }
-swift.property Act.name: var name: String { get }
 swift.property ActionRole.propValue: var propValue: PropValue { get }
 swift.property Alignment.carried: var carried: StateCarried { get }
 swift.property Alignment.propValue: var propValue: PropValue { get }
@@ -3384,8 +3358,6 @@ swift.property ElementEvent.name: let name: String
 swift.property ElementProperty.name: let name: String
 swift.property Ellipse.node: @MainActor var node: Node
 swift.property Ellipse.nodes: @MainActor var nodes: [Node] { get }
-swift.property Event.description: var description: String { get }
-swift.property Event.name: var name: String { get }
 swift.property FileType.propValue: var propValue: PropValue { get }
 swift.property Fill.node: @MainActor var node: Node
 swift.property Fill.nodes: @MainActor var nodes: [Node] { get }
@@ -3472,7 +3444,6 @@ swift.property MenuSeparator.node: @MainActor var node: Node
 swift.property MenuToggle.node: @MainActor var node: Node
 swift.property ModifiedContent.node: @MainActor var node: Node
 swift.property ModifiedContent.nodes: @MainActor var nodes: [Node] { get }
-swift.property MotionLanes.rawValue: let rawValue: UInt8
 swift.property MotionLayout.node: @MainActor var node: Node { get set }
 swift.property MotionLayout.nodes: @MainActor var nodes: [Node] { get }
 swift.property MotionValues.rawValue: let rawValue: Int
@@ -3505,8 +3476,6 @@ swift.property PositionDots.node: @MainActor var node: Node { get set }
 swift.property PositionDots.nodes: @MainActor var nodes: [Node] { get }
 swift.property ProgressBar.node: @MainActor var node: Node
 swift.property ProgressBar.nodes: @MainActor var nodes: [Node] { get }
-swift.property Prop.description: var description: String { get }
-swift.property Prop.name: var name: String { get }
 swift.property PropValue.bool: var bool: Bool? { get }
 swift.property PropValue.bytes: var bytes: [UInt8]? { get }
 swift.property PropValue.color: var color: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)? { get }
@@ -3610,7 +3579,6 @@ swift.property ZStack.node: @MainActor var node: Node
 swift.property ZStack.nodes: @MainActor var nodes: [Node] { get }
 swift.protocol ActionElement: @MainActor protocol ActionElement : AutomationElement
 swift.protocol ApplicationTier: protocol ApplicationTier : Contract
-swift.protocol AppliedProperties: protocol AppliedProperties
 swift.protocol AutomationElement: @MainActor protocol AutomationElement : PropertyContainer
 swift.protocol BarButtonElement: @MainActor protocol BarButtonElement : BarItemElement
 swift.protocol BarElement: @MainActor protocol BarElement : PropertyContainer
@@ -3675,22 +3643,18 @@ swift.protocol VisualElement: @MainActor protocol VisualElement : AutomationElem
 swift.protocol VisualElementProperties: @MainActor protocol VisualElementProperties : PropertyContainer
 swift.protocol Walked: protocol Walked : LaneValue
 swift.protocol WebViewProperties: @MainActor protocol WebViewProperties : PropertyContainer
-swift.struct Act: struct Act
 swift.struct ControlChild: struct ControlChild<Child> where Child : ElementContract
 swift.struct ControlReports: @MainActor struct ControlReports<Realized> where Realized : ElementContract
 swift.struct ControlValues: struct ControlValues<Realized> where Realized : ElementContract
 swift.struct ElementAct: struct ElementAct<Owner, Arguments, Answer> where Owner : Contract
 swift.struct ElementEvent: struct ElementEvent<Owner, Payload> where Owner : Contract
 swift.struct ElementProperty: struct ElementProperty<Owner, Value> where Owner : Contract, Value : HostRepresentable
-swift.struct Event: struct Event
 swift.struct ItemsEntries.Section: struct Section
 swift.struct ItemsEntries: struct ItemsEntries
 swift.struct KeyboardShortcut: struct KeyboardShortcut
-swift.struct MotionLanes: struct MotionLanes
 swift.struct Name: struct Name
 swift.struct Node: @MainActor struct Node
 swift.struct NodeType: struct NodeType
-swift.struct Prop: struct Prop
 swift.subscript ControlValues.subscript(_:): @MainActor subscript<Owner, Value>(member: ElementProperty<Owner, Value>) -> Value? where Owner : Contract, Value : HostRepresentable { get }
 swift.type.method @SwiftArray.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method @SwiftArray.propValue(of:): static func propValue(of list: [Self]) -> PropValue
@@ -4178,12 +4142,6 @@ swift.type.property MenuToggleContract.members: static let members: [any Contrac
 swift.type.property MenuToggleContract.nodeType: static let nodeType: NodeType
 swift.type.property MenuToggleContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property MenuToggleContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property MotionLanes.all: static let all: MotionLanes
-swift.type.property MotionLanes.height: static let height: MotionLanes
-swift.type.property MotionLanes.place: static let place: MotionLanes
-swift.type.property MotionLanes.width: static let width: MotionLanes
-swift.type.property MotionLanes.x: static let x: MotionLanes
-swift.type.property MotionLanes.y: static let y: MotionLanes
 swift.type.property MotionLayout.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MotionLayoutContract.layer: static let layer: ElementLayer
 swift.type.property MotionLayoutContract.layer: static var layer: ElementLayer { get }

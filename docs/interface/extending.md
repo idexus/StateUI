@@ -226,11 +226,10 @@ extension Aim where Target == RatingBar {
 
 ### What a host is handed
 
-A registration's `applies` takes properties a host's view takes together,
-such as the bar's stars with its rating - each an `AppliedProperties` - and
-hands them over as `ControlValues`, read by contract member. The identities
-an ItemsView keeps, in order, cross as `ItemsEntries`. Underneath the typed
-members are the tokens a host reads by name: `Prop`, `Event` and `Act`.
+A registration's `applies` takes the properties a host's view takes
+together, such as the bar's stars with its rating, and hands them over as
+`ControlValues`, read by contract member. The identities an ItemsView keeps,
+in order, cross as `ItemsEntries`.
 
 ## Acts and events of the application
 

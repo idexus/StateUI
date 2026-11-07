@@ -6,7 +6,7 @@
 ///
 /// Comparable by name because the differ walks a node's driven and cleared
 /// properties in name order - that is what makes two renders of one tree alike.
-public struct Prop: Hashable, Comparable, Sendable, CustomStringConvertible {
+@_spi(Host) public struct Prop: Hashable, Comparable, Sendable, CustomStringConvertible {
     /// The property's stable StateUI name.
     public var name: String { key.name }
 

@@ -6,7 +6,7 @@
 ///
 /// Comparable by name because the differ numbers a node's handlers in name
 /// order, so two runs of one tree number alike.
-public struct Event: Hashable, Comparable, Sendable, CustomStringConvertible {
+@_spi(Host) public struct Event: Hashable, Comparable, Sendable, CustomStringConvertible {
     /// The event's stable StateUI name.
     public var name: String { key.name }
 
