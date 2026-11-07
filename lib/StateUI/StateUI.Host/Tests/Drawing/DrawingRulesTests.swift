@@ -244,7 +244,7 @@ final class DrawingRulesTests: XCTestCase {
     func testAGradientsBandIsAsDarkAsItsStops() {
         func gradient(_ colors: [Color], radial: Bool = false) -> HostValue {
             let stops = colors.enumerated().map { GradientStop($0.element, Double($0.offset) / Double(colors.count - 1)) }
-            return Material.gradient(radial ? .radialGradient(stops) : .linearGradient(stops, endPoint: Point(1, 0)))
+            return Material.gradient(radial ? .radialGradient(stops) : .linearGradient(stops, to: Point(1, 0)))
                 .propValue
         }
         XCTAssertEqual(BandWords.light(on: gradient([.purple, .orange])), true)

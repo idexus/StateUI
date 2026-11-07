@@ -1576,11 +1576,11 @@ enum Listings {
                 SectionTitle("Along a line")
 
                 Rectangle()
-                    .fill(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
+                    .fill(.linearGradient(Self.stops, from: Point(0, 0), to: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
-                Button("endPoint: \(Self.ends[end].name)")
+                Button("to: \(Self.ends[end].name)")
                     .horizontalAlignment(.center)
                     .onClicked { end = (end + 1) % Self.ends.count }
 
@@ -1602,7 +1602,7 @@ enum Listings {
                 }
                 .style(.card)
                 .lineWidth(4)
-                .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
+                .stroke(.linearGradient(Self.stops, from: Point(0, 0), to: Point(1, 0)))
 
                 // Not a shape at all: `.background` takes a brush, so any view can
                 // carry one.

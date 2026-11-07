@@ -216,7 +216,7 @@ final class AppKitPageTests: XCTestCase {
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackground] = Material.gradient(.linearGradient(
-            [GradientStop(.black, 0), GradientStop(.white, 1)], endPoint: Point(1, 0))).propValue
+            [GradientStop(.black, 0), GradientStop(.white, 1)], to: Point(1, 0))).propValue
         renderer.applyForTesting(tree(flyout(
             presented: true,
             menu: page("menu", title: "Menu"),

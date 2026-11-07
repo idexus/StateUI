@@ -517,7 +517,7 @@ final class ControlTests: XCTestCase {
                         .stroke(.linearGradient([
                             GradientStop(.gold, 0),
                             GradientStop(.tomato, 1),
-                        ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
+                        ], from: Point(0, 0), to: Point(1, 1)))
                         .lineWidth(2)
                         .dash([4, 2])
                         .dashPhase(1)

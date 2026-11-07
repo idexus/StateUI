@@ -11,7 +11,7 @@
 ///     .background(.linearGradient([
 ///         GradientStop(.cornflowerBlue, 0),
 ///         GradientStop(.indigo, 1),
-///     ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
+///     ], from: Point(0, 0), to: Point(1, 1)))
 ///
 /// A brush is where a gradient goes: `.background` takes one color or one of
 /// these.
@@ -52,7 +52,7 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///     .linearGradient([
     ///         GradientStop(.gold, 0),
     ///         GradientStop(.tomato, 1),
-    ///     ], startPoint: Point(0, 0), endPoint: Point(1, 0))
+    ///     ], from: Point(0, 0), to: Point(1, 0))
     ///
     /// The points are fractions of the thing being painted, not device units:
     /// `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom right.
@@ -61,16 +61,16 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
     ///
     /// - Parameters:
     ///   - stops: the colors, and how far along each one sits.
-    ///   - startPoint: where the gradient begins.
-    ///   - endPoint: where it ends.
+    ///   - from: where the gradient begins.
+    ///   - to: where it ends.
     public static func linearGradient(
         _ stops: [GradientStop],
-        startPoint: Point = Point(0, 0),
-        endPoint: Point = Point(0, 1)
+        from start: Point = Point(0, 0),
+        to end: Point = Point(0, 1)
     ) -> Brush {
         Brush(
             .linearGradient,
-            geometry: [startPoint.x, startPoint.y, endPoint.x, endPoint.y],
+            geometry: [start.x, start.y, end.x, end.y],
             stops: stops)
     }
 

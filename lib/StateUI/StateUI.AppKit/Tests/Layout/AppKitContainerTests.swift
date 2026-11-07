@@ -696,8 +696,8 @@ final class AppKitContainerTests: XCTestCase {
                 ZStack().background(.red)
                 ZStack().background(.linearGradient(
                     [GradientStop(.red, 0), GradientStop(.blue, 1)],
-                    startPoint: Point(0, 0),
-                    endPoint: Point(1, 0)))
+                    from: Point(0, 0),
+                    to: Point(1, 0)))
             }
         }
         defer { renderer.finish() }

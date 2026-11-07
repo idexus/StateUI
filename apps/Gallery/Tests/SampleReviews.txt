@@ -15,7 +15,7 @@ BatterySample.swift 128720d18b4dffd2
 BindingReaderSample.swift 73dcef2911b104df
 BottomBarSample.swift 958ec025905cb33d
 BoundPropertiesSample.swift 52240d3e367abe61
-BrushSample.swift 9bcd94f7f88fe7af
+BrushSample.swift d2d891c981a4703d
 BuilderSample.swift eda47ffd0dda692b
 ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 1b07ddd7b73c31f5
@@ -128,7 +128,7 @@ StackLayoutSample.swift 5f82478083f9d4fe
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift 43ab66cb4f3728d4
+StyleSample.swift 351cecd69d524422
 SwipeSample.swift 6e63a00e055bd605
 SwitchSample.swift e646ed7699a72afe
 TabsSample.swift ed6e1048b5882531

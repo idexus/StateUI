@@ -126,7 +126,7 @@ extension WinUIDriver {
             }
             guard points.count == 4, stops.count == words.count - 5 else { return nil }
             return Material.gradient(.linearGradient(
-                stops, startPoint: Point(points[0], points[1]), endPoint: Point(points[2], points[3]))).propValue
+                stops, from: Point(points[0], points[1]), to: Point(points[2], points[3]))).propValue
         }
         if words.first == "acrylic", words.count == 3, let opacity = Float(words[2]),
            let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
