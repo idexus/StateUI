@@ -1,12 +1,12 @@
 import StateUI
 
-/// A ticker that does not repeat, restarted by the work it started.
+/// A ticker of one tick, restarted by the work it started.
 struct PollSample: SampleContent, ExampleContent {
     // listing: PollSample
     /// One tick, then stopped - and the tick starts the next round when its
     /// work is done. So the gap is measured from where the work ENDED, and two
     /// rounds can never overlap however long one takes.
-    @State private var poll = Ticker(every: .seconds(2), isRepeating: false)
+    @State private var poll = Ticker(every: .seconds(2), limit: 1)
 
     @State private var status = "Not started"
     @State private var rounds = 0
@@ -93,7 +93,7 @@ struct PollSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("A repeating ticker counts each interval from the last tick's deadline, "
-                + "so a long check eats into the gap. This one does not repeat: it ticks "
+                + "so a long check eats into the gap. This one has a limit of one: it ticks "
                 + "once, the tick does the work, and the tick starts the next round when "
                 + "that work is done - so the gap is measured from the END of the work "
                 + "rather than from the start.")

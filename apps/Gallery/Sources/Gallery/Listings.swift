@@ -9233,7 +9233,7 @@ enum Listings {
         /// One tick, then stopped - and the tick starts the next round when its
         /// work is done. So the gap is measured from where the work ENDED, and two
         /// rounds can never overlap however long one takes.
-        @State private var poll = Ticker(every: .seconds(2), isRepeating: false)
+        @State private var poll = Ticker(every: .seconds(2), limit: 1)
 
         @State private var status = "Not started"
         @State private var rounds = 0

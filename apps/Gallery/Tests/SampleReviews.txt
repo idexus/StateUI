@@ -98,7 +98,7 @@ PickerSample.swift 86c5cbb290e05823
 PinchSample.swift e56e5f964acfbeee
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
-PollSample.swift 29d40feb24ecaa77
+PollSample.swift 76ecb0076e0aa5e7
 PopoverSample.swift 9066bd443c9189ec
 PositionDotsSample.swift 85b6d17adabdccb8
 ProgressBarSample.swift f791be1b52dbc323

@@ -22,7 +22,7 @@ final class APIAccessTests: XCTestCase {
 
     private static let settings: [(make: String, names: [String])] = [
         ("ApplicationSession()", ["colorScheme", "accentColor", "styles", "motion"]),
-        ("Ticker(every: .seconds(1))", ["limit", "isRepeating"]),
+        ("Ticker(every: .seconds(1))", ["limit"]),
         ("WindowSession()", ["title", "x", "y", "width", "height", "minimumWidth", "minimumHeight", "maximumWidth",
                              "maximumHeight", "isMaximizable", "isMinimizable", "background"]),
     ]

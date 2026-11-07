@@ -316,14 +316,13 @@ struct Countdown: View {
 ```
 
 Hold a ticker in `@State` so the same instance survives view rebuilds. Reading
-`ticks`, `isRunning`, `isFinished`, `interval`, `limit`, or `isRepeating`
-subscribes the current description to that ticker. A tick, and each change
-to `interval`, `limit` or `isRepeating`, requests a render; setting `onTick`
-does not.
+`ticks`, `isRunning`, `isFinished`, `interval` or `limit` subscribes the
+current description to that ticker. A tick, and each change to `interval` or
+`limit`, requests a render; setting `onTick` does not.
 
 `ticks` and `isRunning` are read-only facts. Use `start()`, `stop()` and
-`reset()` to control them; the writable settings `limit` and `isRepeating`
-also offer bindings for controls.
+`reset()` to control them; the writable setting `limit` also offers a
+binding for controls.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
@@ -345,8 +344,8 @@ the next waits for the current closure to finish and falls due one interval
 after the last deadline; if the work outlasts a whole interval, the next
 deadline starts from completion instead of releasing a burst of missed ticks.
 
-A nonrepeating ticker is a reusable delay. It is useful for polling that must
-not overlap:
+A ticker of `limit: 1` is a reusable delay: started again, it counts from
+none. It is useful for polling that must not overlap:
 
 ```swift
 struct StatusService {
@@ -355,7 +354,7 @@ struct StatusService {
 
 let service = StatusService()
 @State private var status = "Waiting"
-@State private var poll = Ticker(every: .seconds(30), isRepeating: false)
+@State private var poll = Ticker(every: .seconds(30), limit: 1)
 
 VStack { Text(status) }
     .onCreated {

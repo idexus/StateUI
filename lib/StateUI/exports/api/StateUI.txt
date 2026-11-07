@@ -1482,7 +1482,7 @@ swift.init TextField.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init TextField.init(_:): @MainActor init(_ text: String)
 swift.init TextSpan.init(): @MainActor init()
 swift.init TextSpan.init(_:): @MainActor init(_ text: String)
-swift.init Ticker.init(every:isRepeating:limit:onTick:): @MainActor init(every interval: Duration, isRepeating: Bool = true, limit: Int? = nil, onTick: Ticker.Tick? = nil)
+swift.init Ticker.init(every:limit:onTick:): @MainActor init(every interval: Duration, limit: Int? = nil, onTick: Ticker.Tick? = nil)
 swift.init TimePicker.init(): @MainActor init()
 swift.init TimePicker.init(_:): @MainActor init(_ state: Binding<ClockTime>)
 swift.init TimePicker.init(_:): @MainActor init(_ time: ClockTime)
@@ -13073,11 +13073,9 @@ swift.property TabView.body: @MainActor var body: Never { get }
 swift.property Text.body: @MainActor var body: Never { get }
 swift.property TextEditor.body: @MainActor var body: Never { get }
 swift.property TextField.body: @MainActor var body: Never { get }
-swift.property Ticker.$isRepeating: @MainActor var $isRepeating: Binding<Bool> { get }
 swift.property Ticker.$limit: @MainActor var $limit: Binding<Int?> { get }
 swift.property Ticker.interval: @MainActor var interval: Duration { get set }
 swift.property Ticker.isFinished: @MainActor var isFinished: Bool { get }
-swift.property Ticker.isRepeating: @State @MainActor var isRepeating: Bool { get set }
 swift.property Ticker.isRunning: @MainActor var isRunning: Bool { get }
 swift.property Ticker.limit: @State @MainActor var limit: Int? { get set }
 swift.property Ticker.onTick: @MainActor var onTick: Ticker.Tick? { get set }
