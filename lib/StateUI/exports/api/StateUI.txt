@@ -6165,7 +6165,7 @@ swift.method Link.visualState(_:): @MainActor func visualState(_ state: VisualSt
 swift.method Link.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Link.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method Localization.date(_:format:): @MainActor func date(_ day: CalendarDate, format: DateFormat) -> String
+swift.method Localization.date(_:format:): @MainActor func date(_ day: CalendarDate, format: DateFormat = .short) -> String
 swift.method Localization.isolated(_:): @MainActor func isolated(_ text: String) -> String
 swift.method Localization.list(_:): @MainActor func list(_ items: [String]) -> String
 swift.method Localization.number(_:): @MainActor func number(_ value: Int) -> String
@@ -6428,7 +6428,7 @@ swift.method MenuToggle.onToggled(_:): @MainActor func onToggled(_ handler: @esc
 swift.method MenuToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
 swift.method MenuToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
 swift.method MenuToggle.text(_:): @MainActor func text(_ value: String) -> Self.Modified
-swift.method MessageContext.date(_:format:): func date(_ day: CalendarDate, format: DateFormat) -> String
+swift.method MessageContext.date(_:format:): func date(_ day: CalendarDate, format: DateFormat = .short) -> String
 swift.method MessageContext.isolated(_:): func isolated(_ text: String) -> String
 swift.method MessageContext.list(_:): func list(_ items: [String]) -> String
 swift.method MessageContext.number(_:): func number(_ value: Int) -> String

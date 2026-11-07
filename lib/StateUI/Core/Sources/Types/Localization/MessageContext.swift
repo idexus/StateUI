@@ -92,7 +92,7 @@ public struct MessageContext: Sendable {
     }
 
     /// A day: `September 30, 2026`, `30 września 2026`, `30.09.2026`.
-    public func date(_ day: CalendarDate, format: DateFormat) -> String {
+    public func date(_ day: CalendarDate, format: DateFormat = .short) -> String {
         let month = max(1, min(day.month, 12)) - 1
         switch format {
         case .long, .medium:

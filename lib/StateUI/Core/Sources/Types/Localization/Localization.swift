@@ -116,7 +116,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
     }
 
     /// A day - `MessageContext.date`.
-    public func date(_ day: CalendarDate, format: DateFormat) -> String { context.date(day, format: format) }
+    public func date(_ day: CalendarDate, format: DateFormat = .short) -> String { context.date(day, format: format) }
 
     /// A time of day - `MessageContext.time`.
     public func time(_ time: ClockTime, format: TimeFormat = .short) -> String { context.time(time, format: format) }

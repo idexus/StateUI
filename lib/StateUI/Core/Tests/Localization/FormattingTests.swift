@@ -84,6 +84,8 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(polish.date(day, format: .long), "30 września 2026", "a month in a date is in the genitive")
         XCTAssertEqual(polish.date(day, format: .medium), "30 wrz 2026")
         XCTAssertEqual(polish.date(day, format: .short), "30.09.2026")
+        XCTAssertEqual(english.date(day), "9/30/26", "a day is short unless said, as a time is")
+        XCTAssertEqual(english.context.date(day), "9/30/26")
     }
 
     func testWordsFollowTheLanguageAndTheOrderFollowsTheFormats() {
