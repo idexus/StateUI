@@ -60,7 +60,7 @@ final class GeometryBoundsTests: XCTestCase {
         runtime.tree.apply(patch, complete: true)
         let journey = HostJourney(
             value: [.nan, 8, .infinity, -4], destination: [-12, -.infinity, .nan, 6], velocity: [0, 0, 0, 0],
-            motion: .custom, completion: nil, stopped: 0)
+            motion: .none, completion: nil, stopped: 0)
         let malformed = HostBoundary.value(of: journey)
         XCTAssertNil(HostBoundary.journey(from: malformed), "the core refuses nonfinite journey images")
         _ = runtime.tree.present(states: [900: malformed], properties: [:])
@@ -79,7 +79,7 @@ final class GeometryBoundsTests: XCTestCase {
         runtime.tree.apply(patch, complete: true)
         let journey = HostJourney(
             value: [-1, 2, 3, -4], destination: [7, -8, 9, 10], velocity: [0, 0, 0, 0],
-            motion: .custom, completion: nil, stopped: 0)
+            motion: .spring(), completion: nil, stopped: 0)
         _ = runtime.tree.present(states: [900: HostBoundary.value(of: journey)], properties: [:])
         let element = try XCTUnwrap(runtime.tree.root)
         XCTAssertEqual(element.value(.padding)?.numbers, [-1, 2, 3, -4])

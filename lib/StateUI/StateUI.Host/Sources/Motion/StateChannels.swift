@@ -220,7 +220,6 @@ private final class StateChannel {
         motion = journey.motion
         stopped = journey.stopped
 
-        guard motion.kind != .custom else { return }
         aim(
             Array(value.indices),
             at: journey,
@@ -369,15 +368,6 @@ private final class StateChannel {
         stopped = incoming.stopped
         let completion = usesCompletion ? incoming.completion : nil
         for lane in lanes { destination[lane] = incoming.destination[lane] }
-
-        if motion.kind == .custom {
-            for lane in lanes {
-                value[lane] = incoming.value[lane]
-                velocity[lane] = incoming.velocity[lane]
-            }
-            emit(self, nil, [])
-            return
-        }
 
         let animation = Animation(
             from: lanes.map { value[$0] },
