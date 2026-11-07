@@ -17,7 +17,7 @@ Window.minimumWidth: not realized
 Window.stopped: ✓ minimize on Window: the host told the scene's phase, no scene moved
 Window.title: ✅
 Window.width: – iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.
-Window.windowType: not realized
+Window.windowKind: not realized
 Window.windowValue: not realized
 Window.x: – iPadOS places its windows itself: a UIKit scene asks for no place.
 Window.y: – iPadOS places its windows itself: a UIKit scene asks for no place.

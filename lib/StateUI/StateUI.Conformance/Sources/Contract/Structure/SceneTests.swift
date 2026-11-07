@@ -39,7 +39,7 @@
             },
             ConformanceCase("aWindowTheUserClosesIsHeardAndTheLastEndsItsScene", proves: [
                 Covered(SceneContract.windowClosed),
-            ], needs: [Covered(WindowContract.windowType)]) { s in
+            ], needs: [Covered(WindowContract.windowKind)]) { s in
                 let sessions = Received<ApplicationSession>()
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
@@ -59,7 +59,7 @@
             ConformanceCase("aWindowTheUserClosesTakesWhatItAskedWithIt", proves: [
                 Covered(SceneContract.windowClosed),
             ], needs: [
-                Covered(WindowContract.windowType), Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
+                Covered(WindowContract.windowKind), Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
             ]) { s in
                 let said = Received<Bool>()
                 try s.start(application: { AskingApplication(said: said) })
@@ -116,7 +116,7 @@ struct ApplicationPage: View {
 /// `said`.
 struct AskingApplication: Application {
     /// The kind of the draft's window.
-    static let draft = WindowType<Void>("conformance.draft")
+    static let draft = WindowKind<Void>("conformance.draft")
 
     var said = Received<Bool>()
 

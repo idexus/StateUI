@@ -800,7 +800,7 @@ private struct SheetedScene: Scene {
 
     var body: some Scene {
         WindowGroup { SheetedOpeningPage() }
-        Window(WindowType("pages.sheeted")) {
+        Window(WindowKind("pages.sheeted")) {
             if asks {
                 AskingSheetedPage()
             } else {
@@ -827,10 +827,10 @@ private struct SheetedOpeningPage: View {
         let application = self.application
         return VStack {
             Button("Open").onClicked(.ignoreWhileRunning) {
-                try await application.openWindow(WindowType("pages.sheeted"))
+                try await application.openWindow(WindowKind("pages.sheeted"))
             }
             Button("Close").onClicked(.ignoreWhileRunning) {
-                try await application.closeWindow(WindowType("pages.sheeted"))
+                try await application.closeWindow(WindowKind("pages.sheeted"))
             }
         }
     }

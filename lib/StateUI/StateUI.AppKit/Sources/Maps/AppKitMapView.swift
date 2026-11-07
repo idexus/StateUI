@@ -48,7 +48,7 @@ final class AppKitMapView: MapKitView {
         button.pin?.child.reports.raise(MarkerContract.detailsClicked)
     }
 
-    override func dress(_ marker: MKMarkerAnnotationView, as type: MarkerType) {
+    override func dress(_ marker: MKMarkerAnnotationView, as type: MarkerKind) {
         let look = MarkerLook(type)
         marker.markerTintColor = Self.tint(look.hue)
         marker.glyphImage = look.sfSymbol.flatMap { NSImage(systemSymbolName: $0, accessibilityDescription: nil) }

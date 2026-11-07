@@ -128,7 +128,7 @@ enum WebRealization {
         .complete(SceneContract.stopped),
         .notPlanned(SceneContract.windowClosed,
             reason: "A page's one window closes with its tab, which hears nothing after."),
-        .notPlanned(WindowContract.windowType, reason: "A page is one window: it opens none of a kind."),
+        .notPlanned(WindowContract.windowKind, reason: "A page is one window: it opens none of a kind."),
         .notPlanned(WindowContract.windowValue, reason: "A page is one window: it opens none for a value."),
         .complete(WindowContract.activated),
         .complete(WindowContract.created),

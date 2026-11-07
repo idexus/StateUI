@@ -24,7 +24,7 @@ enum Inspector {
     /// Whether a scene's inspector may show in a window of its own: the scene
     /// declares one, and the platform opens windows.
     static func windowed(_ record: SceneRecord) -> Bool {
-        OpenScenes.shared.declares(WindowType.debugInspector.key, in: record) && OpenScenes.opensWindows
+        OpenScenes.shared.declares(WindowKind.debugInspector.key, in: record) && OpenScenes.opensWindows
     }
 
     /// Where a scene's inspector is docked: its place, in the window keyed `window`.
@@ -47,7 +47,7 @@ enum Inspector {
     /// Whether a scene's inspector shows, docked or in its window.
     static func showing(in record: SceneRecord) -> Bool {
         InspectorModel.shared.places[record.id] != nil
-            || record.windows.contains { $0.type == WindowType.debugInspector.key }
+            || record.windows.contains { $0.type == WindowKind.debugInspector.key }
     }
 
     /// Shows a scene's inspector at a place - docked where it cannot show in a
@@ -58,10 +58,10 @@ enum Inspector {
 
         if place == .window, windowed(record) {
             dock(nil, in: record)
-            try? OpenScenes.shared.open(WindowType.debugInspector.key)
+            try? OpenScenes.shared.open(WindowKind.debugInspector.key)
         } else {
             if windowed(record) {
-                try? record.close(WindowType.debugInspector.key, value: nil)
+                try? record.close(WindowKind.debugInspector.key, value: nil)
             }
 
             dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record, window: window)
@@ -81,7 +81,7 @@ enum Inspector {
         let model = InspectorModel.shared
 
         if windowed(record) {
-            try? record.close(WindowType.debugInspector.key, value: nil)
+            try? record.close(WindowKind.debugInspector.key, value: nil)
         }
 
         dock(nil, in: record)

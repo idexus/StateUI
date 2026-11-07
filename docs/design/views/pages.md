@@ -71,7 +71,7 @@ Window* one more, `openWindow` one of a kind - and ends with its last
   hide while another scene is in front, and closes with its scene.
 - What the system restores is what was open: each window comes back as its
   kind for its value, and its scene with the values its `@State(sceneKey:)`
-  held. A group's value is `Codable` for that reason, and a `WindowType` name
+  held. A group's value is `Codable` for that reason, and a `WindowKind` name
   is written down with every window, so it should not change between
   versions.
 

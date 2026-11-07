@@ -17,7 +17,7 @@ Window.minimumWidth: ✅
 Window.stopped: ✅
 Window.title: ✅
 Window.width: ✅
-Window.windowType: ✅
+Window.windowKind: ✅
 Window.windowValue: ✅
 Window.x: ✅
 Window.y: ✅

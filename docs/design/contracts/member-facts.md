@@ -58,7 +58,7 @@ again instead:
   where the host puts an item    a toolbar item's placement, a toolbar group's side and order,
                                  whether a toolbar item shows its text, a menu bar's order
   a choice                       selectedIndex, selectedTab: clearing would move it
-  what keeps a platform window   windowType, windowValue, floatsOnTop, hidesWhenInactive
+  what keeps a platform window   windowKind, windowValue, floatsOnTop, hidesWhenInactive
   where a map opens              region
 ```
 

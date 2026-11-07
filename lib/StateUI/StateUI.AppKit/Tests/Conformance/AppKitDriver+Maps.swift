@@ -17,7 +17,7 @@ extension AppKitDriver {
     func mapHolds(_ property: Prop, _ map: AppKitMapView) -> HostValue? {
         switch property {
         case .region: map.shownRegion.propValue
-        case .type: map.shownType.propValue
+        case .kind: map.shownType.propValue
         case .showsTraffic: map.showsTrafficNow.propValue
         case .isScrollEnabled: map.isScrollEnabled.propValue
         case .isZoomEnabled: map.isZoomEnabled.propValue
@@ -33,9 +33,9 @@ extension AppKitDriver {
         case .title: return pin.title?.propValue
         case .subtitle: return pin.subtitle?.propValue
         case .location: return Location(latitude: pin.coordinate.latitude, longitude: pin.coordinate.longitude).propValue
-        case .type:
+        case .kind:
             let tint = try marker(of: pin, on: map).markerTintColor
-            let kinds: [MarkerType] = [.generic, .place, .saved, .searchResult]
+            let kinds: [MarkerKind] = [.generic, .place, .saved, .searchResult]
             return kinds.first { AppKitMapView.tint(MarkerLook($0).hue) == tint }?.propValue
         default: throw DriverCannot("read \(property.name) of a Marker")
         }

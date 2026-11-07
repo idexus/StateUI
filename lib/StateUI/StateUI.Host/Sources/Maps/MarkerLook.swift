@@ -31,7 +31,7 @@
     }
 
     /// The look of a marker of `type`.
-    public init(_ type: MarkerType) {
+    public init(_ type: MarkerKind) {
         switch type {
         case .generic: self.init(hue: .red, sfSymbol: nil)
         case .place: self.init(hue: .blue, sfSymbol: "building.2.fill")

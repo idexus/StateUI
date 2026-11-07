@@ -5,7 +5,7 @@ extension ReportResources {
     static let english = ReportResources(
         heading: "Folder report",
         prepared: Message { day, context in
-            "Prepared on \(context.date(day, style: .long))"
+            "Prepared on \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)

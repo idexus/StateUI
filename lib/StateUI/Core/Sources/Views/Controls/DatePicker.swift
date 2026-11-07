@@ -25,8 +25,8 @@ extension DatePickerProperties {
     /// How much of the day is written out in the field - `.long`
     /// "September 30, 2026", `.medium` "Sep 30, 2026", `.short` "9/30/26" -
     /// each in the order and the words of the user's language and region.
-    public func format(_ style: DateStyle) -> Modified {
-        setValue(DatePickerContract.format, style)
+    public func format(_ format: DateFormat) -> Modified {
+        setValue(DatePickerContract.format, format)
     }
 }
 
@@ -149,7 +149,7 @@ extension DatePicker {
     }
 
     /// `format` from a state, `$x`: the host writes the day each new way as it stands.
-    public func format(_ state: Binding<DateStyle>) -> Modified {
+    public func format(_ state: Binding<DateFormat>) -> Modified {
         twin(DatePickerContract.format, by: state)
     }
 

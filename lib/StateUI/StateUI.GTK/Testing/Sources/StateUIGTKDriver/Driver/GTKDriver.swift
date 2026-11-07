@@ -135,7 +135,7 @@ final class GTKDriver: HostDriver {
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "minimize": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "restore": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
-        "read windowType of Window": "the scenes the host keeps for the next start",
+        "read windowKind of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
         "rotate": "the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down",

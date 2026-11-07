@@ -306,7 +306,7 @@ final class ApplicationLifecycleTests: XCTestCase {
     private static func window(_ name: String, kind: String? = nil, _ properties: [Prop: HostValue] = [:]) -> HostPatch {
         var window = HostPatch(id: .manual(name), type: .window)
         window.properties = properties
-        if let kind { window.properties[.windowType] = .name(kind) }
+        if let kind { window.properties[.windowKind] = .name(kind) }
         return window
     }
 

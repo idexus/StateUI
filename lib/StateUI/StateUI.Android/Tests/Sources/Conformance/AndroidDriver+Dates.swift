@@ -24,11 +24,11 @@ extension AndroidDriver {
         case .maximum: return .some(bound(Self.latest, of: field))
         case .format where field.kind == .date:
             let format = Java.frame { objectField(field, Self.format).map { Java.text($0) } ?? "" }
-            let style = [DateStyle.short, .medium, .long].first { AndroidDateFieldView.letter(of: $0) == format }
+            let style = [DateFormat.short, .medium, .long].first { AndroidDateFieldView.letter(of: $0) == format }
             return .some(style?.propValue)
         case .format:
             let format = Java.frame { objectField(field, Self.format).map { Java.text($0) } ?? "" }
-            let style = [TimeStyle.short, .medium].first { AndroidDateFieldView.letter(of: $0) == format }
+            let style = [TimeFormat.short, .medium].first { AndroidDateFieldView.letter(of: $0) == format }
             return .some(style?.propValue)
         case .isOpen:
             let showing = Java.frame { objectField(field, Self.dialog).map { Java.callBool($0, Self.isShowing) } }

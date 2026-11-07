@@ -321,7 +321,7 @@ final class AppKitSessionTests: XCTestCase {
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         XCTAssertEqual(renderer.windowsForTesting.count, 1)
         XCTAssertTrue(controller.window === restored)
-        XCTAssertEqual(controller.element?.value(.windowType)?.name, "appkit.test.editor")
+        XCTAssertEqual(controller.element?.value(.windowKind)?.name, "appkit.test.editor")
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "appkit.test.editor")
     }
 
@@ -550,7 +550,7 @@ final class AppKitSessionTests: XCTestCase {
 
         var window = HostPatch(id: .manual(id), type: .window)
         window.properties[.title] = .string(id)
-        if let kind { window.properties[.windowType] = .name(kind) }
+        if let kind { window.properties[.windowKind] = .name(kind) }
         if let eventBase {
             window.events = .replace([
                 .created: eventBase,
@@ -585,8 +585,8 @@ private final class ClosingWatch {
     }
 }
 
-private extension WindowType where Value == Void {
-    static let appKitTestTool = WindowType("appkit.test.tool")
+private extension WindowKind where Value == Void {
+    static let appKitTestTool = WindowKind("appkit.test.tool")
 }
 
 private struct AppKitSessionPage: View {
@@ -605,8 +605,8 @@ private struct AppKitSessionApp: Application {
     var body: some Scene { AppKitSessionScene() }
 }
 
-private extension WindowType where Value == Void {
-    static let appKitTestEditor = WindowType("appkit.test.editor")
+private extension WindowKind where Value == Void {
+    static let appKitTestEditor = WindowKind("appkit.test.editor")
 }
 
 /// An application of two scenes: the one with a tool window, and the editors.

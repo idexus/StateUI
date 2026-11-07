@@ -65,7 +65,7 @@ final class WebDriver: HostDriver {
         "restore": "the notice the browser gives as the page's tab shows, told by the driver: a page shows no tab",
         "close on Window": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
-        "read windowType of Window": "the scenes the host keeps for the next start",
+        "read windowKind of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "read a file dialog": "the dialog the relay holds on a page a test drives, which the browser never shows",
         "read what was launched": "the relay's own record of what it would open, which a test holds back",

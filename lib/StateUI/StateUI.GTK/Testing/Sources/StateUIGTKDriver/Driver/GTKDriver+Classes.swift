@@ -14,9 +14,9 @@ import CStateUIGTK
 extension GTKDriver {
     /// What the host's record of `element` says of `property`; nil for a member this does not read.
     func recorded(_ property: Prop, on element: MountedElement, view: GTKView?) throws -> HostValue?? {
-        if element.type == .window, property == .windowType || property == .windowValue {
+        if element.type == .window, property == .windowKind || property == .windowValue {
             let kept = try keptWindow(element)
-            return property == .windowType ? .some(kept.kind.map { .name($0) }) : .some(kept.value.map { .string($0) })
+            return property == .windowKind ? .some(kept.kind.map { .name($0) }) : .some(kept.value.map { .string($0) })
         }
         guard let view else { return nil }
         if MountedElement.transformProperties.contains(property) { return .some(Self.transform(property, of: view)) }

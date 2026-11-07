@@ -44,7 +44,7 @@ millisecond is there for `application.clock.now()`.
 
 `text` writes one fixed shape, `2026-08-02` or `09:30:00`, for text an
 application composes itself. How a picker writes a day for the user is its
-`.format(_:)` - a `DateStyle`, short, medium or long - which the host
+`.format(_:)` - a `DateFormat`, short, medium or long - which the host
 applies in the user's language and region; a time picker's is its own.
 
 Reading text is strict. A day reads from `2026-08-02`, with or without the

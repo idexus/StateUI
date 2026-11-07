@@ -6,8 +6,8 @@ public protocol MapProperties: PropertyContainer {}
 
 extension MapProperties {
     /// How the world is drawn - streets, satellite photography, or both.
-    public func type(_ value: MapType) -> Modified {
-        setValue(MapContract.type, value)
+    public func kind(_ value: MapKind) -> Modified {
+        setValue(MapContract.kind, value)
     }
 
     /// Whether a drag pans it.
@@ -165,9 +165,9 @@ public struct Marker: Element {
 
     /// What the marker stands for, which is what decides the icon the platform
     /// draws for it.
-    public func type(_ value: MarkerType) -> Self {
+    public func kind(_ value: MarkerKind) -> Self {
         var copy = self
-        copy.node.write(MarkerContract.type, value)
+        copy.node.write(MarkerContract.kind, value)
         return copy
     }
 
@@ -219,7 +219,7 @@ public struct Marker: Element {
 }
 
 /// How the world is drawn.
-public enum MapType: Int32, Sendable, HostRepresentable {
+public enum MapKind: Int32, Sendable, HostRepresentable {
     /// Roads and their names - the default.
     case standard = 0
 
@@ -303,9 +303,9 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
 // MARK: - The acts
 
 extension Map {
-    /// `type` from a state, `$x`: the host shows each new kind of map as it stands, and no view is rebuilt for it.
-    public func type(_ state: Binding<MapType>) -> Modified {
-        twin(MapContract.type, by: state)
+    /// `kind` from a state, `$x`: the host shows each new kind of map as it stands, and no view is rebuilt for it.
+    public func kind(_ state: Binding<MapKind>) -> Modified {
+        twin(MapContract.kind, by: state)
     }
 
     /// `isScrollEnabled` from a state, `$x`: the host sets each new value as it stands.
@@ -354,4 +354,4 @@ extension Aim where Target == Map {
 }
 
 // A map's kind is a choice a property can be handed as `$x` - see StateChoice.
-extension MapType: StateChoice {}
+extension MapKind: StateChoice {}

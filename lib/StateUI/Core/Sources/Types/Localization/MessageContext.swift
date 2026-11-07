@@ -92,11 +92,11 @@ public struct MessageContext: Sendable {
     }
 
     /// A day: `September 30, 2026`, `30 września 2026`, `30.09.2026`.
-    public func date(_ day: CalendarDate, style: DateStyle) -> String {
+    public func date(_ day: CalendarDate, format: DateFormat) -> String {
         let month = max(1, min(day.month, 12)) - 1
-        switch style {
+        switch format {
         case .long, .medium:
-            let name = (style == .long ? words.months : words.shortMonths)[month]
+            let name = (format == .long ? words.months : words.shortMonths)[month]
             return words.dayFirst ?? region.dayFirst
                 ? "\(day.day) \(name) \(day.year)" : "\(name) \(day.day), \(day.year)"
         case .short:
@@ -111,9 +111,9 @@ public struct MessageContext: Sendable {
 
     /// A time of day: `07:30` on a 24-hour clock, `7:30 AM` on a twelve-hour one; `.medium` adds the seconds,
     /// `07:30:05`.
-    public func time(_ time: ClockTime, style: TimeStyle = .short) -> String {
+    public func time(_ time: ClockTime, format: TimeFormat = .short) -> String {
         func twoDigits(_ value: Int) -> String { value < 10 ? "0\(value)" : "\(value)" }
-        let minutes = twoDigits(time.minute) + (style == .medium ? ":" + twoDigits(time.second) : "")
+        let minutes = twoDigits(time.minute) + (format == .medium ? ":" + twoDigits(time.second) : "")
         guard !uses24HourClock else { return twoDigits(time.hour) + ":" + minutes }
 
         let hour = time.hour % 12 == 0 ? 12 : time.hour % 12

@@ -7,4 +7,4 @@ Map.moveToRegion: ✅
 Map.region: ✅
 Map.showsTraffic: ✅
 Map.showsUserLocation: ✅
-Map.type: ✅
+Map.kind: ✅

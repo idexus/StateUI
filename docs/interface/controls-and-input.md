@@ -739,12 +739,12 @@ or on a marker's details:
 @State var said = "tap the map or a marker"
 
 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
-    .type(.hybrid)
+    .kind(.hybrid)
     .markers {
         Marker(at: Location(latitude: 50.0540, longitude: 19.9354))
             .title("Wawel Castle")
             .subtitle("Wawel 5")
-            .type(.place)
+            .kind(.place)
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }

@@ -79,8 +79,8 @@ private struct Holding: Application {
     var body: some Scene { WindowGroup { First() } }
 }
 
-private extension WindowType where Value == Void {
-    static let second = WindowType("inspection.second")
+private extension WindowKind where Value == Void {
+    static let second = WindowKind("inspection.second")
 }
 
 /// An application of two scenes, each a window alone.
@@ -163,7 +163,7 @@ final class InspectionTests: XCTestCase {
     /// Two scenes, the way the platform hands their windows over.
     private func twoScenes() {
         HostBoundary.connectWindow()
-        HostBoundary.connectWindow(kind: WindowType.second.name)
+        HostBoundary.connectWindow(kind: WindowKind.second.name)
     }
 
     /// What each window of each scene holds, by type.

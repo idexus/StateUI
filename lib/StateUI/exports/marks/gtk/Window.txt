@@ -17,7 +17,7 @@ Window.minimumWidth: ✅
 Window.stopped: ☑️ A Wayland desktop tells no window it was minimized, nor brought back.
 Window.title: ✅
 Window.width: ✅
-Window.windowType: ✓ read windowType of Window: the scenes the host keeps for the next start
+Window.windowKind: ✓ read windowType of Window: the scenes the host keeps for the next start
 Window.windowValue: ✓ read windowValue of Window: the scenes the host keeps for the next start
 Window.x: – GNOME places its windows itself: GTK 4 asks no place of the desktop.
 Window.y: – GNOME places its windows itself: GTK 4 asks no place of the desktop.

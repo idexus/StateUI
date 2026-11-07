@@ -145,7 +145,7 @@ final class WebActToolkit: ActToolkit {
                     anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             case (.goBack, let frame as WebFrameView), (.goForward, let frame as WebFrameView),
                  (.reload, let frame as WebFrameView):
-                let step: WebNavigationType = call.act == .goBack ? .back : call.act == .goForward ? .forward : .reload
+                let step: WebNavigationKind = call.act == .goBack ? .back : call.act == .goForward ? .forward : .reload
                 guard frame.step(step) else {
                     core.fail(call, elsewhere, log: log)
                     return true

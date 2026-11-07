@@ -292,7 +292,7 @@ extension ReportResources {
     static let english = ReportResources(
         heading: "Folder report",
         prepared: Message { day, context in
-            "Prepared on \(context.date(day, style: .long))"
+            "Prepared on \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)
@@ -309,7 +309,7 @@ extension ReportResources {
     static let polish = ReportResources(
         heading: "Raport folderu",
         prepared: Message { day, context in
-            "Sporządzono \(context.date(day, style: .long))"
+            "Sporządzono \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)
@@ -380,7 +380,7 @@ struct ReportView: View {
             ForEach(files) { file in
                 HStack {
                     Text(file.name)
-                    Text(localization.date(file.modified, style: .medium))
+                    Text(localization.date(file.modified, format: .medium))
                 }
             }
             Text(res.footer)
@@ -520,10 +520,10 @@ func written() -> [String] {
     return [
         localization.number(12_345.5),                      // 12 345,5
         localization.percent(0.25),                         // 25%
-        localization.date(day, style: .long),               // 30 September 2026
-        localization.date(day, style: .short),              // 30.09.2026
+        localization.date(day, format: .long),               // 30 September 2026
+        localization.date(day, format: .short),              // 30.09.2026
         localization.time(ClockTime(hour: 7, minute: 30)),  // 07:30
-        localization.time(ClockTime(hour: 7, minute: 30, second: 5), style: .medium),  // 07:30:05
+        localization.time(ClockTime(hour: 7, minute: 30, second: 5), format: .medium),  // 07:30:05
         localization.list(["Ania", "Basia", "Celina"]),     // Ania, Basia, and Celina
     ]
 }

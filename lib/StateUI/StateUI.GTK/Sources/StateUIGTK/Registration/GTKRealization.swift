@@ -248,7 +248,7 @@ enum GTKRealization {
             missing: "A Wayland desktop tells no window it was minimized, nor brought back."),
         .complete(WindowContract.title),
         .complete(WindowContract.width),
-        .complete(WindowContract.windowType),
+        .complete(WindowContract.windowKind),
         .complete(WindowContract.windowValue),
         .notPlanned(WindowContract.x, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned(WindowContract.y, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),

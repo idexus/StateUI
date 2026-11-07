@@ -30,11 +30,11 @@ public enum WebViewContract: ElementContract {
     public static let goForward = ElementAct<Self, Void, Void>("goForward")
 
     /// A navigation finished: how it ended, why it happened, and where it went.
-    public static let navigated = ElementEvent<Self, (WebNavigationResult, WebNavigationType, String)>(
+    public static let navigated = ElementEvent<Self, (WebNavigationResult, WebNavigationKind, String)>(
         "navigated", layer: .native)
 
     /// A navigation started: why, and where it is going.
-    public static let navigating = ElementEvent<Self, (WebNavigationType, String)>(
+    public static let navigating = ElementEvent<Self, (WebNavigationKind, String)>(
         "navigating", layer: .native)
 
     /// The platform's web process died under the view.

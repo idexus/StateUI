@@ -87,17 +87,17 @@ final class AndroidDateFieldView: AndroidTextualView {
     }
 
     /// How much of the day is written out, as the relay's letter for it; nil for the platform's.
-    func setFormat(_ style: DateStyle?) {
+    func setFormat(_ style: DateFormat?) {
         setFormat(style.map(Self.letter(of:)))
     }
 
     /// How much of the time is written out, as the relay's letter for it; nil for the platform's.
-    func setFormat(_ style: TimeStyle?) {
+    func setFormat(_ style: TimeFormat?) {
         setFormat(style.map(Self.letter(of:)))
     }
 
     /// The relay's letter for each form of a time: "t" the short, "T" the medium.
-    static func letter(of style: TimeStyle) -> String {
+    static func letter(of style: TimeFormat) -> String {
         switch style {
         case .short: "t"
         case .medium: "T"
@@ -105,7 +105,7 @@ final class AndroidDateFieldView: AndroidTextualView {
     }
 
     /// The relay's letter for each form of a day: "d" the short, "M" the medium, "D" the long.
-    static func letter(of style: DateStyle) -> String {
+    static func letter(of style: DateFormat) -> String {
         switch style {
         case .short: "d"
         case .medium: "M"

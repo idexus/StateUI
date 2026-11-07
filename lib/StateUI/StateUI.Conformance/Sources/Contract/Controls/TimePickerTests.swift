@@ -107,7 +107,7 @@
                 s.settle { heard.values == ["closed"] }
                 s.expect(heard.values, ["closed"], "the user closing what the program opened")
             },
-            Aspects.holds(TimePickerContract.format, on: "TimePicker", TimeStyle.short, then: .medium,
+            Aspects.holds(TimePickerContract.format, on: "TimePicker", TimeFormat.short, then: .medium,
                           with: [Write(TimePickerContract.time, ClockTime(hour: 7, minute: 30))]),
         ]
     }

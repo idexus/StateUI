@@ -69,7 +69,7 @@ final class WebRulesTests: XCTestCase {
     }
 
     func testARefusedStepDoesNotNameTheNextNavigation() {
-        for step in [WebNavigationType.back, .forward, .reload] {
+        for step in [WebNavigationKind.back, .forward, .reload] {
             var cause = WebNavigationCause()
             XCTAssertFalse(cause.ask(step, if: false))
             XCTAssertEqual(cause.begin(told: .newPage), .newPage)

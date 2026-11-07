@@ -9,14 +9,14 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-private extension WindowType where Value == Void {
-    static let fonts = WindowType("fonts")
-    static let note = WindowType("note")
-    static let about = WindowType("about")
+private extension WindowKind where Value == Void {
+    static let fonts = WindowKind("fonts")
+    static let note = WindowKind("note")
+    static let about = WindowKind("about")
 }
 
-private extension WindowType where Value == Int {
-    static let document = WindowType("document")
+private extension WindowKind where Value == Int {
+    static let document = WindowKind("document")
 }
 
 private extension SceneKey where Value == String {
@@ -453,11 +453,11 @@ final class SceneTests: XCTestCase {
     func testWhatCannotOpenIsSaidByName() async {
         Renders().render(tree())
 
-        let undeclared = await refusal { try await self.application.openWindow(WindowType<Void>("palette")) }
-        let valueForOne = await refusal { try await self.application.openWindow(WindowType<Int>("fonts"), value: 3) }
-        let noValue = await refusal { try await self.application.openWindow(WindowType<Void>("document")) }
+        let undeclared = await refusal { try await self.application.openWindow(WindowKind<Void>("palette")) }
+        let valueForOne = await refusal { try await self.application.openWindow(WindowKind<Int>("fonts"), value: 3) }
+        let noValue = await refusal { try await self.application.openWindow(WindowKind<Void>("document")) }
         let otherType = await refusal {
-            try await self.application.openWindow(WindowType<String>("document"), value: "x")
+            try await self.application.openWindow(WindowKind<String>("document"), value: "x")
         }
         let notOpen = await refusal { try await self.application.closeWindow(.fonts) }
 
@@ -750,7 +750,7 @@ final class SceneTests: XCTestCase {
         let document = try XCTUnwrap(whole.children[0].children.last)
 
         XCTAssertEqual(document.id, .window(2, kind: "document"))
-        XCTAssertEqual(document.props[.windowType], .name("document"))
+        XCTAssertEqual(document.props[.windowKind], .name("document"))
         XCTAssertEqual(document.props[.windowValue], .string("42"))
         XCTAssertEqual(document.props[.hidesWhenInactive], .bool(false))
         XCTAssertEqual(document.props[.floatsOnTop], .bool(false))
@@ -761,7 +761,7 @@ final class SceneTests: XCTestCase {
     func testAWindowOfTheUnnamedGroupCarriesNoKind() throws {
         let window = try XCTUnwrap(Renders().render(tree()).children[0].children.first)
 
-        XCTAssertNil(window.props[.windowType])
+        XCTAssertNil(window.props[.windowKind])
         XCTAssertNil(window.props[.windowValue])
         XCTAssertEqual(window.props[.hidesWhenInactive], .bool(false))
         XCTAssertEqual(window.props[.floatsOnTop], .bool(false))
@@ -1037,11 +1037,11 @@ final class SceneTests: XCTestCase {
             "title": .string("Studio"), "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
         ])
         XCTAssertEqual(opened.patch.at(.scene("1"), fonts)?.props, [
-            "title": .string("Fonts"), "windowType": .name("fonts"),
+            "title": .string("Fonts"), "windowKind": .name("fonts"),
             "floatsOnTop": .bool(true), "hidesWhenInactive": .bool(true),
         ])
         XCTAssertEqual(opened.patch.at(.scene("2"), about)?.props, [
-            "title": .string("About"), "windowType": .name("about"),
+            "title": .string("About"), "windowKind": .name("about"),
             "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
         ])
         for path in [[.scene("1"), studio], [.scene("1"), fonts], [.scene("2"), about]] as [[ElementID]] {

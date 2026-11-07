@@ -69,8 +69,8 @@ public enum WindowContract: ElementContract {
     public static let width = ElementProperty<Self, Double>("width", layer: .native, moves: .width)
 
     /// What kind of window it is - the kind a scene declares it under.
-    public static let windowType = ElementProperty<Self, Name>(
-        "windowType", layer: .structure, cleared: false)
+    public static let windowKind = ElementProperty<Self, Name>(
+        "windowKind", layer: .structure, cleared: false)
 
     /// The value a window of the kind was opened for, written down with it.
     public static let windowValue = ElementProperty<Self, String>(
@@ -85,6 +85,6 @@ public enum WindowContract: ElementContract {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         activated, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
-        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, stopped, title, width, windowType, windowValue, x, y,
+        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, stopped, title, width, windowKind, windowValue, x, y,
     ]
 }

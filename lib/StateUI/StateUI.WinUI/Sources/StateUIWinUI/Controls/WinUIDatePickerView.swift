@@ -51,7 +51,7 @@ final class WinUIDatePickerView: WinUIView {
     }
 
     /// How much of the day is written out: the long form, else the short.
-    func setFormat(_ style: DateStyle?) {
+    func setFormat(_ style: DateFormat?) {
         stateui_winui_date_set_format(handle, style == .long)
     }
 

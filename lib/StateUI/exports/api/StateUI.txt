@@ -178,14 +178,14 @@ swift.conformance CorneredShape: StateUI.Shape
 swift.conformance CorneredShape: StateUI.View
 swift.conformance CorneredShape: StateUI.Views
 swift.conformance CorneredShapeContract: Swift.Sendable
+swift.conformance DateFormat: Swift.Equatable
+swift.conformance DateFormat: Swift.Hashable
+swift.conformance DateFormat: Swift.RawRepresentable
+swift.conformance DateFormat: Swift.Sendable
 swift.conformance DatePicker: StateUI.View
 swift.conformance DatePicker: StateUI.Views
 swift.conformance DatePicker: Swift.Sendable
 swift.conformance DatePickerContract: Swift.Sendable
-swift.conformance DateStyle: Swift.Equatable
-swift.conformance DateStyle: Swift.Hashable
-swift.conformance DateStyle: Swift.RawRepresentable
-swift.conformance DateStyle: Swift.Sendable
 swift.conformance DebugInspector.Place: Swift.Equatable
 swift.conformance DebugInspector.Place: Swift.Hashable
 swift.conformance DebugInspector.Place: Swift.Sendable
@@ -442,18 +442,18 @@ swift.conformance Map: StateUI.View
 swift.conformance Map: StateUI.Views
 swift.conformance Map: Swift.Sendable
 swift.conformance MapContract: Swift.Sendable
+swift.conformance MapKind: Swift.Equatable
+swift.conformance MapKind: Swift.Hashable
+swift.conformance MapKind: Swift.RawRepresentable
+swift.conformance MapKind: Swift.Sendable
 swift.conformance MapRegion: Swift.Equatable
 swift.conformance MapRegion: Swift.Sendable
-swift.conformance MapType: Swift.Equatable
-swift.conformance MapType: Swift.Hashable
-swift.conformance MapType: Swift.RawRepresentable
-swift.conformance MapType: Swift.Sendable
 swift.conformance Marker: Swift.Sendable
 swift.conformance MarkerContract: Swift.Sendable
-swift.conformance MarkerType: Swift.Equatable
-swift.conformance MarkerType: Swift.Hashable
-swift.conformance MarkerType: Swift.RawRepresentable
-swift.conformance MarkerType: Swift.Sendable
+swift.conformance MarkerKind: Swift.Equatable
+swift.conformance MarkerKind: Swift.Hashable
+swift.conformance MarkerKind: Swift.RawRepresentable
+swift.conformance MarkerKind: Swift.Sendable
 swift.conformance Material: Swift.Equatable
 swift.conformance Material: Swift.Sendable
 swift.conformance Menu: Swift.Sendable
@@ -728,14 +728,14 @@ swift.conformance TextStyle: Swift.RawRepresentable
 swift.conformance TextStyle: Swift.Sendable
 swift.conformance TextualElementContract: Swift.Sendable
 swift.conformance Ticker: Swift.Sendable
+swift.conformance TimeFormat: Swift.Equatable
+swift.conformance TimeFormat: Swift.Hashable
+swift.conformance TimeFormat: Swift.RawRepresentable
+swift.conformance TimeFormat: Swift.Sendable
 swift.conformance TimePicker: StateUI.View
 swift.conformance TimePicker: StateUI.Views
 swift.conformance TimePicker: Swift.Sendable
 swift.conformance TimePickerContract: Swift.Sendable
-swift.conformance TimeStyle: Swift.Equatable
-swift.conformance TimeStyle: Swift.Hashable
-swift.conformance TimeStyle: Swift.RawRepresentable
-swift.conformance TimeStyle: Swift.Sendable
 swift.conformance TimeZoneName: Swift.CustomStringConvertible
 swift.conformance TimeZoneName: Swift.Equatable
 swift.conformance TimeZoneName: Swift.ExpressibleByExtendedGraphemeClusterLiteral
@@ -795,14 +795,14 @@ swift.conformance WebNavigated: Swift.Equatable
 swift.conformance WebNavigated: Swift.Sendable
 swift.conformance WebNavigation: Swift.Equatable
 swift.conformance WebNavigation: Swift.Sendable
+swift.conformance WebNavigationKind: Swift.Equatable
+swift.conformance WebNavigationKind: Swift.Hashable
+swift.conformance WebNavigationKind: Swift.RawRepresentable
+swift.conformance WebNavigationKind: Swift.Sendable
 swift.conformance WebNavigationResult: Swift.Equatable
 swift.conformance WebNavigationResult: Swift.Hashable
 swift.conformance WebNavigationResult: Swift.RawRepresentable
 swift.conformance WebNavigationResult: Swift.Sendable
-swift.conformance WebNavigationType: Swift.Equatable
-swift.conformance WebNavigationType: Swift.Hashable
-swift.conformance WebNavigationType: Swift.RawRepresentable
-swift.conformance WebNavigationType: Swift.Sendable
 swift.conformance WebView: StateUI.View
 swift.conformance WebView: StateUI.Views
 swift.conformance WebView: Swift.Sendable
@@ -819,11 +819,11 @@ swift.conformance WindowError: Swift.Error
 swift.conformance WindowError: Swift.Sendable
 swift.conformance WindowGroup: StateUI.Scene
 swift.conformance WindowGroup: Swift.Sendable
+swift.conformance WindowKind: Swift.CustomStringConvertible
+swift.conformance WindowKind: Swift.Equatable
+swift.conformance WindowKind: Swift.Hashable
+swift.conformance WindowKind: Swift.Sendable
 swift.conformance WindowSession: Swift.Sendable
-swift.conformance WindowType: Swift.CustomStringConvertible
-swift.conformance WindowType: Swift.Equatable
-swift.conformance WindowType: Swift.Hashable
-swift.conformance WindowType: Swift.Sendable
 swift.conformance Windows: StateUI.Scene
 swift.conformance Windows: Swift.Sendable
 swift.conformance ZStack: StateUI.Layout
@@ -870,8 +870,8 @@ swift.enum ContentMode: enum ContentMode
 swift.enum ContextMenuContract: enum ContextMenuContract
 swift.enum CoordinateSpace: enum CoordinateSpace
 swift.enum CorneredShapeContract: enum CorneredShapeContract
+swift.enum DateFormat: enum DateFormat
 swift.enum DatePickerContract: enum DatePickerContract
-swift.enum DateStyle: enum DateStyle
 swift.enum DebugInspector.Place: enum Place
 swift.enum DecorableTextElementContract: enum DecorableTextElementContract
 swift.enum DisplayOrientation: enum DisplayOrientation
@@ -916,10 +916,10 @@ swift.enum LineJoin: enum LineJoin
 swift.enum LinkContract: enum LinkContract
 swift.enum LocaleChoice: enum LocaleChoice<Value> where Value : Hashable, Value : Sendable
 swift.enum MapContract: enum MapContract
-swift.enum MapType: enum MapType
+swift.enum MapKind: enum MapKind
 swift.enum MarkerBuilder: @resultBuilder enum MarkerBuilder
 swift.enum MarkerContract: enum MarkerContract
-swift.enum MarkerType: enum MarkerType
+swift.enum MarkerKind: enum MarkerKind
 swift.enum MenuBarBuilder: @resultBuilder enum MenuBarBuilder
 swift.enum MenuBarContract: enum MenuBarContract
 swift.enum MenuBuilder: @MainActor @resultBuilder enum MenuBuilder
@@ -986,8 +986,8 @@ swift.enum TextSpanContract: enum TextSpanContract
 swift.enum TextSpansContract: enum TextSpansContract
 swift.enum TextStyle: enum TextStyle
 swift.enum TextualElementContract: enum TextualElementContract
+swift.enum TimeFormat: enum TimeFormat
 swift.enum TimePickerContract: enum TimePickerContract
-swift.enum TimeStyle: enum TimeStyle
 swift.enum TintElementContract: enum TintElementContract
 swift.enum TitleViewContract: enum TitleViewContract
 swift.enum ToolbarBuilder: @MainActor @resultBuilder enum ToolbarBuilder
@@ -1005,8 +1005,8 @@ swift.enum VStackContract: enum VStackContract
 swift.enum ViewBuilder: @MainActor @resultBuilder enum ViewBuilder
 swift.enum ViewContract: enum ViewContract
 swift.enum VisualElementContract: enum VisualElementContract
+swift.enum WebNavigationKind: enum WebNavigationKind
 swift.enum WebNavigationResult: enum WebNavigationResult
-swift.enum WebNavigationType: enum WebNavigationType
 swift.enum WebViewContract: enum WebViewContract
 swift.enum Weekday: enum Weekday
 swift.enum WindowContract: enum WindowContract
@@ -1087,9 +1087,9 @@ swift.enum.case ContentMode.stretch: case stretch
 swift.enum.case CoordinateSpace.global: case global
 swift.enum.case CoordinateSpace.parent: case parent
 swift.enum.case CoordinateSpace.safeArea: case safeArea
-swift.enum.case DateStyle.long: case long
-swift.enum.case DateStyle.medium: case medium
-swift.enum.case DateStyle.short: case short
+swift.enum.case DateFormat.long: case long
+swift.enum.case DateFormat.medium: case medium
+swift.enum.case DateFormat.short: case short
 swift.enum.case DebugInspector.Place.bottom: case bottom
 swift.enum.case DebugInspector.Place.side: case side
 swift.enum.case DebugInspector.Place.window: case window
@@ -1215,13 +1215,13 @@ swift.enum.case LineJoin.miter: case miter
 swift.enum.case LineJoin.round: case round
 swift.enum.case LocaleChoice.fixed(_:): case fixed(Value)
 swift.enum.case LocaleChoice.system: case system
-swift.enum.case MapType.hybrid: case hybrid
-swift.enum.case MapType.satellite: case satellite
-swift.enum.case MapType.standard: case standard
-swift.enum.case MarkerType.generic: case generic
-swift.enum.case MarkerType.place: case place
-swift.enum.case MarkerType.saved: case saved
-swift.enum.case MarkerType.searchResult: case searchResult
+swift.enum.case MapKind.hybrid: case hybrid
+swift.enum.case MapKind.satellite: case satellite
+swift.enum.case MapKind.standard: case standard
+swift.enum.case MarkerKind.generic: case generic
+swift.enum.case MarkerKind.place: case place
+swift.enum.case MarkerKind.saved: case saved
+swift.enum.case MarkerKind.searchResult: case searchResult
 swift.enum.case NetworkAccess.constrainedInternet: case constrainedInternet
 swift.enum.case NetworkAccess.internet: case internet
 swift.enum.case NetworkAccess.local: case local
@@ -1278,8 +1278,8 @@ swift.enum.case TextStyle.display: case display
 swift.enum.case TextStyle.headline: case headline
 swift.enum.case TextStyle.subtitle: case subtitle
 swift.enum.case TextStyle.title: case title
-swift.enum.case TimeStyle.medium: case medium
-swift.enum.case TimeStyle.short: case short
+swift.enum.case TimeFormat.medium: case medium
+swift.enum.case TimeFormat.short: case short
 swift.enum.case ToolbarEdge.bottom: case bottom
 swift.enum.case ToolbarEdge.top: case top
 swift.enum.case ToolbarPart.detail: case detail
@@ -1291,16 +1291,16 @@ swift.enum.case ToolbarStyle.automatic: case automatic
 swift.enum.case ToolbarStyle.glass: case glass
 swift.enum.case ToolbarStyle.plain: case plain
 swift.enum.case ToolbarStyle.rounded: case rounded
+swift.enum.case WebNavigationKind.back: case back
+swift.enum.case WebNavigationKind.forward: case forward
+swift.enum.case WebNavigationKind.newPage: case newPage
+swift.enum.case WebNavigationKind.reload: case reload
+swift.enum.case WebNavigationKind.unknown: case unknown
 swift.enum.case WebNavigationResult.cancelled: case cancelled
 swift.enum.case WebNavigationResult.failure: case failure
 swift.enum.case WebNavigationResult.success: case success
 swift.enum.case WebNavigationResult.timeout: case timeout
 swift.enum.case WebNavigationResult.unknown: case unknown
-swift.enum.case WebNavigationType.back: case back
-swift.enum.case WebNavigationType.forward: case forward
-swift.enum.case WebNavigationType.newPage: case newPage
-swift.enum.case WebNavigationType.reload: case reload
-swift.enum.case WebNavigationType.unknown: case unknown
 swift.enum.case Weekday.friday: case friday
 swift.enum.case Weekday.monday: case monday
 swift.enum.case Weekday.saturday: case saturday
@@ -1520,12 +1520,12 @@ swift.init VStack.init(content:): @MainActor init<Content>(@ViewBuilder content:
 swift.init ViewTransform.init(): init()
 swift.init WebView.init(): @MainActor init()
 swift.init WebView.init(_:): @MainActor init(_ address: String)
-swift.init Window.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
-swift.init WindowGroup.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
-swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ type: WindowType<Value>, @ViewBuilder content: @escaping (Binding<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
+swift.init Window.init(_:content:): @MainActor init<Content>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
+swift.init WindowGroup.init(_:content:): @MainActor init<Content>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
+swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ kind: WindowKind<Value>, @ViewBuilder content: @escaping (Binding<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
 swift.init WindowGroup.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : View
+swift.init WindowKind.init(_:): init(_ name: String)
 swift.init WindowSession.init(): @MainActor convenience init()
-swift.init WindowType.init(_:): init(_ name: String)
 swift.init ZStack.init(): @MainActor init()
 swift.init ZStack.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.method @SwiftNever.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -1922,12 +1922,12 @@ swift.method AnyView.verticalAlignment(_:): @MainActor func verticalAlignment(_ 
 swift.method AnyView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ApplicationSession.announce(_:): @MainActor func announce(_ text: String) async throws
-swift.method ApplicationSession.closeWindow(_:): @MainActor func closeWindow(_ type: WindowType<Void>) async throws
-swift.method ApplicationSession.closeWindow(_:value:): @MainActor func closeWindow<Value>(_ type: WindowType<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
+swift.method ApplicationSession.closeWindow(_:): @MainActor func closeWindow(_ kind: WindowKind<Void>) async throws
+swift.method ApplicationSession.closeWindow(_:value:): @MainActor func closeWindow<Value>(_ kind: WindowKind<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
 swift.method ApplicationSession.launch(_:): @discardableResult @MainActor func launch(_ address: String) async throws -> Bool
 swift.method ApplicationSession.openWindow(): @MainActor func openWindow() async throws
-swift.method ApplicationSession.openWindow(_:): @MainActor func openWindow(_ type: WindowType<Void>) async throws
-swift.method ApplicationSession.openWindow(_:value:): @MainActor func openWindow<Value>(_ type: WindowType<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
+swift.method ApplicationSession.openWindow(_:): @MainActor func openWindow(_ kind: WindowKind<Void>) async throws
+swift.method ApplicationSession.openWindow(_:value:): @MainActor func openWindow<Value>(_ kind: WindowKind<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
 swift.method ApplicationSession.send(_:): @MainActor func send(_ request: HTTPRequest) async throws -> HTTPResponse
 swift.method Arrival.arrived(): @discardableResult @MainActor func arrived() async throws -> Bool
 swift.method AutomationElement.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
@@ -3068,7 +3068,7 @@ swift.method DatePicker.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method DatePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method DatePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method DatePicker.format(_:): @MainActor func format(_ state: Binding<DateStyle>) -> DatePicker.Modified
+swift.method DatePicker.format(_:): @MainActor func format(_ state: Binding<DateFormat>) -> DatePicker.Modified
 swift.method DatePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method DatePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3259,7 +3259,7 @@ swift.method DatePicker.visualState(_:): @MainActor func visualState(_ state: Vi
 swift.method DatePicker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method DatePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method DatePickerProperties.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
+swift.method DatePickerProperties.format(_:): @MainActor func format(_ format: DateFormat) -> Self.Modified
 swift.method DatePickerProperties.maximum(_:): @MainActor func maximum(_ value: CalendarDate) -> Self.Modified
 swift.method DatePickerProperties.minimum(_:): @MainActor func minimum(_ value: CalendarDate) -> Self.Modified
 swift.method DebugInspector.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -6182,7 +6182,7 @@ swift.method Link.visualState(_:): @MainActor func visualState(_ state: VisualSt
 swift.method Link.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Link.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method Localization.date(_:style:): @MainActor func date(_ day: CalendarDate, style: DateStyle) -> String
+swift.method Localization.date(_:format:): @MainActor func date(_ day: CalendarDate, format: DateFormat) -> String
 swift.method Localization.isolated(_:): @MainActor func isolated(_ text: String) -> String
 swift.method Localization.list(_:): @MainActor func list(_ items: [String]) -> String
 swift.method Localization.number(_:): @MainActor func number(_ value: Int) -> String
@@ -6191,7 +6191,7 @@ swift.method Localization.percent(_:fractionDigits:): @MainActor func percent(_ 
 swift.method Localization.plural(_:zero:one:two:few:many:other:): @MainActor func plural(_ count: Int, zero: String? = nil, one: String? = nil, two: String? = nil, few: String? = nil, many: String? = nil, other: String) -> String
 swift.method Localization.speaking(_:): @MainActor func speaking(_ language: Catalog.CatalogLanguage) -> Localization<Catalog>
 swift.method Localization.text(_:_:): @MainActor func text<Arguments>(_ message: Message<Arguments>, _ arguments: Arguments) -> String
-swift.method Localization.time(_:style:): @MainActor func time(_ time: ClockTime, style: TimeStyle = .short) -> String
+swift.method Localization.time(_:format:): @MainActor func time(_ time: ClockTime, format: TimeFormat = .short) -> String
 swift.method Map.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6234,6 +6234,7 @@ swift.method Map.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>
 swift.method Map.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ state: Binding<Bool>) -> Map.Modified
 swift.method Map.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ state: Binding<Bool>) -> Map.Modified
+swift.method Map.kind(_:): @MainActor func kind(_ state: Binding<MapKind>) -> Map.Modified
 swift.method Map.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Map.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method Map.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
@@ -6392,7 +6393,6 @@ swift.method Map.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) 
 swift.method Map.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Map.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.type(_:): @MainActor func type(_ state: Binding<MapType>) -> Map.Modified
 swift.method Map.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Map.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
@@ -6400,11 +6400,12 @@ swift.method Map.width(_:): @MainActor func width(_ state: Binding<Double>) -> S
 swift.method Map.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method MapProperties.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ value: Bool) -> Self.Modified
 swift.method MapProperties.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
+swift.method MapProperties.kind(_:): @MainActor func kind(_ value: MapKind) -> Self.Modified
 swift.method MapProperties.showsTraffic(_:): @MainActor func showsTraffic(_ value: Bool) -> Self.Modified
 swift.method MapProperties.showsUserLocation(_:): @MainActor func showsUserLocation(_ value: Bool) -> Self.Modified
-swift.method MapProperties.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method Marker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Marker.id(_:): @MainActor func id(_ value: some Hashable) -> Marker
+swift.method Marker.kind(_:): @MainActor func kind(_ value: MarkerKind) -> Marker
 swift.method Marker.onDetailsClicked(_:): @MainActor func onDetailsClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Marker
 swift.method Marker.onDetailsClicked(_:_:): @MainActor func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Marker
 swift.method Marker.onDetailsClicked(gate:_:): @MainActor func onDetailsClicked(gate: Gate, _ handler: @escaping EventHandler) -> Marker
@@ -6413,7 +6414,6 @@ swift.method Marker.onSelected(_:_:): @MainActor func onSelected(_ policy: GateP
 swift.method Marker.onSelected(gate:_:): @MainActor func onSelected(gate: Gate, _ handler: @escaping EventHandler) -> Marker
 swift.method Marker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Marker
 swift.method Marker.title(_:): @MainActor func title(_ value: String) -> Marker
-swift.method Marker.type(_:): @MainActor func type(_ value: MarkerType) -> Marker
 swift.method Menu.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Menu.id(_:): @MainActor func id(_ value: some Hashable) -> Menu
 swift.method Menu.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Menu
@@ -6445,14 +6445,14 @@ swift.method MenuToggle.onToggled(_:): @MainActor func onToggled(_ handler: @esc
 swift.method MenuToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
 swift.method MenuToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
 swift.method MenuToggle.text(_:): @MainActor func text(_ value: String) -> Self.Modified
-swift.method MessageContext.date(_:style:): func date(_ day: CalendarDate, style: DateStyle) -> String
+swift.method MessageContext.date(_:format:): func date(_ day: CalendarDate, format: DateFormat) -> String
 swift.method MessageContext.isolated(_:): func isolated(_ text: String) -> String
 swift.method MessageContext.list(_:): func list(_ items: [String]) -> String
 swift.method MessageContext.number(_:): func number(_ value: Int) -> String
 swift.method MessageContext.number(_:fractionDigits:): func number(_ value: Double, fractionDigits: Int? = nil) -> String
 swift.method MessageContext.percent(_:fractionDigits:): func percent(_ value: Double, fractionDigits: Int = 0) -> String
 swift.method MessageContext.plural(_:zero:one:two:few:many:other:): func plural(_ count: Int, zero: String? = nil, one: String? = nil, two: String? = nil, few: String? = nil, many: String? = nil, other: String) -> String
-swift.method MessageContext.time(_:style:): func time(_ time: ClockTime, style: TimeStyle = .short) -> String
+swift.method MessageContext.time(_:format:): func time(_ time: ClockTime, format: TimeFormat = .short) -> String
 swift.method ModifiableElement.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ModifiableElement.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiableElement.onChanged(_:_:): @MainActor func onChanged<Value>(_ value: Value, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified where Value : Equatable
@@ -10339,8 +10339,8 @@ swift.method Styling.fontAttributes(_:): @MainActor func fontAttributes(_ value:
 swift.method Styling.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Styling.fontSize(_:): @MainActor func fontSize(_ value: Double) -> Self.Modified
 swift.method Styling.fontWeight(_:): @MainActor func fontWeight(_ value: FontWeight) -> Self.Modified
-swift.method Styling.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
-swift.method Styling.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
+swift.method Styling.format(_:): @MainActor func format(_ format: DateFormat) -> Self.Modified
+swift.method Styling.format(_:): @MainActor func format(_ format: TimeFormat) -> Self.Modified
 swift.method Styling.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Styling.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method Styling.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ value: Int) -> Self.Modified
@@ -10368,6 +10368,7 @@ swift.method Styling.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnable
 swift.method Styling.isTextPredictionEnabled(_:): @MainActor func isTextPredictionEnabled(_ value: Bool) -> Self.Modified
 swift.method Styling.isVisible(_:): @MainActor func isVisible(_ value: Bool) -> Self.Modified
 swift.method Styling.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
+swift.method Styling.kind(_:): @MainActor func kind(_ value: MapKind) -> Self.Modified
 swift.method Styling.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Styling.layoutDirection(_:): @MainActor func layoutDirection(_ value: LayoutDirection) -> Self.Modified
 swift.method Styling.letsInputThrough(_:): @MainActor func letsInputThrough(_ value: Bool) -> Self.Modified
@@ -10429,7 +10430,6 @@ swift.method Styling.tracking(_:): @MainActor func tracking(_ value: Double) -> 
 swift.method Styling.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Styling.translationX(_:): @MainActor func translationX(_ value: Double) -> Self.Modified
 swift.method Styling.translationY(_:): @MainActor func translationY(_ value: Double) -> Self.Modified
-swift.method Styling.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method Styling.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
 swift.method Styling.verticalAlignment(_:): @MainActor func verticalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Styling.verticalScrollIndicator(_:): @MainActor func verticalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
@@ -11631,7 +11631,7 @@ swift.method TimePicker.fontAttributes(_:): @MainActor func fontAttributes(_ sta
 swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.fontWeight(_:): @MainActor func fontWeight(_ state: Binding<FontWeight>) -> Self.Modified
-swift.method TimePicker.format(_:): @MainActor func format(_ state: Binding<TimeStyle>) -> TimePicker.Modified
+swift.method TimePicker.format(_:): @MainActor func format(_ state: Binding<TimeFormat>) -> TimePicker.Modified
 swift.method TimePicker.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method TimePicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -11822,7 +11822,7 @@ swift.method TimePicker.visualState(_:): @MainActor func visualState(_ state: Vi
 swift.method TimePicker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method TimePicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method TimePickerProperties.format(_:): @MainActor func format(_ style: TimeStyle) -> Self.Modified
+swift.method TimePickerProperties.format(_:): @MainActor func format(_ format: TimeFormat) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
 swift.method ToolbarButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
@@ -13055,13 +13055,15 @@ swift.property VStack.body: @MainActor var body: Never { get }
 swift.property View.body: @ViewBuilder @MainActor var body: Self.Body { get }
 swift.property VisualState.name: var name: String { get }
 swift.property WebNavigated.address: var address: String
+swift.property WebNavigated.kind: var kind: WebNavigationKind
 swift.property WebNavigated.result: var result: WebNavigationResult
-swift.property WebNavigated.type: var type: WebNavigationType
 swift.property WebNavigation.address: var address: String
-swift.property WebNavigation.type: var type: WebNavigationType
+swift.property WebNavigation.kind: var kind: WebNavigationKind
 swift.property WebView.body: @MainActor var body: Never { get }
 swift.property Window.body: @MainActor var body: Never { get }
 swift.property WindowGroup.body: @MainActor var body: Never { get }
+swift.property WindowKind.description: var description: String { get }
+swift.property WindowKind.name: var name: String { get }
 swift.property WindowSession.$background: @MainActor var $background: Binding<Material?> { get }
 swift.property WindowSession.$height: @MainActor var $height: Binding<Double?> { get }
 swift.property WindowSession.$isMaximizable: @MainActor var $isMaximizable: Binding<Bool?> { get }
@@ -13088,8 +13090,6 @@ swift.property WindowSession.title: @State @MainActor var title: String? { get s
 swift.property WindowSession.width: @State @MainActor var width: Double? { get set }
 swift.property WindowSession.x: @State @MainActor var x: Double? { get set }
 swift.property WindowSession.y: @State @MainActor var y: Double? { get set }
-swift.property WindowType.description: var description: String { get }
-swift.property WindowType.name: var name: String { get }
 swift.property Windows.body: @MainActor var body: Never { get }
 swift.property ZStack.body: @MainActor var body: Never { get }
 swift.protocol Application: @MainActor protocol Application
@@ -13240,7 +13240,7 @@ swift.struct WebNavigation: struct WebNavigation
 swift.struct WebView: @MainActor struct WebView
 swift.struct Window: @MainActor struct Window
 swift.struct WindowGroup: @MainActor struct WindowGroup
-swift.struct WindowType: struct WindowType<Value>
+swift.struct WindowKind: struct WindowKind<Value>
 swift.struct Windows: @MainActor struct Windows
 swift.struct ZStack: @MainActor struct ZStack
 swift.subscript Binding.subscript(_:): @MainActor subscript(index: Value.Index) -> StatePart<Value.Element> { get }
@@ -13514,7 +13514,7 @@ swift.type.property CorneredShapeContract.name: static let name: String
 swift.type.property DatePickerContract.closed: static let closed: ElementEvent<DatePickerContract, Void>
 swift.type.property DatePickerContract.date: static let date: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.dateChanged: static let dateChanged: ElementEvent<DatePickerContract, CalendarDate>
-swift.type.property DatePickerContract.format: static let format: ElementProperty<DatePickerContract, DateStyle>
+swift.type.property DatePickerContract.format: static let format: ElementProperty<DatePickerContract, DateFormat>
 swift.type.property DatePickerContract.isOpen: static let isOpen: ElementProperty<DatePickerContract, Bool>
 swift.type.property DatePickerContract.maximum: static let maximum: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.minimum: static let minimum: ElementProperty<DatePickerContract, CalendarDate>
@@ -13636,20 +13636,20 @@ swift.type.property LinkContract.name: static var name: String { get }
 swift.type.property LocalizationCatalog.defaultLanguage: static var defaultLanguage: Self.CatalogLanguage { get }
 swift.type.property MapContract.isScrollEnabled: static let isScrollEnabled: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.isZoomEnabled: static let isZoomEnabled: ElementProperty<MapContract, Bool>
+swift.type.property MapContract.kind: static let kind: ElementProperty<MapContract, MapKind>
 swift.type.property MapContract.locationTapped: static let locationTapped: ElementEvent<MapContract, Location>
 swift.type.property MapContract.moveToRegion: static let moveToRegion: ElementAct<MapContract, MapRegion, Void>
 swift.type.property MapContract.name: static var name: String { get }
 swift.type.property MapContract.region: static let region: ElementProperty<MapContract, MapRegion>
 swift.type.property MapContract.showsTraffic: static let showsTraffic: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.showsUserLocation: static let showsUserLocation: ElementProperty<MapContract, Bool>
-swift.type.property MapContract.type: static let type: ElementProperty<MapContract, MapType>
 swift.type.property MarkerContract.detailsClicked: static let detailsClicked: ElementEvent<MarkerContract, Void>
+swift.type.property MarkerContract.kind: static let kind: ElementProperty<MarkerContract, MarkerKind>
 swift.type.property MarkerContract.location: static let location: ElementProperty<MarkerContract, Location>
 swift.type.property MarkerContract.name: static var name: String { get }
 swift.type.property MarkerContract.selected: static let selected: ElementEvent<MarkerContract, Void>
 swift.type.property MarkerContract.subtitle: static let subtitle: ElementProperty<MarkerContract, String>
 swift.type.property MarkerContract.title: static let title: ElementProperty<MarkerContract, String>
-swift.type.property MarkerContract.type: static let type: ElementProperty<MarkerContract, MarkerType>
 swift.type.property MenuBarContract.name: static var name: String { get }
 swift.type.property MenuBarContract.order: static let order: ElementProperty<MenuBarContract, Int>
 swift.type.property MenuContract.isEnabled: static let isEnabled: ElementProperty<MenuContract, Bool>
@@ -13854,7 +13854,7 @@ swift.type.property TextualElementContract.name: static let name: String
 swift.type.property TextualElementContract.text: static let text: ElementProperty<TextualElementContract, String>
 swift.type.property TextualElementContract.textCase: static let textCase: ElementProperty<TextualElementContract, TextCase>
 swift.type.property TimePickerContract.closed: static let closed: ElementEvent<TimePickerContract, Void>
-swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeStyle>
+swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeFormat>
 swift.type.property TimePickerContract.isOpen: static let isOpen: ElementProperty<TimePickerContract, Bool>
 swift.type.property TimePickerContract.name: static var name: String { get }
 swift.type.property TimePickerContract.opened: static let opened: ElementEvent<TimePickerContract, Void>
@@ -13976,8 +13976,8 @@ swift.type.property WebViewContract.evaluateJavaScript: static let evaluateJavaS
 swift.type.property WebViewContract.goBack: static let goBack: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.goForward: static let goForward: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.name: static var name: String { get }
-swift.type.property WebViewContract.navigated: static let navigated: ElementEvent<WebViewContract, (WebNavigationResult, WebNavigationType, String)>
-swift.type.property WebViewContract.navigating: static let navigating: ElementEvent<WebViewContract, (WebNavigationType, String)>
+swift.type.property WebViewContract.navigated: static let navigated: ElementEvent<WebViewContract, (WebNavigationResult, WebNavigationKind, String)>
+swift.type.property WebViewContract.navigating: static let navigating: ElementEvent<WebViewContract, (WebNavigationKind, String)>
 swift.type.property WebViewContract.processTerminated: static let processTerminated: ElementEvent<WebViewContract, Void>
 swift.type.property WebViewContract.reload: static let reload: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.source: static let source: ElementProperty<WebViewContract, WebViewSource>
@@ -14000,11 +14000,11 @@ swift.type.property WindowContract.name: static var name: String { get }
 swift.type.property WindowContract.stopped: static let stopped: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.title: static let title: ElementProperty<WindowContract, String>
 swift.type.property WindowContract.width: static let width: ElementProperty<WindowContract, Double>
-swift.type.property WindowContract.windowType: static let windowType: ElementProperty<WindowContract, Name>
+swift.type.property WindowContract.windowKind: static let windowKind: ElementProperty<WindowContract, Name>
 swift.type.property WindowContract.windowValue: static let windowValue: ElementProperty<WindowContract, String>
 swift.type.property WindowContract.x: static let x: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.y: static let y: ElementProperty<WindowContract, Double>
-swift.type.property WindowType.debugInspector: static let debugInspector: WindowType<()>
+swift.type.property WindowKind.debugInspector: static let debugInspector: WindowKind<()>
 swift.type.property ZStackContract.name: static var name: String { get }
 swift.typealias @SwiftNever.Body: typealias Body = Never
 swift.typealias @SwiftNever.Modified: typealias Modified = Never

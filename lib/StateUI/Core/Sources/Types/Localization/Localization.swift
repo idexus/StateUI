@@ -116,10 +116,10 @@ public final class Localization<Catalog: LocalizationCatalog> {
     }
 
     /// A day - `MessageContext.date`.
-    public func date(_ day: CalendarDate, style: DateStyle) -> String { context.date(day, style: style) }
+    public func date(_ day: CalendarDate, format: DateFormat) -> String { context.date(day, format: format) }
 
     /// A time of day - `MessageContext.time`.
-    public func time(_ time: ClockTime, style: TimeStyle = .short) -> String { context.time(time, style: style) }
+    public func time(_ time: ClockTime, format: TimeFormat = .short) -> String { context.time(time, format: format) }
 
     /// Items as a sentence lists them - `MessageContext.list`.
     public func list(_ items: [String]) -> String { context.list(items) }

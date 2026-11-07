@@ -1151,6 +1151,6 @@ private final class ReadingNative: NativeElement {
 private struct TwoScenes: Application {
     var body: some Scene {
         WindowGroup { Text("first") }
-        Window(WindowType("tree.second")) { Text("second") }
+        Window(WindowKind("tree.second")) { Text("second") }
     }
 }

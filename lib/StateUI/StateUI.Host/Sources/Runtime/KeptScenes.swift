@@ -71,7 +71,7 @@
             Scene(
                 values: values[SceneValues.key(of: scene)],
                 windows: scene.windows.map {
-                    Window(kind: $0.value(.windowType)?.name, value: $0.value(.windowValue)?.string)
+                    Window(kind: $0.value(.windowKind)?.name, value: $0.value(.windowValue)?.string)
                 })
         }
     }

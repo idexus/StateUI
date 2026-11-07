@@ -121,7 +121,7 @@
     /// Hands StateUI a window the platform made, before its first render.
     ///
     /// The platform's first window is the one launch opens. A window it kept
-    /// comes as the `windowType` and the `windowValue` it carried, with its
+    /// comes as the `windowKind` and the `windowValue` it carried, with its
     /// scene's kept values, which land before that scene builds where it opens
     /// with this window - so `@State(sceneKey:)` never briefly exposes its
     /// declared default. A new window of no kind is one more of the group with

@@ -58,7 +58,7 @@ final class GoogleMapView: AndroidControl {
     }
 
     /// How the world is drawn.
-    func show(_ type: MapType?) {
+    func show(_ type: MapKind?) {
         let kind: Int32 = switch type ?? .standard {
         case .standard: 0
         case .satellite: 1
@@ -93,7 +93,7 @@ final class GoogleMapView: AndroidControl {
             if number == nextNumber { nextNumber += 1 }
             kept[child] = number
             markers[number] = child
-            let kind = switch child.value(MarkerContract.type) ?? .generic {
+            let kind = switch child.value(MarkerContract.kind) ?? .generic {
             case .generic: "generic"
             case .place: "place"
             case .saved: "saved"
@@ -136,7 +136,7 @@ extension GoogleMapView {
         // listing: android.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
@@ -144,7 +144,7 @@ extension GoogleMapView {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

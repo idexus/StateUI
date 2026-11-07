@@ -3,7 +3,7 @@
 
 /// How much of a time of day is written out: `.short` "7:30 PM", `.medium` "7:30:00 PM" - each on the clock and in
 /// the words of the language and region in effect.
-public enum TimeStyle: Int32, Hashable, Sendable, HostRepresentable {
+public enum TimeFormat: Int32, Hashable, Sendable, HostRepresentable {
     /// Hours and minutes.
     case short = 0
 
@@ -11,4 +11,4 @@ public enum TimeStyle: Int32, Hashable, Sendable, HostRepresentable {
     case medium = 1
 }
 
-extension TimeStyle: StateChoice {}
+extension TimeFormat: StateChoice {}

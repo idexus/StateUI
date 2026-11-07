@@ -83,44 +83,44 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigating) { type, address in try handler(WebNavigation(type: type, address: address)) }
+        onEvent(WebViewContract.navigating) { kind, address in try handler(WebNavigation(kind: kind, address: address)) }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, policy: policy) { type, address in
-            try await handler(WebNavigation(type: type, address: address))
+        onEvent(WebViewContract.navigating, policy: policy) { kind, address in
+            try await handler(WebNavigation(kind: kind, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigating(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, gate: gate) { type, address in
-            try await handler(WebNavigation(type: type, address: address))
+        onEvent(WebViewContract.navigating, gate: gate) { kind, address in
+            try await handler(WebNavigation(kind: kind, address: address))
         }
     }
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigated) { result, type, address in
-            try handler(WebNavigated(result: result, type: type, address: address))
+        onEvent(WebViewContract.navigated) { result, kind, address in
+            try handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, policy: policy) { result, type, address in
-            try await handler(WebNavigated(result: result, type: type, address: address))
+        onEvent(WebViewContract.navigated, policy: policy) { result, kind, address in
+            try await handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, gate: gate) { result, type, address in
-            try await handler(WebNavigated(result: result, type: type, address: address))
+        onEvent(WebViewContract.navigated, gate: gate) { result, kind, address in
+            try await handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
@@ -145,7 +145,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 // MARK: - What a navigation reports
 
 /// Why a navigation happened.
-public enum WebNavigationType: Int32, Sendable, HostRepresentable {
+public enum WebNavigationKind: Int32, Sendable, HostRepresentable {
     /// No reason named - what the host answers for a reason it has no case
     /// for. Windows sends it for a view's first navigation, so it is an
     /// ordinary answer there rather than a fault.
@@ -168,7 +168,7 @@ public enum WebNavigationType: Int32, Sendable, HostRepresentable {
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard case .enumeration(let member) = propValue else { return nil }
-        self = WebNavigationType(rawValue: member) ?? .unknown
+        self = WebNavigationKind(rawValue: member) ?? .unknown
     }
 }
 
@@ -202,7 +202,7 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
 /// One navigation, as it starts.
 public struct WebNavigation: Equatable, Sendable {
     /// Why it happened.
-    public var type: WebNavigationType
+    public var kind: WebNavigationKind
 
     /// Where it is going.
     public var address: String
@@ -214,7 +214,7 @@ public struct WebNavigated: Equatable, Sendable {
     public var result: WebNavigationResult
 
     /// Why it happened.
-    public var type: WebNavigationType
+    public var kind: WebNavigationKind
 
     /// Where it went.
     public var address: String

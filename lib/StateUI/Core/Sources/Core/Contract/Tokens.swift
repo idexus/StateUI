@@ -277,7 +277,7 @@ extension NodeType {
     static let title = PageElementContract.title.token
     static let translationX = VisualElementContract.translationX.token
     static let translationY = VisualElementContract.translationY.token
-    static let type = MarkerContract.type.token
+    static let kind = MarkerContract.kind.token
     static let userAgent = WebViewContract.userAgent.token
 
     static let value = SliderContract.value.token
@@ -285,7 +285,7 @@ extension NodeType {
     static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
     static let verticalTextAlignment = TextContract.verticalTextAlignment.token
     static let width = VisualElementContract.width.token
-    static let windowType = WindowContract.windowType.token
+    static let windowKind = WindowContract.windowKind.token
     static let windowValue = WindowContract.windowValue.token
     static let wraps = HStackContract.wraps.token
     static let x = WindowContract.x.token

@@ -40,7 +40,7 @@ final class RestoredWindowsTests: XCTestCase {
         let runtime = HostRuntime.still()
         var scene = HostPatch(id: .scene("1"), type: .scene)
         var note = HostPatch(id: .manual("restored.note 2"), type: .window)
-        note.properties = [.windowType: .name("restored.note"), .windowValue: .string("7")]
+        note.properties = [.windowKind: .name("restored.note"), .windowValue: .string("7")]
         scene.children = .arranged([HostPatch(id: .window(1), type: .window), note])
         runtime.tree.apply(scene, complete: true)
         let windows = try XCTUnwrap(runtime.tree.root?.windows)
@@ -151,15 +151,15 @@ private struct RestoredApplication: Application {
 
     var body: some Scene {
         RestoredScene()
-        Window(WindowType("restored.about")) { Text("about") }
+        Window(WindowKind("restored.about")) { Text("about") }
     }
 }
 
 private struct RestoredScene: Scene {
     var body: some Scene {
         WindowGroup { RestoredSectionPage() }
-        WindowGroup(WindowType<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
-        WindowGroup(WindowType("restored.tool")) { Text("tool") }
+        WindowGroup(WindowKind<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowKind("restored.tool")) { Text("tool") }
     }
 }
 

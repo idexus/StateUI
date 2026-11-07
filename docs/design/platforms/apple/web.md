@@ -29,6 +29,6 @@ host keeps navigation identities, not the navigation objects themselves.
 A script's value is written as JSON and answers as text by the host layer's
 rule.
 
-macOS's WebKit also declares a legacy `WebNavigationType` and `WebHistory`, so
+macOS's WebKit also declares a legacy `WebNavigationKind` and `WebHistory`, so
 the shared code names StateUI's and the host layer's in full
-(`StateUI.WebNavigationType`, `StateUIHost.WebHistory`).
+(`StateUI.WebNavigationKind`, `StateUIHost.WebHistory`).

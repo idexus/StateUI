@@ -46,7 +46,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     }
 
     /// Draws the world as `type` says, the roads colored by traffic where `traffic` and the map has roads.
-    public func style(_ type: MapType, traffic: Bool) {
+    public func style(_ type: MapKind, traffic: Bool) {
         switch type {
         case .standard:
             let configuration = MKStandardMapConfiguration()
@@ -100,7 +100,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     }
 
     /// The kind of map drawn.
-    public var shownType: MapType {
+    public var shownType: MapKind {
         switch preferredConfiguration {
         case is MKImageryMapConfiguration: .satellite
         case is MKHybridMapConfiguration: .hybrid
@@ -148,7 +148,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     }
 
     /// Gives `marker` the color and symbol of a marker's kind (`MarkerLook`), as the platform draws them.
-    open func dress(_ marker: MKMarkerAnnotationView, as type: MarkerType) {}
+    open func dress(_ marker: MKMarkerAnnotationView, as type: MarkerKind) {}
 
     /// Gives `marker`'s callout the details button the platform shows, whose click is heard on `pin`.
     open func dressCallout(_ marker: MKMarkerAnnotationView, of pin: MapKitMarker) {}

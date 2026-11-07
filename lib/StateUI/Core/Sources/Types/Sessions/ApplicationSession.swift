@@ -140,11 +140,11 @@ public final class ApplicationSession {
     ///   `WindowError.undeclared` where no scene declares it, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
-    public func openWindow(_ type: WindowType<Void>) async throws {
-        try OpenScenes.shared.open(type.key)
+    public func openWindow(_ kind: WindowKind<Void>) async throws {
+        try OpenScenes.shared.open(kind.key)
     }
 
-    /// Opens the window of `type` for `value` in the scene declaring it, which
+    /// Opens the window of `kind` for `value` in the scene declaring it, which
     /// opens with it where it does not stand.
     ///
     ///     Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(.document, value: id) }
@@ -152,31 +152,31 @@ public final class ApplicationSession {
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.
     public func openWindow<Value: Codable & Hashable>(
-        _ type: WindowType<Value>,
+        _ kind: WindowKind<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.open(type.key, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
+        try OpenScenes.shared.open(kind.key, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
     }
 
-    /// Closes the window of `type` - every window of a `WindowGroup(type)` -
+    /// Closes the window of `kind` - every window of a `WindowGroup(kind)` -
     /// its scene ending with its last window.
     ///
     /// - Throws: `WindowError.notOpen` where none is open, and
     ///   `WindowError.undeclared` where no scene declares it.
-    public func closeWindow(_ type: WindowType<Void>) async throws {
-        try OpenScenes.shared.close(type.key)
+    public func closeWindow(_ kind: WindowKind<Void>) async throws {
+        try OpenScenes.shared.close(kind.key)
     }
 
-    /// Closes the window of `type` for `value`, its scene ending with its last
+    /// Closes the window of `kind` for `value`, its scene ending with its last
     /// window.
     ///
     /// - Throws: `WindowError.notOpen` where no window for that value is open,
     ///   and the rest of `WindowError` where it cannot close.
     public func closeWindow<Value: Codable & Hashable>(
-        _ type: WindowType<Value>,
+        _ kind: WindowKind<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.close(type.key, value: AnyHashable(value), of: Value.self)
+        try OpenScenes.shared.close(kind.key, value: AnyHashable(value), of: Value.self)
     }
 
     /// Forgets what an application wrote - what a registration starts from, so

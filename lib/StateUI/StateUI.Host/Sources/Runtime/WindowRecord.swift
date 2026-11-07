@@ -32,7 +32,7 @@
     /// scene keeping `kept`.
     @MainActor public init(of element: MountedElement, identifier: String, kept: [String: HostValue]) {
         self.init(
-            identifier: identifier, kind: element.value(.windowType)?.name,
+            identifier: identifier, kind: element.value(.windowKind)?.name,
             value: element.value(.windowValue)?.string, kept: kept)
     }
 

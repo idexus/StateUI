@@ -110,8 +110,8 @@ of its members each meets, and why a cell is empty.
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Link](controls/Link.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
-| [Marker](controls/Marker.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
+| [Map](controls/Map.md) | provider | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
+| [Marker](controls/Marker.md) | provider | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -153,7 +153,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarToggle](controls/ToolbarToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Window](controls/Window.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 <!-- creation:end -->
 
@@ -490,7 +490,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ItemsView](controls/ItemsView.md) | 92 | 45 ✅ · 3 ☑️ · 40 ✓ · 4 – | 10 ✅ · 6 ✓ · 3 – | 16 ✅ · 3 ✓ | 16 ✅ · 3 – | 13 ✅ · 2 ✓ · 4 – | 15 ✅ · 1 ✓ · 3 – |
 | [Line](controls/Line.md) | 83 | 44 ✅ · 3 ☑️ · 36 ✓ | 10 ✅ | 10 ✅ | 10 ✅ | 9 ✅ · 1 – | 10 ✅ |
 | [Link](controls/Link.md) | 84 | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 5 ✅ · 3 ✓ · 3 – | 5 ✅ · 3 ✓ · 3 – | 10 ✅ · 1 ✓ | 7 ✅ · 3 ✓ · 1 – | 10 ✅ · 1 ✓ |
-| [Map](controls/Map.md) | 82 | 41 ✅ · 3 ☑️ · 37 ✓ · 1 – | 8 ✅ · 1 ✓ | 9 🧩 | 9 🧩 | 9 🧩 | 9 🧩 |
+| [Map](controls/Map.md) | 82 | 41 ✅ · 3 ☑️ · 37 ✓ · 1 – | 1 ✅ | 1 🧩 | 1 🧩 | 1 🧩 | 1 🧩 |
 | [MotionLayout](controls/MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 6 ✅ · 1 ☑️ · 11 ✓ · 1 – | 11 ✅ · 6 ✓ · 1 – | 9 ✅ · 8 ✓ · 3 – | 6 ✅ · 9 ✓ · 3 – | 15 ✅ · 1 ☑️ · 4 ✓ · 1 – |
 | [Path](controls/Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 10 ✅ · 1 ☑️ · 1 – | 11 ✅ · 1 ☑️ |
 | [Picker](controls/Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 11 ✅ · 1 ☑️ · 5 ✓ · 3 – | 12 ✅ · 1 ☑️ · 3 ✓ · 3 – | 23 ✅ | 14 ✅ · 2 ✓ · 7 – | 18 ✅ · 3 – |
@@ -513,11 +513,11 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 362 | 372 | 446 | 354 | 455 |
-| ✓ |  | 1355 | 65 | 52 | 9 | 70 | 6 |
+| ✅ |  | 1665 | 355 | 372 | 446 | 354 | 455 |
+| ✓ |  | 1355 | 64 | 52 | 9 | 70 | 6 |
 | – |  | 57 | 48 | 47 | 18 | 57 | 23 |
-| **Met** | 3210 | **3077** | **475** | **471** | **473** | **481** | **484** |
-| 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
+| **Met** | 3210 | **3077** | **467** | **471** | **473** | **481** | **484** |
+| 🧩 |  | 0 | 0 | 1 | 1 | 1 | 1 |
 
 ### Application structure
 
@@ -528,7 +528,7 @@ Every control, and every part an application, its windows and its pages are made
 | [BottomBar](controls/BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
+| [Marker](controls/Marker.md) | 6 | 6 ✅ |  |  |  |  |  |
 | [Menu](controls/Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
@@ -549,12 +549,12 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 6 ✅ · 10 – | 6 ✅ · 10 – | 5 ✅ · 1 ☑️ · 10 – | 7 ✅ · 9 – | 6 ✅ · 10 – | 15 ✅ · 1 – |
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
-| [Window](controls/Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 2 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
-| ✅ |  | 110 | 116 | 94 | 140 | 102 | 170 |
-| ✓ |  | 26 | 24 | 22 | 9 | 16 | 13 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 213 | **191** | **201** | **188** | **201** | **191** | **199** |
-| 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
+| [Window](controls/Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ |  |  |  |  |  |
+| ✅ |  | 110 | 109 | 91 | 120 | 94 | 167 |
+| ✓ |  | 26 | 19 | 19 | 9 | 12 | 10 |
+| – |  | 55 | 53 | 60 | 52 | 66 | 2 |
+| **Met** | 213 | **191** | **181** | **170** | **181** | **172** | **179** |
+| 🧩 |  | 0 | 0 | 0 | 0 | 0 | 0 |
 <!-- dictionary:end -->
 
 ## Contract members
@@ -620,8 +620,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [Line](controls/Line.md) | `from`, `to` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Link](controls/Link.md) | `address`, `onClicked` (`clicked`) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ |
-| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `region`, `showsUserLocation`, `type` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
-| [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `location`, `onSelected` (`selected`), `subtitle`, `title`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
+| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `region`, `showsUserLocation`, `kind` | 7 | 6 ✅ · 1 ✓ |  |  |  |  |  |
+| [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `kind`, `location`, `onSelected` (`selected`), `subtitle`, `title` | 6 | 6 ✅ |  |  |  |  |  |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -654,7 +654,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarLabel](controls/ToolbarLabel.md) | `icon`, `text` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 2 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
+| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `stopped`, `title`, `width`, `windowKind`, `windowValue`, `x`, `y` | 21 | 14 ✅ · 1 ☑️ · 5 ✓ |  |  |  |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -703,7 +703,7 @@ realizes the element and each of its members.
 `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`, `isReadOnly`,
 `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`, `isSelectable`,
 `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`,
-`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`,
+`itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`, `keysTaken`, `kind`,
 `layoutBody`, `layoutDirection`, `letsInputThrough`, `lineAlignment`,
 `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
 `magnifies`, `margin`, `maximum`, `maximumHeight`, `maximumLength`,
@@ -723,10 +723,9 @@ realizes the element and each of its members.
 `swipeDirections`, `swipeThreshold`, `tapCount`, `text`, `textCase`,
 `textColor`, `textDecorations`, `textStyle`, `time`, `tint`, `title`, `to`,
 `toolbarSpacing`, `toolbarStyle`, `tooltip`, `tracking`,
-`translationOrientation`, `translationX`, `translationY`, `type`, `userAgent`,
-`value`, `verticalAlignment`, `verticalScrollIndicator`,
-`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `wraps`, `x`,
-`y`, `zIndex`.
+`translationOrientation`, `translationX`, `translationY`, `userAgent`, `value`,
+`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
+`width`, `windowKind`, `windowValue`, `wraps`, `x`, `y`, `zIndex`.
 
 ### Events
 

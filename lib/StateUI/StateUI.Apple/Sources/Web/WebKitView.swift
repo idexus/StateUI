@@ -11,10 +11,10 @@ import WebKit
 @_spi(Host) @MainActor
 public final class WebKitView: WKWebView, WKNavigationDelegate {
     /// What the view does when a navigation starts: why, and where it goes.
-    public var onNavigating: ((StateUI.WebNavigationType, String) -> Void)?
+    public var onNavigating: ((StateUI.WebNavigationKind, String) -> Void)?
 
     /// What the view does when a navigation ends: how, why, and where it went.
-    public var onNavigated: ((WebNavigationResult, StateUI.WebNavigationType, String) -> Void)?
+    public var onNavigated: ((WebNavigationResult, StateUI.WebNavigationKind, String) -> Void)?
 
     /// What the view does when there comes to be, or stops being, a page behind it and ahead of it.
     public var onCanGoBack: ((Bool) -> Void)?
@@ -78,7 +78,7 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
 
     /// Steps back or forward in the page's history, or loads the page again - the navigation's cause said as the
     /// program's.
-    public func step(_ event: StateUI.WebNavigationType) {
+    public func step(_ event: StateUI.WebNavigationKind) {
         let possible: Bool = switch event {
         case .back: canGoBack
         case .forward: canGoForward
@@ -119,7 +119,7 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
         decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void
     ) {
         if action.targetFrame?.isMainFrame != false {
-            let told: StateUI.WebNavigationType = switch action.navigationType {
+            let told: StateUI.WebNavigationKind = switch action.navigationType {
             case .backForward: backForward(to: action.request.url)
             case .reload: .reload
             case .linkActivated, .formSubmitted, .formResubmitted, .other: .newPage
@@ -131,7 +131,7 @@ public final class WebKitView: WKWebView, WKNavigationDelegate {
     }
 
     /// Whether a step through the history goes back or forward, by where it lands (`WebHistory.step`).
-    private func backForward(to address: URL?) -> StateUI.WebNavigationType {
+    private func backForward(to address: URL?) -> StateUI.WebNavigationKind {
         WebHistory.step(
             landingOn: address?.absoluteString ?? "", behind: backForwardList.backList.map(\.url.absoluteString))
     }

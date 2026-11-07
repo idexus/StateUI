@@ -71,9 +71,9 @@ extension WinUIDriver {
     /// floats and stands shown, and the kind and value the host keeps it by for the next start.
     private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
-        if name == "windowType" || name == "windowValue" {
+        if name == "windowKind" || name == "windowValue" {
             let kept = try keptWindow(element)
-            return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
+            return name == "windowKind" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
         if name == "background" {
             // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its color the tint; else
@@ -412,7 +412,7 @@ extension WinUIDriver {
         case ("minimum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimum"))?.propValue
         case ("maximum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximum"))?.propValue
         case ("format", let picker as WinUIDatePickerView):
-            return (try read(picker, "longDate") == "1" ? DateStyle.long : .short).propValue
+            return (try read(picker, "longDate") == "1" ? DateFormat.long : .short).propValue
         case ("time", let picker as WinUITimePickerView): return picker.time?.propValue
         case ("source", let image as WinUIImageView): return ImageSource(try read(image, "source")).propValue
         case ("iconPosition", let button as WinUIButtonView):

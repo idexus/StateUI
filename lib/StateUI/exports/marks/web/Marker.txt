@@ -5,4 +5,4 @@ Marker.location: 🧩
 Marker.selected: 🧩
 Marker.subtitle: 🧩
 Marker.title: 🧩
-Marker.type: 🧩
+Marker.kind: 🧩

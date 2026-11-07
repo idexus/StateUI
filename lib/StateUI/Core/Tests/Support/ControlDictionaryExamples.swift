@@ -183,7 +183,7 @@ extension ControlDictionary {
             @State var tapped = "nowhere yet"
 
             Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                .type(.hybrid)
+                .kind(.hybrid)
                 .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
 
@@ -371,8 +371,8 @@ extension ControlDictionary {
             """#),
 
         (SceneContract.self, #"""
-            extension WindowType where Value == Void {
-                static let inspector = WindowType("notes.inspector")
+            extension WindowKind where Value == Void {
+                static let inspector = WindowKind("notes.inspector")
             }
 
             struct NotePage: View {

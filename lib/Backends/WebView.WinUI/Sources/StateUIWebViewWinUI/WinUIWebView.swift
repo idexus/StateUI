@@ -15,8 +15,8 @@ final class WinUIWebView: WinUIControl {
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its
     /// web process gone.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
     var onCanGoBack: ((Bool) -> Void)?
     var onCanGoForward: ((Bool) -> Void)?
     var onProcessGone: (() -> Void)?
@@ -114,7 +114,7 @@ final class WinUIWebView: WinUIControl {
 
     /// Steps back or forward, or loads the page again - the navigation's cause the program's step. The page again
     /// asks for the source the reload rule still holds, else is WebView2's own.
-    func step(_ step: WebNavigationType) {
+    func step(_ step: WebNavigationKind) {
         let source = step == .reload ? reloadSource.value : nil
         guard cause.ask(step, if: source != nil || stateui_webview_winui_can_step(element, step.rawValue)) else { return }
         if let source { return request(source) }
@@ -164,7 +164,7 @@ final class WinUIWebView: WinUIControl {
 
     // MARK: - What the page does
 
-    func navigating(told: WebNavigationType, to address: String) {
+    func navigating(told: WebNavigationKind, to address: String) {
         if requestedLoad {
             requestedLoad = false
             requestedUnderWay = true

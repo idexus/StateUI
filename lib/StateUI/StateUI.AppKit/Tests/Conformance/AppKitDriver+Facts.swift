@@ -121,7 +121,7 @@ extension AppKitDriver {
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
         case .background: return Self.ground(of: window)
         case .floatsOnTop: return (window.level == .floating).propValue
-        case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
+        case .windowKind: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
         default: throw DriverCannot(reading: property, of: element)
         }

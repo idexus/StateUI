@@ -78,15 +78,15 @@ LinksSample.swift a814ef4ed2f59b1d
 LivingLayoutSample.swift 9027b77224ed6a31
 LoadingItemsSample.swift d137ae58c27e7004
 LocaleInfoSample.swift feb36c49b5e60da9
-LocalizationSample.swift 1636a0f168875c65
+LocalizationSample.swift 4bd61aa25f66a699
 MainQueueSample.swift 142b7947497fae78
-MapSample.swift d71bb6a9c7982e6e
+MapSample.swift b0149a1c0e7157c6
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift 27a0f7483bb518a3
 ModalSample.swift b00e99d255fb508f
 MotionLayoutSample.swift 9af23c39d1cee8d3
 MotionSample.swift 484c5ee826f9f851
-MultiWindowSample.swift e288bc05a2850957
+MultiWindowSample.swift 2a9da46145d44879
 NavigationSample.swift 6e2af1f1219a06d5
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
@@ -110,7 +110,7 @@ RefreshSample.swift 1852b35610fe51d7
 RemovingRowSample.swift e2701a9d40e4ec8e
 SafeAreaSample.swift 0ceda0f93f537117
 SameInputsSample.swift 11581f61c6c4343c
-ScenesSample.swift 75f4d63d5affdc09
+ScenesSample.swift ffe97ac6cb7ca0f6
 ScrollViewSample.swift 5a3f99e1253f91f9
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b

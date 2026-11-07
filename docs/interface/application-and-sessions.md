@@ -130,12 +130,12 @@ one window of the `WindowGroup` with no name, like any other, and closing it
 closes that window alone.
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
-extension WindowType where Value == Int {
-    static let document = WindowType("notes.document")
+extension WindowKind where Value == Int {
+    static let document = WindowKind("notes.document")
 }
 
 final class Library {
@@ -172,7 +172,7 @@ A scene declares its windows three ways:
 - `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
   opened, and `Window(.kind) { ... }` makes one;
 - `WindowGroup(.kind) { $id in ... }` of a kind with a value - a
-  `WindowType<ID>` - makes one window per value. The value is `Codable` and
+  `WindowKind<ID>` - makes one window per value. The value is `Codable` and
   `Hashable` so it can identify and restore the window, and the closure
   receives a `Binding`, so the same window can be retargeted without replacing
   its session; a value another window of the kind is open for is refused and
@@ -181,7 +181,7 @@ A scene declares its windows three ways:
   or the control the host reports into, which is put back to the window's
   value. A kind with a value opens only with a value of its type,
   `application.openWindow(.kind, value: id)`, and a kind of no value -
-  `WindowType<Void>` - only without one: the compiler refuses the other.
+  `WindowKind<Void>` - only without one: the compiler refuses the other.
 
 Every window of a scene shares the scene's `@State`. What belongs to one
 window is the `@State` of the view it shows: two windows of `NotesPage` each
@@ -198,9 +198,9 @@ none of the others - About, the preferences - is a scene of its own:
 ```swift
 import StateUI
 
-extension WindowType where Value == Void {
-    static let editor = WindowType("notes.editor")
-    static let about = WindowType("notes.about")
+extension WindowKind where Value == Void {
+    static let editor = WindowKind("notes.editor")
+    static let about = WindowKind("notes.about")
 }
 
 struct NotesApp: Application {
@@ -256,10 +256,10 @@ struct EditorPage: View {
 - `window.close()` closes one window, and the scene ends with its last;
   `scene.close()` closes every window of the scene at once.
 
-`WindowType` names are durable application vocabulary. Use stable,
+`WindowKind` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
 
-Every window carries the same four host metadata values. `windowType` is its
+Every window carries the same four host metadata values. `windowKind` is its
 kind - none for a window of the `WindowGroup` with no name - and `windowValue`
 the encoded per-value identity where the group has one. `hidesWhenInactive`
 and `floatsOnTop` are always explicit booleans, so changing either policy
@@ -271,8 +271,8 @@ updates an existing native window without replacing it.
 beside the application's other scenes:
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
 struct InspectorPage: View { var body: some View { Text("Inspector") } }
@@ -366,12 +366,12 @@ The application opens a window by its kind; a session closes the exact
 window or scene it is:
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
-extension WindowType where Value == Int {
-    static let document = WindowType("notes.document")
+extension WindowKind where Value == Int {
+    static let document = WindowKind("notes.document")
 }
 
 struct WindowsPage: View {

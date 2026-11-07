@@ -12,8 +12,8 @@ extension TimePickerProperties {
     /// and 1:00 PM.
     ///
     ///     TimePicker($alarm).format(.medium)
-    public func format(_ style: TimeStyle) -> Modified {
-        setValue(TimePickerContract.format, style)
+    public func format(_ format: TimeFormat) -> Modified {
+        setValue(TimePickerContract.format, format)
     }
 }
 
@@ -132,7 +132,7 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
 
 extension TimePicker {
     /// `format` from a state, `$x`: the host writes the time each new way as it stands.
-    public func format(_ state: Binding<TimeStyle>) -> Modified {
+    public func format(_ state: Binding<TimeFormat>) -> Modified {
         twin(TimePickerContract.format, by: state)
     }
 

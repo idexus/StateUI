@@ -130,7 +130,7 @@
                 DatePickerContract.maximum, on: "DatePicker", CalendarDate(year: 2026, month: 12, day: 31),
                 then: CalendarDate(year: 2026, month: 10, day: 1),
                 with: [Write(DatePickerContract.date, CalendarDate(year: 2026, month: 9, day: 25))]),
-            Aspects.holds(DatePickerContract.format, on: "DatePicker", DateStyle.long, then: .short,
+            Aspects.holds(DatePickerContract.format, on: "DatePicker", DateFormat.long, then: .short,
                           with: [Write(DatePickerContract.date, CalendarDate(year: 2026, month: 9, day: 25))]),
         ]
     }

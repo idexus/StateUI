@@ -6,7 +6,7 @@
 
 /// What a map marker stands for - what `.type` takes, and what decides the icon
 /// the platform draws.
-public enum MarkerType: Int32, Sendable {
+public enum MarkerKind: Int32, Sendable {
     /// Somewhere on the map, with no more said. The default.
     case generic = 0
 
@@ -20,4 +20,4 @@ public enum MarkerType: Int32, Sendable {
     case searchResult = 3
 }
 
-extension MarkerType: HostRepresentable {}
+extension MarkerKind: HostRepresentable {}

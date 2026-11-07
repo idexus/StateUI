@@ -53,10 +53,10 @@ struct ScenesSample: SampleContent, ExampleContent {
         .spacing(12)
     }
 
-    /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-    private func open(_ type: WindowType<Void>, _ caption: String) async {
+    /// Opens a window of `kind`, in the scene declaring it, and says what came of it.
+    private func open(_ kind: WindowKind<Void>, _ caption: String) async {
         do {
-            try await application.openWindow(type)
+            try await application.openWindow(kind)
             said = "\(caption): opened."
         } catch WindowError.alreadyOpen {
             said = "\(caption): WindowError.alreadyOpen - it is open already."

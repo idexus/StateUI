@@ -29,7 +29,7 @@ final class WindowClosingTests: XCTestCase {
         var window = HostPatch(id: .window(1), type: .window)
         window.events = .replace([.destroying: 3])
         var note = HostPatch(id: .window(2, kind: "note"), type: .window)
-        note.properties = [.windowType: .name("notes.note")]
+        note.properties = [.windowKind: .name("notes.note")]
         note.events = .replace([.destroying: 4])
         scene.children = .arranged([window, note])
         runtime.tree.apply(scene, complete: true)

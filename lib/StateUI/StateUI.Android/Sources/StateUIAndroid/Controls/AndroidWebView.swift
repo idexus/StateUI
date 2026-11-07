@@ -11,10 +11,10 @@
 @MainActor
 final class AndroidWebView: AndroidView {
     /// What the view does when a navigation starts: why, and where it goes.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
 
     /// What the view does when a navigation ends: how, why, and where it went.
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
 
     /// What the view does when there comes to be, or stops being, a page behind it and ahead of it.
     var onCanGoBack: ((Bool) -> Void)?

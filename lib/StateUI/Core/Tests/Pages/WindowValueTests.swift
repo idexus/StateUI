@@ -8,12 +8,12 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-private extension WindowType where Value == Double {
-    static let gauge = WindowType("gauge")
+private extension WindowKind where Value == Double {
+    static let gauge = WindowKind("gauge")
 }
 
-private extension WindowType where Value == String {
-    static let label = WindowType("label")
+private extension WindowKind where Value == String {
+    static let label = WindowKind("label")
 }
 
 /// A gauge window: its value in a stepper, which the host reports a journey into.
@@ -62,19 +62,19 @@ final class WindowValueTests: XCTestCase {
     private var application: ApplicationSession { StandardEnvironment.application }
 
     /// The windows of `kind` open, in the order opened, each with the scene it is in - a serial counts within one.
-    private func windows<Value>(_ kind: WindowType<Value>) -> [(record: SceneRecord, window: OpenedWindow)] {
+    private func windows<Value>(_ kind: WindowKind<Value>) -> [(record: SceneRecord, window: OpenedWindow)] {
         OpenScenes.shared.list.flatMap { record in
             record.windows.filter { $0.type?.name == kind.name }.map { (record, $0) }
         }
     }
 
     /// The values the windows of `kind` are about, and the texts the platform keeps them by.
-    private func about<Value>(_ kind: WindowType<Value>) -> (values: [AnyHashable], texts: [String]) {
+    private func about<Value>(_ kind: WindowKind<Value>) -> (values: [AnyHashable], texts: [String]) {
         (windows(kind).compactMap(\.window.value), windows(kind).compactMap(\.window.text))
     }
 
     /// The binding of the window of `kind` opened for `value` - the one its page was handed.
-    private func binding<Value: Codable & Hashable>(_ kind: WindowType<Value>, _ value: Value) throws -> Binding<Value> {
+    private func binding<Value: Codable & Hashable>(_ kind: WindowKind<Value>, _ value: Value) throws -> Binding<Value> {
         let (record, window) = try XCTUnwrap(windows(kind).first { $0.window.value == AnyHashable(value) })
         return record.windowValue(window, as: Value.self).projectedValue
     }

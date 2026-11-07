@@ -50,11 +50,11 @@ final class KeptScenesTests: XCTestCase {
         var root = HostPatch(id: .manual("application"), type: .application)
         var scene = HostPatch(id: .scene("1"), type: .scene)
         var note = HostPatch(id: .window(2, kind: "note"), type: .window)
-        note.properties = [.windowType: .name("note"), .windowValue: .string("7")]
+        note.properties = [.windowKind: .name("note"), .windowValue: .string("7")]
         scene.children = .arranged([HostPatch(id: .window(1), type: .window), note])
         var about = HostPatch(id: .scene("2"), type: .scene)
         var aboutWindow = HostPatch(id: .window(1, kind: "about"), type: .window)
-        aboutWindow.properties = [.windowType: .name("about")]
+        aboutWindow.properties = [.windowKind: .name("about")]
         about.children = .arranged([aboutWindow])
         root.children = .arranged([scene, about])
         runtime.tree.apply(root, complete: true)
@@ -137,14 +137,14 @@ private struct KeptApplication: Application {
 
     var body: some Scene {
         KeptScene()
-        Window(WindowType("kept.about")) { Text("about") }
+        Window(WindowKind("kept.about")) { Text("about") }
     }
 }
 
 private struct KeptScene: Scene {
     var body: some Scene {
         WindowGroup { KeptSectionPage() }
-        WindowGroup(WindowType<Int>("kept.note")) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowKind<Int>("kept.note")) { number in Text("note \(number.wrappedValue)") }
     }
 }
 

@@ -5,7 +5,7 @@ extension ReportResources {
     static let polish = ReportResources(
         heading: "Raport folderu",
         prepared: Message { day, context in
-            "Sporządzono \(context.date(day, style: .long))"
+            "Sporządzono \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)

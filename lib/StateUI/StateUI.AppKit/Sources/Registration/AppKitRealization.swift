@@ -231,7 +231,7 @@ enum AppKitRealization {
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .complete(WindowContract.width),
-        .complete(WindowContract.windowType),
+        .complete(WindowContract.windowKind),
         .complete(WindowContract.windowValue),
         .complete(WindowContract.x),
         .complete(WindowContract.y),

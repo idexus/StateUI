@@ -21,7 +21,7 @@
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First"))
-                            .onNavigating { heard.values.append("navigating \($0.type)") }
+                            .onNavigating { heard.values.append("navigating \($0.kind)") }
                             .onNavigated { heard.values.append("navigated \($0.result)") }
                             .height(200).id("web")
                     }
@@ -118,12 +118,12 @@
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
             ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
-                let heard = Received<WebNavigationType>()
+                let heard = Received<WebNavigationKind>()
                 let arrived = Received<Bool>()
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First")).aim(web)
-                            .onNavigating { heard.values.append($0.type) }
+                            .onNavigating { heard.values.append($0.kind) }
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
                         Button("Reload").onClicked(.ignoreWhileRunning) { try await web.reload() }.id("reload")
                     }
@@ -175,18 +175,18 @@
                 Covered(WebViewContract.goBack), Covered(WebViewContract.goForward), Covered(WebViewContract.reload),
                 Covered(WebViewContract.navigating), Covered(WebViewContract.navigated),
             ], needs: [Covered(WebViewContract.source), Covered(WebViewContract.evaluateJavaScript), Covered(ButtonContract.clicked)]) { s in
-                for step in [WebNavigationType.back, .forward, .reload] {
+                for step in [WebNavigationKind.back, .forward, .reload] {
                     let web = Aim(WebView.self)
                     let given = State(wrappedValue: false)
-                    let began = Received<WebNavigationType>()
-                    let arrived = Received<WebNavigationType>()
+                    let began = Received<WebNavigationKind>()
+                    let arrived = Received<WebNavigationKind>()
                     let said = Received<String>()
                     s.start {
                         VStack {
                             (given.wrappedValue ? WebView().source(html: Self.page("New page")) : WebView())
-                                .aim(web).onNavigating { began.values.append($0.type) }
+                                .aim(web).onNavigating { began.values.append($0.kind) }
                                 .onNavigated { result in
-                                    if result.result == .success { arrived.values.append(result.type) }
+                                    if result.result == .success { arrived.values.append(result.kind) }
                                 }.height(200).id("web")
                             Button("Step").onClicked(.ignoreWhileRunning) {
                                 switch step {

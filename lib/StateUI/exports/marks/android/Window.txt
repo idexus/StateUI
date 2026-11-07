@@ -17,7 +17,7 @@ Window.minimumWidth: – Android bounds an activity's window itself: an activity
 Window.stopped: ✓ minimize on Window: the host told the activity's phase, no activity moved
 Window.title: ✅
 Window.width: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.
-Window.windowType: not realized
+Window.windowKind: not realized
 Window.windowValue: not realized
 Window.x: – Android places an activity's window itself: an activity asks for no place.
 Window.y: – Android places an activity's window itself: an activity asks for no place.

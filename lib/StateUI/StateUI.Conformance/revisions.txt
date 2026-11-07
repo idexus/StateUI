@@ -22,7 +22,7 @@ ToolbarGroup 9
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 10
+Window 11
 Scene 3
 Overlay 5
 BarElement 15
@@ -86,7 +86,7 @@ Grid 2
 HStack 5
 ItemsView 5
 Line 3
-Map 3
+Map 4
 Path 2
 Polygon 2
 ProgressBar 3
@@ -102,3 +102,4 @@ BottomBar 5
 appkit MotionLayout 2
 gtk MotionLayout 2
 web MotionLayout 2
+Marker 2

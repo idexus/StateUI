@@ -1,9 +1,9 @@
 import StateUI
 
 // listing: AboutScene
-extension WindowType where Value == Void {
+extension WindowKind where Value == Void {
     /// About the gallery: one window for the whole application.
-    static let about = WindowType("gallery.about")
+    static let about = WindowKind("gallery.about")
 }
 // listing: end
 

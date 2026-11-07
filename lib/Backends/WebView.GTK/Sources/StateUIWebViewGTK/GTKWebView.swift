@@ -15,8 +15,8 @@ final class GTKWebView: GTKControl {
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its
     /// web process gone.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
     var onCanGoBack: ((Bool) -> Void)?
     var onCanGoForward: ((Bool) -> Void)?
     var onProcessGone: (() -> Void)?
@@ -30,7 +30,7 @@ final class GTKWebView: GTKControl {
     private var requestedLoad = false
 
     /// Why the navigation WebKit decides on next began, as its action says.
-    private var told = WebNavigationType.newPage
+    private var told = WebNavigationKind.newPage
 
     /// Whether the navigation under way failed, so its finish tells nothing more.
     private var failed = false
@@ -81,7 +81,7 @@ final class GTKWebView: GTKControl {
     // MARK: - Its acts
 
     /// Takes the program's step - back, forward, the page again - which the navigation it begins is told as.
-    func step(_ step: WebNavigationType) {
+    func step(_ step: WebNavigationKind) {
         let possible: Bool = switch step {
         case .back: webkit_web_view_can_go_back(webView) != 0
         case .forward: webkit_web_view_can_go_forward(webView) != 0

@@ -207,6 +207,10 @@ swift.conformance CorneredShapeProperties: StateUI.PropertyContainer
 swift.conformance CorneredShapeProperties: StateUI.ShapeProperties
 swift.conformance CorneredShapeProperties: StateUI.ViewProperties
 swift.conformance CorneredShapeProperties: StateUI.VisualElementProperties
+swift.conformance DateFormat: StateUI.HostRepresentable
+swift.conformance DateFormat: StateUI.LaneValue
+swift.conformance DateFormat: StateUI.StateChoice
+swift.conformance DateFormat: StateUI.StateValue
 swift.conformance DatePicker: StateUI.AutomationElement
 swift.conformance DatePicker: StateUI.DatePickerProperties
 swift.conformance DatePicker: StateUI.Element
@@ -224,10 +228,6 @@ swift.conformance DatePicker: StateUI.VisualElementProperties
 swift.conformance DatePickerContract: StateUI.Contract
 swift.conformance DatePickerContract: StateUI.ElementContract
 swift.conformance DatePickerProperties: StateUI.PropertyContainer
-swift.conformance DateStyle: StateUI.HostRepresentable
-swift.conformance DateStyle: StateUI.LaneValue
-swift.conformance DateStyle: StateUI.StateChoice
-swift.conformance DateStyle: StateUI.StateValue
 swift.conformance DebugInspector: StateUI.AutomationElement
 swift.conformance DebugInspector: StateUI.Element
 swift.conformance DebugInspector: StateUI.ModifiableElement
@@ -555,16 +555,16 @@ swift.conformance Map: StateUI.VisualElement
 swift.conformance Map: StateUI.VisualElementProperties
 swift.conformance MapContract: StateUI.Contract
 swift.conformance MapContract: StateUI.ElementContract
+swift.conformance MapKind: StateUI.HostRepresentable
+swift.conformance MapKind: StateUI.LaneValue
+swift.conformance MapKind: StateUI.StateChoice
+swift.conformance MapKind: StateUI.StateValue
 swift.conformance MapProperties: StateUI.PropertyContainer
 swift.conformance MapRegion: StateUI.HostRepresentable
-swift.conformance MapType: StateUI.HostRepresentable
-swift.conformance MapType: StateUI.LaneValue
-swift.conformance MapType: StateUI.StateChoice
-swift.conformance MapType: StateUI.StateValue
 swift.conformance Marker: StateUI.Element
 swift.conformance MarkerContract: StateUI.Contract
 swift.conformance MarkerContract: StateUI.ElementContract
-swift.conformance MarkerType: StateUI.HostRepresentable
+swift.conformance MarkerKind: StateUI.HostRepresentable
 swift.conformance Material: StateUI.HostRepresentable
 swift.conformance Material: StateUI.LaneValue
 swift.conformance Material: StateUI.StateValue
@@ -1240,6 +1240,10 @@ swift.conformance TextStyle: StateUI.StateValue
 swift.conformance TextualElement: StateUI.PropertyContainer
 swift.conformance TextualElement: StateUI.TextColorElement
 swift.conformance TextualElementContract: StateUI.Contract
+swift.conformance TimeFormat: StateUI.HostRepresentable
+swift.conformance TimeFormat: StateUI.LaneValue
+swift.conformance TimeFormat: StateUI.StateChoice
+swift.conformance TimeFormat: StateUI.StateValue
 swift.conformance TimePicker: StateUI.AutomationElement
 swift.conformance TimePicker: StateUI.Element
 swift.conformance TimePicker: StateUI.ElementView
@@ -1257,10 +1261,6 @@ swift.conformance TimePicker: StateUI.VisualElementProperties
 swift.conformance TimePickerContract: StateUI.Contract
 swift.conformance TimePickerContract: StateUI.ElementContract
 swift.conformance TimePickerProperties: StateUI.PropertyContainer
-swift.conformance TimeStyle: StateUI.HostRepresentable
-swift.conformance TimeStyle: StateUI.LaneValue
-swift.conformance TimeStyle: StateUI.StateChoice
-swift.conformance TimeStyle: StateUI.StateValue
 swift.conformance TintElement: StateUI.PropertyContainer
 swift.conformance TintElementContract: StateUI.Contract
 swift.conformance TitleViewContract: StateUI.Contract
@@ -1356,8 +1356,8 @@ swift.conformance Walked: StateUI.LaneValue
 swift.conformance Walked: StateUI.StateValue
 swift.conformance Walked: Swift.Equatable
 swift.conformance Walked: Swift.Sendable
+swift.conformance WebNavigationKind: StateUI.HostRepresentable
 swift.conformance WebNavigationResult: StateUI.HostRepresentable
-swift.conformance WebNavigationType: StateUI.HostRepresentable
 swift.conformance WebView: StateUI.AutomationElement
 swift.conformance WebView: StateUI.Element
 swift.conformance WebView: StateUI.ElementView
@@ -1508,9 +1508,9 @@ swift.init ContentMode.init(carried:): init?(carried: StateCarried)
 swift.init ContentMode.init(propValue:): init?(propValue: PropValue)
 swift.init ContentMode.init(rawValue:): init?(rawValue: Int32)
 swift.init CornerRadius.init(propValue:): init?(propValue: PropValue)
-swift.init DateStyle.init(carried:): init?(carried: StateCarried)
-swift.init DateStyle.init(propValue:): init?(propValue: PropValue)
-swift.init DateStyle.init(rawValue:): init?(rawValue: Int32)
+swift.init DateFormat.init(carried:): init?(carried: StateCarried)
+swift.init DateFormat.init(propValue:): init?(propValue: PropValue)
+swift.init DateFormat.init(rawValue:): init?(rawValue: Int32)
 swift.init DisplayOrientation.init(rawValue:): init?(rawValue: Int32)
 swift.init DisplayRotation.init(rawValue:): init?(rawValue: Int32)
 swift.init DotShape.init(carried:): init?(carried: StateCarried)
@@ -1576,12 +1576,12 @@ swift.init LineJoin.init(carried:): init?(carried: StateCarried)
 swift.init LineJoin.init(propValue:): init?(propValue: PropValue)
 swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
 swift.init Location.init(propValue:): init?(propValue: PropValue)
+swift.init MapKind.init(carried:): init?(carried: StateCarried)
+swift.init MapKind.init(propValue:): init?(propValue: PropValue)
+swift.init MapKind.init(rawValue:): init?(rawValue: Int32)
 swift.init MapRegion.init(propValue:): init?(propValue: PropValue)
-swift.init MapType.init(carried:): init?(carried: StateCarried)
-swift.init MapType.init(propValue:): init?(propValue: PropValue)
-swift.init MapType.init(rawValue:): init?(rawValue: Int32)
-swift.init MarkerType.init(propValue:): init?(propValue: PropValue)
-swift.init MarkerType.init(rawValue:): init?(rawValue: Int32)
+swift.init MarkerKind.init(propValue:): init?(propValue: PropValue)
+swift.init MarkerKind.init(rawValue:): init?(rawValue: Int32)
 swift.init Material.init(carried:): init?(carried: StateCarried)
 swift.init Material.init(propValue:): init?(propValue: PropValue)
 swift.init MotionLanes.init(rawValue:): init(rawValue: UInt8)
@@ -1645,9 +1645,9 @@ swift.init TextDecorations.init(rawValue:): init(rawValue: Int32)
 swift.init TextStyle.init(carried:): init?(carried: StateCarried)
 swift.init TextStyle.init(propValue:): init?(propValue: PropValue)
 swift.init TextStyle.init(rawValue:): init?(rawValue: Int32)
-swift.init TimeStyle.init(carried:): init?(carried: StateCarried)
-swift.init TimeStyle.init(propValue:): init?(propValue: PropValue)
-swift.init TimeStyle.init(rawValue:): init?(rawValue: Int32)
+swift.init TimeFormat.init(carried:): init?(carried: StateCarried)
+swift.init TimeFormat.init(propValue:): init?(propValue: PropValue)
+swift.init TimeFormat.init(rawValue:): init?(rawValue: Int32)
 swift.init ToolbarEdge.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarEdge.init(rawValue:): init?(rawValue: Int32)
 swift.init ToolbarPart.init(propValue:): init?(propValue: PropValue)
@@ -1658,10 +1658,10 @@ swift.init ToolbarStyle.init(carried:): init?(carried: StateCarried)
 swift.init ToolbarStyle.init(propValue:): init?(propValue: PropValue)
 swift.init ToolbarStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init ViewTransform.init(propValue:): init?(propValue: PropValue)
+swift.init WebNavigationKind.init(propValue:): init?(propValue: PropValue)
+swift.init WebNavigationKind.init(rawValue:): init?(rawValue: Int32)
 swift.init WebNavigationResult.init(propValue:): init?(propValue: PropValue)
 swift.init WebNavigationResult.init(rawValue:): init?(rawValue: Int32)
-swift.init WebNavigationType.init(propValue:): init?(propValue: PropValue)
-swift.init WebNavigationType.init(rawValue:): init?(rawValue: Int32)
 swift.init WebViewSource.init(propValue:): init?(propValue: PropValue)
 swift.init Weekday.init(rawValue:): init?(rawValue: Int32)
 swift.method @SwiftArray.value(_:): func value(_ index: Int = 0) -> PropValue?
@@ -3384,10 +3384,10 @@ swift.property ContentMode.propValue: var propValue: PropValue { get }
 swift.property ContractMember.name: var name: String { get }
 swift.property ControlChild.reports: @MainActor var reports: ControlReports<Child> { get }
 swift.property CornerRadius.propValue: var propValue: PropValue { get }
+swift.property DateFormat.carried: var carried: StateCarried { get }
+swift.property DateFormat.propValue: var propValue: PropValue { get }
 swift.property DatePicker.node: @MainActor var node: Node
 swift.property DatePicker.nodes: @MainActor var nodes: [Node] { get }
-swift.property DateStyle.carried: var carried: StateCarried { get }
-swift.property DateStyle.propValue: var propValue: PropValue { get }
 swift.property DebugInspector.node: @MainActor var node: Node { get set }
 swift.property DebugInspector.nodes: @MainActor var nodes: [Node] { get }
 swift.property DebugInspectorButton.node: @MainActor var node: Node { get set }
@@ -3478,11 +3478,11 @@ swift.property Link.nodes: @MainActor var nodes: [Node] { get }
 swift.property Location.propValue: var propValue: PropValue { get }
 swift.property Map.node: @MainActor var node: Node
 swift.property Map.nodes: @MainActor var nodes: [Node] { get }
+swift.property MapKind.carried: var carried: StateCarried { get }
+swift.property MapKind.propValue: var propValue: PropValue { get }
 swift.property MapRegion.propValue: var propValue: PropValue { get }
-swift.property MapType.carried: var carried: StateCarried { get }
-swift.property MapType.propValue: var propValue: PropValue { get }
 swift.property Marker.node: @MainActor var node: Node
-swift.property MarkerType.propValue: var propValue: PropValue { get }
+swift.property MarkerKind.propValue: var propValue: PropValue { get }
 swift.property Material.carried: var carried: StateCarried { get }
 swift.property Material.propValue: var propValue: PropValue { get }
 swift.property Menu.node: @MainActor var node: Node
@@ -3600,10 +3600,10 @@ swift.property TextField.nodes: @MainActor var nodes: [Node] { get }
 swift.property TextSpan.node: @MainActor var node: Node
 swift.property TextStyle.carried: var carried: StateCarried { get }
 swift.property TextStyle.propValue: var propValue: PropValue { get }
+swift.property TimeFormat.carried: var carried: StateCarried { get }
+swift.property TimeFormat.propValue: var propValue: PropValue { get }
 swift.property TimePicker.node: @MainActor var node: Node
 swift.property TimePicker.nodes: @MainActor var nodes: [Node] { get }
-swift.property TimeStyle.carried: var carried: StateCarried { get }
-swift.property TimeStyle.propValue: var propValue: PropValue { get }
 swift.property ToolbarButton.node: @MainActor var node: Node
 swift.property ToolbarEdge.propValue: var propValue: PropValue { get }
 swift.property ToolbarGroup.node: @MainActor var node: Node
@@ -3619,8 +3619,8 @@ swift.property View.node: @MainActor var node: Node { get set }
 swift.property View.nodes: @MainActor var nodes: [Node] { get }
 swift.property ViewTransform.propValue: var propValue: PropValue { get }
 swift.property Views.nodes: @MainActor var nodes: [Node] { get }
+swift.property WebNavigationKind.propValue: var propValue: PropValue { get }
 swift.property WebNavigationResult.propValue: var propValue: PropValue { get }
-swift.property WebNavigationType.propValue: var propValue: PropValue { get }
 swift.property WebView.node: @MainActor var node: Node
 swift.property WebView.nodes: @MainActor var nodes: [Node] { get }
 swift.property WebViewSource.propValue: var propValue: PropValue { get }
@@ -3770,8 +3770,8 @@ swift.type.method ContentMode.list(from:): static func list(from value: PropValu
 swift.type.method ContentMode.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method CornerRadius.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method CornerRadius.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method DateStyle.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method DateStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method DateFormat.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method DateFormat.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method DotShape.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method DotShape.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method DrawCommand.list(from:): static func list(from value: PropValue) -> [Self]?
@@ -3838,12 +3838,12 @@ swift.type.method LineJoin.list(from:): static func list(from value: PropValue) 
 swift.type.method LineJoin.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Location.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Location.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method MapKind.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method MapKind.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method MapRegion.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method MapRegion.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method MapType.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method MapType.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method MarkerType.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method MarkerType.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method MarkerKind.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method MarkerKind.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Material.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Material.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Name.list(from:): static func list(from value: PropValue) -> [Self]?
@@ -3886,8 +3886,8 @@ swift.type.method TextDecorations.list(from:): static func list(from value: Prop
 swift.type.method TextDecorations.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method TextStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method TextStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method TimeStyle.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method TimeStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method TimeFormat.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method TimeFormat.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarEdge.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ToolbarEdge.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ToolbarPart.list(from:): static func list(from value: PropValue) -> [Self]?
@@ -3898,10 +3898,10 @@ swift.type.method ToolbarStyle.list(from:): static func list(from value: PropVal
 swift.type.method ToolbarStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ViewTransform.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ViewTransform.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method WebNavigationKind.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method WebNavigationKind.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method WebNavigationResult.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method WebNavigationResult.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method WebNavigationType.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method WebNavigationType.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method WebViewSource.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method WebViewSource.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.property @SwiftBool.laneKind: static var laneKind: LaneKind { get }
@@ -4027,6 +4027,9 @@ swift.type.property Contract.tiers: static var tiers: [any Contract.Type] { get 
 swift.type.property CorneredShapeContract.members: static let members: [any ContractMember]
 swift.type.property CorneredShapeContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property CorneredShapeContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property DateFormat.laneKind: static var laneKind: LaneKind { get }
+swift.type.property DateFormat.lanes: static var lanes: Int { get }
+swift.type.property DateFormat.moving: static var moving: MotionValues { get }
 swift.type.property DatePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property DatePickerContract.layer: static let layer: ElementLayer
 swift.type.property DatePickerContract.layer: static var layer: ElementLayer { get }
@@ -4034,9 +4037,6 @@ swift.type.property DatePickerContract.members: static let members: [any Contrac
 swift.type.property DatePickerContract.nodeType: static let nodeType: NodeType
 swift.type.property DatePickerContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property DatePickerContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property DateStyle.laneKind: static var laneKind: LaneKind { get }
-swift.type.property DateStyle.lanes: static var lanes: Int { get }
-swift.type.property DateStyle.moving: static var moving: MotionValues { get }
 swift.type.property DecorableTextElementContract.members: static let members: [any ContractMember]
 swift.type.property DecorableTextElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property DotShape.laneKind: static var laneKind: LaneKind { get }
@@ -4157,9 +4157,9 @@ swift.type.property MapContract.members: static let members: [any ContractMember
 swift.type.property MapContract.nodeType: static let nodeType: NodeType
 swift.type.property MapContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property MapContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property MapType.laneKind: static var laneKind: LaneKind { get }
-swift.type.property MapType.lanes: static var lanes: Int { get }
-swift.type.property MapType.moving: static var moving: MotionValues { get }
+swift.type.property MapKind.laneKind: static var laneKind: LaneKind { get }
+swift.type.property MapKind.lanes: static var lanes: Int { get }
+swift.type.property MapKind.moving: static var moving: MotionValues { get }
 swift.type.property MarkerContract.layer: static let layer: ElementLayer
 swift.type.property MarkerContract.layer: static var layer: ElementLayer { get }
 swift.type.property MarkerContract.members: static let members: [any ContractMember]
@@ -4453,6 +4453,9 @@ swift.type.property TextStyle.moving: static var moving: MotionValues { get }
 swift.type.property TextualElementContract.members: static let members: [any ContractMember]
 swift.type.property TextualElementContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property TextualElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property TimeFormat.laneKind: static var laneKind: LaneKind { get }
+swift.type.property TimeFormat.lanes: static var lanes: Int { get }
+swift.type.property TimeFormat.moving: static var moving: MotionValues { get }
 swift.type.property TimePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TimePickerContract.layer: static let layer: ElementLayer
 swift.type.property TimePickerContract.layer: static var layer: ElementLayer { get }
@@ -4460,9 +4463,6 @@ swift.type.property TimePickerContract.members: static let members: [any Contrac
 swift.type.property TimePickerContract.nodeType: static let nodeType: NodeType
 swift.type.property TimePickerContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property TimePickerContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property TimeStyle.laneKind: static var laneKind: LaneKind { get }
-swift.type.property TimeStyle.lanes: static var lanes: Int { get }
-swift.type.property TimeStyle.moving: static var moving: MotionValues { get }
 swift.type.property TintElementContract.members: static let members: [any ContractMember]
 swift.type.property TintElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TitleViewContract.layer: static let layer: ElementLayer

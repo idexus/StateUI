@@ -536,16 +536,16 @@ final class DrivenPatchTests: XCTestCase {
         let edge = State(wrappedValue: ScrollEdge.hard)
         let split = SplitView { Text("x") } detail: { Text("y") }
         let driven: [(Node, Prop, String)] = [
-            (Map().type(State(wrappedValue: MapType.satellite).projectedValue).node, MapContract.type.token, "type"),
+            (Map().kind(State(wrappedValue: MapKind.satellite).projectedValue).node, MapContract.kind.token, "type"),
             (Map().isScrollEnabled(flag.projectedValue).node, MapContract.isScrollEnabled.token, "isScrollEnabled"),
             (Map().isZoomEnabled(flag.projectedValue).node, MapContract.isZoomEnabled.token, "isZoomEnabled"),
             (Map().showsTraffic(flag.projectedValue).node, MapContract.showsTraffic.token, "showsTraffic"),
             (Map().showsUserLocation(flag.projectedValue).node, MapContract.showsUserLocation.token, "userLocation"),
             (DatePicker().minimum(day.projectedValue).node, DatePickerContract.minimum.token, "minimum"),
             (DatePicker().maximum(day.projectedValue).node, DatePickerContract.maximum.token, "maximum"),
-            (DatePicker().format(State(wrappedValue: DateStyle.long).projectedValue).node,
+            (DatePicker().format(State(wrappedValue: DateFormat.long).projectedValue).node,
              DatePickerContract.format.token, "DatePicker.format"),
-            (TimePicker().format(State(wrappedValue: TimeStyle.medium).projectedValue).node,
+            (TimePicker().format(State(wrappedValue: TimeFormat.medium).projectedValue).node,
              TimePickerContract.format.token, "TimePicker.format"),
             (Button("Go").stroke(color.projectedValue).node, BorderElementContract.stroke.token, "stroke"),
             (split.barForegroundColor(color.projectedValue).node, BarElementContract.barForegroundColor.token,

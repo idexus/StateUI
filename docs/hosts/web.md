@@ -241,7 +241,7 @@ element of its own on the page.
 // Platforms/Web/Host/GoogleMapElement.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.type) { control, type in control.show(type) }
+    map.property(MapContract.kind) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
@@ -249,7 +249,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(repo
     map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)

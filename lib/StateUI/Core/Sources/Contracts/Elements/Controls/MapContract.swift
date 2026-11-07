@@ -35,11 +35,11 @@ public enum MapContract: ElementContract {
     public static let showsUserLocation = ElementProperty<Self, Bool>("showsUserLocation", layer: .provider)
 
     /// How the world is drawn - streets, photography from above, or both.
-    public static let type = ElementProperty<Self, MapType>("type", layer: .provider)
+    public static let kind = ElementProperty<Self, MapKind>("kind", layer: .provider)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
         isScrollEnabled, showsTraffic, isZoomEnabled, locationTapped, moveToRegion, region,
-        showsUserLocation, type,
+        showsUserLocation, kind,
     ]
 }

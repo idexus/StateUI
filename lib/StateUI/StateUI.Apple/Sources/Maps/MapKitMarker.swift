@@ -22,7 +22,7 @@ public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
     @objc public dynamic var subtitle: String?
 
     /// The child's kind.
-    public private(set) var type = MarkerType.generic
+    public private(set) var type = MarkerKind.generic
 
     /// The marker of `child`, its values not yet taken.
     public init(_ child: ControlChild<MarkerContract>) {
@@ -36,6 +36,6 @@ public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
         coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
         title = child.value(MarkerContract.title)
         subtitle = child.value(MarkerContract.subtitle)
-        type = child.value(MarkerContract.type) ?? .generic
+        type = child.value(MarkerContract.kind) ?? .generic
     }
 }

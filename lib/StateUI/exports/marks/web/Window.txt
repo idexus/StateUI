@@ -17,7 +17,7 @@ Window.minimumWidth: – A page bounds no browser window: the user sizes it.
 Window.stopped: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
 Window.title: ✅
 Window.width: – A page sizes no browser window: the user does, and the page fills it.
-Window.windowType: – A page is one window: it opens none of a kind.
+Window.windowKind: – A page is one window: it opens none of a kind.
 Window.windowValue: – A page is one window: it opens none for a value.
 Window.x: – A page places no browser window: the system does.
 Window.y: – A page places no browser window: the system does.

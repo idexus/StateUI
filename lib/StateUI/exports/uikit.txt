@@ -123,16 +123,16 @@ Link
 Map
   isScrollEnabled
   isZoomEnabled
+  kind
   region
   showsTraffic
   showsUserLocation
-  type
   locationTapped()
 Marker
+  kind
   location
   subtitle
   title
-  type
   detailsClicked()
   selected()
 MotionLayout

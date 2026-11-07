@@ -1169,10 +1169,10 @@ final class CatalogTests: XCTestCase {
     func testTheGalleriesAreASceneWithTheirToolsBeside() {
         let windows = GalleryScene().declaredWindows.declared
 
-        let (fonts, colors, inspector) = (WindowType.fonts.key, WindowType.colors.key, WindowType.debugInspector.key)
-        XCTAssertEqual(windows.map(\.type), [nil, fonts, colors, inspector, WindowType.swatch.key])
+        let (fonts, colors, inspector) = (WindowKind.fonts.key, WindowKind.colors.key, WindowKind.debugInspector.key)
+        XCTAssertEqual(windows.map(\.type), [nil, fonts, colors, inspector, WindowKind.swatch.key])
         XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [fonts, colors, inspector])
-        XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [WindowType.swatch.key])
+        XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [WindowKind.swatch.key])
         XCTAssertEqual(windows.first?.page(nil, nil).stateful?.viewType.name, String(reflecting: GalleryWindow.self))
     }
 
@@ -1186,8 +1186,8 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(scenes.declared[1] is ScratchpadScene)
         XCTAssertTrue(scenes.declared[2] is AboutScene)
         XCTAssertEqual(scenes.launching, 0, "launch opens a gallery window")
-        XCTAssertEqual(scenes.windows[1].declared.map(\.type), [WindowType.scratchpad.key])
-        XCTAssertEqual(scenes.windows[2].declared.map(\.type), [WindowType.about.key])
+        XCTAssertEqual(scenes.windows[1].declared.map(\.type), [WindowKind.scratchpad.key])
+        XCTAssertEqual(scenes.windows[2].declared.map(\.type), [WindowKind.about.key])
         XCTAssertEqual(scenes.windows[2].declared.map(\.single), [true])
     }
 

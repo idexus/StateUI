@@ -394,7 +394,7 @@ final class ControlTests: XCTestCase {
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
                 Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                    .type(.hybrid)
+                    .kind(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
@@ -403,7 +403,7 @@ final class ControlTests: XCTestCase {
                         Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
                             .title("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
-                            .type(.place)
+                            .kind(.place)
                             .onSelected {}
                             .onDetailsClicked {}
 
@@ -891,7 +891,7 @@ final class ControlTests: XCTestCase {
             "Views/Mixins/TextualElement.swift|text:String", "Views/Text/Text.swift|text:String",
             "Views/Text/Text.swift|background:Color", "Views/Text/Text.swift|background:Material",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
-            "Views/Controls/Map.swift|type:MarkerType",
+            "Views/Controls/Map.swift|kind:MarkerKind",
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
@@ -1368,7 +1368,7 @@ final class ControlTests: XCTestCase {
     ///
     /// Measured on Windows: a web view's FIRST navigation - the source it was
     /// handed before its browser existed - arrives with a reason no
-    /// `WebNavigationType` member names, and the host has nothing to
+    /// `WebNavigationKind` member names, and the host has nothing to
     /// translate it onto but `.unknown`. Refusing that report would leave a
     /// page loaded on screen while the interface still said nothing had, with
     /// only a second navigation ever reporting. An unknown member degrades; a
@@ -1384,13 +1384,13 @@ final class ControlTests: XCTestCase {
 
         renders.fire(handler(patch, "navigated"), with: [
             .enumeration(WebNavigationResult.success.rawValue),
-            .enumeration(WebNavigationType.unknown.rawValue),
+            .enumeration(WebNavigationKind.unknown.rawValue),
             .string("https://example.com/"),
         ])
 
         XCTAssertEqual(seen.count, 1)
         XCTAssertEqual(seen.first?.result, .success)
-        XCTAssertEqual(seen.first?.type, .unknown)
+        XCTAssertEqual(seen.first?.kind, .unknown)
         XCTAssertEqual(seen.first?.address, "https://example.com/")
 
         // `.unknown` is what this platform actually reports, and it has a case
@@ -1402,7 +1402,7 @@ final class ControlTests: XCTestCase {
 
         XCTAssertEqual(seen.count, 2)
         XCTAssertEqual(seen.last?.result, .unknown)
-        XCTAssertEqual(seen.last?.type, .unknown)
+        XCTAssertEqual(seen.last?.kind, .unknown)
     }
 
     /// The other half of the same rule: a value of the wrong KIND is a
@@ -1420,7 +1420,7 @@ final class ControlTests: XCTestCase {
         // The reason as a plain NUMBER where a member is wanted - what a host
         // that stopped translating would send.
         renders.fire(handler(patch, "navigating"), with: [
-            .number(Double(WebNavigationType.newPage.rawValue)),
+            .number(Double(WebNavigationKind.newPage.rawValue)),
             .string("https://example.com/"),
         ])
 

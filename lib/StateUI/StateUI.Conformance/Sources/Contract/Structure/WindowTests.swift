@@ -84,7 +84,7 @@
             blurred,
             groundsItsSheets,
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
-                Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
+                Covered(WindowContract.windowKind), Covered(WindowContract.windowValue),
             ]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
@@ -92,7 +92,7 @@
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
                 try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
-                s.expect(try s.held(WindowContract.windowType, on: note), Name(NotesApplication.note.name))
+                s.expect(try s.held(WindowContract.windowKind, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
@@ -247,10 +247,10 @@ struct WindowPhasePage: View {
 /// alone.
 struct NotesApplication: Application {
     /// The kind of a note's window.
-    static let note = WindowType<Int>("conformance.note")
+    static let note = WindowKind<Int>("conformance.note")
 
     /// The kind of the other scene's window.
-    static let other = WindowType<Void>("conformance.other")
+    static let other = WindowKind<Void>("conformance.other")
 
     var body: some Scene {
         NotesScene()

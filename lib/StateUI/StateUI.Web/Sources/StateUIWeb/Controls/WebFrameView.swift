@@ -11,8 +11,8 @@
 /// Design: docs/design/platforms/web/controls.md#a-web-view
 @MainActor
 final class WebFrameView: WebDOMView {
-    var onNavigating: (WebNavigationType, String) -> Void = { _, _ in }
-    var onNavigated: (WebNavigationResult, WebNavigationType, String) -> Void = { _, _, _ in }
+    var onNavigating: (WebNavigationKind, String) -> Void = { _, _ in }
+    var onNavigated: (WebNavigationResult, WebNavigationKind, String) -> Void = { _, _, _ in }
     var onCanGoBack: (Bool) -> Void = { _ in }
     var onCanGoForward: (Bool) -> Void = { _ in }
 
@@ -49,7 +49,7 @@ final class WebFrameView: WebDOMView {
     }
 
     /// Loads `source` whole, its navigation told as `told`; the complete source stands for a reload until it loads.
-    private func request(_ source: WebViewSource, told: WebNavigationType) {
+    private func request(_ source: WebViewSource, told: WebNavigationKind) {
         reloadSource.requested(source)
         requestedLoad = true
         given = switch source {
@@ -80,7 +80,7 @@ final class WebFrameView: WebDOMView {
     /// Takes a step of the frame's own - back, forward, the page again - its navigation beginning for it; a document
     /// of another site takes none but the page again, which loads the address the page gave it. Whether the act can
     /// be answered here; a reachable history with no destination is an ordinary no-op.
-    func step(_ step: WebNavigationType) -> Bool {
+    func step(_ step: WebNavigationKind) -> Bool {
         let taken: WebRelay.FrameStep = step == .back ? .back : step == .forward ? .forward : .reload
         let state = WebRelay.frameState(frame.node)
         let possible: Bool = switch taken {

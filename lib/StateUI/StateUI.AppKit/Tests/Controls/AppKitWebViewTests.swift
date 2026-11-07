@@ -44,7 +44,7 @@ final class AppKitWebViewTests: XCTestCase {
     }
 
     func testAStepWithNoDestinationDoesNotNameTheNextNewPage() throws {
-        for step in [StateUI.WebNavigationType.back, .forward, .reload] {
+        for step in [StateUI.WebNavigationKind.back, .forward, .reload] {
             try Self.withPage { web, heard in
                 XCTAssertFalse(web.canGoBack)
                 XCTAssertFalse(web.canGoForward)
@@ -71,7 +71,7 @@ final class AppKitWebViewTests: XCTestCase {
             XCTAssertEqual(try Self.body(of: web), "VISITED_DOCUMENT")
 
             for (step, words) in [
-                (StateUI.WebNavigationType.reload, "VISITED_DOCUMENT"),
+                (StateUI.WebNavigationKind.reload, "VISITED_DOCUMENT"),
                 (.back, "AUTHORED_DOCUMENT"), (.forward, "VISITED_DOCUMENT"),
             ] {
                 if step == .back { XCTAssertTrue(web.canGoBack) }
@@ -170,8 +170,8 @@ final class AppKitWebViewTests: XCTestCase {
     }
 
     @MainActor private final class Heard {
-        var began: [StateUI.WebNavigationType] = []
-        var arrived: [StateUI.WebNavigationType] = []
+        var began: [StateUI.WebNavigationKind] = []
+        var arrived: [StateUI.WebNavigationKind] = []
     }
 
     private struct WaitFailure: Error {

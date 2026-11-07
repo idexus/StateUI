@@ -275,7 +275,7 @@ final class AppKitImageViewTests: XCTestCase {
         Self.draw(renderer)
         let before = Self.footprint()
 
-        try await StandardEnvironment.application.openWindow(WindowType("pictures.again"))
+        try await StandardEnvironment.application.openWindow(WindowKind("pictures.again"))
         renderer.runtime.pump.turn()
         Self.draw(renderer)
         let grown = Self.footprint() - before
@@ -356,7 +356,7 @@ private struct PicturesApplication: Application {
 private struct PicturesScene: Scene {
     var body: some Scene {
         WindowGroup { PicturesPage() }
-        Window(WindowType("pictures.again")) { PicturesPage() }
+        Window(WindowKind("pictures.again")) { PicturesPage() }
     }
 }
 

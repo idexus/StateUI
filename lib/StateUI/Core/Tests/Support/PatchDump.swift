@@ -205,10 +205,10 @@ enum PatchDump {
             return spelled(member, as: ContentMode.self)
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
-        case Prop.type.name where element == MapContract.nodeType:
-            return spelled(member, as: MapType.self)
-        case Prop.type.name:
-            return spelled(member, as: MarkerType.self)
+        case Prop.kind.name where element == MapContract.nodeType:
+            return spelled(member, as: MapKind.self)
+        case Prop.kind.name:
+            return spelled(member, as: MarkerKind.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
         case Prop.accessibilityHeading.name:

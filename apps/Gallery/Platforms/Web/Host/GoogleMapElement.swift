@@ -55,7 +55,7 @@ final class GoogleMapElement: WebControl {
     }
 
     /// How the world is drawn.
-    func show(_ type: MapType?) {
+    func show(_ type: MapKind?) {
         let name = switch type ?? .standard {
         case .standard: "standard"
         case .satellite: "satellite"
@@ -75,7 +75,7 @@ final class GoogleMapElement: WebControl {
             if number == nextNumber { nextNumber += 1 }
             kept[child] = number
             markers[number] = child
-            let kind = switch child.value(MarkerContract.type) ?? .generic {
+            let kind = switch child.value(MarkerContract.kind) ?? .generic {
             case .generic: "generic"
             case .place: "place"
             case .saved: "saved"
@@ -112,7 +112,7 @@ extension GoogleMapElement {
         // listing: web.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
@@ -120,7 +120,7 @@ extension GoogleMapElement {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

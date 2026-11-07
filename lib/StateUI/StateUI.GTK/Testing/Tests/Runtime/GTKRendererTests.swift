@@ -371,7 +371,7 @@ private struct FirstScene: Scene {
 
 private struct SecondScene: Scene {
     var body: some Scene {
-        Window(WindowType("frames.second")) { Text("Second") }
+        Window(WindowKind("frames.second")) { Text("Second") }
     }
 }
 
@@ -380,6 +380,6 @@ private struct OpeningSecondPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("frames.second")) }
+        return Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowKind("frames.second")) }
     }
 }

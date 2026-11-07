@@ -78,18 +78,18 @@ final class FormattingTests: XCTestCase {
     func testDays() {
         let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
 
-        XCTAssertEqual(english.date(day, style: .long), "September 30, 2026")
-        XCTAssertEqual(english.date(day, style: .medium), "Sep 30, 2026")
-        XCTAssertEqual(english.date(day, style: .short), "9/30/26")
-        XCTAssertEqual(polish.date(day, style: .long), "30 września 2026", "a month in a date is in the genitive")
-        XCTAssertEqual(polish.date(day, style: .medium), "30 wrz 2026")
-        XCTAssertEqual(polish.date(day, style: .short), "30.09.2026")
+        XCTAssertEqual(english.date(day, format: .long), "September 30, 2026")
+        XCTAssertEqual(english.date(day, format: .medium), "Sep 30, 2026")
+        XCTAssertEqual(english.date(day, format: .short), "9/30/26")
+        XCTAssertEqual(polish.date(day, format: .long), "30 września 2026", "a month in a date is in the genitive")
+        XCTAssertEqual(polish.date(day, format: .medium), "30 wrz 2026")
+        XCTAssertEqual(polish.date(day, format: .short), "30.09.2026")
     }
 
     func testWordsFollowTheLanguageAndTheOrderFollowsTheFormats() {
         let english = localization(.english, "pl-PL")
 
-        XCTAssertEqual(english.date(day, style: .long), "30 September 2026")
+        XCTAssertEqual(english.date(day, format: .long), "30 September 2026")
         XCTAssertEqual(english.number(12_345.5), "12\u{A0}345,5")
         XCTAssertEqual(english.list(["Ania", "Basia", "Celina"]), "Ania, Basia, and Celina")
     }
@@ -97,9 +97,9 @@ final class FormattingTests: XCTestCase {
     func testALanguageWhoseGrammarFixesTheOrderKeepsIt() {
         let polish = localization(.polish, "en-US")
 
-        XCTAssertEqual(polish.date(day, style: .long), "30 września 2026", "a genitive month follows its day")
-        XCTAssertEqual(polish.date(day, style: .medium), "30 wrz 2026")
-        XCTAssertEqual(polish.date(day, style: .short), "9/30/26", "digits follow the region")
+        XCTAssertEqual(polish.date(day, format: .long), "30 września 2026", "a genitive month follows its day")
+        XCTAssertEqual(polish.date(day, format: .medium), "30 wrz 2026")
+        XCTAssertEqual(polish.date(day, format: .short), "9/30/26", "digits follow the region")
     }
 
     func testTimesOfDay() {
@@ -111,8 +111,8 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.time(ClockTime(hour: 0, minute: 15)), "12:15\u{202F}AM")
         XCTAssertEqual(polish.time(morning), "07:30")
         XCTAssertEqual(polish.time(evening), "19:05")
-        XCTAssertEqual(english.time(ClockTime(hour: 19, minute: 5, second: 7), style: .medium), "7:05:07\u{202F}PM")
-        XCTAssertEqual(polish.time(ClockTime(hour: 7, minute: 30, second: 0), style: .medium), "07:30:00")
+        XCTAssertEqual(english.time(ClockTime(hour: 19, minute: 5, second: 7), format: .medium), "7:05:07\u{202F}PM")
+        XCTAssertEqual(polish.time(ClockTime(hour: 7, minute: 30, second: 0), format: .medium), "07:30:00")
     }
 
     func testLists() {
