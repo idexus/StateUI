@@ -92,6 +92,7 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
         _ arguments: repeat each Argument
     ) async throws -> (repeat each Answer) {
         let aimed = try target
+        Wearing.takes(box.declaration, act)
         let reply = try await Renderer.shared.call(
             act.token, [aimed] + MemberValues.encode(repeat each arguments))
         return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
@@ -126,6 +127,9 @@ extension Aim: Aiming {}
 /// an act reads it.
 @MainActor
 final class AimBox: Hashable {
+    /// The contract of the element it was last put on, which says what acts it takes.
+    var declaration: (any ElementContract.Type)?
+
     /// Where the element this was last put on stands: the keys from the root down to it.
     private var standing: [ElementID]?
 

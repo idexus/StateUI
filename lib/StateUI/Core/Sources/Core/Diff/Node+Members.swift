@@ -36,6 +36,7 @@ extension Node {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) {
+        Wearing.takes(declaration, property)
         props.write(property, value)
     }
 

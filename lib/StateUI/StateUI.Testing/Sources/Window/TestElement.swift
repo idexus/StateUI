@@ -49,13 +49,17 @@ public struct TestElement {
     }
 
     /// What the view holds of `member` now - its words, its value, whether it is enabled - as the window shows it;
-    /// nil where it holds none. It fails where no view, or two, is the one it names, as `perform` does.
+    /// nil where it holds none. It fails where no view, or two, is the one it names, as `perform` does, and where
+    /// the view wears no contract of the member's.
     ///
     ///     XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 1 time")
     public func value<Owner: Contract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) throws -> Value? {
         let element = try mounted()
+        if Wearing.element(element.type, wears: Owner.self) == false {
+            throw TestFailure(description: "\(self) wears no \(Owner.name): it holds no `\(Owner.name).\(member.name)`")
+        }
         do {
             return try window.driver.held(member.token, on: element).flatMap { Value(propValue: $0) }
         } catch let cannot as DriverCannot {

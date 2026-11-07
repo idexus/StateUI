@@ -77,4 +77,4 @@ holds them - in its case, within its bound.
 `SwitchContract.isOn`, `VisualElementContract.accessibilityValue` - as the
 member's own type, nil where the view holds none. Like `perform(_:)`, it
 fails where no view, or two, is the one it names - a view gone with its
-window included.
+window included - and where the view wears no contract of the member's.

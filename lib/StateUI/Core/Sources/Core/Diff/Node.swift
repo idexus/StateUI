@@ -233,6 +233,9 @@ public struct Node {
     /// `.vStack`, or an application's own registered type.
     public internal(set) var type: NodeType
 
+    /// The contract the node was made through, which says what members it takes; nil for one made by type.
+    var declaration: (any ElementContract.Type)?
+
     /// The authored identity described for diagnostics, or nil where none was given. The renderer compares the
     /// original value and assigns its host key separately; this description is not a host lookup key.
     public internal(set) var id: String? {
@@ -418,6 +421,8 @@ public struct Node {
         children: [Node] = []
     ) {
         self.init(type: Declaration.nodeType, id: id, children: children)
+        declaration = Declaration.self
+        Wearing.declare(Declaration.self)
     }
 }
 

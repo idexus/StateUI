@@ -9,6 +9,14 @@ import XCTest
 /// does - each act's work done before the test reads what it changed.
 @MainActor
 final class TestWindowTests: XCTestCase {
+    func testReadingAMemberTheViewDoesNotWearFails() async throws {
+        let window = try await TestWindow(motion: .none) { Text("words").accessibilityIdentifier("words") }
+
+        XCTAssertEqual(try window.element("words").value(TextualElementContract.text), "words")
+        XCTAssertThrowsError(try window.element("words").value(SliderContract.value), "a text holds no slider's value")
+        try await window.close()
+    }
+
     func testAClickIsCounted() async throws {
         let window = try await TestWindow(motion: .none) { CounterPage() }
         let button = try window.element("counter.add")

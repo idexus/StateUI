@@ -53,6 +53,10 @@ extension Differ {
         if let inner = node.aim, inner !== pass.written {
             inner.attach(standing, walk: walkStamp)
         }
+        if let declaration = node.declaration {
+            pass.written?.declaration = declaration
+            node.aim?.declaration = declaration
+        }
 
         // The same for a reading written on that root.
         for (image, into, cadence, take) in node.samples {

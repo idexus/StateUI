@@ -19,7 +19,8 @@ extension ModifiableElement {
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode, kind: kind)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: mode, kind: kind)
     }
 
     /// The same, for text: the host writes the words as the state changes,
@@ -35,7 +36,8 @@ extension ModifiableElement {
         on state: Binding<String>,
         mode: StateMode
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: mode)
     }
 
     /// The same, for a value the host can animate - a number, a color, a
@@ -59,7 +61,8 @@ extension ModifiableElement {
         mode: StateMode,
         kind: StateKind
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode, kind: kind)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: mode, kind: kind)
     }
 }
 

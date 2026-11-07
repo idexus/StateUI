@@ -45,7 +45,8 @@ extension PropertyContainer {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) -> Modified {
-        setValue(property.token, value.propValue)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, value.propValue)
     }
 }
 

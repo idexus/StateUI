@@ -48,6 +48,19 @@ map's pins - carries no modifiers but its own. It writes a member on its node,
 view's `setValue` and `onEvent` are written over, so the compiler still pairs
 each member with its value.
 
+## A member the element does not wear
+
+A member's type pairs it with its value, not with who may wear it: a view is
+handed a member of any contract, and the compiler takes it. The description
+checks instead. A node made through its contract, `Node(contract:)`, keeps
+it, and a value, a state, a handler, or an act through an aim on it - each
+written with its member - is judged once per element, contract and member:
+the element takes a member a contract it wears declares among its `members`.
+One it does not take is said once and still written; no host shows it there.
+A node made by type - a style's, the library's structure - judges nothing.
+A test reads the same judgment: `TestElement.value` fails for a member of a
+contract its view does not wear.
+
 ## Member facts
 
 A property says three things about itself beside its value's type and its

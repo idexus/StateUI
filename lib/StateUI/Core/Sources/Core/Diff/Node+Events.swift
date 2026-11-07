@@ -18,6 +18,7 @@ extension Node {
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token) {
             guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
             else { return }
@@ -38,6 +39,7 @@ extension Node {
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token, gate: .own(policy)) {
             guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
             else { return }
@@ -52,6 +54,7 @@ extension Node {
         gate: Gate,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token, gate: .shared(gate)) {
             guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
             else { return }
