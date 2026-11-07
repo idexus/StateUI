@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.ignoresInput: ✅
 Button.pivotY: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element
@@ -6,6 +6,7 @@ Canvas.zIndex: ✅
 Capsule.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Capsule.translationX: ✅
 CheckBox.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+ColorPicker.accessibilityPresence: ✅
 ColorPicker.opacity: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.pivotY: ✅
@@ -43,6 +44,7 @@ Polyline.scaleX: ✅
 ProgressBar.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 ProgressBar.translationY: ✅
 Rectangle.tooltip: ✅
+ScrollView.accessibilityPresence: ✅
 ScrollView.opacity: ✅
 SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.isEnabled: ✅
@@ -59,6 +61,7 @@ Stepper.scaleY: ✅
 Switch.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Text.accessibilityPresence: ✅
 Text.isVisible: ✅
+TextEditor.accessibilityPresence: ✅
 TextEditor.opacity: ✅
 TextField.ignoresInput: ✅
 TextField.pivotY: ✅

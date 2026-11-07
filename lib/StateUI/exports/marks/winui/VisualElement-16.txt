@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityPresence: ✅
 Button.isVisible: ✅
 Canvas.height: ✅
@@ -10,7 +10,7 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.scaleX: ✅
 ColorPicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 ColorPicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-DatePicker.accessibilityPresence: ✅
+DatePicker.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 DatePicker.isVisible: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -28,6 +28,7 @@ Image.rotation: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.scale: ✅
 Line.tooltip: ✅
+Link.accessibilityPresence: ✅
 Link.opacity: ✅
 Map.ignoresInput: 🧩
 Map.pivotY: 🧩
@@ -50,6 +51,7 @@ ScrollView.isEnabled: ✅
 SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Separator.accessibilityHeading: ✅
 Separator.scale: ✅
+Slider.accessibilityPresence: ✅
 Slider.opacity: ✅
 Space.ignoresInput: ✅
 Space.pivotY: ✅

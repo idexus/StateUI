@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityHint: ✅
 Button.scaleY: ✅
 Canvas.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
@@ -15,9 +15,10 @@ DatePicker.scaleY: ✅
 Ellipse.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Fill.accessibilityPresence: ✅
 Fill.isVisible: ✅
+Grid.accessibilityPresence: ✅
 Grid.opacity: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.accessibilityPresence: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.isVisible: ✅
 Image.accessibilityHeading: ✅
 ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
@@ -36,6 +37,7 @@ Picker.scale: ✅
 Polygon.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Polygon.translationY: ✅
 Polyline.tooltip: ✅
+ProgressBar.accessibilityPresence: ✅
 ProgressBar.opacity: ✅
 Rectangle.maximumHeight: ✅
 Rectangle.maximumWidth: ✅
@@ -65,6 +67,7 @@ TextEditor.style: ✅
 TextField.accessibilityHint: ✅
 TextField.scaleY: ✅
 TimePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+VStack.accessibilityPresence: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.opacity: ✅
 WebView.accessibilityHeading: ✅

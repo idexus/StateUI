@@ -1,5 +1,6 @@
-# revision 24.2
+# revision 25.2
 Button.tooltip: ✅
+Canvas.accessibilityPresence: ✅
 Canvas.opacity: ✅
 Capsule.ignoresInput: ✅
 Capsule.pivotY: ✅

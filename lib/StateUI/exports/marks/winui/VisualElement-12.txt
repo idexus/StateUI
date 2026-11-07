@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Button.accessibilityActions: – UI Automation offers no action of an application's own words.
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
@@ -32,6 +32,7 @@ ItemsView.pivotY: ✅
 Line.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Line.translationX: ✅
 Link.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Map.accessibilityPresence: 🧩
 Map.opacity: 🧩
 MotionLayout.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 MotionLayout.translationX: ✅
@@ -40,6 +41,7 @@ Path.scale: ✅
 Picker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Picker.translationX: ✅
 Polygon.tooltip: ✅
+Polyline.accessibilityPresence: ✅
 Polyline.opacity: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
@@ -55,6 +57,7 @@ SearchField.scaleY: ✅
 Separator.ignoresInput: ✅
 Separator.pivotY: ✅
 Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Space.accessibilityPresence: ✅
 Space.opacity: ✅
 Spinner.accessibilityHint: ✅
 Spinner.scaleY: ✅
@@ -68,7 +71,7 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.scaleX: ✅
 TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
-TimePicker.accessibilityPresence: ✅
+TimePicker.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 TimePicker.isVisible: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅

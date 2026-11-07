@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Button.isEnabled: ✅
 Canvas.ignoresInput: ✅

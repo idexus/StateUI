@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.background: ✅
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
@@ -28,6 +28,7 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.accessibilityPresence: ✅
 ProgressBar.accessibilityLabel: ✅
 Rectangle.opacity: ✅
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself

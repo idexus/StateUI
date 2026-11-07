@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.rotationY: ✓ read rotationY of Button: the host's own tip, checked against the projection it laid on the element
 Button.zIndex: ✅
 Canvas.accessibilityHint: ✅
@@ -43,6 +43,7 @@ Polygon.scaleX: ✅
 Polyline.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Polyline.translationY: ✅
 ProgressBar.tooltip: ✅
+Rectangle.accessibilityPresence: ✅
 Rectangle.opacity: ✅
 ScrollView.maximumHeight: ✅
 ScrollView.maximumWidth: ✅
@@ -78,6 +79,6 @@ VStack.layoutDirection: ✅
 VStack.tooltip: ✅
 WebView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 WebView.accessibilityActions: – UI Automation offers no action of an application's own words.
-ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.accessibilityPresence: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.isVisible: ✅

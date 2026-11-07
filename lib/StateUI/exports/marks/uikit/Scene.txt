@@ -3,4 +3,4 @@ Scene: ✅
 Scene.activated: ✅
 Scene.deactivated: ✅
 Scene.stopped: ✅
-Scene.windowClosed: waits on Window.windowType
+Scene.windowClosed: waits on Window.windowKind

@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityHeading: ✅
 Canvas.background: ☑️ A brush fills the canvas with its first color alone.
 Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
@@ -35,6 +35,7 @@ MotionLayout.layoutDirection: ✅
 Path.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Path.translationX: ✅
 Picker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Polygon.accessibilityPresence: ✅
 Polygon.opacity: ✅
 Polyline.maximumHeight: ✅
 Polyline.maximumWidth: ✅

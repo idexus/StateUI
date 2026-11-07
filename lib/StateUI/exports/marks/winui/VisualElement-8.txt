@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityLabel: ✅
 Button.scaleX: ✅
 Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
@@ -14,12 +14,13 @@ Ellipse.accessibilityActionPerformed: – UI Automation offers no action of an a
 Ellipse.accessibilityActions: – UI Automation offers no action of an application's own words.
 Ellipse.isEnabled: ✅
 Fill.accessibilityHeading: ✅
-Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.accessibilityPresence: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.isVisible: ✅
 HStack.accessibilityHeading: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Image.tooltip: ✅
+ItemsView.accessibilityPresence: ✅
 ItemsView.opacity: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
 Line.zIndex: ✅
@@ -44,6 +45,7 @@ ScrollView.frame: ✅
 ScrollView.rotation: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.style: ✅
+Separator.accessibilityPresence: ✅
 Separator.opacity: ✅
 Slider.accessibilityHint: ✅
 Slider.scaleY: ✅
@@ -62,8 +64,8 @@ TextField.accessibilityLabel: ✅
 TextField.scaleX: ✅
 TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.accessibilityPresence: ✅
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.isVisible: ✅
 WebView.tooltip: ✅
 ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.

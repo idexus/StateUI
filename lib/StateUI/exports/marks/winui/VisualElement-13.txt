@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Canvas.accessibilityPresence: ✅
 Canvas.isVisible: ✅
@@ -12,6 +12,7 @@ CheckBox.style: ✅
 ColorPicker.accessibilityHint: ✅
 ColorPicker.scaleY: ✅
 DatePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Ellipse.accessibilityPresence: ✅
 Ellipse.opacity: ✅
 Fill.maximumHeight: ✅
 Fill.maximumWidth: ✅
@@ -69,6 +70,7 @@ Text.scaleX: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.scaleY: ✅
 TextField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+TimePicker.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 TimePicker.opacity: ✅
 VStack.ignoresInput: ✅
 VStack.pivotY: ✅

@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Canvas.isVisible: ✅
 Canvas.rotation: ✓ read rotation of Canvas: the host's own transform, checked against the layer it composed itself
@@ -16,6 +16,7 @@ HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked agai
 Image.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 ItemsView.isVisible: ✅
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
+Line.accessibilityPresence: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself

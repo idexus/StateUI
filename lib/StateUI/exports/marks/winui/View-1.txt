@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapCount: ✅
 Button.tapped: ✅

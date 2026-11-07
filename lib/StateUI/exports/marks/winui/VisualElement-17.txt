@@ -1,4 +1,5 @@
-# revision 24.2
+# revision 25.2
+Button.accessibilityPresence: ✅
 Button.opacity: ✅
 Canvas.maximumHeight: ✅
 Canvas.maximumWidth: ✅
@@ -10,6 +11,7 @@ Capsule.zIndex: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.scaleY: ✅
 ColorPicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+DatePicker.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 DatePicker.opacity: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.pivotY: ✅
@@ -61,6 +63,7 @@ Text.accessibilityActionPerformed: – UI Automation offers no action of an appl
 Text.accessibilityActions: – UI Automation offers no action of an application's own words.
 Text.isEnabled: ✅
 TextEditor.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+TextField.accessibilityPresence: ✅
 TextField.opacity: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.pivotY: ✅

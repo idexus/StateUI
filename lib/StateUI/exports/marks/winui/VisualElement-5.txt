@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.rotationX: ✓ read rotationX of Button: the host's own tip, checked against the projection it laid on the element
 Button.style: ✅
 Canvas.accessibilityLabel: ✅

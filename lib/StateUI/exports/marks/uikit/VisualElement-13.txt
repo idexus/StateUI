@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.height: ✅
 Button.scale: ✓ read scale of Button: the host's own transform, checked against the layer it composed itself
 Button.width: ✅
@@ -32,6 +32,7 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
+Picker.accessibilityPresence: ✅
 Polygon.accessibilityHint: ✅
 Polyline.isEnabled: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform, checked against the layer it composed itself
@@ -60,3 +61,4 @@ VStack.accessibilityHeading: does not apply - read a heading's level - UIKit mar
 WebView.height: ✅
 WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
 WebView.width: ✅
+ZStack.accessibilityPresence: ✅

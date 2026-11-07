@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Canvas.ignoresInput: ✅
@@ -39,6 +39,7 @@ ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
+Rectangle.accessibilityPresence: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself

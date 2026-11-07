@@ -1,4 +1,4 @@
-# revision 24.2
+# revision 25.2
 Button.maximumHeight: ✅
 Button.maximumWidth: ✅
 Button.minimumHeight: ✅
@@ -49,6 +49,7 @@ ProgressBar.translationX: ✅
 Rectangle.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 ScrollView.accessibilityPresence: ✅
 ScrollView.isVisible: ✅
+SearchField.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 SearchField.opacity: ✅
 Separator.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Separator.translationY: ✅
@@ -56,6 +57,7 @@ Slider.ignoresInput: ✅
 Slider.pivotY: ✅
 Space.accessibilityHeading: ✅
 Space.scale: ✅
+Spinner.accessibilityPresence: ☑️ Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Spinner.opacity: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.scaleX: ✅

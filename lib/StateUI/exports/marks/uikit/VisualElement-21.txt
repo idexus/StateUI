@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityHint: ✅
 Canvas.isEnabled: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -29,6 +29,7 @@ Path.accessibilityRole: ✅
 Picker.height: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Picker.width: ✅
+Polygon.accessibilityPresence: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.opacity: ✅
 ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform, checked against the layer it composed itself

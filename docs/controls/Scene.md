@@ -62,5 +62,5 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract
 <tbody><tr></tr><tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
-<tr><td colspan="9">UIKit: waits on Window.windowType, not realized yet<br>Android Views: not realized<br>Web: A page's one window closes with its tab, which hears nothing after.</td></tr></tbody>
+<tr><td colspan="9">UIKit: waits on Window.windowKind, not realized yet<br>Android Views: not realized<br>Web: A page's one window closes with its tab, which hears nothing after.</td></tr></tbody>
 </table>
