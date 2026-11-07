@@ -12678,10 +12678,8 @@ swift.method WindowGroup.hidesWhenInactive(_:): @MainActor func hidesWhenInactiv
 swift.method WindowSession.alert(_:message:accept:): @MainActor func alert(_ title: String, message: String = "", accept: String? = nil) async throws
 swift.method WindowSession.chooseAction(_:among:caption:destructive:cancel:): @MainActor func chooseAction<Choice>(_ title: String, among choices: [Choice], caption: (Choice) -> String = { "\($0)" }, destructive: Choice? = nil, cancel: String? = nil) async throws -> Choice? where Choice : Equatable
 swift.method WindowSession.close(): @MainActor func close() async throws
-swift.method WindowSession.closeDebugInspector(): @MainActor func closeDebugInspector()
 swift.method WindowSession.confirm(_:message:accept:cancel:): @MainActor func confirm(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil) async throws -> Bool
 swift.method WindowSession.hideOnScreenKeyboard(): @discardableResult @MainActor func hideOnScreenKeyboard() async throws -> Bool
-swift.method WindowSession.openDebugInspector(_:): @MainActor func openDebugInspector(_ place: DebugInspector.Place? = nil)
 swift.method WindowSession.openFile(types:): @MainActor func openFile(types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.openFiles(types:): @MainActor func openFiles(types: [FileType] = []) async throws -> [ChosenFile]
 swift.method WindowSession.prompt(_:message:accept:cancel:placeholder:initialValue:maximumLength:inputPurpose:): @MainActor func prompt(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil, placeholder: String? = nil, initialValue: String = "", maximumLength: Int? = nil, inputPurpose: InputPurpose = .automatic) async throws -> String?
@@ -12689,7 +12687,6 @@ swift.method WindowSession.saveFile(_:name:types:): @discardableResult @MainActo
 swift.method WindowSession.share(address:): @discardableResult @MainActor func share(address: String) async throws -> Bool
 swift.method WindowSession.share(text:): @discardableResult @MainActor func share(text: String) async throws -> Bool
 swift.method WindowSession.share(text:address:): @discardableResult @MainActor func share(text: String, address: String) async throws -> Bool
-swift.method WindowSession.toggleDebugInspector(): @MainActor func toggleDebugInspector()
 swift.method Windows.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
 swift.method ZStack.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13164,8 +13161,8 @@ swift.property WindowSession.$width: @MainActor var $width: Binding<Double?> { g
 swift.property WindowSession.$x: @MainActor var $x: Binding<Double?> { get }
 swift.property WindowSession.$y: @MainActor var $y: Binding<Double?> { get }
 swift.property WindowSession.background: @State @MainActor var background: Material? { get set }
+swift.property WindowSession.debugInspector: @MainActor var debugInspector: DebugInspector.Place? { get set }
 swift.property WindowSession.height: @State @MainActor var height: Double? { get set }
-swift.property WindowSession.isDebugInspectorOpen: @MainActor var isDebugInspectorOpen: Bool { get }
 swift.property WindowSession.isMaximizable: @State @MainActor var isMaximizable: Bool? { get set }
 swift.property WindowSession.isMinimizable: @State @MainActor var isMinimizable: Bool? { get set }
 swift.property WindowSession.maximumHeight: @State @MainActor var maximumHeight: Double? { get set }

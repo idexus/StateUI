@@ -8,8 +8,8 @@
 ///     VStack { … }
 ///         .toolbar { ToolbarButton.debugInspector(window) }
 ///
-/// A window opens, closes and moves its scene's inspector:
-/// `window.openDebugInspector(_:)`, `closeDebugInspector()`, `toggleDebugInspector()`.
+/// A window shows its scene's inspector where `window.debugInspector` says, and
+/// hides it with nil.
 ///
 /// Each render is listed as it happens - its cause, its road, the time Swift
 /// took to describe it and the host to apply it, and how many composed views

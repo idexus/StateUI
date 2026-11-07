@@ -504,7 +504,7 @@ the session a view reads with `@Environment(\.window)` - puts its ⓘ in a
 page's bar, and `DebugInspectorButton()` stands anywhere a view goes. The ⓘ
 opens its scene's inspector along the bottom of its window, folded to one line;
 opened out, it can dock at the side on a desktop or a tablet.
-`window.openDebugInspector(.side)` opens it from code. A scene that declares
+`window.debugInspector = .side` opens it from code, and `nil` closes it. A scene that declares
 `Window(.debugInspector) { DebugInspector() }` can show it in a window of its
 own, where the platform opens windows.
 

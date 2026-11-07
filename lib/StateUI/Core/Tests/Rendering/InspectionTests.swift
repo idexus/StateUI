@@ -481,9 +481,9 @@ final class InspectionTests: XCTestCase {
 
         window.toggleDebugInspector()
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
-        XCTAssertTrue(window.isDebugInspectorOpen)
+        XCTAssertNotNil(window.debugInspector)
         let other = OpenScenes.shared.list[0]
-        XCTAssertFalse(other.windowSession(other.windows[0].key).isDebugInspectorOpen)
+        XCTAssertNil(other.windowSession(other.windows[0].key).debugInspector)
 
         window.toggleDebugInspector()
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
@@ -505,10 +505,10 @@ final class InspectionTests: XCTestCase {
 
         first.toggleDebugInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [true, false], "moved, and open")
-        XCTAssertTrue(second.isDebugInspectorOpen, "open in every window's sense")
+        XCTAssertNotNil(second.debugInspector, "open in every window's sense")
 
         first.toggleDebugInspector()
-        XCTAssertFalse(second.isDebugInspectorOpen, "pressed where it stands, it closes")
+        XCTAssertNil(second.debugInspector, "pressed where it stands, it closes")
     }
 
     /// A scene that ends takes its docked inspector with it - and the record
@@ -569,10 +569,29 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(InspectorModel.shared.collapsed, ["1"])
         XCTAssertEqual(Array(docked()[0].suffix(2)), ["Expand", "Close"])
 
-        first.openDebugInspector(.bottom)
+        first.debugInspector = .bottom
 
         XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty)
         XCTAssertEqual(pair(from: "Collapse", in: docked()[0]), ["Collapse", "Close"])
+    }
+
+    /// A window says where its scene's inspector shows, and is told: a place written shows it there, whole, and nil
+    /// hides it.
+    func testAWindowSaysWhereItsScenesInspectorShows() {
+        twoScenes()
+
+        _ = pass { Renders().render(tree()) }
+
+        let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
+
+        XCTAssertNil(first.debugInspector)
+
+        first.debugInspector = .side
+        XCTAssertEqual(first.debugInspector, .side)
+        XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty, "whole")
+
+        first.debugInspector = nil
+        XCTAssertNil(first.debugInspector)
     }
 
     /// A scene's history is the renders that reached it.
