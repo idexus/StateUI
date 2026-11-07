@@ -117,6 +117,24 @@ final class HostEventsTests: XCTestCase {
         XCTAssertEqual(heard.lines, ["online true", "ordered"])
     }
 
+    /// Any number of values is heard as it is raised: four, as the contract declares them - by a subscription and by
+    /// a view alike.
+    func testFourValuesAreHeardAsRaised() {
+        let heard = Heard()
+        let subscription = HostEvents.on(TestEvents.moved) { x, y, width, label in
+            heard.lines.append("\(x) \(y) \(width) \(label)")
+        }
+        defer { subscription.cancel() }
+        let renders = Renders()
+        renders.render(Text("x").onHostEvent(TestEvents.moved) { _, _, _, label in heard.lines.append(label) }.node)
+        defer { renders.render(VStack {}.node) }
+
+        HostBoundary.raise(TestEvents.moved, 1, 2, 3, "pane")
+        deliver()
+
+        XCTAssertEqual(heard.lines, ["1.0 2.0 3.0 pane", "pane"])
+    }
+
     /// A raise is one door in from any thread, as a post is: raised on another thread, the events are heard on the UI
     /// thread in the order raised.
     func testRaisesFromAnotherThreadAreHeardInTheOrderRaised() async throws {
@@ -154,6 +172,7 @@ private enum TestEvents: ApplicationTier {
     static let ordered = ElementEvent<Self, Void>("Test.Ordered")
     static let cancelled = ElementEvent<Self, Bool>("Test.Cancelled")
     static let connectivityChanged = ElementEvent<Self, Bool>("Test.ConnectivityChanged")
+    static let moved = ElementEvent<Self, (Double, Double, Double, String)>("Test.Moved")
 
-    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled, connectivityChanged]
+    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled, connectivityChanged, moved]
 }
