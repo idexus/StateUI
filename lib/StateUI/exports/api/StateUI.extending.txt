@@ -3925,8 +3925,6 @@ swift.type.property ApplicationContract.layer: static let layer: ElementLayer
 swift.type.property ApplicationContract.layer: static var layer: ElementLayer { get }
 swift.type.property ApplicationContract.members: static let members: [any ContractMember]
 swift.type.property ApplicationContract.nodeType: static let nodeType: NodeType
-swift.type.property ApplicationContract.persistSceneValue: static let persistSceneValue: ElementAct<ApplicationContract, (Name, Name, PropValue), Void>
-swift.type.property ApplicationContract.persistValue: static let persistValue: ElementAct<ApplicationContract, (Name, PropValue), Void>
 swift.type.property ApplicationContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property AutomationElementContract.members: static let members: [any ContractMember]
 swift.type.property AutomationElementContract.tiers: static var tiers: [any Contract.Type] { get }

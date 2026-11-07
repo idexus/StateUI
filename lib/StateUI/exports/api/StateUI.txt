@@ -13354,28 +13354,7 @@ swift.type.property ActionElementContract.clicked: static let clicked: ElementEv
 swift.type.property ActionElementContract.name: static let name: String
 swift.type.property ActionElementContract.role: static let role: ElementProperty<ActionElementContract, ActionRole>
 swift.type.property AnchorContract.name: static var name: String { get }
-swift.type.property ApplicationContract.alert: static let alert: ElementAct<ApplicationContract, (Name, Name, String, String, String), Void>
-swift.type.property ApplicationContract.announce: static let announce: ElementAct<ApplicationContract, String, Void>
-swift.type.property ApplicationContract.cancelCall: static let cancelCall: ElementAct<ApplicationContract, Int, Void>
-swift.type.property ApplicationContract.chooseAction: static let chooseAction: ElementAct<ApplicationContract, (Name, Name, String, [String], Int?, String), Int?>
-swift.type.property ApplicationContract.confirm: static let confirm: ElementAct<ApplicationContract, (Name, Name, String, String, String, String), Bool>
-swift.type.property ApplicationContract.currentTime: static let currentTime: ElementAct<ApplicationContract, Void, [Double]>
-swift.type.property ApplicationContract.handlerFailed: static let handlerFailed: ElementAct<ApplicationContract, String, Void>
-swift.type.property ApplicationContract.hideOnScreenKeyboard: static let hideOnScreenKeyboard: ElementAct<ApplicationContract, (Name, Name), Bool>
-swift.type.property ApplicationContract.launchAddress: static let launchAddress: ElementAct<ApplicationContract, String, Bool>
-swift.type.property ApplicationContract.launchFile: static let launchFile: ElementAct<ApplicationContract, ChosenFile, Bool>
 swift.type.property ApplicationContract.name: static var name: String { get }
-swift.type.property ApplicationContract.openFiles: static let openFiles: ElementAct<ApplicationContract, (Name, Name, [FileType], Bool), [ChosenFile]>
-swift.type.property ApplicationContract.prompt: static let prompt: ElementAct<ApplicationContract, (Name, Name, String, String, String, String, String?, Int?, InputPurpose, String), String?>
-swift.type.property ApplicationContract.readClipboard: static let readClipboard: ElementAct<ApplicationContract, Void, String?>
-swift.type.property ApplicationContract.readFile: static let readFile: ElementAct<ApplicationContract, (ChosenFile, Int?), [UInt8]>
-swift.type.property ApplicationContract.saveFile: static let saveFile: ElementAct<ApplicationContract, (Name, Name, [UInt8], String, [FileType]), ChosenFile?>
-swift.type.property ApplicationContract.sendRequest: static let sendRequest: ElementAct<ApplicationContract, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>
-swift.type.property ApplicationContract.share: static let share: ElementAct<ApplicationContract, (Name, Name, String?, String?), Bool>
-swift.type.property ApplicationContract.useAccentColor: static let useAccentColor: ElementAct<ApplicationContract, Color?, Void>
-swift.type.property ApplicationContract.useColorScheme: static let useColorScheme: ElementAct<ApplicationContract, ColorScheme?, Void>
-swift.type.property ApplicationContract.utcOffset: static let utcOffset: ElementAct<ApplicationContract, (String?, CalendarDate?), Int>
-swift.type.property ApplicationContract.writeClipboard: static let writeClipboard: ElementAct<ApplicationContract, String, Void>
 swift.type.property AutomationElementContract.accessibilityIdentifier: static let accessibilityIdentifier: ElementProperty<AutomationElementContract, String>
 swift.type.property AutomationElementContract.name: static let name: String
 swift.type.property AxisValues.endpoints: static var endpoints: AxisValues { get }

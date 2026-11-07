@@ -323,6 +323,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Slider>().setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#,
             open: #"_ = Slider(0.5).setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#),
         Road(
+            name: "an application calling the library's own act",
+            closed: #"_ = ApplicationContract.handlerFailed"#,
+            open: #"_ = ApplicationContract.nodeType"#),
+        Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,
             open: #"_ = Button().text("Save")"#),
