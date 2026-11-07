@@ -66,8 +66,8 @@ ContextMenu 3
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
-TextField 5
-SearchField 5
+TextField 6
+SearchField 6
 Polyline 3
 FilledShape 3
 AutomationElement 8

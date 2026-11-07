@@ -14,20 +14,20 @@ extension UIKitRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let field = UIKitTextFieldView()
             hearInput(field, reports)
-            field.typing.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.typing.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.isSecureTextEntry = hidden ?? false }
-            field.property(TextFieldContract.submitLabel) { view, key in
+            field.property(SubmitElementContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: false))
             }
             field.property(TextFieldContract.showsClearButton) { view, shows in
                 view.clearButtonMode = shows == true ? .whileEditing : .never
             }
             field.declares(TextInputContract.textChanged)
-            field.declares(TextFieldContract.submitted)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = UIKitTextEditorView()
@@ -42,16 +42,16 @@ extension UIKitRegistrations {
         registry.add(SearchFieldContract.self, create: { reports in
             let search = UIKitSearchFieldView()
             hearInput(search, reports)
-            search.typing.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.typing.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.property(SearchFieldContract.submitLabel) { view, key in
+            search.property(SubmitElementContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: true))
             }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 

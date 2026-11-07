@@ -1,19 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `SearchField`'s own properties, shared by the control and its
-/// `Style<SearchField>`.
-public protocol SearchFieldProperties: PropertyContainer {}
-
-extension SearchFieldProperties {
-    /// What the keyboard's return key is captioned, `.search` unless said. What
-    /// the key does is `.onSubmitted`; `.next` hands the keyboard on as well,
-    /// to the next field the page reads.
-    public func submitLabel(_ value: SubmitLabel) -> Modified {
-        setValue(SearchFieldContract.submitLabel, value)
-    }
-}
-
 /// A text field for what to search for, shown as the platform's search field.
 ///
 ///     SearchField($query)
@@ -31,7 +18,7 @@ extension SearchFieldProperties {
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
 public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, BorderElement,
-    SearchFieldProperties {
+    SubmitElement {
     /// The node this control describes.
     public var node: Node
 
@@ -56,31 +43,5 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
     func text(_ state: Binding<String>) -> Modified {
         words(TextualElementContract.text.token, by: state, mode: .inOut)
     }
-
-    // MARK: Events
-
-    /// Fires when the search is submitted - the return key, or the magnifier
-    /// where a platform draws a button.
-    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(SearchFieldContract.submitted, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SearchFieldContract.submitted, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SearchFieldContract.submitted, gate: gate, handler)
-    }
 }
 
-extension SearchField {
-    /// `submitLabel` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
-    public func submitLabel(_ state: Binding<SubmitLabel>) -> Modified {
-        twin(SearchFieldContract.submitLabel, carrying: state)
-    }
-}

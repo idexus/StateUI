@@ -1,4 +1,2 @@
-# revision 5.1
+# revision 6.1
 SearchField: ✅
-SearchField.submitLabel: ☑️ The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next hands the keyboard on all the same.
-SearchField.submitted: ✅

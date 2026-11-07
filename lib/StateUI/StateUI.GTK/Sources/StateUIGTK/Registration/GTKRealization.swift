@@ -102,7 +102,7 @@ enum GTKRealization {
         .complete(TextAndIconElementContract.showsText, on: ButtonContract.self),
         .complete(ButtonMenuElementContract.showsMenuArrow, on: ToolbarButtonContract.self),
         .notPlanned(PageContract.backButtonTitle, reason: "GNOME's way back in the bar is an arrow, with no words."),
-        .partial(SearchFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: SearchFieldContract.self,
             missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
         .notPlanned(TextFieldContract.showsClearButton,
@@ -110,7 +110,7 @@ enum GTKRealization {
         .partial(TextInputContract.inputPurpose,
             missing: "Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a "
             + "password and a code get their keys and checking all the same."),
-        .partial(TextFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: TextFieldContract.self,
             missing: "The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
         .complete(VisualElementContract.background, on: GridContract.self),

@@ -12,7 +12,7 @@ extension WinUIRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let field = WinUITextFieldView()
             hearInput(field, reports)
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
@@ -20,7 +20,7 @@ extension WinUIRegistrations {
             field.applies(boxMembers) { view, values in applyBox(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.declares(TextInputContract.textChanged)
-            field.declares(TextFieldContract.submitted)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = WinUITextEditorView()
@@ -36,7 +36,7 @@ extension WinUIRegistrations {
         registry.add(SearchFieldContract.self, create: { reports in
             let search = WinUISearchFieldView()
             hearInput(search, reports)
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
@@ -50,7 +50,7 @@ extension WinUIRegistrations {
                 TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
                 TextInputContract.inputPurpose) { view, values in view.setTraits(InputTraits(values)) }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 

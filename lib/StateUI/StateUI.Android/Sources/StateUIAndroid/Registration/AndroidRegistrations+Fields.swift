@@ -14,14 +14,14 @@ extension AndroidRegistrations {
             field.onTextChanged = { typed in
                 reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers, TextFieldContract.isPassword) { view, values in applyField(view, values) }
-            field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            field.property(SubmitElementContract.submitLabel) { view, key in view.setReturnKey(key) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.declares(TextInputContract.textChanged)
-            field.declares(TextFieldContract.submitted)
+            field.declares(SubmitElementContract.submitted)
         })
 
         registry.add(SearchFieldContract.self, create: { reports in
@@ -29,14 +29,14 @@ extension AndroidRegistrations {
             search.onTextChanged = { typed in
                 reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyField(view, values) }
-            search.property(SearchFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            search.property(SubmitElementContract.submitLabel) { view, key in view.setReturnKey(key) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in

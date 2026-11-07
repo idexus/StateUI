@@ -130,7 +130,7 @@ of its members each meets, and why a cell is empty.
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Scene](controls/Scene.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [SearchField](controls/SearchField.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Separator](controls/Separator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Sheet](controls/Sheet.md) | adaptive | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Slider](controls/Slider.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
@@ -142,7 +142,7 @@ of its members each meets, and why a cell is empty.
 | [TabView](controls/TabView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [TextField](controls/TextField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [TextField](controls/TextField.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TextSpan](controls/TextSpan.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TextSpans](controls/TextSpans.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
@@ -497,7 +497,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ProgressBar](controls/ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 24 ✅ · 2 ☑️ · 10 ✓ · 2 – | 33 ✅ · 4 ☑️ | 30 ✅ · 2 ✓ · 6 – | 18 ✅ · 3 ☑️ · 11 ✓ · 6 – | 24 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Rectangle](controls/Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 33 ✅ · 3 ☑️ · 10 ✓ · 1 – | 41 ✅ · 5 ☑️ | 37 ✅ · 1 ☑️ · 3 ✓ · 6 – | 27 ✅ · 4 ☑️ · 10 ✓ · 6 – | 32 ✅ · 2 ☑️ · 10 ✓ · 3 – |
 | [ScrollView](controls/ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 33 ✅ · 2 ☑️ · 12 ✓ · 4 – | 42 ✅ · 4 ☑️ · 3 ✓ · 3 – | 42 ✅ · 1 ☑️ · 2 ✓ · 8 – | 30 ✅ · 2 ☑️ · 12 ✓ · 9 – | 33 ✅ · 1 ☑️ · 10 ✓ · 9 – |
-| [SearchField](controls/SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 50 ✅ · 2 ☑️ · 12 ✓ · 2 – | 57 ✅ · 4 ☑️ · 2 ✓ · 1 – | 52 ✅ · 5 ☑️ · 2 ✓ · 7 – | 39 ✅ · 5 ☑️ · 16 ✓ · 6 – | 52 ✅ · 1 ☑️ · 10 ✓ · 3 – |
+| [SearchField](controls/SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 48 ✅ · 2 ☑️ · 12 ✓ · 2 – | 55 ✅ · 4 ☑️ · 2 ✓ · 1 – | 51 ✅ · 4 ☑️ · 2 ✓ · 7 – | 38 ✅ · 4 ☑️ · 16 ✓ · 6 – | 50 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Separator](controls/Separator.md) | 74 | 34 ✅ · 3 ☑️ · 36 ✓ · 1 – | 22 ✅ · 2 ☑️ · 10 ✓ · 2 – | 31 ✅ · 4 ☑️ | 26 ✅ · 1 ☑️ · 3 ✓ · 5 – | 17 ✅ · 3 ☑️ · 10 ✓ · 6 – | 22 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Slider](controls/Slider.md) | 86 | 43 ✅ · 3 ☑️ · 36 ✓ · 2 – | 23 ✅ · 2 ☑️ · 12 ✓ · 5 – | 32 ✅ · 4 ☑️ · 2 ✓ · 3 – | 34 ✅ · 1 ☑️ · 2 ✓ · 5 – | 20 ✅ · 3 ☑️ · 13 ✓ · 6 – | 28 ✅ · 10 ✓ · 4 – |
 | [Space](controls/Space.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 26 ✅ · 2 ☑️ · 10 ✓ · 1 – | 35 ✅ · 4 ☑️ | 32 ✅ · 1 ☑️ · 3 ✓ · 3 – | 21 ✅ · 2 ☑️ · 10 ✓ · 6 – | 25 ✅ · 1 ☑️ · 10 ✓ · 3 – |
@@ -506,15 +506,15 @@ Every control, and every part an application, its windows and its pages are made
 | [Switch](controls/Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 26 ✅ · 2 ☑️ · 12 ✓ · 5 – | 34 ✅ · 4 ☑️ · 2 ✓ · 3 – | 37 ✅ · 1 ☑️ · 2 ✓ · 5 – | 23 ✅ · 2 ☑️ · 13 ✓ · 7 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Text](controls/Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 41 ✅ · 1 ☑️ · 10 ✓ · 1 – | 48 ✅ · 4 ☑️ | 46 ✅ · 1 ☑️ · 2 ✓ · 5 – | 34 ✅ · 3 ☑️ · 11 ✓ · 6 – | 40 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [TextEditor](controls/TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 49 ✅ · 2 ☑️ · 12 ✓ · 2 – | 56 ✅ · 4 ☑️ · 2 ✓ · 1 – | 56 ✅ · 2 ☑️ · 2 ✓ · 5 – | 38 ✅ · 5 ☑️ · 16 ✓ · 6 – | 51 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| [TextField](controls/TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 52 ✅ · 2 ☑️ · 12 ✓ · 2 – | 58 ✅ · 4 ☑️ · 2 ✓ · 2 – | 56 ✅ · 4 ☑️ · 2 ✓ · 5 – | 40 ✅ · 5 ☑️ · 16 ✓ · 7 – | 53 ✅ · 1 ☑️ · 10 ✓ · 3 – |
+| [TextField](controls/TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 48 ✅ · 2 ☑️ · 12 ✓ · 2 – | 55 ✅ · 4 ☑️ · 2 ✓ · 1 – | 55 ✅ · 2 ☑️ · 2 ✓ · 5 – | 38 ✅ · 4 ☑️ · 16 ✓ · 6 – | 50 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [TimePicker](controls/TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 25 ✅ · 1 ☑️ · 12 ✓ · 10 – | 37 ✅ · 4 ☑️ · 2 ✓ · 3 – | 39 ✅ · 2 ☑️ · 2 ✓ · 5 – | 27 ✅ · 3 ☑️ · 12 ✓ · 6 – | 33 ✅ · 1 ☑️ · 10 ✓ · 4 – |
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 30 ✅ · 3 ☑️ · 11 ✓ · 1 – | 41 ✅ · 4 ☑️ · 1 ✓ | 38 ✅ · 1 ☑️ · 2 ✓ · 4 – | 26 ✅ · 2 ☑️ · 11 ✓ · 7 – | 32 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 35 ✅ · 2 ☑️ · 13 ✓ · 2 – | 42 ✅ · 4 ☑️ · 2 ✓ · 3 – | 39 ✅ · 3 ✓ · 9 – | 31 ✅ · 3 ☑️ · 12 ✓ · 6 – | 32 ✅ · 1 ☑️ · 10 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 28 ✅ · 3 ☑️ · 12 ✓ · 1 – | 39 ✅ · 4 ☑️ · 2 ✓ | 37 ✅ · 1 ☑️ · 2 ✓ · 4 – | 24 ✅ · 2 ☑️ · 12 ✓ · 7 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| ✅ |  | 1665 | 1138 | 1401 | 1373 | 943 | 1179 |
+| ✅ |  | 1665 | 1132 | 1396 | 1371 | 940 | 1174 |
 | ✓ |  | 1355 | 427 | 46 | 95 | 428 | 366 |
-| – |  | 57 | 106 | 83 | 197 | 232 | 125 |
-| **Met** | 3210 | **3077** | **1671** | **1530** | **1665** | **1603** | **1670** |
+| – |  | 57 | 106 | 82 | 197 | 231 | 125 |
+| **Met** | 3210 | **3077** | **1665** | **1524** | **1663** | **1599** | **1665** |
 | 🧩 |  | 0 | 0 | 44 | 44 | 44 | 44 |
 
 ### Application structure
@@ -580,6 +580,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
+| [SubmitElement](controls/tiers/SubmitElement.md) | `onSubmitted` (`submitted`), `submitLabel` | 2 |
 | [SessionElement](controls/tiers/SessionElement.md) | `activated`, `deactivated`, `stopped` | 3 |
 | [HoverElement](controls/tiers/HoverElement.md) | `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`) | 2 |
 | [PressElement](controls/tiers/PressElement.md) | `onPressed` (`pressed`), `onReleased` (`released`) | 2 |
@@ -637,7 +638,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `windowClosed` | 1 | 1 ✅ |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | `axes`, `horizontalScrollIndicator`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ | 3 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
-| [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
 | [Slider](controls/Slider.md) | `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 4 | 4 ✅ |  |  |  |  |  |
 | [Spinner](controls/Spinner.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarToggle`, `showsSidebarChanged`, `sidebarBackground`, `sidebarOverlayBackground`, `sidebarOverlays` | 6 | 5 ✅ · 1 – | 4 ✅ · 2 ✓ | 1 ✅ · 2 ☑️ · 3 ✓ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ |
@@ -645,7 +645,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment`, `isSelectable` | 4 | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
+| [TextField](controls/TextField.md) | `isPassword`, `showsClearButton` | 2 | 1 ✅ · 1 – |  |  |  |  |  |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `format`, `time`, `onTimeChanged` (`timeChanged`) | 3 | 1 ✅ · 1 ✓ · 1 – |  |  |  |  |  |
 | [ToolbarGroup](controls/ToolbarGroup.md) | `barEdge`, `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `spacing`, `standsAlone` | 8 | 6 ✅ · 2 – | 6 ✅ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 7 ✅ · 1 – | 6 ✅ · 2 – | 7 ✅ · 1 – |

@@ -29,7 +29,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted")))
+            HostRealizedMember(element: "TextField", owner: "SubmitElement", member: "submitted")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextEditor", owner: "TextEditor", member: "growsWithText")))
         XCTAssertTrue(realization.members.contains(

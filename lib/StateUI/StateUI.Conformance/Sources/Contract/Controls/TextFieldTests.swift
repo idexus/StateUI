@@ -36,16 +36,6 @@
                 s.expect(try s.held(TextualElementContract.text, on: field), "Ada")
                 s.expect(try s.held(TextualElementContract.text, on: s.element("greeting")), "Hello, Ada!")
             },
-            ConformanceCase("enterSubmitsAFieldOnce", proves: [Covered(TextFieldContract.submitted)]) { s in
-                let heard = Received<String>()
-                s.start { VStack { TextField("").onSubmitted { heard.values.append("submitted") }.id("field") } }
-
-                try s.perform(.submit, on: s.element("field"))
-                s.settle { !heard.values.isEmpty }
-                s.turn()
-
-                s.expect(heard.values, ["submitted"])
-            },
             ConformanceCase("aPasswordsWordsAreHeardAsTyped", proves: [
                 Covered(TextFieldContract.isPassword),
             ], needs: [Covered(TextualElementContract.text, on: "TextField")]) { s in
@@ -59,8 +49,6 @@
                 s.expect(secret.wrappedValue, "hunter2", "a password's words reach the state as any field's")
             },
             Aspects.holds(TextFieldContract.isPassword, on: "TextField", false, then: true),
-            Aspects.holds(TextFieldContract.submitLabel, on: "TextField", .done, then: .send),
-            handsTheKeyboardOn(from: "TextField", saying: TextFieldContract.submitLabel),
             Aspects.holds(TextFieldContract.showsClearButton, on: "TextField", true, then: false),
         ]
     }

@@ -832,8 +832,8 @@ swift.conformance SearchField: StateUI.FontElement
 swift.conformance SearchField: StateUI.KeyboardElement
 swift.conformance SearchField: StateUI.ModifiableElement
 swift.conformance SearchField: StateUI.PropertyContainer
-swift.conformance SearchField: StateUI.SearchFieldProperties
 swift.conformance SearchField: StateUI.StyleTarget
+swift.conformance SearchField: StateUI.SubmitElement
 swift.conformance SearchField: StateUI.TextAlignmentElement
 swift.conformance SearchField: StateUI.TextColorElement
 swift.conformance SearchField: StateUI.TextInputProperties
@@ -843,7 +843,6 @@ swift.conformance SearchField: StateUI.VisualElement
 swift.conformance SearchField: StateUI.VisualElementProperties
 swift.conformance SearchFieldContract: StateUI.Contract
 swift.conformance SearchFieldContract: StateUI.ElementContract
-swift.conformance SearchFieldProperties: StateUI.PropertyContainer
 swift.conformance SelectionMode: StateUI.HostRepresentable
 swift.conformance SelectionMode: Swift.Equatable
 swift.conformance SelectionMode: Swift.Hashable
@@ -1015,6 +1014,7 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : PaddingEleme
 swift.conformance Styling: StateUI.PropertyContainer where Target : Shape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Stack, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget
+swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : SubmitElement
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : TextAndIconElement
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : TextColorElement
@@ -1036,7 +1036,6 @@ swift.conformance Styling: StateUI.PropertyContainer where Target == Polygon
 swift.conformance Styling: StateUI.PropertyContainer where Target == Polyline
 swift.conformance Styling: StateUI.PropertyContainer where Target == Rectangle
 swift.conformance Styling: StateUI.PropertyContainer where Target == ScrollView
-swift.conformance Styling: StateUI.PropertyContainer where Target == SearchField
 swift.conformance Styling: StateUI.PropertyContainer where Target == Slider
 swift.conformance Styling: StateUI.PropertyContainer where Target == Stepper
 swift.conformance Styling: StateUI.PropertyContainer where Target == Text
@@ -1047,13 +1046,13 @@ swift.conformance Styling: StateUI.PropertyContainer where Target == ToolbarGrou
 swift.conformance Styling: StateUI.PropertyContainer where Target == WebView
 swift.conformance Styling: StateUI.RectangleProperties where Target == Rectangle
 swift.conformance Styling: StateUI.ScrollViewProperties where Target == ScrollView
-swift.conformance Styling: StateUI.SearchFieldProperties where Target == SearchField
 swift.conformance Styling: StateUI.ShapeProperties where Target : CorneredShape, Target : StyleTarget
 swift.conformance Styling: StateUI.ShapeProperties where Target : FilledShape, Target : StyleTarget
 swift.conformance Styling: StateUI.ShapeProperties where Target : Shape, Target : StyleTarget
 swift.conformance Styling: StateUI.SliderProperties where Target == Slider
 swift.conformance Styling: StateUI.StackProperties where Target : Stack, Target : StyleTarget
 swift.conformance Styling: StateUI.StepperProperties where Target == Stepper
+swift.conformance Styling: StateUI.SubmitElement where Target : StyleTarget, Target : SubmitElement
 swift.conformance Styling: StateUI.TextAlignmentElement where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
 swift.conformance Styling: StateUI.TextAndIconElement where Target : StyleTarget, Target : TextAndIconElement
 swift.conformance Styling: StateUI.TextColorElement where Target : StyleTarget, Target : TextColorElement
@@ -1084,6 +1083,8 @@ swift.conformance Styling: StateUI.VisualElementProperties where Target : StyleT
 swift.conformance Styling: StateUI.VisualElementProperties where Target : StyleTarget, Target : View
 swift.conformance Styling: StateUI.VisualElementProperties where Target : StyleTarget, Target : VisualElement
 swift.conformance Styling: StateUI.WebViewProperties where Target == WebView
+swift.conformance SubmitElement: StateUI.PropertyContainer
+swift.conformance SubmitElementContract: StateUI.Contract
 swift.conformance SubmitLabel: StateUI.HostRepresentable
 swift.conformance SubmitLabel: StateUI.LaneValue
 swift.conformance SubmitLabel: StateUI.StateChoice
@@ -1188,6 +1189,7 @@ swift.conformance TextField: StateUI.KeyboardElement
 swift.conformance TextField: StateUI.ModifiableElement
 swift.conformance TextField: StateUI.PropertyContainer
 swift.conformance TextField: StateUI.StyleTarget
+swift.conformance TextField: StateUI.SubmitElement
 swift.conformance TextField: StateUI.TextAlignmentElement
 swift.conformance TextField: StateUI.TextColorElement
 swift.conformance TextField: StateUI.TextFieldProperties
@@ -2545,7 +2547,6 @@ swift.protocol PropertyContainer: @MainActor protocol PropertyContainer
 swift.protocol RectangleProperties: @MainActor protocol RectangleProperties : PropertyContainer
 swift.protocol RefreshElement: @MainActor protocol RefreshElement : View
 swift.protocol ScrollViewProperties: @MainActor protocol ScrollViewProperties : PropertyContainer
-swift.protocol SearchFieldProperties: @MainActor protocol SearchFieldProperties : PropertyContainer
 swift.protocol ShapeProperties: @MainActor protocol ShapeProperties : ViewProperties
 swift.protocol SliderProperties: @MainActor protocol SliderProperties : PropertyContainer
 swift.protocol StackProperties: @MainActor protocol StackProperties : LayoutProperties
@@ -2553,6 +2554,7 @@ swift.protocol StateChoice: protocol StateChoice : LaneValue, RawRepresentable w
 swift.protocol StateValue: protocol StateValue : Equatable, Sendable
 swift.protocol StepperProperties: @MainActor protocol StepperProperties : PropertyContainer
 swift.protocol StyleTarget: @MainActor protocol StyleTarget : PropertyContainer
+swift.protocol SubmitElement: @MainActor protocol SubmitElement : PropertyContainer
 swift.protocol TextAlignmentElement: @MainActor protocol TextAlignmentElement : VisualElementProperties
 swift.protocol TextAndIconElement: @MainActor protocol TextAndIconElement : PropertyContainer
 swift.protocol TextColorElement: @MainActor protocol TextColorElement : PropertyContainer
@@ -3248,6 +3250,8 @@ swift.type.property StepperContract.nodeType: static let nodeType: NodeType
 swift.type.property StepperContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property StepperContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property StyleTarget.nodeType: @MainActor static var nodeType: NodeType { get }
+swift.type.property SubmitElementContract.members: static let members: [any ContractMember]
+swift.type.property SubmitElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property SubmitLabel.laneKind: static var laneKind: LaneKind { get }
 swift.type.property SubmitLabel.lanes: static var lanes: Int { get }
 swift.type.property SubmitLabel.moving: static var moving: MotionValues { get }

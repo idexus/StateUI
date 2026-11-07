@@ -12,14 +12,14 @@ extension GTKRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let field = GTKTextFieldView()
             hearInput(field, reports)
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.declares(TextInputContract.textChanged)
-            field.declares(TextFieldContract.submitted)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = GTKTextEditorView()
@@ -34,13 +34,13 @@ extension GTKRegistrations {
         registry.add(SearchFieldContract.self, create: { reports in
             let search = GTKSearchFieldView()
             hearInput(search, reports)
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 

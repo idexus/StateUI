@@ -12,32 +12,32 @@ extension WebRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let field = WebTextInputView(.field)
             hearInput(field, reports)
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
-            field.property(TextFieldContract.submitLabel) { view, label in
+            field.property(SubmitElementContract.submitLabel) { view, label in
                 view.setSubmitLabel(InputTraits.submitLabel(label, searching: false))
             }
             field.declares(TextInputContract.textChanged)
-            field.declares(TextFieldContract.submitted)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = WebTextInputView(.search)
             hearInput(search, reports)
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             search.setSubmitLabel(InputTraits.submitLabel(nil, searching: true))
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.property(SearchFieldContract.submitLabel) { view, label in
+            search.property(SubmitElementContract.submitLabel) { view, label in
                 view.setSubmitLabel(InputTraits.submitLabel(label, searching: true))
             }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = WebTextInputView(.editor)

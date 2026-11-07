@@ -19,7 +19,7 @@ extension AppKitRegistrations {
             entry.onTextChanged = { typed in
                 reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            entry.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            entry.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return entry
         }, members: { entry in
             entry.applies(Self.fieldMembers, TextFieldContract.isPassword) { view, values in
@@ -54,7 +54,7 @@ extension AppKitRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             entry.declares(TextInputContract.textChanged)
-            entry.declares(TextFieldContract.submitted)
+            entry.declares(SubmitElementContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in
@@ -103,7 +103,7 @@ extension AppKitRegistrations {
             search.onTextChanged = { typed in
                 reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(Self.fieldMembers) { view, values in
@@ -131,7 +131,7 @@ extension AppKitRegistrations {
                     writeSelection: Self.writesSelection(values))
             }
             search.declares(TextInputContract.textChanged)
-            search.declares(SearchFieldContract.submitted)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 

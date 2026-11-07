@@ -2,5 +2,3 @@
 TextField: ✅
 TextField.isPassword: ✅
 TextField.showsClearButton: – Android's text field has no button of its own that empties it.
-TextField.submitLabel: ✅
-TextField.submitted: ✅

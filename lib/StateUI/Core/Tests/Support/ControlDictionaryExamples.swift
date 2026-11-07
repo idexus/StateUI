@@ -836,6 +836,14 @@ extension ControlDictionary {
             }
             """#),
 
+        (SubmitElementContract.self, #"""
+            @State var city = ""
+
+            TextField($city)
+                .submitLabel(.done)
+                .onSubmitted { print("saved") }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

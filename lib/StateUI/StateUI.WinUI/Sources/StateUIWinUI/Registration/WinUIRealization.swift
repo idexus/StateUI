@@ -109,10 +109,10 @@ enum WinUIRealization {
         .partial(TextInputContract.inputPurpose,
             missing: "Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a "
             + "name, a password and a code get their keys and checking all the same."),
-        .partial(SearchFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: SearchFieldContract.self,
             missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
-        .partial(TextFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: TextFieldContract.self,
             missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
         .notPlanned(VisualElementContract.background, on: SpinnerContract.self,

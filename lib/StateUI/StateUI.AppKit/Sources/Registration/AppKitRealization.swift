@@ -101,10 +101,10 @@ enum AppKitRealization {
             reason: "AppKit's date picker says its own date to assistive technology, over any value given."),
         .notPlanned(VisualElementContract.accessibilityValue, on: TimePickerContract.self,
             reason: "AppKit's date picker says its own time to assistive technology, over any value given."),
-        .partial(TextFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: TextFieldContract.self,
             missing: "The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next "
             + "hands the keyboard on all the same."),
-        .partial(SearchFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: SearchFieldContract.self,
             missing: "The return key's word: a Mac has no keyboard on the screen whose return key says anything; Next "
             + "hands the keyboard on all the same."),
         .notPlanned(TextFieldContract.showsClearButton,

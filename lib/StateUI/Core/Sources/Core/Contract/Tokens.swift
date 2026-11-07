@@ -240,7 +240,7 @@ extension NodeType {
     static let progress = ProgressBarContract.progress.token
     static let region = MapContract.region.token
     static let geometryTransform = ShapeContract.geometryTransform.token
-    static let submitLabel = SearchFieldContract.submitLabel.token
+    static let submitLabel = SubmitElementContract.submitLabel.token
     static let rotation = VisualElementContract.rotation.token
     static let rotationX = VisualElementContract.rotationX.token
     static let rotationY = VisualElementContract.rotationY.token
@@ -309,7 +309,7 @@ extension NodeType {
     static let detailsClicked = MarkerContract.detailsClicked.token
     static let realizedChanged = ItemsViewContract.realizedChanged.token
     static let selectedItemsChanged = ItemsViewContract.selectedItemsChanged.token
-    static let submitted = SearchFieldContract.submitted.token
+    static let submitted = SubmitElementContract.submitted.token
     static let created = WindowContract.created.token
     static let selectedTabChanged = TabViewContract.selectedTabChanged.token
     static let deactivated = SessionElementContract.deactivated.token

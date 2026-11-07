@@ -37,7 +37,7 @@ final class AndroidRegistrationTests: XCTestCase {
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
                 HostRealizedMember(element: "Slider", owner: "PressElement", member: "released"),
                 HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged"),
-                HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted"),
+                HostRealizedMember(element: "TextField", owner: "SubmitElement", member: "submitted"),
                 HostRealizedMember(element: "Grid", owner: "Grid", member: "rows"),
                 HostRealizedMember(element: "Text", owner: "View", member: "gridRow"),
                 HostRealizedMember(element: "Text", owner: "View", member: "area"),

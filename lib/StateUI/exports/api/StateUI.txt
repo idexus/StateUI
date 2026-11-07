@@ -766,6 +766,9 @@ swift.conformance StyleKey: Swift.Equatable
 swift.conformance StyleKey: Swift.Hashable
 swift.conformance StyleKey: Swift.Sendable
 swift.conformance Styling: Swift.Sendable
+swift.conformance SubmitElementContract: StateUI.Tier
+swift.conformance SubmitElementContract: StateUI.WornContract
+swift.conformance SubmitElementContract: Swift.Sendable
 swift.conformance SubmitLabel: Swift.Equatable
 swift.conformance SubmitLabel: Swift.Hashable
 swift.conformance SubmitLabel: Swift.RawRepresentable
@@ -1123,6 +1126,7 @@ swift.enum StyleBuilder: @MainActor @resultBuilder enum StyleBuilder
 swift.enum StyleScope.VisualState: enum VisualState
 swift.enum StyleScope.Whole: enum Whole
 swift.enum StyleScope: enum StyleScope
+swift.enum SubmitElementContract: enum SubmitElementContract
 swift.enum SubmitLabel: enum SubmitLabel
 swift.enum SwipeDirection: enum SwipeDirection
 swift.enum SwitchContract: enum SwitchContract
@@ -9099,9 +9103,9 @@ swift.method SearchField.onPointerReleased(gate:_:): @MainActor func onPointerRe
 swift.method SearchField.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method SearchField.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method SearchField.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
-swift.method SearchField.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> SearchField.Modified
-swift.method SearchField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> SearchField.Modified
-swift.method SearchField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> SearchField.Modified
+swift.method SearchField.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SearchField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SearchField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SearchField.onSwiped(directions:policy:_:): @MainActor func onSwiped(directions: SwipeDirections, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method SearchField.onSwiped(directions:threshold:_:): @MainActor func onSwiped(directions: SwipeDirections = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
@@ -9159,7 +9163,7 @@ swift.method SearchField.showsTitle(_:): @MainActor func showsTitle(_ state: Bin
 swift.method SearchField.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method SearchField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method SearchField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method SearchField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> SearchField.Modified
+swift.method SearchField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> Self.Modified
 swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method SearchField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
@@ -9178,7 +9182,6 @@ swift.method SearchField.visualState(_:): @MainActor func visualState(_ state: V
 swift.method SearchField.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method SearchField.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method SearchFieldProperties.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
 swift.method Section.footer(_:): func footer<Content>(@ViewBuilder _ content: () -> Content) -> Section<ID> where Content : View
 swift.method Section.header(_:): func header<Content>(@ViewBuilder _ content: () -> Content) -> Section<ID> where Content : View
 swift.method Section.id(_:): func id(_ value: some Hashable) -> Section<ID>
@@ -10572,6 +10575,11 @@ swift.method Styling.visualState(_:_:): @MainActor func visualState(_ state: Vis
 swift.method Styling.width(_:): @MainActor func width(_ value: Double) -> Self.Modified
 swift.method Styling.wraps(_:): @MainActor func wraps(_ value: Bool) -> Self.Modified
 swift.method Styling.zIndex(_:): @MainActor func zIndex(_ value: Int) -> Self.Modified
+swift.method SubmitElement.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SubmitElement.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SubmitElement.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SubmitElement.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> Self.Modified
+swift.method SubmitElement.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
 swift.method SwipeDirections.contains(_:): func contains(_ direction: SwipeDirection) -> Bool
 swift.method Switch.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11591,9 +11599,9 @@ swift.method TextField.onPointerReleased(gate:_:): @MainActor func onPointerRele
 swift.method TextField.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method TextField.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method TextField.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
-swift.method TextField.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> TextField.Modified
-swift.method TextField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> TextField.Modified
-swift.method TextField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> TextField.Modified
+swift.method TextField.onSubmitted(_:): @MainActor func onSubmitted(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TextField.onSubmitted(_:_:): @MainActor func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextField.onSubmitted(gate:_:): @MainActor func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextField.onSwiped(directions:policy:_:): @MainActor func onSwiped(directions: SwipeDirections, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method TextField.onSwiped(directions:threshold:_:): @MainActor func onSwiped(directions: SwipeDirections = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
@@ -11652,7 +11660,7 @@ swift.method TextField.showsTitle(_:): @MainActor func showsTitle(_ state: Bindi
 swift.method TextField.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
 swift.method TextField.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
 swift.method TextField.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method TextField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> TextField.Modified
+swift.method TextField.submitLabel(_:): @MainActor func submitLabel(_ state: Binding<SubmitLabel>) -> Self.Modified
 swift.method TextField.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method TextField.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
@@ -11673,7 +11681,6 @@ swift.method TextField.width(_:): @MainActor func width(_ state: Binding<Double>
 swift.method TextField.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method TextFieldProperties.isPassword(_:): @MainActor func isPassword(_ value: Bool) -> Self.Modified
 swift.method TextFieldProperties.showsClearButton(_:): @MainActor func showsClearButton(_ value: Bool) -> Self.Modified
-swift.method TextFieldProperties.submitLabel(_:): @MainActor func submitLabel(_ value: SubmitLabel) -> Self.Modified
 swift.method TextInput.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method TextInput.cursorPosition(_:): @MainActor func cursorPosition(_ value: Int) -> Self.Modified
 swift.method TextInput.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
@@ -13863,8 +13870,6 @@ swift.type.property ScrollViewContract.scrollOffset: static let scrollOffset: El
 swift.type.property ScrollViewContract.scrollStopped: static let scrollStopped: ElementEvent<ScrollViewContract, Void>
 swift.type.property ScrollViewContract.verticalScrollIndicator: static let verticalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
 swift.type.property SearchFieldContract.name: static var name: String { get }
-swift.type.property SearchFieldContract.submitLabel: static let submitLabel: ElementProperty<SearchFieldContract, SubmitLabel>
-swift.type.property SearchFieldContract.submitted: static let submitted: ElementEvent<SearchFieldContract, Void>
 swift.type.property SeparatorContract.name: static var name: String { get }
 swift.type.property SessionElementContract.activated: static let activated: ElementEvent<SessionElementContract, Void>
 swift.type.property SessionElementContract.deactivated: static let deactivated: ElementEvent<SessionElementContract, Void>
@@ -13903,6 +13908,9 @@ swift.type.property StepperContract.step: static let step: ElementProperty<Stepp
 swift.type.property StepperContract.value: static let value: ElementProperty<StepperContract, Double>
 swift.type.property StepperContract.valueChanged: static let valueChanged: ElementEvent<StepperContract, Double>
 swift.type.property StyleKey.platform: static var platform: StyleKey<Target> { get }
+swift.type.property SubmitElementContract.name: static let name: String
+swift.type.property SubmitElementContract.submitLabel: static let submitLabel: ElementProperty<SubmitElementContract, SubmitLabel>
+swift.type.property SubmitElementContract.submitted: static let submitted: ElementEvent<SubmitElementContract, Void>
 swift.type.property SwipeDirections.all: static let all: SwipeDirections
 swift.type.property SwipeDirections.down: static let down: SwipeDirections
 swift.type.property SwipeDirections.left: static let left: SwipeDirections
@@ -13930,8 +13938,6 @@ swift.type.property TextEditorContract.name: static var name: String { get }
 swift.type.property TextFieldContract.isPassword: static let isPassword: ElementProperty<TextFieldContract, Bool>
 swift.type.property TextFieldContract.name: static var name: String { get }
 swift.type.property TextFieldContract.showsClearButton: static let showsClearButton: ElementProperty<TextFieldContract, Bool>
-swift.type.property TextFieldContract.submitLabel: static let submitLabel: ElementProperty<TextFieldContract, SubmitLabel>
-swift.type.property TextFieldContract.submitted: static let submitted: ElementEvent<TextFieldContract, Void>
 swift.type.property TextInputContract.cursorPosition: static let cursorPosition: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.inputPurpose: static let inputPurpose: ElementProperty<TextInputContract, InputPurpose>
 swift.type.property TextInputContract.isReadOnly: static let isReadOnly: ElementProperty<TextInputContract, Bool>

@@ -28,6 +28,7 @@ extension Styling: ImageElement where Target: ImageElement {}
 extension Styling: ButtonMenuElement where Target: ButtonMenuElement {}
 extension Styling: TextAndIconElement where Target: TextAndIconElement {}
 extension Styling: TextInputProperties where Target: TextInput {}
+extension Styling: SubmitElement where Target: SubmitElement {}
 
 // And each control's own properties.
 
@@ -45,7 +46,6 @@ extension Styling: PolygonProperties where Target == Polygon {}
 extension Styling: PolylineProperties where Target == Polyline {}
 extension Styling: RectangleProperties where Target == Rectangle {}
 extension Styling: ScrollViewProperties where Target == ScrollView {}
-extension Styling: SearchFieldProperties where Target == SearchField {}
 extension Styling: SliderProperties where Target == Slider {}
 extension Styling: StepperProperties where Target == Stepper {}
 extension Styling: TimePickerProperties where Target == TimePicker {}
