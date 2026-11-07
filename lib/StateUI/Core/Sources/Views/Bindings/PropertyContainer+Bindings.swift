@@ -1,13 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension PropertyContainer {
+extension ModifiableElement {
     /// Carries one of this element's properties from a state the host keeps,
     /// the state's value being the type the contract declares - how an
-    /// application's own control takes a binding for a property.
-    ///
-    /// Write it on the control, never on its `…Properties` protocol, which a
-    /// `Style` wears too.
+    /// application's own control takes a binding for a property. A style
+    /// carries no state, so it has no such road.
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
@@ -63,7 +61,9 @@ extension PropertyContainer {
     ) -> Modified {
         setValue(property.token, on: state, mode: mode, kind: kind)
     }
+}
 
+extension PropertyContainer {
     /// Writes the number of a carried state onto a property - how a drag is
     /// told where to report (`panX`, `panY`). It reads nothing at build, so
     /// the reports rebuild nothing.

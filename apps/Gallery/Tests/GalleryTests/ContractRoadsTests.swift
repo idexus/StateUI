@@ -319,6 +319,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Canvas().drawing { Draw.lineWidth(2) }"#,
             open: #"_ = Canvas { Draw.lineWidth(2) }"#),
         Road(
+            name: "a state handed to a style by setValue(_:on:)",
+            closed: #"_ = Style<Slider>().setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#,
+            open: #"_ = Slider(0.5).setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#),
+        Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,
             open: #"_ = Button().text("Save")"#),
