@@ -63,7 +63,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewCo
 <tbody><tr></tr><tr><td><code>endReachedWithin</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>endReached</code></td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>realizedChanged</code></td><td>event</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>scrollTo</code></td><td>act</td><td><code>(String, ScrollAnchor) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>scrollTo</code></td><td>act</td><td><code>(String, ScrollAnchor) -&gt; Void</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -231,11 +231,11 @@ An element that takes the keyboard focus itself - a field, a button, a list - an
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ItemsView takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 </table>
 

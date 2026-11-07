@@ -21,6 +21,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `focus` | act | `() -> Bool` |  |
+| `focus` | act | `() -> Bool` | native |
 | `isFocusedChanged` | event | `Bool` | native |
-| `unfocus` | act | `() -> Void` |  |
+| `unfocus` | act | `() -> Void` | native |

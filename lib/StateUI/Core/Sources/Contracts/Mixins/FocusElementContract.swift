@@ -10,13 +10,13 @@ public enum FocusElementContract: Contract {
     public static let tiers: [any Contract.Type] = [KeyboardElementContract.self]
 
     /// Gives the element the keyboard focus, answering whether it took it.
-    public static let focus = ElementAct<Self, Void, Bool>("focus")
+    public static let focus = ElementAct<Self, Void, Bool>("focus", layer: .native)
 
     /// The platform moved the focus onto the element, or off it.
     public static let isFocusedChanged = ElementEvent<Self, Bool>("isFocusedChanged", layer: .native)
 
     /// Takes the keyboard focus off the element.
-    public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
+    public static let unfocus = ElementAct<Self, Void, Void>("unfocus", layer: .native)
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [focus, isFocusedChanged, unfocus]

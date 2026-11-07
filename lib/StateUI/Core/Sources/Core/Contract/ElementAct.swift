@@ -14,11 +14,17 @@ public struct ElementAct<Owner: Contract, Arguments, Answer>: ContractMember {
     /// The act's name: what crosses the boundary.
     public let name: String
 
+    /// Which layer performs it.
+    let layer: ElementLayer
+
     /// An act declared in `Owner`.
     ///
-    /// - Parameter name: its name - the name of the static member holding it.
-    public init(_ name: String) {
+    /// - Parameters:
+    ///   - name: its name - the name of the static member holding it.
+    ///   - layer: which layer performs it; an application's own unless said.
+    public init(_ name: String, layer: ElementLayer = .provider) {
         self.name = name
+        self.layer = layer
         token = Act(name)
         owner = KeyName(Owner.name)
     }

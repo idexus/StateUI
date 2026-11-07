@@ -25,7 +25,7 @@ public enum MapContract: ElementContract {
     public static let locationTapped = ElementEvent<Self, Location>("locationTapped", layer: .provider)
 
     /// Slides the map until it shows a region.
-    public static let moveToRegion = ElementAct<Self, MapRegion, Void>("moveToRegion")
+    public static let moveToRegion = ElementAct<Self, MapRegion, Void>("moveToRegion", layer: .provider)
 
     /// The region the map opens on.
     public static let region = ElementProperty<Self, MapRegion>(

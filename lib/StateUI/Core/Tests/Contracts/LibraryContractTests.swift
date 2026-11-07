@@ -79,6 +79,25 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(Prop("Test.Unknown").facts, .undeclared)
     }
 
+    /// A library member says which layer realizes it, an act included: none is left an application's own but a
+    /// member of an element a provider supplies.
+    func testEveryLibraryMemberSaysItsLayer() {
+        let provided = Set(LibraryContracts.elements.filter { $0.layer == .provider }.map { $0.name })
+        var unsaid: [String] = []
+
+        for member in declared {
+            guard let layer = member.facts.layer else {
+                unsaid.append("\(member.contract).\(member.name)")
+                continue
+            }
+            if layer == .provider, !provided.contains(member.contract) {
+                unsaid.append("\(member.contract).\(member.name)")
+            }
+        }
+
+        XCTAssertEqual(unsaid, [])
+    }
+
     // MARK: - The names
 
     /// A member crosses under its name, so a library member's name is a token

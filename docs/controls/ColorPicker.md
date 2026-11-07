@@ -245,10 +245,10 @@ An element that takes the keyboard focus itself - a field, a button, a list - an
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ColorPicker takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ColorPicker takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: ColorPicker takes no keyboard focus here: it refuses it, and nothing is heard<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 </table>

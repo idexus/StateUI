@@ -21,13 +21,13 @@ public enum WebViewContract: ElementContract {
     public static let canGoForwardChanged = ElementEvent<Self, Bool>("canGoForwardChanged", layer: .native)
 
     /// Runs JavaScript in the page, answering what it evaluated to, as text.
-    public static let evaluateJavaScript = ElementAct<Self, String, String?>("evaluateJavaScript")
+    public static let evaluateJavaScript = ElementAct<Self, String, String?>("evaluateJavaScript", layer: .native)
 
     /// Steps back through the page's history.
-    public static let goBack = ElementAct<Self, Void, Void>("goBack")
+    public static let goBack = ElementAct<Self, Void, Void>("goBack", layer: .native)
 
     /// Steps forward through the page's history.
-    public static let goForward = ElementAct<Self, Void, Void>("goForward")
+    public static let goForward = ElementAct<Self, Void, Void>("goForward", layer: .native)
 
     /// A navigation finished: how it ended, why it happened, and where it went.
     public static let navigated = ElementEvent<Self, (WebNavigationResult, WebNavigationKind, String)>(
@@ -41,7 +41,7 @@ public enum WebViewContract: ElementContract {
     public static let processTerminated = ElementEvent<Self, Void>("processTerminated", layer: .native)
 
     /// Loads the page again.
-    public static let reload = ElementAct<Self, Void, Void>("reload")
+    public static let reload = ElementAct<Self, Void, Void>("reload", layer: .native)
 
     /// The page it shows: fetched from an address, or written here.
     public static let source = ElementProperty<Self, WebViewSource>("source", layer: .native)
