@@ -454,13 +454,13 @@ The scheme is the head's to register, in its platform's own file: the Mac's and
 iOS's `CFBundleURLTypes`, an Android activity's `ACTION_VIEW` intent filter -
 the activity `singleTask`, so a link reaches the running one - a GTK head's
 `Platforms/GTK/link-schemes`, which its desktop entry takes, and on Windows
-`StateUIWinUI.run(linkSchemes:)`, which registers them as the application
+`WinUIHost.run(linkSchemes:)`, which registers them as the application
 starts and keeps it one instance. On the Web a link is the page's address
 with a fragment, `#note/7`, as the page opens and as its fragment changes.
 
 An application whose SDK asks for its own iOS delegate subclasses
 `StateUIApplicationDelegate` and starts with
-`StateUIUIKit.run(delegate: AppDelegate.self)`; on Android its activity
+`UIKitHost.run(delegate: AppDelegate.self)`; on Android its activity
 subclasses `StateUIActivity`, calling `super` where it overrides.
 
 ## Restoration

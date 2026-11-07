@@ -16,5 +16,5 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIUIKit.run()
+UIKitHost.run()
 // listing: end

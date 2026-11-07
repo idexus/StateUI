@@ -11,18 +11,21 @@
 ///     import StateUIWeb
 ///
 ///     HelloWorldApp.register()
-///     StateUIWeb.run(name: "HelloWorld")
+///     WebHost.run(name: "HelloWorld", applicationID: "com.stateui.helloworld")
 ///
 /// `.scripts/Web/run-app.sh` builds the head, lays the page out beside it
 /// and serves it. A control this host does not present yet shows its name in
 /// red where it belongs.
-public enum StateUIWeb {
+public enum WebHost {
     /// Shows the application in the page and returns: from then on the browser calls it, as the user acts and as
     /// the display draws.
     ///
-    /// - Parameter name: the application's name, which `app.info` tells it.
+    /// - Parameters:
+    ///   - name: the application's name, which `app.info.name` tells it.
+    ///   - applicationID: the application's identity, `com.example.App`, which `app.info.packageName` tells it; a
+    ///     page without one tells none.
     @MainActor
-    public static func run(name: String) {
-        WebRenderer.start(applicationName: name)
+    public static func run(name: String, applicationID: String? = nil) {
+        WebRenderer.start(applicationName: name, applicationID: applicationID)
     }
 }

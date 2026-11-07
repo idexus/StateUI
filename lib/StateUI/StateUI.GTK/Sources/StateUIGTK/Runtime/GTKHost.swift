@@ -15,11 +15,11 @@ import StateUIFoundation
 ///     import StateUIGTK
 ///
 ///     HelloWorldApp.register()
-///     StateUIGTK.run(applicationID: "com.stateui.helloworld")
+///     GTKHost.run(applicationID: "com.stateui.helloworld")
 ///
 /// `.scripts/GTK/run-app.sh` builds the head and starts it. A control this
 /// host does not present yet shows its name in red where it belongs.
-public enum StateUIGTK {
+public enum GTKHost {
     /// Starts GTK on this thread, runs the application until its last window closes, and ends the process with
     /// the code GTK ended with - a start GTK refused fails it.
     ///

@@ -15,16 +15,16 @@ import StateUIFoundation
 ///     import StateUIWinUI
 ///
 ///     HelloWorldApp.register()
-///     StateUIWinUI.run()
+///     WinUIHost.run()
 ///
 /// `.scripts/WinUI/run-app.ps1` builds the head and lays the Windows App SDK
 /// beside it. A control this host does not present yet shows its name in red
 /// where it belongs.
-public enum StateUIWinUI {
+public enum WinUIHost {
     /// Starts WinUI on this thread, runs the application until its last window closes, and ends the process with
     /// 0 - or with the failure WinUI started with.
     ///
-    ///     StateUIWinUI.run(linkSchemes: ["notes"])
+    ///     WinUIHost.run(linkSchemes: ["notes"])
     ///
     /// - Parameter linkSchemes: the schemes of the links the application opens - `notes://` - which it registers
     ///   for the user as it starts; naming any makes it its one instance, a second start handing its link to the

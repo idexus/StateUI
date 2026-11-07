@@ -82,8 +82,12 @@ GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
-StateUIWeb.run(name: "Gallery")
+WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
 ```
+
+`name:` is what `app.info.name` tells the application, and `applicationID:`
+what `app.info.packageName` tells: a page has no identity of its own, so a
+head that names none leaves it empty.
 
 `STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
 reads it, declares its `Platforms/Web` head and the module it makes, links the
@@ -130,7 +134,7 @@ the head gives none. The Gallery's describes StateUI at stateui.dev:
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its Web head: registrations run before
-`StateUIWeb.run`. A control of the application's own is an object that makes
+`WebHost.run`. A control of the application's own is an object that makes
 and holds the page's element it shows, a `WebControl`; `StateUIControls.add`
 says which contract it realizes, as on every host:
 

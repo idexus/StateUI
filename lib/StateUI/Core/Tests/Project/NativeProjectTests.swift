@@ -33,7 +33,7 @@ final class NativeProjectTests: XCTestCase {
                 encoding: .utf8)
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
             XCTAssertTrue(entry.contains("\(name)App.register()"))
-            XCTAssertTrue(entry.contains("StateUIAppKit.run("))
+            XCTAssertTrue(entry.contains("AppKitHost.run("))
 
             // Every head names the application to its host in Swift: the module exports no C function to be named.
             let registration = try String(
@@ -199,7 +199,7 @@ final class NativeProjectTests: XCTestCase {
 
         let declared = try names(#"static native \w+ (\w+)\("#, in: "\(host)/Java/stateui/android/StateUIHost.java")
         let registered = try names(
-            #"\("(\w+)", "\("#, in: "\(host)/Sources/StateUIAndroid/Runtime/StateUIAndroid.swift")
+            #"\("(\w+)", "\("#, in: "\(host)/Sources/StateUIAndroid/Runtime/AndroidHost.swift")
         XCTAssertGreaterThan(declared.count, 3, "the walk read almost no native method")
         XCTAssertEqual(declared, registered, "the Java layer and the host disagree on the native methods")
     }
@@ -429,7 +429,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no WinUI head in Platforms/WinUI")
 
             let entry = try text("Platforms/WinUI/main.swift")
-            for shape in ["import StateUIWinUI", "\(name)App.register()", "StateUIWinUI.run()"] {
+            for shape in ["import StateUIWinUI", "\(name)App.register()", "WinUIHost.run()"] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s WinUI head does not say \(shape)")
             }
         }
@@ -556,7 +556,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
-            for shape in ["import StateUIGTK", "\(name)App.register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
+            for shape in ["import StateUIGTK", "\(name)App.register()", "GTKHost.run(applicationID: \"com.stateui."] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
             }
         }
@@ -598,7 +598,7 @@ final class NativeProjectTests: XCTestCase {
             XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
 
             let entry = try text("Platforms/Android/Swift/\(name)Android.swift")
-            for shape in ["@_cdecl(\"JNI_OnLoad\")", "\(name)App.register()", "StateUIAndroid.load("] {
+            for shape in ["@_cdecl(\"JNI_OnLoad\")", "\(name)App.register()", "AndroidHost.load("] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s Android head does not say \(shape)")
             }
 
@@ -709,8 +709,8 @@ final class NativeProjectTests: XCTestCase {
         }
 
         for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
-            "docs/development.md", "docs/getting-started.md",
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
+            ".scripts/test-native.sh",
         ] {
             let commands = try text(relative)
                 .replacingOccurrences(of: "\\\n", with: " ")
@@ -769,8 +769,8 @@ final class NativeProjectTests: XCTestCase {
         }
 
         for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
-            "docs/development.md", "docs/getting-started.md",
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh",
+            ".scripts/test-native.sh",
         ] {
             XCTAssertTrue(
                 try text(relative).contains("STATEUI_HOST=appkit"),
@@ -904,15 +904,15 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
-    /// Every application's AppKit head hands the host its icon on macOS's icon
-    /// grid, found from its own source file rather than from the directory it
-    /// was started in.
+    /// Every application's AppKit head shows its icon on macOS's icon grid
+    /// wherever it is started: what builds a head lays the application's
+    /// artwork beside the program, where the host reads it, and the head finds
+    /// none itself.
     ///
     /// A macOS icon is a 1024 canvas whose body is an 824-point rounded square
     /// 100 points in: artwork drawn edge to edge stands larger in the Dock than
-    /// every icon beside it. And a head started by a debugger, a task or a
-    /// terminal elsewhere would find no artwork at all, and show the bare
-    /// executable's icon.
+    /// every icon beside it. And a head finding its artwork from where it was
+    /// started, or from its source file, finds none where it was not built.
     func testEveryAppKitHeadShowsAnIconOnTheMacGridWhereverItIsStarted() throws {
         let applications = try SourceTree.applications()
         let icon = "Resources/AppIcon/appicon_macos.svg"
@@ -926,12 +926,9 @@ final class NativeProjectTests: XCTestCase {
             let relative = application.path.replacingOccurrences(of: SourceTree.repository.path + "/", with: "")
             let text = try String(contentsOf: head, encoding: .utf8)
 
-            XCTAssertTrue(
-                text.contains("applicationIcon:") && text.contains("appicon_macos.svg"),
-                "\(relative)'s AppKit head does not hand the host \(icon)")
             XCTAssertFalse(
-                text.contains("currentDirectoryPath"),
-                "\(relative)'s AppKit head finds its artwork from the directory it was started in")
+                text.contains("currentDirectoryPath") || text.contains("#filePath"),
+                "\(relative)'s AppKit head finds its artwork itself")
 
             let artwork = try String(contentsOf: application.appendingPathComponent(icon), encoding: .utf8)
             XCTAssertTrue(
@@ -947,6 +944,12 @@ final class NativeProjectTests: XCTestCase {
                 encoding: .utf8
             ).contains("Resources/AppIcon/appicon_macos.svg"),
             "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
+        for script in [".scripts/AppKit/run-app.sh", ".scripts/AppKit/deploy.sh"] {
+            XCTAssertTrue(
+                try String(contentsOf: SourceTree.repository.appendingPathComponent(script), encoding: .utf8)
+                    .contains("for artwork in Images AppIcon"),
+                "\(script) lays no artwork beside the program it builds")
+        }
     }
 
     /// Every application's GTK head has its icon on GNOME's icon grid, which the run script installs, with the

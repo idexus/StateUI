@@ -7,12 +7,12 @@ import StateUI
 /// The web view's GTK backend: WebKitGTK's web view, realized through the GTK host's registration of an application's
 /// own controls.
 @MainActor
-public enum StateUIWebViewGTK {
+public enum WebViewGTK {
     /// Registers the web view with the GTK host - its control, the members it takes and tells, and its four acts.
-    /// Said once, from the application's GTK head, before `StateUIGTK.run(applicationID:)`.
+    /// Said once, from the application's GTK head, before `GTKHost.run(applicationID:)`.
     ///
-    ///     StateUIWebViewGTK.register()
-    ///     StateUIGTK.run(applicationID: "com.example.App")
+    ///     WebViewGTK.register()
+    ///     GTKHost.run(applicationID: "com.example.App")
     public static func register() {
         StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebView in
             let web = GTKWebView()

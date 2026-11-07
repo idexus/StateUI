@@ -5,4 +5,4 @@ import HelloWorldUI
 import StateUIUIKit
 
 HelloWorldApp.register()
-StateUIUIKit.run()
+UIKitHost.run()

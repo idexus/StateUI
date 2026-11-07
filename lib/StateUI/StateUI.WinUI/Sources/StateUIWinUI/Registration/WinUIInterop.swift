@@ -6,7 +6,7 @@
 import CStateUIWinUI
 
 /// What an APPLICATION registers with this host, beside the elements the host realizes itself: the acts it performs,
-/// by the host layer's rule. Said once, before `StateUIWinUI.run()`.
+/// by the host layer's rule. Said once, before `WinUIHost.run()`.
 /// Design: docs/design/platforms/winui/interop.md
 @MainActor
 enum WinUIInterop {
@@ -28,7 +28,7 @@ public protocol WinUIControl: AnyObject {
 
 /// The controls an application adds to this host - its own elements, each realized with a control of its own.
 ///
-/// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
+/// Said once, from the application's WinUI head, before `WinUIHost.run()`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and
@@ -67,7 +67,7 @@ public enum StateUIControls {
 
 /// The acts an application performs on this host - what its own calls, `application.call` and an `Aim`, reach.
 ///
-/// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
+/// Said once, from the application's WinUI head, before `WinUIHost.run()`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with

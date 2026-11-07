@@ -58,7 +58,7 @@ The host builds on Windows 10 1809 or newer, on arm64 or x64:
 The web view is a backend, `lib/Backends/WebView.WinUI` - WinUI's `WebView2`
 over the system's WebView2 runtime, which WinUI does not ship: an application
 showing a web view depends on it from its WinUI head and calls
-`StateUIWebViewWinUI.register()` before the host runs.
+`WebViewWinUI.register()` before the host runs.
 
 ## Architectures and a deployed head
 
@@ -94,14 +94,14 @@ import StateUIWinUI
 // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
 // relay in Relay/. Then hand WinUI this thread until the last window closes.
 GalleryApp.register()
-// Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+// Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
 GalleryControls.register()
 GalleryActs.register()
-// Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+// Before WinUIHost.run(): the pushes this host raises, their source wired.
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebView2.
-StateUIWebViewWinUI.register()
-StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
+WebViewWinUI.register()
+WinUIHost.run(linkSchemes: ["stateui-gallery"])
 ```
 
 `STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
@@ -119,7 +119,7 @@ head, as HelloWorld does.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its WinUI head. Registrations run before
-`StateUIWinUI.run`, on the main thread. Registering a contract or an act again
+`WinUIHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's WinUI halves are in
@@ -236,7 +236,7 @@ What the user sees there is the application's own registration. The
 `WebView` is a backend, as [Requirements](#requirements) says: the
 application's manifest depends on the package `lib/Backends/WebView.WinUI` by
 its path and its WinUI head on that package's `StateUIWebViewWinUI`, and the
-head calls `StateUIWebViewWinUI.register()` before `StateUIWinUI.run()`, as
+head calls `WebViewWinUI.register()` before `WinUIHost.run()`, as
 the Gallery's does. Until then the host realizes no web view.
 
 ### An act

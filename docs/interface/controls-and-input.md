@@ -719,7 +719,7 @@ Package.swift
   the head:      .product(name: "StateUIWebView<Host>", package: "StateUIWebView<Host>")
 
 Platforms/<Host>/main.swift
-  StateUIWebView<Host>.register()         before the host runs
+  WebView<Host>.register()                before the host runs
 ```
 
 ## Maps

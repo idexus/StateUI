@@ -18,6 +18,6 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
         GalleryActs.register()
         GalleryEventSources.register()
     }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }
 // listing: end

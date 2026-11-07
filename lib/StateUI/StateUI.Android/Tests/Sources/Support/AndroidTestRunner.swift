@@ -65,7 +65,7 @@ nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
 /// Registers the host's natives and the runner's own as the test APK loads this library.
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    let version = StateUIAndroid.load(machine)
+    let version = AndroidHost.load(machine)
     guard version > 0, let env = Java.machine.flatMap(AndroidTestRunner.environment) else { return version }
 
     return AndroidTestRunner.register(env) ? version : -1

@@ -9,7 +9,7 @@ import UIKit
 /// What an APPLICATION registers with this host, beside the elements the host
 /// realizes itself: the acts it performs and the events it raises.
 ///
-/// An application says these once, before `StateUIUIKit.run(resourceDirectory:)`,
+/// An application says these once, before `UIKitHost.run(resourceDirectory:)`,
 /// from its own host file. Nothing new reaches the core: an act arrives as the
 /// call the application already made through `application.call` or an `Aim`, and an
 /// event leaves as the raise every `HostEvents.on` already hears.
@@ -27,7 +27,7 @@ enum UIKitInterop {
 /// `application.call` and an `Aim`, reach.
 ///
 /// Said once, from the application's UIKit head, before
-/// `StateUIUIKit.run(resourceDirectory:)`.
+/// `UIKitHost.run(resourceDirectory:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind -
@@ -96,7 +96,7 @@ public enum StateUIEvents {
     /// told, once, that it will not hear it.
     ///
     /// Said once, from the application's UIKit head, before
-    /// `StateUIUIKit.run(resourceDirectory:)`.
+    /// `UIKitHost.run(resourceDirectory:)`.
     ///
     ///     StateUIEvents.raises(GalleryContract.batteryChanged)
     ///
@@ -127,7 +127,7 @@ public enum StateUIEvents {
 /// realized with a view of its own.
 ///
 /// Said once, from the application's UIKit head, before
-/// `StateUIUIKit.run(resourceDirectory:)`.
+/// `UIKitHost.run(resourceDirectory:)`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a view of its own:

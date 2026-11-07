@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import Foundation
 // listing: appkit.md.head
 import GalleryUI
 import StateUIAppKit
@@ -18,19 +17,6 @@ GalleryActs.register()
 GalleryEventSources.start()
 // listing: end
 
-let bundledResources = Bundle.main.resourceURL?.appendingPathComponent(
-    "Images", isDirectory: true)
-let sourceApplication = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-let sourceResources = sourceApplication.appendingPathComponent("Resources/Images", isDirectory: true)
-let resources = bundledResources.flatMap {
-    FileManager.default.fileExists(atPath: $0.path) ? $0 : nil
-} ?? sourceResources
-let bundledIcon = Bundle.main.url(forResource: "StateUI", withExtension: "icns")
-let icon = bundledIcon ?? sourceApplication.appendingPathComponent("Resources/AppIcon/appicon_macos.svg")
-
 // listing: appkit.md.head
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+AppKitHost.run()
 // listing: end

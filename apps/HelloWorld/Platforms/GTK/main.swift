@@ -7,4 +7,4 @@ import StateUIGTK
 // Name the application to the host, then hand GTK this thread until the last
 // window closes.
 HelloWorldApp.register()
-StateUIGTK.run(applicationID: "com.stateui.helloworld")
+GTKHost.run(applicationID: "com.stateui.helloworld")

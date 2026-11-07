@@ -33,7 +33,7 @@ final class AppKitMenuBarTests: XCTestCase {
     @MainActor
     func testTheMenuBarSpeaksTheSystemsLanguage() throws {
         Self.speak("pl")
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         XCTAssertEqual(main.items.map(\.title).dropFirst(), ["Plik", "Edycja", "Okno"])
         XCTAssertEqual(main.item(withTitle: "Plik")?.submenu?.items.map(\.title), ["Nowe okno"])
         XCTAssertEqual(
@@ -56,7 +56,7 @@ final class AppKitMenuBarTests: XCTestCase {
     /// equivalents, so without them a field copies, pastes and undoes nothing.
     @MainActor
     func testTheMenuBarHoldsTheTextCommandsAFieldAnswers() throws {
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         XCTAssertEqual(main.items.map(\.title).dropFirst(), ["File", "Edit", "Window"])
 
         let edit = try XCTUnwrap(main.item(withTitle: "Edit")?.submenu)
@@ -85,7 +85,7 @@ final class AppKitMenuBarTests: XCTestCase {
             }
         }
         defer { renderer.finish() }
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
         renderer.installPageMenus(controller.pageMenus, into: main)
@@ -110,7 +110,7 @@ final class AppKitMenuBarTests: XCTestCase {
             }
         }
         defer { renderer.finish() }
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
         renderer.installPageMenus(controller.pageMenus, into: main)

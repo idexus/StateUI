@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// What an APPLICATION registers with this host, beside the elements the host realizes itself: the acts it performs,
-/// by the host layer's rule. Said once, before `StateUIWeb.run(name:)`.
+/// by the host layer's rule. Said once, before `WebHost.run(name:applicationID:)`.
 /// Design: docs/design/platforms/web/interop.md
 @MainActor
 enum WebInterop {
@@ -103,7 +103,7 @@ public enum StateUIScripts {
 
 /// The acts an application performs on this host - what its own calls, `application.call` and an `Aim`, reach.
 ///
-/// Said once, from the application's Web head, before `StateUIWeb.run(name:)`.
+/// Said once, from the application's Web head, before `WebHost.run(name:applicationID:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
@@ -171,7 +171,7 @@ public enum StateUIEvents {
 
 /// The controls an application adds to this host - its own elements, each realized with a control of its own.
 ///
-/// Said once, from the application's Web head, before `StateUIWeb.run(name:)`.
+/// Said once, from the application's Web head, before `WebHost.run(name:applicationID:)`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and

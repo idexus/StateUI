@@ -29,7 +29,7 @@ final class TrafficLightView: AndroidControl {
 
     init() {
         number = GalleryControls.reserve()
-        view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+        view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
         Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
         GalleryControls.hold(self, as: number)
     }

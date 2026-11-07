@@ -22,7 +22,7 @@ fails at once, so a handler awaiting it goes on.
 ## Starting
 
 The page loads the module and calls its `_start`, which runs the head's
-`main`: it names the application and calls `StateUIWeb.run(name:)`. The host
+`main`: it names the application and calls `WebHost.run(name:applicationID:)`. The host
 claims the page's one thread as the UI thread, hands the relay the two
 functions the page calls it through, and starts in the order every host keeps
 ([starting](../../host/runtime.md#starting)): it tells the core what it

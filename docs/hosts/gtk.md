@@ -52,7 +52,7 @@ The host builds on Linux, on arm64 or x64:
 - WebKitGTK 6.0 with its headers - `libwebkitgtk-6.0-dev` on Ubuntu,
   `webkitgtk-6.0` on Arch - for the web view's backend,
   `lib/Backends/WebView.GTK`: an application showing a web view depends on it
-  from its GTK head and calls `StateUIWebViewGTK.register()` before the host
+  from its GTK head and calls `WebViewGTK.register()` before the host
   runs, and the host's own tests register it to prove the web view;
 - a desktop session to show the windows in, the test suite's included.
 
@@ -77,9 +77,9 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-StateUIWebViewGTK.register()
+WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+GTKHost.run(applicationID: "com.stateui.gallery")
 ```
 
 The name is the one the desktop knows the application by. GTK keeps one
@@ -98,7 +98,7 @@ as HelloWorld does.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its GTK head. Registrations run before
-`StateUIGTK.run`, on the main thread. Registering a contract or an act again
+`GTKHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's GTK halves are in
@@ -211,7 +211,7 @@ What the user sees there is the application's own registration. The
 `WebView` is a backend, as [Requirements](#requirements) says: the
 application's manifest depends on the package `lib/Backends/WebView.GTK` by
 its path and its GTK head on that package's `StateUIWebViewGTK`, and the head
-calls `StateUIWebViewGTK.register()` before `StateUIGTK.run`, as the
+calls `WebViewGTK.register()` before `GTKHost.run`, as the
 Gallery's does. Until then the host realizes no web view.
 
 ### An act

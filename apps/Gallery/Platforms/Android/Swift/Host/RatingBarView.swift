@@ -28,7 +28,7 @@ final class RatingBarView: AndroidControl {
 
     init() {
         number = GalleryControls.reserve()
-        view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+        view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
         GalleryControls.hold(self, as: number)
     }
 

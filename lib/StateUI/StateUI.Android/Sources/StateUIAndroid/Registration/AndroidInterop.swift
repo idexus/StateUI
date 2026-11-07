@@ -16,7 +16,7 @@ enum AndroidInterop {
 /// A control of the application's own on this host: an object that holds the Android view it shows.
 ///
 /// The application makes the view with a Java class of its own, beside its head, through `Java` - handed the
-/// activity as `StateUIAndroid.context` - and hands the reference over: the host places, sizes and shows the view as
+/// activity as `AndroidHost.context` - and hands the reference over: the host places, sizes and shows the view as
 /// it does its own; the view's own `onMeasure` is what the host measures.
 @MainActor
 public protocol AndroidControl: AnyObject {
@@ -26,7 +26,7 @@ public protocol AndroidControl: AnyObject {
 
 /// The controls an application adds to this host - its own elements, each realized with a control of its own.
 ///
-/// Said once, from the application's Android head as its library loads, before `StateUIAndroid.load(_:)`.
+/// Said once, from the application's Android head as its library loads, before `AndroidHost.load(_:)`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and
@@ -66,7 +66,7 @@ public enum StateUIControls {
 /// The acts an application performs on this host - what its own `application.call` reaches.
 ///
 /// Said once, from the application's Android head as its library loads - `JNI_OnLoad` runs on the UI thread -
-/// before `StateUIAndroid.load(_:)`.
+/// before `AndroidHost.load(_:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with

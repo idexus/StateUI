@@ -262,7 +262,7 @@ contract declares and answered with those it returns, once the performer
 returns; an act nothing registered is refused by its name. An event the
 application raises (`StateUIEvents`) reaches every listener to it. Both are
 said as the library loads: `JNI_OnLoad` runs on the UI thread and says them
-before `StateUIAndroid.load(_:)`, which registers the host's natives; the
+before `AndroidHost.load(_:)`, which registers the host's natives; the
 activity starts the host after it.
 
 ## The application's own controls

@@ -59,7 +59,7 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIUIKit.run()
+UIKitHost.run()
 ```
 
 The bundle `build-app.sh` makes carries the application's `Resources/Images`
@@ -120,7 +120,7 @@ with `.menuBar` stand in the iPad's main menu.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its UIKit head. Registrations run before
-`StateUIUIKit.run`, on the main thread. Registering a contract or an act again
+`UIKitHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration.
 
 **A host in the same process registers BY TYPE.** Every registration is

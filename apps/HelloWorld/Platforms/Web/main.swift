@@ -7,4 +7,4 @@ import StateUIWeb
 // Name the application to the host, then show it in the page; the browser
 // calls it from then on.
 HelloWorldApp.register()
-StateUIWeb.run(name: "HelloWorld")
+WebHost.run(name: "HelloWorld", applicationID: "com.stateui.helloworld")

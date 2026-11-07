@@ -14,12 +14,12 @@ import UIKit
 ///     import StateUIUIKit
 ///
 ///     NotesApp.register()
-///     StateUIUIKit.run()
+///     UIKitHost.run()
 @MainActor
-public enum StateUIUIKit {
+public enum UIKitHost {
     /// Runs the application on UIKit's main loop, which never returns.
     ///
-    ///     StateUIUIKit.run(delegate: AppDelegate.self)
+    ///     UIKitHost.run(delegate: AppDelegate.self)
     ///
     /// - Parameters:
     ///   - resourceDirectory: where the application's pictures are; the bundle's `Images` where nil.

@@ -164,11 +164,10 @@ Build the runnable Gallery bundle:
 .scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
-Build the smaller example:
+Build and start the smaller example:
 
 ```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
 ```
 
 In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the

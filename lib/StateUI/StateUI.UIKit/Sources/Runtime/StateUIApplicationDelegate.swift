@@ -8,7 +8,7 @@ import UIKit
 
 /// The application's delegate: the host starts as the application does, and every scene iOS connects is one of the
 /// host's. An application whose SDK asks for a delegate of its own subclasses it, calling `super` where it overrides,
-/// and hands it to `StateUIUIKit.run(delegate:)`:
+/// and hands it to `UIKitHost.run(delegate:)`:
 ///
 ///     final class AppDelegate: StateUIApplicationDelegate {
 ///         override func application(

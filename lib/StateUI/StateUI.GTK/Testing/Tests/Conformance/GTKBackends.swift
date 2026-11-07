@@ -13,7 +13,7 @@
 enum GTKBackends {
     /// Every backend registered, once.
     @MainActor static let registered: Void = {
-        StateUIWebViewGTK.register()
+        WebViewGTK.register()
         GTKDriver.backends[WebViewContract.nodeType] = GTKBackendDriving(
             contract: WebViewContract.self,
             held: { property, view in

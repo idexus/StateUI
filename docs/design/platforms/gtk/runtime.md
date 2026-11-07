@@ -25,7 +25,7 @@ its panel and drops the reference it held.
 ## Starting
 
 The head's `main` names the application and hands the thread to
-`StateUIGTK.run(applicationID:)`, which makes an `AdwApplication` under that
+`GTKHost.run(applicationID:)`, which makes an `AdwApplication` under that
 name and runs GLib's main loop on the thread until the last window closes,
 then answers the code GLib's application ended with - a refused start, an
 unknown option, its own - which the head ends the process with; `run` holds

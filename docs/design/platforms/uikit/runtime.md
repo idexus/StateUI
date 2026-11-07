@@ -88,7 +88,7 @@ A scene's delegate hears the links it is asked to open: those it connects with
 (`scene(_:openURLContexts:)`), each named by the scene's window where it
 stands. The application's delegate, `StateUIApplicationDelegate`, is open: an
 application whose SDK asks for a delegate subclasses it, calling `super` where
-it overrides, and hands it to `StateUIUIKit.run(delegate:)`.
+it overrides, and hands it to `UIKitHost.run(delegate:)`.
 
 ## The environment
 

@@ -43,15 +43,15 @@ project group for applications outside the checkout.
 
 ### From the command line
 
-Every launch has a command-line equivalent. Build HelloWorld's AppKit head from
-the repository root:
+Every launch has a command-line equivalent. Build and start HelloWorld's
+AppKit head from the repository root:
 
 ```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
 ```
 
-The variable is what makes it an AppKit build: the manifest then declares the
+The script builds it with `STATEUI_HOST=appkit`, the variable that makes it an
+AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
 [Project structure and development](development.md). Each host builds an
@@ -97,12 +97,11 @@ which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 .scripts/new-app.sh Notes
 ```
 
-Test it, then build its AppKit head from the same repository root:
+Test it, then build and start its AppKit head from the same repository root:
 
 ```bash
 swift test --package-path apps/Notes
-STATEUI_HOST=appkit swift build --package-path apps/Notes \
-  --scratch-path apps/Notes/.build/appkit --product NotesAppKit
+.scripts/AppKit/run-app.sh apps/Notes debug
 ```
 
 ## Application shape
@@ -219,13 +218,13 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+AppKitHost.run()
 ```
 
-The head finds its artwork beside itself where a deployed copy carries it -
-`.scripts/AppKit/deploy.sh` lays the application's `Resources` there - else
-from its own source file, so it runs from any directory, and on another Mac. Its icon is drawn on macOS's icon grid; see
-[AppKit host](hosts/appkit.md).
+The host finds the artwork beside the program - its bundle's, or the
+`Resources` that `.scripts/AppKit/run-app.sh` and `deploy.sh` lay there - so a
+head runs from any directory, and on another Mac. Its icon is drawn on
+macOS's icon grid; see [AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then
 belong to one application tree, renderer generation, and native host. Opening a
@@ -268,9 +267,9 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-StateUIWebViewGTK.register()
+WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+GTKHost.run(applicationID: "com.stateui.gallery")
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's

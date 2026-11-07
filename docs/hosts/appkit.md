@@ -51,16 +51,15 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+AppKitHost.run()
 ```
 
 `run` shows the artwork the program carries - the `Images` in its bundle, or
-in the `Resources` that `.scripts/AppKit/deploy.sh` lays beside it, with the
-icon there - and ends the process as the application ends. A head run from
-the build carries nothing, so it hands the host the artwork the application
-keeps, found from its own source file, `#filePath`
-(`run(resourceDirectory:applicationIcon:)`): it runs the same whether a
-debugger, a task or a terminal starts it. The icon a head hands the host is
+in the `Resources` beside it, with the icon there - and ends the process as
+the application ends. `.scripts/AppKit/run-app.sh` and `deploy.sh` lay the
+application's `Resources/Images` and `Resources/AppIcon` beside the program
+they build, so a head runs the same whether a debugger, a task or a terminal
+starts it; `run(resourceDirectory:applicationIcon:)` names other places. The icon a head hands the host is
 `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
 1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside
@@ -73,7 +72,7 @@ condition; Swift written for this host alone stands under `#if APPKIT`. See
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its AppKit head. Registrations run before
-`StateUIAppKit.run`, on the main thread. Registering a contract or an act again
+`AppKitHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration.
 
 **A host in the same process registers BY TYPE.** Every registration is written
@@ -343,7 +342,7 @@ than a failure, so an application wires its sources unconditionally. The Swift s
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 The head declares each event it raises where it wires the source, before
-`StateUIAppKit.run(resourceDirectory:applicationIcon:)`:
+`AppKitHost.run(resourceDirectory:applicationIcon:)`:
 
 ```swift listing appkit.md.raises
 // Platforms/AppKit/Host/GalleryEventSources.swift
@@ -362,32 +361,27 @@ of, the first time it is described.
 ## Running
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
-open apps/Gallery/.build/appkit/debug/GalleryAppKit.app
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
+.scripts/AppKit/run-app.sh apps/Gallery debug
 ```
 
-`build-gallery-appkit.sh` builds the Gallery's head, `debug` or `release`, and
-makes it an application bundle, `apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`:
-the head, the StateUI libraries it links, the Gallery's pictures, its icon
-drawn from `Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an
-ad-hoc signature. It prints where the bundle is. An application with no
-bundling script of its own is built by SwiftPM, and runs as the executable it
-makes:
-
-```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
-apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit
-```
+`run-app.sh` builds an application's head, `debug` or `release`, and starts
+it; `--build-only` builds it and says where it is. An application with no
+bundling script of its own is built by SwiftPM, its `Resources/Images` and
+`Resources/AppIcon` laid in `Resources` beside the executable. The Gallery's,
+`build-gallery-appkit.sh`, makes it an application bundle,
+`apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`: the head, the
+StateUI libraries it links, the Gallery's pictures, its icon drawn from
+`Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an ad-hoc
+signature.
 
 Everything an AppKit build writes stays in the application's `.build/appkit/`.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
-builds the head - with the application's bundling script,
-`.scripts/AppKit/build-<application>-appkit.sh`, where the checkout's own
-`apps/<application>` has one, else with SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
-in StateUI or in the host holds from the first line. **StateUI: Release**
-builds and starts the optimized head the same way.
+builds the head with `run-app.sh --build-only` and starts it under
+`lldb-dap`, so a breakpoint in the application, in StateUI or in the host
+holds from the first line. **StateUI: Release** builds and starts the
+optimized head the same way.
 
 ## Deploying
 

@@ -77,7 +77,7 @@ private enum LampContract: ElementContract {
 /// where an application makes one of its own Java classes.
 @MainActor
 private final class LampControl: AndroidControl {
-    let view = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(StateUIAndroid.context))
+    let view = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidHost.context))
 
     /// Whether it is lit, as the tree last said; how many times the act flashed it, and a user pulled it.
     var lit = false

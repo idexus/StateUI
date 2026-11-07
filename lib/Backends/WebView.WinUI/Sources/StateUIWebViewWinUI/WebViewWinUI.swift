@@ -7,11 +7,11 @@ import StateUI
 /// The web view's WinUI backend: WinUI's WebView2, made by this package's relay and realized through the WinUI host's
 /// registration of an application's own controls.
 @MainActor
-public enum StateUIWebViewWinUI {
+public enum WebViewWinUI {
     /// Registers the web view with the WinUI host - its control, the members it takes and tells, and its four acts.
-    /// Said once, from the application's WinUI head, before `StateUIWinUI.run()`.
+    /// Said once, from the application's WinUI head, before `WinUIHost.run()`.
     ///
-    ///     StateUIWebViewWinUI.register()
+    ///     WebViewWinUI.register()
     public static func register() {
         StateUIControls.add(WebViewContract.self, create: { reports -> WinUIWebView in
             let web = WinUIWebView()

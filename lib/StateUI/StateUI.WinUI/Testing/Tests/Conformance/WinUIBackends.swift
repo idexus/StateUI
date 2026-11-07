@@ -12,7 +12,7 @@
 enum WinUIBackends {
     /// Every backend registered, once.
     @MainActor static let registered: Void = {
-        StateUIWebViewWinUI.register()
+        WebViewWinUI.register()
         WinUIDriver.backends[WebViewContract.nodeType] = WinUIBackendDriving(
             contract: WebViewContract.self,
             held: { property, view in

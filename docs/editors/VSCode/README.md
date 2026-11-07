@@ -99,9 +99,10 @@ says **no host**, a launch says why it runs nothing, and the editor and
   compiles for the iOS simulator - `arm64-apple-ios26.0-simulator` against
   Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
   resolve.
-- **StateUI: Debug and StateUI: Release run on it.** On AppKit the application's
-  head is built - with its bundling script where it has one, with SwiftPM
-  otherwise - and started under `lldb-dap`. On Android
+- **StateUI: Debug and StateUI: Release run on it.** On AppKit
+  `.scripts/AppKit/run-app.sh --build-only` builds the application's head -
+  with its bundling script where it has one, with SwiftPM and its artwork laid
+  beside it otherwise - and it is started under `lldb-dap`. On Android
   `.scripts/Android/run-app.sh` builds the head, installs it on the device
   chosen below and starts it, and its terminal then follows the application's
   log, in color, until the task is stopped. StateUI:

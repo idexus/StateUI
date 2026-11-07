@@ -17,13 +17,13 @@ import CStateUIAndroid
 ///     @_cdecl("JNI_OnLoad")
 ///     public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
 ///         MainActor.assumeIsolated { HelloWorldApp.register() }
-///         return StateUIAndroid.load(machine)
+///         return AndroidHost.load(machine)
 ///     }
 ///
 /// The head's manifest declares `stateui.android.StateUIActivity`, which starts
 /// the host. A control this host does not present yet shows its name in red
 /// where it belongs.
-public enum StateUIAndroid {
+public enum AndroidHost {
     /// The activity the host runs in, which a view of the application's own control is made with; read while the
     /// host runs.
     @MainActor public static var context: jobject { AndroidRenderer.context }

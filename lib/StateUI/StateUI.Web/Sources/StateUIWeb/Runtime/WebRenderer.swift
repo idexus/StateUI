@@ -25,6 +25,9 @@ final class WebRenderer {
     /// The application's name, which the core tells the application.
     let applicationName: String
 
+    /// The application's identity, `com.example.App`; nil where the head names none.
+    let applicationID: String?
+
     /// What the host hears the page by - its focus and visibility, its leaving, the user's appearance - for as
     /// long as it runs the page.
     private(set) var pageListeners: [Int32] = []
@@ -63,10 +66,11 @@ final class WebRenderer {
     /// A runtime of the application `applicationName`, on the page's clock or on `clock`, with the motion
     /// `reducesMotion` allows.
     init(
-        applicationName: String, clock: (() -> Double)? = nil,
+        applicationName: String, applicationID: String? = nil, clock: (() -> Double)? = nil,
         reducesMotion: @escaping () -> Bool = { MainActor.assumeIsolated { WebRelay.reducesMotion } }
     ) {
         self.applicationName = applicationName
+        self.applicationID = applicationID
         frameClock = clock.map { WebFrameClock(now: $0, ticksWithBrowser: false) } ?? WebFrameClock()
         self.reducesMotion = reducesMotion
         runtime.presenter = self
@@ -75,8 +79,8 @@ final class WebRenderer {
     /// Starts the host in the page: told what the page stands on, the application rendered in one new scene, and a
     /// turn after every call the page makes from then on.
     /// Design: docs/design/platforms/web/runtime.md#starting
-    static func start(applicationName: String) {
-        WebRenderer(applicationName: applicationName).run()
+    static func start(applicationName: String, applicationID: String?) {
+        WebRenderer(applicationName: applicationName, applicationID: applicationID).run()
     }
 
     /// Runs this host in the page, in place of any before it, on the page's thread claimed as the UI thread.
@@ -109,7 +113,7 @@ final class WebRenderer {
             register: WebRealization.register,
             complainingTo: WebRenderer.log,
             environment: {
-                WebEnvironment.report(to: core, applicationName: applicationName)
+                WebEnvironment.report(to: core, applicationName: applicationName, applicationID: applicationID)
                 pageListeners.append(WebEnvironment.watch { [weak self] in
                     self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
                 })

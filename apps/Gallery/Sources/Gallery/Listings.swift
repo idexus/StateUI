@@ -13505,7 +13505,7 @@ extension Listings {
 
             init() {
                 number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
                 GalleryControls.hold(self, as: number)
             }
 
@@ -14584,7 +14584,7 @@ extension Listings {
                 GalleryActs.register()
                 GalleryEventSources.register()
             }
-            return StateUIAndroid.load(machine)
+            return AndroidHost.load(machine)
         }
         """#,
         "InteropActsSample.Android.swift": #"""
@@ -14610,7 +14610,7 @@ extension Listings {
             static func battery() -> (Double, Bool) {
                 let reading = Java.frame { () -> [Double] in
                     var values = [0.0, 0.0]
-                    guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(StateUIAndroid.context))
+                    guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(AndroidHost.context))
                     else { return values }
                     values.withUnsafeMutableBufferPointer { Java.jni.GetDoubleArrayRegion(Java.env, array, 0, 2, $0.baseAddress) }
                     return values
@@ -14796,7 +14796,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "InteropActsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
@@ -14940,7 +14940,7 @@ extension Listings {
                 }
 
         // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        // Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()
         """#,
@@ -15082,7 +15082,7 @@ extension Listings {
 
             init() {
                 number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
                 Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
                 GalleryControls.hold(self, as: number)
             }
@@ -15935,7 +15935,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "InteropEventsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
@@ -15978,7 +15978,7 @@ extension Listings {
 
         // Platforms/Web/main.swift
         GalleryEventSources.start()
-        StateUIWeb.run(name: "Gallery")
+        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
         """#,
         "InteropEventsSample.WinUI.cpp": #"""
         // Platforms/WinUI/Relay/System.cpp
@@ -16066,7 +16066,7 @@ extension Listings {
         }
 
         // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        // Before WinUIHost.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
         """#,
         "android.md.acts": #"""
@@ -16176,7 +16176,7 @@ extension Listings {
                 GalleryActs.register()
                 GalleryEventSources.register()
             }
-            return StateUIAndroid.load(machine)
+            return AndroidHost.load(machine)
         }
         """#,
         "appkit.md.acts": #"""
@@ -16302,7 +16302,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+        AppKitHost.run()
         """#,
         "appkit.md.raises": #"""
         // Platforms/AppKit/Host/GalleryEventSources.swift
@@ -16409,9 +16409,9 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
         // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-        StateUIWebViewGTK.register()
+        WebViewGTK.register()
         // Then GTK holds this thread until the last window closes.
-        StateUIGTK.run(applicationID: "com.stateui.gallery")
+        GTKHost.run(applicationID: "com.stateui.gallery")
         """#,
         "uikit.md.acts": #"""
         // Platforms/UIKit/Host/GalleryActs.swift
@@ -16521,7 +16521,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "web.md.acts": #"""
         // Platforms/Web/Host/GalleryActs.swift
@@ -16628,7 +16628,7 @@ extension Listings {
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.start()
-        StateUIWeb.run(name: "Gallery")
+        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
         """#,
         "winui.md.acts": #"""
         // Platforms/WinUI/Host/GalleryActs.swift
@@ -16723,14 +16723,14 @@ extension Listings {
         // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
         // relay in Relay/. Then hand WinUI this thread until the last window closes.
         GalleryApp.register()
-        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        // Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()
-        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        // Before WinUIHost.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
         // The backends the Gallery shows a library element through: the web view, over WebView2.
-        StateUIWebViewWinUI.register()
-        StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
+        WebViewWinUI.register()
+        WinUIHost.run(linkSchemes: ["stateui-gallery"])
         """#,
     ]
 }

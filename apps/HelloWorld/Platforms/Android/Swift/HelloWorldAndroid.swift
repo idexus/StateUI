@@ -9,5 +9,5 @@ import StateUIAndroid
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
     MainActor.assumeIsolated { HelloWorldApp.register() }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }

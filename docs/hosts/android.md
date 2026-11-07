@@ -70,7 +70,7 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
         GalleryActs.register()
         GalleryEventSources.register()
     }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }
 ```
 
@@ -99,7 +99,7 @@ is debugged as soon as it is made.
 
 An application extends the host from its Android head. Registrations run in
 `JNI_OnLoad`, on the UI thread - the main actor's - before
-`StateUIAndroid.load`. Registering a contract or an act again replaces the
+`AndroidHost.load`. Registering a contract or an act again replaces the
 earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's Android halves are in
@@ -110,7 +110,7 @@ of its own and must see them. The Gallery's Android halves are in
 A control of the application's own is an object holding the Android view it
 shows, an `AndroidControl`. The view is a class of the application's own
 Java, made from Swift through `Java` - the host's JNI, the same calls it
-makes itself - with the activity, `StateUIAndroid.context`, and held as a
+makes itself - with the activity, `AndroidHost.context`, and held as a
 `JavaObject`. `StateUIControls.add` says which contract it realizes:
 
 ```swift quote
