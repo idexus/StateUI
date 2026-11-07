@@ -824,8 +824,8 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.parameterMotion(_:)`.
 
-A view can be a body of its own: `.followsLayout(response:damping:)` on it - short for
-`.layoutBody(.followsLayout(response:damping:))` - makes it follow its place on a spring of its own - carried by the run, it
+A view can be a body of its own: `.layoutBody(.followsLayout(response:damping:))` on
+it makes it follow its place on a spring of its own - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
@@ -841,7 +841,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .followsLayout(response: .milliseconds(420), damping: 0.55)
+                .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
         } placements: { room, turn in
             (0..<4).map { index in
                 Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))

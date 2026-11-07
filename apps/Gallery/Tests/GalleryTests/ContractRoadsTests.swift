@@ -287,6 +287,14 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Button>().tooltip(State(wrappedValue: "Saves").projectedValue)"#,
             open: #"_ = Button("Save").tooltip(State(wrappedValue: "Saves").projectedValue)"#),
         Road(
+            name: "a layout body by a shortcut",
+            closed: #"_ = Text("a").followsLayout(response: .milliseconds(420))"#,
+            open: #"_ = Text("a").layoutBody(.followsLayout(response: .milliseconds(420)))"#),
+        Road(
+            name: "a color written as a brush",
+            closed: #"_ = Rectangle().fill(.solidColor(.red))"#,
+            open: #"_ = Rectangle().fill(.red)"#),
+        Road(
             name: "an engine said by a motion",
             closed: #"_ = State(wrappedValue: 0.0, motion: .custom)"#,
             open: #"_ = State(wrappedValue: 0.0, animatedBy: .engine)"#),

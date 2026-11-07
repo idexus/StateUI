@@ -207,7 +207,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 // settles back onto its place.
                 if swaying {
                     face(Self.cards[index])
-                        .followsLayout(response: .milliseconds(420), damping: 0.55)
+                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
                 } else {
                     face(Self.cards[index])
                 }

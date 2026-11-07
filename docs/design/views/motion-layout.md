@@ -169,7 +169,7 @@ slow as an animation counts arrived leaves the world.
 
 A body of the world's own is at its place but where a change shifted it: the
 parameters and the hand carry it exactly. A body following its layout
-(`.followsLayout(response:damping:)`) is carried by its place's moves too: the place moving
+(`.layoutBody(.followsLayout(response:damping:))`) is carried by its place's moves too: the place moving
 under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand

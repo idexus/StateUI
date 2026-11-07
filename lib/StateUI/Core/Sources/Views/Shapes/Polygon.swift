@@ -19,7 +19,7 @@ extension PolygonProperties {
 /// A closed outline through a list of points.
 ///
 ///     Polygon([Point(20, 0), Point(40, 40), Point(0, 40)])
-///         .fill(.solidColor(.steelBlue))
+///         .fill(.steelBlue)
 ///
 /// The last point is joined back to the first,
 /// which is the whole difference between this and a `Polyline`.

@@ -7,7 +7,7 @@
 
 /// What a shape, an outline or a background is painted with.
 ///
-///     .fill(.solidColor(.tomato))
+///     .fill(.tomato)
 ///     .background(.linearGradient([
 ///         GradientStop(.cornflowerBlue, 0),
 ///         GradientStop(.indigo, 1),
@@ -40,10 +40,9 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
         self.stops = stops
     }
 
-    /// One color, everywhere.
-    ///
-    /// A color said as a brush, for a property that takes only a brush.
-    public static func solidColor(_ color: Color) -> Brush {
+    /// One color as a brush, as a host is handed a color where a property takes a brush. An application writes
+    /// the `Color` itself, which every place taking a brush takes too.
+    @_spi(Host) public static func solidColor(_ color: Color) -> Brush {
         Brush(.solidColor, stops: [GradientStop(color, 0)])
     }
 

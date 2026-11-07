@@ -107,14 +107,8 @@ final class LayoutFollowerTests: XCTestCase {
         .node
     }
 
-    /// A VIEW FOLLOWING ITS LAYOUT WEARS THE BODY THAT FOLLOWS IT: `.followsLayout(response:damping:)` writes what
-    /// `.layoutBody(.followsLayout(response:damping:))` does, on the spring the world's dynamics of the same words
-    /// would be.
-    func testAViewFollowingItsLayoutWearsTheBodyThatFollowsIt() {
-        let short = Text("a").followsLayout(response: .milliseconds(420), damping: 0.55).node
-        let whole = Text("a").layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55)).node
-
-        XCTAssertEqual(short.props[.layoutBody], whole.props[.layoutBody])
+    /// A BODY FOLLOWING ITS LAYOUT MOVES ON THE SPRING the world's dynamics of the same words would be.
+    func testABodyFollowingItsLayoutMovesOnTheWorldsSpring() {
         XCTAssertEqual(
             LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.55).spring,
             LayoutDynamics.spring(response: .milliseconds(420), damping: 0.55).spring)
@@ -137,7 +131,7 @@ final class LayoutFollowerTests: XCTestCase {
         func built() -> Node {
             let layout = MotionLayout([0], parameters: phase.projectedValue) { index in
                 if sways.wrappedValue {
-                    Text("\(index)").followsLayout(response: .milliseconds(400), damping: 0.5)
+                    Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
                 } else {
                     Text("\(index)")
                 }

@@ -426,7 +426,7 @@ Rectangle()
         from: Point(0, 0),
         to: Point(1, 0)))
     .cornerRadius(14)
-    .stroke(.solidColor(.white))
+    .stroke(.white)
     .lineWidth(2)
     .height(80)
 ```

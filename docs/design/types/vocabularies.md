@@ -48,7 +48,7 @@ kind is made of.
 
 ```text
   GridLength.proportional(2)       [1, 2]
-  GridLength.automatic                  [2, 1]      every length carries both parts
+  GridLength.automatic             [2, 1]      every length carries both parts
   ContainerShape.roundedRectangle(12) [1, 12]
   ContainerShape.ellipse              [2]
   ContainerShape.capsule              [3]

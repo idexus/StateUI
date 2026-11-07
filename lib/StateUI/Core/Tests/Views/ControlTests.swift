@@ -530,7 +530,7 @@ final class ControlTests: XCTestCase {
                         .geometryTransform(Self.leaned)
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
-                        .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))
+                        .background(Color(light: .whiteSmoke, dark: .black))
 
                     Text("Tiers")
                         .textColor(.firebrick)
@@ -833,7 +833,7 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
-            "followsLayout", "id", "assign", "area",
+            "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
             // whose twin a view's tier carries.
             "title", "ignoresSafeArea", "accessibilityIdentifier",

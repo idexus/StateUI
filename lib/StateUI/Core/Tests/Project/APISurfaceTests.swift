@@ -231,7 +231,8 @@ final class APISurfaceTests: XCTestCase {
 
     /// Whatever takes a `Material` takes a `Color` and a `Brush` beside it, and a state of a color where it takes
     /// one of a material: a background is written alike on a view, a page, a bar and a sidebar. A run of text is
-    /// painted by the platform's text in one color, so it takes no brush.
+    /// painted by the platform's text in one color, so it takes no brush. A modifier taking a brush takes a color
+    /// too, so no application writes a color as a brush.
     func testWhatTakesAMaterialTakesAColorAndABrush() throws {
         let oneColor: Set = ["swift.method TextSpan.background(_:)"]
         var overloads: [String: [String]] = [:]
@@ -241,6 +242,11 @@ final class APISurfaceTests: XCTestCase {
         }
 
         var missing: [String] = []
+        for (name, declarations) in overloads where name.hasPrefix("swift.method ")
+            && declarations.contains(where: { $0.contains(/\(_ \w+: Brush\)/) })
+            && !declarations.contains(where: { $0.contains(/\(_ \w+: Color\)/) }) {
+            missing.append("\(name) takes no Color")
+        }
         for (name, declarations) in overloads where declarations.contains(where: { $0.contains(/\(_ \w+: Material\)/) }) {
             let takes = { (type: String) in declarations.contains { $0.contains("(_ ") && $0.contains(": \(type))") } }
             var wanted = ["Color"] + (oneColor.contains(name) ? [] : ["Brush"])
