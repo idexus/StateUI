@@ -10,7 +10,7 @@ public enum MenuItemContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// An entry is an item a user chooses, and it acts.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self, ActionElementContract.self]
+    public static let tiers: [any Tier.Type] = [MenuItemElementContract.self, ActionElementContract.self]
 
     /// The element's own members: none beyond its tiers'.
     public static let members: [any ContractMember] = []

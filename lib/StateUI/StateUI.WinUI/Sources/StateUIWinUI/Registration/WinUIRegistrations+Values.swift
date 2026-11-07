@@ -25,7 +25,7 @@ extension WinUIRegistrations {
             }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            slider.raises(SliderContract.valueChanged)
+            slider.declares(SliderContract.valueChanged)
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = WinUIStepperView()
@@ -44,7 +44,7 @@ extension WinUIRegistrations {
                     step: values[StepperContract.step] ?? 1)
             }
             stepper.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(StepperContract.valueChanged)
         })
     }
 }

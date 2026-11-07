@@ -4,12 +4,12 @@
 /// What every drawn element has: its size and its bounds, how it is shown and
 /// turned, whether it answers input and holds the keyboard focus, the visual
 /// states it enters, and what a screen reader says about it.
-public enum VisualElementContract: Contract {
+public enum VisualElementContract: Tier {
     /// The tier's name.
     public static let name = "VisualElement"
 
     /// Every drawn element is found by automation.
-    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
     public static let accessibilityActionPerformed = ElementEvent<Self, String>(

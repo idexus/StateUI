@@ -16,10 +16,10 @@ extension WebRegistrations {
                     layout: values[ItemsViewContract.itemsLayout] ?? .list(),
                     mode: values[ItemsViewContract.selectionMode] ?? .none)
             }
-            list.raises(ItemsViewContract.selectedItemsChanged)
-            list.raises(ItemsViewContract.itemActivated)
-            list.raises(ItemsViewContract.endReached)
-            list.raises(ItemsViewContract.realizedChanged)
+            list.declares(ItemsViewContract.selectedItemsChanged)
+            list.declares(ItemsViewContract.itemActivated)
+            list.declares(ItemsViewContract.endReached)
+            list.declares(ItemsViewContract.realizedChanged)
         }
     }
 }

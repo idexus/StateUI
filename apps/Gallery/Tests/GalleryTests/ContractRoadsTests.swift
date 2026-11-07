@@ -35,7 +35,7 @@ final class ContractRoadsTests: XCTestCase {
     private static let declarations = """
         enum BeaconContract: ElementContract {
             static let nodeType: NodeType = "Maps.Beacon"
-            static let tiers: [any Contract.Type] = [ViewContract.self]
+            static let tiers: [any Tier.Type] = [ViewContract.self]
 
             static let title = ElementProperty<Self, String>("title")
             static let level = ElementProperty<Self, Double>("level")
@@ -326,6 +326,18 @@ final class ContractRoadsTests: XCTestCase {
             name: "an application calling the library's own act",
             closed: #"_ = ApplicationContract.handlerFailed"#,
             open: #"_ = ApplicationContract.nodeType"#),
+        Road(
+            name: "an application's event heard as a control's",
+            closed: #"_ = Beacon().onEvent(NotesContract.changed) { _ in }"#,
+            open: #"_ = Beacon().onHostEvent(NotesContract.changed) { _ in }"#),
+        Road(
+            name: "an application's acts worn as a tier",
+            closed: #"enum Worn: ElementContract { static let nodeType: NodeType = "Worn"; static let tiers: [any Tier.Type] = [NotesContract.self]; static let members: [any ContractMember] = [] }"#,
+            open: #"enum Worn: ElementContract { static let nodeType: NodeType = "Worn"; static let tiers: [any Tier.Type] = [ViewContract.self]; static let members: [any ContractMember] = [] }"#),
+        Road(
+            name: "an application's act aimed at a control",
+            closed: #"_ = try await Aim(Beacon.self).call(NotesContract.log, "aimed")"#,
+            open: #"_ = try await Aim(Beacon.self).call(FocusElementContract.focus)"#),
         Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,

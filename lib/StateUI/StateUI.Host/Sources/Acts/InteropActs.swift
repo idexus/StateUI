@@ -47,7 +47,7 @@
     /// Performs an act aimed at an element with `perform`, handed the control `control` finds in the element's
     /// view and the values its contract declares; an element shown otherwise fails the call.
     public func add<
-        Owner: Contract, Made, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, Made, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         control: @escaping @MainActor (View) -> Made?,

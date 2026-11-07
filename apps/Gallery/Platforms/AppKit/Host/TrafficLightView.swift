@@ -128,7 +128,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }

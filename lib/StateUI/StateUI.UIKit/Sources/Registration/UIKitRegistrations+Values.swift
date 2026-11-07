@@ -29,9 +29,9 @@ extension UIKitRegistrations {
                 view.minimumTrackTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.pressed)
-            slider.raises(SliderContract.released)
+            slider.declares(SliderContract.valueChanged)
+            slider.declares(SliderContract.pressed)
+            slider.declares(SliderContract.released)
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = UIKitStepperView()
@@ -50,7 +50,7 @@ extension UIKitRegistrations {
                     step: values[StepperContract.step] ?? 1)
             }
             stepper.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(StepperContract.valueChanged)
         })
     }
 }

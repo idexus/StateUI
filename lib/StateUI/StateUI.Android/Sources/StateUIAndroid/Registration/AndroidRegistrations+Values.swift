@@ -27,9 +27,9 @@ extension AndroidRegistrations {
             }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.pressed)
-            slider.raises(SliderContract.released)
+            slider.declares(SliderContract.valueChanged)
+            slider.declares(SliderContract.pressed)
+            slider.declares(SliderContract.released)
         })
 
         registry.add(StepperContract.self, create: { reports in
@@ -49,7 +49,7 @@ extension AndroidRegistrations {
                     step: values[StepperContract.step] ?? 1,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(StepperContract.valueChanged)
         })
     }
 }

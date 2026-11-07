@@ -141,7 +141,7 @@ extension GoogleMapView {
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,

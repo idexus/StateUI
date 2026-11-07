@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// An element the user pulls to refresh what it shows - a scroller, a list.
-public enum RefreshElementContract: Contract {
+public enum RefreshElementContract: Tier {
     /// The tier's name.
     public static let name = "RefreshElement"
 

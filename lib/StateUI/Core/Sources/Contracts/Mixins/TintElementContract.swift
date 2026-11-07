@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A control's one accent color.
-public enum TintElementContract: Contract {
+public enum TintElementContract: Tier {
     /// The tier's name.
     public static let name = "TintElement"
 

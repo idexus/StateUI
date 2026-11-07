@@ -74,9 +74,9 @@ extension WebRegistrations {
                 view.attribute("type", role == .primary ? "submit" : "button")
                 view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ButtonContract.clicked)
+            button.declares(ButtonContract.pressed)
+            button.declares(ButtonContract.released)
         })
     }
 

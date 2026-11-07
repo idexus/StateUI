@@ -422,7 +422,7 @@ final class RegistryTests: XCTestCase {
                     + (values[LampContract.emphasis] == true ? "!" : "")
                 view.captions += 1
             }
-            lamp.raises(LampContract.lampTapped)
+            lamp.declares(LampContract.lampTapped)
         })
 
         return registry
@@ -457,7 +457,7 @@ final class RegistryTests: XCTestCase {
 
 /// A tier the lamp wears: a value and the change it reports, declared apart
 /// from the element itself - as a field's words and its text change are.
-private enum DialContract: Contract {
+private enum DialContract: Tier {
     static let name = "TestDial"
 
     static let setting = ElementProperty<Self, Double>("setting")
@@ -468,7 +468,7 @@ private enum DialContract: Contract {
 }
 
 /// The same shape, worn by nothing here.
-private enum StrayDialContract: Contract {
+private enum StrayDialContract: Tier {
     static let name = "StrayDial"
 
     static let setting = ElementProperty<Self, Double>("setting")
@@ -482,7 +482,7 @@ private enum StrayDialContract: Contract {
 /// own.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "Test.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self, DialContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self, DialContract.self]
 
     static let signal = ElementProperty<Self, Int>("signal")
     static let caption = ElementProperty<Self, String>("caption")

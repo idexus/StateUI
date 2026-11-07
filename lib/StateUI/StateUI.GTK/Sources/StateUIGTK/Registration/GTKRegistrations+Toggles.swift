@@ -19,7 +19,7 @@ extension GTKRegistrations {
             toggle.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
             let box = GTKCheckView()
@@ -32,7 +32,7 @@ extension GTKRegistrations {
             box.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(CheckBoxContract.toggled)
         })
     }
 }

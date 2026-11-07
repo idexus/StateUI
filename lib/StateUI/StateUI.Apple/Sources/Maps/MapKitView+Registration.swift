@@ -27,7 +27,7 @@ extension MapKitView {
             map.property(MapContract.isScrollEnabled) { view, on in view.isScrollEnabled = on ?? true }
             map.property(MapContract.isZoomEnabled) { view, on in view.isZoomEnabled = on ?? true }
             map.property(MapContract.showsUserLocation) { view, on in view.showUser(on ?? false) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.kind, MarkerContract.location,

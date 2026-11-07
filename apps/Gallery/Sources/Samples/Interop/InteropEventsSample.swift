@@ -59,7 +59,7 @@ struct InteropEventsSample: SampleContent, ExampleContent {
                 + "when the platform reports something. Every `.onHostEvent` - and every "
                 + "`HostEvents.on` subscription - hears it in a job of the UI thread's, like a control's handler: on "
                 + "`MainActor`, free to write `@State`, and to await through a `gate:`. "
-                + "The head declares each event it raises with `StateUIEvents.raises`, so "
+                + "The head declares each event it raises with `StateUIEvents.declares`, so "
                 + "a handler listening for one nothing raises is told so once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

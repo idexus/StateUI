@@ -186,7 +186,7 @@
     /// visibility - rather than one registration.
     ///
     /// - Parameter member: the property, written with its contract.
-    public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
+    public func everyElementRealizes<Owner: WornContract, Value>(_ member: ElementProperty<Owner, Value>) {
         everyElement.append((owner: Owner.self, member: member.name))
         realized = nil
     }
@@ -196,7 +196,7 @@
     /// registration.
     ///
     /// - Parameter event: the event, written with its contract.
-    public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func everyElementRaises<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         everyElement.append((owner: Owner.self, member: event.name))
         realized = nil
     }
@@ -210,10 +210,10 @@
     /// raises through `HostBoundary.raise`: recorded on the
     /// application element, so the core knows the host reports it.
     ///
-    ///     registry.raises(GalleryContract.batteryChanged)
+    ///     registry.declares(GalleryContract.batteryChanged)
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
         applicationEvents.insert(
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
         realized = nil

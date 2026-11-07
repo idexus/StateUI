@@ -3,12 +3,12 @@
 
 /// What every field a user types into has: the text's limits and caret, the
 /// keyboard it asks for, and the placeholder shown while it is empty.
-public enum TextInputContract: Contract {
+public enum TextInputContract: Tier {
     /// The tier's name.
     public static let name = "TextInput"
 
     /// A field is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, FocusElementContract.self]
 
     /// Where the caret is, in characters from the start.
     public static let cursorPosition = ElementProperty<Self, Int>(

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// How a picture fills the room it was given.
-public enum ImageElementContract: Contract {
+public enum ImageElementContract: Tier {
     /// The tier's name.
     public static let name = "ImageElement"
 

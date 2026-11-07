@@ -22,7 +22,7 @@ extension WebRegistrations {
             }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(DatePickerContract.dateChanged)
+            picker.declares(DatePickerContract.dateChanged)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = WebTimePickerView()
@@ -32,7 +32,7 @@ extension WebRegistrations {
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.declares(TimePickerContract.timeChanged)
         })
     }
 }

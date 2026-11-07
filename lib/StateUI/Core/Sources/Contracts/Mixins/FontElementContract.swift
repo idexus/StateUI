@@ -4,7 +4,7 @@
 /// The font text is drawn in: its step of the platform's type ramp, its family,
 /// its size, its weight and slant, and whether it follows the user's text-size
 /// setting.
-public enum FontElementContract: Contract {
+public enum FontElementContract: Tier {
     /// The tier's name.
     public static let name = "FontElement"
 

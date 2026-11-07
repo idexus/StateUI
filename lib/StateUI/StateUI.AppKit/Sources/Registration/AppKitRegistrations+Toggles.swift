@@ -25,7 +25,7 @@ extension AppKitRegistrations {
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(SwitchContract.toggled)
         })
 
         registry.add(CheckBoxContract.self, create: { reports in
@@ -45,7 +45,7 @@ extension AppKitRegistrations {
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(CheckBoxContract.toggled)
         })
     }
 }

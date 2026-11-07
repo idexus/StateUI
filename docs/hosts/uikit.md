@@ -150,7 +150,7 @@ public static func add<Realized: ElementContract, Made: UIView>(
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
   over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the view raises.
+  described, and `declares(_:)` records an event the view raises.
 
 ```swift listing uikit.md.control
 // Platforms/UIKit/Host/TrafficLightView.swift
@@ -170,7 +170,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -217,7 +217,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
             rating: values[RatingBarContract.rating] ?? 0,
             of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -269,7 +269,7 @@ fail the call with the reason, named. The Swift half is under
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, and `StateUIEvents.raises` declares it where its source is wired -
+element, and `StateUIEvents.declares` declares it where its source is wired -
 here the Gallery's battery:
 
 ```swift listing uikit.md.event
@@ -279,7 +279,7 @@ here the Gallery's battery:
 static func start() {
     // What the host raises, declared where its source is wired: a handler
     // listening for an event nothing raises is told so.
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 
     UIDevice.current.isBatteryMonitoringEnabled = true
     for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {

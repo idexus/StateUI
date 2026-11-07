@@ -85,11 +85,11 @@ extension WinUIRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: values[BorderElementContract.shape] != nil)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
             scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
                 view.applyRefresh(values)
             }
-            scroll.raises(RefreshElementContract.refreshRequested)
+            scroll.declares(RefreshElementContract.refreshRequested)
         }
     }
 

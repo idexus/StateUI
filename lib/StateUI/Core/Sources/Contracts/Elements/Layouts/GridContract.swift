@@ -11,7 +11,7 @@ public enum GridContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A grid is a layout.
-    public static let tiers: [any Contract.Type] = [LayoutContract.self]
+    public static let tiers: [any Tier.Type] = [LayoutContract.self]
 
     /// The gap between one column and the next, in device units.
     public static let columnSpacing = ElementProperty<Self, Double>(

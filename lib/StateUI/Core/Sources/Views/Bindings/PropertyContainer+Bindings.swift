@@ -13,7 +13,7 @@ extension ModifiableElement {
     ///   - mode: which way the value crosses.
     ///   - kind: how the host applies the value; see `StateKind`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable & LaneValue>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable & LaneValue>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
         mode: StateMode,
@@ -31,7 +31,7 @@ extension ModifiableElement {
     ///   - state: the whole state, `$x`.
     ///   - mode: which way the words cross.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract>(
+    public func setValue<Owner: WornContract>(
         _ property: ElementProperty<Owner, String>,
         on state: Binding<String>,
         mode: StateMode
@@ -55,7 +55,7 @@ extension ModifiableElement {
     ///   - mode: which way the value crosses.
     ///   - kind: how the host applies the value; see `StateKind`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable & Walked>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable & Walked>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
         mode: StateMode,
@@ -214,7 +214,7 @@ extension PropertyContainer {
     /// where the member travels, and sets it as it stands where it does not - the contract decides, so a twin never
     /// disagrees with the value it twins.
     /// Design: docs/design/views/bindings.md#binding-twins
-    func twin<Owner: Contract, Value: Walked & HostRepresentable>(
+    func twin<Owner: WornContract, Value: Walked & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>
     ) -> Modified {
@@ -222,7 +222,7 @@ extension PropertyContainer {
     }
 
     /// A twin over a value no host walks: set as it stands.
-    func twin<Owner: Contract, Value: LaneValue & HostRepresentable>(
+    func twin<Owner: WornContract, Value: LaneValue & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>
     ) -> Modified {
@@ -231,7 +231,7 @@ extension PropertyContainer {
 
     /// A twin whose state carries another type than its member's - a color into a material, a radius into its
     /// corners: walked where the member travels and the value can be.
-    func twin<Owner: Contract, Member, Value: Walked>(
+    func twin<Owner: WornContract, Member, Value: Walked>(
         _ property: ElementProperty<Owner, Member>,
         carrying state: Binding<Value>
     ) -> Modified {
@@ -239,7 +239,7 @@ extension PropertyContainer {
     }
 
     /// A twin carrying another type than its member's that no host walks: set as it stands.
-    func twin<Owner: Contract, Member, Value: LaneValue>(
+    func twin<Owner: WornContract, Member, Value: LaneValue>(
         _ property: ElementProperty<Owner, Member>,
         carrying state: Binding<Value>
     ) -> Modified {
@@ -247,7 +247,7 @@ extension PropertyContainer {
     }
 
     /// `words(_:by:mode:)` over a text member.
-    func words<Owner: Contract>(
+    func words<Owner: WornContract>(
         _ property: ElementProperty<Owner, String>,
         by state: Binding<String>,
         mode: StateMode = .out
@@ -260,7 +260,7 @@ extension ElementView {
     /// `isOpen` from a state, both ways: the host opens and closes as the state stands, and the user's opening and
     /// closing come back into it as the platform raises them.
     /// Design: docs/design/views/bindings.md#binding-twins
-    func opening<Owner: Contract>(
+    func opening<Owner: WornContract>(
         _ property: ElementProperty<Owner, Bool>, by state: Binding<Bool>,
         opened: ElementEvent<Owner, Void>, closed: ElementEvent<Owner, Void>
     ) -> Self {

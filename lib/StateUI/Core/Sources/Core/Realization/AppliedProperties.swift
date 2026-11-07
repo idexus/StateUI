@@ -17,7 +17,7 @@
     @_spi(Host) public var applied: PropertyList { PropertyList() }
 }
 
-@_spi(Host) extension ElementProperty: AppliedProperties {
+@_spi(Host) extension ElementProperty: AppliedProperties where Owner: WornContract {
     /// The property, alone.
     @_spi(Host) public var applied: PropertyList { PropertyList(self) }
 }

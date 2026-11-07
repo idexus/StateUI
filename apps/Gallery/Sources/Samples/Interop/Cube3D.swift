@@ -36,7 +36,7 @@ public enum CubeColor: Int32, CaseIterable, HostRepresentable {
 /// and its members, each with its value's type.
 public enum Cube3DContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.Cube3D"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// How long the cube's edge is, as a share of the room the view is given,
     /// 0 through 1. A size HAS a half way, so a change travels and a walk of

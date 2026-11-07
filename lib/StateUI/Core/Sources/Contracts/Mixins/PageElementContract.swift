@@ -6,7 +6,7 @@
 /// window is given. A page and an arrangement say them under the same keys, so
 /// both wear this tier, and it wears nothing: an arrangement's background is the
 /// ground of its pages that say none.
-public enum PageElementContract: Contract {
+public enum PageElementContract: Tier {
     /// The tier's name.
     public static let name = "PageElement"
 

@@ -3,12 +3,12 @@
 
 /// What every drawn shape has: the line along it, how it fits its room, and a
 /// transform of its own drawing.
-public enum ShapeContract: Contract {
+public enum ShapeContract: Tier {
     /// The tier's name.
     public static let name = "Shape"
 
     /// A shape is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// How the shape fills the room it was given when the two differ.
     public static let contentMode = ElementProperty<Self, ContentMode>("contentMode", layer: .native)

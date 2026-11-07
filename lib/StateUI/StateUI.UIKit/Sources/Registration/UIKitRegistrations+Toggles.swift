@@ -25,7 +25,7 @@ extension UIKitRegistrations {
                     TextMembers.caption(values),
                     color: values[TextColorElementContract.textColor].flatMap { UIColor(stateUI: $0.propValue) })
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
             let box = UIKitCheckView()
@@ -41,7 +41,7 @@ extension UIKitRegistrations {
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(CheckBoxContract.toggled)
         })
     }
 }

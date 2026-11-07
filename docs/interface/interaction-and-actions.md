@@ -605,7 +605,7 @@ same contract the subscription is written against, from whatever thread the
 platform reports on; the subscriptions hear it on the UI thread soon after, in
 the order raised. A raise nobody hears is an ordinary one rather than a
 failure, so a host wires its sources unconditionally. The head declares what
-it raises, `StateUIEvents.raises(NotesContract.importFinished)`, and a
+it raises, `StateUIEvents.declares(NotesContract.importFinished)`, and a
 subscription to an event no head declared is said once, as a misspelled name
 would be. The Gallery's heads raise the battery's changes:
 [AppKit](../hosts/appkit.md#an-event-without-a-control),

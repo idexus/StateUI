@@ -53,7 +53,7 @@ public struct TestElement {
     /// the view wears no contract of the member's.
     ///
     ///     XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 1 time")
-    public func value<Owner: Contract, Value: HostRepresentable>(
+    public func value<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) throws -> Value? {
         let element = try mounted()

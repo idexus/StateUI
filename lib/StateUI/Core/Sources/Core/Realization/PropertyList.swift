@@ -14,7 +14,7 @@
     /// The properties given, in their order.
     ///
     /// - Parameter properties: each written with its contract.
-    public init<each Owner: Contract, each Value: HostRepresentable>(
+    public init<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>
     ) {
         var listed: [any RegisteredProperty] = []

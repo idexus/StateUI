@@ -3,7 +3,7 @@
 
 /// What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow
 /// saying so shows.
-public enum ButtonMenuElementContract: Contract {
+public enum ButtonMenuElementContract: Tier {
     /// The tier's name.
     public static let name = "ButtonMenuElement"
 

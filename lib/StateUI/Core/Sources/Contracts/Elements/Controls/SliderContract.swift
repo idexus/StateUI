@@ -10,7 +10,7 @@ public enum SliderContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A slider is a view, tinted.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 

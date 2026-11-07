@@ -20,12 +20,12 @@ public struct ControlValues<Realized: ElementContract> {
 
     /// The value of `member`, as the type its contract declares - nil where it is not described.
     @MainActor
-    public subscript<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
+    public subscript<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
         values[member]
     }
 
     /// Whether `member`'s value changed since the control last took them.
-    public func changed<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
+    public func changed<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
         values.changed(member)
     }
 }

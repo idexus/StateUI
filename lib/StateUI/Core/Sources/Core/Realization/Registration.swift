@@ -36,7 +36,7 @@
     /// - Parameters:
     ///   - member: the property, written with its contract.
     ///   - apply: puts the value on the view.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
         _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
@@ -106,8 +106,8 @@
     ///   - events: the children's events the view raises, written with their contracts.
     ///   - apply: hands the view every child of the contract.
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,
@@ -140,7 +140,7 @@
     /// wear is refused, and said once.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         guard Self.wears(Owner.self, for: event.name) else { return }
 
         members.insert(HostRealizedMember(element: Realized.name, owner: Owner.name, member: event.name))

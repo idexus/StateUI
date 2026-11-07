@@ -8,7 +8,7 @@ import XCTest
 /// An element of the suite's own, as an application declares one.
 enum ProbeContract: ElementContract {
     static let nodeType: NodeType = "WebTests.Probe"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let tone = ElementProperty<Self, Double>("tone")
     static let members: [any ContractMember] = [tone]
 }

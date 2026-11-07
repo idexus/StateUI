@@ -3,12 +3,12 @@
 
 /// What every layout has: the edges it runs under what stands over its page
 /// on, and whether its children are clipped or let input through.
-public enum LayoutContract: Contract {
+public enum LayoutContract: Tier {
     /// The tier's name.
     public static let name = "Layout"
 
     /// A layout is a view, and keeps space inside itself.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, PaddingElementContract.self, BorderElementContract.self, KeyboardElementContract.self,
     ]
 

@@ -18,7 +18,7 @@ extension AndroidRegistrations {
             }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.
             link.property(LinkContract.address) { _, _ in }
-            link.raises(LinkContract.clicked)
+            link.declares(LinkContract.clicked)
         })
     }
 }

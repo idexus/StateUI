@@ -58,7 +58,7 @@ public enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
 /// wears, and its members, each with its value's type.
 public enum TrafficLightContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.TrafficLight"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Which lamp is lit.
     public static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -106,6 +106,11 @@ public struct TrafficLight: ElementView {
   native, adaptive, composed by StateUI or the provider's own. The library
   declares every control the same way; the [control dictionary](../controls/README.md)
   renders those declarations.
+- **`Tier`** declares members many elements wear, such as a glow several of
+  an application's controls share; an element lists it among its `tiers`.
+  An element's own contract and its tiers are `WornContract`s: what a view
+  writes, hears and is aimed with is a member of one, and the compiler
+  refuses a member of an `ApplicationTier` there.
 - **`HostRepresentable`** is a value that crosses to a host:
   `propValue` and `init?(propValue:)` turn it into a `PropValue` and back. A
   closed vocabulary crosses as its case's number, an author-named one as a

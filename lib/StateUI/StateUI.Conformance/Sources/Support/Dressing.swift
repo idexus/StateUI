@@ -23,7 +23,7 @@ extension Worn {
 
 /// One member and its value, written through the element's own `setValue`.
 @MainActor
-public struct Write<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
+public struct Write<Owner: WornContract, Value: HostRepresentable & Sendable>: Worn {
     /// The member.
     public let member: ElementProperty<Owner, Value>
 
@@ -48,7 +48,7 @@ public struct Write<Owner: Contract, Value: HostRepresentable & Sendable>: Worn 
 
 /// One event and what hears it, through the element's own `onEvent`.
 @MainActor
-public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
+public struct Hear<Owner: WornContract, Value: HostRepresentable & Sendable>: Worn {
     /// The event.
     public let event: ElementEvent<Owner, Value>
 
@@ -70,7 +70,7 @@ public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
 
 /// One event carrying two values, and what hears them.
 @MainActor
-public struct HearTwo<Owner: Contract, First, Second>: Worn
+public struct HearTwo<Owner: WornContract, First, Second>: Worn
 where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable {
     /// The event.
     public let event: ElementEvent<Owner, (First, Second)>
@@ -95,7 +95,7 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable 
 
 /// One event carrying three values, and what hears them.
 @MainActor
-public struct HearThree<Owner: Contract, First, Second, Third>: Worn
+public struct HearThree<Owner: WornContract, First, Second, Third>: Worn
 where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable, Third: HostRepresentable & Sendable {
     /// The event.
     public let event: ElementEvent<Owner, (First, Second, Third)>
@@ -121,7 +121,7 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
 
 /// One event carrying four values, and what hears them.
 @MainActor
-public struct HearFour<Owner: Contract, First, Second, Third, Fourth>: Worn
+public struct HearFour<Owner: WornContract, First, Second, Third, Fourth>: Worn
 where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable, Third: HostRepresentable & Sendable,
     Fourth: HostRepresentable & Sendable {
     /// The event.
@@ -148,7 +148,7 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
 
 /// One event carrying nothing, and what hears it.
 @MainActor
-public struct HearDone<Owner: Contract>: Worn {
+public struct HearDone<Owner: WornContract>: Worn {
     /// The event.
     public let event: ElementEvent<Owner, Void>
 

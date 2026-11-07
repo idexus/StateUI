@@ -19,7 +19,7 @@ extension ModifiableElement {
     ///   - event: the member, written with its contract.
     ///   - handler: what runs, given the values.
     /// - Returns: the element, with the handler on it.
-    public func onEvent<Owner: Contract, each Value: HostRepresentable>(
+    public func onEvent<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) -> Modified {
@@ -36,7 +36,7 @@ extension ModifiableElement {
     ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs, given the values.
     /// - Returns: the element, with the handler on it.
-    public func onEvent<Owner: Contract, each Value: HostRepresentable>(
+    public func onEvent<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<repeat each Value>
@@ -45,7 +45,7 @@ extension ModifiableElement {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onEvent<Owner: Contract, each Value: HostRepresentable>(
+    public func onEvent<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<repeat each Value>

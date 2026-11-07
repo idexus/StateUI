@@ -29,7 +29,7 @@ extension WebRegistrations {
                 (view as! any WebChoosing).setLook(TextMembers.look(of: values))
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(PickerContract.selectedIndexChanged)
+            picker.declares(PickerContract.selectedIndexChanged)
         })
     }
 }

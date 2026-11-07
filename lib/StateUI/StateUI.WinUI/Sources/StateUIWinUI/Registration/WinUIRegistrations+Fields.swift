@@ -19,8 +19,8 @@ extension WinUIRegistrations {
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(TextFieldContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = WinUITextEditorView()
@@ -31,7 +31,7 @@ extension WinUIRegistrations {
             editor.applies(boxMembers) { view, values in applyBox(view, values) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = WinUISearchFieldView()
@@ -49,8 +49,8 @@ extension WinUIRegistrations {
             search.applies(
                 TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
                 TextInputContract.inputPurpose) { view, values in view.setTraits(InputTraits(values)) }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SearchFieldContract.submitted)
         })
     }
 

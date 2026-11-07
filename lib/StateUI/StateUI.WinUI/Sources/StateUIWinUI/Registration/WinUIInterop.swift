@@ -108,7 +108,7 @@ public enum StateUIActs {
     ///   - perform: given the element's control and the arguments the contract declares, answering the values it
     ///     declares.
     public static func add<
-        Owner: Contract, Made: WinUIControl, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, Made: WinUIControl, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on control: Made.Type,
@@ -124,12 +124,12 @@ public enum StateUIEvents {
     /// Declares an event of the application's this host raises, where its source is wired: a handler listening for
     /// an event nothing declared is told, once, that it will not hear it.
     ///
-    ///     StateUIEvents.raises(GalleryContract.batteryChanged)
+    ///     StateUIEvents.declares(GalleryContract.batteryChanged)
     ///
     /// - Parameter event: the member, written with its contract.
     @MainActor
-    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        WinUIRegistrations.registry.raises(event)
+    public static func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        WinUIRegistrations.registry.declares(event)
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares, from
@@ -166,7 +166,7 @@ public final class WinUIRegistration<Realized: ElementContract, Made: WinUIContr
     /// - Parameters:
     ///   - member: the property, written with its contract.
     ///   - apply: puts the value on the control.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
         _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
@@ -185,7 +185,7 @@ public final class WinUIRegistration<Realized: ElementContract, Made: WinUIContr
     /// - Parameters:
     ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+    public func applies<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>,
         apply: @escaping @MainActor (Made, ControlValues<Realized>) -> Void
     ) {
@@ -195,8 +195,8 @@ public final class WinUIRegistration<Realized: ElementContract, Made: WinUIContr
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        registration.raises(event)
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        registration.declares(event)
     }
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
@@ -215,8 +215,8 @@ public final class WinUIRegistration<Realized: ElementContract, Made: WinUIContr
     ///   - events: the children's events the control raises, written with their contracts.
     ///   - apply: hands the control every child of the contract.
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,

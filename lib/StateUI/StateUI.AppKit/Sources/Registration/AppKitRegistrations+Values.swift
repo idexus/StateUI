@@ -31,9 +31,9 @@ extension AppKitRegistrations {
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.pressed)
-            slider.raises(SliderContract.released)
+            slider.declares(SliderContract.valueChanged)
+            slider.declares(SliderContract.pressed)
+            slider.declares(SliderContract.released)
         })
 
         registry.add(StepperContract.self, create: { reports in
@@ -53,7 +53,7 @@ extension AppKitRegistrations {
                     step: values[StepperContract.step] ?? 1,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(StepperContract.valueChanged)
         })
     }
 }

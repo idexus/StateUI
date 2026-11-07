@@ -42,9 +42,9 @@ extension AndroidRegistrations {
             }
             // The role's look; its key is the window's (`KeyboardShortcuts.pressing`).
             button.property(ButtonContract.role) { view, role in view.setRole(role) }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ButtonContract.clicked)
+            button.declares(ButtonContract.pressed)
+            button.declares(ButtonContract.released)
         })
     }
 }

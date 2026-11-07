@@ -10,7 +10,7 @@ public enum SeparatorContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A separator is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// The element's own members.
     public static let members: [any ContractMember] = []

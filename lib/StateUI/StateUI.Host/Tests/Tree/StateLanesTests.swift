@@ -82,7 +82,7 @@ private enum Signal: Int32, HostRepresentable, StateChoice {
 
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "Test.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     static let isLit = ElementProperty<Self, Bool>("isLit")
     static let signal = ElementProperty<Self, Signal>("signal")

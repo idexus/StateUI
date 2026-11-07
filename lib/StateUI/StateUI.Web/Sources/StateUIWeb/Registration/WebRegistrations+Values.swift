@@ -25,9 +25,9 @@ extension WebRegistrations {
             }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.pressed)
-            slider.raises(SliderContract.released)
+            slider.declares(SliderContract.valueChanged)
+            slider.declares(SliderContract.pressed)
+            slider.declares(SliderContract.released)
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = WebStepperView()
@@ -46,7 +46,7 @@ extension WebRegistrations {
                     step: values[StepperContract.step] ?? 1)
             }
             stepper.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(StepperContract.valueChanged)
         })
     }
 }

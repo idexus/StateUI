@@ -6,7 +6,7 @@
 ///
 ///     enum TrafficLightContract: ElementContract {
 ///         static let nodeType: NodeType = "Gallery.TrafficLight"
-///         static let tiers: [any Contract.Type] = [ViewContract.self]
+///         static let tiers: [any Tier.Type] = [ViewContract.self]
 ///
 ///         static let signal = ElementProperty<Self, TrafficSignal>("signal")
 ///
@@ -24,7 +24,7 @@
 /// Every element exists through its contract: its view builds its node from
 /// it, its modifiers write its members, and a host realizes it member by
 /// member.
-public protocol ElementContract: Contract {
+public protocol ElementContract: WornContract {
     /// The node type this contract declares.
     static var nodeType: NodeType { get }
 

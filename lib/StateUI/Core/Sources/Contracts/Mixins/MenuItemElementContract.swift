@@ -4,12 +4,12 @@
 /// What every item a user chooses from says - a menu's entry, a toolbar's
 /// item, an action or a setting: a caption, a picture, whether it can be
 /// chosen, and the keys that choose it.
-public enum MenuItemElementContract: Contract {
+public enum MenuItemElementContract: Tier {
     /// The tier's name.
     public static let name = "MenuItemElement"
 
     /// An item is found by automation.
-    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self]
 
     /// The picture shown with the caption.
     public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)

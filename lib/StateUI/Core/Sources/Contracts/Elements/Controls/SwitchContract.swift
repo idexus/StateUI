@@ -10,7 +10,7 @@ public enum SwitchContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A switch is a view, tinted, with the words it says beside it.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 

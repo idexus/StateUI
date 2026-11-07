@@ -42,9 +42,9 @@ extension UIKitRegistrations {
             picker.property(VisualElementContract.isEnabled) { view, enabled in
                 (view as! any UIKitChoosing).isEnabled = enabled ?? true
             }
-            picker.raises(PickerContract.selectedIndexChanged)
-            picker.raises(PickerContract.opened)
-            picker.raises(PickerContract.closed)
+            picker.declares(PickerContract.selectedIndexChanged)
+            picker.declares(PickerContract.opened)
+            picker.declares(PickerContract.closed)
         })
 
         registry.add(DatePickerContract.self, create: { reports in
@@ -59,7 +59,7 @@ extension UIKitRegistrations {
                 if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            picker.raises(DatePickerContract.dateChanged)
+            picker.declares(DatePickerContract.dateChanged)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
@@ -69,7 +69,7 @@ extension UIKitRegistrations {
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.declares(TimePickerContract.timeChanged)
         })
 
         registry.add(ColorPickerContract.self, create: { reports in
@@ -86,7 +86,7 @@ extension UIKitRegistrations {
                     choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false)
             }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
-            picker.raises(ColorPickerContract.colorChanged)
+            picker.declares(ColorPickerContract.colorChanged)
         })
     }
 }

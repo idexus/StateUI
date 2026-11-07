@@ -3,12 +3,12 @@
 
 /// A button on a bar - an action or a setting: the press its visual states follow, beside the pointer over it every
 /// item on a bar reports.
-public enum BarButtonElementContract: Contract {
+public enum BarButtonElementContract: Tier {
     /// The tier's name.
     public static let name = "BarButtonElement"
 
     /// A button on a bar is an item on it.
-    public static let tiers: [any Contract.Type] = [BarItemElementContract.self]
+    public static let tiers: [any Tier.Type] = [BarItemElementContract.self]
 
     /// A press began on the button: a finger, a pen or a mouse button went down.
     public static let pressed = ElementEvent<Self, Void>("pressed", layer: .native)

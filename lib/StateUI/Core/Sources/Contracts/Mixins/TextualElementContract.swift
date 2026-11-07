@@ -3,12 +3,12 @@
 
 /// What every element showing words has: the words, and the case they are
 /// drawn in.
-public enum TextualElementContract: Contract {
+public enum TextualElementContract: Tier {
     /// The tier's name.
     public static let name = "TextualElement"
 
     /// Words are drawn in a color and a spacing.
-    public static let tiers: [any Contract.Type] = [TextColorElementContract.self]
+    public static let tiers: [any Tier.Type] = [TextColorElementContract.self]
 
     /// The words.
     public static let text = ElementProperty<Self, String>("text", layer: .native)

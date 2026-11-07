@@ -9,7 +9,7 @@ extension ElementValues {
     /// at shows it - else `standing`, the one the control shows, so a hand on it is never argued with.
     /// Design: docs/design/host/runtime.md#a-value-in-a-range
     @MainActor
-    public func written<Owner: Contract>(
+    public func written<Owner: WornContract>(
         _ value: ElementProperty<Owner, Double>, within ends: [ElementProperty<Owner, Double>], standing: Double
     ) -> Double {
         guard let tree = self[value], changed(value) || ends.contains(where: { changed($0) }) else { return standing }

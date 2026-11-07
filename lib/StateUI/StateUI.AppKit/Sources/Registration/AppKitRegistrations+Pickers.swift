@@ -43,9 +43,9 @@ extension AppKitRegistrations {
                     open: values[PickerContract.isOpen] ?? false,
                     writeOpen: values.changed(PickerContract.isOpen))
             }
-            picker.raises(PickerContract.selectedIndexChanged)
-            picker.raises(PickerContract.opened)
-            picker.raises(PickerContract.closed)
+            picker.declares(PickerContract.selectedIndexChanged)
+            picker.declares(PickerContract.opened)
+            picker.declares(PickerContract.closed)
         })
 
         registry.add(DatePickerContract.self, create: { reports in
@@ -62,7 +62,7 @@ extension AppKitRegistrations {
                 view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
-            picker.raises(DatePickerContract.dateChanged)
+            picker.declares(DatePickerContract.dateChanged)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
@@ -77,7 +77,7 @@ extension AppKitRegistrations {
                 dress(view, values)
                 if values.changed(TimePickerContract.time) { view.setTime(values[TimePickerContract.time]) }
             }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.declares(TimePickerContract.timeChanged)
         })
 
         registry.add(ColorPickerContract.self, create: { reports in
@@ -96,7 +96,7 @@ extension AppKitRegistrations {
                     choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            picker.raises(ColorPickerContract.colorChanged)
+            picker.declares(ColorPickerContract.colorChanged)
         })
     }
 

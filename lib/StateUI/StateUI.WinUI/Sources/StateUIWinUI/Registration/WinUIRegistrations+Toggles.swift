@@ -19,7 +19,7 @@ extension WinUIRegistrations {
             toggle.applies(TextMembers.captionMembers) { view, values in
                 view.setWords(TextMembers.caption(values), color: values[TextColorElementContract.textColor]?.propValue)
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
             let box = WinUICheckBoxView()
@@ -32,7 +32,7 @@ extension WinUIRegistrations {
             box.applies(TextMembers.captionMembers) { view, values in
                 view.setWords(TextMembers.caption(values), color: values[TextColorElementContract.textColor]?.propValue)
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(CheckBoxContract.toggled)
         })
     }
 }

@@ -53,8 +53,8 @@ extension AppKitRegistrations {
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            entry.raises(TextInputContract.textChanged)
-            entry.raises(TextFieldContract.submitted)
+            entry.declares(TextInputContract.textChanged)
+            entry.declares(TextFieldContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in
@@ -95,7 +95,7 @@ extension AppKitRegistrations {
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
 
         registry.add(SearchFieldContract.self, create: { reports in
@@ -130,8 +130,8 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
             }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SearchFieldContract.submitted)
         })
     }
 

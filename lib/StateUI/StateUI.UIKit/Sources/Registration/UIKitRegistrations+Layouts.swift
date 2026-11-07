@@ -95,11 +95,11 @@ extension UIKitRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: true)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
             scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
                 view.refresh.apply(values)
             }
-            scroll.raises(RefreshElementContract.refreshRequested)
+            scroll.declares(RefreshElementContract.refreshRequested)
         }
     }
 

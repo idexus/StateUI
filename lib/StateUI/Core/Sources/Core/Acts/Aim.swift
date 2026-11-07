@@ -86,7 +86,7 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
     /// - Returns: the answer, as the contract declares it.
     @discardableResult
     public func call<
-        Owner: Contract, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         _ arguments: repeat each Argument

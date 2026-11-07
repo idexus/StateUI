@@ -90,7 +90,7 @@ extension GTKRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: values[BorderElementContract.shape] != nil)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
         }
     }
 

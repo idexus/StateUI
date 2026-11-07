@@ -10,7 +10,7 @@ public enum MenuToggleContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// A setting's entry is an item a user chooses.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
+    public static let tiers: [any Tier.Type] = [MenuItemElementContract.self]
 
     /// Whether the entry stands checked - a mark beside it.
     public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)

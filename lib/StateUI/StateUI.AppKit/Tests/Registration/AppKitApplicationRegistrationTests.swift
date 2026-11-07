@@ -12,7 +12,7 @@ import XCTest
 /// wrote - the half this host was missing.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -113,7 +113,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
             lamp.property(LampContract.lit) { view, lit in
                 view.lit = lit ?? false
             }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
 
         StateUIActs.add(LampContract.flash, on: LampView.self) { lamp in

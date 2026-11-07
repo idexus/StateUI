@@ -26,7 +26,7 @@ private enum InteropTestContract: ApplicationTier {
 /// An element the application declares, realized by a view the application wrote.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -131,7 +131,7 @@ final class UIKitInteropTests: XCTestCase {
             return lamp
         }) { lamp in
             lamp.property(LampContract.lit) { view, lit in view.lit = lit ?? false }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
         StateUIActs.add(LampContract.flash, on: LampView.self) { lamp in lamp.flashes += 1 }
     }
@@ -140,7 +140,7 @@ final class UIKitInteropTests: XCTestCase {
     @MainActor
     private func running() -> UIKitRenderer {
         Self.registerLamp()
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         return UIKitRenderer.running { Calling() }
     }
 

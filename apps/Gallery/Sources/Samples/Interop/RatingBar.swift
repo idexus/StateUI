@@ -15,7 +15,7 @@ import StateUI
 /// and its members, each with its value's type.
 public enum RatingBarContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.RatingBar"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// How many stars are filled. Declared by every host's registration, so
     /// the host assigns it, walks it and lets a style set it.

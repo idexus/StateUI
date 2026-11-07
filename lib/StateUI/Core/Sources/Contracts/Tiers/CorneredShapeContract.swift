@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
-public enum CorneredShapeContract: Contract {
+public enum CorneredShapeContract: Tier {
     /// The tier's name.
     public static let name = "CorneredShape"
 
     /// A cornered shape is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Tier.Type] = [ShapeContract.self]
 
     /// How two segments of the outline meet.
     public static let lineJoin = ElementProperty<Self, LineJoin>("lineJoin", layer: .stateUI)

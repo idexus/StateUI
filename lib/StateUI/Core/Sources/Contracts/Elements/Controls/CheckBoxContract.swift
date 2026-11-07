@@ -11,7 +11,7 @@ public enum CheckBoxContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A check box is a view, tinted, with the words it says beside its box.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 

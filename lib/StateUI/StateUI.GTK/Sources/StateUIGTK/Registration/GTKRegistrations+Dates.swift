@@ -26,9 +26,9 @@ extension GTKRegistrations {
             picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(DatePickerContract.dateChanged)
-            picker.raises(DatePickerContract.opened)
-            picker.raises(DatePickerContract.closed)
+            picker.declares(DatePickerContract.dateChanged)
+            picker.declares(DatePickerContract.opened)
+            picker.declares(DatePickerContract.closed)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = GTKTimePickerView()
@@ -42,9 +42,9 @@ extension GTKRegistrations {
             picker.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in applyWords(view, values) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(TimePickerContract.timeChanged)
-            picker.raises(TimePickerContract.opened)
-            picker.raises(TimePickerContract.closed)
+            picker.declares(TimePickerContract.timeChanged)
+            picker.declares(TimePickerContract.opened)
+            picker.declares(TimePickerContract.closed)
         })
     }
 

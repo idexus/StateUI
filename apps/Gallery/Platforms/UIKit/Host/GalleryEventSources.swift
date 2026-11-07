@@ -31,7 +31,7 @@ enum GalleryEventSources {
     static func start() {
         // What the host raises, declared where its source is wired: a handler
         // listening for an event nothing raises is told so.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
 
         UIDevice.current.isBatteryMonitoringEnabled = true
         for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {

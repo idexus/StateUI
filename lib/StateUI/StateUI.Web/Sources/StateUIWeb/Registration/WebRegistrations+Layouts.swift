@@ -91,7 +91,7 @@ extension WebRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: false)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
         }
     }
 

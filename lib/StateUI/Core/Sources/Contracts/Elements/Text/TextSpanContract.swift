@@ -10,7 +10,7 @@ public enum TextSpanContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// A run is text in a font, decorated - and no view: no line of its own, and nothing automation finds.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         TextualElementContract.self, FontElementContract.self, TrackingElementContract.self,
         DecorableTextElementContract.self,
     ]

@@ -30,7 +30,7 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
     private static let declarations = """
         enum LampContract: ElementContract {
             static let nodeType: NodeType = "Test.Lamp"
-            static let tiers: [any Contract.Type] = [ViewContract.self]
+            static let tiers: [any Tier.Type] = [ViewContract.self]
 
             static let lit = ElementProperty<Self, Bool>("lit")
             static let flash = ElementAct<Self, Void, Void>("Test.Flash")

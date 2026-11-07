@@ -11,7 +11,7 @@ public enum ToolbarGroupContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// Where its host draws the bar itself, the background its items share is the application's to say.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         BarItemElementContract.self, BorderElementContract.self, PaddingElementContract.self,
     ]
 

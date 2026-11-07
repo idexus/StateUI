@@ -29,11 +29,11 @@ public enum WebViewGTK {
                 if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
                 if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
             }
-            web.raises(WebViewContract.navigating)
-            web.raises(WebViewContract.navigated)
-            web.raises(WebViewContract.canGoBackChanged)
-            web.raises(WebViewContract.canGoForwardChanged)
-            web.raises(WebViewContract.processTerminated)
+            web.declares(WebViewContract.navigating)
+            web.declares(WebViewContract.navigated)
+            web.declares(WebViewContract.canGoBackChanged)
+            web.declares(WebViewContract.canGoForwardChanged)
+            web.declares(WebViewContract.processTerminated)
         }
         StateUIActs.add(WebViewContract.goBack, on: GTKWebView.self) { web in web.step(.back) }
         StateUIActs.add(WebViewContract.goForward, on: GTKWebView.self) { web in web.step(.forward) }

@@ -157,7 +157,7 @@ struct ControlDictionary {
     let elements: [any ElementContract.Type]
 
     /// Every tier, in the dictionary's order.
-    let tiers: [any Contract.Type]
+    let tiers: [any Tier.Type]
 
     /// The hosts' columns, each what its runs said.
     let columns: [Column]

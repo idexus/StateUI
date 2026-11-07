@@ -126,7 +126,7 @@ public static func add<Realized: ElementContract, Made: AndroidControl>(
   a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the control raises.
+  described, and `declares(_:)` records an event the control raises.
 
 ```swift listing android.md.control
 // Platforms/Android/Swift/Host/TrafficLightView.swift
@@ -143,7 +143,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -183,7 +183,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -207,7 +207,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports
     map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
     map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-    map.raises(MapContract.locationTapped)
+    map.declares(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
         properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
@@ -272,7 +272,7 @@ an aim at nothing; an act nobody registered is refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.declares` declares it before the host
 starts, so a handler listening for one no source raises is told so. Its
 source is often Android's own - the Gallery's activity registers a receiver
 for the battery while it lives:
@@ -282,7 +282,7 @@ for the battery while it lives:
 /// Declares the event the activity's watcher raises. Said once, as the library loads.
 @MainActor
 static func register() {
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 }
 
 @MainActor private static var lastSaid: (level: Double, charging: Bool)?

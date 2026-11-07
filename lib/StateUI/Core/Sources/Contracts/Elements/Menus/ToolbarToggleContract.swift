@@ -11,7 +11,7 @@ public enum ToolbarToggleContract: ElementContract {
 
     /// A setting on the bar is an item a user chooses; where its host draws the bar itself, its look is the
     /// application's to say.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         MenuItemElementContract.self, TextAndIconElementContract.self, BarButtonElementContract.self,
         BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
         PaddingElementContract.self,

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The space kept inside an element, around what it holds.
-public enum PaddingElementContract: Contract {
+public enum PaddingElementContract: Tier {
     /// The tier's name.
     public static let name = "PaddingElement"
 

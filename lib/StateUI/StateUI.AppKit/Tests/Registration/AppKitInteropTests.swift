@@ -31,7 +31,7 @@ private enum InteropTestContract: ApplicationTier {
 /// An element no registration answers, which the host shows as unsupported.
 private enum DialContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Dial"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let members: [any ContractMember] = []
 }
 
@@ -107,7 +107,7 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
@@ -124,7 +124,7 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testAnActNobodyRegisteredIsRefusedByName() throws {
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
@@ -142,7 +142,7 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() throws {
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.finish() }
         XCTAssertEqual(said(renderer), "-")
@@ -159,7 +159,7 @@ final class AppKitInteropTests: XCTestCase {
     /// source raises is told so.
     @MainActor
     func testARunningHostSaysWhatItRealizesAndWhatTheApplicationRaises() {
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.finish() }
 

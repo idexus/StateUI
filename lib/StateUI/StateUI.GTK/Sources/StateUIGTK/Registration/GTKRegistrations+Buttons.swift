@@ -49,9 +49,9 @@ extension GTKRegistrations {
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ButtonContract.clicked)
+            button.declares(ButtonContract.pressed)
+            button.declares(ButtonContract.released)
         })
     }
 }

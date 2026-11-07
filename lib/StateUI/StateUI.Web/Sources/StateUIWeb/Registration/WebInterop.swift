@@ -130,7 +130,7 @@ public enum StateUIActs {
     ///         bar.element.call("flash")
     ///     }
     public static func add<
-        Owner: Contract, Made: WebControl, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, Made: WebControl, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on control: Made.Type,
@@ -146,10 +146,10 @@ public enum StateUIEvents {
     /// Declares an event of the application's this host raises, where its source is wired: a handler listening for
     /// an event nothing declared is told, once, that it will not hear it.
     ///
-    ///     StateUIEvents.raises(GalleryContract.batteryChanged)
+    ///     StateUIEvents.declares(GalleryContract.batteryChanged)
     @MainActor
-    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        WebRegistrations.registry.raises(event)
+    public static func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        WebRegistrations.registry.declares(event)
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares, from
@@ -214,7 +214,7 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     /// A property the control takes, handed over as the type its contract declares - nil where the value is no
     /// longer described. A member of the element's contract or of a tier it wears; any other is refused, and said
     /// once.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
         _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
@@ -233,7 +233,7 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     /// - Parameters:
     ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+    public func applies<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>,
         apply: @escaping @MainActor (Made, ControlValues<Realized>) -> Void
     ) {
@@ -241,8 +241,8 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     }
 
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        registration.raises(event)
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        registration.declares(event)
     }
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
@@ -255,8 +255,8 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     ///         control.show(markers)
     ///     }
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,

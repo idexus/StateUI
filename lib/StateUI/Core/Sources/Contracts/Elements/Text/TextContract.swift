@@ -11,7 +11,7 @@ public enum TextContract: ElementContract {
 
     /// Text is a view of words in a font - aligned, spaced, decorated and
     /// padded.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, LineHeightElementContract.self, TrackingElementContract.self,
         DecorableTextElementContract.self, PaddingElementContract.self,

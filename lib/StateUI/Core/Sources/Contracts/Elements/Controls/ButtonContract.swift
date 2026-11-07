@@ -11,7 +11,7 @@ public enum ButtonContract: ElementContract {
 
     /// A button is a view with a caption in a font, padded, bordered, with a
     /// picture fitted, and a menu it may open.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TrackingElementContract.self, FontElementContract.self,
         PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
         ButtonMenuElementContract.self, TextAndIconElementContract.self,

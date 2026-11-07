@@ -10,7 +10,7 @@ public enum LinkContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A link is a view of words the keyboard reaches.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, FocusElementContract.self,
     ]
 

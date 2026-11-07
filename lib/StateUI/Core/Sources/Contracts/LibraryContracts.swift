@@ -7,7 +7,7 @@
 /// Design: docs/design/contracts/README.md#the-contracts-of-the-library
 @_spi(Host) public enum LibraryContracts {
     /// The tiers, in the dictionary's order.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self,
         VisualElementContract.self,
         ViewContract.self,

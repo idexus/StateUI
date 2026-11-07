@@ -3,12 +3,12 @@
 
 /// What every view a layout positions has: where it sits in its layout, the
 /// space kept around it, and the gestures, drags and frame reports it answers.
-public enum ViewContract: Contract {
+public enum ViewContract: Tier {
     /// The tier's name.
     public static let name = "View"
 
     /// Every view is drawn.
-    public static let tiers: [any Contract.Type] = [VisualElementContract.self]
+    public static let tiers: [any Tier.Type] = [VisualElementContract.self]
 
     /// Whether the view accepts what is dropped on it.
     public static let allowsDrop = ElementProperty<Self, Bool>("allowsDrop", layer: .native, cleared: false)

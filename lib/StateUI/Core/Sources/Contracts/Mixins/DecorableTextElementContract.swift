@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The lines drawn through or under text.
-public enum DecorableTextElementContract: Contract {
+public enum DecorableTextElementContract: Tier {
     /// The tier's name.
     public static let name = "DecorableTextElement"
 

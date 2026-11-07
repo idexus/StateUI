@@ -47,7 +47,7 @@
     ///
     /// - Parameter member: the property, written with its contract.
     @MainActor
-    public func destination<Owner: Contract, Value: HostRepresentable>(
+    public func destination<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) -> Value? {
         guard let value = heading(member.token) ?? read(member.token) else { return nil }
@@ -64,7 +64,7 @@
     ///
     /// - Parameter member: the property, written with its contract.
     @MainActor
-    public func carriedIn<Owner: Contract, Value: HostRepresentable>(
+    public func carriedIn<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) -> Bool {
         carried(member.token)
@@ -75,7 +75,7 @@
     ///
     /// - Parameter member: the property, written with its contract.
     @MainActor
-    public subscript<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
+    public subscript<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
         guard let value = read(member.token) else { return nil }
 
         guard let typed = Value(propValue: value) else {
@@ -92,7 +92,7 @@
     ///
     /// - Parameter member: the property, written with its contract.
     /// - Returns: whether the patch changed it.
-    public func changed<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
+    public func changed<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
         changes.contains(member.token)
     }
 }

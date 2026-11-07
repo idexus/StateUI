@@ -14,7 +14,7 @@ extension Node {
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, each Value: HostRepresentable>(
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) {
@@ -34,7 +34,7 @@ extension Node {
     ///   - event: the member, written with its contract.
     ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, each Value: HostRepresentable>(
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<repeat each Value>
@@ -49,7 +49,7 @@ extension Node {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<Owner: Contract, each Value: HostRepresentable>(
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<repeat each Value>

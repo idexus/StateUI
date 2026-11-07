@@ -26,8 +26,8 @@ extension UIKitRegistrations {
             field.property(TextFieldContract.showsClearButton) { view, shows in
                 view.clearButtonMode = shows == true ? .whileEditing : .never
             }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(TextFieldContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = UIKitTextEditorView()
@@ -37,7 +37,7 @@ extension UIKitRegistrations {
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = UIKitSearchFieldView()
@@ -50,8 +50,8 @@ extension UIKitRegistrations {
             search.property(SearchFieldContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: true))
             }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SearchFieldContract.submitted)
         })
     }
 

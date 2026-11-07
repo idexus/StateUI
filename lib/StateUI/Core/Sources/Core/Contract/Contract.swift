@@ -11,7 +11,7 @@
 ///
 /// Declared as an enum, which holds the members and is never made:
 ///
-///     public enum FontElementContract: Contract {
+///     public enum FontElementContract: Tier {
 ///         public static let name = "FontElement"
 ///         public static let fontSize = ElementProperty<Self, Double>("fontSize", layer: .native)
 ///         public static let members: [any ContractMember] = [fontSize]
@@ -23,15 +23,28 @@ public protocol Contract: Sendable {
 
     /// The tiers this contract wears. Their members are its members too, and so
     /// are the members of the tiers they wear.
-    static var tiers: [any Contract.Type] { get }
+    static var tiers: [any Tier.Type] { get }
 
     /// The members declared here, in the order the documentation lists them.
     static var members: [any ContractMember] { get }
 }
 
+/// A contract an element wears: its own, an `ElementContract`, or a `Tier` many elements share. What an element
+/// writes, hears and is aimed with is a member of one.
+public protocol WornContract: Contract {}
+
+/// A tier: members many elements wear, each element's contract listing it among its `tiers`.
+///
+///     public enum FontElementContract: Tier {
+///         public static let name = "FontElement"
+///         public static let fontSize = ElementProperty<Self, Double>("fontSize", layer: .native)
+///         public static let members: [any ContractMember] = [fontSize]
+///     }
+public protocol Tier: WornContract {}
+
 extension Contract {
     /// Nothing worn, unless the contract says.
-    public static var tiers: [any Contract.Type] { [] }
+    public static var tiers: [any Tier.Type] { [] }
 
     /// This contract, then every tier it wears, each once, depth first in
     /// declaration order.

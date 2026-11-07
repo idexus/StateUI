@@ -4,7 +4,7 @@
 /// What an item standing on a bar - a button, a setting or a group of them - shows of its own where its host draws
 /// the bar itself: the keyed style it wears, what its surface is made of, and the pointer over it its visual states
 /// follow. A host whose bar is the platform's keeps the platform's look.
-public enum BarItemElementContract: Contract {
+public enum BarItemElementContract: Tier {
     /// The tier's name.
     public static let name = "BarItemElement"
 

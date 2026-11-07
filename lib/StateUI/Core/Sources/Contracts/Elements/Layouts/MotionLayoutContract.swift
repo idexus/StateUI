@@ -12,7 +12,7 @@ public enum MotionLayoutContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// It is a layout; where each child stands is the run of placements an engine writes.
-    public static let tiers: [any Contract.Type] = [LayoutContract.self]
+    public static let tiers: [any Tier.Type] = [LayoutContract.self]
 
     /// Where the parameters rest or are going, one number an axis: the element wears the layout's parameters, so the
     /// host walks them under the layout's motion and says where they stand every frame.

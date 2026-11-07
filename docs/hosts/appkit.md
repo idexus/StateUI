@@ -104,7 +104,7 @@ public static func add<Realized: ElementContract, Made: NSView>(
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
   over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the view raises.
+  described, and `declares(_:)` records an event the view raises.
 
 Name the view's own class where the closure makes it - `create: { reports ->
 TrafficLightView in … }` - so every applier is handed that class rather than a
@@ -130,7 +130,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -230,7 +230,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
             rating: values[RatingBarContract.rating] ?? 0,
             of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -344,11 +344,11 @@ than a failure, so an application wires its sources unconditionally. The Swift s
 The head declares each event it raises where it wires the source, before
 `AppKitHost.run(resourceDirectory:applicationIcon:)`:
 
-```swift listing appkit.md.raises
+```swift listing appkit.md.declares
 // Platforms/AppKit/Host/GalleryEventSources.swift
 // Declared where the source is wired: a handler listening for an
 // event nothing declared is told, once, that it will not hear it.
-StateUIEvents.raises(GalleryContract.batteryChanged)
+StateUIEvents.declares(GalleryContract.batteryChanged)
 ```
 
 The host tells the core what it realizes when it starts: every element of the

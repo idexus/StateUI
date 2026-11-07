@@ -18,8 +18,8 @@ extension GTKRegistrations {
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(TextFieldContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = GTKTextEditorView()
@@ -29,7 +29,7 @@ extension GTKRegistrations {
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrowsWithText(grows ?? false) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = GTKSearchFieldView()
@@ -39,8 +39,8 @@ extension GTKRegistrations {
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SearchFieldContract.submitted)
         })
     }
 

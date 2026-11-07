@@ -19,14 +19,14 @@ extension UIKitRegistrations {
                     layout: values[ItemsViewContract.itemsLayout] ?? .list(),
                     mode: values[ItemsViewContract.selectionMode] ?? .none)
             }
-            list.raises(ItemsViewContract.selectedItemsChanged)
-            list.raises(ItemsViewContract.itemActivated)
-            list.raises(ItemsViewContract.endReached)
-            list.raises(ItemsViewContract.realizedChanged)
+            list.declares(ItemsViewContract.selectedItemsChanged)
+            list.declares(ItemsViewContract.itemActivated)
+            list.declares(ItemsViewContract.endReached)
+            list.declares(ItemsViewContract.realizedChanged)
             list.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
                 view.refresh.apply(values)
             }
-            list.raises(RefreshElementContract.refreshRequested)
+            list.declares(RefreshElementContract.refreshRequested)
         }
     }
 

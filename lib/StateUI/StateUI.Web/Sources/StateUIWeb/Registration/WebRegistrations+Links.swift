@@ -17,7 +17,7 @@ extension WebRegistrations {
                 view.setColor(values[TextColorElementContract.textColor]?.propValue)
             }
             link.property(LinkContract.address) { view, address in view.setDestination(address) }
-            link.raises(LinkContract.clicked)
+            link.declares(LinkContract.clicked)
         })
     }
 }

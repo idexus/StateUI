@@ -346,7 +346,7 @@ final class AimTests: XCTestCase {
 /// meet the library's.
 private enum WheelContract: ElementContract {
     static let nodeType: NodeType = "Test.Wheel"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     static let spin = ElementAct<Self, Double, Void>("Test.Spin")
 

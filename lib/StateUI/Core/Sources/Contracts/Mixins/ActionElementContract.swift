@@ -3,12 +3,12 @@
 
 /// What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks
 /// it.
-public enum ActionElementContract: Contract {
+public enum ActionElementContract: Tier {
     /// The tier's name.
     public static let name = "ActionElement"
 
     /// An item that acts is found by automation.
-    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self]
 
     /// The item was chosen.
     public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)

@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What both stacks have: the space between their children.
-public enum StackContract: Contract {
+public enum StackContract: Tier {
     /// The tier's name.
     public static let name = "Stack"
 
     /// A stack is a layout.
-    public static let tiers: [any Contract.Type] = [LayoutContract.self]
+    public static let tiers: [any Tier.Type] = [LayoutContract.self]
 
     /// The space between one child and the next.
     public static let spacing = ElementProperty<Self, Double>("spacing", layer: .native, moves: .spacing)

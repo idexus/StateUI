@@ -23,9 +23,9 @@ extension WinUIRegistrations {
             picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(DatePickerContract.dateChanged)
-            picker.raises(DatePickerContract.opened)
-            picker.raises(DatePickerContract.closed)
+            picker.declares(DatePickerContract.dateChanged)
+            picker.declares(DatePickerContract.opened)
+            picker.declares(DatePickerContract.closed)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = WinUITimePickerView()
@@ -36,7 +36,7 @@ extension WinUIRegistrations {
             picker.property(TimePickerContract.format) { _, _ in }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.declares(TimePickerContract.timeChanged)
         })
     }
 }

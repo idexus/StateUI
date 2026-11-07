@@ -13,7 +13,7 @@ public enum ItemsViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A collection is a view, pulled to refresh its items.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, FocusElementContract.self, RefreshElementContract.self,
     ]
 

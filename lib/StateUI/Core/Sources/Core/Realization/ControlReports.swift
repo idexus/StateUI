@@ -52,7 +52,7 @@ public struct ControlReports<Realized: ElementContract> {
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    public func raise<Owner: Contract, each Value: HostRepresentable>(
+    public func raise<Owner: WornContract, each Value: HostRepresentable>(
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
@@ -82,7 +82,7 @@ public struct ControlReports<Realized: ElementContract> {
     ///   - property: the value's member, written with its contract.
     ///   - value: what the user made it.
     ///   - event: the member the element raises for that change.
-    public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
+    public func report<Owner: WornContract, Raised: Contract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         _ value: Value,
         as event: ElementEvent<Raised, Value>

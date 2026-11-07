@@ -77,7 +77,7 @@ public enum StateUIActs {
     ///     declares, answering the values it declares. A performer may await,
     ///     and the call is answered once it returns.
     public static func add<
-        Owner: Contract, Made: NSView,
+        Owner: WornContract, Made: NSView,
         each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -98,12 +98,12 @@ public enum StateUIEvents {
     /// Said once, from the application's AppKit head, before
     /// `AppKitHost.run(resourceDirectory:applicationIcon:)`.
     ///
-    ///     StateUIEvents.raises(GalleryContract.batteryChanged)
+    ///     StateUIEvents.declares(GalleryContract.batteryChanged)
     ///
     /// - Parameter event: the member, written with its contract.
     @MainActor
-    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        AppKitRegistrations.registry.raises(event)
+    public static func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        AppKitRegistrations.registry.declares(event)
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares, from
@@ -196,7 +196,7 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     /// - Parameters:
     ///   - member: the property, written with its contract.
     ///   - apply: puts the value on the view.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
         _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
@@ -215,7 +215,7 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     /// - Parameters:
     ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the view.
-    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+    public func applies<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>,
         apply: @escaping @MainActor (Made, ControlValues<Realized>) -> Void
     ) {
@@ -226,8 +226,8 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     /// knows this host reports it.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        registration.raises(event)
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        registration.declares(event)
     }
 
     /// The children of one contract the view draws itself - a map's markers - handed over whole, in the tree's order,
@@ -246,8 +246,8 @@ public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     ///   - events: the children's events the view raises, written with their contracts.
     ///   - apply: hands the view every child of the contract.
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,

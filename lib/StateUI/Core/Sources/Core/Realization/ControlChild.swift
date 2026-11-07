@@ -18,7 +18,7 @@ public struct ControlChild<Child: ElementContract>: Hashable {
     /// - Parameter property: the member, written with its contract.
     /// - Returns: the value, or nil.
     @MainActor
-    public func value<Owner: Contract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
+    public func value<Owner: WornContract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
         guard Child.wears(Owner.self) else {
             complain("\(Child.name) was read for `\(Owner.name).\(property.name)`, and \(Child.name) wears no "
                 + "\(Owner.name): nothing was read.")

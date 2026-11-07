@@ -226,7 +226,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarElemen
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -250,7 +250,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(repo
     map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
     map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-    map.raises(MapContract.locationTapped)
+    map.declares(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
         properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
@@ -279,7 +279,7 @@ Without a key the map draws no tiles, and the Gallery says so under it.
 An act of the application's own is performed with `StateUIActs.add`, and an
 act aimed at one of its controls with `StateUIActs.add(_:on:_:)`, which hands
 the performer that control. An event of the application's own is declared
-with `StateUIEvents.raises` and raised with `StateUIEvents.raise`; every
+with `StateUIEvents.declares` and raised with `StateUIEvents.raise`; every
 `HostEvents.on` subscription hears it.
 
 What only a page's JavaScript reaches - its console, its battery - the

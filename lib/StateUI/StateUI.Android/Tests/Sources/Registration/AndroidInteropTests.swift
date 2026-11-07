@@ -59,7 +59,7 @@ private struct Calling: View {
 /// An element the APPLICATION declares, realized by a control the application wrote.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -157,7 +157,7 @@ final class AndroidInteropTests: XCTestCase {
             return lamp
         }) { lamp in
             lamp.property(LampContract.lit) { control, lit in control.lit = lit ?? false }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
         StateUIActs.add(LampContract.flash, on: LampControl.self) { lamp in lamp.flashes += 1 }
     }
@@ -211,7 +211,7 @@ final class AndroidInteropTests: XCTestCase {
         try onMainActor {
             defer { AndroidInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
@@ -224,7 +224,7 @@ final class AndroidInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onMainActor {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
@@ -239,7 +239,7 @@ final class AndroidInteropTests: XCTestCase {
     /// declares.
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() {
         onMainActor {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             StateUIEvents.raise(InteropTestContract.spoke, "hello")

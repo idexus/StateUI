@@ -149,7 +149,7 @@ public static func add<Realized: ElementContract, Made: WinUIControl>(
   a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the control raises.
+  described, and `declares(_:)` records an event the control raises.
 
 ```swift listing winui.md.control
 // Platforms/WinUI/Host/TrafficLightControl.swift
@@ -167,7 +167,7 @@ extension TrafficLightControl {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -208,7 +208,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarContro
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -269,7 +269,7 @@ may call Win32 itself through `WinSDK` - the Gallery's log does.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.declares` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
 ```swift listing winui.md.event
@@ -278,7 +278,7 @@ runs, so a handler listening for one no source raises is told so.
 @MainActor
 static func start() {
     // A handler listening for an event nothing declared is told, once, that it will not hear it.
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 
     // The gallery's relay asks Windows for each change of the battery's charge and of the power source
     // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.

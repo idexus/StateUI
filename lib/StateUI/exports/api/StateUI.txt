@@ -51,6 +51,8 @@ swift.conformance AccessibilityRole: Swift.Hashable
 swift.conformance AccessibilityRole: Swift.RawRepresentable
 swift.conformance AccessibilityRole: Swift.Sendable
 swift.conformance AccessibilitySettings: Swift.Sendable
+swift.conformance ActionElementContract: StateUI.Tier
+swift.conformance ActionElementContract: StateUI.WornContract
 swift.conformance ActionElementContract: Swift.Sendable
 swift.conformance ActionRole: Swift.Equatable
 swift.conformance ActionRole: Swift.Hashable
@@ -62,6 +64,7 @@ swift.conformance Alignment: Swift.Equatable
 swift.conformance Alignment: Swift.Hashable
 swift.conformance Alignment: Swift.RawRepresentable
 swift.conformance Alignment: Swift.Sendable
+swift.conformance AnchorContract: StateUI.WornContract
 swift.conformance AnchorContract: Swift.Sendable
 swift.conformance AnimationOwner: Swift.Equatable
 swift.conformance AnimationOwner: Swift.Hashable
@@ -71,18 +74,27 @@ swift.conformance AnyView: StateUI.View
 swift.conformance AnyView: StateUI.Views
 swift.conformance AnyView: Swift.Sendable
 swift.conformance ApplicationBuilder: Swift.Sendable
+swift.conformance ApplicationContract: StateUI.WornContract
 swift.conformance ApplicationContract: Swift.Sendable
 swift.conformance ApplicationInfo: Swift.Sendable
 swift.conformance ApplicationSession: Swift.Sendable
 swift.conformance Area: Swift.Equatable
 swift.conformance Area: Swift.Sendable
 swift.conformance Arrival: Swift.Sendable
+swift.conformance AutomationElementContract: StateUI.Tier
+swift.conformance AutomationElementContract: StateUI.WornContract
 swift.conformance AutomationElementContract: Swift.Sendable
 swift.conformance AxisValues: Swift.Equatable
 swift.conformance AxisValues: Swift.ExpressibleByArrayLiteral
 swift.conformance AxisValues: Swift.Sendable
+swift.conformance BarButtonElementContract: StateUI.Tier
+swift.conformance BarButtonElementContract: StateUI.WornContract
 swift.conformance BarButtonElementContract: Swift.Sendable
+swift.conformance BarElementContract: StateUI.Tier
+swift.conformance BarElementContract: StateUI.WornContract
 swift.conformance BarElementContract: Swift.Sendable
+swift.conformance BarItemElementContract: StateUI.Tier
+swift.conformance BarItemElementContract: StateUI.WornContract
 swift.conformance BarItemElementContract: Swift.Sendable
 swift.conformance Battery: Swift.Sendable
 swift.conformance BatteryPowerSource: Swift.Equatable
@@ -101,15 +113,22 @@ swift.conformance Blur.Thickness: Swift.RawRepresentable
 swift.conformance Blur.Thickness: Swift.Sendable
 swift.conformance Blur: Swift.Equatable
 swift.conformance Blur: Swift.Sendable
+swift.conformance BorderElementContract: StateUI.Tier
+swift.conformance BorderElementContract: StateUI.WornContract
 swift.conformance BorderElementContract: Swift.Sendable
+swift.conformance BottomBarContract: StateUI.WornContract
 swift.conformance BottomBarContract: Swift.Sendable
 swift.conformance Brush: Swift.Equatable
 swift.conformance Brush: Swift.Sendable
 swift.conformance Button: StateUI.View
 swift.conformance Button: StateUI.Views
 swift.conformance Button: Swift.Sendable
+swift.conformance ButtonContract: StateUI.WornContract
 swift.conformance ButtonContract: Swift.Sendable
+swift.conformance ButtonMenuContract: StateUI.WornContract
 swift.conformance ButtonMenuContract: Swift.Sendable
+swift.conformance ButtonMenuElementContract: StateUI.Tier
+swift.conformance ButtonMenuElementContract: StateUI.WornContract
 swift.conformance ButtonMenuElementContract: Swift.Sendable
 swift.conformance ButtonMenuKind: Swift.CaseIterable
 swift.conformance ButtonMenuKind: Swift.Equatable
@@ -129,16 +148,19 @@ swift.conformance CalendarDate: Swift.Sendable
 swift.conformance Canvas: StateUI.View
 swift.conformance Canvas: StateUI.Views
 swift.conformance Canvas: Swift.Sendable
+swift.conformance CanvasContract: StateUI.WornContract
 swift.conformance CanvasContract: Swift.Sendable
 swift.conformance Capsule: StateUI.FilledShape
 swift.conformance Capsule: StateUI.Shape
 swift.conformance Capsule: StateUI.View
 swift.conformance Capsule: StateUI.Views
 swift.conformance Capsule: Swift.Sendable
+swift.conformance CapsuleContract: StateUI.WornContract
 swift.conformance CapsuleContract: Swift.Sendable
 swift.conformance CheckBox: StateUI.View
 swift.conformance CheckBox: StateUI.Views
 swift.conformance CheckBox: Swift.Sendable
+swift.conformance CheckBoxContract: StateUI.WornContract
 swift.conformance CheckBoxContract: Swift.Sendable
 swift.conformance ChosenFile: Swift.Equatable
 swift.conformance ChosenFile: Swift.Hashable
@@ -154,6 +176,7 @@ swift.conformance Color: Swift.Sendable
 swift.conformance ColorPicker: StateUI.View
 swift.conformance ColorPicker: StateUI.Views
 swift.conformance ColorPicker: Swift.Sendable
+swift.conformance ColorPickerContract: StateUI.WornContract
 swift.conformance ColorPickerContract: Swift.Sendable
 swift.conformance ColorScheme: Swift.Equatable
 swift.conformance ColorScheme: Swift.Hashable
@@ -170,6 +193,7 @@ swift.conformance ContentMode: Swift.Equatable
 swift.conformance ContentMode: Swift.Hashable
 swift.conformance ContentMode: Swift.RawRepresentable
 swift.conformance ContentMode: Swift.Sendable
+swift.conformance ContextMenuContract: StateUI.WornContract
 swift.conformance ContextMenuContract: Swift.Sendable
 swift.conformance CoordinateSpace: Swift.Equatable
 swift.conformance CoordinateSpace: Swift.Hashable
@@ -177,6 +201,8 @@ swift.conformance CoordinateSpace: Swift.Sendable
 swift.conformance CorneredShape: StateUI.Shape
 swift.conformance CorneredShape: StateUI.View
 swift.conformance CorneredShape: StateUI.Views
+swift.conformance CorneredShapeContract: StateUI.Tier
+swift.conformance CorneredShapeContract: StateUI.WornContract
 swift.conformance CorneredShapeContract: Swift.Sendable
 swift.conformance DateFormat: Swift.Equatable
 swift.conformance DateFormat: Swift.Hashable
@@ -185,6 +211,7 @@ swift.conformance DateFormat: Swift.Sendable
 swift.conformance DatePicker: StateUI.View
 swift.conformance DatePicker: StateUI.Views
 swift.conformance DatePicker: Swift.Sendable
+swift.conformance DatePickerContract: StateUI.WornContract
 swift.conformance DatePickerContract: Swift.Sendable
 swift.conformance DebugInspector.Place: Swift.Equatable
 swift.conformance DebugInspector.Place: Swift.Hashable
@@ -195,6 +222,8 @@ swift.conformance DebugInspector: Swift.Sendable
 swift.conformance DebugInspectorButton: StateUI.View
 swift.conformance DebugInspectorButton: StateUI.Views
 swift.conformance DebugInspectorButton: Swift.Sendable
+swift.conformance DecorableTextElementContract: StateUI.Tier
+swift.conformance DecorableTextElementContract: StateUI.WornContract
 swift.conformance DecorableTextElementContract: Swift.Sendable
 swift.conformance Device: Swift.Sendable
 swift.conformance DeviceDisplay: Swift.Sendable
@@ -227,6 +256,7 @@ swift.conformance Ellipse: StateUI.Shape
 swift.conformance Ellipse: StateUI.View
 swift.conformance Ellipse: StateUI.Views
 swift.conformance Ellipse: Swift.Sendable
+swift.conformance EllipseContract: StateUI.WornContract
 swift.conformance EllipseContract: Swift.Sendable
 swift.conformance EnergySaverStatus: Swift.Equatable
 swift.conformance EnergySaverStatus: Swift.Hashable
@@ -244,6 +274,7 @@ swift.conformance FileType: Swift.Sendable
 swift.conformance Fill: StateUI.View
 swift.conformance Fill: StateUI.Views
 swift.conformance Fill: Swift.Sendable
+swift.conformance FillContract: StateUI.WornContract
 swift.conformance FillContract: Swift.Sendable
 swift.conformance FillRule: Swift.Equatable
 swift.conformance FillRule: Swift.Hashable
@@ -252,9 +283,13 @@ swift.conformance FillRule: Swift.Sendable
 swift.conformance FilledShape: StateUI.Shape
 swift.conformance FilledShape: StateUI.View
 swift.conformance FilledShape: StateUI.Views
+swift.conformance FilledShapeContract: StateUI.Tier
+swift.conformance FilledShapeContract: StateUI.WornContract
 swift.conformance FilledShapeContract: Swift.Sendable
 swift.conformance FocusElement: StateUI.View
 swift.conformance FocusElement: StateUI.Views
+swift.conformance FocusElementContract: StateUI.Tier
+swift.conformance FocusElementContract: StateUI.WornContract
 swift.conformance FocusElementContract: Swift.Sendable
 swift.conformance FontAttributes: Swift.Equatable
 swift.conformance FontAttributes: Swift.ExpressibleByArrayLiteral
@@ -262,6 +297,8 @@ swift.conformance FontAttributes: Swift.OptionSet
 swift.conformance FontAttributes: Swift.RawRepresentable
 swift.conformance FontAttributes: Swift.Sendable
 swift.conformance FontAttributes: Swift.SetAlgebra
+swift.conformance FontElementContract: StateUI.Tier
+swift.conformance FontElementContract: StateUI.WornContract
 swift.conformance FontElementContract: Swift.Sendable
 swift.conformance FontWeight: Swift.CaseIterable
 swift.conformance FontWeight: Swift.Equatable
@@ -302,6 +339,7 @@ swift.conformance Grid: StateUI.Layout
 swift.conformance Grid: StateUI.View
 swift.conformance Grid: StateUI.Views
 swift.conformance Grid: Swift.Sendable
+swift.conformance GridContract: StateUI.WornContract
 swift.conformance GridContract: Swift.Sendable
 swift.conformance GridLength: Swift.Equatable
 swift.conformance GridLength: Swift.Sendable
@@ -315,6 +353,7 @@ swift.conformance HStack: StateUI.Stack
 swift.conformance HStack: StateUI.View
 swift.conformance HStack: StateUI.Views
 swift.conformance HStack: Swift.Sendable
+swift.conformance HStackContract: StateUI.WornContract
 swift.conformance HStackContract: Swift.Sendable
 swift.conformance HTTPMethod: Swift.Equatable
 swift.conformance HTTPMethod: Swift.Hashable
@@ -337,7 +376,10 @@ swift.conformance IconPosition: Swift.Sendable
 swift.conformance Image: StateUI.View
 swift.conformance Image: StateUI.Views
 swift.conformance Image: Swift.Sendable
+swift.conformance ImageContract: StateUI.WornContract
 swift.conformance ImageContract: Swift.Sendable
+swift.conformance ImageElementContract: StateUI.Tier
+swift.conformance ImageElementContract: StateUI.WornContract
 swift.conformance ImageElementContract: Swift.Sendable
 swift.conformance ImageSource: Swift.Equatable
 swift.conformance ImageSource: Swift.ExpressibleByExtendedGraphemeClusterLiteral
@@ -363,6 +405,7 @@ swift.conformance ItemsLayout: Swift.Sendable
 swift.conformance ItemsView: StateUI.View
 swift.conformance ItemsView: StateUI.Views
 swift.conformance ItemsView: Swift.Sendable
+swift.conformance ItemsViewContract: StateUI.WornContract
 swift.conformance ItemsViewContract: Swift.Sendable
 swift.conformance Journey: Swift.Sendable
 swift.conformance Key: Swift.Equatable
@@ -382,11 +425,15 @@ swift.conformance KeyPress: Swift.Hashable
 swift.conformance KeyPress: Swift.Sendable
 swift.conformance KeyboardElement: StateUI.View
 swift.conformance KeyboardElement: StateUI.Views
+swift.conformance KeyboardElementContract: StateUI.Tier
+swift.conformance KeyboardElementContract: StateUI.WornContract
 swift.conformance KeyboardElementContract: Swift.Sendable
 swift.conformance Layout: StateUI.View
 swift.conformance Layout: StateUI.Views
 swift.conformance LayoutBody: Swift.Equatable
 swift.conformance LayoutBody: Swift.Sendable
+swift.conformance LayoutContract: StateUI.Tier
+swift.conformance LayoutContract: StateUI.WornContract
 swift.conformance LayoutContract: Swift.Sendable
 swift.conformance LayoutCurve: StateUI.LayoutInterpolation
 swift.conformance LayoutCurve: Swift.Equatable
@@ -414,7 +461,10 @@ swift.conformance LineCap: Swift.Equatable
 swift.conformance LineCap: Swift.Hashable
 swift.conformance LineCap: Swift.RawRepresentable
 swift.conformance LineCap: Swift.Sendable
+swift.conformance LineContract: StateUI.WornContract
 swift.conformance LineContract: Swift.Sendable
+swift.conformance LineHeightElementContract: StateUI.Tier
+swift.conformance LineHeightElementContract: StateUI.WornContract
 swift.conformance LineHeightElementContract: Swift.Sendable
 swift.conformance LineJoin: Swift.Equatable
 swift.conformance LineJoin: Swift.Hashable
@@ -423,6 +473,7 @@ swift.conformance LineJoin: Swift.Sendable
 swift.conformance Link: StateUI.View
 swift.conformance Link: StateUI.Views
 swift.conformance Link: Swift.Sendable
+swift.conformance LinkContract: StateUI.WornContract
 swift.conformance LinkContract: Swift.Sendable
 swift.conformance LocaleChoice: Swift.Equatable
 swift.conformance LocaleChoice: Swift.Hashable
@@ -441,6 +492,7 @@ swift.conformance Location: Swift.Sendable
 swift.conformance Map: StateUI.View
 swift.conformance Map: StateUI.Views
 swift.conformance Map: Swift.Sendable
+swift.conformance MapContract: StateUI.WornContract
 swift.conformance MapContract: Swift.Sendable
 swift.conformance MapKind: Swift.Equatable
 swift.conformance MapKind: Swift.Hashable
@@ -449,6 +501,7 @@ swift.conformance MapKind: Swift.Sendable
 swift.conformance MapRegion: Swift.Equatable
 swift.conformance MapRegion: Swift.Sendable
 swift.conformance Marker: Swift.Sendable
+swift.conformance MarkerContract: StateUI.WornContract
 swift.conformance MarkerContract: Swift.Sendable
 swift.conformance MarkerKind: Swift.Equatable
 swift.conformance MarkerKind: Swift.Hashable
@@ -457,16 +510,23 @@ swift.conformance MarkerKind: Swift.Sendable
 swift.conformance Material: Swift.Equatable
 swift.conformance Material: Swift.Sendable
 swift.conformance Menu: Swift.Sendable
+swift.conformance MenuBarContract: StateUI.WornContract
 swift.conformance MenuBarContract: Swift.Sendable
 swift.conformance MenuBuilder: Swift.Sendable
+swift.conformance MenuContract: StateUI.WornContract
 swift.conformance MenuContract: Swift.Sendable
 swift.conformance MenuEntries: Swift.Sendable
 swift.conformance MenuItem: Swift.Sendable
+swift.conformance MenuItemContract: StateUI.WornContract
 swift.conformance MenuItemContract: Swift.Sendable
+swift.conformance MenuItemElementContract: StateUI.Tier
+swift.conformance MenuItemElementContract: StateUI.WornContract
 swift.conformance MenuItemElementContract: Swift.Sendable
 swift.conformance MenuSeparator: Swift.Sendable
+swift.conformance MenuSeparatorContract: StateUI.WornContract
 swift.conformance MenuSeparatorContract: Swift.Sendable
 swift.conformance MenuToggle: Swift.Sendable
+swift.conformance MenuToggleContract: StateUI.WornContract
 swift.conformance MenuToggleContract: Swift.Sendable
 swift.conformance MessageContext: Swift.Sendable
 swift.conformance ModifiedContent: StateUI.View
@@ -477,6 +537,7 @@ swift.conformance Motion: Swift.Sendable
 swift.conformance MotionLayout: StateUI.View
 swift.conformance MotionLayout: StateUI.Views
 swift.conformance MotionLayout: Swift.Sendable
+swift.conformance MotionLayoutContract: StateUI.WornContract
 swift.conformance MotionLayoutContract: Swift.Sendable
 swift.conformance MotionValues: Swift.Equatable
 swift.conformance MotionValues: Swift.ExpressibleByArrayLiteral
@@ -488,6 +549,7 @@ swift.conformance MultiBinding: Swift.Sendable
 swift.conformance NavigationStack: StateUI.View
 swift.conformance NavigationStack: StateUI.Views
 swift.conformance NavigationStack: Swift.Sendable
+swift.conformance NavigationStackContract: StateUI.WornContract
 swift.conformance NavigationStackContract: Swift.Sendable
 swift.conformance NetworkAccess: Swift.Equatable
 swift.conformance NetworkAccess: Swift.Hashable
@@ -497,9 +559,15 @@ swift.conformance Orientation: Swift.Equatable
 swift.conformance Orientation: Swift.Hashable
 swift.conformance Orientation: Swift.RawRepresentable
 swift.conformance Orientation: Swift.Sendable
+swift.conformance OverlayContract: StateUI.WornContract
 swift.conformance OverlayContract: Swift.Sendable
+swift.conformance PaddingElementContract: StateUI.Tier
+swift.conformance PaddingElementContract: StateUI.WornContract
 swift.conformance PaddingElementContract: Swift.Sendable
+swift.conformance PageContract: StateUI.WornContract
 swift.conformance PageContract: Swift.Sendable
+swift.conformance PageElementContract: StateUI.Tier
+swift.conformance PageElementContract: StateUI.WornContract
 swift.conformance PageElementContract: Swift.Sendable
 swift.conformance PanUpdate: Swift.Equatable
 swift.conformance PanUpdate: Swift.Sendable
@@ -509,6 +577,7 @@ swift.conformance Path: StateUI.Shape
 swift.conformance Path: StateUI.View
 swift.conformance Path: StateUI.Views
 swift.conformance Path: Swift.Sendable
+swift.conformance PathContract: StateUI.WornContract
 swift.conformance PathContract: Swift.Sendable
 swift.conformance PersistentKey: Swift.CustomStringConvertible
 swift.conformance PersistentKey: Swift.Equatable
@@ -517,6 +586,7 @@ swift.conformance PersistentKey: Swift.Sendable
 swift.conformance Picker: StateUI.View
 swift.conformance Picker: StateUI.Views
 swift.conformance Picker: Swift.Sendable
+swift.conformance PickerContract: StateUI.WornContract
 swift.conformance PickerContract: Swift.Sendable
 swift.conformance PickerPresentation: Swift.CaseIterable
 swift.conformance PickerPresentation: Swift.Equatable
@@ -535,6 +605,7 @@ swift.conformance Polygon: StateUI.Shape
 swift.conformance Polygon: StateUI.View
 swift.conformance Polygon: StateUI.Views
 swift.conformance Polygon: Swift.Sendable
+swift.conformance PolygonContract: StateUI.WornContract
 swift.conformance PolygonContract: Swift.Sendable
 swift.conformance Polyline: StateUI.CorneredShape
 swift.conformance Polyline: StateUI.FilledShape
@@ -542,7 +613,9 @@ swift.conformance Polyline: StateUI.Shape
 swift.conformance Polyline: StateUI.View
 swift.conformance Polyline: StateUI.Views
 swift.conformance Polyline: Swift.Sendable
+swift.conformance PolylineContract: StateUI.WornContract
 swift.conformance PolylineContract: Swift.Sendable
+swift.conformance PopoverContract: StateUI.WornContract
 swift.conformance PopoverContract: Swift.Sendable
 swift.conformance PositionDots: StateUI.View
 swift.conformance PositionDots: StateUI.Views
@@ -550,6 +623,7 @@ swift.conformance PositionDots: Swift.Sendable
 swift.conformance ProgressBar: StateUI.View
 swift.conformance ProgressBar: StateUI.Views
 swift.conformance ProgressBar: Swift.Sendable
+swift.conformance ProgressBarContract: StateUI.WornContract
 swift.conformance ProgressBarContract: Swift.Sendable
 swift.conformance Rect: Swift.Equatable
 swift.conformance Rect: Swift.Sendable
@@ -559,9 +633,12 @@ swift.conformance Rectangle: StateUI.Shape
 swift.conformance Rectangle: StateUI.View
 swift.conformance Rectangle: StateUI.Views
 swift.conformance Rectangle: Swift.Sendable
+swift.conformance RectangleContract: StateUI.WornContract
 swift.conformance RectangleContract: Swift.Sendable
 swift.conformance RefreshElement: StateUI.View
 swift.conformance RefreshElement: StateUI.Views
+swift.conformance RefreshElementContract: StateUI.Tier
+swift.conformance RefreshElementContract: StateUI.WornContract
 swift.conformance RefreshElementContract: Swift.Sendable
 swift.conformance RotationUpdate: Swift.Equatable
 swift.conformance RotationUpdate: Swift.Sendable
@@ -572,6 +649,7 @@ swift.conformance SafeAreaEdges: Swift.RawRepresentable
 swift.conformance SafeAreaEdges: Swift.Sendable
 swift.conformance SafeAreaEdges: Swift.SetAlgebra
 swift.conformance SceneBuilder: Swift.Sendable
+swift.conformance SceneContract: StateUI.WornContract
 swift.conformance SceneContract: Swift.Sendable
 swift.conformance SceneKey: Swift.CustomStringConvertible
 swift.conformance SceneKey: Swift.Equatable
@@ -601,15 +679,18 @@ swift.conformance ScrollIndicatorVisibility: Swift.Sendable
 swift.conformance ScrollView: StateUI.View
 swift.conformance ScrollView: StateUI.Views
 swift.conformance ScrollView: Swift.Sendable
+swift.conformance ScrollViewContract: StateUI.WornContract
 swift.conformance ScrollViewContract: Swift.Sendable
 swift.conformance SearchField: StateUI.TextInput
 swift.conformance SearchField: StateUI.View
 swift.conformance SearchField: StateUI.Views
 swift.conformance SearchField: Swift.Sendable
+swift.conformance SearchFieldContract: StateUI.WornContract
 swift.conformance SearchFieldContract: Swift.Sendable
 swift.conformance Separator: StateUI.View
 swift.conformance Separator: StateUI.Views
 swift.conformance Separator: Swift.Sendable
+swift.conformance SeparatorContract: StateUI.WornContract
 swift.conformance SeparatorContract: Swift.Sendable
 swift.conformance SessionPhase: Swift.Equatable
 swift.conformance SessionPhase: Swift.Hashable
@@ -617,27 +698,36 @@ swift.conformance SessionPhase: Swift.RawRepresentable
 swift.conformance SessionPhase: Swift.Sendable
 swift.conformance Shape: StateUI.View
 swift.conformance Shape: StateUI.Views
+swift.conformance ShapeContract: StateUI.Tier
+swift.conformance ShapeContract: StateUI.WornContract
 swift.conformance ShapeContract: Swift.Sendable
+swift.conformance SheetContract: StateUI.WornContract
 swift.conformance SheetContract: Swift.Sendable
 swift.conformance Slider: StateUI.View
 swift.conformance Slider: StateUI.Views
 swift.conformance Slider: Swift.Sendable
+swift.conformance SliderContract: StateUI.WornContract
 swift.conformance SliderContract: Swift.Sendable
 swift.conformance Space: StateUI.View
 swift.conformance Space: StateUI.Views
 swift.conformance Space: Swift.Sendable
+swift.conformance SpaceContract: StateUI.WornContract
 swift.conformance SpaceContract: Swift.Sendable
 swift.conformance Spinner: StateUI.View
 swift.conformance Spinner: StateUI.Views
 swift.conformance Spinner: Swift.Sendable
+swift.conformance SpinnerContract: StateUI.WornContract
 swift.conformance SpinnerContract: Swift.Sendable
 swift.conformance SplitView: StateUI.View
 swift.conformance SplitView: StateUI.Views
 swift.conformance SplitView: Swift.Sendable
+swift.conformance SplitViewContract: StateUI.WornContract
 swift.conformance SplitViewContract: Swift.Sendable
 swift.conformance Stack: StateUI.Layout
 swift.conformance Stack: StateUI.View
 swift.conformance Stack: StateUI.Views
+swift.conformance StackContract: StateUI.Tier
+swift.conformance StackContract: StateUI.WornContract
 swift.conformance StackContract: Swift.Sendable
 swift.conformance StandardMenu: Swift.CaseIterable
 swift.conformance StandardMenu: Swift.CustomStringConvertible
@@ -655,6 +745,7 @@ swift.conformance Statements: Swift.Sendable
 swift.conformance Stepper: StateUI.View
 swift.conformance Stepper: StateUI.Views
 swift.conformance Stepper: Swift.Sendable
+swift.conformance StepperContract: StateUI.WornContract
 swift.conformance StepperContract: Swift.Sendable
 swift.conformance StyleBuilder: Swift.Sendable
 swift.conformance StyleKey: Swift.Equatable
@@ -679,10 +770,12 @@ swift.conformance SwipeDirections: Swift.SetAlgebra
 swift.conformance Switch: StateUI.View
 swift.conformance Switch: StateUI.Views
 swift.conformance Switch: Swift.Sendable
+swift.conformance SwitchContract: StateUI.WornContract
 swift.conformance SwitchContract: Swift.Sendable
 swift.conformance TabView: StateUI.View
 swift.conformance TabView: StateUI.Views
 swift.conformance TabView: Swift.Sendable
+swift.conformance TabViewContract: StateUI.WornContract
 swift.conformance TabViewContract: Swift.Sendable
 swift.conformance Text: StateUI.View
 swift.conformance Text: StateUI.Views
@@ -691,13 +784,20 @@ swift.conformance TextAlignment: Swift.Equatable
 swift.conformance TextAlignment: Swift.Hashable
 swift.conformance TextAlignment: Swift.RawRepresentable
 swift.conformance TextAlignment: Swift.Sendable
+swift.conformance TextAlignmentElementContract: StateUI.Tier
+swift.conformance TextAlignmentElementContract: StateUI.WornContract
 swift.conformance TextAlignmentElementContract: Swift.Sendable
+swift.conformance TextAndIconElementContract: StateUI.Tier
+swift.conformance TextAndIconElementContract: StateUI.WornContract
 swift.conformance TextAndIconElementContract: Swift.Sendable
 swift.conformance TextCase: Swift.Equatable
 swift.conformance TextCase: Swift.Hashable
 swift.conformance TextCase: Swift.RawRepresentable
 swift.conformance TextCase: Swift.Sendable
+swift.conformance TextColorElementContract: StateUI.Tier
+swift.conformance TextColorElementContract: StateUI.WornContract
 swift.conformance TextColorElementContract: Swift.Sendable
+swift.conformance TextContract: StateUI.WornContract
 swift.conformance TextContract: Swift.Sendable
 swift.conformance TextDecorations: Swift.Equatable
 swift.conformance TextDecorations: Swift.ExpressibleByArrayLiteral
@@ -709,25 +809,35 @@ swift.conformance TextEditor: StateUI.TextInput
 swift.conformance TextEditor: StateUI.View
 swift.conformance TextEditor: StateUI.Views
 swift.conformance TextEditor: Swift.Sendable
+swift.conformance TextEditorContract: StateUI.WornContract
 swift.conformance TextEditorContract: Swift.Sendable
 swift.conformance TextField: StateUI.TextInput
 swift.conformance TextField: StateUI.View
 swift.conformance TextField: StateUI.Views
 swift.conformance TextField: Swift.Sendable
+swift.conformance TextFieldContract: StateUI.WornContract
 swift.conformance TextFieldContract: Swift.Sendable
 swift.conformance TextInput: StateUI.View
 swift.conformance TextInput: StateUI.Views
+swift.conformance TextInputContract: StateUI.Tier
+swift.conformance TextInputContract: StateUI.WornContract
 swift.conformance TextInputContract: Swift.Sendable
 swift.conformance TextSpan: Swift.Sendable
+swift.conformance TextSpanContract: StateUI.WornContract
 swift.conformance TextSpanContract: Swift.Sendable
+swift.conformance TextSpansContract: StateUI.WornContract
 swift.conformance TextSpansContract: Swift.Sendable
 swift.conformance TextStyle: Swift.CaseIterable
 swift.conformance TextStyle: Swift.Equatable
 swift.conformance TextStyle: Swift.Hashable
 swift.conformance TextStyle: Swift.RawRepresentable
 swift.conformance TextStyle: Swift.Sendable
+swift.conformance TextualElementContract: StateUI.Tier
+swift.conformance TextualElementContract: StateUI.WornContract
 swift.conformance TextualElementContract: Swift.Sendable
 swift.conformance Ticker: Swift.Sendable
+swift.conformance Tier: StateUI.WornContract
+swift.conformance Tier: Swift.Sendable
 swift.conformance TimeFormat: Swift.Equatable
 swift.conformance TimeFormat: Swift.Hashable
 swift.conformance TimeFormat: Swift.RawRepresentable
@@ -735,6 +845,7 @@ swift.conformance TimeFormat: Swift.Sendable
 swift.conformance TimePicker: StateUI.View
 swift.conformance TimePicker: StateUI.Views
 swift.conformance TimePicker: Swift.Sendable
+swift.conformance TimePickerContract: StateUI.WornContract
 swift.conformance TimePickerContract: Swift.Sendable
 swift.conformance TimeZoneName: Swift.CustomStringConvertible
 swift.conformance TimeZoneName: Swift.Equatable
@@ -743,11 +854,15 @@ swift.conformance TimeZoneName: Swift.ExpressibleByStringLiteral
 swift.conformance TimeZoneName: Swift.ExpressibleByUnicodeScalarLiteral
 swift.conformance TimeZoneName: Swift.Hashable
 swift.conformance TimeZoneName: Swift.Sendable
+swift.conformance TintElementContract: StateUI.Tier
+swift.conformance TintElementContract: StateUI.WornContract
 swift.conformance TintElementContract: Swift.Sendable
+swift.conformance TitleViewContract: StateUI.WornContract
 swift.conformance TitleViewContract: Swift.Sendable
 swift.conformance ToolbarBuilder: Swift.Sendable
 swift.conformance ToolbarButton: StateUI.ToolbarItem
 swift.conformance ToolbarButton: Swift.Sendable
+swift.conformance ToolbarButtonContract: StateUI.WornContract
 swift.conformance ToolbarButtonContract: Swift.Sendable
 swift.conformance ToolbarEdge: Swift.Equatable
 swift.conformance ToolbarEdge: Swift.Hashable
@@ -755,9 +870,11 @@ swift.conformance ToolbarEdge: Swift.RawRepresentable
 swift.conformance ToolbarEdge: Swift.Sendable
 swift.conformance ToolbarGroup: Swift.Sendable
 swift.conformance ToolbarGroupBuilder: Swift.Sendable
+swift.conformance ToolbarGroupContract: StateUI.WornContract
 swift.conformance ToolbarGroupContract: Swift.Sendable
 swift.conformance ToolbarLabel: StateUI.ToolbarItem
 swift.conformance ToolbarLabel: Swift.Sendable
+swift.conformance ToolbarLabelContract: StateUI.WornContract
 swift.conformance ToolbarLabelContract: Swift.Sendable
 swift.conformance ToolbarPart: Swift.Equatable
 swift.conformance ToolbarPart: Swift.Hashable
@@ -774,19 +891,27 @@ swift.conformance ToolbarStyle: Swift.RawRepresentable
 swift.conformance ToolbarStyle: Swift.Sendable
 swift.conformance ToolbarToggle: StateUI.ToolbarItem
 swift.conformance ToolbarToggle: Swift.Sendable
+swift.conformance ToolbarToggleContract: StateUI.WornContract
 swift.conformance ToolbarToggleContract: Swift.Sendable
+swift.conformance TrackingElementContract: StateUI.Tier
+swift.conformance TrackingElementContract: StateUI.WornContract
 swift.conformance TrackingElementContract: Swift.Sendable
 swift.conformance VStack: StateUI.Layout
 swift.conformance VStack: StateUI.Stack
 swift.conformance VStack: StateUI.View
 swift.conformance VStack: StateUI.Views
 swift.conformance VStack: Swift.Sendable
+swift.conformance VStackContract: StateUI.WornContract
 swift.conformance VStackContract: Swift.Sendable
 swift.conformance View: StateUI.Views
 swift.conformance ViewBuilder: Swift.Sendable
+swift.conformance ViewContract: StateUI.Tier
+swift.conformance ViewContract: StateUI.WornContract
 swift.conformance ViewContract: Swift.Sendable
 swift.conformance ViewTransform: Swift.Equatable
 swift.conformance ViewTransform: Swift.Sendable
+swift.conformance VisualElementContract: StateUI.Tier
+swift.conformance VisualElementContract: StateUI.WornContract
 swift.conformance VisualElementContract: Swift.Sendable
 swift.conformance VisualState: Swift.Equatable
 swift.conformance VisualState: Swift.Sendable
@@ -806,6 +931,7 @@ swift.conformance WebNavigationResult: Swift.Sendable
 swift.conformance WebView: StateUI.View
 swift.conformance WebView: StateUI.Views
 swift.conformance WebView: Swift.Sendable
+swift.conformance WebViewContract: StateUI.WornContract
 swift.conformance WebViewContract: Swift.Sendable
 swift.conformance Weekday: Swift.Equatable
 swift.conformance Weekday: Swift.Hashable
@@ -813,6 +939,7 @@ swift.conformance Weekday: Swift.RawRepresentable
 swift.conformance Weekday: Swift.Sendable
 swift.conformance Window: StateUI.Scene
 swift.conformance Window: Swift.Sendable
+swift.conformance WindowContract: StateUI.WornContract
 swift.conformance WindowContract: Swift.Sendable
 swift.conformance WindowError: Swift.Equatable
 swift.conformance WindowError: Swift.Error
@@ -826,6 +953,7 @@ swift.conformance WindowKind: Swift.Sendable
 swift.conformance WindowSession: Swift.Sendable
 swift.conformance Windows: StateUI.Scene
 swift.conformance Windows: Swift.Sendable
+swift.conformance WornContract: Swift.Sendable
 swift.conformance WritingDirection: Swift.CaseIterable
 swift.conformance WritingDirection: Swift.Equatable
 swift.conformance WritingDirection: Swift.Hashable
@@ -835,6 +963,7 @@ swift.conformance ZStack: StateUI.Layout
 swift.conformance ZStack: StateUI.View
 swift.conformance ZStack: StateUI.Views
 swift.conformance ZStack: Swift.Sendable
+swift.conformance ZStackContract: StateUI.WornContract
 swift.conformance ZStackContract: Swift.Sendable
 swift.enum AccessibilityAdjustment: enum AccessibilityAdjustment
 swift.enum AccessibilityHeadingLevel: enum AccessibilityHeadingLevel
@@ -13061,9 +13190,11 @@ swift.protocol Scene: @MainActor protocol Scene
 swift.protocol Shape: @MainActor protocol Shape : ElementView, ShapeProperties
 swift.protocol Stack: @MainActor protocol Stack : Layout, StackProperties
 swift.protocol TextInput: @MainActor protocol TextInput : ElementView, FocusElement, TextInputProperties
+swift.protocol Tier: protocol Tier : WornContract
 swift.protocol ToolbarItem: @MainActor protocol ToolbarItem : Element
 swift.protocol View: @MainActor protocol View : ViewProperties, Views, VisualElement where Self.Modified : View
 swift.protocol Views: @MainActor protocol Views
+swift.protocol WornContract: protocol WornContract : Contract
 swift.struct AnyStyle: @MainActor struct AnyStyle
 swift.struct AnyView: @MainActor struct AnyView
 swift.struct ApplicationBuilder.Declared: struct Declared

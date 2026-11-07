@@ -27,9 +27,9 @@ extension AndroidRegistrations {
             field.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            field.raises(DatePickerContract.dateChanged)
-            field.raises(DatePickerContract.opened)
-            field.raises(DatePickerContract.closed)
+            field.declares(DatePickerContract.dateChanged)
+            field.declares(DatePickerContract.opened)
+            field.declares(DatePickerContract.closed)
         })
 
         registry.add(TimePickerContract.self, create: { reports in
@@ -47,9 +47,9 @@ extension AndroidRegistrations {
             field.property(TimePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
             field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            field.raises(TimePickerContract.timeChanged)
-            field.raises(TimePickerContract.opened)
-            field.raises(TimePickerContract.closed)
+            field.declares(TimePickerContract.timeChanged)
+            field.declares(TimePickerContract.opened)
+            field.declares(TimePickerContract.closed)
         })
     }
 

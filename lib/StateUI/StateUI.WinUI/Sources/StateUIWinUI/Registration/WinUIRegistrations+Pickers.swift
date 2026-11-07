@@ -31,9 +31,9 @@ extension WinUIRegistrations {
             }
             picker.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(PickerContract.selectedIndexChanged)
-            picker.raises(PickerContract.opened)
-            picker.raises(PickerContract.closed)
+            picker.declares(PickerContract.selectedIndexChanged)
+            picker.declares(PickerContract.opened)
+            picker.declares(PickerContract.closed)
         })
     }
 }

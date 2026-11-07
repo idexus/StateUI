@@ -20,8 +20,8 @@ extension AndroidRegistrations {
             field.applies(inputMembers, TextFieldContract.isPassword) { view, values in applyField(view, values) }
             field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(TextFieldContract.submitted)
         })
 
         registry.add(SearchFieldContract.self, create: { reports in
@@ -35,8 +35,8 @@ extension AndroidRegistrations {
             search.applies(inputMembers) { view, values in applyField(view, values) }
             search.property(SearchFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SearchFieldContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in
@@ -49,7 +49,7 @@ extension AndroidRegistrations {
             editor.applies(inputMembers) { view, values in applyField(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrows(grows ?? false) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
     }
 

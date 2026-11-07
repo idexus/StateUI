@@ -18,10 +18,10 @@ extension WebRegistrations {
             return frame
         }, members: { frame in
             frame.property(WebViewContract.source) { view, source in view.show(source) }
-            frame.raises(WebViewContract.navigating)
-            frame.raises(WebViewContract.navigated)
-            frame.raises(WebViewContract.canGoBackChanged)
-            frame.raises(WebViewContract.canGoForwardChanged)
+            frame.declares(WebViewContract.navigating)
+            frame.declares(WebViewContract.navigated)
+            frame.declares(WebViewContract.canGoBackChanged)
+            frame.declares(WebViewContract.canGoForwardChanged)
         })
     }
 }

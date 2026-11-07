@@ -10,7 +10,7 @@ public enum TextFieldContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A field is an input of text in a font, aligned.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, BorderElementContract.self,
     ]

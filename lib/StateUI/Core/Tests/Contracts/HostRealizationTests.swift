@@ -69,7 +69,7 @@ final class HostRealizationTests: XCTestCase {
     func testARegistryRecordsTheApplicationsEventsItRaises() {
         let registry = Registry<Plain>()
 
-        registry.raises(TestHostEvents.batteryChanged)
+        registry.declares(TestHostEvents.batteryChanged)
         HostBoundary.setRealization(registry.realization)
 
         XCTAssertTrue(registry.realization.members.contains(

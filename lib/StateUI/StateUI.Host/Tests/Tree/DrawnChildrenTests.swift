@@ -122,7 +122,7 @@ private final class Drawing: NativeElement {
 /// A view drawing its books itself.
 enum ShelfContract: ElementContract {
     static let nodeType: NodeType = "Test.Shelf"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let caption = ElementProperty<Self, String>("caption")
     static let members: [any ContractMember] = [caption]
 }

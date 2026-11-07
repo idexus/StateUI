@@ -19,7 +19,7 @@ extension AndroidRegistrations {
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(SwitchContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
             let box = AndroidCheckBoxView()
@@ -33,7 +33,7 @@ extension AndroidRegistrations {
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(CheckBoxContract.toggled)
         })
     }
 }

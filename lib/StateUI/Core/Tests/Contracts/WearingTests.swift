@@ -76,7 +76,7 @@ final class WearingTests: XCTestCase {
 /// An element of an application's own: a view with a glow of its own.
 private enum BeaconContract: ElementContract {
     static let nodeType: NodeType = "Test.Beacon"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     static let glow = ElementProperty<Self, Double>("glow")
     static let flashed = ElementEvent<Self, Void>("flashed")

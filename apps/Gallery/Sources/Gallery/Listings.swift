@@ -2635,7 +2635,7 @@ enum Listings {
         /// and its members, each with its value's type.
         public enum Cube3DContract: ElementContract {
             public static let nodeType: NodeType = "Gallery.Cube3D"
-            public static let tiers: [any Contract.Type] = [ViewContract.self]
+            public static let tiers: [any Tier.Type] = [ViewContract.self]
 
             /// How long the cube's edge is, as a share of the room the view is given,
             /// 0 through 1. A size HAS a half way, so a change travels and a walk of
@@ -12583,7 +12583,7 @@ enum Listings {
         /// wears, and its members, each with its value's type.
         public enum TrafficLightContract: ElementContract {
             public static let nodeType: NodeType = "Gallery.TrafficLight"
-            public static let tiers: [any Contract.Type] = [ViewContract.self]
+            public static let tiers: [any Tier.Type] = [ViewContract.self]
 
             /// Which lamp is lit.
             public static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -14640,7 +14640,7 @@ extension Listings {
                         control.show(
                             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
                     }
-                    bar.raises(RatingBarContract.ratingChanged)
+                    bar.declares(RatingBarContract.ratingChanged)
                 }
 
                 // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
@@ -15111,7 +15111,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15258,7 +15258,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15337,7 +15337,7 @@ extension Listings {
                         light.property(TrafficLightContract.signal) { control, signal in
                             control.signal = signal ?? .stop
                         }
-                        light.raises(TrafficLightContract.lampTapped)
+                        light.declares(TrafficLightContract.lampTapped)
                     }
                 }
             }
@@ -15437,7 +15437,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15524,7 +15524,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15637,7 +15637,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15749,7 +15749,7 @@ extension Listings {
             /// Declares the event the activity's watcher raises. Said once, as the library loads.
             @MainActor
             static func register() {
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
             }
 
             @MainActor private static var lastSaid: (level: Double, charging: Bool)?
@@ -15799,7 +15799,7 @@ extension Listings {
             static func start() {
                 // Declared where the source is wired: a handler listening for an
                 // event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // Named in full: a C function pointer carries no context at all, and
                 // an unqualified call to a static method captures the type implicitly.
@@ -15850,7 +15850,7 @@ extension Listings {
             @MainActor
             static func start() {
                 // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // UPower's display device signals each change of its properties, the battery's among them.
                 guard let device = GalleryPower.device else { return }
@@ -15904,7 +15904,7 @@ extension Listings {
                 static func start() {
                     // What the host raises, declared where its source is wired: a handler
                     // listening for an event nothing raises is told so.
-                    StateUIEvents.raises(GalleryContract.batteryChanged)
+                    StateUIEvents.declares(GalleryContract.batteryChanged)
 
                     UIDevice.current.isBatteryMonitoringEnabled = true
                     for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
@@ -15967,7 +15967,7 @@ extension Listings {
             static func start() {
                 // What the host raises, declared where its source is wired: a handler listening for an event nothing
                 // declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
                 StateUIScripts.hear("battery") { words in
                     let (level, charging) = GalleryActs.battery(words)
                     guard level > 0 else { return }
@@ -16039,7 +16039,7 @@ extension Listings {
             @MainActor
             static func start() {
                 // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // The gallery's relay asks Windows for each change of the battery's charge and of the power source
                 // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
@@ -16097,7 +16097,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "android.md.children": #"""
@@ -16109,7 +16109,7 @@ extension Listings {
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
@@ -16134,7 +16134,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16144,7 +16144,7 @@ extension Listings {
         /// Declares the event the activity's watcher raises. Said once, as the library loads.
         @MainActor
         static func register() {
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
         }
 
         @MainActor private static var lastSaid: (level: Double, charging: Bool)?
@@ -16221,7 +16221,7 @@ extension Listings {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "appkit.md.control": #"""
@@ -16242,7 +16242,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16265,6 +16265,12 @@ extension Listings {
                 MetalCube3DView.register()
             }
         }
+        """#,
+        "appkit.md.declares": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        // Declared where the source is wired: a handler listening for an
+        // event nothing declared is told, once, that it will not hear it.
+        StateUIEvents.declares(GalleryContract.batteryChanged)
         """#,
         "appkit.md.event": #"""
         // Platforms/AppKit/Host/GalleryEventSources.swift
@@ -16304,12 +16310,6 @@ extension Listings {
 
         AppKitHost.run()
         """#,
-        "appkit.md.raises": #"""
-        // Platforms/AppKit/Host/GalleryEventSources.swift
-        // Declared where the source is wired: a handler listening for an
-        // event nothing declared is told, once, that it will not hear it.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
-        """#,
         "gtk.md.acts": #"""
         // Platforms/GTK/Host/GalleryActs.swift
         // A performer is handed the arguments its act declares and answers the values it declares.
@@ -16341,7 +16341,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "gtk.md.control": #"""
@@ -16360,7 +16360,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16371,7 +16371,7 @@ extension Listings {
         @MainActor
         static func start() {
             // A handler listening for an event nothing declared is told, once, that it will not hear it.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             // UPower's display device signals each change of its properties, the battery's among them.
             guard let device = GalleryPower.device else { return }
@@ -16452,7 +16452,7 @@ extension Listings {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "uikit.md.control": #"""
@@ -16473,7 +16473,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16485,7 +16485,7 @@ extension Listings {
         static func start() {
             // What the host raises, declared where its source is wired: a handler
             // listening for an event nothing raises is told so.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             UIDevice.current.isBatteryMonitoringEnabled = true
             for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
@@ -16552,7 +16552,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "web.md.children": #"""
@@ -16564,7 +16564,7 @@ extension Listings {
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
@@ -16658,7 +16658,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "winui.md.control": #"""
@@ -16677,7 +16677,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16688,7 +16688,7 @@ extension Listings {
         @MainActor
         static func start() {
             // A handler listening for an event nothing declared is told, once, that it will not hear it.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             // The gallery's relay asks Windows for each change of the battery's charge and of the power source
             // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.

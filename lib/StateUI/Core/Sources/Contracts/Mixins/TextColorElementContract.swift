@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The color of text, wherever it is drawn.
-public enum TextColorElementContract: Contract {
+public enum TextColorElementContract: Tier {
     /// The tier's name.
     public static let name = "TextColorElement"
 

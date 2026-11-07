@@ -12,7 +12,7 @@ public enum PageContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A page shows a title and an icon where it is an item.
-    public static let tiers: [any Contract.Type] = [PageElementContract.self]
+    public static let tiers: [any Tier.Type] = [PageElementContract.self]
 
     /// The page is coming on screen.
     public static let appearing = ElementEvent<Self, Void>("appearing", layer: .adaptive)

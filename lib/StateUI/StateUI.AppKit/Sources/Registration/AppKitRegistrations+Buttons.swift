@@ -89,9 +89,9 @@ extension AppKitRegistrations {
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ButtonContract.clicked)
+            button.declares(ButtonContract.pressed)
+            button.declares(ButtonContract.released)
         })
     }
 

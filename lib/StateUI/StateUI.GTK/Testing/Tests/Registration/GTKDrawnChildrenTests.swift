@@ -11,7 +11,7 @@ import XCTest
 /// A shelf the application declares, whose control draws its books itself.
 private enum ShelfContract: ElementContract {
     static let nodeType: NodeType = "DrawnTest.Shelf"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let members: [any ContractMember] = []
 }
 

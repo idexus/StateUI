@@ -469,7 +469,7 @@ private enum TestDevice: ApplicationTier {
 }
 
 /// A contract declaring a property under the name a button's event has.
-private enum EchoContract: Contract {
+private enum EchoContract: Tier {
     static let name = "TestEcho"
 
     static let clicked = ElementProperty<Self, Bool>("clicked")
