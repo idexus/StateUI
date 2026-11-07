@@ -37,7 +37,7 @@ extension AndroidRegistrations {
             button.property(ButtonContract.lineBreak) { view, breaking in
                 view.setLines(breaking: breaking ?? .wordWrap, maximum: nil)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in
+            button.property(EnabledElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
             // The role's look; its key is the window's (`KeyboardShortcuts.pressing`).

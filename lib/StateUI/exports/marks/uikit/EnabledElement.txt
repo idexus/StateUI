@@ -1,0 +1,7 @@
+# revision 0.0
+Menu.isEnabled: ☑️ UIKit holds no menu out of reach itself: each of its entries is.
+MenuItem.isEnabled: ✅
+MenuToggle.isEnabled: ✅
+ToolbarButton.isEnabled: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarToggle.isEnabled: ✅

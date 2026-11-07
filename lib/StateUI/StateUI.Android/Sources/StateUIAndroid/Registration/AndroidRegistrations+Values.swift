@@ -26,7 +26,7 @@ extension AndroidRegistrations {
                     maximum: values[RangeElementContract.maximum] ?? 1)
             }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            slider.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.declares(RangeElementContract.valueChanged)
             slider.declares(PressElementContract.pressed)
             slider.declares(PressElementContract.released)
@@ -41,13 +41,13 @@ extension AndroidRegistrations {
         }, members: { stepper in
             stepper.applies(
                 RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, StepperContract.step,
-                VisualElementContract.isEnabled) { view, values in
+                EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.value),
                     minimum: values[RangeElementContract.minimum] ?? 0,
                     maximum: values[RangeElementContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             stepper.declares(RangeElementContract.valueChanged)
         })

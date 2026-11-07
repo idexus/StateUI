@@ -39,7 +39,7 @@ enum WebRegistrations {
     static func shared(_ registry: Registry<WebDOMView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
-        registry.everyElementRealizes(VisualElementContract.isEnabled)
+        registry.everyElementRealizes(EnabledElementContract.isEnabled)
         registry.everyElementRaises(FocusElementContract.isFocusedChanged)
         registry.everyElementRealizes(VisualElementContract.background)
         registry.everyElementRealizes(VisualElementContract.ignoresInput)

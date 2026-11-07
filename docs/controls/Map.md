@@ -16,7 +16,7 @@ A host with no map of its own shows the one the application registers with it - 
 
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [HoverElement](tiers/HoverElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -37,14 +37,14 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 37 ✓ · 1 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>29 ✅ · 2 ☑️ · 11 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>44 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 1 ✓</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>9 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>44 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>9 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>44 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>9 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>44 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>9 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 
@@ -88,76 +88,53 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityActionPerformed</code></td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityActions</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onAccessibilityAdjusted</code> (<code>accessibilityAdjusted</code>)</td><td>event</td><td><code>AccessibilityAdjustment</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.<br>UIKit: VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHeading</code></td><td>property</td><td><code>AccessibilityHeadingLevel</code></td><td>native</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: AppKit marks a heading, not its level: every level is a heading.<br>UIKit: UIKit marks a heading, not its level: every level is a heading.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityPresence</code></td><td>property</td><td><code>AccessibilityPresence</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityRole</code></td><td>property</td><td><code>AccessibilityRole</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityValue</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.<br>UIKit: UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>opacity</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>pivotX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read pivotX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>pivotY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read pivotY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>rotation</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read rotation of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>rotationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read rotationX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>rotationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read rotationY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>scale</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read scale of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>scaleX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationX of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit, UIKit: only through the host's own: read translationY of Map: the host's own transform, checked against the layer it composed itself<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityActionPerformed</code></td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityActions</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onAccessibilityAdjusted</code> (<code>accessibilityAdjusted</code>)</td><td>event</td><td><code>AccessibilityAdjustment</code></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityHeading</code></td><td>property</td><td><code>AccessibilityHeadingLevel</code></td><td>native</td><td align="center">☑️</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit marks a heading, not its level: every level is a heading.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityPresence</code></td><td>property</td><td><code>AccessibilityPresence</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityRole</code></td><td>property</td><td><code>AccessibilityRole</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>accessibilityValue</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>maximumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>minimumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>opacity</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>pivotX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read pivotX of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>pivotY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read pivotY of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotation</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read rotation of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read rotationX of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>rotationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read rotationY of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scale</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read scale of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scaleX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read scaleX of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read scaleY of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read translationX of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>translationY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read translationY of Map: the host's own transform, checked against the layer it composed itself</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>zIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [View](tiers/View.md)
@@ -227,6 +204,15 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
+## From [EnabledElement](tiers/EnabledElement.md)
+
+Whether the user's hand reaches an element: a view, a menu, an entry in one, a toolbar's group.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [HoverElement](tiers/HoverElement.md)

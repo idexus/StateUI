@@ -53,7 +53,7 @@ extension WinUIRegistrations {
                     ButtonRoleLook(role, fills: false, colorsWords: values[TextColorElementContract.textColor] != nil)
                         .wordsInCritical)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in
+            button.property(EnabledElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
             button.declares(ClickElementContract.clicked)

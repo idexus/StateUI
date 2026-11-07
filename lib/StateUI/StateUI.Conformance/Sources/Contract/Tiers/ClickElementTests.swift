@@ -49,8 +49,6 @@
                 s.expect(heard.values, [true], "its handler ran once")
             },
         ] + Specimens.wearing(ActionElementContract.self).map(ActionElementTests.chosen)
-            + (ButtonTests.written + LinkTests.written).filter { written in
-                written.proves.contains { $0.tier == ClickElementContract.name }
-            }.map { $0.proving(ClickElementContract.self) }
+            + (ButtonTests.written + LinkTests.written).proving(ClickElementContract.self)
     }
 }

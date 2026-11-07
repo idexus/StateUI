@@ -12,7 +12,10 @@
 @_spi(Host) public enum VisualElementTests: ConformanceFamily {
     public static let name = "VisualElement"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(VisualElementContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(VisualElementContract.self).flatMap { element -> [ConformanceCase] in
             let held: [ConformanceCase] = [
                 shown(element), opacity(element), enabled(element), sized(element), bounded(element),
@@ -256,7 +259,7 @@
     @MainActor
     static func answering(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).answersNoTapWhileDisabled", proves: [
-            Covered(VisualElementContract.isEnabled, on: element),
+            Covered(EnabledElementContract.isEnabled, on: element),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.tapped, on: element)]) { s in
             let enabled = State(wrappedValue: false)
             let heard = Received<String>()
@@ -264,7 +267,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        Write(EnabledElementContract.isEnabled, enabled.wrappedValue),
                         HearDone(ViewContract.tapped) { heard.values.append("tapped") },
                     ])
                     Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
@@ -290,24 +293,24 @@
     @MainActor
     static func disablingItsBranch(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).disablesTheControlsInIt", proves: [
-            Covered(VisualElementContract.isEnabled, on: layout),
-        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(VisualElementContract.isEnabled, on: "Button")]) { s in
+            Covered(EnabledElementContract.isEnabled, on: layout),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(EnabledElementContract.isEnabled, on: "Button")]) { s in
             let enabled = State(wrappedValue: false)
             s.start {
                 VStack {
                     Specimens.holding(layout, Button("Inside").id("inside"), [
-                        Write(VisualElementContract.isEnabled, enabled.wrappedValue),
+                        Write(EnabledElementContract.isEnabled, enabled.wrappedValue),
                         Write(VisualElementContract.height, 60),
                     ])
                     Button("Enable").onClicked { enabled.wrappedValue = true }.id("change")
                 }
             }
             let inside = try s.element("inside")
-            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), false, "disabled with its layout")
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: inside), false, "disabled with its layout")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(VisualElementContract.isEnabled, on: inside) == true }
-            s.expect(try s.held(VisualElementContract.isEnabled, on: inside), true, "enabled with it")
+            try s.settle { try s.held(EnabledElementContract.isEnabled, on: inside) == true }
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: inside), true, "enabled with it")
         }
     }
 
@@ -353,24 +356,24 @@
     @MainActor
     static func enabled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesInputAsTheTreeSays", proves: [
-            Covered(VisualElementContract.isEnabled, on: element),
+            Covered(EnabledElementContract.isEnabled, on: element),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let enabled = State(wrappedValue: false)
             s.start(reducesMotion: true) {
-                Specimens.page(element, [Write(VisualElementContract.isEnabled, enabled.wrappedValue)], beside: [
+                Specimens.page(element, [Write(EnabledElementContract.isEnabled, enabled.wrappedValue)], beside: [
                     Button("Change").onClicked { enabled.wrappedValue.toggle() }.id("change"),
                 ])
             }
             let view = try s.specimen(element)
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false, "made taking no input")
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false, "made taking no input")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(VisualElementContract.isEnabled, on: view) == true }
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), true)
+            try s.settle { try s.held(EnabledElementContract.isEnabled, on: view) == true }
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), true)
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(VisualElementContract.isEnabled, on: view) == false }
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false)
+            try s.settle { try s.held(EnabledElementContract.isEnabled, on: view) == false }
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false)
         }
     }
 

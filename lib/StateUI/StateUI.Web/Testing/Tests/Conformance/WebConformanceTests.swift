@@ -96,6 +96,7 @@ final class WebConformanceTests: XCTestCase {
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testEnabledElement() { conform(EnabledElementTests.self) }
     func testClickElement() { conform(ClickElementTests.self) }
     func testRangeElement() { conform(RangeElementTests.self) }
     func testSubmitElement() { conform(SubmitElementTests.self) }

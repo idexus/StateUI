@@ -17,7 +17,7 @@ extension WinUIRegistrations {
                 view.setText(TextMembers.caption(values))
                 view.setForeground(values[TextColorElementContract.textColor]?.propValue)
             }
-            link.property(VisualElementContract.isEnabled) { view, enabled in
+            link.property(EnabledElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.

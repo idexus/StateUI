@@ -10,7 +10,7 @@
 @_spi(Host) public enum ButtonTests: ConformanceFamily {
     public static let name = "Button"
 
-    public static var cases: [ConformanceCase] { written.map { $0.provingOwn() }.filter { !$0.proves.isEmpty } }
+    public static var cases: [ConformanceCase] { written.proving(ButtonContract.self) }
 
     /// Every case written for the element: its own members, and its tiers' a tier's family takes up.
     @MainActor static var written: [ConformanceCase] {

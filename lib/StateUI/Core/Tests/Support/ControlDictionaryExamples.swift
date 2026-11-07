@@ -860,6 +860,13 @@ extension ControlDictionary {
                 .onClicked { saved = true }
             """#),
 
+        (EnabledElementContract.self, #"""
+            @State var name = ""
+
+            Button("Send")
+                .isEnabled(!name.isEmpty)
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

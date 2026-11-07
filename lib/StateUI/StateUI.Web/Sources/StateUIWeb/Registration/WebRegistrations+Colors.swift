@@ -15,7 +15,7 @@ extension WebRegistrations {
             return picker
         }, members: { picker in
             picker.property(ColorPickerContract.color) { view, color in view.setColor(color ?? ColorChoice.unset) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(ColorPickerContract.colorChanged)
         })
     }

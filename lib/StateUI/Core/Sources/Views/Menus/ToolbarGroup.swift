@@ -69,7 +69,7 @@ public struct ToolbarGroup: BarItemElement, BorderElement, PaddingElement, Toolb
     /// as a disabled view does what it holds.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
-        copy.node.write(ToolbarGroupContract.isEnabled, value)
+        copy.node.write(EnabledElementContract.isEnabled, value)
         return copy
     }
 }

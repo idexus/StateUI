@@ -13,7 +13,7 @@ extension GTKRegistrations {
             link.onClicked = { reports.raise(ClickElementContract.clicked) }
             return link
         }, members: { link in
-            link.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            link.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             link.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))
             }

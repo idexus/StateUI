@@ -9,7 +9,7 @@ public enum VisualElementContract: Tier {
     public static let name = "VisualElement"
 
     /// Every drawn element is found by automation.
-    public static let tiers: [any Tier.Type] = [AutomationElementContract.self]
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self, EnabledElementContract.self]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
     public static let accessibilityActionPerformed = ElementEvent<Self, String>(
@@ -61,9 +61,6 @@ public enum VisualElementContract: Tier {
 
     /// Whether input passes through the element to what is under it.
     public static let ignoresInput = ElementProperty<Self, Bool>("ignoresInput", layer: .native)
-
-    /// Whether the element answers input.
-    public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
 
     /// Whether the element is shown.
     public static let isVisible = ElementProperty<Self, Bool>("isVisible", layer: .native)
@@ -146,12 +143,5 @@ public enum VisualElementContract: Tier {
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted,
-        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole,
-        accessibilityValue, background, frame, height, ignoresInput, isEnabled, isVisible, layoutDirection,
-        maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
-        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
-        translationY, width, zIndex,
-    ]
+    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, background, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX, translationY, width, zIndex]
 }

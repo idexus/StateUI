@@ -17,7 +17,7 @@ Text("Report.pdf")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [ClickElement](tiers/ClickElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [EnabledElement](tiers/EnabledElement.md) · [ClickElement](tiers/ClickElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -38,11 +38,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (7)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>4 ✅ · 1 ☑️</td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 2 –</td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>5 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 2 –</td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>5 ✅</td><td>ARIA <code>menu</code> in a <code>popover</code>; a menu bar's menus under the bar's More button</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>1 ✅</td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 –</td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 –</td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>1 ✅</td><td>ARIA <code>menu</code> in a <code>popover</code>; a menu bar's menus under the bar's More button</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuItemContract.swift`.
@@ -61,6 +61,15 @@ What an element the platform's automation meets has - a drawn element, a menu's 
 <tr><td colspan="9">AppKit: Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.<br>Android Views: An Android menu entry holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
 </table>
 
+## From [EnabledElement](tiers/EnabledElement.md)
+
+Whether the user's hand reaches an element: a view, a menu, an entry in one, a toolbar's group.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
 ## From [ClickElement](tiers/ClickElement.md)
 
 What a control the user chooses reports: a button, a link, a menu's entry, a toolbar's button.
@@ -76,12 +85,9 @@ What every item a user chooses from says - a menu's entry, a toolbar's item, an 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.<br>GTK 4: GNOME's menus show words alone, no picture beside them.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: UIKit shows a shortcut in the main menu alone, none in a context menu.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [ActionElement](tiers/ActionElement.md)

@@ -14,7 +14,7 @@
         [
             ConformanceCase("thePagesMenusStandOnItsWindowsBar", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(MenuContract.text), Covered(MenuItemElementContract.isEnabled, on: "MenuItem")]) { s in
+            ], needs: [Covered(MenuContract.text), Covered(EnabledElementContract.isEnabled, on: "MenuItem")]) { s in
                 s.start { onAStack(MenusPage(heard: Received())) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 

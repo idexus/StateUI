@@ -17,11 +17,11 @@ extension AppKitRegistrations {
             }
             return toggle
         }, members: { toggle in
-            toggle.applies(ToggleElementContract.isOn, VisualElementContract.isEnabled, TextMembers.captionMembers) {
+            toggle.applies(ToggleElementContract.isOn, EnabledElementContract.isEnabled, TextMembers.captionMembers) {
                 view, values in
                 view.apply(
                     toggled: values[ToggleElementContract.isOn] ?? false,
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
@@ -36,11 +36,11 @@ extension AppKitRegistrations {
             return box
         }, members: { box in
             box.applies(
-                ToggleElementContract.isOn, VisualElementContract.isEnabled, TintElementContract.tint,
+                ToggleElementContract.isOn, EnabledElementContract.isEnabled, TintElementContract.tint,
                 TextMembers.captionMembers) { view, values in
                 view.apply(
                     checked: values[ToggleElementContract.isOn] ?? false,
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })

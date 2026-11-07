@@ -66,16 +66,16 @@ final class HostDeclarationTests: XCTestCase {
     }
 
     /// What the shared machinery realizes is a tier's member: an element that declares a member of the same name
-    /// of its own - a menu's `isEnabled` - and registers nothing takes nothing from it, so a realization read back
+    /// of its own - a window's `width` - and registers nothing takes nothing from it, so a realization read back
     /// through its declaration is the realization it was.
     func testASharedNameReachesOnlyTheWearersOfItsTier() {
         let realization = HostRealization(
-            elements: ["Menu", "Button"],
-            members: [HostRealizedMember(element: "Button", owner: "VisualElement", member: "isEnabled")])
+            elements: ["Window", "Button"],
+            members: [HostRealizedMember(element: "Button", owner: "VisualElement", member: "width")])
 
-        let back = HostDeclaration(realization: realization, shared: ["isEnabled"], acts: []).realization
+        let back = HostDeclaration(realization: realization, shared: ["width"], acts: []).realization
 
-        XCTAssertFalse(back.members.contains(HostRealizedMember(element: "Menu", owner: "Menu", member: "isEnabled")))
+        XCTAssertFalse(back.members.contains(HostRealizedMember(element: "Window", owner: "Window", member: "width")))
         XCTAssertEqual(back.members, realization.members)
     }
 

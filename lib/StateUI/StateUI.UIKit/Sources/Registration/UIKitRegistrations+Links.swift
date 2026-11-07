@@ -19,7 +19,7 @@ extension UIKitRegistrations {
                     TextMembers.caption(values),
                     color: values[TextColorElementContract.textColor].flatMap { UIColor(stateUI: $0.propValue) })
             }
-            link.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            link.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.
             link.property(LinkContract.address) { _, _ in }
             link.declares(ClickElementContract.clicked)

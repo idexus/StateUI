@@ -2,7 +2,6 @@
 ToolbarGroup: ✅
 ToolbarGroup.barEdge: ✅
 ToolbarGroup.hidesWithSidebar: ✅
-ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅
 ToolbarGroup.part: ✅
 ToolbarGroup.position: ✅

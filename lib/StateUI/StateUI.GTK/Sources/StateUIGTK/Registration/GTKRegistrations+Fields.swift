@@ -62,7 +62,7 @@ extension GTKRegistrations {
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
         + TextMembers.lookMembers
@@ -80,8 +80,8 @@ extension GTKRegistrations {
             view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
         }
         if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
-        if values.changed(VisualElementContract.isEnabled) {
-            view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
+        if values.changed(EnabledElementContract.isEnabled) {
+            view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }
         if values.changed(TextInputContract.isReadOnly) || InputTraits.changed(values) != nil {
             let (hints, purpose) = GTKTextFieldView.input(InputTraits(values))

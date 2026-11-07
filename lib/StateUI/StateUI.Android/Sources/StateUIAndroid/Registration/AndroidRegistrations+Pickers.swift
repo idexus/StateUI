@@ -34,7 +34,7 @@ extension AndroidRegistrations {
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
             }
             picker.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(PickerContract.selectedIndexChanged)
             picker.declares(PopupElementContract.opened)
             picker.declares(PopupElementContract.closed)

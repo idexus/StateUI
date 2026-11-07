@@ -16,7 +16,7 @@ Text("Draft")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [HoverElement](tiers/HoverElement.md) · [PressElement](tiers/PressElement.md) · [ToggleElement](tiers/ToggleElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [PressElement](tiers/PressElement.md) · [ToggleElement](tiers/ToggleElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -37,11 +37,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (26)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 16 –</td><td>an <code>NSToolbarItem</code> showing its on picture, prominent while on with none; a checked <code>NSMenuItem</code> in the overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>5 ✅ · 12 –</td><td>a <code>UIBarButtonItem</code> with <code>changesSelectionAsPrimaryAction</code>, <code>isSelected</code> while on</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>4 ✅ · 12 –</td><td>a checkable <code>Toolbar</code> <code>MenuItem</code>, its state on the bar by its on picture</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>6 ✅ · 11 –</td><td>a <code>ToggleButton</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>; <code>AppBarToggleButton</code> behind More</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>5 ✅ · 12 –</td><td><code>GtkToggleButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>17 ✅</td><td><code>&lt;button aria-pressed&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>1 ✅ · 12 –</td><td>a <code>UIBarButtonItem</code> with <code>changesSelectionAsPrimaryAction</code>, <code>isSelected</code> while on</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>12 –</td><td>a checkable <code>Toolbar</code> <code>MenuItem</code>, its state on the bar by its on picture</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>2 ✅ · 11 –</td><td>a <code>ToggleButton</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>; <code>AppBarToggleButton</code> behind More</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>1 ✅ · 12 –</td><td><code>GtkToggleButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>13 ✅</td><td><code>&lt;button aria-pressed&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarToggleContract.swift`.
@@ -61,6 +61,15 @@ What an element the platform's automation meets has - a drawn element, a menu's 
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center"></td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: not realized<br>Android Views: An Android bar action is a menu entry, which holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
+</table>
+
+## From [EnabledElement](tiers/EnabledElement.md)
+
+Whether the user's hand reaches an element: a view, a menu, an entry in one, a toolbar's group.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [HoverElement](tiers/HoverElement.md)
@@ -169,10 +178,9 @@ What every item a user chooses from says - a menu's entry, a toolbar's item, an 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [TextAndIconElement](tiers/TextAndIconElement.md)

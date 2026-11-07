@@ -176,7 +176,7 @@ extension NodeType {
     static let isAnimating = ImageContract.isAnimating.token
     static let isOn = ToggleElementContract.isOn.token
     static let clipsContent = LayoutContract.clipsContent.token
-    static let isEnabled = VisualElementContract.isEnabled.token
+    static let isEnabled = EnabledElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
     static let isMinimizable = WindowContract.isMinimizable.token
     static let isOpen = PopupElementContract.isOpen.token

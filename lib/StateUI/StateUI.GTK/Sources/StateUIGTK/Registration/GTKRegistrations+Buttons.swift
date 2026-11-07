@@ -46,7 +46,7 @@ extension GTKRegistrations {
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in
+            button.property(EnabledElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
             button.declares(ClickElementContract.clicked)

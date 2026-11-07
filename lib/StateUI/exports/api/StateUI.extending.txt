@@ -289,6 +289,7 @@ swift.conformance Ellipse: StateUI.VisualElement
 swift.conformance Ellipse: StateUI.VisualElementProperties
 swift.conformance EllipseContract: StateUI.Contract
 swift.conformance EllipseContract: StateUI.ElementContract
+swift.conformance EnabledElementContract: StateUI.Contract
 swift.conformance FileType: StateUI.HostRepresentable
 swift.conformance Fill: StateUI.AutomationElement
 swift.conformance Fill: StateUI.BorderElement
@@ -2927,6 +2928,8 @@ swift.type.property EllipseContract.members: static let members: [any ContractMe
 swift.type.property EllipseContract.nodeType: static let nodeType: NodeType
 swift.type.property EllipseContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property EllipseContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property EnabledElementContract.members: static let members: [any ContractMember]
+swift.type.property EnabledElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Fill.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property FillContract.layer: static let layer: ElementLayer
 swift.type.property FillContract.layer: static var layer: ElementLayer { get }
@@ -3054,6 +3057,7 @@ swift.type.property MenuContract.layer: static let layer: ElementLayer
 swift.type.property MenuContract.layer: static var layer: ElementLayer { get }
 swift.type.property MenuContract.members: static let members: [any ContractMember]
 swift.type.property MenuContract.nodeType: static let nodeType: NodeType
+swift.type.property MenuContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property MenuContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property MenuItemContract.layer: static let layer: ElementLayer
 swift.type.property MenuItemContract.layer: static var layer: ElementLayer { get }

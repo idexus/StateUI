@@ -14,7 +14,7 @@ extension AndroidRegistrations {
             return toggle
         }, members: { toggle in
             toggle.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             toggle.applies(TextMembers.captionMembers) { view, values in
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
@@ -27,7 +27,7 @@ extension AndroidRegistrations {
             return box
         }, members: { box in
             box.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            box.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             box.applies(TextMembers.captionMembers) { view, values in
                 view.setText(TextMembers.caption(values))

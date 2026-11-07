@@ -111,24 +111,24 @@
     static func closed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviorChanges", proves: [
             Covered(TextInputContract.isReadOnly, on: element),
-        ], needs: [Covered(VisualElementContract.isEnabled, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+        ], needs: [Covered(EnabledElementContract.isEnabled, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "kept")
             let readOnly = State(wrappedValue: true)
             s.start {
                 VStack {
                     field(element, words, [
-                        Write(VisualElementContract.isEnabled, false),
+                        Write(EnabledElementContract.isEnabled, false),
                         Write(TextInputContract.isReadOnly, readOnly.wrappedValue),
                     ])
                     Button("Open").onClicked { readOnly.wrappedValue = false }.id("open")
                 }
             }
             let view = try s.element("field")
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false)
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false)
 
             try s.perform(.activate, on: s.element("open"))
             s.turn()
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false, "no longer read only, still closed")
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false, "no longer read only, still closed")
         }
     }
 

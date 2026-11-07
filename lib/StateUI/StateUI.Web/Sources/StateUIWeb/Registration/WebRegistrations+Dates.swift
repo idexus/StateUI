@@ -21,7 +21,7 @@ extension WebRegistrations {
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(DatePickerContract.dateChanged)
         })
         registry.add(TimePickerContract.self, create: { reports in
@@ -31,7 +31,7 @@ extension WebRegistrations {
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(TimePickerContract.timeChanged)
         })
     }

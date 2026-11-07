@@ -28,7 +28,7 @@ extension WebRegistrations {
             picker.applies(TextMembers.lookMembers) { view, values in
                 (view as! any WebChoosing).setLook(TextMembers.look(of: values))
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(PickerContract.selectedIndexChanged)
         })
     }

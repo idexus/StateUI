@@ -1,0 +1,7 @@
+# revision 0.0
+Menu.isEnabled: ✅
+MenuItem.isEnabled: ✅
+MenuToggle.isEnabled: ✅
+ToolbarButton.isEnabled: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarToggle.isEnabled: ✅

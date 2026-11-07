@@ -39,7 +39,7 @@ extension UIKitRegistrations {
             picker.property(TintElementContract.tint) { view, tint in
                 (view as! any UIKitChoosing).setTint(tint.flatMap { UIColor(stateUI: $0.propValue) })
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in
                 (view as! any UIKitChoosing).isEnabled = enabled ?? true
             }
             picker.declares(PickerContract.selectedIndexChanged)
@@ -58,7 +58,7 @@ extension UIKitRegistrations {
                 view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
                 if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.declares(DatePickerContract.dateChanged)
         })
 
@@ -68,7 +68,7 @@ extension UIKitRegistrations {
             return picker
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.declares(TimePickerContract.timeChanged)
         })
 
@@ -85,7 +85,7 @@ extension UIKitRegistrations {
                     write: values.changed(ColorPickerContract.color),
                     choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false)
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.declares(ColorPickerContract.colorChanged)
         })
     }

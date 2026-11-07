@@ -14,11 +14,11 @@ extension AppKitRegistrations {
             link.onClicked = { reports.raise(ClickElementContract.clicked) }
             return link
         }, members: { link in
-            link.applies(VisualElementContract.isEnabled, TextMembers.captionMembers) { view, values in
+            link.applies(EnabledElementContract.isEnabled, TextMembers.captionMembers) { view, values in
                 view.apply(
                     text: TextMembers.caption(values),
                     color: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) },
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.
             link.property(LinkContract.address) { _, _ in }

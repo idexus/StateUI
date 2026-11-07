@@ -12,7 +12,6 @@ Button.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
-Button.isEnabled: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
 Button.maximumHeight: ✅
@@ -47,7 +46,6 @@ Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
-Canvas.isEnabled: ✅
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
 Canvas.maximumHeight: ✅
@@ -82,7 +80,6 @@ Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: not realized
-Capsule.isEnabled: ✅
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
 Capsule.maximumHeight: ✅
@@ -117,7 +114,6 @@ CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass
 CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
-CheckBox.isEnabled: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
 CheckBox.maximumHeight: ✅
@@ -152,7 +148,6 @@ ColorPicker.background: – Android has no color picker of its own: neither the 
 ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.isEnabled: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isVisible: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.layoutDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.maximumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -187,7 +182,6 @@ DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or gla
 DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
-DatePicker.isEnabled: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ✅
 DatePicker.maximumHeight: ✅
@@ -222,7 +216,6 @@ Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.isEnabled: ✅
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
 Ellipse.maximumHeight: ✅
@@ -257,7 +250,6 @@ Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
-Fill.isEnabled: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
 Fill.maximumHeight: ✅
@@ -292,7 +284,6 @@ Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
-Grid.isEnabled: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
 Grid.maximumHeight: ✅
@@ -327,7 +318,6 @@ HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
-HStack.isEnabled: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
 HStack.maximumHeight: ✅
@@ -362,7 +352,6 @@ Image.background: ☑️ Android blurs nothing behind a view: a blur or glass sh
 Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
-Image.isEnabled: ✅
 Image.isVisible: ✅
 Image.layoutDirection: ✅
 Image.maximumHeight: ✅
@@ -397,7 +386,6 @@ ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glas
 ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
-ItemsView.isEnabled: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.maximumHeight: ✅
@@ -432,7 +420,6 @@ Line.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
-Line.isEnabled: ✅
 Line.isVisible: ✅
 Line.layoutDirection: ✅
 Line.maximumHeight: ✅
@@ -467,7 +454,6 @@ Link.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: not realized
-Link.isEnabled: ✅
 Link.isVisible: ✅
 Link.layoutDirection: ✅
 Link.maximumHeight: ✅
@@ -502,7 +488,6 @@ Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
-Map.isEnabled: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
 Map.maximumHeight: 🧩
@@ -537,7 +522,6 @@ MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or g
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
-MotionLayout.isEnabled: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
 MotionLayout.maximumHeight: ✅
@@ -572,7 +556,6 @@ Path.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
-Path.isEnabled: ✅
 Path.isVisible: ✅
 Path.layoutDirection: ✅
 Path.maximumHeight: ✅
@@ -607,7 +590,6 @@ Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
-Picker.isEnabled: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
 Picker.maximumHeight: ✅
@@ -642,7 +624,6 @@ Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
-Polygon.isEnabled: ✅
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
 Polygon.maximumHeight: ✅
@@ -677,7 +658,6 @@ Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass
 Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
-Polyline.isEnabled: ✅
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
 Polyline.maximumHeight: ✅
@@ -712,7 +692,6 @@ ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or gl
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
-ProgressBar.isEnabled: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
 ProgressBar.maximumHeight: ✅
@@ -747,7 +726,6 @@ Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glas
 Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.isEnabled: ✅
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
 Rectangle.maximumHeight: ✅
@@ -782,7 +760,6 @@ ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or gla
 ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
-ScrollView.isEnabled: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
 ScrollView.maximumHeight: ✅
@@ -817,7 +794,6 @@ SearchField.background: ☑️ Android blurs nothing behind a view: a blur or gl
 SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
-SearchField.isEnabled: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
 SearchField.maximumHeight: ✅
@@ -852,7 +828,6 @@ Separator.background: ☑️ Android blurs nothing behind a view: a blur or glas
 Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: not realized
-Separator.isEnabled: ✅
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
 Separator.maximumHeight: ✅
@@ -887,7 +862,6 @@ Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
-Slider.isEnabled: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
 Slider.maximumHeight: ✅
@@ -922,7 +896,6 @@ Space.background: ☑️ Android blurs nothing behind a view: a blur or glass sh
 Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
-Space.isEnabled: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
 Space.maximumHeight: ✅
@@ -957,7 +930,6 @@ Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: not realized
-Spinner.isEnabled: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
 Spinner.maximumHeight: ✅
@@ -992,7 +964,6 @@ Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
-Stepper.isEnabled: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
 Stepper.maximumHeight: ✅
@@ -1027,7 +998,6 @@ Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
-Switch.isEnabled: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
 Switch.maximumHeight: ✅
@@ -1062,7 +1032,6 @@ Text.background: ☑️ Android blurs nothing behind a view: a blur or glass sho
 Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
-Text.isEnabled: ✅
 Text.isVisible: ✅
 Text.layoutDirection: ✅
 Text.maximumHeight: ✅
@@ -1097,7 +1066,6 @@ TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or gla
 TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
-TextEditor.isEnabled: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ✅
 TextEditor.maximumHeight: ✅
@@ -1132,7 +1100,6 @@ TextField.background: ☑️ Android blurs nothing behind a view: a blur or glas
 TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
-TextField.isEnabled: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
 TextField.maximumHeight: ✅
@@ -1167,7 +1134,6 @@ TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or gla
 TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
-TimePicker.isEnabled: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ✅
 TimePicker.maximumHeight: ✅
@@ -1202,7 +1168,6 @@ VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
-VStack.isEnabled: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
 VStack.maximumHeight: ✅
@@ -1237,7 +1202,6 @@ WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass 
 WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
-WebView.isEnabled: ✅
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
 WebView.maximumHeight: ✅
@@ -1272,7 +1236,6 @@ ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass s
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
-ZStack.isEnabled: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
 ZStack.maximumHeight: ✅

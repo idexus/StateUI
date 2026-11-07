@@ -1,25 +1,28 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// One run proving an element's own members and a tier's, written once and stood in both families.
+// One run proving the members of two contracts, written once and stood in each one's family.
 // Design: docs/design/host/conformance.md#a-case
 
 @_spi(Host) import StateUI
 
 extension ConformanceCase {
-    /// The same run under the tier's family: proving the members of `tier` alone, named for its element, the rest
-    /// of what it proved what it needs.
+    /// The same run under `contract`'s family: proving that contract's members alone - an element's own, or a
+    /// tier's - the rest of what it proved what it needs; under a tier's, named for its element.
     @MainActor
-    public func proving(_ tier: any Tier.Type) -> ConformanceCase {
-        let (worn, rest) = (proves.filter { $0.tier == tier.name }, proves.filter { $0.tier != tier.name })
-        let element = worn.first?.element ?? ""
-        return ConformanceCase("\(element).\(name)", proves: worn, needs: rest + needs, body)
+    public func proving(_ contract: any Contract.Type) -> ConformanceCase {
+        let owns = { (covered: Covered) in (covered.tier ?? covered.element) == contract.name }
+        let (own, rest) = (proves.filter(owns), proves.filter { !owns($0) })
+        let element = own.first?.element ?? ""
+        let named = contract is any Tier.Type && !name.hasPrefix("\(element).") ? "\(element).\(name)" : name
+        return ConformanceCase(named, proves: own, needs: rest + needs, body)
     }
+}
 
-    /// The same run under the element's family: proving the element's own members alone, a tier's what it needs.
+@_spi(Host) extension Array where Element == ConformanceCase {
+    /// The cases proving any of `contract`'s members, each proving them alone.
     @MainActor
-    public func provingOwn() -> ConformanceCase {
-        let (own, worn) = (proves.filter { $0.tier == nil }, proves.filter { $0.tier != nil })
-        return ConformanceCase(name, proves: own, needs: worn + needs, body)
+    public func proving(_ contract: any Contract.Type) -> [ConformanceCase] {
+        map { $0.proving(contract) }.filter { !$0.proves.isEmpty }
     }
 }

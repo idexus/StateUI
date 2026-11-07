@@ -16,7 +16,7 @@ extension UIKitRegistrations {
             return toggle
         }, members: { toggle in
             toggle.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             toggle.property(TintElementContract.tint) { view, tint in
                 view.control.onTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }
@@ -33,7 +33,7 @@ extension UIKitRegistrations {
             return box
         }, members: { box in
             box.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            box.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            box.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             box.property(TintElementContract.tint) { view, tint in
                 view.tintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }

@@ -35,7 +35,7 @@ extension UIKitRegistrations {
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     vertical: values[TextContract.verticalTextAlignment] ?? .start)
             }
-            label.property(VisualElementContract.isEnabled) { view, enabled in
+            label.property(EnabledElementContract.isEnabled) { view, enabled in
                 (view as! any UIKitLabel).isEnabled = enabled ?? true
             }
             label.property(VisualElementContract.background) { view, background in

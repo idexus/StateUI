@@ -14,7 +14,7 @@ extension GTKRegistrations {
             return toggle
         }, members: { toggle in
             toggle.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             toggle.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             toggle.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))
@@ -27,7 +27,7 @@ extension GTKRegistrations {
             return box
         }, members: { box in
             box.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
-            box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            box.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             box.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))

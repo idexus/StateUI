@@ -12,7 +12,6 @@ Button.background: ☑️ A brush fills the view with its first color alone; GTK
 Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: ✅
-Button.isEnabled: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
 Button.maximumHeight: ✅
@@ -47,7 +46,6 @@ Canvas.background: ☑️ A brush fills the view with its first color alone; GTK
 Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: ✅
-Canvas.isEnabled: ✅
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
 Canvas.maximumHeight: ✅
@@ -82,7 +80,6 @@ Capsule.background: ☑️ A brush fills the view with its first color alone; GT
 Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: ✅
-Capsule.isEnabled: ✅
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
 Capsule.maximumHeight: ✅
@@ -117,7 +114,6 @@ CheckBox.background: ☑️ A brush fills the view with its first color alone; G
 CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: ✅
-CheckBox.isEnabled: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
 CheckBox.maximumHeight: ✅
@@ -152,7 +148,6 @@ ColorPicker.background: ☑️ A brush fills the view with its first color alone
 ColorPicker.frame: ✅
 ColorPicker.height: ✅
 ColorPicker.ignoresInput: ✅
-ColorPicker.isEnabled: ✅
 ColorPicker.isVisible: ✅
 ColorPicker.layoutDirection: ✅
 ColorPicker.maximumHeight: ✅
@@ -187,7 +182,6 @@ DatePicker.background: ☑️ A brush fills the view with its first color alone;
 DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: ✅
-DatePicker.isEnabled: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ✅
 DatePicker.maximumHeight: ✅
@@ -222,7 +216,6 @@ Ellipse.background: ☑️ A brush fills the view with its first color alone; GT
 Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: ✅
-Ellipse.isEnabled: ✅
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
 Ellipse.maximumHeight: ✅
@@ -257,7 +250,6 @@ Fill.background: ✅
 Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
-Fill.isEnabled: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
 Fill.maximumHeight: ✅
@@ -292,7 +284,6 @@ Grid.background: ✅
 Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
-Grid.isEnabled: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
 Grid.maximumHeight: ✅
@@ -327,7 +318,6 @@ HStack.background: ✅
 HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
-HStack.isEnabled: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
 HStack.maximumHeight: ✅
@@ -362,7 +352,6 @@ Image.background: ☑️ A brush fills the view with its first color alone; GTK 
 Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: ✅
-Image.isEnabled: ✅
 Image.isVisible: ✅
 Image.layoutDirection: ✅
 Image.maximumHeight: ✅
@@ -397,7 +386,6 @@ ItemsView.background: does not apply - read background of ItemsView - StateUI dr
 ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: ✅
-ItemsView.isEnabled: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.maximumHeight: ✅
@@ -432,7 +420,6 @@ Line.background: ☑️ A brush fills the view with its first color alone; GTK b
 Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: ✅
-Line.isEnabled: ✅
 Line.isVisible: ✅
 Line.layoutDirection: ✅
 Line.maximumHeight: ✅
@@ -467,7 +454,6 @@ Link.background: ☑️ A brush fills the view with its first color alone; GTK b
 Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: ✅
-Link.isEnabled: ✅
 Link.isVisible: ✅
 Link.layoutDirection: ✅
 Link.maximumHeight: ✅
@@ -502,7 +488,6 @@ Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
-Map.isEnabled: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
 Map.maximumHeight: 🧩
@@ -537,7 +522,6 @@ MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driv
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
-MotionLayout.isEnabled: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
 MotionLayout.maximumHeight: ✅
@@ -572,7 +556,6 @@ Path.background: ☑️ A brush fills the view with its first color alone; GTK b
 Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: ✅
-Path.isEnabled: ✅
 Path.isVisible: ✅
 Path.layoutDirection: ✅
 Path.maximumHeight: ✅
@@ -607,7 +590,6 @@ Picker.background: ☑️ A brush fills the view with its first color alone; GTK
 Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: ✅
-Picker.isEnabled: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
 Picker.maximumHeight: ✅
@@ -642,7 +624,6 @@ Polygon.background: ☑️ A brush fills the view with its first color alone; GT
 Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: ✅
-Polygon.isEnabled: ✅
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
 Polygon.maximumHeight: ✅
@@ -677,7 +658,6 @@ Polyline.background: ☑️ A brush fills the view with its first color alone; G
 Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: ✅
-Polyline.isEnabled: ✅
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
 Polyline.maximumHeight: ✅
@@ -712,7 +692,6 @@ ProgressBar.background: ☑️ A brush fills the view with its first color alone
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: ✅
-ProgressBar.isEnabled: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
 ProgressBar.maximumHeight: ✅
@@ -747,7 +726,6 @@ Rectangle.background: ☑️ A brush fills the view with its first color alone; 
 Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: ✅
-Rectangle.isEnabled: ✅
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
 Rectangle.maximumHeight: ✅
@@ -782,7 +760,6 @@ ScrollView.background: ✅
 ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: ✅
-ScrollView.isEnabled: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
 ScrollView.maximumHeight: ✅
@@ -817,7 +794,6 @@ SearchField.background: ☑️ A brush fills the view with its first color alone
 SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: ✅
-SearchField.isEnabled: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
 SearchField.maximumHeight: ✅
@@ -852,7 +828,6 @@ Separator.background: ☑️ A brush fills the view with its first color alone; 
 Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: ✅
-Separator.isEnabled: ✅
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
 Separator.maximumHeight: ✅
@@ -887,7 +862,6 @@ Slider.background: ☑️ A brush fills the view with its first color alone; GTK
 Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: ✅
-Slider.isEnabled: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
 Slider.maximumHeight: ✅
@@ -922,7 +896,6 @@ Space.background: ✅
 Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
-Space.isEnabled: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
 Space.maximumHeight: ✅
@@ -957,7 +930,6 @@ Spinner.background: ☑️ A brush fills the view with its first color alone; GT
 Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: ✅
-Spinner.isEnabled: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
 Spinner.maximumHeight: ✅
@@ -992,7 +964,6 @@ Stepper.background: ☑️ A brush fills the view with its first color alone; GT
 Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: ✅
-Stepper.isEnabled: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
 Stepper.maximumHeight: ✅
@@ -1027,7 +998,6 @@ Switch.background: – GTK's switch paints its own box as its track: a color the
 Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: ✅
-Switch.isEnabled: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
 Switch.maximumHeight: ✅
@@ -1062,7 +1032,6 @@ Text.background: ☑️ A brush fills the view with its first color alone; GTK b
 Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: ✅
-Text.isEnabled: ✅
 Text.isVisible: ✅
 Text.layoutDirection: ✅
 Text.maximumHeight: ✅
@@ -1097,7 +1066,6 @@ TextEditor.background: ☑️ A brush fills the view with its first color alone;
 TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: ✅
-TextEditor.isEnabled: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ☑️ Its placeholder stands at the left edge whichever way the words are written.
 TextEditor.maximumHeight: ✅
@@ -1132,7 +1100,6 @@ TextField.background: ☑️ A brush fills the view with its first color alone; 
 TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: ✅
-TextField.isEnabled: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
 TextField.maximumHeight: ✅
@@ -1167,7 +1134,6 @@ TimePicker.background: ☑️ A brush fills the view with its first color alone;
 TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: ✅
-TimePicker.isEnabled: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ✅
 TimePicker.maximumHeight: ✅
@@ -1202,7 +1168,6 @@ VStack.background: ✅
 VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
-VStack.isEnabled: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
 VStack.maximumHeight: ✅
@@ -1237,7 +1202,6 @@ WebView.background: ☑️ A brush fills the view with its first color alone; GT
 WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: ✅
-WebView.isEnabled: ✅
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
 WebView.maximumHeight: ✅
@@ -1272,7 +1236,6 @@ ZStack.background: ✅
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅
-ZStack.isEnabled: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
 ZStack.maximumHeight: ✅

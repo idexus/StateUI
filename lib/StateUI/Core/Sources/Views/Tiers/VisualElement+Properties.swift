@@ -13,7 +13,7 @@ extension VisualElementProperties {
 
     /// Whether the view responds to the user. Disabling a container disables
     /// everything in it, the bar's actions and menu items declared in it too.
-    public func isEnabled(_ value: Bool) -> Modified { setValue(VisualElementContract.isEnabled, value) }
+    public func isEnabled(_ value: Bool) -> Modified { setValue(EnabledElementContract.isEnabled, value) }
 
     /// Whether the view and everything in it ignore input: a tap or a click
     /// goes through to whatever is behind it. Not the same as disabled - a
@@ -198,7 +198,7 @@ extension VisualElement {
     /// `isEnabled` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isEnabled(_ state: Binding<Bool>) -> Modified {
-        twin(VisualElementContract.isEnabled, by: state)
+        twin(EnabledElementContract.isEnabled, by: state)
     }
 
     /// `isVisible` from a state, `$x`: the host sets each new value as it

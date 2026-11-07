@@ -72,7 +72,7 @@ extension WinUIRegistrations {
     /// many it holds, whether it takes them, and their font and color.
     private static let wordMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled)
+        TextInputContract.maximumLength, EnabledElementContract.isEnabled)
         + TextMembers.lookMembers
 
     private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
@@ -83,8 +83,8 @@ extension WinUIRegistrations {
             view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
         }
         if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
-        if values.changed(VisualElementContract.isEnabled) {
-            view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
+        if values.changed(EnabledElementContract.isEnabled) {
+            view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
     }

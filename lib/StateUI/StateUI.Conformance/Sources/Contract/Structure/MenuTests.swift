@@ -9,7 +9,10 @@
 @_spi(Host) public enum MenuTests: ConformanceFamily {
     public static let name = "Menu"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(MenuContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aSubmenuStandsUnderItsCaptionHoldingItsEntries", proves: [
                 Covered(MenuContract.self), Covered(MenuContract.text),
@@ -19,7 +22,7 @@
                 s.expect(try s.menu(of: s.element("row")).hasSuffix("Share[Mail]"), true)
             },
             ConformanceCase("aSubmenusCaptionAndReachFollowTheTree", proves: [
-                Covered(MenuContract.text), Covered(MenuContract.isEnabled),
+                Covered(MenuContract.text), Covered(EnabledElementContract.isEnabled, on: MenuContract.self),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {

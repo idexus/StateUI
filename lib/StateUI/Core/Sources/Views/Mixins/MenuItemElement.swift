@@ -27,7 +27,7 @@ extension MenuItemElement {
     /// user still knows the action exists. An item declared in a disabled view
     /// is disabled with it.
     public func isEnabled(_ value: Bool) -> Modified {
-        setValue(MenuItemElementContract.isEnabled, value)
+        setValue(EnabledElementContract.isEnabled, value)
     }
 
     /// Keys that choose it from the keyboard while its window is in front:

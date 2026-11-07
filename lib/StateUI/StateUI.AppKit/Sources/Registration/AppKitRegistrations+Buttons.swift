@@ -29,7 +29,7 @@ extension AppKitRegistrations {
                 TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
                 ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
                 TextColorElementContract.textColor, VisualElementContract.background, BorderElementContract.shape,
-                BorderElementContract.stroke, BorderElementContract.lineWidth, VisualElementContract.isEnabled,
+                BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
                 ButtonContract.role, TextAndIconElementContract.showsText) { view, values in
@@ -80,7 +80,7 @@ extension AppKitRegistrations {
                     lineWidth: lineWidth,
                     shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.

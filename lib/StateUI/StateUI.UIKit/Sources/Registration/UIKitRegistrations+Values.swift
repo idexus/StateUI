@@ -28,7 +28,7 @@ extension UIKitRegistrations {
             slider.property(TintElementContract.tint) { view, tint in
                 view.minimumTrackTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }
-            slider.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            slider.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             slider.declares(RangeElementContract.valueChanged)
             slider.declares(PressElementContract.pressed)
             slider.declares(PressElementContract.released)
@@ -49,7 +49,7 @@ extension UIKitRegistrations {
                     maximum: values[RangeElementContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1)
             }
-            stepper.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            stepper.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             stepper.declares(RangeElementContract.valueChanged)
         })
     }

@@ -78,7 +78,7 @@ extension UIKitRegistrations {
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
         + TextMembers.lookMembers
@@ -99,12 +99,12 @@ extension UIKitRegistrations {
                 values[TextInputContract.placeholder],
                 color: values[TextInputContract.placeholderColor].flatMap { UIColor(stateUI: $0.propValue) })
         }
-        if values.changed(VisualElementContract.isEnabled) || values.changed(TextInputContract.isReadOnly)
+        if values.changed(EnabledElementContract.isEnabled) || values.changed(TextInputContract.isReadOnly)
             || values.changed(TextInputContract.isSpellCheckEnabled)
             || values.changed(TextInputContract.isTextPredictionEnabled)
             || values.changed(TextInputContract.inputPurpose) {
             view.setBehavior(
-                enabled: values[VisualElementContract.isEnabled] ?? true,
+                enabled: values[EnabledElementContract.isEnabled] ?? true,
                 readOnly: values[TextInputContract.isReadOnly] ?? false,
                 keyboard: UIKitKeyboard(InputTraits(values)))
         }

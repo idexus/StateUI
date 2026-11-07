@@ -22,7 +22,7 @@ extension WinUIRegistrations {
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
             picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(DatePickerContract.dateChanged)
             picker.declares(PopupElementContract.opened)
             picker.declares(PopupElementContract.closed)
@@ -35,7 +35,7 @@ extension WinUIRegistrations {
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(TimePickerContract.format) { _, _ in }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             picker.declares(TimePickerContract.timeChanged)
         })
     }

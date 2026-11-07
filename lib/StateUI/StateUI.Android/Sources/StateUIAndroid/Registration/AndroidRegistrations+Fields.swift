@@ -73,7 +73,7 @@ extension AndroidRegistrations {
             TextAlignmentElementContract.horizontalTextAlignment, TextInputContract.inputPurpose,
             TextInputContract.isTextPredictionEnabled, TextInputContract.maximumLength,
             TextInputContract.cursorPosition, TextInputContract.selectionLength, TextInputContract.isReadOnly,
-            VisualElementContract.isEnabled)
+            EnabledElementContract.isEnabled)
 
     private static func applyField<Realized: ElementContract>(
         _ view: AndroidTextFieldView, _ values: ElementValues<Realized>
@@ -101,8 +101,8 @@ extension AndroidRegistrations {
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
         }
-        if values.changed(VisualElementContract.isEnabled) {
-            view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
+        if values.changed(EnabledElementContract.isEnabled) {
+            view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }
         if values.changed(TextInputContract.isReadOnly) { view.setReadOnly(values[TextInputContract.isReadOnly] ?? false) }
         view.maximumLength = values[TextInputContract.maximumLength].map { max(0, $0) }

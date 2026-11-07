@@ -21,7 +21,7 @@ extension AppKitRegistrations {
         }, members: { slider in
             slider.applies(
                 RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, TintElementContract.tint,
-                VisualElementContract.isEnabled) { view, values in
+                EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.written(
                         RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
@@ -29,7 +29,7 @@ extension AppKitRegistrations {
                     minimum: values[RangeElementContract.minimum] ?? 0,
                     maximum: values[RangeElementContract.maximum] ?? 1,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             slider.declares(RangeElementContract.valueChanged)
             slider.declares(PressElementContract.pressed)
@@ -45,13 +45,13 @@ extension AppKitRegistrations {
         }, members: { stepper in
             stepper.applies(
                 RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, StepperContract.step,
-                VisualElementContract.isEnabled) { view, values in
+                EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.doubleValue),
                     minimum: values[RangeElementContract.minimum] ?? 0,
                     maximum: values[RangeElementContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             stepper.declares(RangeElementContract.valueChanged)
         })

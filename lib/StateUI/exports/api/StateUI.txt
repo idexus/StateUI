@@ -258,6 +258,9 @@ swift.conformance Ellipse: StateUI.Views
 swift.conformance Ellipse: Swift.Sendable
 swift.conformance EllipseContract: StateUI.WornContract
 swift.conformance EllipseContract: Swift.Sendable
+swift.conformance EnabledElementContract: StateUI.Tier
+swift.conformance EnabledElementContract: StateUI.WornContract
+swift.conformance EnabledElementContract: Swift.Sendable
 swift.conformance EnergySaverStatus: Swift.Equatable
 swift.conformance EnergySaverStatus: Swift.Hashable
 swift.conformance EnergySaverStatus: Swift.RawRepresentable
@@ -1042,6 +1045,7 @@ swift.enum DrawingBuilder: @resultBuilder enum DrawingBuilder
 swift.enum Easing: enum Easing
 swift.enum Either: enum Either<First, Second>
 swift.enum EllipseContract: enum EllipseContract
+swift.enum EnabledElementContract: enum EnabledElementContract
 swift.enum EnergySaverStatus: enum EnergySaverStatus
 swift.enum EngineAnswer: enum EngineAnswer
 swift.enum FillContract: enum FillContract
@@ -13636,6 +13640,8 @@ swift.type.property DatePickerContract.name: static var name: String { get }
 swift.type.property DecorableTextElementContract.name: static let name: String
 swift.type.property DecorableTextElementContract.textDecorations: static let textDecorations: ElementProperty<DecorableTextElementContract, TextDecorations>
 swift.type.property EllipseContract.name: static var name: String { get }
+swift.type.property EnabledElementContract.isEnabled: static let isEnabled: ElementProperty<EnabledElementContract, Bool>
+swift.type.property EnabledElementContract.name: static let name: String
 swift.type.property EngineCycle.mostElapsedSeconds: static let mostElapsedSeconds: Double
 swift.type.property FillContract.name: static var name: String { get }
 swift.type.property FilledShapeContract.fill: static let fill: ElementProperty<FilledShapeContract, Material>
@@ -13767,12 +13773,10 @@ swift.type.property MarkerContract.subtitle: static let subtitle: ElementPropert
 swift.type.property MarkerContract.title: static let title: ElementProperty<MarkerContract, String>
 swift.type.property MenuBarContract.name: static var name: String { get }
 swift.type.property MenuBarContract.order: static let order: ElementProperty<MenuBarContract, Int>
-swift.type.property MenuContract.isEnabled: static let isEnabled: ElementProperty<MenuContract, Bool>
 swift.type.property MenuContract.name: static var name: String { get }
 swift.type.property MenuContract.text: static let text: ElementProperty<MenuContract, String>
 swift.type.property MenuItemContract.name: static var name: String { get }
 swift.type.property MenuItemElementContract.icon: static let icon: ElementProperty<MenuItemElementContract, ImageSource>
-swift.type.property MenuItemElementContract.isEnabled: static let isEnabled: ElementProperty<MenuItemElementContract, Bool>
 swift.type.property MenuItemElementContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<MenuItemElementContract, KeyboardShortcut>
 swift.type.property MenuItemElementContract.name: static let name: String
 swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
@@ -13975,7 +13979,6 @@ swift.type.property ToggleElementContract.toggled: static let toggled: ElementEv
 swift.type.property ToolbarButtonContract.name: static var name: String { get }
 swift.type.property ToolbarGroupContract.barEdge: static let barEdge: ElementProperty<ToolbarGroupContract, ToolbarEdge>
 swift.type.property ToolbarGroupContract.hidesWithSidebar: static let hidesWithSidebar: ElementProperty<ToolbarGroupContract, Bool>
-swift.type.property ToolbarGroupContract.isEnabled: static let isEnabled: ElementProperty<ToolbarGroupContract, Bool>
 swift.type.property ToolbarGroupContract.name: static var name: String { get }
 swift.type.property ToolbarGroupContract.order: static let order: ElementProperty<ToolbarGroupContract, Int>
 swift.type.property ToolbarGroupContract.part: static let part: ElementProperty<ToolbarGroupContract, ToolbarPart>
@@ -14041,7 +14044,6 @@ swift.type.property VisualElementContract.background: static let background: Ele
 swift.type.property VisualElementContract.frame: static let frame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.height: static let height: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.ignoresInput: static let ignoresInput: ElementProperty<VisualElementContract, Bool>
-swift.type.property VisualElementContract.isEnabled: static let isEnabled: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isVisible: static let isVisible: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.layoutDirection: static let layoutDirection: ElementProperty<VisualElementContract, LayoutDirection>
 swift.type.property VisualElementContract.maximumHeight: static let maximumHeight: ElementProperty<VisualElementContract, Double>

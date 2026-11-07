@@ -10,14 +10,17 @@
 @_spi(Host) public enum MenuItemElementTests: ConformanceFamily {
     public static let name = "MenuItemElement"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(MenuItemElementContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(MenuItemElementContract.self).flatMap { element in
             [
                 chosen(element),
                 outOfReachWithItsBranch(element),
                 Aspects.holds(MenuItemElementContract.text, on: element, "Copy", then: "Duplicate"),
                 Aspects.holds(MenuItemElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
-                Aspects.holds(MenuItemElementContract.isEnabled, on: element, true, then: false),
+                Aspects.holds(EnabledElementContract.isEnabled, on: element, true, then: false),
                 Aspects.holds(
                     MenuItemElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),
                     then: KeyboardShortcut("s", modifiers: [.primary, .shift])),
@@ -39,7 +42,7 @@
     @MainActor
     static func chosen(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemChosenRunsItsHandlerUnlessOutOfReach", proves: [
-            Covered(MenuItemElementContract.isEnabled, on: element),
+            Covered(EnabledElementContract.isEnabled, on: element),
         ], needs: [choosing(element)]) { s in
             let heard = Received<String>()
             s.start {
@@ -61,7 +64,7 @@
     @MainActor
     static func outOfReachWithItsBranch(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemInADisabledBranchIsOutOfReach", proves: [
-            Covered(MenuItemElementContract.isEnabled, on: element),
+            Covered(EnabledElementContract.isEnabled, on: element),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), choosing(element)]) { s in
             let heard = Received<String>()
             let enabled = State(wrappedValue: false)
@@ -71,15 +74,15 @@
                     heard.values.append("item")
                 }
             }
-            try s.settle { try s.held(MenuItemElementContract.isEnabled, on: s.element("item")) == false }
-            s.expect(try s.held(MenuItemElementContract.isEnabled, on: s.element("item")), false, "disabled with it")
+            try s.settle { try s.held(EnabledElementContract.isEnabled, on: s.element("item")) == false }
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: s.element("item")), false, "disabled with it")
             try? s.perform(.activate, on: s.element("item"))
             s.turn()
             s.expect(heard.values, [], "out of reach, it ran nothing")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(MenuItemElementContract.isEnabled, on: s.element("item")) == true }
-            s.expect(try s.held(MenuItemElementContract.isEnabled, on: s.element("item")), true, "enabled with it")
+            try s.settle { try s.held(EnabledElementContract.isEnabled, on: s.element("item")) == true }
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: s.element("item")), true, "enabled with it")
             try s.perform(.activate, on: s.element("item"))
             s.settle { heard.values == ["item"] }
             s.expect(heard.values, ["item"], "in reach, it runs its handler")

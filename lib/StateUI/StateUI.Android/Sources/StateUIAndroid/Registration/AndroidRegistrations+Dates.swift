@@ -26,7 +26,7 @@ extension AndroidRegistrations {
             field.property(DatePickerContract.format) { view, style in view.setFormat(style) }
             field.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
-            field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            field.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.declares(DatePickerContract.dateChanged)
             field.declares(PopupElementContract.opened)
             field.declares(PopupElementContract.closed)
@@ -46,7 +46,7 @@ extension AndroidRegistrations {
             field.property(TimePickerContract.format) { view, format in view.setFormat(format) }
             field.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             field.applies(TextMembers.lookMembers) { view, values in applyFont(view, values) }
-            field.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            field.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             field.declares(TimePickerContract.timeChanged)
             field.declares(PopupElementContract.opened)
             field.declares(PopupElementContract.closed)

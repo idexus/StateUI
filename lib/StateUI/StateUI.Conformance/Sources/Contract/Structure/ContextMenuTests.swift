@@ -17,7 +17,7 @@
                 Covered(MenuContract.text),
                 Covered(MenuSeparatorContract.self),
                 Covered(MenuItemElementContract.text, on: "MenuItem"),
-                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
+                Covered(EnabledElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
 
@@ -26,7 +26,7 @@
             ConformanceCase("theMenuFollowsTheStatesItsEntriesRead", proves: [
                 Covered(ContextMenuContract.self),
             ], needs: [
-                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
+                Covered(EnabledElementContract.isEnabled, on: "MenuItem"),
                 Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }

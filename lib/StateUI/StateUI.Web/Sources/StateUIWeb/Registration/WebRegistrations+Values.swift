@@ -23,7 +23,7 @@ extension WebRegistrations {
                     minimum: values[RangeElementContract.minimum] ?? 0,
                     maximum: values[RangeElementContract.maximum] ?? 1)
             }
-            slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            slider.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.declares(RangeElementContract.valueChanged)
             slider.declares(PressElementContract.pressed)
@@ -45,7 +45,7 @@ extension WebRegistrations {
                     maximum: values[RangeElementContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1)
             }
-            stepper.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            stepper.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             stepper.declares(RangeElementContract.valueChanged)
         })
     }

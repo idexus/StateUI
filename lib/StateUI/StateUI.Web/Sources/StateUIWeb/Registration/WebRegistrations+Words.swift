@@ -63,7 +63,7 @@ extension WebRegistrations {
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            button.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             // The page holds a shortcut on no control - the one stated, else the role's: the window's keys reach it,
             // and assistive technology is told. The role is the document's own for the main action, a submit, and
             // the page's look for each.

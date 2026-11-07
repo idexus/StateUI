@@ -66,7 +66,7 @@ public struct Menu: Element {
     /// Whether the menu opens at all.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
-        copy.node.write(MenuContract.isEnabled, value)
+        copy.node.write(EnabledElementContract.isEnabled, value)
         return copy
     }
 }
