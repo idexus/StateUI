@@ -4,11 +4,10 @@ Button.maximumWidth: ✅
 Button.minimumHeight: ✅
 Button.minimumWidth: ✅
 Button.scaleX: ✓ read scaleX of Button: the host's own transform, checked against the layer it composed itself
-Canvas.hidesFromAccessibility: ✅
 Capsule.accessibilityHint: ✅
 CheckBox.isEnabled: ✅
 CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform, checked against the layer it composed itself
-ColorPicker.isAccessibilityHidden: ✅
+ColorPicker.accessibilityPresence: ✅
 DatePicker.accessibilityLabel: ✅
 Ellipse.isEnabled: ✅
 Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform, checked against the layer it composed itself
@@ -21,7 +20,6 @@ Image.maximumWidth: ✅
 Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.hidesFromAccessibility: ✅
 Line.accessibilityActionPerformed: ✅
 Line.accessibilityActions: ✅
 Link.ignoresInput: ✅
@@ -36,7 +34,7 @@ Polygon.accessibilityRole: ✅
 Polyline.height: ✅
 Polyline.scale: ✓ read scale of Polyline: the host's own transform, checked against the layer it composed itself
 Polyline.width: ✅
-ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.accessibilityPresence: ✅
 Rectangle.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 ScrollView.isVisible: ✅
 ScrollView.rotation: ✓ read rotation of ScrollView: the host's own transform, checked against the layer it composed itself
@@ -50,11 +48,11 @@ Stepper.accessibilityLabel: ✅
 Switch.isEnabled: ✅
 Switch.rotationY: ✓ read rotationY of Switch: the host's own transform, checked against the layer it composed itself
 Text.accessibilityHint: ✅
-TextEditor.isAccessibilityHidden: ✅
+TextEditor.accessibilityPresence: ✅
 TextField.accessibilityLabel: ✅
 TimePicker.isEnabled: ✅
 TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform, checked against the layer it composed itself
-VStack.isAccessibilityHidden: ✅
+VStack.accessibilityPresence: ✅
 WebView.maximumHeight: ✅
 WebView.maximumWidth: ✅
 WebView.minimumHeight: ✅

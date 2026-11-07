@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.tapped: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent

@@ -20,10 +20,10 @@ extension AppKitDriver {
                 throw DriverCannot("read a transform: the view's layer holds another")
             }
             return transform(property, drawn)
-        case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .isAccessibilityHidden,
-             .hidesFromAccessibility, .accessibilityRole, .accessibilityValue:
+        case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .accessibilityPresence,
+             .accessibilityRole, .accessibilityValue:
             guard let native else { return nil }
-            return accessibility(property, native.accessibilityTarget(of: view), view)
+            return accessibility(property, native.accessibilityTarget(of: view), view, native)
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
         case .tooltip: return view.toolTip.propValue
@@ -93,8 +93,11 @@ extension AppKitDriver {
         }
     }
 
-    /// What assistive technology meets of the view, as its accessibility object says it.
-    private static func accessibility(_ property: Prop, _ target: NSAccessibilityProtocol, _ view: NSView) -> HostValue? {
+    /// What assistive technology meets of the view, as its accessibility object says it - what it holds left out as
+    /// the element suppressed the view's children.
+    private static func accessibility(
+        _ property: Prop, _ target: NSAccessibilityProtocol, _ view: NSView, _ native: AppKitElement
+    ) -> HostValue? {
         switch property {
         case .accessibilityLabel: return target.accessibilityLabel().propValue
         case .accessibilityHint: return target.accessibilityHelp().propValue
@@ -103,9 +106,9 @@ extension AppKitDriver {
             return AccessibilityRole.allCases.first { AppKitElement.accessibilityRole($0) == role }?.propValue
         case .accessibilityValue: return (target.accessibilityValue() as? String).propValue
         case .accessibilityIdentifier: return target.accessibilityIdentifier().propValue
-        case .isAccessibilityHidden: return (!target.isAccessibilityElement()).propValue
-        case .hidesFromAccessibility:
-            return (!target.isAccessibilityElement() && (view.accessibilityChildren() ?? []).isEmpty).propValue
+        case .accessibilityPresence:
+            guard !target.isAccessibilityElement() else { return AccessibilityPresence.element.propValue }
+            return (native.accessibilityChildrenSuppressed ? AccessibilityPresence.hiddenWithContents : .hidden).propValue
         default: return nil
         }
     }

@@ -369,6 +369,7 @@ ZStack
   accessibilityHeading
   accessibilityHint
   accessibilityLabel
+  accessibilityPresence
   allowsDrop
   area
   background
@@ -380,11 +381,9 @@ ZStack
   gridRow
   gridRowSpan
   height
-  hidesFromAccessibility
   holdDuration
   horizontalAlignment
   ignoresInput
-  isAccessibilityHidden
   isDraggable
   isEnabled
   isVisible

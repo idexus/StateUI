@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Button.zIndex: ✅
 Canvas.pivotY: ✓ read pivotY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -17,7 +17,7 @@ HStack.layoutDirection: ✅
 Image.isEnabled: ✓ tap on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.zIndex: ✅
 ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.isAccessibilityHidden: ✅
+Line.accessibilityPresence: ✅
 Link.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Map.opacity: ✅
 Map.rotationX: ✓ read rotationX of Map: the host's own transform, checked against the layer it composed itself

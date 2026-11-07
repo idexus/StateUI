@@ -2,7 +2,7 @@
 Button.accessibilityHint: ✅
 Canvas.isEnabled: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
-Capsule.isAccessibilityHidden: ✅
+Capsule.accessibilityPresence: ✅
 CheckBox.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 ColorPicker.opacity: ✅
 ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform, checked against the layer it composed itself
@@ -29,7 +29,6 @@ Path.accessibilityRole: ✅
 Picker.height: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Picker.width: ✅
-Polygon.hidesFromAccessibility: ✅
 Polyline.accessibilityLabel: ✅
 ProgressBar.opacity: ✅
 ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform, checked against the layer it composed itself
@@ -47,7 +46,7 @@ Space.scaleX: ✓ read scaleX of Space: the host's own transform, checked agains
 Spinner.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Stepper.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Switch.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
-Text.isAccessibilityHidden: ✅
+Text.accessibilityPresence: ✅
 TextEditor.opacity: ✅
 TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
 TextField.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level

@@ -1,5 +1,5 @@
 # revision 24.1
-Button.isAccessibilityHidden: ✅
+Button.accessibilityPresence: ✅
 Canvas.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Capsule.opacity: ✅
 Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform, checked against the layer it composed itself
@@ -13,17 +13,15 @@ Fill.translationY: ✓ read translationY of Fill: the host's own transform, chec
 Grid.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 HStack.style: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
-Image.isAccessibilityHidden: ✅
+Image.accessibilityPresence: ✅
 ItemsView.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
-Link.hidesFromAccessibility: ✅
 Map.accessibilityHint: ✅
 MotionLayout.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-Path.hidesFromAccessibility: ✅
 Picker.accessibilityLabel: ✅
 Polygon.isEnabled: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
@@ -39,7 +37,6 @@ SearchField.width: ✅
 Separator.height: ✅
 Separator.scale: ✓ read scale of Separator: the host's own transform, checked against the layer it composed itself
 Separator.width: ✅
-Slider.hidesFromAccessibility: ✅
 Space.accessibilityHint: ✅
 Spinner.height: ✅
 Spinner.scale: ✓ read scale of Spinner: the host's own transform, checked against the layer it composed itself
@@ -55,6 +52,6 @@ TextField.rotation: ✓ read rotation of TextField: the host's own transform, ch
 TimePicker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 VStack.isEnabled: ✓ tap on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.zIndex: ✅
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityPresence: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.layoutDirection: ✅

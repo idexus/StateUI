@@ -415,9 +415,16 @@ extension GTKDriver {
                 }
             }
             return nil
-        case .isAccessibilityHidden, .hidesFromAccessibility:
-            return (!differs(stateui_test_accessible_state_is(
-                UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))).propValue
+        case .accessibilityPresence:
+            // GTK leaves an accessible out with everything in it, its one hidden state - the view alone as the
+            // register records it missing.
+            let hidden = !differs(stateui_test_accessible_state_is(
+                UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))
+            guard hidden else { return AccessibilityPresence.element.propValue }
+            let alone = element.accessibilityWords.presence == .hidden
+                && register.judgment(of: "accessibilityPresence", on: element.type.name, from: "VisualElement")
+                    .map { if case .partial = $0 { true } else { false } } == true
+            return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
         default: return nil
         }
     }

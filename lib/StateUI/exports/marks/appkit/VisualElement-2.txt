@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.tooltip: ✅
 Canvas.style: ✅
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform, checked against the layer it composed itself
@@ -12,7 +12,7 @@ Ellipse.accessibilityActionPerformed: ✅
 Ellipse.accessibilityActions: ✅
 Fill.ignoresInput: ✅
 Fill.scaleY: ✓ read scaleY of Fill: the host's own transform, checked against the layer it composed itself
-Grid.isAccessibilityHidden: ✅
+Grid.accessibilityPresence: ✅
 HStack.ignoresInput: ✅
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform, checked against the layer it composed itself
 Image.tooltip: ✅

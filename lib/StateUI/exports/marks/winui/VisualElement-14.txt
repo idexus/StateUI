@@ -1,6 +1,5 @@
 # revision 24.2
 Button.tooltip: ✅
-Canvas.hidesFromAccessibility: ✅
 Canvas.opacity: ✅
 Capsule.ignoresInput: ✅
 Capsule.pivotY: ✅
@@ -38,7 +37,7 @@ Path.accessibilityHint: ✅
 Path.scaleY: ✅
 Picker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Picker.accessibilityActions: – UI Automation offers no action of an application's own words.
-Polygon.isAccessibilityHidden: ✅
+Polygon.accessibilityPresence: ✅
 Polygon.isVisible: ✅
 Polyline.height: ✅
 Polyline.layoutDirection: ✓ read layoutDirection of Polyline: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

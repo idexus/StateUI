@@ -25,9 +25,10 @@
                 readerActed(element), readerStepped(element),
                 Aspects.holds(VisualElementContract.tooltip, on: element, "Saves the draft", then: "Saves every draft"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
-                Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
+                Aspects.holds(VisualElementContract.accessibilityPresence, on: element, .element, then: .hidden, with: named),
                 Aspects.holds(
-                    VisualElementContract.hidesFromAccessibility, on: element, false, then: true, with: named),
+                    VisualElementContract.accessibilityPresence, on: element, .element, then: .hiddenWithContents,
+                    with: named, aspect: "leavesWhatItHoldsOut"),
                 Aspects.holds(VisualElementContract.background, on: element, .color(.red), then: .color(.blue)),
                 Aspects.holds(VisualElementContract.layoutDirection, on: element, .leftToRight, then: .rightToLeft),
                 Aspects.holds(VisualElementContract.pivotX, on: element, 0.5, then: 0, with: turned),

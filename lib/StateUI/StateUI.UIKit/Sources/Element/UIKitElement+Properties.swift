@@ -173,7 +173,7 @@ extension UIView {
         accessibilityLabel = words.label
         accessibilityHint = words.hint
         if words.headingLevel > 0 { accessibilityTraits.insert(.header) } else { accessibilityTraits.remove(.header) }
-        accessibilityElementsHidden = words.presence == .hiddenWithChildren
+        accessibilityElementsHidden = words.presence == .hiddenWithContents
             || (words.presence == .hidden && holdingNoChildren)
         isAccessibilityElement = words.isElement(standing: standing)
     }

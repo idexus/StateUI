@@ -6,12 +6,10 @@ Capsule.maximumWidth: ✅
 Capsule.minimumHeight: ✅
 Capsule.minimumWidth: ✅
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.hidesFromAccessibility: ✅
 ColorPicker.accessibilityHint: ✅
 DatePicker.height: ✅
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform, checked against the layer it composed itself
 DatePicker.width: ✅
-Ellipse.hidesFromAccessibility: ✅
 Fill.accessibilityLabel: ✅
 Fill.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Grid.pivotY: ✓ read pivotY of Grid: the host's own transform, checked against the layer it composed itself
@@ -24,7 +22,6 @@ Line.translationY: ✓ read translationY of Line: the host's own transform, chec
 Link.pivotX: ✓ read pivotX of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityActionPerformed: ✅
 Map.accessibilityActions: ✅
-MotionLayout.hidesFromAccessibility: ✅
 Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
 Picker.accessibilityValue: ✅
 Polygon.ignoresInput: ✅
@@ -46,7 +43,6 @@ Spinner.translationX: ✓ read translationX of Spinner: the host's own transform
 Stepper.height: ✅
 Stepper.scale: ✓ read scale of Stepper: the host's own transform, checked against the layer it composed itself
 Stepper.width: ✅
-Switch.hidesFromAccessibility: ✅
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
 Text.minimumHeight: ✅
@@ -56,7 +52,6 @@ TextEditor.accessibilityHint: ✅
 TextField.height: ✅
 TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
 TextField.width: ✅
-TimePicker.hidesFromAccessibility: ✅
 VStack.accessibilityHint: ✅
 VStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 WebView.layoutDirection: ✅

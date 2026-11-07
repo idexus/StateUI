@@ -198,7 +198,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .padding(12)
                 }
                 .style(.card)
-                .hidesFromAccessibility(true)
+                .accessibilityPresence(.hiddenWithContents)
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -206,7 +206,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // A rule is decoration: a stop that would waste the user's time.
             Fill(Palette.outline)
                 .height(1)
-                .isAccessibilityHidden(true)
+                .accessibilityPresence(.hidden)
         }
         .spacing(12)
     }

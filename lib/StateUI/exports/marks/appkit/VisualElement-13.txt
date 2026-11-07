@@ -1,8 +1,8 @@
-# revision 24.1
+# revision 25.1
 Button.height: ✅
 Button.scale: ✓ read scale of Button: the host's own transform, checked against the layer it composed itself
 Button.width: ✅
-Canvas.isAccessibilityHidden: ✅
+Canvas.accessibilityPresence: ✅
 Capsule.accessibilityLabel: ✅
 CheckBox.opacity: ✅
 CheckBox.rotationX: ✓ read rotationX of CheckBox: the host's own transform, checked against the layer it composed itself
@@ -17,7 +17,7 @@ HStack.tooltip: ✅
 Image.height: ✅
 Image.scale: ✓ read scale of Image: the host's own transform, checked against the layer it composed itself
 Image.width: ✅
-ItemsView.isAccessibilityHidden: ✅
+ItemsView.accessibilityPresence: ✅
 Line.accessibilityValue: ✅
 Link.maximumHeight: ✅
 Link.maximumWidth: ✅
@@ -32,7 +32,7 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
-Picker.hidesFromAccessibility: ✅
+Picker.accessibilityPresence: ✅
 Polygon.accessibilityHint: ✅
 Polyline.isEnabled: ✅
 Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform, checked against the layer it composed itself
@@ -61,4 +61,4 @@ VStack.accessibilityHeading: does not apply - read a heading's level - AppKit ma
 WebView.height: ✅
 WebView.scale: ✓ read scale of WebView: the host's own transform, checked against the layer it composed itself
 WebView.width: ✅
-ZStack.hidesFromAccessibility: ✅
+ZStack.accessibilityPresence: ✅

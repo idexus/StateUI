@@ -120,15 +120,15 @@ enum WinUIRealization {
             + "track, no ground under its frame."),
         .partial(VisualElementContract.background, on: CanvasContract.self,
             missing: "A brush fills the canvas with its first color alone."),
-        .partial(VisualElementContract.hidesFromAccessibility, on: SpinnerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: SpinnerContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesFromAccessibility, on: DatePickerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: DatePickerContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesFromAccessibility, on: SearchFieldContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: SearchFieldContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesFromAccessibility, on: StepperContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: StepperContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesFromAccessibility, on: TimePickerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: TimePickerContract.self,
             missing: Self.partsStayMet),
         .notPlanned(VisualElementContract.background, on: CapsuleContract.self, reason: figurePaintsNoGround),
         .notPlanned(VisualElementContract.background, on: EllipseContract.self, reason: figurePaintsNoGround),
@@ -301,7 +301,8 @@ enum WinUIRealization {
     /// Why a control left out with its children is left out alone: WinUI has no property that leaves out a
     /// subtree, and the host reaches into no template's parts.
     private static let partsStayMet =
-        "WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them."
+        "Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where "
+        + "assistive technology meets them."
 
     /// What WinUI realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {

@@ -40,6 +40,11 @@ swift.conformance AccessibilityHeadingLevel: Swift.Equatable
 swift.conformance AccessibilityHeadingLevel: Swift.Hashable
 swift.conformance AccessibilityHeadingLevel: Swift.RawRepresentable
 swift.conformance AccessibilityHeadingLevel: Swift.Sendable
+swift.conformance AccessibilityPresence: Swift.CaseIterable
+swift.conformance AccessibilityPresence: Swift.Equatable
+swift.conformance AccessibilityPresence: Swift.Hashable
+swift.conformance AccessibilityPresence: Swift.RawRepresentable
+swift.conformance AccessibilityPresence: Swift.Sendable
 swift.conformance AccessibilityRole: Swift.CaseIterable
 swift.conformance AccessibilityRole: Swift.Equatable
 swift.conformance AccessibilityRole: Swift.Hashable
@@ -828,6 +833,7 @@ swift.conformance ZStack: Swift.Sendable
 swift.conformance ZStackContract: Swift.Sendable
 swift.enum AccessibilityAdjustment: enum AccessibilityAdjustment
 swift.enum AccessibilityHeadingLevel: enum AccessibilityHeadingLevel
+swift.enum AccessibilityPresence: enum AccessibilityPresence
 swift.enum AccessibilityRole: enum AccessibilityRole
 swift.enum ActionElementContract: enum ActionElementContract
 swift.enum ActionRole: enum ActionRole
@@ -1018,6 +1024,9 @@ swift.enum.case AccessibilityHeadingLevel.h7: case h7
 swift.enum.case AccessibilityHeadingLevel.h8: case h8
 swift.enum.case AccessibilityHeadingLevel.h9: case h9
 swift.enum.case AccessibilityHeadingLevel.none: case none
+swift.enum.case AccessibilityPresence.element: case element
+swift.enum.case AccessibilityPresence.hidden: case hidden
+swift.enum.case AccessibilityPresence.hiddenWithContents: case hiddenWithContents
 swift.enum.case AccessibilityRole.adjustable: case adjustable
 swift.enum.case AccessibilityRole.button: case button
 swift.enum.case AccessibilityRole.image: case image
@@ -1526,6 +1535,7 @@ swift.method @SwiftNever.accessibilityHeading(_:): @MainActor func accessibility
 swift.method @SwiftNever.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method @SwiftNever.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method @SwiftNever.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method @SwiftNever.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method @SwiftNever.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -1552,11 +1562,9 @@ swift.method @SwiftNever.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method @SwiftNever.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method @SwiftNever.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method @SwiftNever.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method @SwiftNever.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method @SwiftNever.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method @SwiftNever.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -1730,6 +1738,7 @@ swift.method AnyView.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method AnyView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method AnyView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method AnyView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method AnyView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method AnyView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -1755,11 +1764,9 @@ swift.method AnyView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method AnyView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method AnyView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method AnyView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method AnyView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method AnyView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method AnyView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -1957,6 +1964,7 @@ swift.method Button.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method Button.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Button.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Button.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Button.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Button.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Button.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Button.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -1987,14 +1995,12 @@ swift.method Button.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Button.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Button.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Button.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Button.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method Button.iconPosition(_:): @MainActor func iconPosition(_ state: Binding<IconPosition>) -> Button.Modified
 swift.method Button.iconSpacing(_:): @MainActor func iconSpacing(_ state: Binding<Double>) -> Button.Modified
 swift.method Button.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Button.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Button.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Button.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2200,6 +2206,7 @@ swift.method Canvas.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method Canvas.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Canvas.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Canvas.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Canvas.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -2226,11 +2233,9 @@ swift.method Canvas.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Canvas.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Canvas.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Canvas.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Canvas.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Canvas.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Canvas.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2400,6 +2405,7 @@ swift.method Capsule.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method Capsule.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Capsule.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Capsule.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Capsule.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Capsule.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -2434,11 +2440,9 @@ swift.method Capsule.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Capsule.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Capsule.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Capsule.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Capsule.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Capsule.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Capsule.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Capsule.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2610,6 +2614,7 @@ swift.method CheckBox.accessibilityHeading(_:): @MainActor func accessibilityHea
 swift.method CheckBox.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method CheckBox.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method CheckBox.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method CheckBox.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -2635,11 +2640,9 @@ swift.method CheckBox.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state
 swift.method CheckBox.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method CheckBox.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method CheckBox.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method CheckBox.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method CheckBox.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -2827,6 +2830,7 @@ swift.method ColorPicker.accessibilityHeading(_:): @MainActor func accessibility
 swift.method ColorPicker.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ColorPicker.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ColorPicker.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ColorPicker.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ColorPicker.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -2855,11 +2859,9 @@ swift.method ColorPicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method ColorPicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ColorPicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ColorPicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ColorPicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method ColorPicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3040,6 +3042,7 @@ swift.method DatePicker.accessibilityHeading(_:): @MainActor func accessibilityH
 swift.method DatePicker.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method DatePicker.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method DatePicker.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method DatePicker.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method DatePicker.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -3072,11 +3075,9 @@ swift.method DatePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method DatePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DatePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DatePicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DatePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DatePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method DatePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3268,6 +3269,7 @@ swift.method DebugInspector.accessibilityHeading(_:): @MainActor func accessibil
 swift.method DebugInspector.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspector.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method DebugInspector.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method DebugInspector.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspector.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -3293,11 +3295,9 @@ swift.method DebugInspector.gridColumnSpan(_:): @MainActor func gridColumnSpan(_
 swift.method DebugInspector.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspector.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspector.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspector.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method DebugInspector.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DebugInspector.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3459,6 +3459,7 @@ swift.method DebugInspectorButton.accessibilityHeading(_:): @MainActor func acce
 swift.method DebugInspectorButton.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspectorButton.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method DebugInspectorButton.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method DebugInspectorButton.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method DebugInspectorButton.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -3484,11 +3485,9 @@ swift.method DebugInspectorButton.gridColumnSpan(_:): @MainActor func gridColumn
 swift.method DebugInspectorButton.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspectorButton.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspectorButton.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method DebugInspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method DebugInspectorButton.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspectorButton.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DebugInspectorButton.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3659,6 +3658,8 @@ swift.method Either.accessibilityIdentifier(_:): @MainActor func accessibilityId
 swift.method Either.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method Either.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
 swift.method Either.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ value: String) -> Self.Modified
+swift.method Either.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
+swift.method Either.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ value: AccessibilityPresence) -> Self.Modified
 swift.method Either.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Either.accessibilityRole(_:): @MainActor func accessibilityRole(_ value: AccessibilityRole) -> Self.Modified
 swift.method Either.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
@@ -3691,15 +3692,11 @@ swift.method Either.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Bindin
 swift.method Either.gridRowSpan(_:): @MainActor func gridRowSpan(_ value: Int) -> Self.Modified
 swift.method Either.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method Either.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
-swift.method Either.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Either.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Either.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
-swift.method Either.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
-swift.method Either.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ value: Bool) -> Self.Modified
 swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Either.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3885,6 +3882,7 @@ swift.method Ellipse.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method Ellipse.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Ellipse.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Ellipse.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Ellipse.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Ellipse.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -3919,11 +3917,9 @@ swift.method Ellipse.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Ellipse.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Ellipse.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Ellipse.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Ellipse.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Ellipse.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Ellipse.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Ellipse.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4095,6 +4091,7 @@ swift.method Fill.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Fill.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Fill.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Fill.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Fill.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Fill.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -4120,11 +4117,9 @@ swift.method Fill.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Fill.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Fill.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Fill.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Fill.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Fill.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Fill.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4313,6 +4308,7 @@ swift.method GalleryView.accessibilityHeading(_:): @MainActor func accessibility
 swift.method GalleryView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method GalleryView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method GalleryView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method GalleryView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method GalleryView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -4341,11 +4337,9 @@ swift.method GalleryView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method GalleryView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GalleryView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GalleryView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method GalleryView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GalleryView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4519,6 +4513,7 @@ swift.method GeometryReader.accessibilityHeading(_:): @MainActor func accessibil
 swift.method GeometryReader.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method GeometryReader.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method GeometryReader.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method GeometryReader.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method GeometryReader.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -4544,11 +4539,9 @@ swift.method GeometryReader.gridColumnSpan(_:): @MainActor func gridColumnSpan(_
 swift.method GeometryReader.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method GeometryReader.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method GeometryReader.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GeometryReader.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method GeometryReader.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GeometryReader.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4712,6 +4705,7 @@ swift.method Grid.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Grid.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Grid.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Grid.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Grid.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Grid.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -4740,12 +4734,10 @@ swift.method Grid.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Grid.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Grid.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Grid.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Grid.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
-swift.method Grid.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Grid.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4930,6 +4922,7 @@ swift.method Group.accessibilityHeading(_:): @MainActor func accessibilityHeadin
 swift.method Group.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Group.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Group.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Group.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Group.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Group.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Group.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -4955,11 +4948,9 @@ swift.method Group.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Group.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Group.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Group.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Group.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Group.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Group.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5121,6 +5112,7 @@ swift.method HStack.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method HStack.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method HStack.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method HStack.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method HStack.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method HStack.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -5147,12 +5139,10 @@ swift.method HStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method HStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method HStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method HStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method HStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
-swift.method HStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method HStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5339,6 +5329,7 @@ swift.method Image.accessibilityHeading(_:): @MainActor func accessibilityHeadin
 swift.method Image.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Image.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Image.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Image.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Image.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Image.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Image.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -5365,11 +5356,9 @@ swift.method Image.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Image.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Image.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Image.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Image.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Image.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Image.Modified
 swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
@@ -5543,6 +5532,7 @@ swift.method ItemsView.accessibilityHeading(_:): @MainActor func accessibilityHe
 swift.method ItemsView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ItemsView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ItemsView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ItemsView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.aim(_:): @MainActor func aim(_ aim: Aim<ItemsView<ID>>) -> ItemsView<ID>
@@ -5571,11 +5561,9 @@ swift.method ItemsView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int
 swift.method ItemsView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ItemsView.header(_:): @MainActor func header<Content>(@ViewBuilder _ content: () -> Content) -> ItemsView<ID> where Content : View
 swift.method ItemsView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ItemsView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ItemsView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ItemsView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method ItemsView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ItemsView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5784,6 +5772,7 @@ swift.method Line.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Line.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Line.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Line.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Line.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Line.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Line.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Line.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -5815,11 +5804,9 @@ swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Line.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Line.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Line.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Line.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Line.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -5995,6 +5982,7 @@ swift.method Link.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Link.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Link.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Link.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Link.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Link.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Link.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Link.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -6020,11 +6008,9 @@ swift.method Link.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Link.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Link.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Link.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Link.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Link.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Link.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6213,6 +6199,7 @@ swift.method Map.accessibilityHeading(_:): @MainActor func accessibilityHeading(
 swift.method Map.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Map.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Map.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Map.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Map.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Map.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Map.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -6238,11 +6225,9 @@ swift.method Map.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bin
 swift.method Map.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Map.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Map.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Map.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6484,6 +6469,7 @@ swift.method ModifiedContent.accessibilityHeading(_:): @MainActor func accessibi
 swift.method ModifiedContent.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ModifiedContent.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ModifiedContent.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ModifiedContent.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ModifiedContent.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -6509,11 +6495,9 @@ swift.method ModifiedContent.gridColumnSpan(_:): @MainActor func gridColumnSpan(
 swift.method ModifiedContent.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ModifiedContent.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ModifiedContent.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ModifiedContent.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method ModifiedContent.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ModifiedContent.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6675,6 +6659,7 @@ swift.method MotionLayout.accessibilityHeading(_:): @MainActor func accessibilit
 swift.method MotionLayout.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method MotionLayout.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method MotionLayout.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method MotionLayout.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -6703,12 +6688,10 @@ swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ s
 swift.method MotionLayout.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method MotionLayout.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method MotionLayout.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.interpolation(_:): @MainActor func interpolation(_ curve: some LayoutInterpolation) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -6904,6 +6887,7 @@ swift.method NavigationStack.accessibilityHeading(_:): @MainActor func accessibi
 swift.method NavigationStack.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method NavigationStack.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method NavigationStack.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method NavigationStack.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method NavigationStack.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -6938,11 +6922,9 @@ swift.method NavigationStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(
 swift.method NavigationStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method NavigationStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method NavigationStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method NavigationStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method NavigationStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method NavigationStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7112,6 +7094,7 @@ swift.method Path.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Path.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Path.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Path.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Path.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Path.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Path.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Path.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -7147,11 +7130,9 @@ swift.method Path.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Path.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Path.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Path.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Path.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Path.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Path.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7325,6 +7306,7 @@ swift.method Picker.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method Picker.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Picker.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Picker.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Picker.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -7354,12 +7336,10 @@ swift.method Picker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Picker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Picker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Picker.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Picker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Picker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Picker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7551,6 +7531,7 @@ swift.method Polygon.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method Polygon.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Polygon.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Polygon.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Polygon.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Polygon.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -7586,11 +7567,9 @@ swift.method Polygon.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Polygon.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Polygon.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polygon.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polygon.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Polygon.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polygon.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7766,6 +7745,7 @@ swift.method Polyline.accessibilityHeading(_:): @MainActor func accessibilityHea
 swift.method Polyline.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Polyline.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Polyline.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Polyline.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Polyline.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -7801,11 +7781,9 @@ swift.method Polyline.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state
 swift.method Polyline.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Polyline.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Polyline.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polyline.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Polyline.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polyline.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -7981,6 +7959,7 @@ swift.method PositionDots.accessibilityHeading(_:): @MainActor func accessibilit
 swift.method PositionDots.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method PositionDots.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method PositionDots.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method PositionDots.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method PositionDots.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -8018,11 +7997,9 @@ swift.method PositionDots.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: 
 swift.method PositionDots.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ state: Binding<Bool>) -> PositionDots
 swift.method PositionDots.hidesForSinglePage(_:): @MainActor func hidesForSinglePage(_ value: Bool) -> PositionDots
-swift.method PositionDots.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method PositionDots.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method PositionDots.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method PositionDots.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method PositionDots.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8188,6 +8165,7 @@ swift.method ProgressBar.accessibilityHeading(_:): @MainActor func accessibility
 swift.method ProgressBar.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ProgressBar.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ProgressBar.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ProgressBar.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ProgressBar.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -8213,11 +8191,9 @@ swift.method ProgressBar.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method ProgressBar.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ProgressBar.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ProgressBar.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ProgressBar.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method ProgressBar.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ProgressBar.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8389,6 +8365,7 @@ swift.method Rectangle.accessibilityHeading(_:): @MainActor func accessibilityHe
 swift.method Rectangle.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Rectangle.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Rectangle.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Rectangle.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Rectangle.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -8425,11 +8402,9 @@ swift.method Rectangle.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method Rectangle.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Rectangle.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Rectangle.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Rectangle.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Rectangle.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Rectangle.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Rectangle.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8614,6 +8589,7 @@ swift.method ScrollView.accessibilityHeading(_:): @MainActor func accessibilityH
 swift.method ScrollView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ScrollView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ScrollView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ScrollView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -8640,12 +8616,10 @@ swift.method ScrollView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method ScrollView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ScrollView.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ state: Binding<ScrollIndicatorVisibility>) -> ScrollView.Modified
 swift.method ScrollView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ScrollView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method ScrollView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -8838,6 +8812,7 @@ swift.method SearchField.accessibilityHeading(_:): @MainActor func accessibility
 swift.method SearchField.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method SearchField.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method SearchField.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method SearchField.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method SearchField.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -8869,13 +8844,11 @@ swift.method SearchField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ st
 swift.method SearchField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method SearchField.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SearchField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method SearchField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SearchField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
-swift.method SearchField.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SearchField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9075,6 +9048,7 @@ swift.method Separator.accessibilityHeading(_:): @MainActor func accessibilityHe
 swift.method Separator.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Separator.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Separator.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Separator.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Separator.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -9100,11 +9074,9 @@ swift.method Separator.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method Separator.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Separator.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Separator.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Separator.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Separator.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Separator.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9286,6 +9258,7 @@ swift.method Slider.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method Slider.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Slider.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Slider.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Slider.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Slider.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -9311,11 +9284,9 @@ swift.method Slider.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Slider.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Slider.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Slider.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Slider.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Slider.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9504,6 +9475,7 @@ swift.method Space.accessibilityHeading(_:): @MainActor func accessibilityHeadin
 swift.method Space.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Space.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Space.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Space.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Space.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Space.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Space.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -9529,11 +9501,9 @@ swift.method Space.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: B
 swift.method Space.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Space.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Space.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Space.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Space.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Space.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9705,6 +9675,7 @@ swift.method Spinner.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method Spinner.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Spinner.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Spinner.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Spinner.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Spinner.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -9730,11 +9701,9 @@ swift.method Spinner.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Spinner.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Spinner.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Spinner.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Spinner.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
@@ -9906,6 +9875,7 @@ swift.method SplitView.accessibilityHeading(_:): @MainActor func accessibilityHe
 swift.method SplitView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method SplitView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method SplitView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method SplitView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method SplitView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -9940,11 +9910,9 @@ swift.method SplitView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method SplitView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method SplitView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method SplitView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SplitView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method SplitView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SplitView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10128,6 +10096,7 @@ swift.method Stepper.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method Stepper.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Stepper.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Stepper.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Stepper.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Stepper.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -10153,11 +10122,9 @@ swift.method Stepper.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method Stepper.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Stepper.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Stepper.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Stepper.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Stepper.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10344,6 +10311,7 @@ swift.method StyleTarget.visualState(_:_:): @MainActor func visualState(_ state:
 swift.method Styling.accessibilityHeading(_:): @MainActor func accessibilityHeading(_ value: AccessibilityHeadingLevel) -> Self.Modified
 swift.method Styling.accessibilityHint(_:): @MainActor func accessibilityHint(_ value: String) -> Self.Modified
 swift.method Styling.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ value: String) -> Self.Modified
+swift.method Styling.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ value: AccessibilityPresence) -> Self.Modified
 swift.method Styling.accessibilityRole(_:): @MainActor func accessibilityRole(_ value: AccessibilityRole) -> Self.Modified
 swift.method Styling.accessibilityValue(_:): @MainActor func accessibilityValue(_ value: String) -> Self.Modified
 swift.method Styling.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
@@ -10379,7 +10347,6 @@ swift.method Styling.gridRow(_:): @MainActor func gridRow(_ value: Int) -> Self.
 swift.method Styling.gridRowSpan(_:): @MainActor func gridRowSpan(_ value: Int) -> Self.Modified
 swift.method Styling.growsWithText(_:): @MainActor func growsWithText(_ value: Bool) -> Self.Modified
 swift.method Styling.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method Styling.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method Styling.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ value: Alignment) -> Self.Modified
 swift.method Styling.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
 swift.method Styling.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ value: TextAlignment) -> Self.Modified
@@ -10389,7 +10356,6 @@ swift.method Styling.iconSpacing(_:): @MainActor func iconSpacing(_ value: Doubl
 swift.method Styling.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
 swift.method Styling.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ edges: SafeAreaEdges) -> Self.Modified
 swift.method Styling.inputPurpose(_:): @MainActor func inputPurpose(_ value: InputPurpose) -> Self.Modified
-swift.method Styling.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ value: Bool) -> Self.Modified
 swift.method Styling.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
 swift.method Styling.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method Styling.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ value: Bool) -> Self.Modified
@@ -10480,6 +10446,7 @@ swift.method Switch.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method Switch.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Switch.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Switch.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Switch.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -10505,11 +10472,9 @@ swift.method Switch.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method Switch.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Switch.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Switch.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Switch.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Switch.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10691,6 +10656,7 @@ swift.method TabView.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method TabView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method TabView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method TabView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method TabView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method TabView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -10725,11 +10691,9 @@ swift.method TabView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method TabView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TabView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TabView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method TabView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TabView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -10896,6 +10860,7 @@ swift.method Text.accessibilityHeading(_:): @MainActor func accessibilityHeading
 swift.method Text.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method Text.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method Text.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method Text.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method Text.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method Text.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method Text.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -10925,12 +10890,10 @@ swift.method Text.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Bi
 swift.method Text.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method Text.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method Text.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Text.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method Text.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Text.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Text.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Text.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11121,6 +11084,7 @@ swift.method TextEditor.accessibilityHeading(_:): @MainActor func accessibilityH
 swift.method TextEditor.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method TextEditor.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method TextEditor.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method TextEditor.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method TextEditor.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -11153,13 +11117,11 @@ swift.method TextEditor.gridRow(_:): @MainActor func gridRow(_ state: Binding<In
 swift.method TextEditor.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.growsWithText(_:): @MainActor func growsWithText(_ state: Binding<Bool>) -> TextEditor.Modified
 swift.method TextEditor.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TextEditor.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextEditor.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method TextEditor.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextEditor.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
-swift.method TextEditor.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextEditor.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11352,6 +11314,7 @@ swift.method TextField.accessibilityHeading(_:): @MainActor func accessibilityHe
 swift.method TextField.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method TextField.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method TextField.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method TextField.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method TextField.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -11383,13 +11346,11 @@ swift.method TextField.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ stat
 swift.method TextField.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TextField.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TextField.horizontalTextAlignment(_:): @MainActor func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Self.Modified
 swift.method TextField.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TextField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
-swift.method TextField.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11645,6 +11606,7 @@ swift.method TimePicker.accessibilityHeading(_:): @MainActor func accessibilityH
 swift.method TimePicker.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method TimePicker.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method TimePicker.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method TimePicker.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method TimePicker.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -11675,11 +11637,9 @@ swift.method TimePicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ sta
 swift.method TimePicker.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method TimePicker.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method TimePicker.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method TimePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TimePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method TimePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11979,6 +11939,7 @@ swift.method VStack.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method VStack.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method VStack.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method VStack.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method VStack.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method VStack.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -12005,12 +11966,10 @@ swift.method VStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method VStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method VStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
-swift.method VStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method VStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -12335,6 +12294,7 @@ swift.method VisualElement.accessibilityHeading(_:): @MainActor func accessibili
 swift.method VisualElement.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method VisualElement.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method VisualElement.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method VisualElement.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method VisualElement.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method VisualElement.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method VisualElement.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -12343,10 +12303,8 @@ swift.method VisualElement.background(_:): @MainActor func background(_ state: B
 swift.method VisualElement.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method VisualElement.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method VisualElement.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method VisualElement.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method VisualElement.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method VisualElement.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method VisualElement.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
@@ -12377,15 +12335,14 @@ swift.method VisualElement.zIndex(_:): @MainActor func zIndex(_ state: Binding<I
 swift.method VisualElementProperties.accessibilityHeading(_:): @MainActor func accessibilityHeading(_ value: AccessibilityHeadingLevel) -> Self.Modified
 swift.method VisualElementProperties.accessibilityHint(_:): @MainActor func accessibilityHint(_ value: String) -> Self.Modified
 swift.method VisualElementProperties.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ value: String) -> Self.Modified
+swift.method VisualElementProperties.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ value: AccessibilityPresence) -> Self.Modified
 swift.method VisualElementProperties.accessibilityRole(_:): @MainActor func accessibilityRole(_ value: AccessibilityRole) -> Self.Modified
 swift.method VisualElementProperties.accessibilityValue(_:): @MainActor func accessibilityValue(_ value: String) -> Self.Modified
 swift.method VisualElementProperties.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method VisualElementProperties.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method VisualElementProperties.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
 swift.method VisualElementProperties.height(_:): @MainActor func height(_ value: Double) -> Self.Modified
-swift.method VisualElementProperties.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
-swift.method VisualElementProperties.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.isVisible(_:): @MainActor func isVisible(_ value: Bool) -> Self.Modified
 swift.method VisualElementProperties.layoutDirection(_:): @MainActor func layoutDirection(_ value: LayoutDirection) -> Self.Modified
@@ -12418,6 +12375,7 @@ swift.method WebView.accessibilityHeading(_:): @MainActor func accessibilityHead
 swift.method WebView.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method WebView.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method WebView.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method WebView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -12445,11 +12403,9 @@ swift.method WebView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state:
 swift.method WebView.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method WebView.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method WebView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method WebView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method WebView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method WebView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -12656,6 +12612,7 @@ swift.method ZStack.accessibilityHeading(_:): @MainActor func accessibilityHeadi
 swift.method ZStack.accessibilityHint(_:): @MainActor func accessibilityHint(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.accessibilityLabel(_:): @MainActor func accessibilityLabel(_ state: Binding<String>) -> Self.Modified
+swift.method ZStack.accessibilityPresence(_:): @MainActor func accessibilityPresence(_ state: Binding<AccessibilityPresence>) -> Self.Modified
 swift.method ZStack.accessibilityRole(_:): @MainActor func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Self.Modified
 swift.method ZStack.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ZStack.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
@@ -12682,12 +12639,10 @@ swift.method ZStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: 
 swift.method ZStack.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.height(_:): @MainActor func height(_ state: Binding<Double>) -> Self.Modified
-swift.method ZStack.hidesFromAccessibility(_:): @MainActor func hidesFromAccessibility(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ZStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ZStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
-swift.method ZStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ZStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -13973,14 +13928,13 @@ swift.type.property VisualElementContract.accessibilityAdjusted: static let acce
 swift.type.property VisualElementContract.accessibilityHeading: static let accessibilityHeading: ElementProperty<VisualElementContract, AccessibilityHeadingLevel>
 swift.type.property VisualElementContract.accessibilityHint: static let accessibilityHint: ElementProperty<VisualElementContract, String>
 swift.type.property VisualElementContract.accessibilityLabel: static let accessibilityLabel: ElementProperty<VisualElementContract, String>
+swift.type.property VisualElementContract.accessibilityPresence: static let accessibilityPresence: ElementProperty<VisualElementContract, AccessibilityPresence>
 swift.type.property VisualElementContract.accessibilityRole: static let accessibilityRole: ElementProperty<VisualElementContract, AccessibilityRole>
 swift.type.property VisualElementContract.accessibilityValue: static let accessibilityValue: ElementProperty<VisualElementContract, String>
 swift.type.property VisualElementContract.background: static let background: ElementProperty<VisualElementContract, Material>
 swift.type.property VisualElementContract.frame: static let frame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.height: static let height: ElementProperty<VisualElementContract, Double>
-swift.type.property VisualElementContract.hidesFromAccessibility: static let hidesFromAccessibility: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.ignoresInput: static let ignoresInput: ElementProperty<VisualElementContract, Bool>
-swift.type.property VisualElementContract.isAccessibilityHidden: static let isAccessibilityHidden: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isEnabled: static let isEnabled: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.isVisible: static let isVisible: ElementProperty<VisualElementContract, Bool>
 swift.type.property VisualElementContract.layoutDirection: static let layoutDirection: ElementProperty<VisualElementContract, LayoutDirection>

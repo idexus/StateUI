@@ -108,13 +108,12 @@ extension NodeType {
     static let endReachedWithin = ItemsViewContract.endReachedWithin.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
     static let ignoresSafeArea = LayoutContract.ignoresSafeArea.token
-    static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
+    static let accessibilityPresence = VisualElementContract.accessibilityPresence.token
     static let items = ItemsViewContract.items.token
     static let itemsLayout = ItemsViewContract.itemsLayout.token
     static let pivotX = VisualElementContract.pivotX.token
     static let pivotY = VisualElementContract.pivotY.token
     static let contentMode = ShapeContract.contentMode.token
-    static let hidesFromAccessibility = VisualElementContract.hidesFromAccessibility.token
     static let growsWithText = TextEditorContract.growsWithText.token
     static let scrollEdge = BottomBarContract.scrollEdge.token
     static let background = VisualElementContract.background.token

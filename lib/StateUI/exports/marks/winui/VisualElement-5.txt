@@ -42,7 +42,7 @@ Polygon.scale: ✅
 Polyline.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Polyline.translationX: ✅
 ProgressBar.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Rectangle.isAccessibilityHidden: ✅
+Rectangle.accessibilityPresence: ✅
 Rectangle.isVisible: ✅
 ScrollView.height: ✅
 ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned

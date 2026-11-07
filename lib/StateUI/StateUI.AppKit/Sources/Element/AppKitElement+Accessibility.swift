@@ -33,7 +33,7 @@ extension AppKitElement {
         if said != nil || accessibilityValueSaid { target.setAccessibilityValue(said) }
         accessibilityValueSaid = said != nil
 
-        let excludesChildren = value(.hidesFromAccessibility)?.bool == true
+        let excludesChildren = words.presence == .hiddenWithContents
         if excludesChildren {
             view.setAccessibilityChildren([])
             accessibilityChildrenSuppressed = true

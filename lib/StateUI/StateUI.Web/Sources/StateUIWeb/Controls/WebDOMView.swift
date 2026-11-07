@@ -360,7 +360,7 @@ class WebDOMView {
         writeRole()
         attribute("aria-valuetext", words.value)
         attribute("aria-level", spoken.heading ? String(words.headingLevel) : nil)
-        attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
+        attribute("aria-hidden", words.presence == .hiddenWithContents ? "true" : nil)
     }
 
     /// The element assistive technology names the view by: its own, or the browser's control it stands around.

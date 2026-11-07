@@ -17,7 +17,7 @@ HStack.layoutDirection: ✅
 Image.isEnabled: ✓ tap on Image: the view's listening handed the recognizer's states, no touch sent
 Image.zIndex: ✅
 ItemsView.pivotY: ✓ read pivotY of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.isAccessibilityHidden: ✅
+Line.accessibilityPresence: ✅
 Link.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Map.opacity: ✅
 Map.rotationX: ✓ read rotationX of Map: the host's own transform, checked against the layer it composed itself

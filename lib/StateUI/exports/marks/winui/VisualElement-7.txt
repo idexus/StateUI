@@ -4,7 +4,6 @@ Button.scale: ✅
 Canvas.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Canvas.translationX: ✅
 Capsule.tooltip: ✅
-CheckBox.hidesFromAccessibility: ✅
 CheckBox.opacity: ✅
 ColorPicker.ignoresInput: ✅
 ColorPicker.pivotY: ✅
@@ -19,7 +18,7 @@ Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass s
 HStack.layoutDirection: ✅
 HStack.tooltip: ✅
 Image.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ItemsView.isAccessibilityHidden: ✅
+ItemsView.accessibilityPresence: ✅
 ItemsView.isVisible: ✅
 Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
 Line.style: ✅
@@ -48,7 +47,7 @@ ScrollView.ignoresInput: ✅
 ScrollView.pivotY: ✅
 SearchField.frame: ✅
 SearchField.rotation: ✅
-Separator.isAccessibilityHidden: ✅
+Separator.accessibilityPresence: ✅
 Separator.isVisible: ✅
 Slider.accessibilityLabel: ✅
 Slider.scaleX: ✅
@@ -58,7 +57,6 @@ Space.isEnabled: ✅
 Spinner.frame: ✅
 Spinner.rotation: ✅
 Stepper.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Switch.hidesFromAccessibility: ✅
 Switch.opacity: ✅
 Text.maximumHeight: ✅
 Text.maximumWidth: ✅
@@ -74,5 +72,4 @@ TimePicker.translationY: ✅
 VStack.accessibilityHeading: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ZStack.hidesFromAccessibility: ✅
 ZStack.opacity: ✅

@@ -34,9 +34,9 @@ extension UIKitDriver {
             return kinds.count == 1 ? kinds[0].propValue : nil
         case .accessibilityValue: return met(view).accessibilityValue.propValue
         case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
-        case .isAccessibilityHidden: return (!met(view).isAccessibilityElement).propValue
-        case .hidesFromAccessibility:
-            return (!met(view).isAccessibilityElement && met(view).accessibilityElementsHidden).propValue
+        case .accessibilityPresence:
+            guard !met(view).isAccessibilityElement else { return AccessibilityPresence.element.propValue }
+            return (met(view).accessibilityElementsHidden ? AccessibilityPresence.hiddenWithContents : .hidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .keyboardShortcut:

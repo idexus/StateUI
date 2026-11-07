@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Canvas.isVisible: ✅
 Canvas.rotation: ✓ read rotation of Canvas: the host's own transform, checked against the layer it composed itself
@@ -16,7 +16,7 @@ HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked agai
 Image.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 ItemsView.isVisible: ✅
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.hidesFromAccessibility: ✅
+Line.accessibilityPresence: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
@@ -33,12 +33,12 @@ Rectangle.accessibilityActionPerformed: ✅
 Rectangle.accessibilityActions: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.isAccessibilityHidden: ✅
-Separator.isAccessibilityHidden: ✅
+SearchField.accessibilityPresence: ✅
+Separator.accessibilityPresence: ✅
 Slider.accessibilityLabel: ✅
 Space.isEnabled: ✅
 Space.rotationY: ✓ read rotationY of Space: the host's own transform, checked against the layer it composed itself
-Spinner.isAccessibilityHidden: ✅
+Spinner.accessibilityPresence: ✅
 Stepper.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Switch.style: ✅
 Switch.translationY: ✓ read translationY of Switch: the host's own transform, checked against the layer it composed itself

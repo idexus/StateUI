@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.frame: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.layoutDirection: ✅
@@ -15,10 +15,10 @@ Ellipse.maximumWidth: ✅
 Ellipse.minimumHeight: ✅
 Ellipse.minimumWidth: ✅
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform, checked against the layer it composed itself
-Fill.hidesFromAccessibility: ✅
+Fill.accessibilityPresence: ✅
 Grid.isEnabled: ✓ tap on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.zIndex: ✅
-HStack.hidesFromAccessibility: ✅
+HStack.accessibilityPresence: ✅
 Image.frame: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.layoutDirection: ✅

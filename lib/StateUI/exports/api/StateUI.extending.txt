@@ -27,6 +27,10 @@ swift.conformance AccessibilityHeadingLevel: StateUI.HostRepresentable
 swift.conformance AccessibilityHeadingLevel: StateUI.LaneValue
 swift.conformance AccessibilityHeadingLevel: StateUI.StateChoice
 swift.conformance AccessibilityHeadingLevel: StateUI.StateValue
+swift.conformance AccessibilityPresence: StateUI.HostRepresentable
+swift.conformance AccessibilityPresence: StateUI.LaneValue
+swift.conformance AccessibilityPresence: StateUI.StateChoice
+swift.conformance AccessibilityPresence: StateUI.StateValue
 swift.conformance AccessibilityRole: StateUI.HostRepresentable
 swift.conformance AccessibilityRole: StateUI.LaneValue
 swift.conformance AccessibilityRole: StateUI.StateChoice
@@ -1468,6 +1472,9 @@ swift.init AccessibilityAdjustment.init(rawValue:): init?(rawValue: Int32)
 swift.init AccessibilityHeadingLevel.init(carried:): init?(carried: StateCarried)
 swift.init AccessibilityHeadingLevel.init(propValue:): init?(propValue: PropValue)
 swift.init AccessibilityHeadingLevel.init(rawValue:): init?(rawValue: Int32)
+swift.init AccessibilityPresence.init(carried:): init?(carried: StateCarried)
+swift.init AccessibilityPresence.init(propValue:): init?(propValue: PropValue)
+swift.init AccessibilityPresence.init(rawValue:): init?(rawValue: Int32)
 swift.init AccessibilityRole.init(carried:): init?(carried: StateCarried)
 swift.init AccessibilityRole.init(propValue:): init?(propValue: PropValue)
 swift.init AccessibilityRole.init(rawValue:): init?(rawValue: Int32)
@@ -3337,6 +3344,8 @@ swift.property @SwiftUInt8.propValue: var propValue: PropValue { get }
 swift.property AccessibilityAdjustment.propValue: var propValue: PropValue { get }
 swift.property AccessibilityHeadingLevel.carried: var carried: StateCarried { get }
 swift.property AccessibilityHeadingLevel.propValue: var propValue: PropValue { get }
+swift.property AccessibilityPresence.carried: var carried: StateCarried { get }
+swift.property AccessibilityPresence.propValue: var propValue: PropValue { get }
 swift.property AccessibilityRole.carried: var carried: StateCarried { get }
 swift.property AccessibilityRole.propValue: var propValue: PropValue { get }
 swift.property Act.description: var description: String { get }
@@ -3727,6 +3736,8 @@ swift.type.method AccessibilityAdjustment.list(from:): static func list(from val
 swift.type.method AccessibilityAdjustment.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method AccessibilityHeadingLevel.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method AccessibilityHeadingLevel.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method AccessibilityPresence.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method AccessibilityPresence.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method AccessibilityRole.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method AccessibilityRole.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ActionRole.list(from:): static func list(from value: PropValue) -> [Self]?
@@ -3911,6 +3922,9 @@ swift.type.property @SwiftString.persistentKind: static var persistentKind: Pers
 swift.type.property AccessibilityHeadingLevel.laneKind: static var laneKind: LaneKind { get }
 swift.type.property AccessibilityHeadingLevel.lanes: static var lanes: Int { get }
 swift.type.property AccessibilityHeadingLevel.moving: static var moving: MotionValues { get }
+swift.type.property AccessibilityPresence.laneKind: static var laneKind: LaneKind { get }
+swift.type.property AccessibilityPresence.lanes: static var lanes: Int { get }
+swift.type.property AccessibilityPresence.moving: static var moving: MotionValues { get }
 swift.type.property AccessibilityRole.laneKind: static var laneKind: LaneKind { get }
 swift.type.property AccessibilityRole.lanes: static var lanes: Int { get }
 swift.type.property AccessibilityRole.moving: static var moving: MotionValues { get }

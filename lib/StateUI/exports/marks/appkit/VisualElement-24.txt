@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityActionPerformed: ✅
 Button.accessibilityActions: ✅
 Canvas.ignoresInput: ✅
@@ -39,7 +39,7 @@ ProgressBar.maximumWidth: ✅
 ProgressBar.minimumHeight: ✅
 ProgressBar.minimumWidth: ✅
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.hidesFromAccessibility: ✅
+Rectangle.accessibilityPresence: ✅
 ScrollView.accessibilityLabel: ✅
 ScrollView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 SearchField.pivotY: ✓ read pivotY of SearchField: the host's own transform, checked against the layer it composed itself

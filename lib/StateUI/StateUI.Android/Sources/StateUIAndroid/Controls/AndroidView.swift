@@ -266,9 +266,9 @@ class AndroidView {
         ownPresence = own
         // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
         let presence: Int32 = switch words.presence {
-        case .met?: 1
+        case .element?: 1
         case .hidden?: 2
-        case .hiddenWithChildren?: 4
+        case .hiddenWithContents?: 4
         case nil: own
         }
         Java.frame {

@@ -1,5 +1,4 @@
 # revision 24.1
-Button.hidesFromAccessibility: ✅
 Canvas.accessibilityLabel: ✅
 Capsule.isEnabled: ✅
 Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform, checked against the layer it composed itself
@@ -13,7 +12,6 @@ Fill.zIndex: ✅
 Grid.layoutDirection: ✅
 HStack.isEnabled: ✓ tap on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.zIndex: ✅
-Image.hidesFromAccessibility: ✅
 ItemsView.accessibilityLabel: ✅
 Line.ignoresInput: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
@@ -25,7 +23,7 @@ Picker.accessibilityHint: ✅
 Polygon.height: ✅
 Polygon.scale: ✓ read scale of Polygon: the host's own transform, checked against the layer it composed itself
 Polygon.width: ✅
-Polyline.isAccessibilityHidden: ✅
+Polyline.accessibilityPresence: ✅
 ProgressBar.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Rectangle.isVisible: ✅
 Rectangle.rotation: ✓ read rotation of Rectangle: the host's own transform, checked against the layer it composed itself
@@ -58,6 +56,5 @@ TextField.rotationX: ✓ read rotationX of TextField: the host's own transform, 
 TimePicker.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 VStack.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 VStack.isEnabled: ✅
-WebView.hidesFromAccessibility: ✅
 ZStack.accessibilityHint: ✅
 ZStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.

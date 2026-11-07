@@ -23,13 +23,12 @@ Line.accessibilityRole: ✅
 Link.height: ✅
 Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
 Link.width: ✅
-Map.hidesFromAccessibility: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.height: ✅
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Path.width: ✅
-Picker.isAccessibilityHidden: ✅
+Picker.accessibilityPresence: ✅
 Polygon.accessibilityLabel: ✅
 Polyline.opacity: ✅
 Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
@@ -42,7 +41,6 @@ Separator.accessibilityHint: ✅
 Slider.height: ✅
 Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
 Slider.width: ✅
-Space.hidesFromAccessibility: ✅
 Spinner.accessibilityHint: ✅
 Stepper.zIndex: ✅
 Switch.isVisible: ✅
@@ -55,4 +53,4 @@ TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, 
 VStack.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 WebView.isEnabled: ✅
 WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.isAccessibilityHidden: ✅
+ZStack.accessibilityPresence: ✅

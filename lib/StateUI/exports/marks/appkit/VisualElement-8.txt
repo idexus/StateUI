@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.pivotX: ✓ read pivotX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityValue: ✅
 Capsule.ignoresInput: ✅
@@ -33,7 +33,7 @@ ProgressBar.accessibilityRole: ✅
 Rectangle.height: ✅
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
 Rectangle.width: ✅
-ScrollView.isAccessibilityHidden: ✅
+ScrollView.accessibilityPresence: ✅
 SearchField.style: ✅
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
 Separator.style: ✅

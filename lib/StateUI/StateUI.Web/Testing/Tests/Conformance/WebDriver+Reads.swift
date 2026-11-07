@@ -278,9 +278,10 @@ extension WebDriver {
         case .accessibilityHeading:
             let level = try WebBrowser.number("e.getAttribute('role') === 'heading' ? Number(e.ariaLevel) : 0", on: e) ?? 0
             return AccessibilityHeadingLevel(rawValue: Int32(level))?.propValue ?? AccessibilityHeadingLevel.none.propValue
-        case .isAccessibilityHidden:
-            return try WebBrowser.truth("e.getAttribute('role') === 'none' || e.ariaHidden === 'true'", on: e).propValue
-        case .hidesFromAccessibility: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
+        case .accessibilityPresence:
+            if try WebBrowser.truth("e.ariaHidden === 'true'", on: e) { return AccessibilityPresence.hiddenWithContents.propValue }
+            let hidden = try WebBrowser.truth("e.getAttribute('role') === 'none'", on: e)
+            return (hidden ? AccessibilityPresence.hidden : .element).propValue
         default: return nil
         }
     }

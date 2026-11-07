@@ -334,10 +334,10 @@ class WinUIView {
     func setAccessibility(_ words: AccessibilityWords) {
         let met: StateUIPresence = switch words.presence {
         case nil: .own
-        case .met: .met
+        case .element: .met
         case .hidden: .skipped
         // A control's parts are its template's, left out with it; a layout holds its children back itself.
-        case .hiddenWithChildren: self is WinUILayoutView ? .skipped : .skippedWithParts
+        case .hiddenWithContents: self is WinUILayoutView ? .skipped : .skippedWithParts
         }
         stateui_winui_set_accessibility(handle, words.identifier, words.label, words.hint, words.headingLevel, met)
     }

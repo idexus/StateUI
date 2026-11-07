@@ -57,7 +57,7 @@ extension WinUIDriver {
         }
         guard let view else { throw cannot }
         if property.name == "layoutDirection" { return try direction(of: view, element) }
-        if property.name == "hidesFromAccessibility" { return excluded(view, element) }
+        if property.name == "accessibilityPresence" { return presence(view, element) }
         if let held = try viewHolds(property.name, view) { return held }
         if let held = try wordsHold(property.name, view) { return held }
         if let held = try boxHolds(property.name, view) { return held }
@@ -178,14 +178,19 @@ extension WinUIDriver {
         return (try read(holder, "flowDirection") == "1" ? LayoutDirection.rightToLeft : .leftToRight).propValue
     }
 
-    /// Whether the view is left out with its children: itself out of what assistive technology meets, and nothing it
-    /// holds met - but the parts a control's template draws, where the register records them staying.
-    private func excluded(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
+    /// Whether assistive technology meets the view, and what it holds: met as a control or content; left out with
+    /// its contents where nothing it holds is met - but the parts a control's template draws, where the register
+    /// records them staying - else alone. A view holding nothing is left out alone or with its contents alike, as
+    /// it was said.
+    private func presence(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
         let facts = view.automationFacts
+        guard !facts.isControl, !facts.isContent else { return AccessibilityPresence.element.propValue }
         let judgment = WinUIRealization.register.judgment(
-            of: "hidesFromAccessibility", on: element.type.name, from: "VisualElement")
+            of: "accessibilityPresence", on: element.type.name, from: "VisualElement")
         let partsStay = if case .partial? = judgment { true } else { false }
-        return (!facts.isControl && !facts.isContent && (facts.children == 0 || partsStay)).propValue
+        let alone = facts.children > 0 && !partsStay
+            || facts.children == 0 && element.accessibilityWords.presence == .hidden
+        return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
     }
 
     /// Every element: shown, how opaque, taking input, what assistive technology meets, how it is moved.
@@ -219,9 +224,6 @@ extension WinUIDriver {
             return words.isEmpty ? nil : .string(words)
         case "accessibilityIdentifier": return .string(view.automationWords.identifier)
         case "accessibilityHeading": return (AccessibilityHeadingLevel(rawValue: view.automationFacts.heading) ?? AccessibilityHeadingLevel.none).propValue
-        case "isAccessibilityHidden":
-            let facts = view.automationFacts
-            return (!facts.isControl && !facts.isContent).propValue
         case "translationX": return view.drawnTransform.translationX.propValue
         case "translationY": return view.drawnTransform.translationY.propValue
         case "rotation": return view.drawnTransform.rotation.propValue

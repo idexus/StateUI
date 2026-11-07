@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.ignoresInput: ✅
 Button.scaleY: ✓ read scaleY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
@@ -6,15 +6,15 @@ Capsule.accessibilityRole: ✅
 CheckBox.height: ✅
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
 CheckBox.width: ✅
-ColorPicker.hidesFromAccessibility: ✅
+ColorPicker.accessibilityPresence: ✅
 DatePicker.accessibilityHint: ✅
 Ellipse.height: ✅
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform, checked against the layer it composed itself
 Ellipse.width: ✅
-Fill.isAccessibilityHidden: ✅
+Fill.accessibilityPresence: ✅
 Grid.style: ✅
 Grid.translationY: ✓ read translationY of Grid: the host's own transform, checked against the layer it composed itself
-HStack.isAccessibilityHidden: ✅
+HStack.accessibilityPresence: ✅
 Image.ignoresInput: ✅
 Image.scaleY: ✓ read scaleY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
@@ -34,7 +34,7 @@ Polyline.maximumWidth: ✅
 Polyline.minimumHeight: ✅
 Polyline.minimumWidth: ✅
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.hidesFromAccessibility: ✅
+ProgressBar.accessibilityPresence: ✅
 Rectangle.accessibilityLabel: ✅
 ScrollView.opacity: ✅
 ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own transform, checked against the layer it composed itself
@@ -52,12 +52,12 @@ Switch.height: ✅
 Switch.scale: ✓ read scale of Switch: the host's own transform, checked against the layer it composed itself
 Switch.width: ✅
 Text.accessibilityRole: ✅
-TextEditor.hidesFromAccessibility: ✅
+TextEditor.accessibilityPresence: ✅
 TextField.accessibilityHint: ✅
 TimePicker.height: ✅
 TimePicker.scale: ✓ read scale of TimePicker: the host's own transform, checked against the layer it composed itself
 TimePicker.width: ✅
-VStack.hidesFromAccessibility: ✅
+VStack.accessibilityPresence: ✅
 WebView.ignoresInput: ✅
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform, checked against the layer it composed itself
 ZStack.layoutDirection: ✅

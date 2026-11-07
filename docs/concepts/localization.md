@@ -198,7 +198,7 @@ struct FilesPage: View {
 
             if files.isEmpty {
                 Image(res.emptyState)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
 
             Button(res.showReport)

@@ -1,7 +1,7 @@
 # Each sample's sources - its file and every file its listings are cut from - fingerprinted when its
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
-AccessibilitySettingsSample.swift fa38044121b2ffbd
+AccessibilitySettingsSample.swift b3a4338417a32f56
 AimSample.swift 0dd87d843f89ee88
 AnalogClockSample.swift b812972d23ed6c3e
 AnimatedInputSample.swift c8318a56dc2830ce
@@ -115,7 +115,7 @@ ScrollViewSample.swift 5a3f99e1253f91f9
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
-SemanticsSample.swift 13c63c5f482a67f0
+SemanticsSample.swift 0b73050a04229507
 ShapesSample.swift da1878eaf2de52e6
 ShareSample.swift 5eff4f5bca43b92b
 SheetsSample.swift 761a45a6cd3b500a

@@ -10,7 +10,7 @@ Capsule.accessibilityHint: ✅
 Capsule.scaleY: ✅
 CheckBox.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 CheckBox.accessibilityActions: – UI Automation offers no action of an application's own words.
-ColorPicker.isAccessibilityHidden: ✅
+ColorPicker.accessibilityPresence: ✅
 ColorPicker.isVisible: ✅
 DatePicker.maximumHeight: ✅
 DatePicker.maximumWidth: ✅
@@ -47,9 +47,8 @@ Polyline.scale: ✅
 ProgressBar.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 ProgressBar.translationX: ✅
 Rectangle.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ScrollView.isAccessibilityHidden: ✅
+ScrollView.accessibilityPresence: ✅
 ScrollView.isVisible: ✅
-SearchField.hidesFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 SearchField.opacity: ✅
 Separator.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Separator.translationY: ✅
@@ -57,14 +56,13 @@ Slider.ignoresInput: ✅
 Slider.pivotY: ✅
 Space.accessibilityHeading: ✅
 Space.scale: ✅
-Spinner.hidesFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Spinner.opacity: ✅
 Stepper.accessibilityLabel: ✅
 Stepper.scaleX: ✅
 Switch.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Switch.accessibilityActions: – UI Automation offers no action of an application's own words.
 Text.accessibilityHeading: ✅
-TextEditor.isAccessibilityHidden: ✅
+TextEditor.accessibilityPresence: ✅
 TextEditor.isVisible: ✅
 TextField.maximumHeight: ✅
 TextField.maximumWidth: ✅

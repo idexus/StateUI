@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.opacity: ✅
 Button.rotationX: ✓ read rotationX of Button: the host's own transform, checked against the layer it composed itself
 Canvas.tooltip: ✅
@@ -22,7 +22,7 @@ ItemsView.tooltip: ✅
 Line.accessibilityHint: ✅
 Link.isEnabled: ✅
 Link.rotationY: ✓ read rotationY of Link: the host's own transform, checked against the layer it composed itself
-Map.isAccessibilityHidden: ✅
+Map.accessibilityPresence: ✅
 MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.isEnabled: ✅
 Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
@@ -38,7 +38,7 @@ SearchField.accessibilityLabel: ✅
 Separator.accessibilityLabel: ✅
 Slider.isEnabled: ✅
 Slider.rotationY: ✓ read rotationY of Slider: the host's own transform, checked against the layer it composed itself
-Space.isAccessibilityHidden: ✅
+Space.accessibilityPresence: ✅
 Spinner.accessibilityLabel: ✅
 Stepper.style: ✅
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform, checked against the layer it composed itself

@@ -220,11 +220,13 @@ extension AndroidDriver {
             let kind = TestAccessibility.word("kind", of: view)
             return AccessibilityRole.allCases.first { AndroidView.accessibilityClass($0) == kind }?.propValue
         case .accessibilityValue: return TestAccessibility.word("value", of: view).propValue
-        case .isAccessibilityHidden:
-            let presence = Java.callInt(reference, JavaAPI.getImportantForAccessibility)
-            return (presence == 2 || presence == 4).propValue
-        case .hidesFromAccessibility:
-            return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
+        case .accessibilityPresence:
+            // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
+            return switch Java.callInt(reference, JavaAPI.getImportantForAccessibility) {
+            case 4: AccessibilityPresence.hiddenWithContents.propValue
+            case 2: AccessibilityPresence.hidden.propValue
+            default: AccessibilityPresence.element.propValue
+            }
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
         case .tooltip:

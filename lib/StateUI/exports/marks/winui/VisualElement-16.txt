@@ -1,5 +1,5 @@
 # revision 24.2
-Button.isAccessibilityHidden: ✅
+Button.accessibilityPresence: ✅
 Button.isVisible: ✅
 Canvas.height: ✅
 Canvas.layoutDirection: ✓ read layoutDirection of Canvas: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
@@ -10,7 +10,7 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.scaleX: ✅
 ColorPicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 ColorPicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-DatePicker.isAccessibilityHidden: ✅
+DatePicker.accessibilityPresence: ✅
 DatePicker.isVisible: ✅
 Ellipse.maximumHeight: ✅
 Ellipse.maximumWidth: ✅
@@ -28,7 +28,6 @@ Image.rotation: ✅
 ItemsView.accessibilityHeading: ✅
 ItemsView.scale: ✅
 Line.tooltip: ✅
-Link.hidesFromAccessibility: ✅
 Link.opacity: ✅
 Map.ignoresInput: 🧩
 Map.pivotY: 🧩
@@ -51,7 +50,6 @@ ScrollView.isEnabled: ✅
 SearchField.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Separator.accessibilityHeading: ✅
 Separator.scale: ✅
-Slider.hidesFromAccessibility: ✅
 Slider.opacity: ✅
 Space.ignoresInput: ✅
 Space.pivotY: ✅
@@ -64,7 +62,7 @@ Text.accessibilityValue: – A WinUI control says its own value to assistive tec
 Text.translationY: ✅
 TextEditor.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TextEditor.accessibilityActions: – UI Automation offers no action of an application's own words.
-TextField.isAccessibilityHidden: ✅
+TextField.accessibilityPresence: ✅
 TextField.isVisible: ✅
 TimePicker.maximumHeight: ✅
 TimePicker.maximumWidth: ✅

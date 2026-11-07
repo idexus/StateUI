@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Canvas.zIndex: ✅
 Capsule.isVisible: ✅
@@ -10,7 +10,7 @@ DatePicker.pivotY: ✓ read pivotY of DatePicker: the host's own transform, chec
 Ellipse.accessibilityAdjusted: ✅
 Fill.frame: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform, checked against the layer it composed itself
-Grid.hidesFromAccessibility: ✅
+Grid.accessibilityPresence: ✅
 HStack.frame: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
 Image.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
@@ -18,10 +18,10 @@ ItemsView.zIndex: ✅
 Line.height: ✅
 Line.scale: ✓ read scale of Line: the host's own transform, checked against the layer it composed itself
 Line.width: ✅
-Link.isAccessibilityHidden: ✅
+Link.accessibilityPresence: ✅
 Map.accessibilityLabel: ✅
 MotionLayout.accessibilityAdjusted: ✅
-Path.isAccessibilityHidden: ✅
+Path.accessibilityPresence: ✅
 Picker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Polygon.opacity: ✅
 Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself
@@ -34,7 +34,7 @@ SearchField.isEnabled: ✅
 SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transform, checked against the layer it composed itself
 Separator.isEnabled: ✅
 Separator.rotationY: ✓ read rotationY of Separator: the host's own transform, checked against the layer it composed itself
-Slider.isAccessibilityHidden: ✅
+Slider.accessibilityPresence: ✅
 Space.accessibilityLabel: ✅
 Space.background: ✅
 Spinner.isEnabled: ✅

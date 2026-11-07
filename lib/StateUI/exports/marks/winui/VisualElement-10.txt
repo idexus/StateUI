@@ -2,7 +2,6 @@
 Button.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Button.translationX: ✅
 Canvas.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Capsule.hidesFromAccessibility: ✅
 Capsule.opacity: ✅
 CheckBox.maximumHeight: ✅
 CheckBox.maximumWidth: ✅
@@ -14,13 +13,11 @@ ColorPicker.zIndex: ✅
 DatePicker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 DatePicker.translationX: ✅
 Ellipse.tooltip: ✅
-Fill.hidesFromAccessibility: ✅
 Fill.opacity: ✅
 Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.isEnabled: does not apply - read isEnabled of Grid - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-HStack.hidesFromAccessibility: ✅
 HStack.opacity: ✅
-Image.isAccessibilityHidden: ✅
+Image.accessibilityPresence: ✅
 Image.isVisible: ✅
 ItemsView.height: ✅
 ItemsView.layoutDirection: ✅
@@ -56,7 +53,7 @@ Slider.translationY: ✅
 Space.accessibilityHeading: ✅
 Spinner.accessibilityHeading: ✅
 Spinner.scale: ✅
-Stepper.isAccessibilityHidden: ✅
+Stepper.accessibilityPresence: ✅
 Stepper.isVisible: ✅
 Switch.maximumHeight: ✅
 Switch.maximumWidth: ✅
@@ -72,7 +69,7 @@ TextField.translationX: ✅
 TimePicker.tooltip: ✅
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.isEnabled: does not apply - read isEnabled of VStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityPresence: ✅
 WebView.isVisible: ✅
 ZStack.maximumHeight: ✅
 ZStack.maximumWidth: ✅

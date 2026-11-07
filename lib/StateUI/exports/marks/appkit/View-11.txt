@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 22.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent

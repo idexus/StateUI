@@ -10,9 +10,8 @@ Button.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
-Button.hidesFromAccessibility: ✅
 Button.ignoresInput: not realized
-Button.isAccessibilityHidden: ✅
+Button.accessibilityPresence: ✅
 Button.isEnabled: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
@@ -46,9 +45,8 @@ Canvas.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
-Canvas.hidesFromAccessibility: ✅
 Canvas.ignoresInput: not realized
-Canvas.isAccessibilityHidden: ✅
+Canvas.accessibilityPresence: ✅
 Canvas.isEnabled: ✅
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
@@ -82,9 +80,8 @@ Capsule.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
-Capsule.hidesFromAccessibility: ✅
 Capsule.ignoresInput: not realized
-Capsule.isAccessibilityHidden: ✅
+Capsule.accessibilityPresence: ✅
 Capsule.isEnabled: ✅
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
@@ -118,9 +115,8 @@ CheckBox.accessibilityValue: ☑️ Before Android 11 a view says no value of it
 CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
-CheckBox.hidesFromAccessibility: ✅
 CheckBox.ignoresInput: not realized
-CheckBox.isAccessibilityHidden: ✅
+CheckBox.accessibilityPresence: ✅
 CheckBox.isEnabled: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
@@ -154,9 +150,8 @@ ColorPicker.accessibilityValue: – Android has no color picker of its own: neit
 ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.hidesFromAccessibility: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.isAccessibilityHidden: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityPresence: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isEnabled: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.isVisible: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.layoutDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -190,9 +185,8 @@ DatePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
-DatePicker.hidesFromAccessibility: ✅
 DatePicker.ignoresInput: not realized
-DatePicker.isAccessibilityHidden: ✅
+DatePicker.accessibilityPresence: ✅
 DatePicker.isEnabled: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ✅
@@ -226,9 +220,8 @@ Ellipse.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
-Ellipse.hidesFromAccessibility: ✅
 Ellipse.ignoresInput: not realized
-Ellipse.isAccessibilityHidden: ✅
+Ellipse.accessibilityPresence: ✅
 Ellipse.isEnabled: ✅
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
@@ -262,9 +255,8 @@ Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Fill.frame: ✅
 Fill.height: ✅
-Fill.hidesFromAccessibility: ✅
 Fill.ignoresInput: ✅
-Fill.isAccessibilityHidden: ✅
+Fill.accessibilityPresence: ✅
 Fill.isEnabled: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
@@ -298,9 +290,8 @@ Grid.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.frame: ✅
 Grid.height: ✅
-Grid.hidesFromAccessibility: ✅
 Grid.ignoresInput: ✅
-Grid.isAccessibilityHidden: ✅
+Grid.accessibilityPresence: ✅
 Grid.isEnabled: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
@@ -334,9 +325,8 @@ HStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.frame: ✅
 HStack.height: ✅
-HStack.hidesFromAccessibility: ✅
 HStack.ignoresInput: ✅
-HStack.isAccessibilityHidden: ✅
+HStack.accessibilityPresence: ✅
 HStack.isEnabled: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
@@ -370,9 +360,8 @@ Image.accessibilityValue: ☑️ Before Android 11 a view says no value of its o
 Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
-Image.hidesFromAccessibility: ✅
 Image.ignoresInput: not realized
-Image.isAccessibilityHidden: ✅
+Image.accessibilityPresence: ✅
 Image.isEnabled: ✅
 Image.isVisible: ✅
 Image.layoutDirection: ✅
@@ -406,9 +395,8 @@ ItemsView.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.frame: ✅
 ItemsView.height: ✅
-ItemsView.hidesFromAccessibility: ✅
 ItemsView.ignoresInput: not realized
-ItemsView.isAccessibilityHidden: ✅
+ItemsView.accessibilityPresence: ✅
 ItemsView.isEnabled: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
@@ -442,9 +430,8 @@ Line.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
-Line.hidesFromAccessibility: ✅
 Line.ignoresInput: not realized
-Line.isAccessibilityHidden: ✅
+Line.accessibilityPresence: ✅
 Line.isEnabled: ✅
 Line.isVisible: ✅
 Line.layoutDirection: ✅
@@ -478,9 +465,8 @@ Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Link.frame: ✅
 Link.height: ✅
-Link.hidesFromAccessibility: ✅
 Link.ignoresInput: not realized
-Link.isAccessibilityHidden: ✅
+Link.accessibilityPresence: ✅
 Link.isEnabled: ✅
 Link.isVisible: ✅
 Link.layoutDirection: ✅
@@ -514,9 +500,8 @@ Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
-Map.hidesFromAccessibility: 🧩
 Map.ignoresInput: 🧩
-Map.isAccessibilityHidden: 🧩
+Map.accessibilityPresence: 🧩
 Map.isEnabled: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
@@ -550,9 +535,8 @@ MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value o
 MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
-MotionLayout.hidesFromAccessibility: ✅
 MotionLayout.ignoresInput: ✅
-MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.accessibilityPresence: ✅
 MotionLayout.isEnabled: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
@@ -586,9 +570,8 @@ Path.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
-Path.hidesFromAccessibility: ✅
 Path.ignoresInput: not realized
-Path.isAccessibilityHidden: ✅
+Path.accessibilityPresence: ✅
 Path.isEnabled: ✅
 Path.isVisible: ✅
 Path.layoutDirection: ✅
@@ -622,9 +605,8 @@ Picker.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
-Picker.hidesFromAccessibility: ✅
 Picker.ignoresInput: not realized
-Picker.isAccessibilityHidden: ✅
+Picker.accessibilityPresence: ✅
 Picker.isEnabled: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
@@ -658,9 +640,8 @@ Polygon.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
-Polygon.hidesFromAccessibility: ✅
 Polygon.ignoresInput: not realized
-Polygon.isAccessibilityHidden: ✅
+Polygon.accessibilityPresence: ✅
 Polygon.isEnabled: ✅
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
@@ -694,9 +675,8 @@ Polyline.accessibilityValue: ☑️ Before Android 11 a view says no value of it
 Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
-Polyline.hidesFromAccessibility: ✅
 Polyline.ignoresInput: not realized
-Polyline.isAccessibilityHidden: ✅
+Polyline.accessibilityPresence: ✅
 Polyline.isEnabled: ✅
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
@@ -730,9 +710,8 @@ ProgressBar.accessibilityValue: ☑️ Before Android 11 a view says no value of
 ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
-ProgressBar.hidesFromAccessibility: ✅
 ProgressBar.ignoresInput: not realized
-ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.accessibilityPresence: ✅
 ProgressBar.isEnabled: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
@@ -766,9 +745,8 @@ Rectangle.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
-Rectangle.hidesFromAccessibility: ✅
 Rectangle.ignoresInput: not realized
-Rectangle.isAccessibilityHidden: ✅
+Rectangle.accessibilityPresence: ✅
 Rectangle.isEnabled: ✅
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
@@ -802,9 +780,8 @@ ScrollView.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.frame: ✅
 ScrollView.height: ✅
-ScrollView.hidesFromAccessibility: ✅
 ScrollView.ignoresInput: not realized
-ScrollView.isAccessibilityHidden: ✅
+ScrollView.accessibilityPresence: ✅
 ScrollView.isEnabled: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
@@ -838,9 +815,8 @@ SearchField.accessibilityValue: ☑️ Before Android 11 a view says no value of
 SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
-SearchField.hidesFromAccessibility: ✅
 SearchField.ignoresInput: not realized
-SearchField.isAccessibilityHidden: ✅
+SearchField.accessibilityPresence: ✅
 SearchField.isEnabled: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
@@ -874,9 +850,8 @@ Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Separator.frame: ✅
 Separator.height: ✅
-Separator.hidesFromAccessibility: ✅
 Separator.ignoresInput: not realized
-Separator.isAccessibilityHidden: ✅
+Separator.accessibilityPresence: ✅
 Separator.isEnabled: ✅
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
@@ -910,9 +885,8 @@ Slider.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
-Slider.hidesFromAccessibility: ✅
 Slider.ignoresInput: not realized
-Slider.isAccessibilityHidden: ✅
+Slider.accessibilityPresence: ✅
 Slider.isEnabled: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
@@ -946,9 +920,8 @@ Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its o
 Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Space.frame: ✅
 Space.height: ✅
-Space.hidesFromAccessibility: ✅
 Space.ignoresInput: ✅
-Space.isAccessibilityHidden: ✅
+Space.accessibilityPresence: ✅
 Space.isEnabled: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
@@ -982,9 +955,8 @@ Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Spinner.frame: ✅
 Spinner.height: ✅
-Spinner.hidesFromAccessibility: ✅
 Spinner.ignoresInput: not realized
-Spinner.isAccessibilityHidden: ✅
+Spinner.accessibilityPresence: ✅
 Spinner.isEnabled: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
@@ -1018,9 +990,8 @@ Stepper.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
-Stepper.hidesFromAccessibility: ✅
 Stepper.ignoresInput: not realized
-Stepper.isAccessibilityHidden: ✅
+Stepper.accessibilityPresence: ✅
 Stepper.isEnabled: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
@@ -1054,9 +1025,8 @@ Switch.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.frame: ✅
 Switch.height: ✅
-Switch.hidesFromAccessibility: ✅
 Switch.ignoresInput: not realized
-Switch.isAccessibilityHidden: ✅
+Switch.accessibilityPresence: ✅
 Switch.isEnabled: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
@@ -1090,9 +1060,8 @@ Text.accessibilityValue: ☑️ Before Android 11 a view says no value of its ow
 Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
-Text.hidesFromAccessibility: ✅
 Text.ignoresInput: not realized
-Text.isAccessibilityHidden: ✅
+Text.accessibilityPresence: ✅
 Text.isEnabled: ✅
 Text.isVisible: ✅
 Text.layoutDirection: ✅
@@ -1126,9 +1095,8 @@ TextEditor.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
-TextEditor.hidesFromAccessibility: ✅
 TextEditor.ignoresInput: not realized
-TextEditor.isAccessibilityHidden: ✅
+TextEditor.accessibilityPresence: ✅
 TextEditor.isEnabled: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ✅
@@ -1162,9 +1130,8 @@ TextField.accessibilityValue: ☑️ Before Android 11 a view says no value of i
 TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
-TextField.hidesFromAccessibility: ✅
 TextField.ignoresInput: not realized
-TextField.isAccessibilityHidden: ✅
+TextField.accessibilityPresence: ✅
 TextField.isEnabled: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
@@ -1198,9 +1165,8 @@ TimePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of 
 TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
-TimePicker.hidesFromAccessibility: ✅
 TimePicker.ignoresInput: not realized
-TimePicker.isAccessibilityHidden: ✅
+TimePicker.accessibilityPresence: ✅
 TimePicker.isEnabled: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ✅
@@ -1234,9 +1200,8 @@ VStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.frame: ✅
 VStack.height: ✅
-VStack.hidesFromAccessibility: ✅
 VStack.ignoresInput: ✅
-VStack.isAccessibilityHidden: ✅
+VStack.accessibilityPresence: ✅
 VStack.isEnabled: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
@@ -1270,9 +1235,8 @@ WebView.accessibilityValue: ☑️ Before Android 11 a view says no value of its
 WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
-WebView.hidesFromAccessibility: ✅
 WebView.ignoresInput: not realized
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityPresence: ✅
 WebView.isEnabled: ✅
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
@@ -1306,9 +1270,8 @@ ZStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its 
 ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.frame: ✅
 ZStack.height: ✅
-ZStack.hidesFromAccessibility: ✅
 ZStack.ignoresInput: ✅
-ZStack.isAccessibilityHidden: ✅
+ZStack.accessibilityPresence: ✅
 ZStack.isEnabled: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅

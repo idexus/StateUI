@@ -47,7 +47,7 @@ enum Listings {
                 Rectangle()
                     .fill(settings.prefersHigherContrast ? Palette.accent : Palette.outline)
                     .height(settings.prefersHigherContrast ? 3 : 1)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
         }
         """#,
@@ -10536,14 +10536,14 @@ enum Listings {
                         }
                     }
                     .style(.card)
-                    .hidesFromAccessibility(true)
+                    .accessibilityPresence(.hiddenWithContents)
                 }
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
                 Fill(Palette.outline)
                     .height(1)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
         }
 

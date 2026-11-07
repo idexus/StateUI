@@ -15,12 +15,11 @@ Ellipse.accessibilityActions: – UI Automation offers no action of an applicati
 Ellipse.isEnabled: ✅
 Fill.accessibilityHeading: ✅
 Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Grid.isAccessibilityHidden: ✅
+Grid.accessibilityPresence: ✅
 Grid.isVisible: ✅
 HStack.accessibilityHeading: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Image.tooltip: ✅
-ItemsView.hidesFromAccessibility: ✅
 ItemsView.opacity: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
 Line.zIndex: ✅
@@ -36,7 +35,7 @@ Picker.zIndex: ✅
 Polygon.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Polygon.translationX: ✅
 Polyline.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.accessibilityPresence: ✅
 ProgressBar.isVisible: ✅
 Rectangle.height: ✅
 Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
@@ -45,7 +44,6 @@ ScrollView.frame: ✅
 ScrollView.rotation: ✅
 SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
 SearchField.style: ✅
-Separator.hidesFromAccessibility: ✅
 Separator.opacity: ✅
 Slider.accessibilityHint: ✅
 Slider.scaleY: ✅
@@ -65,7 +63,7 @@ TextField.scaleX: ✅
 TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
 VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-VStack.isAccessibilityHidden: ✅
+VStack.accessibilityPresence: ✅
 VStack.isVisible: ✅
 WebView.tooltip: ✅
 ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.

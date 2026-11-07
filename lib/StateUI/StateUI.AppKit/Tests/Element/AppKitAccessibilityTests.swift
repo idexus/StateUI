@@ -51,7 +51,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             .accessibilityLabel: .string("Temporary"),
             .accessibilityHint: .string("Temporary hint"),
             .accessibilityHeading: .enumeration(1),
-            .isAccessibilityHidden: .bool(false),
+            .accessibilityPresence: AccessibilityPresence.element.propValue,
         ]
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
@@ -62,7 +62,7 @@ final class AppKitAccessibilityTests: XCTestCase {
             .accessibilityLabel,
             .accessibilityHint,
             .accessibilityHeading,
-            .isAccessibilityHidden,
+            .accessibilityPresence,
         ]
         renderer.applyForTesting(changedTree(cleared))
 
@@ -82,8 +82,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties = [
             .accessibilityLabel: .string("Skipped panel"),
-            .isAccessibilityHidden: .bool(false),
-            .hidesFromAccessibility: .bool(true),
+            .accessibilityPresence: AccessibilityPresence.hiddenWithContents.propValue,
         ]
         stack.children = .arranged([child])
 
@@ -219,10 +218,10 @@ final class AppKitAccessibilityTests: XCTestCase {
         var hidden = HostPatch(id: .manual("hidden"), type: .rectangle)
         hidden.properties = [
             .accessibilityLabel: .string("Decoration"),
-            .isAccessibilityHidden: .bool(true),
+            .accessibilityPresence: AccessibilityPresence.hidden.propValue,
         ]
         var shown = HostPatch(id: .manual("shown"), type: .vStack)
-        shown.properties[.isAccessibilityHidden] = .bool(false)
+        shown.properties[.accessibilityPresence] = AccessibilityPresence.element.propValue
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([hidden, shown])
 

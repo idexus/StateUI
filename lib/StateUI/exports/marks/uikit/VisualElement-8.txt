@@ -33,7 +33,7 @@ ProgressBar.accessibilityRole: ✅
 Rectangle.height: ✅
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform, checked against the layer it composed itself
 Rectangle.width: ✅
-ScrollView.isAccessibilityHidden: ✅
+ScrollView.accessibilityPresence: ✅
 SearchField.style: ✅
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform, checked against the layer it composed itself
 Separator.style: ✅

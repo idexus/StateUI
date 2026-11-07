@@ -222,7 +222,7 @@ class WinUILayoutView: WinUIView {
     /// value its element says, its panel's peer tells.
     override func setAccessibility(_ words: AccessibilityWords) {
         super.setAccessibility(words)
-        stateui_winui_panel_hide_children(handle, words.presence == .hiddenWithChildren)
+        stateui_winui_panel_hide_children(handle, words.presence == .hiddenWithContents)
         stateui_winui_panel_set_kind(handle, words.role.map(Self.controlType) ?? -1, words.value)
     }
 

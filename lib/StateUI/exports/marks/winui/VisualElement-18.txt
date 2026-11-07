@@ -22,17 +22,17 @@ Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked agains
 Image.zIndex: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.scaleY: ✅
-Line.isAccessibilityHidden: ✅
+Line.accessibilityPresence: ✅
 Line.isVisible: ✅
 Link.height: ✅
 Link.layoutDirection: ✅
 Link.width: ✅
 Map.rotationX: 🧩
 Map.style: 🧩
-MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.accessibilityPresence: ✅
 MotionLayout.isVisible: ✅
 Path.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Picker.isAccessibilityHidden: ✅
+Picker.accessibilityPresence: ✅
 Picker.isVisible: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅

@@ -18,7 +18,6 @@ Grid.layoutDirection: ✓ read layoutDirection of Grid: the direction the host l
 Grid.width: ✅
 HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.isEnabled: does not apply - read isEnabled of HStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Image.hidesFromAccessibility: ✅
 Image.opacity: ✅
 ItemsView.maximumHeight: ✅
 ItemsView.maximumWidth: ✅
@@ -29,7 +28,7 @@ Line.accessibilityHint: ✅
 Line.scaleY: ✅
 Link.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Link.accessibilityActions: – UI Automation offers no action of an application's own words.
-Map.isAccessibilityHidden: 🧩
+Map.accessibilityPresence: 🧩
 Map.isVisible: 🧩
 MotionLayout.accessibilityHint: ✅
 MotionLayout.scaleY: ✅
@@ -38,7 +37,7 @@ Path.zIndex: ✅
 Picker.accessibilityHint: ✅
 Picker.scaleY: ✅
 Polygon.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Polyline.isAccessibilityHidden: ✅
+Polyline.accessibilityPresence: ✅
 Polyline.isVisible: ✅
 ProgressBar.height: ✅
 ProgressBar.layoutDirection: ✅
@@ -56,11 +55,10 @@ Separator.minimumWidth: ✅
 Separator.pivotX: ✅
 Slider.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Slider.accessibilityActions: – UI Automation offers no action of an application's own words.
-Space.isAccessibilityHidden: ✅
+Space.accessibilityPresence: ✅
 Space.isVisible: ✅
 Spinner.accessibilityLabel: ✅
 Spinner.scaleX: ✅
-Stepper.hidesFromAccessibility: ☑️ WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them.
 Stepper.opacity: ✅
 Switch.ignoresInput: ✅
 Switch.pivotY: ✅
@@ -74,7 +72,6 @@ TimePicker.accessibilityHeading: ✅
 VStack.height: ✅
 VStack.layoutDirection: ✓ read layoutDirection of VStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 VStack.width: ✅
-WebView.hidesFromAccessibility: ✅
 WebView.opacity: ✅
 ZStack.ignoresInput: ✅
 ZStack.pivotY: ✅

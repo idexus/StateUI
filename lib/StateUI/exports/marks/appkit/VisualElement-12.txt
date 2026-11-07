@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.isEnabled: ✅
 Button.rotationY: ✓ read rotationY of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
@@ -23,13 +23,13 @@ Line.accessibilityRole: ✅
 Link.height: ✅
 Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
 Link.width: ✅
-Map.hidesFromAccessibility: ✅
+Map.accessibilityPresence: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.height: ✅
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Path.width: ✅
-Picker.isAccessibilityHidden: ✅
+Picker.accessibilityPresence: ✅
 Polygon.accessibilityLabel: ✅
 Polyline.opacity: ✅
 Polyline.rotationX: ✓ read rotationX of Polyline: the host's own transform, checked against the layer it composed itself
@@ -42,7 +42,7 @@ Separator.accessibilityHint: ✅
 Slider.height: ✅
 Slider.scale: ✓ read scale of Slider: the host's own transform, checked against the layer it composed itself
 Slider.width: ✅
-Space.hidesFromAccessibility: ✅
+Space.accessibilityPresence: ✅
 Spinner.accessibilityHint: ✅
 Stepper.zIndex: ✅
 Switch.isVisible: ✅
@@ -55,4 +55,4 @@ TimePicker.rotation: ✓ read rotation of TimePicker: the host's own transform, 
 VStack.tooltip: ✅
 WebView.isEnabled: ✅
 WebView.rotationY: ✓ read rotationY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.isAccessibilityHidden: ✅
+ZStack.accessibilityPresence: ✅

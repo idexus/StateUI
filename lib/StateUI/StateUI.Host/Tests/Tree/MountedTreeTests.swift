@@ -470,7 +470,7 @@ final class MountedTreeTests: XCTestCase {
         child.properties = [.text: .string("Shown")]
         var row = HostPatch(id: .manual("row"), type: .vStack)
         row.properties = [
-            .accessibilityLabel: .string("Private"), .text: .string("Own"), .isAccessibilityHidden: .bool(true),
+            .accessibilityLabel: .string("Private"), .text: .string("Own"), .accessibilityPresence: AccessibilityPresence.hidden.propValue,
         ]
         row.children = .arranged([child])
         let (tree, _) = Self.tree(viewless: [])
@@ -480,7 +480,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(element.spokenWords, "Shown", "neither the label nor the words of the hidden element")
 
         var whole = HostPatch(id: .manual("row"), type: .vStack)
-        whole.properties = [.hidesFromAccessibility: .bool(true)]
+        whole.properties = [.accessibilityPresence: AccessibilityPresence.hiddenWithContents.propValue]
         tree.apply(whole, complete: false)
         XCTAssertEqual(element.spokenWords, "", "hidden with all it holds")
     }
@@ -703,27 +703,27 @@ final class MountedTreeTests: XCTestCase {
             label("said", [
                 .accessibilityIdentifier: .string("greeting"), .accessibilityLabel: .string("Hello"),
                 .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
-                .isAccessibilityHidden: .bool(false),
+                .accessibilityPresence: AccessibilityPresence.element.propValue,
             ]),
             label("rated", [
                 .accessibilityLabel: .string("Rating"), .accessibilityRole: .enumeration(3),
                 .accessibilityValue: .string("3 of 5"),
             ]),
             label("kind", [.accessibilityRole: .enumeration(1)]),
-            label("both", [.isAccessibilityHidden: .bool(true), .hidesFromAccessibility: .bool(true)]),
-            label("hidden", [.isAccessibilityHidden: .bool(true)]),
+            label("both", [.accessibilityPresence: AccessibilityPresence.hiddenWithContents.propValue]),
+            label("hidden", [.accessibilityPresence: AccessibilityPresence.hidden.propValue]),
             label("silent", [:]),
         ])
         tree.apply(root, complete: true)
         func words(_ id: String) -> AccessibilityWords? { tree.root?.first(id: .manual(id))?.accessibilityWords }
 
         XCTAssertEqual(words("said"), AccessibilityWords(
-            identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .met))
+            identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .element))
         XCTAssertEqual(words("rated"), AccessibilityWords(
             identifier: nil, label: "Rating", hint: nil, role: .adjustable, value: "3 of 5", headingLevel: 0,
-            presence: .met))
-        XCTAssertEqual(words("kind")?.presence, .met, "a kind of its own said is words of its own")
-        XCTAssertEqual(words("both")?.presence, .hiddenWithChildren)
+            presence: .element))
+        XCTAssertEqual(words("kind")?.presence, .element, "a kind of its own said is words of its own")
+        XCTAssertEqual(words("both")?.presence, .hiddenWithContents)
         XCTAssertEqual(words("hidden")?.presence, .hidden)
         XCTAssertEqual(words("silent"), AccessibilityWords(
             identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: nil))
@@ -747,16 +747,16 @@ final class MountedTreeTests: XCTestCase {
             stack("hinted", [.accessibilityHint: .string("Opens it")]),
             stack("heading", [.accessibilityHeading: .enumeration(1)]),
             stack("tapped", [:], tapped: true),
-            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
+            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .accessibilityPresence: AccessibilityPresence.hidden.propValue]),
             stack("plain", [:]),
         ])
         tree.apply(root, complete: true)
-        func presence(_ id: String) -> AccessibilityWords.Presence? {
+        func presence(_ id: String) -> AccessibilityPresence? {
             tree.root?.first(id: .manual(id))?.accessibilityWords.presence
         }
 
         XCTAssertEqual(
-            ["labeled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
+            ["labeled", "hinted", "heading", "tapped"].map(presence), [.element, .element, .element, .element], "each met")
         XCTAssertEqual(presence("labeled but hidden"), .hidden, "as the author says")
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
@@ -796,12 +796,12 @@ final class MountedTreeTests: XCTestCase {
     /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
     /// before any word reached it - never as the last word left it.
     func testAViewIsAnElementAsItsPresenceSaysElseAsItStoodOfItself() {
-        func words(_ presence: AccessibilityWords.Presence?) -> AccessibilityWords {
+        func words(_ presence: AccessibilityPresence?) -> AccessibilityWords {
             AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: presence)
         }
-        XCTAssertTrue(words(.met).isElement(standing: false))
+        XCTAssertTrue(words(.element).isElement(standing: false))
         XCTAssertFalse(words(.hidden).isElement(standing: true))
-        XCTAssertFalse(words(.hiddenWithChildren).isElement(standing: true))
+        XCTAssertFalse(words(.hiddenWithContents).isElement(standing: true))
         XCTAssertTrue(words(nil).isElement(standing: true))
         XCTAssertFalse(words(nil).isElement(standing: false))
     }

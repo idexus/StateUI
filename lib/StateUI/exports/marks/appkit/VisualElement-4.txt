@@ -1,5 +1,5 @@
-# revision 24.1
-Button.isAccessibilityHidden: ✅
+# revision 25.1
+Button.accessibilityPresence: ✅
 Canvas.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Capsule.opacity: ✅
 Capsule.rotationX: ✓ read rotationX of Capsule: the host's own transform, checked against the layer it composed itself
@@ -13,17 +13,17 @@ Fill.translationY: ✓ read translationY of Fill: the host's own transform, chec
 Grid.background: ✅
 HStack.style: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
-Image.isAccessibilityHidden: ✅
+Image.accessibilityPresence: ✅
 ItemsView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
 Line.minimumWidth: ✅
 Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
-Link.hidesFromAccessibility: ✅
+Link.accessibilityPresence: ✅
 Map.accessibilityHint: ✅
 MotionLayout.tooltip: ✅
-Path.hidesFromAccessibility: ✅
+Path.accessibilityPresence: ✅
 Picker.accessibilityLabel: ✅
 Polygon.isEnabled: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself
@@ -39,7 +39,7 @@ SearchField.width: ✅
 Separator.height: ✅
 Separator.scale: ✓ read scale of Separator: the host's own transform, checked against the layer it composed itself
 Separator.width: ✅
-Slider.hidesFromAccessibility: ✅
+Slider.accessibilityPresence: ✅
 Space.accessibilityHint: ✅
 Spinner.height: ✅
 Spinner.scale: ✓ read scale of Spinner: the host's own transform, checked against the layer it composed itself
@@ -55,6 +55,6 @@ TextField.rotation: ✓ read rotation of TextField: the host's own transform, ch
 TimePicker.tooltip: ✅
 VStack.isEnabled: ✓ tap on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.zIndex: ✅
-WebView.isAccessibilityHidden: ✅
+WebView.accessibilityPresence: ✅
 ZStack.accessibilityLabel: ✅
 ZStack.layoutDirection: ✅

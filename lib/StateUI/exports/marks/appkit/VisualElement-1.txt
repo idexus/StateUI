@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Canvas.frame: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform, checked against the layer it composed itself

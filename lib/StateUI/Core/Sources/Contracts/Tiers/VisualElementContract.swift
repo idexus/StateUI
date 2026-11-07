@@ -43,10 +43,9 @@ public enum VisualElementContract: Contract {
     public static let accessibilityValue = ElementProperty<Self, String>(
         "accessibilityValue", layer: .native)
 
-    /// Whether the element and everything in it are left out of what a screen
-    /// reader reads.
-    public static let hidesFromAccessibility = ElementProperty<Self, Bool>(
-        "hidesFromAccessibility", layer: .native)
+    /// Whether a screen reader meets the element, and what is inside it.
+    public static let accessibilityPresence = ElementProperty<Self, AccessibilityPresence>(
+        "accessibilityPresence", layer: .native)
 
     /// What the element's surface is made of: a color, a gradient, a blur of
     /// what lies behind it, or the platform's glass.
@@ -62,10 +61,6 @@ public enum VisualElementContract: Contract {
 
     /// Whether input passes through the element to what is under it.
     public static let ignoresInput = ElementProperty<Self, Bool>("ignoresInput", layer: .native)
-
-    /// Whether a screen reader skips the element.
-    public static let isAccessibilityHidden = ElementProperty<Self, Bool>(
-        "isAccessibilityHidden", layer: .native)
 
     /// Whether the element answers input.
     public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
@@ -153,9 +148,8 @@ public enum VisualElementContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted,
-        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityRole, accessibilityValue,
-        background, frame, height, hidesFromAccessibility, ignoresInput,
-        isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
+        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole,
+        accessibilityValue, background, frame, height, ignoresInput, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
         translationY, width, zIndex,

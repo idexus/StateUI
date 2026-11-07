@@ -12,7 +12,7 @@ ColorPicker.accessibilityLabel: ✅
 ColorPicker.scaleX: ✅
 DatePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 DatePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
-Ellipse.isAccessibilityHidden: ✅
+Ellipse.accessibilityPresence: ✅
 Ellipse.isVisible: ✅
 Fill.height: ✅
 Fill.layoutDirection: ✓ read layoutDirection of Fill: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
@@ -32,7 +32,6 @@ ItemsView.pivotY: ✅
 Line.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Line.translationX: ✅
 Link.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Map.hidesFromAccessibility: 🧩
 Map.opacity: 🧩
 MotionLayout.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 MotionLayout.translationX: ✅
@@ -41,7 +40,6 @@ Path.scale: ✅
 Picker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Picker.translationX: ✅
 Polygon.tooltip: ✅
-Polyline.hidesFromAccessibility: ✅
 Polyline.opacity: ✅
 ProgressBar.maximumHeight: ✅
 ProgressBar.maximumWidth: ✅
@@ -57,7 +55,6 @@ SearchField.scaleY: ✅
 Separator.ignoresInput: ✅
 Separator.pivotY: ✅
 Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Space.hidesFromAccessibility: ✅
 Space.opacity: ✅
 Spinner.accessibilityHint: ✅
 Spinner.scaleY: ✅
@@ -71,7 +68,7 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.scaleX: ✅
 TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
-TimePicker.isAccessibilityHidden: ✅
+TimePicker.accessibilityPresence: ✅
 TimePicker.isVisible: ✅
 VStack.maximumHeight: ✅
 VStack.maximumWidth: ✅

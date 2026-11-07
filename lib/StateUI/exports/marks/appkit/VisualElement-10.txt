@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.isVisible: ✅
 Button.rotation: ✓ read rotation of Button: the host's own transform, checked against the layer it composed itself
 Canvas.accessibilityAdjusted: ✅

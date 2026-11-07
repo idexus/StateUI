@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.accessibilityLabel: ✅
 Canvas.opacity: ✅
 Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform, checked against the layer it composed itself
@@ -26,20 +26,20 @@ MotionLayout.zIndex: ✅
 Path.accessibilityHint: ✅
 Picker.isEnabled: ✅
 Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
-Polygon.isAccessibilityHidden: ✅
+Polygon.accessibilityPresence: ✅
 Polyline.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 ProgressBar.isVisible: ✅
 ProgressBar.rotation: ✓ read rotation of ProgressBar: the host's own transform, checked against the layer it composed itself
 Rectangle.accessibilityAdjusted: ✅
 ScrollView.frame: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.hidesFromAccessibility: ✅
-Separator.hidesFromAccessibility: ✅
+SearchField.accessibilityPresence: ✅
+Separator.accessibilityPresence: ✅
 Slider.accessibilityHint: ✅
 Space.height: ✅
 Space.scale: ✓ read scale of Space: the host's own transform, checked against the layer it composed itself
 Space.width: ✅
-Spinner.hidesFromAccessibility: ✅
+Spinner.accessibilityPresence: ✅
 Stepper.tooltip: ✅
 Switch.zIndex: ✅
 Text.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

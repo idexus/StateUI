@@ -1,14 +1,14 @@
-# revision 24.1
+# revision 25.1
 Button.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Canvas.accessibilityHint: ✅
 Capsule.height: ✅
 Capsule.scale: ✓ read scale of Capsule: the host's own transform, checked against the layer it composed itself
 Capsule.width: ✅
-CheckBox.isAccessibilityHidden: ✅
+CheckBox.accessibilityPresence: ✅
 ColorPicker.accessibilityLabel: ✅
 DatePicker.isEnabled: ✅
 DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.isAccessibilityHidden: ✅
+Ellipse.accessibilityPresence: ✅
 Fill.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Fill.background: ✅
 Grid.pivotX: ✓ read pivotX of Grid: the host's own transform, checked against the layer it composed itself
@@ -20,7 +20,7 @@ Line.frame: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
 Link.layoutDirection: ✅
 Map.accessibilityValue: ✅
-MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.accessibilityPresence: ✅
 Path.layoutDirection: ✅
 Picker.accessibilityRole: ✅
 Polygon.maximumHeight: ✅
@@ -28,7 +28,7 @@ Polygon.maximumWidth: ✅
 Polygon.minimumHeight: ✅
 Polygon.minimumWidth: ✅
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.hidesFromAccessibility: ✅
+Polyline.accessibilityPresence: ✅
 ProgressBar.accessibilityLabel: ✅
 Rectangle.opacity: ✅
 Rectangle.rotationX: ✓ read rotationX of Rectangle: the host's own transform, checked against the layer it composed itself
@@ -43,14 +43,14 @@ Spinner.ignoresInput: ✅
 Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.isEnabled: ✅
 Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.isAccessibilityHidden: ✅
+Switch.accessibilityPresence: ✅
 Text.height: ✅
 Text.scale: ✓ read scale of Text: the host's own transform, checked against the layer it composed itself
 Text.width: ✅
 TextEditor.accessibilityLabel: ✅
 TextField.isEnabled: ✅
 TextField.rotationY: ✓ read rotationY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.isAccessibilityHidden: ✅
+TimePicker.accessibilityPresence: ✅
 VStack.accessibilityLabel: ✅
 VStack.layoutDirection: ✅
 WebView.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.

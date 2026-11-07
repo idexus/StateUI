@@ -36,7 +36,6 @@ MotionLayout.maximumWidth: ✅
 MotionLayout.minimumHeight: ✅
 MotionLayout.minimumWidth: ✅
 MotionLayout.pivotX: ✅
-Path.hidesFromAccessibility: ✅
 Path.opacity: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
@@ -67,7 +66,6 @@ Spinner.width: ✅
 Stepper.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Stepper.translationX: ✅
 Switch.tooltip: ✅
-Text.hidesFromAccessibility: ✅
 Text.opacity: ✅
 TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.isEnabled: ✅
