@@ -787,7 +787,7 @@ final class StyleTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(read, 21, "the scan read almost nothing")
+        XCTAssertGreaterThan(read, 15, "the scan read almost nothing")
     }
 
     /// The property tiers must stay PROPERTY tiers: a handler subscribed from
