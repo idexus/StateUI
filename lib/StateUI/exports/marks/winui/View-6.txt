@@ -35,7 +35,7 @@ DatePicker.swiped: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Ellipse.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Ellipse.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.frameChanged: ✅
 Ellipse.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Ellipse.margin: ✅
@@ -66,7 +66,7 @@ ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Line.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Line.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.frameChanged: ✅
 Line.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Line.margin: ✅
@@ -110,7 +110,7 @@ Polyline.swiped: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ProgressBar.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ProgressBar.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.frameChanged: ✅
 ProgressBar.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ProgressBar.margin: ✅
@@ -167,7 +167,7 @@ Text.tapped: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TextEditor.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TextEditor.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.frameChanged: ✅
 TextEditor.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 TextEditor.margin: ✅

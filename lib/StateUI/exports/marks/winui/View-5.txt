@@ -22,7 +22,7 @@ Capsule.swiped: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-CheckBox.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+CheckBox.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.frameChanged: ✅
 CheckBox.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 CheckBox.margin: ✅
@@ -65,7 +65,7 @@ Image.swiped: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ItemsView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ItemsView.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.frameChanged: ✅
 ItemsView.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ItemsView.margin: ✅
@@ -99,7 +99,7 @@ Path.swiped: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Picker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Picker.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Picker.frameChanged: ✅
 Picker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Picker.margin: ✅
@@ -148,7 +148,7 @@ Slider.swiped: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Space.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Space.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Space.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Space.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Space.frameChanged: ✅
 Space.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Space.margin: ✅
@@ -198,7 +198,7 @@ WebView.swiped: – WebView2 gives the user's hand to its page: listened to by W
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ZStack.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.frameChanged: ✅
 ZStack.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ZStack.margin: ✅

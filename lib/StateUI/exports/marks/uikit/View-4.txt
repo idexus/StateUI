@@ -25,7 +25,7 @@ Ellipse.rotationUpdated: ✓ rotate on Ellipse: the view's listening handed the 
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Fill.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Fill.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Fill.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Fill.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Fill.tapCount: ✓ tap on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.tapped: ✓ tap on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.holdDuration: ✅
@@ -62,7 +62,7 @@ MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Path.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Path.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.tapCount: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
 Path.tapped: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.holdDuration: ✅
@@ -116,7 +116,7 @@ Stepper.rotationUpdated: ✓ rotate on Stepper: the view's listening handed the 
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Switch.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Switch.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Switch.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Switch.tapCount: ✓ tap on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.tapped: ✓ tap on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.

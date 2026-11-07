@@ -64,7 +64,7 @@ struct FilesSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             .onDragEntered { dropping = true }
             .onDragExited { dropping = false }
-            .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+            .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                 dropping = false
                 let start = try await files[0].read(atMost: 1025)
                 guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }

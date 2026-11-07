@@ -168,8 +168,8 @@ final class GestureTests: XCTestCase {
         let picture = FileType("Picture", extensions: ["png"])
 
         let patch = renders.render(Rectangle()
-            .onDrop(files: [text]) { files in heard += files.map { "text " + $0.name } }
-            .onDrop(files: [picture]) { files in heard += files.map { "picture " + $0.name } }
+            .onDropped(files: [text]) { files in heard += files.map { "text " + $0.name } }
+            .onDropped(files: [picture]) { files in heard += files.map { "picture " + $0.name } }
             .node)
 
         XCTAssertEqual(patch.props["droppedFileTypes"], [text, picture].propValue)
@@ -317,7 +317,7 @@ final class GestureTests: XCTestCase {
                 ZStack {
                     Text("Drop here")
                 }
-                .onDrop { dropped.append($0) }
+                .onDropped { dropped.append($0) }
                 .id("target")
             }
             .node)
@@ -330,7 +330,7 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(target?.props["allowsDrop"], .bool(true),
                        "a view that handles a drop is a view that allows one")
 
-        renders.fire(target?.events?["drop"] ?? -1, with: [.string("Alpha")])
+        renders.fire(target?.events?["dropped"] ?? -1, with: [.string("Alpha")])
         XCTAssertEqual(dropped, ["Alpha"])
     }
 }

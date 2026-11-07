@@ -685,7 +685,7 @@
                         .width(80)
                         .height(40)
                         .setValue(ViewContract.allowsDrop, true)
-                        .onEvent(ViewContract.drop) { heard.values.append("drop \($0)") }.id("target")
+                        .onEvent(ViewContract.dropped) { heard.values.append("drop \($0)") }.id("target")
                 }
                 .horizontalAlignment(.start)
             }
@@ -700,7 +700,7 @@
     @MainActor
     static func droppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
-            Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.drop, on: element),
+            Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.dropped, on: element),
             Covered(ViewContract.dragEntered, on: element), Covered(ViewContract.dragExited, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -716,11 +716,11 @@
                         Write(ViewContract.allowsDrop, true),
                         HearDone(ViewContract.dragEntered) { heard.values.append("over") },
                         HearDone(ViewContract.dragExited) { heard.values.append("left") },
-                        Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
+                        Hear(ViewContract.dropped) { heard.values.append("drop \($0)") },
                     ], id: "crossed")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.allowsDrop, true), Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
+                        Write(ViewContract.allowsDrop, true), Hear(ViewContract.dropped) { heard.values.append("drop \($0)") },
                     ], id: "target")
                 }
                 .horizontalAlignment(.start)

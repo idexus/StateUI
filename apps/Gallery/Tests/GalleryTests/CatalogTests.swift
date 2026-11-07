@@ -1666,7 +1666,7 @@ final class CatalogTests: XCTestCase {
             "tapped", "swiped", "panUpdated", "pinchUpdated",
             "pointerEntered", "pointerExited", "pointerMoved",
             "pointerPressed", "pointerReleased",
-            "dragStarting", "dragEnded", "drop", "dragOver", "dragLeave",
+            "dragStarting", "dragEnded", "dropped", "dragEntered", "dragExited",
         ]
 
         for sample in group.samples {

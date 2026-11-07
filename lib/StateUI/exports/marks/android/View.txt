@@ -6,7 +6,7 @@ Button.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Button.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.dragStarting: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
 Button.dragText: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
-Button.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Button.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.droppedFileTypes: ✓ dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started
 Button.filesDropped: ✓ dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started
 Button.frameChanged: ✅
@@ -44,7 +44,7 @@ Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Canvas.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
 Canvas.dragText: ✓ dragAndDrop on Canvas: the views' drag listeners' reports told by the driver, no drag started
-Canvas.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Canvas.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the view's drag listener's report told the driver's documents, no drag started
 Canvas.filesDropped: ✓ dropFiles on Canvas: the view's drag listener's report told the driver's documents, no drag started
 Canvas.frameChanged: ✅
@@ -82,7 +82,7 @@ Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 Capsule.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Capsule.dragStarting: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
 Capsule.dragText: ✓ dragAndDrop on Capsule: the views' drag listeners' reports told by the driver, no drag started
-Capsule.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Capsule.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
 Capsule.filesDropped: ✓ dropFiles on Capsule: the view's drag listener's report told the driver's documents, no drag started
 Capsule.frameChanged: ✅
@@ -120,7 +120,7 @@ CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' r
 CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.dragText: ✓ dragAndDrop on CheckBox: the views' drag listeners' reports told by the driver, no drag started
-CheckBox.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+CheckBox.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the view's drag listener's report told the driver's documents, no drag started
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the view's drag listener's report told the driver's documents, no drag started
 CheckBox.frameChanged: ✅
@@ -158,7 +158,7 @@ ColorPicker.dragEntered: – Android has no color picker of its own: neither the
 ColorPicker.dragExited: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.dragStarting: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.dragText: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.drop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.droppedFileTypes: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.filesDropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.frameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -196,7 +196,7 @@ DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners'
 DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
-DatePicker.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+DatePicker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the view's drag listener's report told the driver's documents, no drag started
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the view's drag listener's report told the driver's documents, no drag started
 DatePicker.frameChanged: ✅
@@ -234,7 +234,7 @@ Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
-Ellipse.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Ellipse.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the view's drag listener's report told the driver's documents, no drag started
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the view's drag listener's report told the driver's documents, no drag started
 Ellipse.frameChanged: ✅
@@ -272,7 +272,7 @@ Fill.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Fill.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Fill.dragStarting: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
 Fill.dragText: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
-Fill.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
 Fill.filesDropped: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
 Fill.frameChanged: ✅
@@ -310,7 +310,7 @@ Grid.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Grid.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.dragStarting: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
 Grid.dragText: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
-Grid.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Grid.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the view's drag listener's report told the driver's documents, no drag started
 Grid.filesDropped: ✓ dropFiles on Grid: the view's drag listener's report told the driver's documents, no drag started
 Grid.frameChanged: ✅
@@ -348,7 +348,7 @@ HStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 HStack.dragStarting: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
 HStack.dragText: ✓ dragAndDrop on HStack: the views' drag listeners' reports told by the driver, no drag started
-HStack.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+HStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the view's drag listener's report told the driver's documents, no drag started
 HStack.filesDropped: ✓ dropFiles on HStack: the view's drag listener's report told the driver's documents, no drag started
 HStack.frameChanged: ✅
@@ -386,7 +386,7 @@ Image.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repo
 Image.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Image.dragStarting: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
 Image.dragText: ✓ dragAndDrop on Image: the views' drag listeners' reports told by the driver, no drag started
-Image.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Image.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Image.droppedFileTypes: ✓ dropFiles on Image: the view's drag listener's report told the driver's documents, no drag started
 Image.filesDropped: ✓ dropFiles on Image: the view's drag listener's report told the driver's documents, no drag started
 Image.frameChanged: ✅
@@ -424,7 +424,7 @@ ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' 
 ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.dragText: ✓ dragAndDrop on ItemsView: the views' drag listeners' reports told by the driver, no drag started
-ItemsView.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+ItemsView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the view's drag listener's report told the driver's documents, no drag started
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the view's drag listener's report told the driver's documents, no drag started
 ItemsView.frameChanged: ✅
@@ -462,7 +462,7 @@ Line.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Line.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.dragStarting: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
 Line.dragText: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
-Line.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Line.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.droppedFileTypes: ✓ dropFiles on Line: the view's drag listener's report told the driver's documents, no drag started
 Line.filesDropped: ✓ dropFiles on Line: the view's drag listener's report told the driver's documents, no drag started
 Line.frameChanged: ✅
@@ -500,7 +500,7 @@ Link.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Link.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Link.dragStarting: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
 Link.dragText: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
-Link.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Link.droppedFileTypes: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
 Link.filesDropped: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
 Link.frameChanged: ✅
@@ -538,7 +538,7 @@ Map.dragEntered: 🧩
 Map.dragExited: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
-Map.drop: 🧩
+Map.dropped: 🧩
 Map.droppedFileTypes: 🧩
 Map.filesDropped: 🧩
 Map.frameChanged: 🧩
@@ -576,7 +576,7 @@ MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listener
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
 MotionLayout.frameChanged: ✅
@@ -614,7 +614,7 @@ Path.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Path.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.dragStarting: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
 Path.dragText: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
-Path.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Path.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.droppedFileTypes: ✓ dropFiles on Path: the view's drag listener's report told the driver's documents, no drag started
 Path.filesDropped: ✓ dropFiles on Path: the view's drag listener's report told the driver's documents, no drag started
 Path.frameChanged: ✅
@@ -652,7 +652,7 @@ Picker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.dragStarting: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
 Picker.dragText: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started
-Picker.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Picker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the view's drag listener's report told the driver's documents, no drag started
 Picker.filesDropped: ✓ dropFiles on Picker: the view's drag listener's report told the driver's documents, no drag started
 Picker.frameChanged: ✅
@@ -690,7 +690,7 @@ Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polygon.dragStarting: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
 Polygon.dragText: ✓ dragAndDrop on Polygon: the views' drag listeners' reports told by the driver, no drag started
-Polygon.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the view's drag listener's report told the driver's documents, no drag started
 Polygon.filesDropped: ✓ dropFiles on Polygon: the view's drag listener's report told the driver's documents, no drag started
 Polygon.frameChanged: ✅
@@ -728,7 +728,7 @@ Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' r
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polyline.dragStarting: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
 Polyline.dragText: ✓ dragAndDrop on Polyline: the views' drag listeners' reports told by the driver, no drag started
-Polyline.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Polyline.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the view's drag listener's report told the driver's documents, no drag started
 Polyline.filesDropped: ✓ dropFiles on Polyline: the view's drag listener's report told the driver's documents, no drag started
 Polyline.frameChanged: ✅
@@ -766,7 +766,7 @@ ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners
 ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the views' drag listeners' reports told by the driver, no drag started
-ProgressBar.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+ProgressBar.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the view's drag listener's report told the driver's documents, no drag started
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the view's drag listener's report told the driver's documents, no drag started
 ProgressBar.frameChanged: ✅
@@ -804,7 +804,7 @@ Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' 
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Rectangle.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Rectangle.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the view's drag listener's report told the driver's documents, no drag started
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the view's drag listener's report told the driver's documents, no drag started
 Rectangle.frameChanged: ✅
@@ -842,7 +842,7 @@ ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners'
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.dragText: ✓ dragAndDrop on ScrollView: the views' drag listeners' reports told by the driver, no drag started
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the view's drag listener's report told the driver's documents, no drag started
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the view's drag listener's report told the driver's documents, no drag started
 ScrollView.frameChanged: ✅
@@ -880,7 +880,7 @@ SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners
 SearchField.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 SearchField.dragStarting: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
 SearchField.dragText: ✓ dragAndDrop on SearchField: the views' drag listeners' reports told by the driver, no drag started
-SearchField.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+SearchField.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the view's drag listener's report told the driver's documents, no drag started
 SearchField.filesDropped: ✓ dropFiles on SearchField: the view's drag listener's report told the driver's documents, no drag started
 SearchField.frameChanged: ✅
@@ -918,7 +918,7 @@ Separator.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' 
 Separator.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Separator.dragStarting: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
 Separator.dragText: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
-Separator.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
 Separator.filesDropped: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
 Separator.frameChanged: ✅
@@ -956,7 +956,7 @@ Slider.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.dragStarting: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
 Slider.dragText: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
-Slider.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Slider.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the view's drag listener's report told the driver's documents, no drag started
 Slider.filesDropped: ✓ dropFiles on Slider: the view's drag listener's report told the driver's documents, no drag started
 Slider.frameChanged: ✅
@@ -994,7 +994,7 @@ Space.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repo
 Space.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Space.dragStarting: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
 Space.dragText: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
-Space.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Space.droppedFileTypes: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
 Space.filesDropped: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
 Space.frameChanged: ✅
@@ -1032,7 +1032,7 @@ Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Spinner.dragStarting: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
 Spinner.dragText: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
-Spinner.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
 Spinner.filesDropped: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
 Spinner.frameChanged: ✅
@@ -1070,7 +1070,7 @@ Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 Stepper.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
 Stepper.dragText: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
-Stepper.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Stepper.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the view's drag listener's report told the driver's documents, no drag started
 Stepper.filesDropped: ✓ dropFiles on Stepper: the view's drag listener's report told the driver's documents, no drag started
 Stepper.frameChanged: ✅
@@ -1108,7 +1108,7 @@ Switch.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 Switch.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Switch.dragStarting: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
 Switch.dragText: ✓ dragAndDrop on Switch: the views' drag listeners' reports told by the driver, no drag started
-Switch.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Switch.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the view's drag listener's report told the driver's documents, no drag started
 Switch.filesDropped: ✓ dropFiles on Switch: the view's drag listener's report told the driver's documents, no drag started
 Switch.frameChanged: ✅
@@ -1146,7 +1146,7 @@ Text.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' repor
 Text.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Text.dragStarting: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
 Text.dragText: ✓ dragAndDrop on Text: the views' drag listeners' reports told by the driver, no drag started
-Text.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Text.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Text.droppedFileTypes: ✓ dropFiles on Text: the view's drag listener's report told the driver's documents, no drag started
 Text.filesDropped: ✓ dropFiles on Text: the view's drag listener's report told the driver's documents, no drag started
 Text.frameChanged: ✅
@@ -1184,7 +1184,7 @@ TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners'
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.dragText: ✓ dragAndDrop on TextEditor: the views' drag listeners' reports told by the driver, no drag started
-TextEditor.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+TextEditor.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the view's drag listener's report told the driver's documents, no drag started
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the view's drag listener's report told the driver's documents, no drag started
 TextEditor.frameChanged: ✅
@@ -1222,7 +1222,7 @@ TextField.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' 
 TextField.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextField.dragStarting: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
 TextField.dragText: ✓ dragAndDrop on TextField: the views' drag listeners' reports told by the driver, no drag started
-TextField.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+TextField.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the view's drag listener's report told the driver's documents, no drag started
 TextField.filesDropped: ✓ dropFiles on TextField: the view's drag listener's report told the driver's documents, no drag started
 TextField.frameChanged: ✅
@@ -1260,7 +1260,7 @@ TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners'
 TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the views' drag listeners' reports told by the driver, no drag started
-TimePicker.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+TimePicker.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the view's drag listener's report told the driver's documents, no drag started
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the view's drag listener's report told the driver's documents, no drag started
 TimePicker.frameChanged: ✅
@@ -1298,7 +1298,7 @@ VStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 VStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 VStack.dragStarting: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
 VStack.dragText: ✓ dragAndDrop on VStack: the views' drag listeners' reports told by the driver, no drag started
-VStack.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+VStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the view's drag listener's report told the driver's documents, no drag started
 VStack.filesDropped: ✓ dropFiles on VStack: the view's drag listener's report told the driver's documents, no drag started
 VStack.frameChanged: ✅
@@ -1336,7 +1336,7 @@ WebView.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' re
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 WebView.dragStarting: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
 WebView.dragText: ✓ dragAndDrop on WebView: the views' drag listeners' reports told by the driver, no drag started
-WebView.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+WebView.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the view's drag listener's report told the driver's documents, no drag started
 WebView.filesDropped: ✓ dropFiles on WebView: the view's drag listener's report told the driver's documents, no drag started
 WebView.frameChanged: ✅
@@ -1374,7 +1374,7 @@ ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the views' drag listeners' rep
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ZStack.dragStarting: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
 ZStack.dragText: ✓ dragAndDrop on ZStack: the views' drag listeners' reports told by the driver, no drag started
-ZStack.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the view's drag listener's report told the driver's documents, no drag started
 ZStack.filesDropped: ✓ dropFiles on ZStack: the view's drag listener's report told the driver's documents, no drag started
 ZStack.frameChanged: ✅

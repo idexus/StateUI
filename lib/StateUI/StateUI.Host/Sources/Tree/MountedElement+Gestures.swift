@@ -151,7 +151,7 @@ extension MountedElement {
             if dropTarget.left() { send(.dragExited, [], in: runtime) }
         case .dropped(let words):
             dropTarget.dropped()
-            send(.drop, [.string(words)], in: runtime)
+            send(.dropped, [.string(words)], in: runtime)
         case .filesDropped(let files):
             dropTarget.dropped()
             let taken = dragAndDrop.taken(files)

@@ -32,7 +32,7 @@ private struct DropPage: View {
         VStack {
             if shown {
                 Text("target")
-                    .onDrop { _ in }
+                    .onDropped { _ in }
             }
             Button("Hide")
                 .onClicked { shown = false }

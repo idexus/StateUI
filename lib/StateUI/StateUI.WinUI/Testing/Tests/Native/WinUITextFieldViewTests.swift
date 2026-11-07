@@ -92,7 +92,7 @@ final class WinUITextFieldViewTests: XCTestCase {
                 VStack {
                     if shown.wrappedValue {
                         TextField(words.projectedValue).isPassword(hidden.wrappedValue)
-                            .dragText("Alpha").onDrop { _ in }
+                            .dragText("Alpha").onDropped { _ in }
                     }
                 }
             }

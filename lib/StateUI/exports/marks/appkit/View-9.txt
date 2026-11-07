@@ -38,7 +38,7 @@ Grid.rotationUpdated: ✓ rotate on Grid: handed to the host's recognizer or han
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-HStack.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+HStack.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.tapCount: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.holdDuration: ✅
@@ -71,7 +71,7 @@ Picker.rotationUpdated: ✓ rotate on Picker: handed to the host's recognizer or
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Polygon.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.tapCount: ✓ tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.tapped: ✓ tap on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.holdDuration: ✅
@@ -125,7 +125,7 @@ TextEditor.rotationUpdated: ✓ rotate on TextEditor: handed to the host's recog
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 TextField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 TextField.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-TextField.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+TextField.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 TextField.tapCount: ✓ tap on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TextField.tapped: ✓ tap on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.holdDuration: ✅

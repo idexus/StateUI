@@ -319,7 +319,7 @@ extension NodeType {
     static let dragEntered = ViewContract.dragEntered.token
     static let dragExited = ViewContract.dragExited.token
     static let dragStarting = ViewContract.dragStarting.token
-    static let drop = ViewContract.drop.token
+    static let dropped = ViewContract.dropped.token
     static let filesDropped = ViewContract.filesDropped.token
     static let dragEnded = ViewContract.dragEnded.token
     static let frameChanged = ViewContract.frameChanged.token

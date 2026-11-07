@@ -1602,12 +1602,12 @@ swift.method @SwiftNever.onDragExited(gate:_:): @MainActor func onDragExited(gat
 swift.method @SwiftNever.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method @SwiftNever.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method @SwiftNever.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method @SwiftNever.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method @SwiftNever.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method @SwiftNever.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method @SwiftNever.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method @SwiftNever.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method @SwiftNever.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method @SwiftNever.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method @SwiftNever.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method @SwiftNever.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method @SwiftNever.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -1805,12 +1805,12 @@ swift.method AnyView.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method AnyView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method AnyView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method AnyView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method AnyView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method AnyView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method AnyView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method AnyView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method AnyView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method AnyView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method AnyView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method AnyView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method AnyView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method AnyView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method AnyView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method AnyView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method AnyView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -2049,12 +2049,12 @@ swift.method Button.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Button.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Button.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Button.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Button.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Button.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Button.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Button.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Button.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Button.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Button.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Button.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Button.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Button.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Button.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Button.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Button.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -2276,12 +2276,12 @@ swift.method Canvas.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Canvas.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Canvas.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Canvas.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Canvas.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Canvas.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Canvas.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Canvas.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Canvas.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Canvas.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Canvas.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Canvas.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Canvas.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Canvas.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Canvas.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Canvas.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Canvas.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -2486,12 +2486,12 @@ swift.method Capsule.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method Capsule.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Capsule.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Capsule.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Capsule.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Capsule.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Capsule.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Capsule.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Capsule.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Capsule.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Capsule.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Capsule.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Capsule.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Capsule.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Capsule.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Capsule.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Capsule.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -2688,12 +2688,12 @@ swift.method CheckBox.onDragExited(gate:_:): @MainActor func onDragExited(gate: 
 swift.method CheckBox.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method CheckBox.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method CheckBox.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method CheckBox.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method CheckBox.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method CheckBox.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method CheckBox.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method CheckBox.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method CheckBox.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method CheckBox.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method CheckBox.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method CheckBox.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method CheckBox.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method CheckBox.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method CheckBox.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method CheckBox.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -2909,12 +2909,12 @@ swift.method ColorPicker.onDragExited(gate:_:): @MainActor func onDragExited(gat
 swift.method ColorPicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ColorPicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ColorPicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ColorPicker.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ColorPicker.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ColorPicker.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ColorPicker.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ColorPicker.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ColorPicker.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ColorPicker.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ColorPicker.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ColorPicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ColorPicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ColorPicker.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ColorPicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -3134,12 +3134,12 @@ swift.method DatePicker.onDragExited(gate:_:): @MainActor func onDragExited(gate
 swift.method DatePicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DatePicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method DatePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DatePicker.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method DatePicker.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DatePicker.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DatePicker.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DatePicker.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method DatePicker.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DatePicker.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method DatePicker.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DatePicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DatePicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DatePicker.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DatePicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DatePicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -3343,12 +3343,12 @@ swift.method DebugInspector.onDragExited(gate:_:): @MainActor func onDragExited(
 swift.method DebugInspector.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DebugInspector.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method DebugInspector.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DebugInspector.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method DebugInspector.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DebugInspector.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DebugInspector.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspector.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method DebugInspector.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspector.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method DebugInspector.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspector.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspector.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspector.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspector.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DebugInspector.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -3534,12 +3534,12 @@ swift.method DebugInspectorButton.onDragExited(gate:_:): @MainActor func onDragE
 swift.method DebugInspectorButton.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspectorButton.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method DebugInspectorButton.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method DebugInspectorButton.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspectorButton.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method DebugInspectorButton.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method DebugInspectorButton.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -3753,12 +3753,12 @@ swift.method Either.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Either.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Either.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Either.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Either.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Either.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Either.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Either.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Either.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Either.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Either.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Either.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Either.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Either.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Either.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Either.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Either.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -3971,12 +3971,12 @@ swift.method Ellipse.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method Ellipse.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Ellipse.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Ellipse.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Ellipse.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Ellipse.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Ellipse.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Ellipse.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Ellipse.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Ellipse.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Ellipse.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Ellipse.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Ellipse.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Ellipse.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Ellipse.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Ellipse.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Ellipse.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -4171,12 +4171,12 @@ swift.method Fill.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Fill.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Fill.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Fill.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Fill.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Fill.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Fill.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Fill.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Fill.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Fill.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Fill.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Fill.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Fill.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Fill.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Fill.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Fill.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Fill.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -4394,12 +4394,12 @@ swift.method GalleryView.onDragExited(gate:_:): @MainActor func onDragExited(gat
 swift.method GalleryView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method GalleryView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method GalleryView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method GalleryView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method GalleryView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method GalleryView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method GalleryView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GalleryView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method GalleryView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GalleryView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method GalleryView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method GalleryView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method GalleryView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GalleryView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GalleryView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method GalleryView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -4594,12 +4594,12 @@ swift.method GeometryReader.onDragExited(gate:_:): @MainActor func onDragExited(
 swift.method GeometryReader.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method GeometryReader.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method GeometryReader.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method GeometryReader.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method GeometryReader.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method GeometryReader.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method GeometryReader.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GeometryReader.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method GeometryReader.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method GeometryReader.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method GeometryReader.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method GeometryReader.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method GeometryReader.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GeometryReader.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method GeometryReader.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method GeometryReader.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -4793,12 +4793,12 @@ swift.method Grid.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Grid.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Grid.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Grid.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Grid.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Grid.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Grid.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Grid.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Grid.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Grid.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Grid.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Grid.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Grid.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Grid.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Grid.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Grid.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Grid.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -5005,12 +5005,12 @@ swift.method Group.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gat
 swift.method Group.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Group.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Group.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Group.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Group.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Group.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Group.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Group.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Group.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Group.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Group.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Group.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Group.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Group.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Group.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Group.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -5201,12 +5201,12 @@ swift.method HStack.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method HStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method HStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method HStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method HStack.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method HStack.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method HStack.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method HStack.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method HStack.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method HStack.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method HStack.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method HStack.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method HStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method HStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method HStack.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method HStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method HStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -5416,12 +5416,12 @@ swift.method Image.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gat
 swift.method Image.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Image.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Image.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Image.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Image.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Image.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Image.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Image.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Image.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Image.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Image.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Image.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Image.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Image.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Image.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Image.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -5626,12 +5626,12 @@ swift.method ItemsView.onDragExited(gate:_:): @MainActor func onDragExited(gate:
 swift.method ItemsView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ItemsView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ItemsView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ItemsView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ItemsView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ItemsView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ItemsView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ItemsView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ItemsView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ItemsView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ItemsView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ItemsView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ItemsView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ItemsView.onEndReached(_:_:): @MainActor func onEndReached(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> ItemsView<ID>
 swift.method ItemsView.onEndReached(within:_:): @MainActor func onEndReached(within: Int = 0, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> ItemsView<ID>
 swift.method ItemsView.onEndReached(within:gate:_:): @MainActor func onEndReached(within: Int = 0, gate: Gate, _ handler: @escaping EventHandler) -> ItemsView<ID>
@@ -5867,12 +5867,12 @@ swift.method Line.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Line.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Line.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Line.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Line.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Line.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Line.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Line.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Line.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Line.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Line.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Line.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Line.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Line.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Line.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Line.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Line.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -6074,12 +6074,12 @@ swift.method Link.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Link.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Link.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Link.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Link.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Link.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Link.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Link.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Link.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Link.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Link.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Link.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Link.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Link.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Link.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Link.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Link.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -6291,12 +6291,12 @@ swift.method Map.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate,
 swift.method Map.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Map.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Map.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Map.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Map.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Map.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Map.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Map.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Map.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Map.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Map.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Map.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Map.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Map.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Map.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -6559,12 +6559,12 @@ swift.method ModifiedContent.onDragExited(gate:_:): @MainActor func onDragExited
 swift.method ModifiedContent.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ModifiedContent.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ModifiedContent.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ModifiedContent.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ModifiedContent.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ModifiedContent.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ModifiedContent.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ModifiedContent.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ModifiedContent.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ModifiedContent.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ModifiedContent.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ModifiedContent.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ModifiedContent.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -6756,12 +6756,12 @@ swift.method MotionLayout.onDragExited(gate:_:): @MainActor func onDragExited(ga
 swift.method MotionLayout.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method MotionLayout.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method MotionLayout.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method MotionLayout.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method MotionLayout.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method MotionLayout.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method MotionLayout.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method MotionLayout.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method MotionLayout.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method MotionLayout.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method MotionLayout.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method MotionLayout.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method MotionLayout.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method MotionLayout.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -6988,12 +6988,12 @@ swift.method NavigationStack.onDragExited(gate:_:): @MainActor func onDragExited
 swift.method NavigationStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method NavigationStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method NavigationStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method NavigationStack.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method NavigationStack.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method NavigationStack.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method NavigationStack.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method NavigationStack.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method NavigationStack.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method NavigationStack.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method NavigationStack.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method NavigationStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method NavigationStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method NavigationStack.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method NavigationStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method NavigationStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -7201,12 +7201,12 @@ swift.method Path.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Path.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Path.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Path.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Path.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Path.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Path.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Path.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Path.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Path.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Path.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Path.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Path.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Path.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Path.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Path.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Path.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -7412,12 +7412,12 @@ swift.method Picker.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Picker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Picker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Picker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Picker.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Picker.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Picker.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Picker.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Picker.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Picker.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Picker.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Picker.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Picker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Picker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Picker.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Picker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Picker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -7640,12 +7640,12 @@ swift.method Polygon.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method Polygon.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Polygon.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Polygon.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Polygon.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Polygon.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Polygon.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Polygon.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polygon.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Polygon.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polygon.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Polygon.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Polygon.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Polygon.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polygon.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polygon.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Polygon.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -7855,12 +7855,12 @@ swift.method Polyline.onDragExited(gate:_:): @MainActor func onDragExited(gate: 
 swift.method Polyline.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Polyline.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Polyline.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Polyline.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Polyline.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Polyline.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Polyline.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polyline.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Polyline.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Polyline.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Polyline.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Polyline.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Polyline.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polyline.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Polyline.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Polyline.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -8070,12 +8070,12 @@ swift.method PositionDots.onDragExited(gate:_:): @MainActor func onDragExited(ga
 swift.method PositionDots.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method PositionDots.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method PositionDots.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method PositionDots.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method PositionDots.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method PositionDots.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method PositionDots.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method PositionDots.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method PositionDots.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method PositionDots.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method PositionDots.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method PositionDots.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method PositionDots.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method PositionDots.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method PositionDots.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method PositionDots.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -8263,12 +8263,12 @@ swift.method ProgressBar.onDragExited(gate:_:): @MainActor func onDragExited(gat
 swift.method ProgressBar.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ProgressBar.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ProgressBar.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ProgressBar.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ProgressBar.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ProgressBar.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ProgressBar.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ProgressBar.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ProgressBar.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ProgressBar.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ProgressBar.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ProgressBar.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ProgressBar.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ProgressBar.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ProgressBar.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -8479,12 +8479,12 @@ swift.method Rectangle.onDragExited(gate:_:): @MainActor func onDragExited(gate:
 swift.method Rectangle.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Rectangle.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Rectangle.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Rectangle.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Rectangle.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Rectangle.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Rectangle.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Rectangle.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Rectangle.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Rectangle.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Rectangle.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Rectangle.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Rectangle.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Rectangle.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Rectangle.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Rectangle.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -8696,12 +8696,12 @@ swift.method ScrollView.onDragExited(gate:_:): @MainActor func onDragExited(gate
 swift.method ScrollView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ScrollView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ScrollView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ScrollView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ScrollView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ScrollView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ScrollView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ScrollView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ScrollView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ScrollView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ScrollView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ScrollView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ScrollView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ScrollView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ScrollView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ScrollView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -8928,12 +8928,12 @@ swift.method SearchField.onDragExited(gate:_:): @MainActor func onDragExited(gat
 swift.method SearchField.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method SearchField.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method SearchField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method SearchField.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method SearchField.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method SearchField.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method SearchField.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SearchField.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method SearchField.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SearchField.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method SearchField.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method SearchField.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method SearchField.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SearchField.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SearchField.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method SearchField.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -9150,12 +9150,12 @@ swift.method Separator.onDragExited(gate:_:): @MainActor func onDragExited(gate:
 swift.method Separator.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Separator.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Separator.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Separator.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Separator.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Separator.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Separator.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Separator.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Separator.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Separator.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Separator.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Separator.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Separator.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Separator.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Separator.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Separator.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -9364,12 +9364,12 @@ swift.method Slider.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Slider.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Slider.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Slider.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Slider.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Slider.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Slider.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Slider.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Slider.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Slider.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Slider.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Slider.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Slider.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Slider.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Slider.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Slider.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Slider.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -9580,12 +9580,12 @@ swift.method Space.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gat
 swift.method Space.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Space.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Space.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Space.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Space.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Space.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Space.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Space.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Space.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Space.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Space.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Space.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Space.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Space.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Space.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Space.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -9781,12 +9781,12 @@ swift.method Spinner.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method Spinner.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Spinner.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Spinner.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Spinner.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Spinner.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Spinner.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Spinner.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Spinner.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Spinner.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Spinner.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Spinner.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Spinner.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Spinner.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Spinner.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Spinner.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Spinner.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -9990,12 +9990,12 @@ swift.method SplitView.onDragExited(gate:_:): @MainActor func onDragExited(gate:
 swift.method SplitView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method SplitView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method SplitView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method SplitView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method SplitView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method SplitView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method SplitView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SplitView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method SplitView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method SplitView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method SplitView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method SplitView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method SplitView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SplitView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method SplitView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method SplitView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -10206,12 +10206,12 @@ swift.method Stepper.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method Stepper.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Stepper.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Stepper.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Stepper.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Stepper.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Stepper.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Stepper.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Stepper.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Stepper.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Stepper.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Stepper.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Stepper.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Stepper.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Stepper.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Stepper.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Stepper.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -10558,12 +10558,12 @@ swift.method Switch.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method Switch.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Switch.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Switch.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Switch.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Switch.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Switch.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Switch.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Switch.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Switch.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Switch.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Switch.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Switch.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Switch.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Switch.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Switch.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Switch.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -10775,12 +10775,12 @@ swift.method TabView.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method TabView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TabView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method TabView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TabView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method TabView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TabView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TabView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TabView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method TabView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TabView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method TabView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TabView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TabView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TabView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TabView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TabView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -10981,12 +10981,12 @@ swift.method Text.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method Text.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Text.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method Text.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Text.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method Text.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Text.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method Text.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Text.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method Text.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method Text.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method Text.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Text.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method Text.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Text.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method Text.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method Text.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -11212,12 +11212,12 @@ swift.method TextEditor.onDragExited(gate:_:): @MainActor func onDragExited(gate
 swift.method TextEditor.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextEditor.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method TextEditor.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TextEditor.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method TextEditor.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TextEditor.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TextEditor.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextEditor.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method TextEditor.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextEditor.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method TextEditor.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TextEditor.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TextEditor.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextEditor.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextEditor.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TextEditor.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -11443,12 +11443,12 @@ swift.method TextField.onDragExited(gate:_:): @MainActor func onDragExited(gate:
 swift.method TextField.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TextField.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method TextField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TextField.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method TextField.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TextField.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TextField.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextField.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method TextField.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TextField.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method TextField.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TextField.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TextField.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextField.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TextField.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TextField.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -11732,12 +11732,12 @@ swift.method TimePicker.onDragExited(gate:_:): @MainActor func onDragExited(gate
 swift.method TimePicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method TimePicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method TimePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TimePicker.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method TimePicker.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TimePicker.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method TimePicker.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TimePicker.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method TimePicker.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method TimePicker.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method TimePicker.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TimePicker.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method TimePicker.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TimePicker.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method TimePicker.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method TimePicker.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -12058,12 +12058,12 @@ swift.method VStack.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method VStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method VStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method VStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method VStack.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method VStack.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method VStack.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method VStack.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method VStack.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method VStack.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method VStack.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method VStack.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method VStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method VStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method VStack.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method VStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method VStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -12216,12 +12216,12 @@ swift.method View.onDragExited(gate:_:): @MainActor func onDragExited(gate: Gate
 swift.method View.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method View.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method View.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method View.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method View.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method View.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method View.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method View.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method View.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method View.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method View.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method View.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method View.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method View.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method View.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method View.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -12496,12 +12496,12 @@ swift.method WebView.onDragExited(gate:_:): @MainActor func onDragExited(gate: G
 swift.method WebView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method WebView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method WebView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method WebView.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method WebView.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method WebView.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method WebView.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method WebView.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method WebView.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method WebView.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method WebView.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method WebView.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method WebView.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method WebView.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method WebView.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method WebView.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -12735,12 +12735,12 @@ swift.method ZStack.onDragExited(gate:_:): @MainActor func onDragExited(gate: Ga
 swift.method ZStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ZStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
-swift.method ZStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method ZStack.onDrop(files:_:): @MainActor func onDrop(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
-swift.method ZStack.onDrop(files:gate:_:): @MainActor func onDrop(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ZStack.onDrop(files:policy:_:): @MainActor func onDrop(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
-swift.method ZStack.onDrop(gate:_:): @MainActor func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ZStack.onDropped(_:): @MainActor func onDropped(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
+swift.method ZStack.onDropped(_:_:): @MainActor func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
+swift.method ZStack.onDropped(files:_:): @MainActor func onDropped(files types: [FileType], _ handler: @escaping @MainActor @Sendable ([ChosenFile]) throws -> Void) -> Self.Modified
+swift.method ZStack.onDropped(files:gate:_:): @MainActor func onDropped(files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ZStack.onDropped(files:policy:_:): @MainActor func onDropped(files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
+swift.method ZStack.onDropped(gate:_:): @MainActor func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ZStack.onFrameChanged(_:_:): @MainActor func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
 swift.method ZStack.onFrameChanged(in:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, _ handler: @escaping @MainActor @Sendable (Rect) throws -> Void) -> Self.Modified
 swift.method ZStack.onFrameChanged(in:gate:_:): @MainActor func onFrameChanged(in space: CoordinateSpace = .parent, gate: Gate, _ handler: @escaping ValueEventHandler<Rect>) -> Self.Modified
@@ -13934,7 +13934,7 @@ swift.type.property ViewContract.dragEntered: static let dragEntered: ElementEve
 swift.type.property ViewContract.dragExited: static let dragExited: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragStarting: static let dragStarting: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragText: static let dragText: ElementProperty<ViewContract, String>
-swift.type.property ViewContract.drop: static let drop: ElementEvent<ViewContract, String>
+swift.type.property ViewContract.dropped: static let dropped: ElementEvent<ViewContract, String>
 swift.type.property ViewContract.droppedFileTypes: static let droppedFileTypes: ElementProperty<ViewContract, [FileType]>
 swift.type.property ViewContract.filesDropped: static let filesDropped: ElementEvent<ViewContract, [ChosenFile]>
 swift.type.property ViewContract.frameChanged: static let frameChanged: ElementEvent<ViewContract, [Double]>

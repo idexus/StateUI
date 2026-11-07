@@ -5,7 +5,7 @@ Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the re
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Canvas.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Canvas.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Canvas.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Canvas.tapCount: ✓ tap on Canvas: the view's listening handed the recognizer's states, no touch sent
 Canvas.tapped: ✓ tap on Canvas: the view's listening handed the recognizer's states, no touch sent
 Capsule.holdDuration: ✅
@@ -82,7 +82,7 @@ ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the view's listening han
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Rectangle.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Rectangle.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.frameChanged: ✅
 Rectangle.tapCount: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.tapped: ✓ tap on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -117,7 +117,7 @@ Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Text.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Text.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Text.tapCount: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
 Text.tapped: ✓ tap on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag and drop interactions' handlers called, no drag session
@@ -136,7 +136,7 @@ VStack.rotationUpdated: ✓ rotate on VStack: the view's listening handed the re
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-WebView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+WebView.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.tapCount: ✓ tap on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.tapped: ✓ tap on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.holdDuration: ✅

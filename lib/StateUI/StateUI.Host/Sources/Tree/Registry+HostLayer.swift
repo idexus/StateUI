@@ -123,7 +123,7 @@ extension Registry {
         everyElementRaises(ViewContract.dragEnded)
         everyElementRaises(ViewContract.dragEntered)
         everyElementRaises(ViewContract.dragExited)
-        everyElementRaises(ViewContract.drop)
+        everyElementRaises(ViewContract.dropped)
     }
 
     /// Every element's view takes files dropped on it from the system, of the kinds it lists (`DragAndDrop.taken`).

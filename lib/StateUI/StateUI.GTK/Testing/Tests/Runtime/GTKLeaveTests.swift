@@ -58,7 +58,7 @@ final class GTKLeaveTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     if shown.wrappedValue {
-                        Text("Target").onDrop { _ in }
+                        Text("Target").onDropped { _ in }
                     }
                 }
             }

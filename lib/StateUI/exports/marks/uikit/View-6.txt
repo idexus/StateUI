@@ -39,7 +39,7 @@ HStack.rotationUpdated: ✓ rotate on HStack: the view's listening handed the re
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Image.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Image.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Image.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Image.tapCount: ✓ tap on Image: the view's listening handed the recognizer's states, no touch sent
 Image.tapped: ✓ tap on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.holdDuration: ✅
@@ -70,7 +70,7 @@ Polygon.rotationUpdated: ✓ rotate on Polygon: the view's listening handed the 
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Polyline.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Polyline.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Polyline.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Polyline.tapCount: ✓ tap on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.tapped: ✓ tap on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.holdDuration: ✅
@@ -107,7 +107,7 @@ Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Spinner.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Spinner.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Spinner.tapCount: ✓ tap on Spinner: the view's listening handed the recognizer's states, no touch sent
 Spinner.tapped: ✓ tap on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
@@ -131,7 +131,7 @@ TextField.rotationUpdated: ✓ rotate on TextField: the view's listening handed 
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-TimePicker.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+TimePicker.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TimePicker.tapCount: ✓ tap on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.tapped: ✓ tap on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.holdDuration: ✅

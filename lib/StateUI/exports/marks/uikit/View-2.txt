@@ -15,7 +15,7 @@ CheckBox.rotationUpdated: ✓ rotate on CheckBox: the view's listening handed th
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ColorPicker.tapCount: ✓ tap on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.tapped: ✓ tap on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.holdDuration: ✅
@@ -55,7 +55,7 @@ Line.rotationUpdated: ✓ rotate on Line: the view's listening handed the recogn
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Link.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Link.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Link.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Link.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Link.tapCount: ✓ tap on Link: the view's listening handed the recognizer's states, no touch sent
 Link.tapped: ✓ tap on Link: the view's listening handed the recognizer's states, no touch sent
 Map.holdDuration: ✅
@@ -100,7 +100,7 @@ Separator.swiped: ✓ pan on Separator: the view's listening handed the recogniz
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Slider.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Slider.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Slider.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Slider.tapCount: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.tapped: ✓ tap on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.holdDuration: ✅

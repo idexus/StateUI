@@ -2956,7 +2956,7 @@ enum Listings {
                 .onDragExited { over = false }
                 // A drop is not a leave, so the light comes down here too. Words
                 // longer than 1 KB are left out.
-                .onDrop { text in
+                .onDropped { text in
                     basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                     over = false
                 }
@@ -3418,7 +3418,7 @@ enum Listings {
                 .lineWidth(dropping ? 2 : 1)
                 .onDragEntered { dropping = true }
                 .onDragExited { dropping = false }
-                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+                .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)
                     guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }

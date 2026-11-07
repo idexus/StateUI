@@ -280,8 +280,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
         Road(
             name: "a drop of files that does not say files",
-            closed: #"_ = Text("x").onDrop { (files: [ChosenFile]) in }"#,
-            open: #"_ = Text("x").onDrop(files: []) { files in }"#),
+            closed: #"_ = Text("x").onDropped { (files: [ChosenFile]) in }"#,
+            open: #"_ = Text("x").onDropped(files: []) { files in }"#),
         Road(
             name: "a state handed to a style",
             closed: #"_ = Style<Button>().tooltip(State(wrappedValue: "Saves").projectedValue)"#,

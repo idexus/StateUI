@@ -26,7 +26,7 @@ CheckBox.swiped: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.frameChanged: ✅
 ColorPicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ColorPicker.margin: ✅
@@ -97,7 +97,7 @@ Picker.swiped: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.frameChanged: ✅
 Polygon.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Polygon.margin: ✅
@@ -154,7 +154,7 @@ Spinner.isDraggable: ✓ dragAndDrop on Spinner: the relay's drag reports told b
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Stepper.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.frameChanged: ✅
 Stepper.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Stepper.margin: ✅
@@ -164,7 +164,7 @@ Switch.tapped: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Text.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Text.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Text.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Text.frameChanged: ✅
 Text.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Text.margin: ✅

@@ -214,7 +214,7 @@ Text(item.title)
     .onDragEnded { dragging = nil }
 
 ZStack { Text("Drop here") }
-    .onDrop { text in receive(text) }
+    .onDropped { text in receive(text) }
     .onDragEntered { highlighted = true }
     .onDragExited { highlighted = false }
 ```
@@ -225,14 +225,14 @@ carries. On a touch screen the drag begins once the finger has held the view a
 moment, as the platform's own drags do.
 
 Files dragged from the system - from a file manager, another application, the
-desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
+desktop - land on a view through `onDropped(files:)`, as `ChosenFile`s of the
 kinds it lists, an empty list taking any file:
 
 ```swift
 @State private var report = ""
 
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+    .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```

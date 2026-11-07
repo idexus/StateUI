@@ -554,13 +554,13 @@ extension View {
     /// Accepts what is dropped on the view, with the text it carried.
     ///
     ///     VStack { … }
-    ///         .onDrop { text in items.append(text) }
-    public func onDrop(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
+    ///         .onDropped { text in items.append(text) }
+    public func onDropped(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token) {
+            $0.addHandler(ViewContract.dropped.token) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try handler(text)
                 }
             }
@@ -569,12 +569,12 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onDropped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token, gate: .own(policy)) {
+            $0.addHandler(ViewContract.dropped.token, gate: .own(policy)) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try await handler(text)
                 }
             }
@@ -582,12 +582,12 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token, gate: .shared(gate)) {
+            $0.addHandler(ViewContract.dropped.token, gate: .shared(gate)) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try await handler(text)
                 }
             }
@@ -598,14 +598,14 @@ extension View {
     /// `types`, any file where the list is empty - with those dropped.
     ///
     ///     Text("Drop a report here")
-    ///         .onDrop(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
+    ///         .onDropped(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
     ///             notes = String(decoding: try await files[0].read(), as: UTF8.self)
     ///         }
     ///
     /// A dropped file reads and launches as one the user opened
     /// (`ChosenFile`); files of other kinds are not taken. `files:` is always
     /// written, so a drop of files never reads as a drop of words.
-    public func onDrop(
+    public func onDropped(
         files types: [FileType], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
         modified {
@@ -622,7 +622,7 @@ extension View {
 
     /// The same, with a handler that awaits - reading a file does: its `policy` says what a drop does while a
     /// run is under way.
-    public func onDrop(
+    public func onDropped(
         files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
@@ -632,7 +632,7 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDrop(
+    public func onDropped(
         files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {

@@ -6,7 +6,7 @@ Canvas.rotationUpdated: ✓ rotate on Canvas: the view's listening handed the re
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Capsule.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Capsule.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Capsule.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Capsule.tapCount: ✓ tap on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.tapped: ✓ tap on Capsule: the view's listening handed the recognizer's states, no touch sent
 CheckBox.holdDuration: ✅
@@ -60,7 +60,7 @@ Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognize
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.tapCount: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
@@ -86,7 +86,7 @@ Rectangle.rotationUpdated: ✓ rotate on Rectangle: the view's listening handed 
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.tapCount: ✓ tap on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.tapped: ✓ tap on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.holdDuration: ✅
@@ -137,6 +137,6 @@ WebView.rotationUpdated: ✓ rotate on WebView: the view's listening handed the 
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ZStack.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ZStack.tapCount: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.tapped: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent

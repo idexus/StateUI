@@ -32,7 +32,7 @@ public enum ViewContract: Contract {
     public static let dragText = ElementProperty<Self, String>("dragText", layer: .native, cleared: false)
 
     /// Something was dropped on the view, with the text it carried.
-    public static let drop = ElementEvent<Self, String>("drop", layer: .native)
+    public static let dropped = ElementEvent<Self, String>("dropped", layer: .native)
 
     /// The kinds of file the view takes when the user drops files on it from the system - any file where it lists
     /// none; it takes no files where it says nothing.
@@ -148,7 +148,7 @@ public enum ViewContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         allowsDrop, area, dragEntered,
-        dragExited, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
+        dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped,

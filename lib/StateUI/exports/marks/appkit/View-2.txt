@@ -15,7 +15,7 @@ CheckBox.rotationUpdated: ✓ rotate on CheckBox: handed to the host's recognize
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ColorPicker.tapCount: ✓ tap on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.tapped: ✓ tap on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.holdDuration: ✅
@@ -55,7 +55,7 @@ Line.rotationUpdated: ✓ rotate on Line: handed to the host's recognizer or han
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Link.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Link.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Link.tapCount: ✓ tap on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.tapped: ✓ tap on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.holdDuration: ✅
@@ -100,7 +100,7 @@ Separator.swiped: ✓ pan on Separator: handed to the host's recognizer or handl
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-Slider.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+Slider.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.tapCount: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.tapped: ✓ tap on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.holdDuration: ✅

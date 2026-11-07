@@ -33,7 +33,7 @@ Fill.rotationUpdated: ✓ rotate on Fill: the view's listening handed the recogn
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Grid.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Grid.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.tapCount: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.holdDuration: ✅
@@ -72,7 +72,7 @@ Path.rotationUpdated: ✓ rotate on Path: the view's listening handed the recogn
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Picker.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Picker.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.tapCount: ✓ tap on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.tapped: ✓ tap on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.holdDuration: ✅
@@ -125,7 +125,7 @@ Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-TextEditor.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+TextEditor.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 TextEditor.tapCount: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.tapped: ✓ tap on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.holdDuration: ✅

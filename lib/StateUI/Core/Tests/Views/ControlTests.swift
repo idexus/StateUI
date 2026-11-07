@@ -633,8 +633,8 @@ final class ControlTests: XCTestCase {
                 .isDraggable(true)
                 .onDragStarting {}
                 .onDragEnded {}
-                .onDrop { _ in }
-                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
+                .onDropped { _ in }
+                .onDropped(files: [FileType("Text", extensions: ["txt"])]) { _ in }
                 .onDragEntered {}
                 .onDragExited {}),
         ]

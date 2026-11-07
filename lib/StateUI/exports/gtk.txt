@@ -419,7 +419,7 @@ ZStack
   dragEntered()
   dragExited()
   dragStarting()
-  drop()
+  dropped()
   filesDropped()
   frameChanged()
   held()
