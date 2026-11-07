@@ -62,6 +62,7 @@ swift.conformance ApplicationTier: Swift.Sendable
 swift.conformance Area: StateUI.HostRepresentable
 swift.conformance AutomationElement: StateUI.PropertyContainer
 swift.conformance AutomationElementContract: StateUI.Contract
+swift.conformance BackgroundElementContract: StateUI.Contract
 swift.conformance BarButtonElement: StateUI.BarItemElement
 swift.conformance BarButtonElement: StateUI.PropertyContainer
 swift.conformance BarElement: StateUI.PropertyContainer
@@ -2824,6 +2825,8 @@ swift.type.property ApplicationContract.nodeType: static let nodeType: NodeType
 swift.type.property ApplicationContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property AutomationElementContract.members: static let members: [any ContractMember]
 swift.type.property AutomationElementContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property BackgroundElementContract.members: static let members: [any ContractMember]
+swift.type.property BackgroundElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarElementContract.members: static let members: [any ContractMember]
 swift.type.property BarElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarItemElementContract.members: static let members: [any ContractMember]
@@ -3106,6 +3109,7 @@ swift.type.property PageContract.nodeType: static let nodeType: NodeType
 swift.type.property PageContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property PageContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property PageElementContract.members: static let members: [any ContractMember]
+swift.type.property PageElementContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property PageElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Path.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PathContract.layer: static let layer: ElementLayer

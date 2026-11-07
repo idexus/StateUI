@@ -18,7 +18,7 @@ Text("Inbox")
     }
 ```
 
-Wears: [HoverElement](HoverElement.md)
+Wears: [HoverElement](HoverElement.md) · [BackgroundElement](BackgroundElement.md)
 
 Worn by: [ToolbarButton](../ToolbarButton.md) · [ToolbarGroup](../ToolbarGroup.md) · [ToolbarToggle](../ToolbarToggle.md)
 
@@ -29,4 +29,3 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `style` | property | `Name` | structure |
-| `background` | property | `Material` | adaptive |

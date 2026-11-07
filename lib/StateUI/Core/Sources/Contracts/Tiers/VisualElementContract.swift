@@ -9,7 +9,9 @@ public enum VisualElementContract: Tier {
     public static let name = "VisualElement"
 
     /// Every drawn element is found by automation.
-    public static let tiers: [any Tier.Type] = [AutomationElementContract.self, EnabledElementContract.self]
+    public static let tiers: [any Tier.Type] = [
+        AutomationElementContract.self, EnabledElementContract.self, BackgroundElementContract.self,
+    ]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
     public static let accessibilityActionPerformed = ElementEvent<Self, String>(
@@ -46,11 +48,6 @@ public enum VisualElementContract: Tier {
     /// Whether a screen reader meets the element, and what is inside it.
     public static let accessibilityPresence = ElementProperty<Self, AccessibilityPresence>(
         "accessibilityPresence", layer: .native)
-
-    /// What the element's surface is made of: a color, a gradient, a blur of
-    /// what lies behind it, or the platform's glass.
-    public static let background = ElementProperty<Self, Material>(
-        "background", layer: .adaptive)
 
     /// The frame the element settled on, fed by the host into a state.
     public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
@@ -143,5 +140,5 @@ public enum VisualElementContract: Tier {
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, background, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX, translationY, width, zIndex]
+    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX, translationY, width, zIndex]
 }

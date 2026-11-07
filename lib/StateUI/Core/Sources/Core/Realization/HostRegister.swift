@@ -61,8 +61,8 @@
         and(Self.records(of: declaration))
     }
 
-    /// What the host's records say of `member` on `element`: the element's own record, else the record of the tier
-    /// the member comes from; nil where the host does not realize it.
+    /// What the host's records say of `member` on `element`: the element's own record, else the record of a tier it
+    /// wears - the nearest first, the tier the member comes from last; nil where the host does not realize it.
     public func judgment(of member: String, on element: String, from tier: String?) -> HostRecord.Judgment? {
         switch judgment(ofElement: element) {
         case nil: return nil
@@ -71,7 +71,8 @@
         default: break
         }
 
-        let owners = [element] + (Self.viewless.contains { $0.name == element } ? [] : [tier].compactMap { $0 })
+        let worn = (Self.wornBy[element] ?? []).map { $0.name }
+        let owners = [element] + (Self.viewless.contains { $0.name == element } ? [] : worn + [tier].compactMap { $0 })
         for owner in owners {
             if let record = records.first(where: { $0.owner == owner && $0.member == member }) { return record.judgment }
         }

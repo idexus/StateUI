@@ -22,7 +22,7 @@ ToolbarGroup 10
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 12
+Window 13
 Scene 4
 Overlay 5
 BarElement 15
@@ -44,14 +44,14 @@ TimePicker 6
 Picker 5
 Image 3
 Page 9
-PageElement 4
+PageElement 5
 View 23
-VisualElement 26
+VisualElement 27
 Shape 5
 BorderElement 14
 TextInput 8
 Application 14
-TextSpan 4
+TextSpan 5
 Separator 4
 Canvas 4
 Rectangle 3
@@ -105,6 +105,6 @@ web MotionLayout 2
 Marker 2
 MenuToggle 2
 Sheet 2
-BarItemElement 2
+BarItemElement 3
 ActionElement 2
 Menu 2

@@ -38,7 +38,7 @@ extension UIKitRegistrations {
             label.property(EnabledElementContract.isEnabled) { view, enabled in
                 (view as! any UIKitLabel).isEnabled = enabled ?? true
             }
-            label.property(VisualElementContract.background) { view, background in
+            label.property(BackgroundElementContract.background) { view, background in
                 (view as! any UIKitLabel).setBackground(background?.propValue)
             }
             label.property(TrackingElementContract.tracking) { view, spacing in

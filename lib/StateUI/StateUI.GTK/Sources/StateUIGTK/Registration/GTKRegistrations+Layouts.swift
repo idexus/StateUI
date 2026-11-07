@@ -80,10 +80,10 @@ extension GTKRegistrations {
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
             scroll.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
-                view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
+                view.setBackground(HostMaterial(values[BackgroundElementContract.background]?.propValue).painted)
                 view.setOutline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
@@ -97,7 +97,7 @@ extension GTKRegistrations {
 
     private static func applyBox<Realized: ElementContract>(_ view: GTKLayoutView, _ values: ElementValues<Realized>) {
         // GTK blurs nothing behind a widget: the material's color stands in, under the fill.
-        view.setBackground(HostMaterial(values[VisualElementContract.background]?.propValue).painted)
+        view.setBackground(HostMaterial(values[BackgroundElementContract.background]?.propValue).painted)
         view.setOutline(
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],

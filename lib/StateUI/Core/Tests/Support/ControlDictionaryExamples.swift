@@ -867,6 +867,12 @@ extension ControlDictionary {
                 .isEnabled(!name.isEmpty)
             """#),
 
+        (BackgroundElementContract.self, #"""
+            Text("On a colored ground")
+                .padding(12)
+                .background(.cornflowerBlue)
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

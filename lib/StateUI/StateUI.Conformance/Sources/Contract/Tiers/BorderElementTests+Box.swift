@@ -32,9 +32,9 @@ extension BorderElementTests {
     @MainActor
     static func boxFilled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fillsItsBoxInItsBackground", proves: [
-            Covered(VisualElementContract.background, on: element),
+            Covered(BackgroundElementContract.background, on: element),
         ]) { s in
-            s.start { VStack { Specimens.view(element, room + [Write(VisualElementContract.background, .color(.red))]) } }
+            s.start { VStack { Specimens.view(element, room + [Write(BackgroundElementContract.background, .color(.red))]) } }
             let layout = try s.specimen(element)
             try s.settle { try s.shows(.red, on: layout, at: Point(30, 20)) }
             s.expect(try s.color(of: layout, at: Point(30, 20)), shows: .red, "inside its box")

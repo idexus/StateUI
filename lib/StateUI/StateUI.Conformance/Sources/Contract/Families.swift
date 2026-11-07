@@ -91,6 +91,7 @@
         BorderElementTests.self,
         ImageElementTests.self,
         TintElementTests.self,
+        BackgroundElementTests.self,
         EnabledElementTests.self,
         ClickElementTests.self,
         RangeElementTests.self,

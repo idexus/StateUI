@@ -192,7 +192,7 @@
     private static var overlayUnsaid: ConformanceCase {
         ConformanceCase("theSidebarOverTheDetailStandsOnTheWindowsBackgroundUnsaid", proves: [
             Covered(SplitViewContract.sidebarOverlayBackground),
-        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(WindowContract.background)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(BackgroundElementContract.background, on: WindowContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             s.start {
                 SplitView {

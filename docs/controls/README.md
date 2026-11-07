@@ -91,26 +91,26 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 1 ✅ | 1 – | 1 ✅ | 1 – | 1 ✅ |
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 1 ✅ | 1 – | 1 ✅ | 1 – | 1 ✅ |
-| [NavigationStack](NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
+| [NavigationStack](NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 5 ✅ · 2 – | 3 ✅ · 2 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 2 – | 2 ✅ · 2 ☑️ · 3 – | 6 ✅ · 1 ☑️ |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Page](Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
+| [Page](Page.md) | 15 | 11 ✅ · 1 ✓ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ |  |  |  |  |  |
 | [Scene](Scene.md) | 4 | 4 ✅ |  |  |  |  |  |
 | [Sheet](Sheet.md) | 2 | 2 ✅ |  |  |  |  |  |
-| [SplitView](SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 4 ☑️ · 4 ✓ · 2 – | 10 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 4 ☑️ · 1 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
-| [TabView](TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
-| [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
+| [SplitView](SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 8 ✅ · 2 ✓ · 2 – | 3 ✅ · 4 ☑️ · 3 ✓ · 2 – | 7 ✅ · 3 ☑️ · 2 – | 5 ✅ · 4 ☑️ · 3 – | 9 ✅ · 3 ☑️ |
+| [TabView](TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 6 ✅ · 2 – | 4 ✅ · 2 ☑️ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 3 ✅ · 2 ☑️ · 3 – | 7 ✅ · 1 ☑️ |
+| [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 11 ✅ | 9 ✅ · 1 – | 10 ✅ · 1 – | 11 ✅ | 11 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 16 – | 1 ✅ · 1 ☑️ · 13 – | 1 ☑️ · 13 – | 4 ✅ · 11 – | 3 ✅ · 12 – | 15 ✅ |
-| [ToolbarGroup](ToolbarGroup.md) | 16 | 6 ✅ · 8 – | 4 – | 4 – | 4 – | 4 – | 4 ✅ |
+| [ToolbarButton](ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 15 – | 1 ✅ · 1 ☑️ · 13 – | 1 ☑️ · 13 – | 4 ✅ · 11 – | 3 ✅ · 12 – | 15 ✅ |
+| [ToolbarGroup](ToolbarGroup.md) | 16 | 6 ✅ · 7 – | 4 – | 4 – | 4 – | 4 – | 4 ✅ |
 | [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 16 – | 1 ✅ · 12 – | 12 – | 2 ✅ · 11 – | 1 ✅ · 12 – | 13 ✅ |
+| [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 15 – | 1 ✅ · 12 – | 12 – | 2 ✅ · 11 – | 1 ✅ · 12 – | 13 ✅ |
 | [Window](Window.md) | 21 | 13 ✅ · 1 ☑️ · 6 ✓ |  |  |  |  |  |
-| ✅ |  | 109 | 78 | 56 | 79 | 58 | 110 |
-| ✓ |  | 27 | 19 | 18 | 8 | 10 | 10 |
-| – |  | 49 | 35 | 40 | 35 | 45 | 0 |
-| **Met** | 213 | **185** | **132** | **114** | **122** | **113** | **120** |
+| ✅ |  | 109 | 65 | 43 | 66 | 53 | 97 |
+| ✓ |  | 27 | 15 | 14 | 4 | 6 | 6 |
+| – |  | 46 | 35 | 40 | 35 | 41 | 0 |
+| **Met** | 213 | **182** | **115** | **97** | **105** | **100** | **103** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [BackgroundElement](tiers/BackgroundElement.md) - What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
 - [EnabledElement](tiers/EnabledElement.md) - Whether the user's hand reaches an element: a view, a menu, an entry in one, a toolbar's group.
 - [ClickElement](tiers/ClickElement.md) - What a control the user chooses reports: a button, a link, a menu's entry, a toolbar's button.
 - [RangeElement](tiers/RangeElement.md) - What a control choosing a number in a range holds and reports: a slider, a stepper.

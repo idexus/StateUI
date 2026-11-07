@@ -10,10 +10,6 @@ public enum PageElementContract: Tier {
     /// The tier's name.
     public static let name = "PageElement"
 
-    /// What the page stands on behind what it shows; on an arrangement, what each of its pages that says none
-    /// stands on.
-    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
-
     /// A link was opened into the application - one chosen elsewhere, its scheme the application's - and given
     /// to the window this page or arrangement stands in: its address.
     public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
@@ -24,6 +20,9 @@ public enum PageElementContract: Tier {
     /// The title.
     public static let title = ElementProperty<Self, String>("title", layer: .native)
 
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [BackgroundElementContract.self]
+
     /// The tier's own members.
-    public static let members: [any ContractMember] = [background, icon, linkOpened, title]
+    public static let members: [any ContractMember] = [icon, linkOpened, title]
 }

@@ -1,6 +1,5 @@
 # revision 11.1
 Window: ✅
-Window.background: ☑️ GNOME draws its windows opaque: a blur or glass shows its color.
 Window.created: ✅
 Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.

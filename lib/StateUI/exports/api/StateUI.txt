@@ -87,6 +87,9 @@ swift.conformance AutomationElementContract: Swift.Sendable
 swift.conformance AxisValues: Swift.Equatable
 swift.conformance AxisValues: Swift.ExpressibleByArrayLiteral
 swift.conformance AxisValues: Swift.Sendable
+swift.conformance BackgroundElementContract: StateUI.Tier
+swift.conformance BackgroundElementContract: StateUI.WornContract
+swift.conformance BackgroundElementContract: Swift.Sendable
 swift.conformance BarElementContract: StateUI.Tier
 swift.conformance BarElementContract: StateUI.WornContract
 swift.conformance BarElementContract: Swift.Sendable
@@ -1007,6 +1010,7 @@ swift.enum ApplicationBuilder: @MainActor @resultBuilder enum ApplicationBuilder
 swift.enum ApplicationContract: enum ApplicationContract
 swift.enum Area: enum Area
 swift.enum AutomationElementContract: enum AutomationElementContract
+swift.enum BackgroundElementContract: enum BackgroundElementContract
 swift.enum BarElementContract: enum BarElementContract
 swift.enum BarItemElementContract: enum BarItemElementContract
 swift.enum BatteryPowerSource: enum BatteryPowerSource
@@ -13551,13 +13555,14 @@ swift.type.property ApplicationContract.name: static var name: String { get }
 swift.type.property AutomationElementContract.accessibilityIdentifier: static let accessibilityIdentifier: ElementProperty<AutomationElementContract, String>
 swift.type.property AutomationElementContract.name: static let name: String
 swift.type.property AxisValues.endpoints: static var endpoints: AxisValues { get }
+swift.type.property BackgroundElementContract.background: static let background: ElementProperty<BackgroundElementContract, Material>
+swift.type.property BackgroundElementContract.name: static let name: String
 swift.type.property BarElementContract.barBackground: static let barBackground: ElementProperty<BarElementContract, Material>
 swift.type.property BarElementContract.barForegroundColor: static let barForegroundColor: ElementProperty<BarElementContract, Color>
 swift.type.property BarElementContract.barScrollEdge: static let barScrollEdge: ElementProperty<BarElementContract, ScrollEdge>
 swift.type.property BarElementContract.name: static let name: String
 swift.type.property BarElementContract.toolbarSpacing: static let toolbarSpacing: ElementProperty<BarElementContract, Double>
 swift.type.property BarElementContract.toolbarStyle: static let toolbarStyle: ElementProperty<BarElementContract, ToolbarStyle>
-swift.type.property BarItemElementContract.background: static let background: ElementProperty<BarItemElementContract, Material>
 swift.type.property BarItemElementContract.name: static let name: String
 swift.type.property BarItemElementContract.style: static let style: ElementProperty<BarItemElementContract, Name>
 swift.type.property Blur.regular: static let regular: Blur
@@ -13825,7 +13830,6 @@ swift.type.property PageContract.showsCloseButton: static let showsCloseButton: 
 swift.type.property PageContract.showsNavigationBar: static let showsNavigationBar: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsTitle: static let showsTitle: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.subtitle: static let subtitle: ElementProperty<PageContract, String>
-swift.type.property PageElementContract.background: static let background: ElementProperty<PageElementContract, Material>
 swift.type.property PageElementContract.icon: static let icon: ElementProperty<PageElementContract, ImageSource>
 swift.type.property PageElementContract.linkOpened: static let linkOpened: ElementEvent<PageElementContract, String>
 swift.type.property PageElementContract.name: static let name: String
@@ -13960,7 +13964,6 @@ swift.type.property TextInputContract.placeholder: static let placeholder: Eleme
 swift.type.property TextInputContract.placeholderColor: static let placeholderColor: ElementProperty<TextInputContract, Color>
 swift.type.property TextInputContract.selectionLength: static let selectionLength: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.textChanged: static let textChanged: ElementEvent<TextInputContract, String>
-swift.type.property TextSpanContract.background: static let background: ElementProperty<TextSpanContract, Material>
 swift.type.property TextSpanContract.name: static var name: String { get }
 swift.type.property TextSpansContract.name: static var name: String { get }
 swift.type.property TextualElementContract.name: static let name: String
@@ -14040,7 +14043,6 @@ swift.type.property VisualElementContract.accessibilityLabel: static let accessi
 swift.type.property VisualElementContract.accessibilityPresence: static let accessibilityPresence: ElementProperty<VisualElementContract, AccessibilityPresence>
 swift.type.property VisualElementContract.accessibilityRole: static let accessibilityRole: ElementProperty<VisualElementContract, AccessibilityRole>
 swift.type.property VisualElementContract.accessibilityValue: static let accessibilityValue: ElementProperty<VisualElementContract, String>
-swift.type.property VisualElementContract.background: static let background: ElementProperty<VisualElementContract, Material>
 swift.type.property VisualElementContract.frame: static let frame: ElementProperty<VisualElementContract, Rect>
 swift.type.property VisualElementContract.height: static let height: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.ignoresInput: static let ignoresInput: ElementProperty<VisualElementContract, Bool>
@@ -14089,7 +14091,6 @@ swift.type.property WebViewContract.processTerminated: static let processTermina
 swift.type.property WebViewContract.reload: static let reload: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.source: static let source: ElementProperty<WebViewContract, WebViewSource>
 swift.type.property WebViewContract.userAgent: static let userAgent: ElementProperty<WebViewContract, String>
-swift.type.property WindowContract.background: static let background: ElementProperty<WindowContract, Material>
 swift.type.property WindowContract.created: static let created: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.destroying: static let destroying: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.floatsOnTop: static let floatsOnTop: ElementProperty<WindowContract, Bool>

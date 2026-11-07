@@ -115,7 +115,7 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
     /// What is drawn behind this run - a highlight over part of a line; a blur
     /// or glass behind a run shows its color.
     public func background(_ value: Material) -> Modified {
-        setValue(TextSpanContract.background, value)
+        setValue(BackgroundElementContract.background, value)
     }
 
     /// What is drawn behind this run, in one color.

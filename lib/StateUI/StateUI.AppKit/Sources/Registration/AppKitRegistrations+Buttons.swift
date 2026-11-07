@@ -28,7 +28,7 @@ extension AppKitRegistrations {
             button.applies(
                 TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
                 ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
-                TextColorElementContract.textColor, VisualElementContract.background, BorderElementContract.shape,
+                TextColorElementContract.textColor, BackgroundElementContract.background, BorderElementContract.shape,
                 BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
@@ -54,7 +54,7 @@ extension AppKitRegistrations {
                 } else {
                     .scaleProportionallyDown
                 }
-                let background = paintedColor(values[VisualElementContract.background]?.propValue)
+                let background = paintedColor(values[BackgroundElementContract.background]?.propValue)
                 // A destructive action's words in the system's red where the tree colors them not.
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,

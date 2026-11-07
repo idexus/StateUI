@@ -32,7 +32,7 @@
                 Aspects.holds(
                     VisualElementContract.accessibilityPresence, on: element, .element, then: .hiddenWithContents,
                     with: named, aspect: "leavesWhatItHoldsOut"),
-                Aspects.holds(VisualElementContract.background, on: element, .color(.red), then: .color(.blue)),
+                Aspects.holds(BackgroundElementContract.background, on: element, .color(.red), then: .color(.blue)),
                 Aspects.holds(VisualElementContract.layoutDirection, on: element, .leftToRight, then: .rightToLeft),
                 Aspects.holds(VisualElementContract.pivotX, on: element, 0.5, then: 0, with: turned),
                 Aspects.holds(VisualElementContract.pivotY, on: element, 0.5, then: 1, with: turned),
@@ -69,17 +69,17 @@
     @MainActor
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
-            Covered(VisualElementContract.background, on: element),
+            Covered(BackgroundElementContract.background, on: element),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thin))
             let changed = Material.glass(.clear)
             s.start {
-                Specimens.page(element, Words.on(element) + [Write(VisualElementContract.background, value.wrappedValue)],
+                Specimens.page(element, Words.on(element) + [Write(BackgroundElementContract.background, value.wrappedValue)],
                                beside: [Button("Change").onClicked { value.wrappedValue = changed }.id("change")])
             }
             let specimen = try s.specimen(element)
             @MainActor func shows(_ wanted: Material) throws -> Bool {
-                let held = try s.held(VisualElementContract.background, on: specimen)
+                let held = try s.held(BackgroundElementContract.background, on: specimen)
                 return held == wanted || held == wanted.withoutGlass
             }
             s.expect(try shows(.blur(.thin)), true, "the blur the tree gave")
@@ -94,7 +94,7 @@
     @MainActor
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("VStack.background.followsAMaterialState", proves: [
-            Covered(VisualElementContract.background, on: "VStack"),
+            Covered(BackgroundElementContract.background, on: "VStack"),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
@@ -105,12 +105,12 @@
                 }
             }
             let specimen = try s.element("specimen")
-            try s.settle { try s.held(VisualElementContract.background, on: specimen) == first }
-            s.expect(try s.held(VisualElementContract.background, on: specimen), first, "the material the state holds")
+            try s.settle { try s.held(BackgroundElementContract.background, on: specimen) == first }
+            s.expect(try s.held(BackgroundElementContract.background, on: specimen), first, "the material the state holds")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(VisualElementContract.background, on: specimen) == second }
-            s.expect(try s.held(VisualElementContract.background, on: specimen), second, "the material written into it")
+            try s.settle { try s.held(BackgroundElementContract.background, on: specimen) == second }
+            s.expect(try s.held(BackgroundElementContract.background, on: specimen), second, "the material written into it")
         }
     }
 
@@ -464,7 +464,7 @@
                 VStack {
                     Specimens.view(element, painted(element) + [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(VisualElementContract.background, Material.color(.red)),
+                        Write(BackgroundElementContract.background, Material.color(.red)),
                         Write(VisualElementContract.ignoresInput, ignores.wrappedValue),
                     ])
                     Button("Ignore").onClicked { ignores.wrappedValue = true }.id("change")

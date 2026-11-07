@@ -9,7 +9,10 @@
 @_spi(Host) public enum TextSpanTests: ConformanceFamily {
     public static let name = "TextSpan"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(TextSpanContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
                 Covered(TextSpanContract.self),
@@ -48,7 +51,6 @@
                 try s.settle { try s.held(TextualElementContract.text, on: label) == "let y" }
                 s.expect(try s.held(TextualElementContract.text, on: label), "let y")
             },
-            Aspects.holds(TextSpanContract.background, on: "TextSpan", .color(.yellow), then: .color(.cyan)),
         ]
     }
 }

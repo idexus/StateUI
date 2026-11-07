@@ -35,7 +35,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
                     enabled: values[EnabledElementContract.isEnabled] ?? true,
@@ -77,7 +77,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
                     enabled: values[EnabledElementContract.isEnabled] ?? true,
@@ -119,7 +119,7 @@ extension AppKitRegistrations {
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
                     enabled: values[EnabledElementContract.isEnabled] ?? true,
@@ -142,7 +142,7 @@ extension AppKitRegistrations {
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.placeholderColor, TextColorElementContract.textColor, VisualElementContract.background,
+        TextInputContract.placeholderColor, TextColorElementContract.textColor, BackgroundElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontWeight, FontElementContract.textStyle,
         TextAlignmentElementContract.horizontalTextAlignment, EnabledElementContract.isEnabled,

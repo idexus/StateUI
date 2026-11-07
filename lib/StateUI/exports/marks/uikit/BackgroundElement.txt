@@ -1,0 +1,10 @@
+# revision 0.0
+NavigationStack.background: ✅
+Page.background: ✅
+SplitView.background: ✅
+TabView.background: ✅
+TextSpan.background: ✅
+ToolbarButton.background: – A bar's items stand in the system's own look.
+ToolbarGroup.background: – A bar's items stand in the system's own look.
+ToolbarToggle.background: – A bar's items stand in the system's own look.
+Window.background: ☑️ iPadOS draws an application's window opaque: a blur or glass shows its color.

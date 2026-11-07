@@ -8,7 +8,6 @@ Button.accessibilityLabel: ✅
 Button.accessibilityPresence: ✅
 Button.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Button.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: not realized
@@ -42,7 +41,6 @@ Canvas.accessibilityLabel: ✅
 Canvas.accessibilityPresence: ✅
 Canvas.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Canvas.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: not realized
@@ -76,7 +74,6 @@ Capsule.accessibilityLabel: ✅
 Capsule.accessibilityPresence: ✅
 Capsule.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Capsule.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: not realized
@@ -110,7 +107,6 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.accessibilityPresence: ✅
 CheckBox.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 CheckBox.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: not realized
@@ -144,7 +140,6 @@ ColorPicker.accessibilityLabel: – Android has no color picker of its own: neit
 ColorPicker.accessibilityPresence: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.accessibilityRole: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.accessibilityValue: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -178,7 +173,6 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.accessibilityPresence: ✅
 DatePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 DatePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: not realized
@@ -212,7 +206,6 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.accessibilityPresence: ✅
 Ellipse.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Ellipse.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: not realized
@@ -246,7 +239,6 @@ Fill.accessibilityLabel: ✅
 Fill.accessibilityPresence: ✅
 Fill.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
@@ -280,7 +272,6 @@ Grid.accessibilityLabel: ✅
 Grid.accessibilityPresence: ✅
 Grid.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Grid.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
@@ -314,7 +305,6 @@ HStack.accessibilityLabel: ✅
 HStack.accessibilityPresence: ✅
 HStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 HStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
@@ -348,7 +338,6 @@ Image.accessibilityLabel: ✅
 Image.accessibilityPresence: ✅
 Image.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Image.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: not realized
@@ -382,7 +371,6 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.accessibilityPresence: ✅
 ItemsView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ItemsView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: not realized
@@ -416,7 +404,6 @@ Line.accessibilityLabel: ✅
 Line.accessibilityPresence: ✅
 Line.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Line.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: not realized
@@ -450,7 +437,6 @@ Link.accessibilityLabel: ✅
 Link.accessibilityPresence: ✅
 Link.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: not realized
@@ -484,7 +470,6 @@ Map.accessibilityLabel: 🧩
 Map.accessibilityPresence: 🧩
 Map.accessibilityRole: 🧩
 Map.accessibilityValue: 🧩
-Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
@@ -518,7 +503,6 @@ MotionLayout.accessibilityLabel: ✅
 MotionLayout.accessibilityPresence: ✅
 MotionLayout.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
@@ -552,7 +536,6 @@ Path.accessibilityLabel: ✅
 Path.accessibilityPresence: ✅
 Path.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Path.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: not realized
@@ -586,7 +569,6 @@ Picker.accessibilityLabel: ✅
 Picker.accessibilityPresence: ✅
 Picker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Picker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: not realized
@@ -620,7 +602,6 @@ Polygon.accessibilityLabel: ✅
 Polygon.accessibilityPresence: ✅
 Polygon.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Polygon.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: not realized
@@ -654,7 +635,6 @@ Polyline.accessibilityLabel: ✅
 Polyline.accessibilityPresence: ✅
 Polyline.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Polyline.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: not realized
@@ -688,7 +668,6 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.accessibilityPresence: ✅
 ProgressBar.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ProgressBar.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: not realized
@@ -722,7 +701,6 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.accessibilityPresence: ✅
 Rectangle.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Rectangle.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: not realized
@@ -756,7 +734,6 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.accessibilityPresence: ✅
 ScrollView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ScrollView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: not realized
@@ -790,7 +767,6 @@ SearchField.accessibilityLabel: ✅
 SearchField.accessibilityPresence: ✅
 SearchField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 SearchField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: not realized
@@ -824,7 +800,6 @@ Separator.accessibilityLabel: ✅
 Separator.accessibilityPresence: ✅
 Separator.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: not realized
@@ -858,7 +833,6 @@ Slider.accessibilityLabel: ✅
 Slider.accessibilityPresence: ✅
 Slider.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Slider.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: not realized
@@ -892,7 +866,6 @@ Space.accessibilityLabel: ✅
 Space.accessibilityPresence: ✅
 Space.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
@@ -926,7 +899,6 @@ Spinner.accessibilityLabel: ✅
 Spinner.accessibilityPresence: ✅
 Spinner.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: not realized
@@ -960,7 +932,6 @@ Stepper.accessibilityLabel: ✅
 Stepper.accessibilityPresence: ✅
 Stepper.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Stepper.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: not realized
@@ -994,7 +965,6 @@ Switch.accessibilityLabel: ✅
 Switch.accessibilityPresence: ✅
 Switch.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Switch.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: not realized
@@ -1028,7 +998,6 @@ Text.accessibilityLabel: ✅
 Text.accessibilityPresence: ✅
 Text.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 Text.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: not realized
@@ -1062,7 +1031,6 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.accessibilityPresence: ✅
 TextEditor.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TextEditor.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: not realized
@@ -1096,7 +1064,6 @@ TextField.accessibilityLabel: ✅
 TextField.accessibilityPresence: ✅
 TextField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TextField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: not realized
@@ -1130,7 +1097,6 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.accessibilityPresence: ✅
 TimePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 TimePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: not realized
@@ -1164,7 +1130,6 @@ VStack.accessibilityLabel: ✅
 VStack.accessibilityPresence: ✅
 VStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 VStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
@@ -1198,7 +1163,6 @@ WebView.accessibilityLabel: ✅
 WebView.accessibilityPresence: ✅
 WebView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 WebView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: not realized
@@ -1232,7 +1196,6 @@ ZStack.accessibilityLabel: ✅
 ZStack.accessibilityPresence: ✅
 ZStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
 ZStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅

@@ -1,0 +1,10 @@
+# revision 0.0
+NavigationStack.background: ✅
+Page.background: ✅
+SplitView.background: ✅
+TabView.background: ✅
+TextSpan.background: ✅
+ToolbarButton.background: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.background: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.background: – The title bar's commands stand in WinUI's own look.
+Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.

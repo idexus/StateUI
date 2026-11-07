@@ -16,6 +16,8 @@ NavigationStack($path) {
 .pageIcon("settings.png")
 ```
 
+Wears: [BackgroundElement](BackgroundElement.md)
+
 Worn by: [NavigationStack](../NavigationStack.md) · [Page](../Page.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/PageElementContract.swift`.
@@ -24,7 +26,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `background` | property | `Material` | adaptive |
 | `icon` | property | `ImageSource` | adaptive |
 | `onLinkOpened` (`linkOpened`) | event | `String` | adaptive |
 | `title` | property | `String` | native |

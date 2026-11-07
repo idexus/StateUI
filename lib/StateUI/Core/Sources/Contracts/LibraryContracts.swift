@@ -18,6 +18,7 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
+        BackgroundElementContract.self,
         EnabledElementContract.self,
         ClickElementContract.self,
         RangeElementContract.self,

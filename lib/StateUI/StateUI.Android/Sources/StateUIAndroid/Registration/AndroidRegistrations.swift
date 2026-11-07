@@ -54,7 +54,7 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(EnabledElementContract.isEnabled)
-        registry.everyElementRealizes(VisualElementContract.background)
+        registry.everyElementRealizes(BackgroundElementContract.background)
         registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 

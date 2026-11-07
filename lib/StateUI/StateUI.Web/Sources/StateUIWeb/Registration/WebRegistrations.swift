@@ -41,7 +41,7 @@ enum WebRegistrations {
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(EnabledElementContract.isEnabled)
         registry.everyElementRaises(FocusElementContract.isFocusedChanged)
-        registry.everyElementRealizes(VisualElementContract.background)
+        registry.everyElementRealizes(BackgroundElementContract.background)
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
         registry.everyElementRealizes(VisualElementContract.layoutDirection)
         registry.everyElementTakesItsPlace()

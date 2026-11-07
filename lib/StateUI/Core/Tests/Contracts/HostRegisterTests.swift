@@ -24,11 +24,11 @@ final class HostRegisterTests: XCTestCase {
     /// A written note about a tier's member judges it on every wearer: the runtime naming the member on one element
     /// does not replace the note.
     func testAWrittenNoteOnATierStaysOnAnElementTheRuntimeNames() {
-        let register = HostRegister(records: [.partial(VisualElementContract.background, missing: "A color alone.")])
-            .and([.complete(VisualElementContract.background, on: ButtonContract.self)])
+        let register = HostRegister(records: [.partial(BackgroundElementContract.background, missing: "A color alone.")])
+            .and([.complete(BackgroundElementContract.background, on: ButtonContract.self)])
 
         XCTAssertEqual(
-            register.judgment(of: "background", on: "Button", from: "VisualElement"), .partial(missing: "A color alone."))
+            register.judgment(of: "background", on: "Button", from: "BackgroundElement"), .partial(missing: "A color alone."))
     }
 
     /// Never is the register's: a member never had says why, an element never had is never on every member with

@@ -43,7 +43,7 @@ extension View {
     /// What the whole page is made of behind what it shows, also where the view it shows does not reach. Written on
     /// an arrangement, it is what each of its pages that says none stands on.
     public func pageBackground(_ value: Material) -> Modified {
-        pageSays { $0.setValue(PageElementContract.background, value) }
+        pageSays { $0.setValue(BackgroundElementContract.background, value) }
     }
 
     /// The page's background in one color.
@@ -58,13 +58,13 @@ extension View {
 
     /// The page's background from a state, `$x`: the host animates its color to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
-        pageSays { $0.twin(PageElementContract.background, carrying: state) }
+        pageSays { $0.twin(BackgroundElementContract.background, carrying: state) }
     }
 
     /// The page's background from a material state, `$x`: the host shows each
     /// new material as it stands.
     public func pageBackground(_ state: Binding<Material>) -> Modified {
-        pageSays { $0.twin(PageElementContract.background, by: state) }
+        pageSays { $0.twin(BackgroundElementContract.background, by: state) }
     }
 
     /// Whether the navigation bar shows while the page is on top of its stack.

@@ -32,7 +32,7 @@ public struct Fill: ElementView, BorderElement {
 
     /// A fill made of `material`; a `Material(light:dark:)` follows the theme.
     public init(_ material: Material) {
-        self = Fill().setValue(VisualElementContract.background, material)
+        self = Fill().setValue(BackgroundElementContract.background, material)
     }
 
     /// A fill of one color; a `Color(light:dark:)` follows the theme.
@@ -48,12 +48,12 @@ public struct Fill: ElementView, BorderElement {
     /// A fill whose color follows a state, `$x`: the host animates it to each new color, and no view is rebuilt for
     /// it.
     public init(_ state: Binding<Color>) {
-        self = Fill().twin(VisualElementContract.background, carrying: state)
+        self = Fill().twin(BackgroundElementContract.background, carrying: state)
     }
 
     /// A fill whose material follows a state, `$x`: the host shows each new material as it stands, and no view is
     /// rebuilt for it.
     public init(_ state: Binding<Material>) {
-        self = Fill().twin(VisualElementContract.background, by: state)
+        self = Fill().twin(BackgroundElementContract.background, by: state)
     }
 }

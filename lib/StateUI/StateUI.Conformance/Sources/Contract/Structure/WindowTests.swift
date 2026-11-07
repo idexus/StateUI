@@ -11,7 +11,10 @@
 @_spi(Host) public enum WindowTests: ConformanceFamily {
     public static let name = "Window"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(WindowContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
                 Covered(WindowContract.self), Covered(WindowContract.created),
@@ -46,7 +49,7 @@
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
             holds(
-                WindowContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
+                BackgroundElementContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
                 then: .color(Color(hex: 0x0F766E))
             ) {
                 $0.background = $1
@@ -128,7 +131,7 @@
     @MainActor
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
-            Covered(WindowContract.background),
+            Covered(BackgroundElementContract.background, on: WindowContract.self),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thick))
             let changed = Material.blur(.ultraThin)
@@ -137,12 +140,12 @@
                                   key: "\(value.wrappedValue)") { window in window.background = value.wrappedValue }
             }
             let window = try s.element(ofType: WindowContract.nodeType)
-            try s.settle { try s.held(WindowContract.background, on: window) == .blur(.thick) }
-            s.expect(try s.held(WindowContract.background, on: window), .blur(.thick), "the blur its session wrote")
+            try s.settle { try s.held(BackgroundElementContract.background, on: window) == .blur(.thick) }
+            s.expect(try s.held(BackgroundElementContract.background, on: window), .blur(.thick), "the blur its session wrote")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(WindowContract.background, on: window) == changed }
-            s.expect(try s.held(WindowContract.background, on: window), changed, "the blur the tree changed it to")
+            try s.settle { try s.held(BackgroundElementContract.background, on: window) == changed }
+            s.expect(try s.held(BackgroundElementContract.background, on: window), changed, "the blur the tree changed it to")
         }
     }
 
@@ -151,7 +154,7 @@
     @MainActor
     static var groundsItsSheets: ConformanceCase {
         ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
-            Covered(WindowContract.background),
+            Covered(BackgroundElementContract.background, on: WindowContract.self),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             let value = State(wrappedValue: first)
@@ -175,12 +178,12 @@
 
     /// `member` of the window holds what its session writes, and what the tree changes it to.
     @MainActor
-    static func holds<Value: HostRepresentable & Sendable & Equatable>(
-        _ member: ElementProperty<WindowContract, Value>, _ first: Value, then second: Value,
+    static func holds<Owner: WornContract, Value: HostRepresentable & Sendable & Equatable>(
+        _ member: ElementProperty<Owner, Value>, _ first: Value, then second: Value,
         _ write: @escaping @MainActor (WindowSession, Value) -> Void
     ) -> ConformanceCase {
         ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
-            Covered(member),
+            Covered(member, on: "Window"),
         ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {

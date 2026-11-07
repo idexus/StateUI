@@ -13,7 +13,7 @@
     public static func look(pressed: Bool, pointerOver: Bool) -> [Prop: HostValue] {
         let facts = VisualStateRules.Facts(pressed: pressed, pointerOver: pointerOver)
         let box = [BorderElementContract.shape.token, BorderElementContract.stroke.token,
-                   BorderElementContract.lineWidth.token, BarItemElementContract.background.token]
+                   BorderElementContract.lineWidth.token, BackgroundElementContract.background.token]
         let group = resolved(Node(contract: ToolbarGroupContract.self), facts).filter { box.contains($0.key) }
         return group.merging(resolved(Node(contract: ToolbarButtonContract.self), facts)) { _, button in button }
     }

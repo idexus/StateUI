@@ -21,10 +21,10 @@ extension WinUIRegistrations {
                 view.setLetterSpacing(values[TrackingElementContract.tracking] ?? 0, size: values[FontElementContract.fontSize])
             }
             button.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 view.setLook(
-                    background: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
+                    background: HostMaterial(values[BackgroundElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

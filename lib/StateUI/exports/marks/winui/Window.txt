@@ -1,6 +1,5 @@
 # revision 11.1
 Window: ✅
-Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.
 Window.created: ✅
 Window.destroying: ✅
 Window.floatsOnTop: ✅

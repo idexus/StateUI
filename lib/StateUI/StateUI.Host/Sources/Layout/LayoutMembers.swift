@@ -9,12 +9,12 @@
     /// What a space or a fill takes of its box: what it is made of, its outline and its shape - it holds nothing to
     /// cut.
     public static let regionMembers = PropertyList(
-        VisualElementContract.background,
+        BackgroundElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
 
     /// What every layout takes of its own box: what fills it, its outline, its shape and its cut.
     public static let boxMembers = PropertyList(
-        VisualElementContract.background,
+        BackgroundElementContract.background,
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
         LayoutContract.clipsContent)
 

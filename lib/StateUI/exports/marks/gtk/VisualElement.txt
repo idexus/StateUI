@@ -8,7 +8,6 @@ Button.accessibilityLabel: ✅
 Button.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Button.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Button.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
 Button.ignoresInput: ✅
@@ -42,7 +41,6 @@ Canvas.accessibilityLabel: ✅
 Canvas.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Canvas.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Canvas.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Canvas.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
 Canvas.ignoresInput: ✅
@@ -76,7 +74,6 @@ Capsule.accessibilityLabel: ✅
 Capsule.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Capsule.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Capsule.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Capsule.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
 Capsule.ignoresInput: ✅
@@ -110,7 +107,6 @@ CheckBox.accessibilityLabel: ✅
 CheckBox.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 CheckBox.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 CheckBox.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-CheckBox.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
 CheckBox.ignoresInput: ✅
@@ -144,7 +140,6 @@ ColorPicker.accessibilityLabel: ✅
 ColorPicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ColorPicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ColorPicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ColorPicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 ColorPicker.frame: ✅
 ColorPicker.height: ✅
 ColorPicker.ignoresInput: ✅
@@ -178,7 +173,6 @@ DatePicker.accessibilityLabel: ✅
 DatePicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 DatePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 DatePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-DatePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
 DatePicker.ignoresInput: ✅
@@ -212,7 +206,6 @@ Ellipse.accessibilityLabel: ✅
 Ellipse.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Ellipse.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Ellipse.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Ellipse.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
 Ellipse.ignoresInput: ✅
@@ -246,7 +239,6 @@ Fill.accessibilityLabel: ✅
 Fill.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Fill.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Fill.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Fill.background: ✅
 Fill.frame: ✅
 Fill.height: ✅
 Fill.ignoresInput: ✅
@@ -280,7 +272,6 @@ Grid.accessibilityLabel: ✅
 Grid.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Grid.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Grid.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Grid.background: ✅
 Grid.frame: ✅
 Grid.height: ✅
 Grid.ignoresInput: ✅
@@ -314,7 +305,6 @@ HStack.accessibilityLabel: ✅
 HStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 HStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 HStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-HStack.background: ✅
 HStack.frame: ✅
 HStack.height: ✅
 HStack.ignoresInput: ✅
@@ -348,7 +338,6 @@ Image.accessibilityLabel: ✅
 Image.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Image.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Image.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Image.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
 Image.ignoresInput: ✅
@@ -382,7 +371,6 @@ ItemsView.accessibilityLabel: ✅
 ItemsView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ItemsView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ItemsView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.frame: ✅
 ItemsView.height: ✅
 ItemsView.ignoresInput: ✅
@@ -416,7 +404,6 @@ Line.accessibilityLabel: ✅
 Line.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Line.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Line.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Line.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
 Line.ignoresInput: ✅
@@ -450,7 +437,6 @@ Link.accessibilityLabel: ✅
 Link.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Link.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Link.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Link.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Link.frame: ✅
 Link.height: ✅
 Link.ignoresInput: ✅
@@ -484,7 +470,6 @@ Map.accessibilityLabel: 🧩
 Map.accessibilityPresence: 🧩
 Map.accessibilityRole: 🧩
 Map.accessibilityValue: 🧩
-Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
 Map.ignoresInput: 🧩
@@ -518,7 +503,6 @@ MotionLayout.accessibilityLabel: ✅
 MotionLayout.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 MotionLayout.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 MotionLayout.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
 MotionLayout.ignoresInput: ✅
@@ -552,7 +536,6 @@ Path.accessibilityLabel: ✅
 Path.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Path.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Path.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Path.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
 Path.ignoresInput: ✅
@@ -586,7 +569,6 @@ Picker.accessibilityLabel: ✅
 Picker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Picker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Picker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Picker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
 Picker.ignoresInput: ✅
@@ -620,7 +602,6 @@ Polygon.accessibilityLabel: ✅
 Polygon.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Polygon.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Polygon.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Polygon.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
 Polygon.ignoresInput: ✅
@@ -654,7 +635,6 @@ Polyline.accessibilityLabel: ✅
 Polyline.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Polyline.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Polyline.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Polyline.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
 Polyline.ignoresInput: ✅
@@ -688,7 +668,6 @@ ProgressBar.accessibilityLabel: ✅
 ProgressBar.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ProgressBar.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ProgressBar.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ProgressBar.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
 ProgressBar.ignoresInput: ✅
@@ -722,7 +701,6 @@ Rectangle.accessibilityLabel: ✅
 Rectangle.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Rectangle.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Rectangle.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Rectangle.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
 Rectangle.ignoresInput: ✅
@@ -756,7 +734,6 @@ ScrollView.accessibilityLabel: ✅
 ScrollView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ScrollView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ScrollView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ScrollView.background: ✅
 ScrollView.frame: ✅
 ScrollView.height: ✅
 ScrollView.ignoresInput: ✅
@@ -790,7 +767,6 @@ SearchField.accessibilityLabel: ✅
 SearchField.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 SearchField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 SearchField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-SearchField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
 SearchField.ignoresInput: ✅
@@ -824,7 +800,6 @@ Separator.accessibilityLabel: ✅
 Separator.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Separator.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Separator.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Separator.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Separator.frame: ✅
 Separator.height: ✅
 Separator.ignoresInput: ✅
@@ -858,7 +833,6 @@ Slider.accessibilityLabel: ✅
 Slider.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Slider.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Slider.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Slider.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
 Slider.ignoresInput: ✅
@@ -892,7 +866,6 @@ Space.accessibilityLabel: ✅
 Space.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Space.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Space.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Space.background: ✅
 Space.frame: ✅
 Space.height: ✅
 Space.ignoresInput: ✅
@@ -926,7 +899,6 @@ Spinner.accessibilityLabel: ✅
 Spinner.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Spinner.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Spinner.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Spinner.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Spinner.frame: ✅
 Spinner.height: ✅
 Spinner.ignoresInput: ✅
@@ -960,7 +932,6 @@ Stepper.accessibilityLabel: ✅
 Stepper.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Stepper.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Stepper.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Stepper.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
 Stepper.ignoresInput: ✅
@@ -994,7 +965,6 @@ Switch.accessibilityLabel: ✅
 Switch.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Switch.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Switch.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Switch.background: – GTK's switch paints its own box as its track: a color there would recolor the track, not lie under it.
 Switch.frame: ✅
 Switch.height: ✅
 Switch.ignoresInput: ✅
@@ -1028,7 +998,6 @@ Text.accessibilityLabel: ✅
 Text.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Text.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Text.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Text.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
 Text.ignoresInput: ✅
@@ -1062,7 +1031,6 @@ TextEditor.accessibilityLabel: ✅
 TextEditor.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TextEditor.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TextEditor.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TextEditor.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
 TextEditor.ignoresInput: ✅
@@ -1096,7 +1064,6 @@ TextField.accessibilityLabel: ✅
 TextField.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TextField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TextField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TextField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
 TextField.ignoresInput: ✅
@@ -1130,7 +1097,6 @@ TimePicker.accessibilityLabel: ✅
 TimePicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TimePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TimePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TimePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
 TimePicker.ignoresInput: ✅
@@ -1164,7 +1130,6 @@ VStack.accessibilityLabel: ✅
 VStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 VStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 VStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-VStack.background: ✅
 VStack.frame: ✅
 VStack.height: ✅
 VStack.ignoresInput: ✅
@@ -1198,7 +1163,6 @@ WebView.accessibilityLabel: ✅
 WebView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 WebView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 WebView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-WebView.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
 WebView.ignoresInput: ✅
@@ -1232,7 +1196,6 @@ ZStack.accessibilityLabel: ✅
 ZStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ZStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ZStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ZStack.background: ✅
 ZStack.frame: ✅
 ZStack.height: ✅
 ZStack.ignoresInput: ✅

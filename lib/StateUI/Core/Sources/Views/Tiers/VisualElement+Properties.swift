@@ -43,7 +43,7 @@ extension VisualElementProperties {
     ///
     /// A view's own background replaces its style's; a
     /// `Material(light:dark:)` follows the theme.
-    public func background(_ value: Material) -> Modified { setValue(VisualElementContract.background, value) }
+    public func background(_ value: Material) -> Modified { setValue(BackgroundElementContract.background, value) }
 
     /// The view's background in one color; a `Color(light:dark:)` follows the
     /// theme.
@@ -168,13 +168,13 @@ extension VisualElement {
     /// `background` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func background(_ state: Binding<Color>) -> Modified {
-        twin(VisualElementContract.background, carrying: state)
+        twin(BackgroundElementContract.background, carrying: state)
     }
 
     /// `background` from a material state, `$x`: the host shows each new
     /// material as it stands, and no view is rebuilt for it.
     public func background(_ state: Binding<Material>) -> Modified {
-        twin(VisualElementContract.background, by: state)
+        twin(BackgroundElementContract.background, by: state)
     }
 
     /// `layoutDirection` from a state, `$x`: the host sets each new value as it

@@ -12,10 +12,6 @@ public enum WindowContract: ElementContract {
     /// The platform made the window.
     public static let created = ElementEvent<Self, Void>("created", layer: .adaptive)
 
-    /// What the window is made of behind its pages: a color, or a blur or
-    /// glass the desktop shows through.
-    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
-
     /// The window is going.
     public static let destroying = ElementEvent<Self, Void>("destroying", layer: .adaptive)
 
@@ -74,8 +70,8 @@ public enum WindowContract: ElementContract {
     public static let y = ElementProperty<Self, Double>("y", layer: .structure)
 
     /// The tiers it wears.
-    public static let tiers: [any Tier.Type] = [SessionElementContract.self]
+    public static let tiers: [any Tier.Type] = [SessionElementContract.self, BackgroundElementContract.self]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [background, created, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable, isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, title, width, windowKind, windowValue, x, y]
+    public static let members: [any ContractMember] = [created, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable, isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, title, width, windowKind, windowValue, x, y]
 }

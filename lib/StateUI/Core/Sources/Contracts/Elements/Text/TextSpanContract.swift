@@ -13,11 +13,9 @@ public enum TextSpanContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         TextualElementContract.self, FontElementContract.self, TrackingElementContract.self,
         DecorableTextElementContract.self,
+        BackgroundElementContract.self,
     ]
 
-    /// What is drawn behind the run - a highlight over part of a line.
-    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [background]
+    public static let members: [any ContractMember] = []
 }

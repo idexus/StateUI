@@ -161,7 +161,7 @@ public final class WindowSession {
         props.describe(WindowContract.height, height)
         props.describe(WindowContract.isMaximizable, isMaximizable)
         props.describe(WindowContract.isMinimizable, isMinimizable)
-        props.describe(WindowContract.background, background)
+        props.describe(BackgroundElementContract.background, background)
         props.describe(WindowContract.minimumWidth, minimumWidth)
         props.describe(WindowContract.minimumHeight, minimumHeight)
         props.describe(WindowContract.maximumWidth, maximumWidth)

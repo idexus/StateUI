@@ -1,6 +1,5 @@
 # revision 11.1
 Window: ✅
-Window.background: ☑️ iPadOS draws an application's window opaque: a blur or glass shows its color.
 Window.created: ✅
 Window.destroying: ✓ close on Window: the host told the scene's phase, no scene moved
 Window.floatsOnTop: – iPadOS stacks its windows itself: UIKit keeps none above the others.

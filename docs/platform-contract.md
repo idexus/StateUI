@@ -143,7 +143,7 @@ of its members each meets, and why a cell is empty.
 | [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TextField](controls/TextField.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
-| [TextSpan](controls/TextSpan.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [TextSpan](controls/TextSpan.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TextSpans](controls/TextSpans.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -401,7 +401,6 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `accessibilityPresence` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityRole` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `accessibilityValue` | [VisualElement](controls/tiers/VisualElement.md) | property |
-| `background` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `frame` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `height` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `ignoresInput` | [VisualElement](controls/tiers/VisualElement.md) | property |
@@ -531,26 +530,26 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 1 ✅ | 1 – | 1 ✅ | 1 – | 1 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 1 ✅ | 1 – | 1 ✅ | 1 – | 1 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
+| [NavigationStack](controls/NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 5 ✅ · 2 – | 3 ✅ · 2 ☑️ · 2 – | 4 ✅ · 1 ☑️ · 2 – | 2 ✅ · 2 ☑️ · 3 – | 6 ✅ · 1 ☑️ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
+| [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ |  |  |  |  |  |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ |  |  |  |  |  |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 4 ☑️ · 4 ✓ · 2 – | 10 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 4 ☑️ · 1 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
-| [TabView](controls/TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
-| [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
+| [SplitView](controls/SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 8 ✅ · 2 ✓ · 2 – | 3 ✅ · 4 ☑️ · 3 ✓ · 2 – | 7 ✅ · 3 ☑️ · 2 – | 5 ✅ · 4 ☑️ · 3 – | 9 ✅ · 3 ☑️ |
+| [TabView](controls/TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 6 ✅ · 2 – | 4 ✅ · 2 ☑️ · 2 – | 5 ✅ · 1 ☑️ · 2 – | 3 ✅ · 2 ☑️ · 3 – | 7 ✅ · 1 ☑️ |
+| [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 11 ✅ | 9 ✅ · 1 – | 10 ✅ · 1 – | 11 ✅ | 11 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](controls/ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 16 – | 1 ✅ · 1 ☑️ · 13 – | 1 ☑️ · 13 – | 4 ✅ · 11 – | 3 ✅ · 12 – | 15 ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 6 ✅ · 8 – | 4 – | 4 – | 4 – | 4 – | 4 ✅ |
+| [ToolbarButton](controls/ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 15 – | 1 ✅ · 1 ☑️ · 13 – | 1 ☑️ · 13 – | 4 ✅ · 11 – | 3 ✅ · 12 – | 15 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 6 ✅ · 7 – | 4 – | 4 – | 4 – | 4 – | 4 ✅ |
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 16 – | 1 ✅ · 12 – | 12 – | 2 ✅ · 11 – | 1 ✅ · 12 – | 13 ✅ |
+| [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 15 – | 1 ✅ · 12 – | 12 – | 2 ✅ · 11 – | 1 ✅ · 12 – | 13 ✅ |
 | [Window](controls/Window.md) | 21 | 13 ✅ · 1 ☑️ · 6 ✓ |  |  |  |  |  |
-| ✅ |  | 109 | 78 | 56 | 79 | 58 | 110 |
-| ✓ |  | 27 | 19 | 18 | 8 | 10 | 10 |
-| – |  | 49 | 35 | 40 | 35 | 45 | 0 |
-| **Met** | 213 | **185** | **132** | **114** | **122** | **113** | **120** |
+| ✅ |  | 109 | 65 | 43 | 66 | 53 | 97 |
+| ✓ |  | 27 | 15 | 14 | 4 | 6 | 6 |
+| – |  | 46 | 35 | 40 | 35 | 41 | 0 |
+| **Met** | 213 | **182** | **115** | **97** | **105** | **100** | **103** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -570,7 +569,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Tier | Members | Count |
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
-| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityPresence`, `accessibilityRole`, `accessibilityValue`, `background`, `frame`, `height`, `ignoresInput`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 34 |
+| [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityPresence`, `accessibilityRole`, `accessibilityValue`, `frame`, `height`, `ignoresInput`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 33 |
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDropped` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 36 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
@@ -579,6 +578,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
+| [BackgroundElement](controls/tiers/BackgroundElement.md) | `background` | 1 |
 | [EnabledElement](controls/tiers/EnabledElement.md) | `isEnabled` | 1 |
 | [ClickElement](controls/tiers/ClickElement.md) | `onClicked` (`clicked`) | 1 |
 | [RangeElement](controls/tiers/RangeElement.md) | `value`, `onValueChanged` (`valueChanged`), `minimum`, `maximum` | 4 |
@@ -603,12 +603,12 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
 | [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `barScrollEdge`, `toolbarStyle`, `toolbarSpacing` | 5 |
-| [BarItemElement](controls/tiers/BarItemElement.md) | `style`, `background` | 2 |
+| [BarItemElement](controls/tiers/BarItemElement.md) | `style` | 1 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `keyboardShortcut`, `text` | 3 |
 | [ActionElement](controls/tiers/ActionElement.md) | `role` | 1 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
 | [TextAndIconElement](controls/tiers/TextAndIconElement.md) | `showsText` | 1 |
-| [PageElement](controls/tiers/PageElement.md) | `background`, `icon`, `onLinkOpened` (`linkOpened`), `title` | 4 |
+| [PageElement](controls/tiers/PageElement.md) | `icon`, `onLinkOpened` (`linkOpened`), `title` | 3 |
 
 ### Elements
 
@@ -647,13 +647,12 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment`, `isSelectable` | 4 | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TextField](controls/TextField.md) | `isPassword`, `showsClearButton` | 2 | 1 ✅ · 1 – |  |  |  |  |  |
-| [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `format`, `time`, `onTimeChanged` (`timeChanged`) | 3 | 1 ✅ · 1 ✓ · 1 – |  |  |  |  |  |
 | [ToolbarGroup](controls/ToolbarGroup.md) | `barEdge`, `hidesWithSidebar`, `order`, `part`, `position`, `spacing`, `standsAlone` | 7 | 5 ✅ · 2 – |  |  |  |  |  |
 | [ToolbarLabel](controls/ToolbarLabel.md) | `icon`, `text` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `onIcon` | 1 | 1 ✅ |  |  |  |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `background`, `created`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `title`, `width`, `windowKind`, `windowValue`, `x`, `y` | 18 | 13 ✅ · 1 ☑️ · 3 ✓ |  |  |  |  |  |
+| [Window](controls/Window.md) | `created`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `title`, `width`, `windowKind`, `windowValue`, `x`, `y` | 17 | 13 ✅ · 3 ✓ |  |  |  |  |  |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

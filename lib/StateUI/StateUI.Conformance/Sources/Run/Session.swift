@@ -172,9 +172,9 @@
     public func ground(of element: MountedElement) throws -> Material? {
         let ability = "read the ground of \(element.type.name)"
         if driver.platformHasNone[ability] != nil { throw DriverCannot(ability) }
-        note(ability, member: VisualElementContract.background.name)
+        note(ability, member: BackgroundElementContract.background.name)
         return try driven {
-            try driver.held(VisualElementContract.background.token, on: element).flatMap { Material(propValue: $0) }
+            try driver.held(BackgroundElementContract.background.token, on: element).flatMap { Material(propValue: $0) }
         }
     }
 

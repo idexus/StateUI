@@ -1,7 +1,4 @@
 # revision 1.1
-ToolbarButton.background: ✅
 ToolbarButton.style: ✅
-ToolbarGroup.background: ✅
 ToolbarGroup.style: ✅
-ToolbarToggle.background: ✅
 ToolbarToggle.style: ✅

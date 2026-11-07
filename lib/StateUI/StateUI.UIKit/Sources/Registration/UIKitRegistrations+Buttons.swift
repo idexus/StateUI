@@ -43,9 +43,9 @@ extension UIKitRegistrations {
             // The box, and the role's look where the tree draws nothing of its own: the main action filled in the
             // tint, a destructive one's words in the system's red.
             button.applies(
-                VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
+                BackgroundElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
                 BorderElementContract.shape, ButtonContract.role, TextColorElementContract.textColor) { view, values in
-                let background = HostMaterial(values[VisualElementContract.background]?.propValue).painted
+                let background = HostMaterial(values[BackgroundElementContract.background]?.propValue).painted
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
                     colorsWords: values[TextColorElementContract.textColor] != nil)

@@ -55,10 +55,10 @@ extension WebRegistrations {
                 view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
             }
             button.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    fill: values[BackgroundElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)

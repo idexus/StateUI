@@ -10,10 +10,13 @@
 @_spi(Host) public enum BarItemElementTests: ConformanceFamily {
     public static let name = "BarItemElement"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(BarItemElementContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(BarItemElementContract.self).flatMap { element in
             [
-                Aspects.holds(BarItemElementContract.background, on: element, .color(.steelBlue), then: .color(.firebrick)),
+                Aspects.holds(BackgroundElementContract.background, on: element, .color(.steelBlue), then: .color(.firebrick)),
                 styled(element),
             ]
         }
@@ -24,14 +27,14 @@
     static func styled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", proves: [
             Covered(BarItemElementContract.style, on: element),
-        ], needs: [Covered(BarItemElementContract.background, on: element)]) { s in
+        ], needs: [Covered(BackgroundElementContract.background, on: element)]) { s in
             s.start {
                 Specimens.page(element, [Write(BarItemElementContract.style, Name(Styled.key(element)))], beside: [WearsStyledSheet()])
             }
             let item = try s.element("specimen")
 
-            try s.settle { try s.held(BarItemElementContract.background, on: item) == .color(.steelBlue) }
-            s.expect(try s.held(BarItemElementContract.background, on: item), .color(.steelBlue), "the style's background")
+            try s.settle { try s.held(BackgroundElementContract.background, on: item) == .color(.steelBlue) }
+            s.expect(try s.held(BackgroundElementContract.background, on: item), .color(.steelBlue), "the style's background")
         }
     }
 
@@ -41,10 +44,10 @@
         ConformanceCase("\(element).followsThePointerOverIt", proves: [
             Covered(HoverElementContract.pointerEntered, on: element),
             Covered(HoverElementContract.pointerExited, on: element),
-        ], needs: [Covered(BarItemElementContract.background, on: element)]) { s in
+        ], needs: [Covered(BackgroundElementContract.background, on: element)]) { s in
             s.start { BarItemStates.page(element, .pointerOver) }
             let item = try s.element("specimen")
-            let background = { try s.held(BarItemElementContract.background, on: item) }
+            let background = { try s.held(BackgroundElementContract.background, on: item) }
             try s.settle { try background() == .color(.steelBlue) }
 
             try s.perform(.hover(at: Point(8, 8)), on: item)

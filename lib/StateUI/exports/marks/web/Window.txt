@@ -1,6 +1,5 @@
 # revision 11.1
 Window: ✅
-Window.background: ☑️ A page draws its window opaque: a blur or glass shows its color.
 Window.created: ✅
 Window.destroying: ✓ close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab
 Window.floatsOnTop: – A page keeps no browser window above the others: the system stacks them.

@@ -64,10 +64,10 @@
     static func pressed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).followsAPressOnIt", proves: [
             Covered(PressElementContract.pressed, on: element), Covered(PressElementContract.released, on: element),
-        ], needs: [Covered(BarItemElementContract.background, on: element)]) { s in
+        ], needs: [Covered(BackgroundElementContract.background, on: element)]) { s in
             s.start { BarItemStates.page(element, .pressed) }
             let button = try s.element("specimen")
-            let background = { try s.held(BarItemElementContract.background, on: button) }
+            let background = { try s.held(BackgroundElementContract.background, on: button) }
             try s.settle { try background() == .color(.steelBlue) }
 
             try s.perform(.pressDown(at: Point(8, 8)), on: button)
