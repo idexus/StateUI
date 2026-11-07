@@ -24,11 +24,11 @@ extension ElementValues where Realized == StepperContract {
     /// Design: docs/design/host/runtime.md#a-value-in-a-range
     @MainActor
     public func shownStep(standing: Double) -> Double {
-        let ends = ValueArithmetic.range(self[StepperContract.minimum] ?? 0, self[StepperContract.maximum] ?? 100)
+        let ends = ValueArithmetic.range(self[RangeElementContract.minimum] ?? 0, self[RangeElementContract.maximum] ?? 100)
         let value = written(
-            StepperContract.value, within: [StepperContract.minimum, StepperContract.maximum], standing: standing)
+            RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum], standing: standing)
         return ValueArithmetic.stepped(
-            value, toward: destination(StepperContract.value) ?? value, step: self[StepperContract.step] ?? 1,
+            value, toward: destination(RangeElementContract.value) ?? value, step: self[StepperContract.step] ?? 1,
             lower: ends.lower, upper: ends.upper)
     }
 }

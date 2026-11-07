@@ -636,6 +636,9 @@ swift.conformance ProgressBar: StateUI.Views
 swift.conformance ProgressBar: Swift.Sendable
 swift.conformance ProgressBarContract: StateUI.WornContract
 swift.conformance ProgressBarContract: Swift.Sendable
+swift.conformance RangeElementContract: StateUI.Tier
+swift.conformance RangeElementContract: StateUI.WornContract
+swift.conformance RangeElementContract: Swift.Sendable
 swift.conformance Rect: Swift.Equatable
 swift.conformance Rect: Swift.Sendable
 swift.conformance Rectangle: StateUI.CorneredShape
@@ -1100,6 +1103,7 @@ swift.enum PopupElementContract: enum PopupElementContract
 swift.enum PresentedElementContract: enum PresentedElementContract
 swift.enum PressElementContract: enum PressElementContract
 swift.enum ProgressBarContract: enum ProgressBarContract
+swift.enum RangeElementContract: enum RangeElementContract
 swift.enum RectangleContract: enum RectangleContract
 swift.enum RefreshElementContract: enum RefreshElementContract
 swift.enum SceneBuilder: @MainActor @resultBuilder enum SceneBuilder
@@ -8504,6 +8508,13 @@ swift.method ProgressBar.visualState(_:): @MainActor func visualState(_ state: V
 swift.method ProgressBar.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ProgressBar.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method RangeElement.maximum(_:): @MainActor func maximum(_ state: Binding<Double>) -> Self.Modified
+swift.method RangeElement.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
+swift.method RangeElement.minimum(_:): @MainActor func minimum(_ state: Binding<Double>) -> Self.Modified
+swift.method RangeElement.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
+swift.method RangeElement.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Self.Modified
+swift.method RangeElement.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
+swift.method RangeElement.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9441,11 +9452,11 @@ swift.method Slider.layoutDirection(_:): @MainActor func layoutDirection(_ state
 swift.method Slider.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method Slider.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method Slider.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
-swift.method Slider.maximum(_:): @MainActor func maximum(_ state: Binding<Double>) -> Slider.Modified
+swift.method Slider.maximum(_:): @MainActor func maximum(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
-swift.method Slider.minimum(_:): @MainActor func minimum(_ state: Binding<Double>) -> Slider.Modified
+swift.method Slider.minimum(_:): @MainActor func minimum(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
@@ -9553,9 +9564,9 @@ swift.method Slider.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method Slider.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Slider.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Slider.Modified
-swift.method Slider.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Slider.Modified
-swift.method Slider.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Slider.Modified
+swift.method Slider.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Self.Modified
+swift.method Slider.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
+swift.method Slider.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
 swift.method Slider.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Slider.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Slider.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -9608,8 +9619,6 @@ swift.method Slider.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Slider.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Slider.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method SliderProperties.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
-swift.method SliderProperties.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
 swift.method Space.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10275,11 +10284,11 @@ swift.method Stepper.layoutDirection(_:): @MainActor func layoutDirection(_ stat
 swift.method Stepper.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method Stepper.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method Stepper.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
-swift.method Stepper.maximum(_:): @MainActor func maximum(_ state: Binding<Double>) -> Stepper.Modified
+swift.method Stepper.maximum(_:): @MainActor func maximum(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.maximumHeight(_:): @MainActor func maximumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.maximumWidth(_:): @MainActor func maximumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
-swift.method Stepper.minimum(_:): @MainActor func minimum(_ state: Binding<Double>) -> Stepper.Modified
+swift.method Stepper.minimum(_:): @MainActor func minimum(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.minimumHeight(_:): @MainActor func minimumHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.minimumWidth(_:): @MainActor func minimumWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.motion(_:): @MainActor func motion(_ motion: Motion) -> Self.Modified
@@ -10381,9 +10390,9 @@ swift.method Stepper.onTapped(count:_:): @MainActor func onTapped(count: Int, _ 
 swift.method Stepper.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Stepper.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Stepper.Modified
-swift.method Stepper.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Stepper.Modified
-swift.method Stepper.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Stepper.Modified
+swift.method Stepper.onValueChanged(_:): @MainActor func onValueChanged(_ handler: @escaping @MainActor @Sendable (Double) throws -> Void) -> Self.Modified
+swift.method Stepper.onValueChanged(_:_:): @MainActor func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
+swift.method Stepper.onValueChanged(gate:_:): @MainActor func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Self.Modified
 swift.method Stepper.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Stepper.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Stepper.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -10436,8 +10445,6 @@ swift.method Stepper.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method Stepper.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Stepper.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method StepperProperties.maximum(_:): @MainActor func maximum(_ value: Double) -> Self.Modified
-swift.method StepperProperties.minimum(_:): @MainActor func minimum(_ value: Double) -> Self.Modified
 swift.method StepperProperties.step(_:): @MainActor func step(_ value: Double) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
@@ -13844,6 +13851,11 @@ swift.type.property PressElementContract.pressed: static let pressed: ElementEve
 swift.type.property PressElementContract.released: static let released: ElementEvent<PressElementContract, Void>
 swift.type.property ProgressBarContract.name: static var name: String { get }
 swift.type.property ProgressBarContract.progress: static let progress: ElementProperty<ProgressBarContract, Double>
+swift.type.property RangeElementContract.maximum: static let maximum: ElementProperty<RangeElementContract, Double>
+swift.type.property RangeElementContract.minimum: static let minimum: ElementProperty<RangeElementContract, Double>
+swift.type.property RangeElementContract.name: static let name: String
+swift.type.property RangeElementContract.value: static let value: ElementProperty<RangeElementContract, Double>
+swift.type.property RangeElementContract.valueChanged: static let valueChanged: ElementEvent<RangeElementContract, Double>
 swift.type.property Rect.zero: static let zero: Rect
 swift.type.property RectangleContract.cornerRadius: static let cornerRadius: ElementProperty<RectangleContract, CornerRadius>
 swift.type.property RectangleContract.name: static var name: String { get }
@@ -13884,11 +13896,7 @@ swift.type.property ShapeContract.lineWidth: static let lineWidth: ElementProper
 swift.type.property ShapeContract.name: static let name: String
 swift.type.property ShapeContract.stroke: static let stroke: ElementProperty<ShapeContract, Brush>
 swift.type.property SheetContract.name: static var name: String { get }
-swift.type.property SliderContract.maximum: static let maximum: ElementProperty<SliderContract, Double>
-swift.type.property SliderContract.minimum: static let minimum: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.name: static var name: String { get }
-swift.type.property SliderContract.value: static let value: ElementProperty<SliderContract, Double>
-swift.type.property SliderContract.valueChanged: static let valueChanged: ElementEvent<SliderContract, Double>
 swift.type.property SpaceContract.name: static var name: String { get }
 swift.type.property SpinnerContract.isAnimating: static let isAnimating: ElementProperty<SpinnerContract, Bool>
 swift.type.property SpinnerContract.name: static var name: String { get }
@@ -13901,12 +13909,8 @@ swift.type.property SplitViewContract.sidebarOverlayBackground: static let sideb
 swift.type.property SplitViewContract.sidebarOverlays: static let sidebarOverlays: ElementProperty<SplitViewContract, Bool>
 swift.type.property StackContract.name: static let name: String
 swift.type.property StackContract.spacing: static let spacing: ElementProperty<StackContract, Double>
-swift.type.property StepperContract.maximum: static let maximum: ElementProperty<StepperContract, Double>
-swift.type.property StepperContract.minimum: static let minimum: ElementProperty<StepperContract, Double>
 swift.type.property StepperContract.name: static var name: String { get }
 swift.type.property StepperContract.step: static let step: ElementProperty<StepperContract, Double>
-swift.type.property StepperContract.value: static let value: ElementProperty<StepperContract, Double>
-swift.type.property StepperContract.valueChanged: static let valueChanged: ElementEvent<StepperContract, Double>
 swift.type.property StyleKey.platform: static var platform: StyleKey<Target> { get }
 swift.type.property SubmitElementContract.name: static let name: String
 swift.type.property SubmitElementContract.submitLabel: static let submitLabel: ElementProperty<SubmitElementContract, SubmitLabel>

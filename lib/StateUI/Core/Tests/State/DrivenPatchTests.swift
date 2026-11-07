@@ -434,7 +434,7 @@ final class DrivenPatchTests: XCTestCase {
     /// the values the host walks by a key of their own stand apart.
     func testEveryTwinIsDecidedByItsContract() throws {
         let ownValues = [
-            "journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,",
+            "journey(.scrollOffset,", "journey(RangeElementContract.value.token,", "journey(RangeElementContract.value.token,",
             "journey(ColorPickerContract.color.token,",
         ]
         var bypassing: [String] = []
@@ -496,8 +496,8 @@ final class DrivenPatchTests: XCTestCase {
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
         let changed: [(Node, Prop, String)] = [
-            (Slider(number.projectedValue).node, SliderContract.value.token, "Slider"),
-            (Stepper(number.projectedValue).node, StepperContract.value.token, "Stepper"),
+            (Slider(number.projectedValue).node, RangeElementContract.value.token, "Slider"),
+            (Stepper(number.projectedValue).node, RangeElementContract.value.token, "Stepper"),
             (Switch(flag.projectedValue).node, ToggleElementContract.isOn.token, "Switch"),
             (CheckBox(flag.projectedValue).node, ToggleElementContract.isOn.token, "CheckBox"),
             (TextField(text.projectedValue).node, TextualElementContract.text.token, "TextField"),

@@ -11,23 +11,23 @@ extension AndroidRegistrations {
         registry.add(SliderContract.self, create: { reports in
             let slider = AndroidSliderView()
             slider.onValueChanged = { moved in
-                reports.report(SliderContract.value, moved, as: SliderContract.valueChanged)
+                reports.report(RangeElementContract.value, moved, as: RangeElementContract.valueChanged)
             }
             slider.onPressed = { reports.raise(PressElementContract.pressed) }
             slider.onReleased = { reports.raise(PressElementContract.released) }
             return slider
         }, members: { slider in
-            slider.applies(SliderContract.value, SliderContract.minimum, SliderContract.maximum) { view, values in
+            slider.applies(RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum) { view, values in
                 view.apply(
                     value: values.written(
-                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
                         standing: view.value),
-                    minimum: values[SliderContract.minimum] ?? 0,
-                    maximum: values[SliderContract.maximum] ?? 1)
+                    minimum: values[RangeElementContract.minimum] ?? 0,
+                    maximum: values[RangeElementContract.maximum] ?? 1)
             }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            slider.declares(SliderContract.valueChanged)
+            slider.declares(RangeElementContract.valueChanged)
             slider.declares(PressElementContract.pressed)
             slider.declares(PressElementContract.released)
         })
@@ -35,21 +35,21 @@ extension AndroidRegistrations {
         registry.add(StepperContract.self, create: { reports in
             let stepper = AndroidStepperView()
             stepper.onValueChanged = { stepped in
-                reports.report(StepperContract.value, stepped, as: StepperContract.valueChanged)
+                reports.report(RangeElementContract.value, stepped, as: RangeElementContract.valueChanged)
             }
             return stepper
         }, members: { stepper in
             stepper.applies(
-                StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
+                RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, StepperContract.step,
                 VisualElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.value),
-                    minimum: values[StepperContract.minimum] ?? 0,
-                    maximum: values[StepperContract.maximum] ?? 100,
+                    minimum: values[RangeElementContract.minimum] ?? 0,
+                    maximum: values[RangeElementContract.maximum] ?? 100,
                     step: values[StepperContract.step] ?? 1,
                     enabled: values[VisualElementContract.isEnabled] ?? true)
             }
-            stepper.declares(StepperContract.valueChanged)
+            stepper.declares(RangeElementContract.valueChanged)
         })
     }
 }

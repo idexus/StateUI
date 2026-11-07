@@ -13,20 +13,9 @@ public enum SliderContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         ViewContract.self, TintElementContract.self, FocusElementContract.self,
         PressElementContract.self,
+        RangeElementContract.self,
     ]
 
-    /// The value at the far end of the track.
-    public static let maximum = ElementProperty<Self, Double>("maximum", layer: .native, travels: false)
-
-    /// The value at the near end of the track.
-    public static let minimum = ElementProperty<Self, Double>("minimum", layer: .native, travels: false)
-
-    /// Where the thumb stands, between the minimum and the maximum.
-    public static let value = ElementProperty<Self, Double>("value", layer: .native)
-
-    /// The thumb was dragged, to the value it carries.
-    public static let valueChanged = ElementEvent<Self, Double>("valueChanged", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [maximum, minimum, value, valueChanged]
+    public static let members: [any ContractMember] = []
 }

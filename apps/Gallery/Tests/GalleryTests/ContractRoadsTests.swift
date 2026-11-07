@@ -320,8 +320,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Canvas { Draw.lineWidth(2) }"#),
         Road(
             name: "a state handed to a style by setValue(_:on:)",
-            closed: #"_ = Style<Slider>().setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#,
-            open: #"_ = Slider(0.5).setValue(SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#),
+            closed: #"_ = Style<Slider>().setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#,
+            open: #"_ = Slider(0.5).setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#),
         Road(
             name: "an application calling the library's own act",
             closed: #"_ = ApplicationContract.handlerFailed"#,

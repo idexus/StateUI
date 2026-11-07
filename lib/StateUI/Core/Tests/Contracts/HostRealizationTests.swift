@@ -107,7 +107,7 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRegister(HostRegister(records: [
             .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
             .notPlanned(PressElementContract.pressed, reason: "a range input says no press."),
-            .partial(SliderContract.value, missing: "steps"),
+            .partial(RangeElementContract.value, missing: "steps"),
         ], unrealized: [ButtonContract.self]))
         defer { HostBoundary.setRegister(nil) }
 
@@ -117,8 +117,8 @@ final class HostRealizationTests: XCTestCase {
         XCTAssertEqual(
             HostRealizations.unhonored(PressElementContract.pressed.token.key, on: SliderContract.nodeType),
             "`Slider.pressed` is never realized on this host: a range input says no press.")
-        XCTAssertNil(HostRealizations.unhonored(SliderContract.value.token.key, on: SliderContract.nodeType))
-        XCTAssertNil(HostRealizations.unhonored(SliderContract.maximum.token.key, on: SliderContract.nodeType),
+        XCTAssertNil(HostRealizations.unhonored(RangeElementContract.value.token.key, on: SliderContract.nodeType))
+        XCTAssertNil(HostRealizations.unhonored(RangeElementContract.maximum.token.key, on: SliderContract.nodeType),
                      "the register says nothing of it")
         XCTAssertNil(HostRealizations.unhonored(TintElementContract.tint.token.key, on: ButtonContract.nodeType),
                      "an element the host does not realize is said once, as an element")

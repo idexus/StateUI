@@ -55,7 +55,7 @@ TextSpan 4
 Separator 4
 Canvas 4
 Rectangle 3
-Stepper 5
+Stepper 6
 KeyboardElement 7
 LineHeightElement 2
 TextAlignmentElement 2
@@ -76,7 +76,7 @@ PaddingElement 3
 MotionLayout 16
 FocusElement 5
 ScrollView 5
-Slider 4
+Slider 5
 Switch 4
 Spinner 2
 Capsule 2

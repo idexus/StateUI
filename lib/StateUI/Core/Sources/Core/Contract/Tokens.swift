@@ -207,12 +207,12 @@ extension NodeType {
     static let lineHeight = LineHeightElementContract.lineHeight.token
     static let location = MarkerContract.location.token
     static let margin = ViewContract.margin.token
-    static let maximum = SliderContract.maximum.token
+    static let maximum = RangeElementContract.maximum.token
     static let maximumHeight = VisualElementContract.maximumHeight.token
     static let maximumWidth = VisualElementContract.maximumWidth.token
     static let maximumLength = TextInputContract.maximumLength.token
     static let maximumLines = TextContract.maximumLines.token
-    static let minimum = SliderContract.minimum.token
+    static let minimum = RangeElementContract.minimum.token
     static let minimumHeight = VisualElementContract.minimumHeight.token
     static let minimumWidth = VisualElementContract.minimumWidth.token
     static let backButtonTitle = PageContract.backButtonTitle.token
@@ -280,7 +280,7 @@ extension NodeType {
     static let kind = MarkerContract.kind.token
     static let userAgent = WebViewContract.userAgent.token
 
-    static let value = SliderContract.value.token
+    static let value = RangeElementContract.value.token
     static let verticalAlignment = ViewContract.verticalAlignment.token
     static let verticalScrollIndicator = ScrollViewContract.verticalScrollIndicator.token
     static let verticalTextAlignment = TextContract.verticalTextAlignment.token
@@ -361,7 +361,7 @@ extension NodeType {
     static let textChanged = TextInputContract.textChanged.token
     static let timeChanged = TimePickerContract.timeChanged.token
     static let toggled = ToggleElementContract.toggled.token
-    static let valueChanged = SliderContract.valueChanged.token
+    static let valueChanged = RangeElementContract.valueChanged.token
     static let windowClosed = SceneContract.windowClosed.token
 }
 

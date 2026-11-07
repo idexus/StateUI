@@ -7,13 +7,12 @@ and acts it declares, and the binding twins of its values.
 ## A control is a node and its modifiers
 
 ```text
-  public struct Slider: ElementView, TintElement, SliderProperties {
+  public struct Slider: ElementView, TintElement, RangeElement, … {
       public var node: Node                      Node(contract: SliderContract.self)
-      init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
       init(_ state: Binding<Double>)             the purpose value, two-way
-      func value(_:) / minimum(_:) / …           properties, from SliderProperties
-      func onValueChanged(_:)                    events, through onEvent(member)
+      func minimum(_:) / maximum(_:)             properties, from the RangeElement tier it wears
+      func onValueChanged(_:)                    events, from the tier, through onEvent(member)
   }
   extension Aim where Target == Map { … }       a control's acts, through call(member)
 ```

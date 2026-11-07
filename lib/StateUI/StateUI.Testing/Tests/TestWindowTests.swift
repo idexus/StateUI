@@ -13,7 +13,7 @@ final class TestWindowTests: XCTestCase {
         let window = try await TestWindow(motion: .none) { Text("words").accessibilityIdentifier("words") }
 
         XCTAssertEqual(try window.element("words").value(TextualElementContract.text), "words")
-        XCTAssertThrowsError(try window.element("words").value(SliderContract.value), "a text holds no slider's value")
+        XCTAssertThrowsError(try window.element("words").value(RangeElementContract.value), "a text holds no slider's value")
         try await window.close()
     }
 

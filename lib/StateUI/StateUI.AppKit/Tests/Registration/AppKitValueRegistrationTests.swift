@@ -23,9 +23,9 @@ final class AppKitValueRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["Slider", "Stepper"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "value")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "value")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Slider", owner: "PressElement", member: "pressed")))
         XCTAssertTrue(realization.members.contains(

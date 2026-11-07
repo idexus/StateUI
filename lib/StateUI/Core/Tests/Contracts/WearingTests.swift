@@ -9,16 +9,16 @@ import XCTest
 @MainActor
 final class WearingTests: XCTestCase {
     func testAPropertyOfAContractTheElementDoesNotWearIsSaid() {
-        _ = Beacon().setValue(SliderContract.value, 3)
+        _ = Beacon().setValue(RangeElementContract.value, 3)
 
-        XCTAssertTrue(hasComplained("Test.Beacon was handed `Slider.value`, and Test.Beacon wears no Slider"))
+        XCTAssertTrue(hasComplained("Test.Beacon was handed `RangeElement.value`, and Test.Beacon wears no RangeElement"))
     }
 
     func testAStateOfAContractTheElementDoesNotWearIsSaid() {
         _ = Beacon().setValue(
-            SliderContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)
+            RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)
 
-        XCTAssertTrue(hasComplained("Test.Beacon was handed `Slider.maximum`"))
+        XCTAssertTrue(hasComplained("Test.Beacon was handed `RangeElement.maximum`"))
     }
 
     func testAnEventOfAContractTheElementDoesNotWearIsSaid() {

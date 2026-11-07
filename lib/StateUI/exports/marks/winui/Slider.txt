@@ -1,6 +1,2 @@
 # revision 3.1
 Slider: ✅
-Slider.maximum: ✅
-Slider.minimum: ✅
-Slider.value: ✅
-Slider.valueChanged: ✅

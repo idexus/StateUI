@@ -1,6 +1,2 @@
-# revision 4.1
+# revision 5.1
 Slider: ✅
-Slider.maximum: ✅
-Slider.minimum: ✅
-Slider.value: ✅
-Slider.valueChanged: ✅

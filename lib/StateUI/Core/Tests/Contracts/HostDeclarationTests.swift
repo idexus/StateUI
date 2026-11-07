@@ -62,7 +62,7 @@ final class HostDeclarationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Text", owner: "FontElement", member: "fontSize")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged")))
     }
 
     /// What the shared machinery realizes is a tier's member: an element that declares a member of the same name
@@ -149,7 +149,7 @@ final class HostDeclarationTests: XCTestCase {
             members: [
                 HostRealizedMember(element: "Text", owner: "Text", member: "maximumLines"),
                 HostRealizedMember(element: "Text", owner: "VisualElement", member: "opacity"),
-                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
+                HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged"),
                 HostRealizedMember(element: "Slider", owner: "VisualElement", member: "opacity"),
                 HostRealizedMember(element: "Slider", owner: "View", member: "tapped"),
                 HostRealizedMember(element: "Doodle", owner: "Doodle", member: "ink"),

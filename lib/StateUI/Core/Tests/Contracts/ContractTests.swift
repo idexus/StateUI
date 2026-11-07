@@ -70,7 +70,7 @@ final class ContractTests: XCTestCase {
     func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
         let text = Text("Save")
             .setValue(ButtonContract.role, .primary)
-            .onEvent(SliderContract.valueChanged) { _ in }
+            .onEvent(RangeElementContract.valueChanged) { _ in }
             .setValue(FontElementContract.fontSize, 20)
 
         let patch = Renders().render(text.id("label").node)

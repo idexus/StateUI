@@ -57,7 +57,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Slider](Slider.md) | 86 | 43 ✅ · 3 ☑️ · 36 ✓ · 2 – | 23 ✅ · 2 ☑️ · 12 ✓ · 5 – | 32 ✅ · 4 ☑️ · 2 ✓ · 3 – | 34 ✅ · 1 ☑️ · 2 ✓ · 5 – | 20 ✅ · 3 ☑️ · 13 ✓ · 6 – | 28 ✅ · 10 ✓ · 4 – |
 | [Space](Space.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 26 ✅ · 2 ☑️ · 10 ✓ · 1 – | 35 ✅ · 4 ☑️ | 32 ✅ · 1 ☑️ · 3 ✓ · 3 – | 21 ✅ · 2 ☑️ · 10 ✓ · 6 – | 25 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Spinner](Spinner.md) | 76 | 34 ✅ · 3 ☑️ · 37 ✓ · 2 – | 24 ✅ · 2 ☑️ · 10 ✓ · 2 – | 33 ✅ · 4 ☑️ | 27 ✅ · 1 ☑️ · 3 ✓ · 6 – | 19 ✅ · 3 ☑️ · 10 ✓ · 6 – | 24 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| [Stepper](Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 27 ✅ · 2 ☑️ · 12 ✓ · 5 – | 36 ✅ · 4 ☑️ · 2 ✓ · 3 – | 37 ✅ · 2 ☑️ · 2 ✓ · 5 – | 25 ✅ · 3 ☑️ · 12 ✓ · 6 – | 32 ✅ · 1 ☑️ · 10 ✓ · 3 – |
+| [Stepper](Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 22 ✅ · 2 ☑️ · 12 ✓ · 5 – | 31 ✅ · 4 ☑️ · 2 ✓ · 3 – | 32 ✅ · 2 ☑️ · 2 ✓ · 5 – | 20 ✅ · 3 ☑️ · 12 ✓ · 6 – | 27 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Switch](Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 26 ✅ · 2 ☑️ · 12 ✓ · 5 – | 34 ✅ · 4 ☑️ · 2 ✓ · 3 – | 37 ✅ · 1 ☑️ · 2 ✓ · 5 – | 23 ✅ · 2 ☑️ · 13 ✓ · 7 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Text](Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 41 ✅ · 1 ☑️ · 10 ✓ · 1 – | 48 ✅ · 4 ☑️ | 46 ✅ · 1 ☑️ · 2 ✓ · 5 – | 34 ✅ · 3 ☑️ · 11 ✓ · 6 – | 40 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [TextEditor](TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 49 ✅ · 2 ☑️ · 12 ✓ · 2 – | 56 ✅ · 4 ☑️ · 2 ✓ · 1 – | 56 ✅ · 2 ☑️ · 2 ✓ · 5 – | 38 ✅ · 5 ☑️ · 16 ✓ · 6 – | 51 ✅ · 1 ☑️ · 10 ✓ · 3 – |
@@ -66,10 +66,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 30 ✅ · 3 ☑️ · 11 ✓ · 1 – | 41 ✅ · 4 ☑️ · 1 ✓ | 38 ✅ · 1 ☑️ · 2 ✓ · 4 – | 26 ✅ · 2 ☑️ · 11 ✓ · 7 – | 32 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 35 ✅ · 2 ☑️ · 13 ✓ · 2 – | 42 ✅ · 4 ☑️ · 2 ✓ · 3 – | 39 ✅ · 3 ✓ · 9 – | 31 ✅ · 3 ☑️ · 12 ✓ · 6 – | 32 ✅ · 1 ☑️ · 10 ✓ · 6 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 28 ✅ · 3 ☑️ · 12 ✓ · 1 – | 39 ✅ · 4 ☑️ · 2 ✓ | 37 ✅ · 1 ☑️ · 2 ✓ · 4 – | 24 ✅ · 2 ☑️ · 12 ✓ · 7 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| ✅ |  | 1665 | 1132 | 1396 | 1371 | 940 | 1174 |
+| ✅ |  | 1665 | 1127 | 1391 | 1366 | 935 | 1169 |
 | ✓ |  | 1355 | 427 | 46 | 95 | 428 | 366 |
 | – |  | 57 | 106 | 82 | 197 | 231 | 125 |
-| **Met** | 3210 | **3077** | **1665** | **1524** | **1663** | **1599** | **1665** |
+| **Met** | 3210 | **3077** | **1660** | **1519** | **1658** | **1594** | **1660** |
 | 🧩 |  | 0 | 0 | 44 | 44 | 44 | 44 |
 <!-- controls:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [RangeElement](tiers/RangeElement.md) - What a control choosing a number in a range holds and reports: a slider, a stepper.
 - [SubmitElement](tiers/SubmitElement.md) - What a field the user submits holds and reports: the word its key shows, and the submission.
 - [SessionElement](tiers/SessionElement.md) - What a scene and a window report of the user's attention: coming to the front, leaving it, going out of sight.
 - [HoverElement](tiers/HoverElement.md) - What an element the pointer comes over and leaves reports: a view, an item on a bar.

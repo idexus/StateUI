@@ -844,6 +844,15 @@ extension ControlDictionary {
                 .onSubmitted { print("saved") }
             """#),
 
+        (RangeElementContract.self, #"""
+            @State var volume = 5.0
+
+            Slider($volume)
+                .minimum(0)
+                .maximum(11)
+                .onValueChanged { print($0) }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

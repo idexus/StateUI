@@ -165,10 +165,9 @@ a protocol of this kind:
 `ButtonProperties`, `ColorPickerProperties`, `DatePickerProperties`,
 `GridProperties`, `HStackProperties`, `ImageProperties`, `MapProperties`,
 `PickerProperties`, `PolygonProperties`, `PolylineProperties`,
-`RectangleProperties`, `ScrollViewProperties`, `SliderProperties`,
-`StepperProperties`, `TextEditorProperties`, `TextFieldProperties`,
-`TextProperties`, `TimePickerProperties`, `ToolbarGroupProperties` and
-`WebViewProperties`. What a control is for -
+`RectangleProperties`, `ScrollViewProperties`, `StepperProperties`,
+`TextEditorProperties`, `TextFieldProperties`, `TextProperties`,
+`TimePickerProperties`, `ToolbarGroupProperties` and `WebViewProperties`. What a control is for -
 a switch's position, a slider's value, a field's words, the place of its
 cursor - and whether a picker stands open are the control's own, never a
 style's: a `Switch` has no such protocol, its style taking only what its

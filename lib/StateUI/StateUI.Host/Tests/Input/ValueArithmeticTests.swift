@@ -21,16 +21,16 @@ final class ValueArithmeticTests: XCTestCase {
     func testARangeThatMovesTakesTheTreesValue() {
         func written(changed: Set<Prop>, tree: Double?) -> Double {
             let values = ElementValues<SliderContract>(changed: changed) { key in
-                key == SliderContract.value.token ? tree.map { .number($0) } : nil
+                key == RangeElementContract.value.token ? tree.map { .number($0) } : nil
             }
             return values.written(
-                SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum], standing: 10)
+                RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum], standing: 10)
         }
 
-        XCTAssertEqual(written(changed: [SliderContract.minimum.token], tree: 25), 25, "the range moved")
-        XCTAssertEqual(written(changed: [SliderContract.value.token], tree: 25), 25, "the value changed")
+        XCTAssertEqual(written(changed: [RangeElementContract.minimum.token], tree: 25), 25, "the range moved")
+        XCTAssertEqual(written(changed: [RangeElementContract.value.token], tree: 25), 25, "the value changed")
         XCTAssertEqual(written(changed: [], tree: 25), 10, "nothing the tree changed: the hand on the control stays")
-        XCTAssertEqual(written(changed: [SliderContract.maximum.token], tree: nil), 10, "no value in the tree")
+        XCTAssertEqual(written(changed: [RangeElementContract.maximum.token], tree: nil), 10, "no value in the tree")
     }
 
     /// A share of work past an end stands at that end; one that is no number stands at the start.

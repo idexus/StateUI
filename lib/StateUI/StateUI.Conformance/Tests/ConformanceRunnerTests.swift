@@ -78,11 +78,11 @@ final class ConformanceRunnerTests: XCTestCase {
             HostVerdict(element: "Switch", member: "isOn", mark: .inapplicable(
                 "its case covers Stepper.step too, which this host never has")),
         ])
-        XCTAssertEqual(Outcome(proving: [Covered(StepperContract.value)], on: register).facts, [
+        XCTAssertEqual(Outcome(proving: [Covered(RangeElementContract.value, on: StepperContract.self)], on: register).facts, [
             HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
         ])
         XCTAssertEqual(
-            Outcome(proving: [Covered(ToggleElementContract.toggled, on: SwitchContract.self), Covered(StepperContract.value), Covered(ToggleElementContract.isOn, on: SwitchContract.self)],
+            Outcome(proving: [Covered(ToggleElementContract.toggled, on: SwitchContract.self), Covered(RangeElementContract.value, on: StepperContract.self), Covered(ToggleElementContract.isOn, on: SwitchContract.self)],
                     on: register).facts,
             [
                 HostVerdict(element: "Stepper", member: "value", mark: .notRealized),
@@ -100,7 +100,7 @@ final class ConformanceRunnerTests: XCTestCase {
         XCTAssertEqual(Outcome(proving: [Covered(MenuBarContract.self)], on: register).facts, [
             HostVerdict(element: "MenuBar", member: nil, mark: .notPlanned(reason: "No bar here.")),
         ])
-        let needing = Outcome(proving: [Covered(ToggleElementContract.isOn, on: SwitchContract.self)], needing: [Covered(StepperContract.value)], on: register)
+        let needing = Outcome(proving: [Covered(ToggleElementContract.isOn, on: SwitchContract.self)], needing: [Covered(RangeElementContract.value, on: StepperContract.self)], on: register)
         XCTAssertFalse(needing.runs, "a case runs only where what it needs is realized too")
         XCTAssertEqual(needing.facts, [
             HostVerdict(element: "Switch", member: "isOn", mark: .waiting(on: "Stepper.value")),
@@ -192,7 +192,7 @@ final class ConformanceRunnerTests: XCTestCase {
     func testACaseTheRegisterStopsSaysWhy() {
         let verdicts = run([
             ConformanceCase("never", proves: [Covered(StepperContract.step)]) { _ in },
-            ConformanceCase("gap", proves: [Covered(StepperContract.value)]) { _ in },
+            ConformanceCase("gap", proves: [Covered(RangeElementContract.value, on: StepperContract.self)]) { _ in },
         ], on: RegisterOnly(realizing: [.notPlanned(StepperContract.step, reason: "No steps here.")]))
 
         XCTAssertEqual(failures, [])
