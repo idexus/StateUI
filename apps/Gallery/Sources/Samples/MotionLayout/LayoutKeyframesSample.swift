@@ -92,7 +92,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
         // input, the axis is keyframes alone and the buttons move it.
         .axis(
-            \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+            \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
             keyframes: .every(1), snaps: byHand ? .every(1) : nil)
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.

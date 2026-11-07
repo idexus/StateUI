@@ -753,7 +753,7 @@ struct Drawer: View {
             [Placement(Rect(0, room.height - 60 - open * 200, room.width, 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
-        .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .endpoints)
+        .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 200), range: 0...1, snaps: .endpoints)
         .height(300)
     }
 }
@@ -762,7 +762,7 @@ struct Drawer: View {
 The hand carries the view in front: it travels as far for one unit of the
 parameters as the front view of those the parameters move goes for it, so a carousel
 that grows with its window turns as far under the finger as on a phone.
-`pointsPerUnit:` gives the distance instead, for a run whose front view
+`lengthPerUnit:` gives the distance instead, for a run whose front view
 hardly moves - a pile of cards fanned out by another axis.
 
 A hand let go with speed throws the run: it goes on to the snap nearest

@@ -600,8 +600,8 @@ extension MotionLayout {
         /// Design: docs/design/views/motion-layout.md#the-hand
         func unit(at value: Double) -> Double? {
             switch travel {
-            case .points(let points):
-                return points
+            case .length(let length):
+                return length
             case .room:
                 let room = states.room.wrappedValue
                 guard room.width > 0, room.height > 0 else { return nil }

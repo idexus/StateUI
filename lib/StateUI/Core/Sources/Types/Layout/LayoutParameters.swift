@@ -14,7 +14,7 @@
 ///     @State private var orbit = Orbit()
 ///
 ///     MotionLayout(planets, id: \.name, parameters: $orbit) { … } placements: { room, orbit in … }
-///         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 240), range: 0...7, snaps: .every(1))
+///         .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 240), range: 0...7, snaps: .every(1))
 ///
 ///     orbit.zoom = 2                    // travels there, the turn going on as it was
 ///

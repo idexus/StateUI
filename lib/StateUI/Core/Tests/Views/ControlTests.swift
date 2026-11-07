@@ -361,7 +361,7 @@ final class ControlTests: XCTestCase {
                 } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
-                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
+                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
                 .shade {
                     Rectangle()
@@ -383,8 +383,8 @@ final class ControlTests: XCTestCase {
                 }
                 .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)
-                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
-                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is

@@ -106,7 +106,7 @@ final class MotionLayoutTests: XCTestCase {
             MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
             .node
         })
 
@@ -117,7 +117,7 @@ final class MotionLayoutTests: XCTestCase {
     func testTheHandIsHeardOnTheElementItself() throws {
         let patch = Renders().render(
             MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
+                .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))
 
@@ -378,7 +378,7 @@ final class MotionLayoutTests: XCTestCase {
             let renders = Renders()
             func tree() -> Node {
                 MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                    .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...6, snaps: .every(1))
+                    .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...6, snaps: .every(1))
                     .throwMotion(throwing)
                     .node
             }
@@ -455,7 +455,7 @@ final class MotionLayoutTests: XCTestCase {
                 handed.phases.append(at)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...7, snaps: .every(1), periodic: true)
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...7, snaps: .every(1), periodic: true)
             .node
         }
 
@@ -478,7 +478,7 @@ final class MotionLayoutTests: XCTestCase {
             handed?.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: range, snaps: snaps)
         .node
     }
 
@@ -514,7 +514,7 @@ final class MotionLayoutTests: XCTestCase {
         func tree() -> Node {
             MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .axis(
-                    \.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1), periodic: true)
+                    \.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1), periodic: true)
                 .node
         }
         _ = bench.laid(renders, tree)
@@ -562,7 +562,7 @@ final class MotionLayoutTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
+                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(1))
                 .onItemActivated { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))

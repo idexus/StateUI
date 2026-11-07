@@ -247,7 +247,7 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
-                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
                 .dynamics(.spring(response: .milliseconds(160)))
                 .node
         }

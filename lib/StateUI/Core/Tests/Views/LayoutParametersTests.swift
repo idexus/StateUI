@@ -179,7 +179,7 @@ final class LayoutParametersTests: XCTestCase {
                 handed?.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
+            .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: range, snaps: snaps)
             .node
         }
     }

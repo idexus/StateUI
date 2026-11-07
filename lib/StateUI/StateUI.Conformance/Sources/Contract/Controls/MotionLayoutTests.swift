@@ -444,7 +444,7 @@ private func itemLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             .parameterMotion(.eased(.milliseconds(200), curve: .linear))
@@ -484,7 +484,7 @@ private func handLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...5, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...5, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .mirrorsRightToLeft(mirrored)
             .width(100).height(40)
@@ -517,8 +517,8 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
-            .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-            .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .width(200).height(160)
         }

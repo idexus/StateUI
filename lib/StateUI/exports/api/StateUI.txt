@@ -13401,8 +13401,8 @@ swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tensi
 swift.type.method LayoutDynamics.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutDynamics
 swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
 swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
-swift.type.method LayoutInput.scroll(_:pointsPerUnit:): static func scroll(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
-swift.type.method LayoutInput.swipe(_:pointsPerUnit:): static func swipe(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
+swift.type.method LayoutInput.scroll(_:lengthPerUnit:): static func scroll(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
+swift.type.method LayoutInput.swipe(_:lengthPerUnit:): static func swipe(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput
 swift.type.method LayoutInterpolation.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
 swift.type.method LocalizedResources.resources(for:): @MainActor static func resources(for language: Self.Catalog.CatalogLanguage) -> Self
 swift.type.method MarkerBuilder.buildBlock(_:): static func buildBlock(_ components: [Marker]...) -> [Marker]

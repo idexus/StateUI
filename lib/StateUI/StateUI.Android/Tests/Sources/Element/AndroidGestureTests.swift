@@ -206,7 +206,7 @@ final class AndroidGestureTests: XCTestCase {
                 } placements: { _, phase in
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
-                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
                 .parameterMotion(.none)
                 .height(100)
             }

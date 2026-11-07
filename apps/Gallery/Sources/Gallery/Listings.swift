@@ -6120,7 +6120,7 @@ enum Listings {
             // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
             // input, the axis is keyframes alone and the buttons move it.
             .axis(
-                \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+                \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
                 keyframes: .every(1), snaps: byHand ? .every(1) : nil)
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
@@ -6274,7 +6274,7 @@ enum Listings {
             // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
             // no hand, so it is declared no axis.
             .axis(
-                \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+                \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
                 range: 0...Double(Self.cards.count - 1), snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
         }

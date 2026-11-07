@@ -29,7 +29,7 @@ final class LayoutShownTests: XCTestCase {
             MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160), curve: .linear))
 
             Rectangle()

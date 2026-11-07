@@ -83,7 +83,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
         // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
         // no hand, so it is declared no axis.
         .axis(
-            \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+            \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
             range: 0...Double(Self.cards.count - 1), snaps: .every(1))
         .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
     }

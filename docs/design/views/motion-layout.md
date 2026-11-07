@@ -399,7 +399,7 @@ still answer a tap.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
 
 The unit is how far the hand travels for one unit of its axis - the input's
-`travel`: so many points (`pointsPerUnit`), the room's length along the
+`travel`: so many device units (`lengthPerUnit`), the room's length along the
 axis (`.pages`), or, unless the input says, how far the view drawn in front
 goes for one unit where the run stands - of the views the parameters move, the
 highest, then the one nearest the middle - measured by the arithmetic a

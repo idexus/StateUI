@@ -209,7 +209,7 @@ final class LayoutKeyframeTests: XCTestCase {
                         return Self.poses(at)
                     }
                 return layout
-                    .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, keyframes: .every(1),
+                    .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, keyframes: .every(1),
                           snaps: .every(1))
                     .node
             }

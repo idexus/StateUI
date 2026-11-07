@@ -30,7 +30,7 @@ final class LayoutSetOutTests: XCTestCase {
             handed.froms.append(from)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...6, snaps: .every(1))
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...6, snaps: .every(1))
         .node
     }
 

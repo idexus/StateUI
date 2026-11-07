@@ -28,7 +28,7 @@ final class LayoutSettleTests: XCTestCase {
         return MotionLayout(items.wrappedValue, parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
         .parameterMotion(.eased(.milliseconds(160)))
         .dynamics(.spring(response: .milliseconds(160)))
         .onSettled { told.phases.append($0) }
@@ -44,7 +44,7 @@ final class LayoutSettleTests: XCTestCase {
             MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160)))
             .onSettled(.ignoreWhileRunning) { _ in
                 heard.append(1)
@@ -74,7 +74,7 @@ final class LayoutSettleTests: XCTestCase {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160)))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
@@ -108,7 +108,7 @@ final class LayoutSettleTests: XCTestCase {
             let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160)))
             return (hears.wrappedValue
                 ? layout.onSettled(gate: gate) { _ in
@@ -141,7 +141,7 @@ final class LayoutSettleTests: XCTestCase {
             MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160)))
             .onSettled { told.phases.append($0) }
             .onSettled { told.phases.append($0 + 10) }
