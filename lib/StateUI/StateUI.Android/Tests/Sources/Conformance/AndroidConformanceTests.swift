@@ -96,6 +96,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBorderElement", testBorderElement),
             ("testImageElement", testImageElement),
             ("testTintElement", testTintElement),
+            ("testSessionElement", testSessionElement),
             ("testHoverElement", testHoverElement),
             ("testPressElement", testPressElement),
             ("testPresentedElement", testPresentedElement),
@@ -199,6 +200,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testImageElement() throws { try conform(ImageElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testSessionElement() throws { try conform(SessionElementTests.self) }
     func testHoverElement() throws { try conform(HoverElementTests.self) }
     func testPressElement() throws { try conform(PressElementTests.self) }
     func testPresentedElement() throws { try conform(PresentedElementTests.self) }

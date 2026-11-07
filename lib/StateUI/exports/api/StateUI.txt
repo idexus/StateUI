@@ -703,6 +703,9 @@ swift.conformance Separator: StateUI.Views
 swift.conformance Separator: Swift.Sendable
 swift.conformance SeparatorContract: StateUI.WornContract
 swift.conformance SeparatorContract: Swift.Sendable
+swift.conformance SessionElementContract: StateUI.Tier
+swift.conformance SessionElementContract: StateUI.WornContract
+swift.conformance SessionElementContract: Swift.Sendable
 swift.conformance SessionPhase: Swift.Equatable
 swift.conformance SessionPhase: Swift.Hashable
 swift.conformance SessionPhase: Swift.RawRepresentable
@@ -1104,6 +1107,7 @@ swift.enum ScrollIndicatorVisibility: enum ScrollIndicatorVisibility
 swift.enum ScrollViewContract: enum ScrollViewContract
 swift.enum SearchFieldContract: enum SearchFieldContract
 swift.enum SeparatorContract: enum SeparatorContract
+swift.enum SessionElementContract: enum SessionElementContract
 swift.enum SessionPhase: enum SessionPhase
 swift.enum ShapeContract: enum ShapeContract
 swift.enum SheetContract: enum SheetContract
@@ -13847,10 +13851,7 @@ swift.type.property SafeAreaEdges.horizontal: static let horizontal: SafeAreaEdg
 swift.type.property SafeAreaEdges.start: static let start: SafeAreaEdges
 swift.type.property SafeAreaEdges.top: static let top: SafeAreaEdges
 swift.type.property SafeAreaEdges.vertical: static let vertical: SafeAreaEdges
-swift.type.property SceneContract.activated: static let activated: ElementEvent<SceneContract, Void>
-swift.type.property SceneContract.deactivated: static let deactivated: ElementEvent<SceneContract, Void>
 swift.type.property SceneContract.name: static var name: String { get }
-swift.type.property SceneContract.stopped: static let stopped: ElementEvent<SceneContract, Void>
 swift.type.property SceneContract.windowClosed: static let windowClosed: ElementEvent<SceneContract, String>
 swift.type.property ScrollAxes.all: static let all: ScrollAxes
 swift.type.property ScrollAxes.horizontal: static let horizontal: ScrollAxes
@@ -13865,6 +13866,10 @@ swift.type.property SearchFieldContract.name: static var name: String { get }
 swift.type.property SearchFieldContract.submitLabel: static let submitLabel: ElementProperty<SearchFieldContract, SubmitLabel>
 swift.type.property SearchFieldContract.submitted: static let submitted: ElementEvent<SearchFieldContract, Void>
 swift.type.property SeparatorContract.name: static var name: String { get }
+swift.type.property SessionElementContract.activated: static let activated: ElementEvent<SessionElementContract, Void>
+swift.type.property SessionElementContract.deactivated: static let deactivated: ElementEvent<SessionElementContract, Void>
+swift.type.property SessionElementContract.name: static let name: String
+swift.type.property SessionElementContract.stopped: static let stopped: ElementEvent<SessionElementContract, Void>
 swift.type.property ShapeContract.contentMode: static let contentMode: ElementProperty<ShapeContract, ContentMode>
 swift.type.property ShapeContract.dash: static let dash: ElementProperty<ShapeContract, [Double]>
 swift.type.property ShapeContract.dashPhase: static let dashPhase: ElementProperty<ShapeContract, Double>
@@ -14069,10 +14074,8 @@ swift.type.property WebViewContract.processTerminated: static let processTermina
 swift.type.property WebViewContract.reload: static let reload: ElementAct<WebViewContract, Void, Void>
 swift.type.property WebViewContract.source: static let source: ElementProperty<WebViewContract, WebViewSource>
 swift.type.property WebViewContract.userAgent: static let userAgent: ElementProperty<WebViewContract, String>
-swift.type.property WindowContract.activated: static let activated: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.background: static let background: ElementProperty<WindowContract, Material>
 swift.type.property WindowContract.created: static let created: ElementEvent<WindowContract, Void>
-swift.type.property WindowContract.deactivated: static let deactivated: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.destroying: static let destroying: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.floatsOnTop: static let floatsOnTop: ElementProperty<WindowContract, Bool>
 swift.type.property WindowContract.height: static let height: ElementProperty<WindowContract, Double>
@@ -14084,7 +14087,6 @@ swift.type.property WindowContract.maximumWidth: static let maximumWidth: Elemen
 swift.type.property WindowContract.minimumHeight: static let minimumHeight: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.minimumWidth: static let minimumWidth: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.name: static var name: String { get }
-swift.type.property WindowContract.stopped: static let stopped: ElementEvent<WindowContract, Void>
 swift.type.property WindowContract.title: static let title: ElementProperty<WindowContract, String>
 swift.type.property WindowContract.width: static let width: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.windowKind: static let windowKind: ElementProperty<WindowContract, Name>

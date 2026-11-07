@@ -1,0 +1,7 @@
+# revision 1.1
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.stopped: ✅
+Window.activated: ✓ switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move
+Window.deactivated: ✓ switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move
+Window.stopped: ✓ minimize on Window: the notification AppKit would post, posted by the driver; the window does not move

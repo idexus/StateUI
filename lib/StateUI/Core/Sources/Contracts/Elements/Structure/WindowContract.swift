@@ -9,14 +9,8 @@ public enum WindowContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// The window came to the front.
-    public static let activated = ElementEvent<Self, Void>("activated", layer: .adaptive)
-
     /// The platform made the window.
     public static let created = ElementEvent<Self, Void>("created", layer: .adaptive)
-
-    /// The window is showing behind another.
-    public static let deactivated = ElementEvent<Self, Void>("deactivated", layer: .adaptive)
 
     /// What the window is made of behind its pages: a color, or a blur or
     /// glass the desktop shows through.
@@ -59,9 +53,6 @@ public enum WindowContract: ElementContract {
     public static let minimumWidth = ElementProperty<Self, Double>(
         "minimumWidth", layer: .native, moves: .width)
 
-    /// The window went out of sight.
-    public static let stopped = ElementEvent<Self, Void>("stopped", layer: .adaptive)
-
     /// The window's title.
     public static let title = ElementProperty<Self, String>("title", layer: .native)
 
@@ -82,9 +73,9 @@ public enum WindowContract: ElementContract {
     /// Where the window stands down the screen, in device units.
     public static let y = ElementProperty<Self, Double>("y", layer: .structure)
 
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [SessionElementContract.self]
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        activated, background, created, deactivated, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable,
-        isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, stopped, title, width, windowKind, windowValue, x, y,
-    ]
+    public static let members: [any ContractMember] = [background, created, destroying, floatsOnTop, height, hidesWhenInactive, isMaximizable, isMinimizable, maximumHeight, maximumWidth, minimumHeight, minimumWidth, title, width, windowKind, windowValue, x, y]
 }

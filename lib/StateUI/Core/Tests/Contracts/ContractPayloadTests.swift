@@ -87,9 +87,9 @@ final class ContractPayloadTests: XCTestCase {
         check(PresentedElementContract.isPresentedChanged, [.bool(false)])
         check(PresentedElementContract.isPresentedChanged, [.bool(false)])
         check(RefreshElementContract.refreshRequested)
-        check(SceneContract.activated)
-        check(SceneContract.deactivated)
-        check(SceneContract.stopped)
+        check(SessionElementContract.activated)
+        check(SessionElementContract.deactivated)
+        check(SessionElementContract.stopped)
         check(SceneContract.windowClosed, [.string("2")])
         check(ScrollViewContract.scrollStopped)
         check(SearchFieldContract.submitted)
@@ -109,11 +109,11 @@ final class ContractPayloadTests: XCTestCase {
         check(WebViewContract.navigated, [.enumeration(1), .enumeration(3), address])
         check(WebViewContract.navigating, [.enumeration(3), address])
         check(WebViewContract.processTerminated)
-        check(WindowContract.activated)
+        check(SessionElementContract.activated)
         check(WindowContract.created)
-        check(WindowContract.deactivated)
+        check(SessionElementContract.deactivated)
         check(WindowContract.destroying)
-        check(WindowContract.stopped)
+        check(SessionElementContract.stopped)
 
         var events: Set<String> = []
 

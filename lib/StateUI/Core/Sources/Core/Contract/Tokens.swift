@@ -296,7 +296,7 @@ extension NodeType {
 @_spi(Host) public extension Event {
     static let accessibilityActionPerformed = VisualElementContract.accessibilityActionPerformed.token
     static let accessibilityAdjusted = VisualElementContract.accessibilityAdjusted.token
-    static let activated = SceneContract.activated.token
+    static let activated = SessionElementContract.activated.token
     static let appearing = PageContract.appearing.token
     static let canGoBackChanged = WebViewContract.canGoBackChanged.token
     static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
@@ -312,7 +312,7 @@ extension NodeType {
     static let submitted = SearchFieldContract.submitted.token
     static let created = WindowContract.created.token
     static let selectedTabChanged = TabViewContract.selectedTabChanged.token
-    static let deactivated = SceneContract.deactivated.token
+    static let deactivated = SessionElementContract.deactivated.token
     static let destroying = WindowContract.destroying.token
     static let disappearing = PageContract.disappearing.token
     static let dragEntered = ViewContract.dragEntered.token
@@ -355,7 +355,7 @@ extension NodeType {
     static let rotationUpdated = ViewContract.rotationUpdated.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token
     static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
-    static let stopped = SceneContract.stopped.token
+    static let stopped = SessionElementContract.stopped.token
     static let swiped = ViewContract.swiped.token
     static let tapped = ViewContract.tapped.token
     static let textChanged = TextInputContract.textChanged.token

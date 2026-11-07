@@ -14,7 +14,7 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
-                Covered(WindowContract.self), Covered(WindowContract.created), Covered(WindowContract.activated),
+                Covered(WindowContract.self), Covered(WindowContract.created),
             ]) { s in
                 let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
@@ -23,36 +23,6 @@
                 // Made, it stands showing and not yet in use; before the platform made it, out of sight.
                 s.expect(log.values.firstIndex(of: .inactive).map { $0 < log.values.count - 1 }, true, "made first")
                 s.expect(log.values.last, .active, "then in front")
-            },
-            ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", proves: [
-                Covered(WindowContract.deactivated), Covered(WindowContract.activated),
-            ]) { s in
-                let log = Received<SessionPhase>()
-                s.start { WindowPhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.switchAway, on: window)
-                s.settle { log.values.last == .inactive }
-                s.expect(log.values.last, .inactive, "behind another application")
-                try s.perform(.switchBack, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "in front again")
-            },
-            ConformanceCase("aWindowPutAwayIsOutOfSightUntilBroughtBack", proves: [
-                Covered(WindowContract.stopped),
-            ], needs: [Covered(WindowContract.activated)]) { s in
-                let log = Received<SessionPhase>()
-                s.start { WindowPhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.minimize, on: window)
-                s.settle { log.values.last == .background }
-                s.expect(log.values.last, .background, "put away")
-                try s.perform(.restore, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "brought back to the front")
             },
             ConformanceCase("aClosedWindowHearsItIsGoing", proves: [Covered(WindowContract.destroying)]) { s in
                 let log = Received<SessionPhase>()

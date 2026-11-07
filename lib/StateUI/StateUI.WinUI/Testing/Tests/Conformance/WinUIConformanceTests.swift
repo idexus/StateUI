@@ -124,6 +124,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testSessionElement() { conform(SessionElementTests.self) }
     func testHoverElement() { conform(HoverElementTests.self) }
     func testPressElement() { conform(PressElementTests.self) }
     func testPresentedElement() { conform(PresentedElementTests.self) }

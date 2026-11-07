@@ -24,7 +24,7 @@ struct NotesScene: Scene {
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits nothing: every member below is its own.
+Inherits: [SessionElement](tiers/SessionElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -45,11 +45,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (4)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>4 ✅</td><td><code>NSApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅</td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅</td><td>structure / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>4 ✅</td><td><code>Application</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>4 ✅</td><td><code>AdwApplication</code> / structure</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 –</td><td><code>document</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td></td><td><code>UIApplication</code> / structure, a <code>UIWindowScene</code> per window</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td></td><td>structure / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td></td><td><code>Application</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td></td><td><code>AdwApplication</code> / structure</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td></td><td><code>document</code> / structure</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract.swift`.
@@ -58,9 +58,16 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/SceneContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⏸</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
-<tr><td colspan="9">UIKit: waits on Window.windowKind, not realized yet<br>Android Views: not realized<br>Web: A page's one window closes with its tab, which hears nothing after.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>windowClosed</code></td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
+## From [SessionElement](tiers/SessionElement.md)
+
+What a scene and a window report of the user's attention: coming to the front, leaving it, going out of sight.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>

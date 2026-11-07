@@ -1,9 +1,7 @@
 # revision 11.1
 Window: ✅
-Window.activated: ✅
 Window.background: ☑️ GNOME draws its windows opaque: a blur or glass shows its color.
 Window.created: ✅
-Window.deactivated: ✓ switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
 Window.destroying: ✅
 Window.floatsOnTop: – GTK 4 keeps no window above the others: the desktop stacks them.
 Window.height: ✅
@@ -14,7 +12,6 @@ Window.maximumHeight: – GTK 4 bounds no window from above.
 Window.maximumWidth: – GTK 4 bounds no window from above.
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.stopped: ☑️ A Wayland desktop tells no window it was minimized, nor brought back.
 Window.title: ✅
 Window.width: ✅
 Window.windowKind: ✓ read windowKind of Window: the scenes the host keeps for the next start

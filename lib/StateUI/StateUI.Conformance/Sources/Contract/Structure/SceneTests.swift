@@ -17,26 +17,6 @@
                 _ = try s.element(ofType: SceneContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
             },
-            ConformanceCase("aSceneHearsWhereItStands", proves: [
-                Covered(SceneContract.activated), Covered(SceneContract.deactivated), Covered(SceneContract.stopped),
-            ]) { s in
-                let log = Received<SessionPhase>()
-                s.start { ScenePhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.switchAway, on: window)
-                s.settle { log.values.last == .inactive }
-                s.expect(log.values.last, .inactive, "behind another application")
-                try s.perform(.switchBack, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "in front again")
-                try s.perform(.minimize, on: window)
-                s.settle { log.values.last == .background }
-                s.expect(log.values.last, .background, "out of sight")
-                try s.perform(.restore, on: window)
-                s.settle { log.values.last == .active }
-            },
             ConformanceCase("aWindowTheUserClosesIsHeardAndTheLastEndsItsScene", proves: [
                 Covered(SceneContract.windowClosed),
             ], needs: [Covered(WindowContract.windowKind)]) { s in

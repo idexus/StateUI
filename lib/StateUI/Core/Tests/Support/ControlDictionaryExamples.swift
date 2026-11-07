@@ -826,6 +826,16 @@ extension ControlDictionary {
                 .onPointerExited { over = false }
             """#),
 
+        (SessionElementContract.self, #"""
+            struct StatusPage: View {
+                @Environment(\.window) private var window
+
+                var body: some View {
+                    Text(window.phase == .active ? "In front" : "Behind")
+                }
+            }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

@@ -22,8 +22,8 @@ ToolbarGroup 9
 TitleView 3
 MenuBar 4
 MenuItem 4
-Window 11
-Scene 3
+Window 12
+Scene 4
 Overlay 5
 BarElement 15
 NavigationStack 3

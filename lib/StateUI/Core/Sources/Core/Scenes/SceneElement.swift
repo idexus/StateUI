@@ -67,9 +67,9 @@ struct SceneElement: Element {
         }
 
         // Where the scene stands, as the host sees it.
-        node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
-        node.addHandler(SceneContract.deactivated.token) { record.session.phase = .inactive }
-        node.addHandler(SceneContract.stopped.token) { record.session.phase = .background }
+        node.addHandler(SessionElementContract.activated.token) { record.session.phase = .active }
+        node.addHandler(SessionElementContract.deactivated.token) { record.session.phase = .inactive }
+        node.addHandler(SessionElementContract.stopped.token) { record.session.phase = .background }
 
         return node
     }

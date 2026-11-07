@@ -95,7 +95,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ |  |  |  |  |  |
-| [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
+| [Scene](Scene.md) | 4 | 4 ✅ |  |  |  |  |  |
 | [Sheet](Sheet.md) | 2 | 2 ✅ |  |  |  |  |  |
 | [SplitView](SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 4 ☑️ · 4 ✓ · 2 – | 10 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 4 ☑️ · 1 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
 | [TabView](TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
@@ -106,11 +106,11 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarGroup](ToolbarGroup.md) | 16 | 6 ✅ · 8 – | 6 ✅ · 6 – | 5 ✅ · 1 ☑️ · 6 – | 7 ✅ · 5 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
 | [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 16 – | 5 ✅ · 12 – | 4 ✅ · 12 – | 6 ✅ · 11 – | 5 ✅ · 12 – | 17 ✅ |
-| [Window](Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 2 ☑️ · 4 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
-| ✅ |  | 110 | 108 | 87 | 132 | 94 | 145 |
-| ✓ |  | 26 | 23 | 21 | 8 | 15 | 13 |
-| – |  | 49 | 45 | 56 | 36 | 57 | 16 |
-| **Met** | 213 | **185** | **176** | **164** | **176** | **166** | **174** |
+| [Window](Window.md) | 21 | 13 ✅ · 1 ☑️ · 6 ✓ |  |  |  |  |  |
+| ✅ |  | 109 | 102 | 81 | 108 | 82 | 139 |
+| ✓ |  | 27 | 20 | 18 | 8 | 11 | 10 |
+| – |  | 49 | 37 | 44 | 36 | 50 | 1 |
+| **Met** | 213 | **185** | **159** | **143** | **152** | **143** | **150** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [SessionElement](tiers/SessionElement.md) - What a scene and a window report of the user's attention: coming to the front, leaving it, going out of sight.
 - [HoverElement](tiers/HoverElement.md) - What an element the pointer comes over and leaves reports: a view, an item on a bar.
 - [PressElement](tiers/PressElement.md) - What a control held down and let go of reports: a button, a slider, a bar's button.
 - [PresentedElement](tiers/PresentedElement.md) - What a page shown over the one beneath it holds and reports: a sheet, a popover.

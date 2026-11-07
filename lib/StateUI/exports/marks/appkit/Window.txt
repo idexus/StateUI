@@ -1,9 +1,7 @@
-# revision 11.1
+# revision 12.1
 Window: ✅
-Window.activated: ✅
 Window.background: ☑️ A window's glass is drawn as the blur as clear as it is.
 Window.created: ✅
-Window.deactivated: ✓ switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.destroying: ✅
 Window.floatsOnTop: ✓ bringToFront on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.height: ✅
@@ -14,7 +12,6 @@ Window.maximumHeight: ✅
 Window.maximumWidth: ✅
 Window.minimumHeight: ✅
 Window.minimumWidth: ✅
-Window.stopped: ✓ minimize on Window: the notification AppKit would post, posted by the driver; the window does not move
 Window.title: ✅
 Window.width: ✅
 Window.windowKind: ✓ read windowKind of Window: the host's restoration record

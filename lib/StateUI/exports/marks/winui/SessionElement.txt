@@ -1,0 +1,7 @@
+# revision 0.0
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.stopped: ✅
+Window.activated: ✅
+Window.deactivated: ✅
+Window.stopped: ✅

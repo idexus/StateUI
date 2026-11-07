@@ -18,6 +18,7 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
+        SessionElementContract.self,
         HoverElementContract.self,
         PressElementContract.self,
         PresentedElementContract.self,
