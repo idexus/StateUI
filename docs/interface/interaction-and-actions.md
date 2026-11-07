@@ -670,7 +670,7 @@ struct Document: View {
                         .keyboardShortcut("e", modifiers: [.primary, .shift])
                         .onClicked { exported += 1 }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             .toolbar {
                 ToolbarButton("Mark")

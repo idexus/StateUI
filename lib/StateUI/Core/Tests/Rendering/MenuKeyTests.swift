@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import Synchronization
 import XCTest
 @_spi(Host) @testable import StateUI
 
@@ -65,6 +66,21 @@ final class MenuKeyTests: XCTestCase {
             try XCTUnwrap(Renders().render(Menu("Menu") {}.id(value).node).menuKey)
         }
         XCTAssertEqual(Set(keys).count, 1)
+    }
+
+    /// A menu joins the platform's by `.joins` alone: a `StandardMenu` given to `.id` is a value like any other, and
+    /// `.id` after a join is said and leaves the join standing.
+    func testOnlyAJoinNamesThePlatformsMenu() throws {
+        let heard = Mutex<[String]>([])
+        Complaints.route { words in heard.withLock { $0.append(words) } }
+        defer { Complaints.route(to: nil) }
+
+        XCTAssertEqual(Renders().render(Menu("Plik") {}.joins(.file).node).menuKey, .standard(.file))
+        let byId = try XCTUnwrap(Renders().render(Menu("Plik") {}.id(StandardMenu.file).node).menuKey)
+        XCTAssertNotEqual(byId, .standard(.file), "an id joins none of the platform's menus")
+
+        XCTAssertEqual(Renders().render(Menu("Plik") {}.joins(.file).id("plik").node).menuKey, .standard(.file))
+        XCTAssertEqual(heard.withLock { $0.count }, 1, "the id beside the join is said")
     }
 
     func testAnUnbuiltListAimDoesNotInventAnItemToken() async throws {

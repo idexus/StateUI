@@ -209,7 +209,7 @@ extension ControlDictionary {
                     Menu("File") {
                         MenuItem("Save").onClicked { saved = true }
                     }
-                    .id(StandardMenu.file)
+                    .joins(.file)
                 }
             """#),
 

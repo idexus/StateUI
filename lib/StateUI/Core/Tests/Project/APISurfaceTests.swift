@@ -197,8 +197,6 @@ final class APISurfaceTests: XCTestCase {
             return (parts[0], path, line.components(separatedBy: ": ").dropFirst().joined(separator: ": "))
         }
         let written = ["StateUI.View", "StateUI.Views", "StateUI.ToolbarItem", "StateUI.Scene", "Swift.Error"]
-        // Handed to `.id(_:)`, which takes any hashable value.
-        let handedGenerically = ["StandardMenu"]
         let isContract = { (path: String) in
             let owner = path.prefix { $0 != "." }
             return owner.hasSuffix("Contract") || owner.hasSuffix("Tier")
@@ -214,7 +212,7 @@ final class APISurfaceTests: XCTestCase {
             let isNamed = fields.contains {
                 $0.kind != "swift.conformance" && !own($0.path) && !isContract($0.path) && $0.text.contains(word)
             }
-            if !isWritten && !isNamed && !handedGenerically.contains(type.path) { unmet.append(type.path) }
+            if !isWritten && !isNamed { unmet.append(type.path) }
         }
 
         XCTAssertGreaterThan(fields.count, 10_000, "the record holds almost nothing")

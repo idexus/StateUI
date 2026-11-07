@@ -971,7 +971,7 @@ VStack { … }
                 }
             }
         }
-        .id(StandardMenu.file)
+        .joins(.file)
     }
 ```
 
@@ -1004,13 +1004,13 @@ SplitView {
             .id("save")
             .isEnabled(false)
     }
-    .id(StandardMenu.file)
+    .joins(.file)
 }
 ```
 
-The platform's own menus are joined by identity, never by caption:
-A standard role is typed; a string such as `"StandardMenu.file"` is an ordinary
-authored identity. `.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
+The platform's own menus are joined by `.joins(_:)`, never by caption; `.id`
+is a menu's identity among the application's own and joins none of the
+platform's. `.joins(.file)` - a `StandardMenu`: `edit`, `view`, `window`, `help` - puts a menu's
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
 own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
 ordinary menu of the application's; on GTK, a submenu of the header bar's main

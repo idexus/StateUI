@@ -63,8 +63,8 @@ final class MenuIdentityTests: XCTestCase {
 
     func testAStandardMenuKeepsItsExplicitRole() throws {
         try menus(
-            outer: [Menu("Plik") { MenuItem("One") }.id(StandardMenu.file)],
-            inner: [Menu("Datei") { MenuItem("Two") }.id(StandardMenu.file)]
+            outer: [Menu("Plik") { MenuItem("One") }.joins(.file)],
+            inner: [Menu("Datei") { MenuItem("Two") }.joins(.file)]
         ) { menus in
             XCTAssertEqual(menus.count, 1)
             XCTAssertEqual(menus.first?.standard, .file)

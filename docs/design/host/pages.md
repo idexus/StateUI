@@ -367,8 +367,8 @@ outer first, then as declared: a page's entries come after the window's as
 a section of their own, parted by a line, and a page's own menus after the
 window's. An entry whose `.id` an entry further out has stands in that
 entry's place - its words, whether it can be chosen, its element - which the
-others of that id leave; a section left with nothing is none. A menu whose
-`.id` is a `StandardMenu` names the platform's menu of that identity
+others of that id leave; a section left with nothing is none. A menu that
+`.joins(_:)` a `StandardMenu` names the platform's menu of that kind
 (`standard`), which the host joins by it, never by its caption.
 
 ## The bar a path declares

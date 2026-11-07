@@ -123,7 +123,7 @@ final class GTKPagesTests: XCTestCase {
                         TextField(words.projectedValue)
                         Button("Other")
                     }
-                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
                     .title("Notes")
                 } destination: { _ in
                     Text("Note")

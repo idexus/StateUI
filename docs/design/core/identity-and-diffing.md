@@ -66,8 +66,10 @@ by where it stands ([aims](#aims-and-readings-on-an-element)).
 A menu's scoped runtime key identifies its native element. Its authored
 identity also joins declarations across page levels, which is a separate
 scope. `HostPatch.menuKey` carries that semantic identity: a literal name,
-an explicit `StandardMenu` role, or a number shared by equal authored values.
-A string reading `StandardMenu.file` remains an authored name, not a role.
+the platform's menu a menu `.joins(_:)`, or a number shared by equal authored
+values. The join is an identity no value an application writes is: a
+`StandardMenu` given to `.id` is an authored value like any other, and a
+menu that joins takes no `.id`.
 
 `MenuKeys` assigns numbers in traversal order. A rendered menu or entry owns
 its key object; the lookup book holds only weak references indexed by cached

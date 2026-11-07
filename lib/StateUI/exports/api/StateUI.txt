@@ -6417,6 +6417,7 @@ swift.method Marker.type(_:): @MainActor func type(_ value: MarkerType) -> Marke
 swift.method Menu.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Menu.id(_:): @MainActor func id(_ value: some Hashable) -> Menu
 swift.method Menu.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Menu
+swift.method Menu.joins(_:): @MainActor func joins(_ menu: StandardMenu) -> Menu
 swift.method MenuItem.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method MenuItem.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MenuItem.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified

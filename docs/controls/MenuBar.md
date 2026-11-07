@@ -12,7 +12,7 @@ Text(saved ? "Saved" : "Not saved")
         Menu("File") {
             MenuItem("Save").onClicked { saved = true }
         }
-        .id(StandardMenu.file)
+        .joins(.file)
     }
 ```
 

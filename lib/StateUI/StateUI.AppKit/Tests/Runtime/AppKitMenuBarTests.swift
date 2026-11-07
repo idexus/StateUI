@@ -78,9 +78,9 @@ final class AppKitMenuBarTests: XCTestCase {
                     MenuItem("Eksportuj").id("export")
                     MenuItem("Zapisz").isEnabled(false).id("save")
                 }
-                .id(StandardMenu.file)
-                Menu("Pomoc") { MenuItem("Podręcznik") }.id(StandardMenu.help)
-                Menu("Widok") { MenuItem("Powiększ") }.id(StandardMenu.view)
+                .joins(.file)
+                Menu("Pomoc") { MenuItem("Podręcznik") }.joins(.help)
+                Menu("Widok") { MenuItem("Powiększ") }.joins(.view)
                 Menu("Format") { MenuItem("Pogrub") }
             }
         }

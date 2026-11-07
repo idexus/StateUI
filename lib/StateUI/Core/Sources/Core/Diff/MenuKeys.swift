@@ -29,8 +29,8 @@ final class MenuKeys {
         let host: HostMenuKey
         if let name = identity.value.base as? String {
             host = .name(name)
-        } else if let standard = identity.value.base as? StandardMenu {
-            host = .standard(standard)
+        } else if let platform = identity.value.base as? PlatformMenu {
+            host = .standard(platform.menu)
         } else {
             host = .value(next)
             next += 1

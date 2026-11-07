@@ -21,7 +21,7 @@ final class WebEditMenuTests: XCTestCase {
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { TextField(words.projectedValue) }
-                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
                     .title("Notes")
             } destination: { _ in
                 Text("Note")

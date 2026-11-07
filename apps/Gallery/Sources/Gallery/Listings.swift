@@ -7434,7 +7434,7 @@ enum Listings {
                         .id("export")
                         .onClicked { exported += 1 }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
 
                 // Edit holds the platform's own entries, acting on the field the
                 // user typed into; Clear stands after them, this page's own.
@@ -7443,7 +7443,7 @@ enum Listings {
                         .id("clear")
                         .onClicked { note = "" }
                 }
-                .id(StandardMenu.edit)
+                .joins(.edit)
 
                 if ownMenu {
                     Menu("Sample") {
@@ -10862,7 +10862,7 @@ enum Listings {
                         .keyboardShortcut("e", modifiers: [.primary, .shift])
                         .onClicked { pressed("Export") }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             .toolbar {
                 ToolbarButton("Mark")
@@ -12461,7 +12461,7 @@ enum Listings {
                         .id("recent")
                         .isEnabled(!recent.isEmpty)
                     }
-                    .id(StandardMenu.file)
+                    .joins(.file)
                 }
                 // Locked, the branch takes no input: its switches, and the
                 // actions and menu items declared on it, dimmed with it.

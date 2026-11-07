@@ -184,7 +184,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .id("recent")
                     .isEnabled(!recent.isEmpty)
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             // Locked, the branch takes no input: its switches, and the
             // actions and menu items declared on it, dimmed with it.

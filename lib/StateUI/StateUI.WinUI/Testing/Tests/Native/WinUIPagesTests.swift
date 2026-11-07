@@ -352,7 +352,7 @@ final class WinUIPagesTests: XCTestCase {
                         TextField(words.projectedValue)
                         Button("Other")
                     }
-                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
                 } destination: { _ in Text("Pushed") }
             }
             let window = try XCTUnwrap(host.window)
