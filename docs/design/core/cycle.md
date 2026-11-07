@@ -112,6 +112,12 @@ range's end. The write stands, the next cycle hands it over, and the travel
 goes on from where the host landed. A text, a plain value or a gesture lays
 what it reports.
 
+A journey an engine animates takes no report. The host was handed the engine's
+frame as a destination under no law (journeys.md, the law on the image), so it
+lands there and says so: laid, that landing would put the frame over the
+destination the author wrote and a still speed over the engine's, and the
+engine, reading both back, would stop where it stands.
+
 ## The per-frame read
 
 What crosses to the host is what a cycle finished, never the image a cycle is

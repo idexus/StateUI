@@ -76,6 +76,14 @@ final class HostStorage: NamedState {
         }
     }
 
+    /// Whether an engine of the application's animates this journey, which the host
+    /// only wears.
+    var engineAnimates: Bool {
+        guard door == .property, let at = StateLaw.within(.property, lanes: published.count / 8) else { return false }
+
+        return StateImage.lane(at, of: published) == StateLaw.custom
+    }
+
     /// The published bytes as the host must read them: an inherited law resolved, and
     /// a `.custom` value handed over as its own destination.
     /// Design: docs/design/core/journeys.md#the-law-on-the-image

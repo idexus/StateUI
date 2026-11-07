@@ -337,6 +337,54 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(law(publishedBy: image), .custom, "while the image itself goes on saying whose the walk is")
     }
 
+    /// A VIEW'S OWN STATE AN ENGINE ANIMATES MOVES ITS VIEW: written, the engine it tracks wakes and walks it there,
+    /// frame by frame, and the host is handed each step - the Gallery's Engine animation, written as a view.
+    func testAViewsStateAnEngineAnimatesMovesItsView() throws {
+        let handle = EngineHandle()
+        let renders = Renders()
+        renders.render(EngineDot(handle: handle).node)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        let offset = try XCTUnwrap(handle.offset)
+        offset.wrappedValue = 120
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        for frame in 1...150 { board.cycle(now: Double(frame) * 16, reducesMotion: false) }
+
+        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
+        XCTAssertEqual(offset.journey.destination, 120)
+    }
+
+    /// A HOST'S REPORT IS NO WORD ON A STATE AN ENGINE ANIMATES: the host is
+    /// handed the engine's frame as its destination, lands there and says so
+    /// every frame; the destination the author wrote, which the host never
+    /// saw, stands, and so does the speed the engine gave it.
+    func testAHostsReportLeavesAStateAnEngineAnimatesAlone() throws {
+        let handle = EngineHandle()
+        let renders = Renders()
+        renders.render(EngineDot(handle: handle).node)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        let offset = try XCTUnwrap(handle.offset)
+        let number = try XCTUnwrap(offset.journeyImage?.number)
+        offset.wrappedValue = 120
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        for frame in 1...150 {
+            board.cycle(now: Double(frame) * 16, reducesMotion: false)
+            let (binding, handed) = try XCTUnwrap(HostAnimatorReport.standing(number))
+            let landed = HostJourney(
+                value: handed.destination, destination: handed.destination, velocity: handed.velocity.map { _ in 0 },
+                motion: handed.motion, completion: handed.completion, stopped: handed.stopped)
+            XCTAssertFalse(
+                HostBoundary.report(landed, updating: [.value, .destination, .velocity], through: binding),
+                "the engine's journey is not the host's to report")
+        }
+
+        XCTAssertEqual(offset.journey.destination, 120, "the author's destination stands")
+        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
+    }
+
     /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: a state an engine
     /// animates is not given the host's law later, because the host was told
     /// at the first crossing and cannot be told again. No law says an engine:
@@ -445,5 +493,33 @@ final class JourneyTests: XCTestCase {
 
         return StateLaw.motion(
             of: (0..<StateLaw.lanes).map { StateImage.lane(at + $0, of: bytes) })
+    }
+}
+
+/// Where the dot's state is lent out to the test.
+@MainActor
+private final class EngineHandle {
+    var offset: Binding<Double>?
+}
+
+/// A dot an engine of its own springs to where its state is sent, as the Gallery's Engine animation does.
+private struct EngineDot: View {
+    @State(animatedBy: .engine) private var offset = 0.0
+    let handle: EngineHandle
+
+    var body: some View {
+        handle.offset = $offset
+        return Rectangle()
+            .translationX($offset)
+            .engine(tracking: $offset) { cycle in
+                let journey = $offset.journey
+                let seconds = cycle.elapsedSeconds
+                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
+                journey.velocity += pull * seconds
+                journey.value += journey.velocity * seconds
+                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
+                journey.snap(to: journey.destination)
+                return .wait
+            }
     }
 }
