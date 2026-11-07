@@ -43,7 +43,7 @@ struct TextStyleSample: SampleContent, ExampleContent {
 
             // With digits of their own width, the words after the number move as it counts.
             HStack {
-                Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : .none)
+                Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : [])
                 Button("Count down").onClicked(.cancelPrevious) {
                     seconds = 20
                     while seconds > 0 {

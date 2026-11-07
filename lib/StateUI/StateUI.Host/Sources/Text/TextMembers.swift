@@ -69,7 +69,7 @@
         look.style = value(.textStyle).flatMap(TextStyle.init(propValue:))
         look.size = value(.fontSize)?.number
         look.weight = value(.fontWeight).flatMap(FontWeight.init(propValue:))
-        look.attributes = value(.fontAttributes).flatMap(FontAttributes.init(propValue:)) ?? .none
+        look.attributes = value(.fontAttributes).flatMap(FontAttributes.init(propValue:)) ?? []
         look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
@@ -84,7 +84,7 @@
         look.style = values[FontElementContract.textStyle]
         look.size = values[FontElementContract.fontSize]
         look.weight = values[FontElementContract.fontWeight]
-        look.attributes = values[FontElementContract.fontAttributes] ?? .none
+        look.attributes = values[FontElementContract.fontAttributes] ?? []
         look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text
         look.color = values[TextColorElementContract.textColor]?.propValue

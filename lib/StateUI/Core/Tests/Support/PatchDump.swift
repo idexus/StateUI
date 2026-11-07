@@ -248,12 +248,12 @@ enum PatchDump {
         // can enumerate, so their names are written out here.
         case Prop.fontAttributes.name:
             return spelled(member, asBitsOf: [
-                ("none", FontAttributes.none.rawValue),
+                ("[]", 0),
                 ("italic", FontAttributes.italic.rawValue),
             ])
         case Prop.textDecorations.name:
             return spelled(member, asBitsOf: [
-                ("none", TextDecorations.none.rawValue),
+                ("[]", 0),
                 ("underline", TextDecorations.underline.rawValue),
                 ("strikethrough", TextDecorations.strikethrough.rawValue),
             ])
@@ -267,7 +267,7 @@ enum PatchDump {
             ])
         case Prop.ignoresSafeArea.name:
             return spelled(member, asBitsOf: [
-                ("none", SafeAreaEdges.none.rawValue),
+                ("[]", 0),
                 ("start", SafeAreaEdges.start.rawValue),
                 ("top", SafeAreaEdges.top.rawValue),
                 ("end", SafeAreaEdges.end.rawValue),

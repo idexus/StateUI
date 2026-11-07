@@ -27,7 +27,7 @@ extension WebRegistrations {
                 var look = TextLook()
                 look.letterSpacing = values[TrackingElementContract.tracking] ?? 0
                 look.lineHeight = values[LineHeightElementContract.lineHeight]
-                look.decorations = values[DecorableTextElementContract.textDecorations] ?? .none
+                look.decorations = values[DecorableTextElementContract.textDecorations] ?? []
                 view.setSpacing(look)
             }
         }

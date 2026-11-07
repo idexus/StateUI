@@ -209,7 +209,7 @@ extension GTKDriver {
         case .fontWeight:
             return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
             if Self.tabularDigits(widget) { attributes.insert(.monospacedDigits) }
             return attributes.propValue
@@ -464,7 +464,7 @@ private struct PangoRun {
             return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
             guard first(PANGO_ATTR_STYLE) != nil || tabularDigits != nil else { return nil }
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
             if tabularDigits == true { attributes.insert(.monospacedDigits) }
             return attributes.propValue

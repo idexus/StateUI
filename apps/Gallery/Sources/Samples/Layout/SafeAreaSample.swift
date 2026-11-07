@@ -31,7 +31,7 @@ struct SafeAreaSample: SampleContent, ExampleContent {
                             .padding(20)
                         }
                     }
-                    .ignoresSafeArea(under ? .all : .none)
+                    .ignoresSafeArea(under ? .all : [])
                     .galleryPage("Safe area")
                 } destination: { _ in
                     Text("")

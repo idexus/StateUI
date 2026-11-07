@@ -47,7 +47,7 @@ final class TextRulesTests: XCTestCase {
     /// them upright then; given nothing, the theme's own stands.
     func testASlantTheTreeGivesIsTheTrees() {
         let none = ElementValues<ButtonContract>(changed: [.fontAttributes]) {
-            $0 == .fontAttributes ? FontAttributes.none.propValue : nil
+            $0 == .fontAttributes ? ([] as FontAttributes).propValue : nil
         }
         XCTAssertTrue(TextMembers.look(of: none).attributesGiven, "upright given")
         XCTAssertFalse(TextMembers.look(of: ElementValues<ButtonContract>(changed: []) { _ in nil }).attributesGiven)
@@ -56,7 +56,7 @@ final class TextRulesTests: XCTestCase {
         run.attributesGiven = true
         var label = TextLook()
         label.attributes = .italic
-        XCTAssertEqual(run.over(label).attributes, .none, "a run given upright stands upright in an italic label")
+        XCTAssertEqual(run.over(label).attributes, [], "a run given upright stands upright in an italic label")
         XCTAssertEqual(TextLook().over(label).attributes, .italic, "a run given nothing takes its label's")
     }
 

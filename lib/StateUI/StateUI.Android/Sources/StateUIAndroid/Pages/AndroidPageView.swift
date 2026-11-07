@@ -89,7 +89,7 @@ final class AndroidPageView: AndroidSingleChildView {
         // The bar stands beside the content, as the bar at the top does: the content's room ends above it.
         let (whole, clear) = place.map { ($0.above, $0.safe) } ?? (bounds, safe)
         let room = SafeAreaArithmetic.room(
-            safe: clear, whole: whole, edges: page?.contentIgnoresSafeArea ?? .none,
+            safe: clear, whole: whole, edges: page?.contentIgnoresSafeArea ?? [],
             direction: page?.layoutDirection ?? direction)
         item.view.layout(SingleChildArithmetic.place(of: item, in: room, direction: direction))
         if let place {

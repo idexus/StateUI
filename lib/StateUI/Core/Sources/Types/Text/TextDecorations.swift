@@ -4,7 +4,7 @@
 // A flag set, its bits numbered by StateUI: append a flag, never insert one.
 // Design: docs/design/types/vocabularies.md#flag-sets-carry-bits
 
-/// The lines drawn through or under text.
+/// The lines drawn through or under text; `[]` is plain text.
 ///
 ///     Text("$40").textDecorations(.strikethrough)
 public struct TextDecorations: OptionSet, Sendable {
@@ -16,9 +16,6 @@ public struct TextDecorations: OptionSet, Sendable {
     public init(rawValue: Int32) {
         self.rawValue = rawValue
     }
-
-    /// Plain text.
-    public static let none = TextDecorations([])
 
     /// A line under the text.
     public static let underline = TextDecorations(rawValue: 1 << 0)

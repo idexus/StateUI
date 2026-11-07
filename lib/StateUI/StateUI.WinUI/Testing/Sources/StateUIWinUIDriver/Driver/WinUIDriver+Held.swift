@@ -267,7 +267,7 @@ extension WinUIDriver {
         case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
         case "fontWeight": return FontWeight(nearest: Double(try read(view, "fontWeight")) ?? 400).propValue
         case "fontAttributes":
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if try read(view, "italic") == "1" { attributes.insert(.italic) }
             if try read(view, "tabularDigits") == "1" { attributes.insert(.monospacedDigits) }
             return attributes.propValue
@@ -529,7 +529,7 @@ extension WinUIDriver {
         case "fontSize": return run[1] == 0 ? nil : run[1].propValue
         case "fontWeight": return FontWeight(nearest: run[2]).propValue
         case "fontAttributes":
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if Int(run[3]) & 1 != 0 { attributes.insert(.italic) }
             if Int(run[3]) & 2 != 0 { attributes.insert(.monospacedDigits) }
             return attributes.propValue

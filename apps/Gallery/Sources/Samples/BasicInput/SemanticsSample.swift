@@ -77,7 +77,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
                     Text(described ? "\(Self.says)\n\(Self.hint)" : "nothing")
                         .fontSize(13)
-                        .fontAttributes(described ? .none : .italic)
+                        .fontAttributes(described ? [] : .italic)
                         .textColor(described ? Palette.accent : Palette.subtle)
                         .horizontalTextAlignment(.center)
                 }

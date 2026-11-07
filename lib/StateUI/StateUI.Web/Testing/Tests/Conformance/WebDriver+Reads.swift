@@ -332,7 +332,7 @@ extension WebDriver {
         case .fontWeight:
             return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
             if try WebBrowser.truth("\(style).fontVariantNumeric.includes('tabular-nums')", on: e) {
                 attributes.insert(.monospacedDigits)

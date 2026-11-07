@@ -1009,7 +1009,7 @@ extension AndroidPagesTests {
         try onMainActor {
             let under = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content")
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
             host.layOut()

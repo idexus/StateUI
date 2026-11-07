@@ -29,7 +29,7 @@ extension GTKRegistrations {
                 view.setLook { $0.lineHeight = height }
             }
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
-                view.setLook { $0.decorations = decorations ?? .none }
+                view.setLook { $0.decorations = decorations ?? [] }
             }
         }
     }

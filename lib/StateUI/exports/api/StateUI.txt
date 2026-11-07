@@ -13621,7 +13621,6 @@ swift.type.property FocusElementContract.name: static let name: String
 swift.type.property FocusElementContract.unfocus: static let unfocus: ElementAct<FocusElementContract, Void, Void>
 swift.type.property FontAttributes.italic: static let italic: FontAttributes
 swift.type.property FontAttributes.monospacedDigits: static let monospacedDigits: FontAttributes
-swift.type.property FontAttributes.none: static let none: FontAttributes
 swift.type.property FontElementContract.fontAttributes: static let fontAttributes: ElementProperty<FontElementContract, FontAttributes>
 swift.type.property FontElementContract.fontFamily: static let fontFamily: ElementProperty<FontElementContract, Name>
 swift.type.property FontElementContract.fontSize: static let fontSize: ElementProperty<FontElementContract, Double>
@@ -13836,7 +13835,6 @@ swift.type.property SafeAreaEdges.all: static let all: SafeAreaEdges
 swift.type.property SafeAreaEdges.bottom: static let bottom: SafeAreaEdges
 swift.type.property SafeAreaEdges.end: static let end: SafeAreaEdges
 swift.type.property SafeAreaEdges.horizontal: static let horizontal: SafeAreaEdges
-swift.type.property SafeAreaEdges.none: static let none: SafeAreaEdges
 swift.type.property SafeAreaEdges.start: static let start: SafeAreaEdges
 swift.type.property SafeAreaEdges.top: static let top: SafeAreaEdges
 swift.type.property SafeAreaEdges.vertical: static let vertical: SafeAreaEdges
@@ -13917,7 +13915,6 @@ swift.type.property TextContract.lineBreak: static let lineBreak: ElementPropert
 swift.type.property TextContract.maximumLines: static let maximumLines: ElementProperty<TextContract, Int>
 swift.type.property TextContract.name: static var name: String { get }
 swift.type.property TextContract.verticalTextAlignment: static let verticalTextAlignment: ElementProperty<TextContract, TextAlignment>
-swift.type.property TextDecorations.none: static let none: TextDecorations
 swift.type.property TextDecorations.strikethrough: static let strikethrough: TextDecorations
 swift.type.property TextDecorations.underline: static let underline: TextDecorations
 swift.type.property TextEditorContract.growsWithText: static let growsWithText: ElementProperty<TextEditorContract, Bool>

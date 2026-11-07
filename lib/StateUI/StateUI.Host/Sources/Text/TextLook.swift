@@ -17,7 +17,7 @@
     public var weight: FontWeight?
 
     /// The font's slant.
-    public var attributes = FontAttributes.none
+    public var attributes: FontAttributes = []
 
     /// Whether the tree gave the slant - upright included: a toolkit whose theme draws words italic draws them
     /// upright then; given nothing, the theme's own stands.
@@ -39,7 +39,7 @@
     public var lineHeight: Double?
 
     /// The lines under or through the words.
-    public var decorations = TextDecorations.none
+    public var decorations: TextDecorations = []
 
     /// Whether the words' size follows the user's text-size setting.
     public var scales = true
@@ -104,13 +104,13 @@ extension MountedElement {
         look.style = value(.textStyle)?.enumeration.flatMap(TextStyle.init(rawValue:))
         look.size = number(.fontSize)
         look.weight = value(.fontWeight)?.enumeration.flatMap(FontWeight.init(rawValue:))
-        look.attributes = value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? .none
+        look.attributes = value(.fontAttributes)?.enumeration.map { FontAttributes(rawValue: $0) } ?? []
         look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
         look.letterSpacing = number(.tracking) ?? 0
         look.lineHeight = number(.lineHeight)
-        look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? .none
+        look.decorations = value(.textDecorations)?.enumeration.map { TextDecorations(rawValue: $0) } ?? []
         look.scales = value(.isFontAutoScalingEnabled)?.bool != false
         return look
     }

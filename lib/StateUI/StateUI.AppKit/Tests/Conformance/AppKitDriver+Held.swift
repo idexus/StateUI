@@ -112,7 +112,7 @@ extension AppKitDriver {
 
     /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
     static func attributes(of font: NSFont) -> FontAttributes {
-        var attributes = FontAttributes.none
+        var attributes: FontAttributes = []
         if NSFontManager.shared.traits(of: font).contains(.italicFontMask) { attributes.insert(.italic) }
         let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[NSFontDescriptor.FeatureKey: Int]]
         if features?.contains(where: {

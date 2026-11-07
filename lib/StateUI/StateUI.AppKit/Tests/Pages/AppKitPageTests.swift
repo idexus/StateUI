@@ -477,7 +477,7 @@ final class AppKitPageTests: XCTestCase {
             return shown.frame.minY
         }
 
-        let clear = try top(ignoring: .none)
+        let clear = try top(ignoring: [])
         XCTAssertGreaterThan(clear, 0, "clear of the bar over its pane")
         XCTAssertEqual(try top(ignoring: .all), 0, "and under it, ignoring the safe area")
     }

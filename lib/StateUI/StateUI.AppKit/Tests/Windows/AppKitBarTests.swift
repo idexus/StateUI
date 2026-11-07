@@ -151,7 +151,7 @@ final class AppKitBarTests: XCTestCase {
         let under = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content").title("Under")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").title("Under")
             } destination: { _ in Text("Next") }
         }
         defer { renderer.finish() }

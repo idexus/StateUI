@@ -19,7 +19,7 @@ final class SafeAreaTests: XCTestCase {
     /// Content ignoring the safe area on no edge stands in it; content ignoring it reaches the window's edge on every
     /// edge it says so.
     func testContentReachesTheWindowsEdgeOnEachEdgeItIgnoresTheSafeAreaOn() {
-        XCTAssertEqual(room(.none), safe)
+        XCTAssertEqual(room([]), safe)
         XCTAssertEqual(room(.all), whole)
         XCTAssertEqual(room(.top), Rect(x: 0, y: 0, width: 400, height: 770), "under the top bar alone")
         XCTAssertEqual(room(.vertical), Rect(x: 0, y: 0, width: 400, height: 800), "under both")

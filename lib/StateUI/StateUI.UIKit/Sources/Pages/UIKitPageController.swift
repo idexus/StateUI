@@ -195,7 +195,7 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         let safe = bar?.safe ?? Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
             safe: safe, whole: wholeRect,
-            edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
+            edges: page?.element.contentIgnoresSafeArea ?? [], direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
         let scroller = page?.element.pageScroller?.uiKit.view as? UIKitPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))

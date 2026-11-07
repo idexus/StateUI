@@ -48,7 +48,7 @@ extension UIKitRegistrations {
                 (view as! any UIKitLabel).setLook { $0.lineHeight = height }
             }
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
-                (view as! any UIKitLabel).setLook { $0.decorations = decorations ?? .none }
+                (view as! any UIKitLabel).setLook { $0.decorations = decorations ?? [] }
             }
         }
     }

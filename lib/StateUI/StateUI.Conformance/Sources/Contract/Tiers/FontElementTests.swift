@@ -15,7 +15,7 @@
             [
                 Aspects.holds(FontElementContract.fontSize, on: element, 14, then: 20, with: Words.on(element)),
                 eachWeightStands(on: element),
-                Aspects.holds(FontElementContract.fontAttributes, on: element, .none, then: [.italic, .monospacedDigits],
+                Aspects.holds(FontElementContract.fontAttributes, on: element, [], then: [.italic, .monospacedDigits],
                               with: Words.on(element)),
                 theStylesStandInTheRampsOrder(on: element),
                 theTreesSizeAndWeightStandOverTheStyle(on: element),

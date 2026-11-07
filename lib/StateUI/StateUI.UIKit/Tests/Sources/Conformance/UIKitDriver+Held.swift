@@ -75,7 +75,7 @@ extension UIKitDriver {
 
     /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
     static func attributes(of font: UIFont) -> FontAttributes {
-        var attributes = FontAttributes.none
+        var attributes: FontAttributes = []
         if font.fontDescriptor.symbolicTraits.contains(.traitItalic) { attributes.insert(.italic) }
         let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[UIFontDescriptor.FeatureKey: Int]]
         if features?.contains(where: { $0[.type] == kNumberSpacingType && $0[.selector] == kMonospacedNumbersSelector })
