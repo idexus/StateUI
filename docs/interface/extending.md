@@ -171,9 +171,13 @@ tiers offer.
 What several controls share has one too: `ViewProperties`,
 `VisualElementProperties`, `LayoutProperties`, `StackProperties`,
 `ShapeProperties`, `FilledShapeProperties`, `CorneredShapeProperties` and
-`TextInputProperties`. A tier's own protocol ends in `Element`, such as
-`VisualElement` or `ActionElement`; the control dictionary's tier pages name
-each one.
+`TextInputProperties`. A tier stands on two sides. On the element side a
+bare name says what an element is - `View`, `Layout`, `Stack`, `Shape`,
+`TextInput` - and its `…Properties` protocol is the half a style wears too.
+A mixin's name ends in `Element` and says what an element has: one a style
+wears too stands on the property side, `FontElement` or `PaddingElement`, and
+one only an element wears on the element side, `FocusElement` or
+`KeyboardElement`. The control dictionary's tier pages name each one.
 
 ### A state the host walks
 

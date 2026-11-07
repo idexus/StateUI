@@ -7,6 +7,7 @@ toolkit, where `swift test` runs, so a page is tested in the time a function
 takes.
 
 ```swift
+import StateUI
 import StateUITesting
 
 struct CounterPage: View {
@@ -30,16 +31,17 @@ try await window.close()
 ```
 
 A test target depends on the `StateUITesting` product of
-`lib/StateUI/StateUI.Testing`, and its test functions run on `@MainActor`.
+`lib/StateUI/StateUI.Testing` and imports both `StateUI` and
+`StateUITesting`; its test functions run on `@MainActor`.
 
 ## Finding a view
 
 `window.element("counter.add")` finds the view whose `accessibilityIdentifier`
-is that name; `window.element(page.name)` finds the view a page's `@Aim` is
-put on. A view is found again each time it is used, so it stays the same view
-while the page builds again. Finding no view, or two, fails and names the
-view. One window stands at a time: a new one closes the last, whose views are
-found no more.
+is that name, a `TestElement`; `window.element(page.name)` finds the view a
+page's `@Aim` is put on. A view is found again each time it is used, so it
+stays the same view while the page builds again. Finding no view, or two,
+fails and names the view. One window stands at a time: a new one closes the
+last, whose views are found no more.
 
 ## Closing a window
 
@@ -60,7 +62,7 @@ page leaving an application that keeps running.
 
 ## Acting and reading
 
-`perform(_:)` takes what a user does - `.activate`, `.toggle`, `.type("Ada")`,
+`perform(_:)` takes a `UserAct`, what a user does - `.activate`, `.toggle`, `.type("Ada")`,
 `.submit`, `.choose(2)`, `.slide(to: 0.5)`, `.tap(count: 2)`, a screen reader's
 `.performAccessibilityAction("Clear")` and `.adjust(.increment)` - and returns
 once the work it began is done: its handlers, what they started, and the

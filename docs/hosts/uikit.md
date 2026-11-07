@@ -125,9 +125,10 @@ replaces the earlier registration.
 
 **A host in the same process registers BY TYPE.** Every registration is
 written against the same `ElementContract` the application's own views are
-written against, so the compiler refuses a property of the wrong type, an
-event of a contract the element does not wear, and a performer whose arguments
-are not the act's. The application's contracts are `public`, for the host's
+written against, so the compiler refuses a property of the wrong type and a
+performer whose arguments are not the act's. A property or an event of a
+contract the element does not wear compiles; the registration refuses it and
+says so once. The application's contracts are `public`, for the host's
 module to see them. The UIKit halves of the Gallery's own are in
 `apps/Gallery/Platforms/UIKit/Host/`.
 

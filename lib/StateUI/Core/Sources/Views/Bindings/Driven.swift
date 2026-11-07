@@ -24,7 +24,7 @@ extension Button {
 }
 
 extension CheckBox {
-    /// What the check box says beside its box, carried from a state; see `Text.text(_:)`.
+    /// What the check box says beside its box, carried from a state.
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the check box, with its caption carried from that state.
@@ -34,7 +34,7 @@ extension CheckBox {
 }
 
 extension Switch {
-    /// What the switch says beside it, carried from a state; see `Text.text(_:)`.
+    /// What the switch says beside it, carried from a state.
     ///
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the switch, with its caption carried from that state.

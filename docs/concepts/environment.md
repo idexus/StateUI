@@ -146,7 +146,7 @@ A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
 guess. A host reports each fact group as one typed value; a field that does
 not change asks for no render. Closed enum values unknown to the runtime
-degrade to `.unknown`, a `Weekday` to `.sunday` and a `LayoutDirection` to
+degrade to `.unknown`, a `Weekday` to `.sunday` and a `WritingDirection` to
 `.leftToRight`, while open vocabulary, such as `device.info.platform`, stays
 authored text.
 
