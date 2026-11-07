@@ -37,7 +37,7 @@ final class AppKitCanvasViewTests: XCTestCase {
             Draw.text("text", x: 0, y: 0, width: 20, height: 10)
             Draw.translate(2, 3)
             Draw.rotate(30)
-            Draw.scale(x: 2, y: 2)
+            Draw.scale(2)
             Draw.saveGraphics()
             Draw.restoreGraphics()
         }

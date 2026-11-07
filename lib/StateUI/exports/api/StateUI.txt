@@ -13371,7 +13371,9 @@ swift.type.method Draw.opacity(_:): static func opacity(_ value: Double) -> Draw
 swift.type.method Draw.restoreGraphics(): static func restoreGraphics() -> DrawCommand
 swift.type.method Draw.rotate(_:): static func rotate(_ degrees: Double) -> DrawCommand
 swift.type.method Draw.saveGraphics(): static func saveGraphics() -> DrawCommand
-swift.type.method Draw.scale(x:y:): static func scale(x: Double, y: Double) -> DrawCommand
+swift.type.method Draw.scale(_:): static func scale(_ factor: Double) -> DrawCommand
+swift.type.method Draw.scaleX(_:): static func scaleX(_ factor: Double) -> DrawCommand
+swift.type.method Draw.scaleY(_:): static func scaleY(_ factor: Double) -> DrawCommand
 swift.type.method Draw.strokeArc(x:y:width:height:startAngle:endAngle:clockwise:closed:): static func strokeArc(x: Double, y: Double, width: Double, height: Double, startAngle: Double, endAngle: Double, clockwise: Bool, closed: Bool) -> DrawCommand
 swift.type.method Draw.strokeColor(_:): static func strokeColor(_ value: Color) -> DrawCommand
 swift.type.method Draw.strokeEllipse(x:y:width:height:): static func strokeEllipse(x: Double, y: Double, width: Double, height: Double) -> DrawCommand

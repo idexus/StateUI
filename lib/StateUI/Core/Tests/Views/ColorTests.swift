@@ -103,6 +103,23 @@ final class ColorTests: XCTestCase {
 
     // MARK: - A color inside a drawing
 
+    /// A drawing resizes as a view's transform does: one factor both ways, or across or down alone, each one
+    /// scale record with the other way left at 1.
+    func testADrawingScalesAsAViewsTransformDoes() {
+        let drawn = Canvas {
+            Draw.scale(2)
+            Draw.scaleX(3)
+            Draw.scaleY(0.5)
+        }.node.props[.drawing]
+        let scale = Int32(DrawCommand.Kind.scale.rawValue)
+
+        XCTAssertEqual(drawn, .values([
+            .values([.enumeration(scale), .number(2), .number(2)]),
+            .values([.enumeration(scale), .number(3), .number(1)]),
+            .values([.enumeration(scale), .number(1), .number(0.5)]),
+        ]))
+    }
+
     /// A drawing is a list of RECORDS - one number for the canvas member, its
     /// arguments after it as the things they are - so a color in one crosses
     /// as the four bytes every other color crosses as, and the theme picks

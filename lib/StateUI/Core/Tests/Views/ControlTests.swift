@@ -495,7 +495,7 @@ final class ControlTests: XCTestCase {
                     Draw.saveGraphics()
                     Draw.translate(4, 4)
                     Draw.rotate(45)
-                    Draw.scale(x: 2, y: 2)
+                    Draw.scale(2)
                     Draw.restoreGraphics()
                 }),
 

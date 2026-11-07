@@ -260,13 +260,20 @@ public enum Draw {
         DrawCommand(.rotate, [.number(degrees)])
     }
 
-    /// Resizes everything drawn after it.
-    ///
-    /// - Parameters:
-    ///   - x: how much across, 1 being unchanged.
-    ///   - y: how much down.
-    public static func scale(x: Double, y: Double) -> DrawCommand {
-        DrawCommand(.scale, [.number(x), .number(y)])
+    /// Resizes everything drawn after it by `factor` both ways, 1 being unchanged, as a view's
+    /// `ViewTransform.scale` resizes the view.
+    public static func scale(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(factor), .number(factor)])
+    }
+
+    /// Resizes everything drawn after it across, 1 being unchanged.
+    public static func scaleX(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(factor), .number(1)])
+    }
+
+    /// Resizes everything drawn after it down, 1 being unchanged.
+    public static func scaleY(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(1), .number(factor)])
     }
 
     /// Remembers the colors, sizes and transforms in force - the graphics, not a
