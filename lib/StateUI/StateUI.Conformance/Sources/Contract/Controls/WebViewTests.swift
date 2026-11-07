@@ -33,7 +33,7 @@
             },
             ConformanceCase("aScriptsAnswerComesBack", proves: [
                 Covered(WebViewContract.evaluateJavaScript),
-            ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(WebViewContract.navigated), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let web = Aim(WebView.self)
                 let said = Received<String>()
                 let arrived = Received<Bool>()
@@ -52,7 +52,7 @@
             },
             ConformanceCase("theAgentItNamesItselfByIsTheTrees", proves: [
                 Covered(WebViewContract.userAgent), Covered(WebViewContract.evaluateJavaScript),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let web = Aim(WebView.self)
                 let said = Received<String>()
                 let arrived = Received<Bool>()
@@ -75,7 +75,7 @@
             ConformanceCase("theWayBackAndForwardOpenAndAreTaken", proves: [
                 Covered(WebViewContract.canGoBackChanged), Covered(WebViewContract.canGoForwardChanged),
                 Covered(WebViewContract.goBack), Covered(WebViewContract.goForward),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let web = Aim(WebView.self)
                 let second = State(wrappedValue: false)
                 let heard = Received<String>()
@@ -116,7 +116,7 @@
             },
             ConformanceCase("aPageLoadedAgainIsHeard", proves: [
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
-            ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(WebViewContract.navigated), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let web = Aim(WebView.self)
                 let heard = Received<WebNavigationKind>()
                 let arrived = Received<Bool>()
@@ -138,7 +138,7 @@
             ConformanceCase("aReplacementReloadsItsOwnDocument", proves: [
                 Covered(WebViewContract.source), Covered(WebViewContract.reload),
             ], needs: [
-                Covered(WebViewContract.navigated), Covered(WebViewContract.evaluateJavaScript), Covered(ButtonContract.clicked),
+                Covered(WebViewContract.navigated), Covered(WebViewContract.evaluateJavaScript), Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let web = Aim(WebView.self)
                 let second = State(wrappedValue: false)
@@ -174,7 +174,7 @@
             ConformanceCase("aStepWithNoDestinationDoesNotNameANewPage", proves: [
                 Covered(WebViewContract.goBack), Covered(WebViewContract.goForward), Covered(WebViewContract.reload),
                 Covered(WebViewContract.navigating), Covered(WebViewContract.navigated),
-            ], needs: [Covered(WebViewContract.source), Covered(WebViewContract.evaluateJavaScript), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(WebViewContract.source), Covered(WebViewContract.evaluateJavaScript), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 for step in [WebNavigationKind.back, .forward, .reload] {
                     let web = Aim(WebView.self)
                     let given = State(wrappedValue: false)
@@ -227,7 +227,7 @@
             },
             ConformanceCase("aPageGivenAgainAfterNoneIsShownAgain", proves: [Covered(WebViewContract.source)], needs: [
                 Covered(WebViewContract.navigated), Covered(WebViewContract.evaluateJavaScript),
-                Covered(ButtonContract.clicked),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let web = Aim(WebView.self)
                 let given = State(wrappedValue: true)

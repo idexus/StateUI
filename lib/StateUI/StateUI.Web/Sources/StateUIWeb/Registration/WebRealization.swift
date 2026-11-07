@@ -44,7 +44,7 @@ enum WebRealization {
         .complete(MenuContract.text),
         .complete(ToggleElementContract.isOn, on: MenuToggleContract.self),
         .complete(ToggleElementContract.toggled, on: MenuToggleContract.self),
-        .complete(ActionElementContract.clicked),
+        .complete(ClickElementContract.clicked, on: ActionElementContract.self),
         .complete(MenuItemElementContract.icon),
         .complete(ActionElementContract.role),
         .complete(MenuItemElementContract.isEnabled),

@@ -22,9 +22,9 @@ final class WearingTests: XCTestCase {
     }
 
     func testAnEventOfAContractTheElementDoesNotWearIsSaid() {
-        _ = Beacon().onEvent(ButtonContract.clicked) {}
+        _ = Beacon().onEvent(ClickElementContract.clicked) {}
 
-        XCTAssertTrue(hasComplained("Test.Beacon was handed `Button.clicked`"))
+        XCTAssertTrue(hasComplained("Test.Beacon was handed `ClickElement.clicked`"))
     }
 
     func testAMemberLeftOutOfTheContractsMembersIsSaid() {

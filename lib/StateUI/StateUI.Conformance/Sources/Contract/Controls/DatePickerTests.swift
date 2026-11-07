@@ -15,7 +15,7 @@
             Aspects.standsAlone("DatePicker"),
             ConformanceCase("theUsersDayIsHeardAndTheProgramsIsNot", proves: [
                 Covered(DatePickerContract.date), Covered(DatePickerContract.dateChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let due = State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 25))
                 let heard = Received<CalendarDate>()
                 s.start {
@@ -40,7 +40,7 @@
             },
             ConformanceCase("aDayOutsideTheCalendarOrTheRangeIsHeldByTheRule", proves: [
                 Covered(DatePickerContract.date),
-            ], needs: [Covered(DatePickerContract.maximum), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(DatePickerContract.maximum), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
                 s.start {
                     VStack {

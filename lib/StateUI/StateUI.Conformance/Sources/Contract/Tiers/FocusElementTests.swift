@@ -20,7 +20,7 @@
         ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
             Covered(FocusElementContract.focus, on: element), Covered(FocusElementContract.unfocus, on: element),
             Covered(FocusElementContract.isFocusedChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let aim = FocusAim()
             let heard = Received<Bool>()
             let took = Received<Bool>()

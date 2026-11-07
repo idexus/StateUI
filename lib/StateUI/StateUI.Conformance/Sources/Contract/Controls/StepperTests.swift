@@ -19,7 +19,7 @@
                 Covered(RangeElementContract.valueChanged, on: StepperContract.self),
                 Covered(RangeElementContract.minimum, on: StepperContract.self),
                 Covered(RangeElementContract.maximum, on: StepperContract.self),
-                Covered(ButtonContract.clicked),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let count = State(wrappedValue: 2.0)
                 let heard = Received<Double>()
@@ -65,7 +65,7 @@
                 Covered(StepperContract.step),
             ], needs: [
                 Covered(RangeElementContract.value, on: StepperContract.self),
-                Covered(ButtonContract.clicked),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let count = State(wrappedValue: 2.0)
                 s.start {

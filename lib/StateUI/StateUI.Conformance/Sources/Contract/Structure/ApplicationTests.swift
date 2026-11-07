@@ -25,7 +25,7 @@
             },
             ConformanceCase("anAlertIsShownAndDismissed", proves: [
                 Covered(ApplicationContract.alert),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -51,7 +51,7 @@
             },
             ConformanceCase("aConfirmationAnswersWhetherItWasAccepted", proves: [
                 Covered(ApplicationContract.confirm),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
@@ -80,7 +80,7 @@
             },
             ConformanceCase("aChoiceAnswersTheActionChosen", proves: [
                 Covered(ApplicationContract.chooseAction),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -115,7 +115,7 @@
             },
             ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", proves: [
                 Covered(ApplicationContract.prompt),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -146,7 +146,7 @@
             },
             ConformanceCase("questionsWaitTheirTurn", proves: [
                 Covered(ApplicationContract.alert), Covered(ApplicationContract.confirm),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -178,7 +178,7 @@
             ConformanceCase("aFileSavedIsOpenedAndReadBack", proves: [
                 Covered(ApplicationContract.saveFile), Covered(ApplicationContract.openFiles),
                 Covered(ApplicationContract.readFile),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
@@ -216,7 +216,7 @@
             ConformanceCase("aFileIsReadNoFurtherThanAsked", proves: [
                 Covered(ApplicationContract.readFile),
             ], needs: [
-                Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile),
                 Covered(ApplicationContract.openFiles),
             ]) { s in
                 let said = Received<String>()
@@ -256,7 +256,7 @@
             },
             ConformanceCase("severalFilesAreOpenedAtOnce", proves: [
                 Covered(ApplicationContract.openFiles),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -288,7 +288,7 @@
             },
             ConformanceCase("aFileDialogCancelledAnswersNothing", proves: [
                 Covered(ApplicationContract.openFiles), Covered(ApplicationContract.saveFile),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -318,7 +318,7 @@
             },
             ConformanceCase("aRequestIsAnsweredAsTheServerSaidIt", proves: [
                 Covered(ApplicationContract.sendRequest),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let address = try s.served()
                 let said = Received<String>()
                 s.start {
@@ -343,7 +343,7 @@
             },
             ConformanceCase("aRequestEndsWithItsRun", proves: [
                 Covered(ApplicationContract.cancelCall),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.sendRequest)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.sendRequest)]) { s in
                 let address = try s.served()
                 let before = try s.held()
                 let said = Received<String>()
@@ -374,7 +374,7 @@
             },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
                 Covered(ApplicationContract.launchAddress), Covered(ApplicationContract.launchFile),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
@@ -398,7 +398,7 @@
             },
             ConformanceCase("theScreenReaderIsToldAndTheCallerGoesOn", proves: [
                 Covered(ApplicationContract.announce),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
@@ -418,7 +418,7 @@
             },
             ConformanceCase("wordsPutOnTheClipboardAreReadBack", proves: [
                 Covered(ApplicationContract.writeClipboard), Covered(ApplicationContract.readClipboard),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let read = Received<String>()
                 s.start {
                     WithSessions { _, application in
@@ -436,7 +436,7 @@
                 s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
             },
             ConformanceCase("wordsAndAnAddressAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
-                            needs: [Covered(ButtonContract.clicked)]) { s in
+                            needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, _ in
@@ -462,7 +462,7 @@
             },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
-            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 s.start { ThemeChoices() }
 
                 @MainActor func inForce() throws -> String? {
@@ -488,7 +488,7 @@
             },
             ConformanceCase("theApplicationDrawsInTheAccentItHolds", proves: [
                 Covered(ApplicationContract.useAccentColor),
-            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
                 s.start { AccentChoices() }
 
                 @MainActor func inForce() throws -> String? {
@@ -507,7 +507,7 @@
             },
             ConformanceCase("theHostTellsTheDayAndTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<(CalendarDate, ClockTime)>()
                 s.start {
                     WithSessions { _, application in
@@ -528,7 +528,7 @@
             },
             ConformanceCase("theUsersOwnZoneIsAnsweredWhereNoneIsNamed", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Int64>()
                 s.start {
                     WithSessions { _, application in
@@ -546,7 +546,7 @@
             },
             ConformanceCase("aZonesDistanceFromUTCIsItsOwnOnTheDayAsked", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<[Int64]>()
                 s.start {
                     WithSessions { _, application in
@@ -569,7 +569,7 @@
             },
             ConformanceCase("aZoneNobodyKnowsIsRefused", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { _, application in
@@ -592,7 +592,7 @@
             },
             ConformanceCase("theKeyboardIsTakenDownFromTheViewHoldingIt", proves: [
                 Covered(ApplicationContract.hideOnScreenKeyboard),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
@@ -613,7 +613,7 @@
             },
             ConformanceCase("aValueIsKeptForTheNextLaunch", proves: [
                 Covered(ApplicationContract.persistValue),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let name = State(wrappedValue: "", persistentKey: PersistentKey<String>("conformance.name"))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
                 s.expect(try s.kept("conformance.name"), nil, "nothing kept before the case wrote it")
@@ -624,7 +624,7 @@
             },
             ConformanceCase("aScenesValueIsKeptForItsNextLaunch", proves: [
                 Covered(ApplicationContract.persistSceneValue),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start { SectionPage() }
                 s.expect(try s.kept("conformance.section", inScene: true), nil, "nothing kept before the case wrote it")
 
@@ -634,7 +634,7 @@
             },
             ConformanceCase("aHandlersFailureIsReportedToTheHost", proves: [
                 Covered(ApplicationContract.handlerFailed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start {
                     VStack {
                         Button("Fail").onClicked { throw ConformanceFailure(message: "the draft could not be saved") }

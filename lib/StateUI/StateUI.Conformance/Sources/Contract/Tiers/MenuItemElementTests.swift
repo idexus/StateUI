@@ -31,7 +31,7 @@
     static func choosing(_ element: String) -> Covered {
         switch element {
         case "MenuToggle", "ToolbarToggle": Covered(ToggleElementContract.toggled, on: element)
-        default: Covered(ActionElementContract.clicked, on: element)
+        default: Covered(ClickElementContract.clicked, on: element)
         }
     }
 
@@ -62,7 +62,7 @@
     static func outOfReachWithItsBranch(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemInADisabledBranchIsOutOfReach", proves: [
             Covered(MenuItemElementContract.isEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked), choosing(element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), choosing(element)]) { s in
             let heard = Received<String>()
             let enabled = State(wrappedValue: false)
             s.start {

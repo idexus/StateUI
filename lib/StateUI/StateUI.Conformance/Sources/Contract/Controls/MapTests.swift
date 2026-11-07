@@ -23,7 +23,7 @@
             },
             ConformanceCase("anActMovesTheMapToARegion", proves: [
                 Covered(MapContract.moveToRegion), Covered(MapContract.region),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let map = Aim(Map.self)
                 let moved = Received<String>()
                 s.start {

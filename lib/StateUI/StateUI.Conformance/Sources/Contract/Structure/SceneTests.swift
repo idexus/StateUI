@@ -39,7 +39,7 @@
             ConformanceCase("aWindowTheUserClosesTakesWhatItAskedWithIt", proves: [
                 Covered(SceneContract.windowClosed),
             ], needs: [
-                Covered(WindowContract.windowKind), Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
+                Covered(WindowContract.windowKind), Covered(ApplicationContract.confirm), Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let said = Received<Bool>()
                 try s.start(application: { AskingApplication(said: said) })

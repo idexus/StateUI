@@ -20,7 +20,7 @@
             },
             ConformanceCase("aSubmenusCaptionAndReachFollowTheTree", proves: [
                 Covered(MenuContract.text), Covered(MenuContract.isEnabled),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {

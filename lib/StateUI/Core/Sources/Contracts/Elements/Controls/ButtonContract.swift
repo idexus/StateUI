@@ -16,10 +16,8 @@ public enum ButtonContract: ElementContract {
         PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
         ButtonMenuElementContract.self, TextAndIconElementContract.self,
         PressElementContract.self,
+        ClickElementContract.self,
     ]
-
-    /// The button was pressed and released on it.
-    public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
 
     /// The picture beside the caption.
     public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
@@ -41,5 +39,5 @@ public enum ButtonContract: ElementContract {
     public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, role]
+    public static let members: [any ContractMember] = [icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, role]
 }

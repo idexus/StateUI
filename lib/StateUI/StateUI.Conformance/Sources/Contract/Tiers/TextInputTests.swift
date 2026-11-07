@@ -69,7 +69,7 @@
     static func filled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).inputPurpose.reachesWhatThePlatformFillsIn", proves: [
             Covered(TextInputContract.inputPurpose, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let purpose = State(wrappedValue: InputPurpose.username)
             s.start {
                 Specimens.page(element, [Write(TextInputContract.inputPurpose, purpose.wrappedValue)], beside: [
@@ -111,7 +111,7 @@
     static func closed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviorChanges", proves: [
             Covered(TextInputContract.isReadOnly, on: element),
-        ], needs: [Covered(VisualElementContract.isEnabled, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(VisualElementContract.isEnabled, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "kept")
             let readOnly = State(wrappedValue: true)
             s.start {
@@ -184,7 +184,7 @@
     static func written(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", proves: [
             Covered(TextInputContract.textChanged, on: element),
-        ], needs: [Covered(TextualElementContract.text, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(TextualElementContract.text, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "")
             let heard = Received<String>()
             s.start {

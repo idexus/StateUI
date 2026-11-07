@@ -35,7 +35,7 @@
             },
             ConformanceCase("DatePicker.theCalendarTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
                 Covered(PopupElementContract.isOpen, on: DatePickerContract.self), Covered(PopupElementContract.closed, on: DatePickerContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 s.start {
@@ -89,7 +89,7 @@
             },
             ConformanceCase("Picker.theListTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
                 Covered(PopupElementContract.isOpen, on: PickerContract.self), Covered(PopupElementContract.closed, on: PickerContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 let size = State<String?>(wrappedValue: nil)
@@ -142,7 +142,7 @@
             },
             ConformanceCase("TimePicker.theClockTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
                 Covered(PopupElementContract.isOpen, on: TimePickerContract.self), Covered(PopupElementContract.closed, on: TimePickerContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let showing = State(wrappedValue: false)
                 let heard = Received<String>()
                 s.start {

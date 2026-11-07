@@ -15,7 +15,7 @@
         [
             ConformanceCase("aSheetStandsOverTheWindowAndOneInItOverIt", proves: [
                 Covered(SheetContract.self),
-            ], needs: [Covered(PageContract.disappearing), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(PageContract.disappearing), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let states = SheetStates()
                 states.shows.wrappedValue = false
                 states.inner.wrappedValue = false

@@ -168,7 +168,7 @@
     static func bodied(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aBodyFollowingItsPlaceLagsAndSettles", proves: [
             Covered(ViewContract.layoutBody, on: element),
-        ], needs: [Covered(MotionLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(MotionLayoutContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
@@ -282,7 +282,7 @@
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let shared = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {
@@ -460,7 +460,7 @@
     static func heldAfterItsTime(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aHoldWaitsItsTime", proves: [
             Covered(ViewContract.holdDuration, on: element),
-        ], needs: [Covered(ViewContract.held, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ViewContract.held, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let long = State(wrappedValue: false)
             s.start {
                 VStack {

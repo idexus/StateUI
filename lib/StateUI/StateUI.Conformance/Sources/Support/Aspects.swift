@@ -20,7 +20,7 @@
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).\(aspect)", proves: [
             Covered(member, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 page(element, worn + [Write(member, value.wrappedValue)], [
@@ -45,7 +45,7 @@
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).holdsWhatTheTreeGivesAndChanges", proves: [
             Covered(member, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 Specimens.page(element, worn + [Write(member, value.wrappedValue)], beside: [

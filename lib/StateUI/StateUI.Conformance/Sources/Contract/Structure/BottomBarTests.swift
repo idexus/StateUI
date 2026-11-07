@@ -80,7 +80,7 @@
             },
             ConformanceCase("aListAtItsEndStaysThereAsTheBarGrows", proves: [
                 Covered(BottomBarContract.self),
-            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let tall = State(wrappedValue: 40.0)
                 let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
@@ -111,7 +111,7 @@
             },
             ConformanceCase("aListUnderItsBottomBarBringsItsLastItemClearAboveIt", proves: [
                 Covered(BottomBarContract.self),
-            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
                     Grid {

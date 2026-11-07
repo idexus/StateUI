@@ -14,7 +14,7 @@
             Aspects.standsAlone("Polyline"),
             ConformanceCase("aPolylineIsDrawnThroughItsPoints", proves: [
                 Covered(PolylineContract.points),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let moved = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -37,7 +37,7 @@
             },
             ConformanceCase("aFilledPolylineCrossingItselfIsFilledByItsRule", proves: [
                 Covered(PolylineContract.fillRule),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let rule = State(wrappedValue: FillRule.evenOdd)
                 s.start {
                     VStack {

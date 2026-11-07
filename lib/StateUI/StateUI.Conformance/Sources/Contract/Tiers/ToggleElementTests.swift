@@ -14,7 +14,7 @@
             ConformanceCase("CheckBox.aUsersTickIsHeardAndTheProgramsIsNot", proves: [
                 Covered(ToggleElementContract.isOn, on: CheckBoxContract.self),
                 Covered(ToggleElementContract.toggled, on: CheckBoxContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let ticked = State(wrappedValue: false)
                 let heard = Received<Bool>()
                 s.start {
@@ -54,7 +54,7 @@
             ConformanceCase("Switch.aSwitchShowsWhatTheTreeSays", proves: [
                 Covered(ToggleElementContract.isOn, on: SwitchContract.self),
                 Covered(ToggleElementContract.toggled, on: SwitchContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 let heard = Received<Bool>()
                 s.start {

@@ -12,7 +12,6 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(ActionElementContract.self).flatMap { element in
             [
-                chosen(element),
                 Aspects.holds(ActionElementContract.role, on: element, ActionRole.normal, then: .destructive),
             ]
         }
@@ -22,7 +21,7 @@
     @MainActor
     static func chosen(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemChosenRunsItsHandler", proves: [
-            Covered(ActionElementContract.clicked, on: element),
+            Covered(ClickElementContract.clicked, on: element),
         ]) { s in
             let heard = Received<String>()
             s.start {

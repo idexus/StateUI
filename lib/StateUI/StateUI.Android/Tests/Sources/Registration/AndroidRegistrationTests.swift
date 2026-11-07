@@ -29,7 +29,7 @@ final class AndroidRegistrationTests: XCTestCase {
                     "Stepper", "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])
             for member in [
-                HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
+                HostRealizedMember(element: "Button", owner: "ClickElement", member: "clicked"),
                 HostRealizedMember(element: "Text", owner: "TextualElement", member: "text"),
                 HostRealizedMember(element: "Switch", owner: "ToggleElement", member: "toggled"),
                 HostRealizedMember(element: "CheckBox", owner: "ToggleElement", member: "toggled"),

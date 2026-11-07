@@ -14,7 +14,7 @@
         [
             ConformanceCase("aPopoverTheStateShowsStandsWithWhatItHolds", proves: [
                 Covered(PopoverContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let shown = State(wrappedValue: false)
                 s.start { FiltersAnchor(shown: shown.projectedValue) }
                 let popover = try Self.popover(of: s.element("anchor"))

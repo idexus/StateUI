@@ -13,7 +13,7 @@
             Aspects.standsAlone("Spinner"),
             ConformanceCase("aSpinnerTurnsWhileItsWorkRuns", proves: [
                 Covered(SpinnerContract.isAnimating),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let running = State(wrappedValue: true)
                 s.start {
                     VStack {

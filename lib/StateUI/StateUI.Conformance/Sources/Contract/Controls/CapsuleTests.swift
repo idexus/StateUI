@@ -14,7 +14,7 @@
             Aspects.standsAlone("Capsule"),
             ConformanceCase("aCapsuleRoundsItsEndsWholeAtEverySize", proves: [
                 Covered(CapsuleContract.self),
-            ], needs: [Covered(FilledShapeContract.fill, on: "Capsule"), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(FilledShapeContract.fill, on: "Capsule"), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let tall = State(wrappedValue: false)
                 s.start {
                     VStack {

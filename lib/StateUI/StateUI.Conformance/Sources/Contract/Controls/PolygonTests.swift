@@ -14,7 +14,7 @@
             Aspects.standsAlone("Polygon"),
             ConformanceCase("aPolygonIsFilledInsideItsPoints", proves: [
                 Covered(PolygonContract.points),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let moved = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -36,7 +36,7 @@
             },
             ConformanceCase("aFigureCrossingItselfIsFilledByItsRule", proves: [
                 Covered(PolygonContract.fillRule), Covered(PolygonContract.points),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let rule = State(wrappedValue: FillRule.evenOdd)
                 s.start {
                     VStack {

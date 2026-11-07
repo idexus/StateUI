@@ -46,7 +46,7 @@
     static func groundsItsPages(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.groundsItsPagesThatSayNone", proves: [
             Covered(PageElementContract.background, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(.steelBlue), Material.color(.firebrick))
             let value = State(wrappedValue: first)
             s.start {
@@ -77,7 +77,7 @@
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).standsOnItsTab", proves: [
             Covered(member, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 TabView([0, 1]) { tab in
@@ -109,7 +109,7 @@
     static var groundHolds: ConformanceCase {
         ConformanceCase("Page.background.holdsWhatItsViewSaysAndChanges", proves: [
             Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.color(.red))
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -128,7 +128,7 @@
     static var groundFollowsColor: ConformanceCase {
         ConformanceCase("Page.background.followsItsState", proves: [
             Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Color.red)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -146,7 +146,7 @@
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("Page.background.followsAMaterialState", proves: [
             Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
@@ -186,7 +186,7 @@
     static var titledByState: ConformanceCase {
         ConformanceCase("Page.theTitleFromAStateFollowsIt", proves: [
             Covered(PageElementContract.title, on: "Page"),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let title = State(wrappedValue: "Notes")
             s.start {
                 VStack {

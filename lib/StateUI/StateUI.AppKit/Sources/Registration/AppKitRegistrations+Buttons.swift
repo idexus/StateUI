@@ -20,7 +20,7 @@ extension AppKitRegistrations {
             // A button holding a menu is made as it opens it from the first; another opening is made again.
             let button = AppKitButtonView(
                 menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.onPressed = { reports.raise(PressElementContract.pressed) }
             button.onReleased = { reports.raise(PressElementContract.released) }
             return button
@@ -89,7 +89,7 @@ extension AppKitRegistrations {
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)
             }
-            button.declares(ButtonContract.clicked)
+            button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)
             button.declares(PressElementContract.released)
         })

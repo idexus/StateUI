@@ -853,6 +853,13 @@ extension ControlDictionary {
                 .onValueChanged { print($0) }
             """#),
 
+        (ClickElementContract.self, #"""
+            @State var saved = false
+
+            Button(saved ? "Saved" : "Save")
+                .onClicked { saved = true }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

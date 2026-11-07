@@ -15,7 +15,7 @@
             ], needs: [
                 Covered(TextualElementContract.text, on: SearchFieldContract.self),
                 Covered(TextInputContract.textChanged, on: SearchFieldContract.self),
-                Covered(ButtonContract.clicked),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let query = State(wrappedValue: "")
                 let heard = Received<String>()

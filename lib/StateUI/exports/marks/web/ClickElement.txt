@@ -1,0 +1,5 @@
+# revision 0.0
+Button.clicked: ✅
+Link.clicked: ✅
+MenuItem.clicked: ✅
+ToolbarButton.clicked: ✅

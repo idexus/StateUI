@@ -47,7 +47,7 @@ enum UIKitRealization {
         .partial(MenuItemElementContract.keyboardShortcut, on: MenuToggleContract.self,
             missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
         .complete(ToggleElementContract.toggled, on: MenuToggleContract.self),
-        .complete(ActionElementContract.clicked),
+        .complete(ClickElementContract.clicked, on: ActionElementContract.self),
         .complete(MenuItemElementContract.icon),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.text),

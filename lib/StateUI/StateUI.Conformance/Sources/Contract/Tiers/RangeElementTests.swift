@@ -24,7 +24,7 @@
             },
             ConformanceCase("Slider.aRangeTheTreeChangesKeepsTheThumbsValue", proves: [
                 Covered(RangeElementContract.value, on: SliderContract.self), Covered(RangeElementContract.maximum, on: SliderContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 4.0)
                 s.start {
@@ -43,7 +43,7 @@
             },
             ConformanceCase("Slider.aRangeWidenedOverItsValueShowsIt", proves: [
                 Covered(RangeElementContract.value, on: SliderContract.self), Covered(RangeElementContract.maximum, on: SliderContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 15.0)
                 s.start {
@@ -64,7 +64,7 @@
             ConformanceCase("Slider.aRangeMovedPastItsValueTakesTheValueWrittenWithIt", proves: [
                 Covered(RangeElementContract.value, on: SliderContract.self), Covered(RangeElementContract.minimum, on: SliderContract.self), Covered(RangeElementContract.maximum, on: SliderContract.self),
                 Covered(RangeElementContract.valueChanged, on: SliderContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let range = State(wrappedValue: 0.0...10.0)
                 let level = State(wrappedValue: 4.0)
                 let heard = Received<Double>()
@@ -100,7 +100,7 @@
             },
             ConformanceCase("Slider.aStateWriteTravelsToTheThumbUnheard", proves: [
                 Covered(RangeElementContract.value, on: SliderContract.self), Covered(RangeElementContract.valueChanged, on: SliderContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let level = State(wrappedValue: 0.25)
                 let heard = Received<Double>()
@@ -204,7 +204,7 @@
             },
             ConformanceCase("Stepper.aRangeWidenedOverItsValueShowsIt", proves: [
                 Covered(RangeElementContract.value, on: StepperContract.self), Covered(RangeElementContract.maximum, on: StepperContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let top = State(wrappedValue: 10.0)
                 let level = State(wrappedValue: 15.0)
                 s.start {
@@ -225,7 +225,7 @@
             ConformanceCase("Stepper.aRangeMovedPastItsValueTakesTheValueWrittenWithIt", proves: [
                 Covered(RangeElementContract.value, on: StepperContract.self), Covered(RangeElementContract.minimum, on: StepperContract.self), Covered(RangeElementContract.maximum, on: StepperContract.self),
                 Covered(RangeElementContract.valueChanged, on: StepperContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let range = State(wrappedValue: 0.0...10.0)
                 let count = State(wrappedValue: 4.0)
                 let heard = Received<Double>()

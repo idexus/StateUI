@@ -37,7 +37,7 @@ extension ShapeTests {
     static func dashShifted(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).startsItsDashesWhereThePhaseSays", proves: [
             Covered(ShapeContract.dashPhase, on: element),
-        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let shifted = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, outlined(element, width: 4) + [
@@ -60,7 +60,7 @@ extension ShapeTests {
     static func capped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).endsItsLinesAsTheTreeSays", proves: [
             Covered(ShapeContract.lineCap, on: element),
-        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let squared = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, outlined(element, width: 4) + [

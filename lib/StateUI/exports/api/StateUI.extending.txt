@@ -36,6 +36,7 @@ swift.conformance AccessibilityRole: StateUI.LaneValue
 swift.conformance AccessibilityRole: StateUI.StateChoice
 swift.conformance AccessibilityRole: StateUI.StateValue
 swift.conformance ActionElement: StateUI.AutomationElement
+swift.conformance ActionElement: StateUI.ClickElement
 swift.conformance ActionElement: StateUI.PropertyContainer
 swift.conformance ActionElementContract: StateUI.Contract
 swift.conformance ActionRole: StateUI.HostRepresentable
@@ -77,6 +78,7 @@ swift.conformance Button: StateUI.AutomationElement
 swift.conformance Button: StateUI.BorderElement
 swift.conformance Button: StateUI.ButtonMenuElement
 swift.conformance Button: StateUI.ButtonProperties
+swift.conformance Button: StateUI.ClickElement
 swift.conformance Button: StateUI.Element
 swift.conformance Button: StateUI.ElementView
 swift.conformance Button: StateUI.FocusElement
@@ -149,6 +151,8 @@ swift.conformance CheckBox: StateUI.VisualElementProperties
 swift.conformance CheckBoxContract: StateUI.Contract
 swift.conformance CheckBoxContract: StateUI.ElementContract
 swift.conformance ChosenFile: StateUI.HostRepresentable
+swift.conformance ClickElement: StateUI.PropertyContainer
+swift.conformance ClickElementContract: StateUI.Contract
 swift.conformance ClockTime: StateUI.HostRepresentable
 swift.conformance ClockTime: StateUI.LaneValue
 swift.conformance ClockTime: StateUI.StateValue
@@ -520,6 +524,7 @@ swift.conformance LineJoin: StateUI.LaneValue
 swift.conformance LineJoin: StateUI.StateChoice
 swift.conformance LineJoin: StateUI.StateValue
 swift.conformance Link: StateUI.AutomationElement
+swift.conformance Link: StateUI.ClickElement
 swift.conformance Link: StateUI.Element
 swift.conformance Link: StateUI.ElementView
 swift.conformance Link: StateUI.FocusElement
@@ -567,6 +572,7 @@ swift.conformance MenuContract: StateUI.Contract
 swift.conformance MenuContract: StateUI.ElementContract
 swift.conformance MenuItem: StateUI.ActionElement
 swift.conformance MenuItem: StateUI.AutomationElement
+swift.conformance MenuItem: StateUI.ClickElement
 swift.conformance MenuItem: StateUI.Element
 swift.conformance MenuItem: StateUI.MenuItemElement
 swift.conformance MenuItem: StateUI.PropertyContainer
@@ -1273,6 +1279,7 @@ swift.conformance ToolbarButton: StateUI.BarButtonElement
 swift.conformance ToolbarButton: StateUI.BarItemElement
 swift.conformance ToolbarButton: StateUI.BorderElement
 swift.conformance ToolbarButton: StateUI.ButtonMenuElement
+swift.conformance ToolbarButton: StateUI.ClickElement
 swift.conformance ToolbarButton: StateUI.Element
 swift.conformance ToolbarButton: StateUI.FontElement
 swift.conformance ToolbarButton: StateUI.MenuItemElement
@@ -2506,7 +2513,7 @@ swift.property WebViewSource.propValue: var propValue: PropValue { get }
 swift.property WritingDirection.propValue: var propValue: PropValue { get }
 swift.property ZStack.node: @MainActor var node: Node
 swift.property ZStack.nodes: @MainActor var nodes: [Node] { get }
-swift.protocol ActionElement: @MainActor protocol ActionElement : AutomationElement
+swift.protocol ActionElement: @MainActor protocol ActionElement : AutomationElement, ClickElement
 swift.protocol ApplicationTier: protocol ApplicationTier : Contract
 swift.protocol AutomationElement: @MainActor protocol AutomationElement : PropertyContainer
 swift.protocol BarButtonElement: @MainActor protocol BarButtonElement : BarItemElement
@@ -2515,6 +2522,7 @@ swift.protocol BarItemElement: @MainActor protocol BarItemElement : PropertyCont
 swift.protocol BorderElement: @MainActor protocol BorderElement : PropertyContainer
 swift.protocol ButtonMenuElement: @MainActor protocol ButtonMenuElement : PropertyContainer
 swift.protocol ButtonProperties: @MainActor protocol ButtonProperties : PropertyContainer
+swift.protocol ClickElement: @MainActor protocol ClickElement : PropertyContainer
 swift.protocol ColorPickerProperties: @MainActor protocol ColorPickerProperties : PropertyContainer
 swift.protocol Contract: protocol Contract : Sendable
 swift.protocol ContractMember: protocol ContractMember : Sendable
@@ -2865,6 +2873,8 @@ swift.type.property CheckBoxContract.members: static let members: [any ContractM
 swift.type.property CheckBoxContract.nodeType: static let nodeType: NodeType
 swift.type.property CheckBoxContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property CheckBoxContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property ClickElementContract.members: static let members: [any ContractMember]
+swift.type.property ClickElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ClockTime.laneKind: static var laneKind: LaneKind { get }
 swift.type.property ClockTime.lanes: static var lanes: Int { get }
 swift.type.property ClockTime.moving: static var moving: MotionValues { get }

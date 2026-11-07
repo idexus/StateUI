@@ -15,7 +15,7 @@ final class ControlIsolationTests: XCTestCase {
             """,
             """
             func callback(_ reports: ControlReports<ButtonContract>) {
-                reports.raise(ButtonContract.clicked)
+                reports.raise(ClickElementContract.clicked)
             }
             """,
             """

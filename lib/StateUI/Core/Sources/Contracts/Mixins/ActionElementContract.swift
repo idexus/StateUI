@@ -8,15 +8,12 @@ public enum ActionElementContract: Tier {
     public static let name = "ActionElement"
 
     /// An item that acts is found by automation.
-    public static let tiers: [any Tier.Type] = [AutomationElementContract.self]
-
-    /// The item was chosen.
-    public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self, ClickElementContract.self]
 
     /// What choosing the item does beyond its words: an ordinary action, or one that destroys something, which the
     /// platform marks.
     public static let role = ElementProperty<Self, ActionRole>("role", layer: .adaptive)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [clicked, role]
+    public static let members: [any ContractMember] = [role]
 }

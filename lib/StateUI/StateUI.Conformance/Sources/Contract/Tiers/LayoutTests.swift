@@ -26,7 +26,7 @@
     static func clipped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).cutsWhatItHoldsToItsOutlineWhereItClips", proves: [
             Covered(LayoutContract.clipsContent, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clips = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -63,7 +63,7 @@
     static func throughIt(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).letsAPressThroughWhereItHoldsNothing", proves: [
             Covered(LayoutContract.letsInputThrough, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let through = State(wrappedValue: false)
             s.start {
                 VStack {

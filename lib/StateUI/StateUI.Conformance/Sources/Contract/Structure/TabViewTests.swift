@@ -52,7 +52,7 @@
             },
             ConformanceCase("theProgramsChoiceIsShown", proves: [
                 Covered(TabViewContract.selectedTab),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let tab = State(wrappedValue: 0)
                 s.start {
                     TabView([0, 1]) { number in

@@ -300,7 +300,7 @@ extension NodeType {
     static let appearing = PageContract.appearing.token
     static let canGoBackChanged = WebViewContract.canGoBackChanged.token
     static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
-    static let clicked = ActionElementContract.clicked.token
+    static let clicked = ClickElementContract.clicked.token
     static let closed = PopupElementContract.closed.token
     static let dateChanged = DatePickerContract.dateChanged.token
     static let endReached = ItemsViewContract.endReached.token

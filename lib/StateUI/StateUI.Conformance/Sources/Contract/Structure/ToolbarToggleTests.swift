@@ -14,7 +14,7 @@
         [
             ConformanceCase("anItemStandsOnAsTheTreeSays", proves: [
                 Covered(ToolbarToggleContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 s.start {
                     Self.page(beside: [Button("Change").onClicked { on.wrappedValue.toggle() }.id("change")],
@@ -32,7 +32,7 @@
 
             ConformanceCase("anItemShowsItsOnPictureWhileOn", proves: [
                 Covered(ToolbarToggleContract.onIcon),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 s.start {
                     Self.page(beside: [Button("Change").onClicked { on.wrappedValue.toggle() }.id("change")],

@@ -11,7 +11,7 @@ extension WinUIRegistrations {
             // A button holding a menu is made as it opens it from the first.
             let button = WinUIButtonView(
                 menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.onPressed = { reports.raise(PressElementContract.pressed) }
             button.onReleased = { reports.raise(PressElementContract.released) }
             return button
@@ -56,7 +56,7 @@ extension WinUIRegistrations {
             button.property(VisualElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
-            button.declares(ButtonContract.clicked)
+            button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)
             button.declares(PressElementContract.released)
         })

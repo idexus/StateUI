@@ -89,7 +89,7 @@
             },
             ConformanceCase("Popover.theUsersDismissalLandsOnTheState", proves: [
                 Covered(PresentedElementContract.isPresented, on: PopoverContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 // The state the host carries takes the dismissal the user makes.
                 let shown = State(wrappedValue: false)
                 s.start { FiltersAnchor(shown: shown.projectedValue) }

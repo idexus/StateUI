@@ -13,7 +13,7 @@
         [
             ConformanceCase("aLabelShowsTheWordsTheTreeSays", proves: [
                 Covered(ToolbarLabelContract.self), Covered(ToolbarLabelContract.text),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 3)
                 s.start {
                     Self.page(beside: [Button("Add").onClicked { count.wrappedValue += 1 }.id("add")],

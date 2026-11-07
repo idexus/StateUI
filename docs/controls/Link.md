@@ -10,7 +10,7 @@ Link("Terms of use", address: "https://stateui.dev/terms")
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [ClickElement](tiers/ClickElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -31,11 +31,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 3 ☑️ · 37 ✓ · 1 –</td><td>a borderless <code>NSButton</code> in the link color, the link role</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>26 ✅ · 2 ☑️ · 13 ✓ · 5 –</td><td>a plain <code>UIButton</code> in the link color, the link trait</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>35 ✅ · 4 ☑️ · 3 ✓ · 3 –</td><td>a <code>TextView</code> in the theme's link color, underlined</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>37 ✅ · 1 ☑️ · 3 ✓ · 5 –</td><td><code>HyperlinkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>24 ✅ · 3 ☑️ · 13 ✓ · 6 –</td><td><code>GtkLinkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>31 ✅ · 1 ☑️ · 11 ✓ · 3 –</td><td><code>&lt;a href&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>25 ✅ · 2 ☑️ · 12 ✓ · 5 –</td><td>a plain <code>UIButton</code> in the link color, the link trait</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>34 ✅ · 4 ☑️ · 2 ✓ · 3 –</td><td>a <code>TextView</code> in the theme's link color, underlined</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>36 ✅ · 1 ☑️ · 2 ✓ · 5 –</td><td><code>HyperlinkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>23 ✅ · 3 ☑️ · 12 ✓ · 6 –</td><td><code>GtkLinkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>30 ✅ · 1 ☑️ · 10 ✓ · 3 –</td><td><code>&lt;a href&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/LinkContract.swift`.
@@ -44,9 +44,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/LinkContract.s
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>address</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read what was launched: the host's own record of what it handed macOS, which a test holds back from launching<br>UIKit: only through the host's own: read what was launched: the host's own record of what it handed iOS, which a test holds back from launching<br>Android Views: only through the host's own: read what was launched: the relay's own record of what it handed the system, which a test holds back from launching<br>WinUI 3: only through the host's own: read what was launched: the host's own record of what it handed Windows, which a test holds back from launching<br>GTK 4: only through the host's own: read what was launched: the host's own record of what it handed the desktop, which a test holds back<br>Web: only through the host's own: read what was launched: the relay's own record of what it would open, which a test holds back</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>address</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read what was launched: the host's own record of what it handed macOS, which a test holds back from launching</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -199,6 +198,15 @@ What every element showing words has: the words, and the case they are drawn in.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [ClickElement](tiers/ClickElement.md)
+
+What a control the user chooses reports: a button, a link, a menu's entry, a toolbar's button.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [HoverElement](tiers/HoverElement.md)

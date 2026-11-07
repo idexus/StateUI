@@ -15,7 +15,7 @@
             Aspects.holds(TextContract.verticalTextAlignment, on: "Text", .start, then: .end, with: Words.on("Text")),
             ConformanceCase("wordsTheTreeMakesSelectableCanBeSelected", proves: [
                 Covered(TextContract.isSelectable, on: "Text"),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let selectable = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -46,7 +46,7 @@
             },
             ConformanceCase("noMoreLinesStandThanItsMaximum", proves: [
                 Covered(TextContract.maximumLines), Covered(TextContract.lineBreak),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let lines = State(wrappedValue: 1)
                 let frames = Received<[Double]>()
                 s.start {
@@ -68,7 +68,7 @@
             },
             ConformanceCase("wordsThatDoNotWrapStandOnOneLine", proves: [
                 Covered(TextContract.lineBreak),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let wraps = State(wrappedValue: false)
                 let frames = Received<[Double]>()
                 s.start {

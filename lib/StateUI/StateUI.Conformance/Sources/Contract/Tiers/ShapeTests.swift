@@ -52,7 +52,7 @@
     static func placedByItsAspect(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", proves: [
             Covered(ShapeContract.contentMode, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
@@ -88,7 +88,7 @@
     static func movedByItsTransform(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isMovedByItsTransform", proves: [
             Covered(ShapeContract.geometryTransform, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let moved = State(wrappedValue: false)
             let line = element == "Line"
             let paint: [any Worn] = line

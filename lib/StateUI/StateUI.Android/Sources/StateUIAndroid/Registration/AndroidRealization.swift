@@ -52,7 +52,7 @@ enum AndroidRealization {
         .complete(MenuItemElementContract.keyboardShortcut, on: MenuItemContract.self),
         .complete(MenuItemElementContract.keyboardShortcut, on: MenuToggleContract.self),
         .complete(ToggleElementContract.toggled, on: MenuToggleContract.self),
-        .complete(ActionElementContract.clicked),
+        .complete(ClickElementContract.clicked, on: ActionElementContract.self),
         .complete(ActionElementContract.role),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.text),

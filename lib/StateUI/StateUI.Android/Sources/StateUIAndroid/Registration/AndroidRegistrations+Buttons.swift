@@ -9,7 +9,7 @@ extension AndroidRegistrations {
     static func buttons(_ registry: Registry<AndroidView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = AndroidButtonView()
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.onPressed = { reports.raise(PressElementContract.pressed) }
             button.onReleased = { reports.raise(PressElementContract.released) }
             return button
@@ -42,7 +42,7 @@ extension AndroidRegistrations {
             }
             // The role's look; its key is the window's (`KeyboardShortcuts.pressing`).
             button.property(ButtonContract.role) { view, role in view.setRole(role) }
-            button.declares(ButtonContract.clicked)
+            button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)
             button.declares(PressElementContract.released)
         })

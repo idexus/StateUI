@@ -12,7 +12,7 @@ extension UIKitRegistrations {
     static func buttons(_ registry: Registry<UIView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = UIKitButtonView()
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.onPressed = { reports.raise(PressElementContract.pressed) }
             button.onReleased = { reports.raise(PressElementContract.released) }
             return button
@@ -67,7 +67,7 @@ extension UIKitRegistrations {
                 case .normal, nil: .normal
                 }
             }
-            button.declares(ButtonContract.clicked)
+            button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)
             button.declares(PressElementContract.released)
         })

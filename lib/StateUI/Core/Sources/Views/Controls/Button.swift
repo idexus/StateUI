@@ -52,7 +52,7 @@ extension ButtonProperties {
 /// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement, ClickElement {
     /// The node this control describes.
     public var node: Node
 
@@ -96,27 +96,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
     }
-
-    // MARK: Events
-
-    /// Runs when the button is pressed AND released on it - the ordinary one - all
-    /// of it before the click is over. A second `.onClicked` runs beside the first,
-    /// like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.clicked, handler)
-    }
-
-    /// Runs when the button is clicked, awaiting as it goes; its `policy` says what a
-    /// click does while a run is under way.
-    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.clicked, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.clicked, gate: gate, handler)
-    }
-
 }
 
 /// Which side of a button's caption its picture is on.

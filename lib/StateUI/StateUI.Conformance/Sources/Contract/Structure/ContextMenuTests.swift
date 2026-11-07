@@ -27,7 +27,7 @@
                 Covered(ContextMenuContract.self),
             ], needs: [
                 Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
-                Covered(ButtonContract.clicked),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
                 let row = try s.element("row")
@@ -42,7 +42,7 @@
             },
             ConformanceCase("aMenuWithNoEntriesIsNone", proves: [
                 Covered(ContextMenuContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let entries = State(wrappedValue: ["Open"])
                 s.start {
                     VStack {

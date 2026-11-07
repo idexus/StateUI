@@ -15,7 +15,7 @@
             Aspects.standsAlone("TimePicker"),
             ConformanceCase("theUsersTimeIsHeardAndTheProgramsIsNot", proves: [
                 Covered(TimePickerContract.time), Covered(TimePickerContract.timeChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let alarm = State(wrappedValue: ClockTime(hour: 7, minute: 30))
                 let heard = Received<ClockTime>()
                 s.start {
@@ -39,7 +39,7 @@
             },
             ConformanceCase("aTimePastTheDayStandsInTheNext", proves: [
                 Covered(TimePickerContract.time),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 0))
                 s.start {
                     VStack {

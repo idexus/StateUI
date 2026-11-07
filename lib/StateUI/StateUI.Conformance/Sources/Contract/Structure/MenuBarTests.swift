@@ -23,7 +23,7 @@
             },
             ConformanceCase("anItemChosenFromTheBarRunsItsHandler", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start { onAStack(MenusPage(heard: heard)) }
 
@@ -35,7 +35,7 @@
             },
             ConformanceCase("theBarShowsTheMenusThePageDeclaresAgain", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start { onAStack(MenusPage(heard: Received())) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 

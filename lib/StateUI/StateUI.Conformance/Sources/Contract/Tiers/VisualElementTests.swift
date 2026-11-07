@@ -67,7 +67,7 @@
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
             Covered(VisualElementContract.background, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thin))
             let changed = Material.glass(.clear)
             s.start {
@@ -92,7 +92,7 @@
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("VStack.background.followsAMaterialState", proves: [
             Covered(VisualElementContract.background, on: "VStack"),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
@@ -168,7 +168,7 @@
     static func shown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isShownAsTheTreeSays", proves: [
             Covered(VisualElementContract.isVisible, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let shown = State(wrappedValue: true)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.isVisible, shown.wrappedValue)], beside: [
@@ -190,7 +190,7 @@
     static func layered(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInTheDepthTheTreeSays", proves: [
             Covered(VisualElementContract.zIndex, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let depth = State(wrappedValue: 1)
             s.start(reducesMotion: true) {
                 VStack {
@@ -218,7 +218,7 @@
     static func opacity(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isAsOpaqueAsTheTreeSays", proves: [
             Covered(VisualElementContract.opacity, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let opacity = State(wrappedValue: 0.5)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.opacity, opacity.wrappedValue)], beside: [
@@ -257,7 +257,7 @@
     static func answering(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).answersNoTapWhileDisabled", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.tapped, on: element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.tapped, on: element)]) { s in
             let enabled = State(wrappedValue: false)
             let heard = Received<String>()
             s.start {
@@ -291,7 +291,7 @@
     static func disablingItsBranch(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).disablesTheControlsInIt", proves: [
             Covered(VisualElementContract.isEnabled, on: layout),
-        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.isEnabled, on: "Button")]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(VisualElementContract.isEnabled, on: "Button")]) { s in
             let enabled = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -317,7 +317,7 @@
     static func directingItsChild(_ layout: String) -> ConformanceCase {
         ConformanceCase("\(layout).placesItsChildInItsDirection", proves: [
             Covered(VisualElementContract.layoutDirection, on: layout),
-        ], needs: [Covered(ButtonContract.clicked), Covered(VisualElementContract.frame, on: "Rectangle")]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(VisualElementContract.frame, on: "Rectangle")]) { s in
             let room = State(wrappedValue: Rect(x: -1, y: 0, width: 0, height: 0))
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
@@ -354,7 +354,7 @@
     static func enabled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesInputAsTheTreeSays", proves: [
             Covered(VisualElementContract.isEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let enabled = State(wrappedValue: false)
             s.start(reducesMotion: true) {
                 Specimens.page(element, [Write(VisualElementContract.isEnabled, enabled.wrappedValue)], beside: [
@@ -455,7 +455,7 @@
     static func reachable(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPressReachesItUnlessItIgnoresInput", proves: [
             Covered(VisualElementContract.ignoresInput, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let ignores = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -506,7 +506,7 @@
     static func framed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).itsFrameLandsInItsState", proves: [
             Covered(VisualElementContract.frame, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let room = State(wrappedValue: Rect(x: 0, y: 0, width: 0, height: 0))
             let wide = State(wrappedValue: false)
             s.start {

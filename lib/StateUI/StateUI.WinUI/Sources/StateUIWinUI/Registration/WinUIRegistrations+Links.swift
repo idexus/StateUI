@@ -10,7 +10,7 @@ extension WinUIRegistrations {
     static func links(_ registry: Registry<WinUIView>) {
         registry.add(LinkContract.self, create: { reports in
             let link = WinUILinkView()
-            link.onClicked = { reports.raise(LinkContract.clicked) }
+            link.onClicked = { reports.raise(ClickElementContract.clicked) }
             return link
         }, members: { link in
             link.applies(TextMembers.captionMembers) { view, values in
@@ -22,7 +22,7 @@ extension WinUIRegistrations {
             }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.
             link.property(LinkContract.address) { _, _ in }
-            link.declares(LinkContract.clicked)
+            link.declares(ClickElementContract.clicked)
         })
     }
 }

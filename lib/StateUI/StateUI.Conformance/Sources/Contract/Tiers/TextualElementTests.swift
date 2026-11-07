@@ -18,7 +18,7 @@
     static func words(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).showsTheWordsTheTreeGives", proves: [
             Covered(TextualElementContract.text, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "Some words")
             s.start {
                 Specimens.page(element, [Write(TextualElementContract.text, words.wrappedValue)], beside: [

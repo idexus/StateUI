@@ -32,7 +32,7 @@
     static func besidePicture(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).itsWordsStandBesideItsPictureAsItSays", proves: [
             Covered(TextAndIconElementContract.showsText, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: true)
             s.start {
                 standing(

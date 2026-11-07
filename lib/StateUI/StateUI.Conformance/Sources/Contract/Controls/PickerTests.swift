@@ -26,7 +26,7 @@
             ConformanceCase("aUsersChoiceLandsOnceAndTheProgramsComesBackFromNobody", proves: [
                 Covered(PickerContract.selectedIndex),
                 Covered(PickerContract.selectedIndexChanged),
-            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
                 let sizes = ["S", "M", "L"]
@@ -54,7 +54,7 @@
             },
             ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", proves: [
                 Covered(PickerContract.placeholder),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let named = State(wrappedValue: false)
                 let size = State<String?>(wrappedValue: nil)
                 s.start {
@@ -74,7 +74,7 @@
             },
             ConformanceCase("choicesTheTreeChangesAreOffered", proves: [
                 Covered(PickerContract.options),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let more = State(wrappedValue: false)
                 let size = State<String?>(wrappedValue: nil)
                 s.start {
@@ -103,7 +103,7 @@
     @MainActor static func offersItsValues(as presentation: PickerPresentation) -> ConformanceCase {
         ConformanceCase("\(presentation)OffersItsValuesAndShowsTheOneChosen", proves: [
             Covered(PickerContract.presentation), Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let size = State(wrappedValue: "M")
             s.start {
                 VStack {

@@ -141,7 +141,7 @@
             },
             ConformanceCase("thePhaseTravelsWhereTheProgramSendsIt", proves: [
                 Covered(MotionLayoutContract.parameters),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: 0.0)
                 let (handed, arrived) = (Received<Double>(), Received<Bool>())
@@ -180,7 +180,7 @@
             },
             ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
                 Covered(MotionLayoutContract.parameters),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: Orbit())
                 let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
@@ -295,7 +295,7 @@
             },
             ConformanceCase("anAxisOfKeyframesAloneLeavesTheHandAlone", proves: [
                 Covered(MotionLayoutContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let (clock, arrangement, handed) = (TestClock(), State(wrappedValue: 0.0), Received<Double>())
                 s.start(clock: clock) {
                     VStack {

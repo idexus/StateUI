@@ -42,7 +42,7 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Image](Image.md) | 77 | 37 ✅ · 3 ☑️ · 36 ✓ | 25 ✅ · 2 ☑️ · 10 ✓ · 1 – | 32 ✅ · 4 ☑️ | 29 ✅ · 3 ✓ · 6 – | 19 ✅ · 3 ☑️ · 10 ✓ · 6 – | 24 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [ItemsView](ItemsView.md) | 92 | 45 ✅ · 3 ☑️ · 40 ✓ · 4 – | 31 ✅ · 2 ☑️ · 16 ✓ · 5 – | 46 ✅ · 4 ☑️ · 3 ✓ | 43 ✅ · 1 ☑️ · 2 ✓ · 8 – | 30 ✅ · 2 ☑️ · 12 ✓ · 9 – | 36 ✅ · 1 ☑️ · 11 ✓ · 6 – |
 | [Line](Line.md) | 83 | 44 ✅ · 3 ☑️ · 36 ✓ | 32 ✅ · 2 ☑️ · 10 ✓ · 1 – | 40 ✅ · 4 ☑️ | 36 ✅ · 3 ✓ · 6 – | 26 ✅ · 3 ☑️ · 10 ✓ · 6 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| [Link](Link.md) | 84 | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 26 ✅ · 2 ☑️ · 13 ✓ · 5 – | 35 ✅ · 4 ☑️ · 3 ✓ · 3 – | 37 ✅ · 1 ☑️ · 3 ✓ · 5 – | 24 ✅ · 3 ☑️ · 13 ✓ · 6 – | 31 ✅ · 1 ☑️ · 11 ✓ · 3 – |
+| [Link](Link.md) | 84 | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 25 ✅ · 2 ☑️ · 12 ✓ · 5 – | 34 ✅ · 4 ☑️ · 2 ✓ · 3 – | 36 ✅ · 1 ☑️ · 2 ✓ · 5 – | 23 ✅ · 3 ☑️ · 12 ✓ · 6 – | 30 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [Map](Map.md) | 82 | 41 ✅ · 3 ☑️ · 37 ✓ · 1 – | 29 ✅ · 2 ☑️ · 11 ✓ · 2 – | 44 🧩 | 44 🧩 | 44 🧩 | 44 🧩 |
 | [MotionLayout](MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 28 ✅ · 3 ☑️ · 21 ✓ · 2 – | 42 ✅ · 4 ☑️ · 6 ✓ · 1 – | 36 ✅ · 1 ☑️ · 10 ✓ · 8 – | 23 ✅ · 2 ☑️ · 19 ✓ · 8 – | 36 ✅ · 2 ☑️ · 14 ✓ · 4 – |
 | [Path](Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 33 ✅ · 3 ☑️ · 10 ✓ · 1 – | 41 ✅ · 5 ☑️ | 37 ✅ · 1 ☑️ · 3 ✓ · 6 – | 27 ✅ · 4 ☑️ · 10 ✓ · 6 – | 32 ✅ · 2 ☑️ · 10 ✓ · 3 – |
@@ -66,10 +66,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 30 ✅ · 3 ☑️ · 11 ✓ · 1 – | 41 ✅ · 4 ☑️ · 1 ✓ | 38 ✅ · 1 ☑️ · 2 ✓ · 4 – | 26 ✅ · 2 ☑️ · 11 ✓ · 7 – | 32 ✅ · 1 ☑️ · 10 ✓ · 3 – |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 35 ✅ · 2 ☑️ · 13 ✓ · 2 – | 42 ✅ · 4 ☑️ · 2 ✓ · 3 – | 39 ✅ · 3 ✓ · 9 – | 31 ✅ · 3 ☑️ · 12 ✓ · 6 – | 32 ✅ · 1 ☑️ · 10 ✓ · 6 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 28 ✅ · 3 ☑️ · 12 ✓ · 1 – | 39 ✅ · 4 ☑️ · 2 ✓ | 37 ✅ · 1 ☑️ · 2 ✓ · 4 – | 24 ✅ · 2 ☑️ · 12 ✓ · 7 – | 31 ✅ · 1 ☑️ · 10 ✓ · 3 – |
-| ✅ |  | 1665 | 1127 | 1391 | 1366 | 935 | 1169 |
-| ✓ |  | 1355 | 427 | 46 | 95 | 428 | 366 |
+| ✅ |  | 1665 | 1126 | 1390 | 1365 | 934 | 1168 |
+| ✓ |  | 1355 | 426 | 45 | 94 | 427 | 365 |
 | – |  | 57 | 106 | 82 | 197 | 231 | 125 |
-| **Met** | 3210 | **3077** | **1660** | **1519** | **1658** | **1594** | **1660** |
+| **Met** | 3210 | **3077** | **1658** | **1517** | **1656** | **1592** | **1658** |
 | 🧩 |  | 0 | 0 | 44 | 44 | 44 | 44 |
 <!-- controls:end -->
 
@@ -88,7 +88,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Marker](Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [Menu](Menu.md) | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](MenuBar.md) | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
+| [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 2 – | 5 ✅ | 3 ✅ · 2 – | 5 ✅ |
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 2 – | 5 ✅ | 3 ✅ · 2 – | 5 ✅ |
 | [NavigationStack](NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
@@ -102,15 +102,15 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 16 – | 6 ✅ · 1 ☑️ · 1 ✓ · 13 – | 6 ✅ · 1 ☑️ · 13 – | 10 ✅ · 11 – | 8 ✅ · 1 ✓ · 12 – | 21 ✅ |
+| [ToolbarButton](ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 16 – | 4 ✅ · 1 ☑️ · 1 ✓ · 13 – | 4 ✅ · 1 ☑️ · 13 – | 8 ✅ · 11 – | 6 ✅ · 1 ✓ · 12 – | 19 ✅ |
 | [ToolbarGroup](ToolbarGroup.md) | 16 | 6 ✅ · 8 – | 6 ✅ · 6 – | 5 ✅ · 1 ☑️ · 6 – | 7 ✅ · 5 – | 6 ✅ · 6 – | 11 ✅ · 1 – |
 | [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 16 – | 5 ✅ · 12 – | 4 ✅ · 12 – | 6 ✅ · 11 – | 5 ✅ · 12 – | 17 ✅ |
 | [Window](Window.md) | 21 | 13 ✅ · 1 ☑️ · 6 ✓ |  |  |  |  |  |
-| ✅ |  | 109 | 102 | 81 | 108 | 82 | 139 |
+| ✅ |  | 109 | 98 | 77 | 104 | 79 | 135 |
 | ✓ |  | 27 | 20 | 18 | 8 | 11 | 10 |
-| – |  | 49 | 37 | 44 | 36 | 50 | 1 |
-| **Met** | 213 | **185** | **159** | **143** | **152** | **143** | **150** |
+| – |  | 49 | 37 | 44 | 36 | 49 | 1 |
+| **Met** | 213 | **185** | **155** | **139** | **148** | **139** | **146** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [ClickElement](tiers/ClickElement.md) - What a control the user chooses reports: a button, a link, a menu's entry, a toolbar's button.
 - [RangeElement](tiers/RangeElement.md) - What a control choosing a number in a range holds and reports: a slider, a stepper.
 - [SubmitElement](tiers/SubmitElement.md) - What a field the user submits holds and reports: the word its key shows, and the submission.
 - [SessionElement](tiers/SessionElement.md) - What a scene and a window report of the user's attention: coming to the front, leaving it, going out of sight.

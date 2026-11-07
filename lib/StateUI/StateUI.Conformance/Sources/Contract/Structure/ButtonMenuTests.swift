@@ -21,7 +21,7 @@
     static func offers(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aButtonsMenuOffersItsEntries", proves: [
             Covered(ButtonMenuContract.self),
-        ], needs: [Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(element, "Share") {
@@ -43,7 +43,7 @@
     static func splits(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aButtonWithAClickOfItsOwnSplits", proves: [
             Covered(ButtonMenuContract.self),
-        ], needs: [ButtonMenuElementTests.clicking(element), Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+        ], needs: [ButtonMenuElementTests.clicking(element), Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(
@@ -67,7 +67,7 @@
     static func follows(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aButtonsMenuFollowsTheStatesItsEntriesRead", proves: [
             Covered(ButtonMenuContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let shares = State(wrappedValue: ["Mail"])
             s.start {
                 MenuButtons.standing(

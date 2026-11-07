@@ -31,7 +31,7 @@
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
                 Covered(TextSpanContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: "TextSpan"), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(TextualElementContract.text, on: "TextSpan"), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {

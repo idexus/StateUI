@@ -30,7 +30,7 @@
     @MainActor static func eachWeightStands(on element: String) -> ConformanceCase {
         ConformanceCase("\(element).fontWeight.standsAtEachWeightTheTreeGives", proves: [
             Covered(FontElementContract.fontWeight, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let weight = State(wrappedValue: FontWeight.regular)
             s.start {
                 Specimens.page(element, Words.on(element) + [Write(FontElementContract.fontWeight, weight.wrappedValue)],
@@ -57,7 +57,7 @@
     @MainActor static func theStylesStandInTheRampsOrder(on element: String) -> ConformanceCase {
         ConformanceCase("\(element).textStyle.standsInTheRampsOrder", proves: [
             Covered(FontElementContract.textStyle, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             // Each next style changes the size, so a step is seen to have landed.
             let order: [TextStyle] = [.display, .title, .subtitle, .body, .caption, .headline]
             let step = State(wrappedValue: 0)

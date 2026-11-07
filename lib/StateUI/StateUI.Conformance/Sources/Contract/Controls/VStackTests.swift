@@ -14,7 +14,7 @@
             Aspects.standsAlone("VStack"),
             ConformanceCase("itsChildrenStandOneUnderAnotherInTheirOrder", proves: [
                 Covered(VStackContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let swapped = State(wrappedValue: false)
                 let (first, second) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
@@ -66,7 +66,7 @@
             ConformanceCase("aFieldKeepsTheKeyboardAsItsRowsMove", proves: [
                 Covered(VStackContract.self),
             ], needs: [
-                Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField"),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(FocusElementContract.focus, on: "TextField"),
                 Covered(FocusElementContract.isFocusedChanged, on: "TextField"),
             ]) { s in
                 let order = State(wrappedValue: ["a", "b", "c"])

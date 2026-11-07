@@ -96,7 +96,7 @@ final class ConformanceRunnerTests: XCTestCase {
         let map = Outcome(proving: [Covered(MapContract.region)], on: left)
         XCTAssertFalse(map.runs, "a case of what the application realizes does not run")
         XCTAssertEqual(map.facts, [HostVerdict(element: "Map", member: "region", mark: .byApplication)])
-        XCTAssertFalse(Outcome(proving: [Covered(ButtonContract.clicked)], needing: [Covered(MapContract.region)], on: left).runs)
+        XCTAssertFalse(Outcome(proving: [Covered(ClickElementContract.clicked, on: ButtonContract.self)], needing: [Covered(MapContract.region)], on: left).runs)
         XCTAssertEqual(Outcome(proving: [Covered(MenuBarContract.self)], on: register).facts, [
             HostVerdict(element: "MenuBar", member: nil, mark: .notPlanned(reason: "No bar here.")),
         ])

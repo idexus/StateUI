@@ -61,7 +61,7 @@
             ConformanceCase("aChoiceTheUserMakesLandsOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
                 Covered(ItemsViewContract.selectedItemsChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let chosen = State<Int?>(wrappedValue: nil)
                 let heard = Received<[String]>()
                 s.start(reducesMotion: true) {
@@ -138,7 +138,7 @@
             },
             ConformanceCase("theEndIsHeardAgainWhenTheListLosesItemsWithItsEndInView", proves: [
                 Covered(ItemsViewContract.endReached),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 30)
                 let heard = Received<Int>()
                 s.start {
@@ -166,7 +166,7 @@
             },
             ConformanceCase("theListScrollsToAnItem", proves: [
                 Covered(ItemsViewContract.scrollTo),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
                     VStack {

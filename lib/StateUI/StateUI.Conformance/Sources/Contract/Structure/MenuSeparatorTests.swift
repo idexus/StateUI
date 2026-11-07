@@ -13,7 +13,7 @@
         [
             ConformanceCase("aSeparatorPartsItsEntries", proves: [
                 Covered(MenuSeparatorContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let parted = State(wrappedValue: true)
                 s.start {
                     VStack {

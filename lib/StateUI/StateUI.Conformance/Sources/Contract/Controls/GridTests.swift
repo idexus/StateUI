@@ -122,7 +122,7 @@
             },
             ConformanceCase("aSpacingTheTreeChangesMovesTheCells", proves: [
                 Covered(GridContract.columnSpacing), Covered(GridContract.rowSpacing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let wide = State(wrappedValue: false)
                 let box = Received<[Double]>()
                 s.start {
@@ -157,7 +157,7 @@
             },
             ConformanceCase("aTrackTheTreeChangesMovesTheCells", proves: [
                 Covered(GridContract.columns), Covered(GridContract.rows),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let wide = State(wrappedValue: false)
                 let box = Received<[Double]>()
                 s.start {

@@ -30,7 +30,7 @@
             },
             ConformanceCase("itsCornersAreRoundedAwayAsTheTreeSays", proves: [
                 Covered(RectangleContract.cornerRadius),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let square = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -55,7 +55,7 @@
             },
             ConformanceCase("aFillFromAStateTakesTheColorItTurnsTo", proves: [
                 Covered(RectangleContract.self),
-            ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle"), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(FilledShapeContract.fill, on: "Rectangle"), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let color = State(wrappedValue: Color.red)
                 s.start {
                     VStack {

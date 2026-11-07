@@ -77,7 +77,7 @@
             },
             ConformanceCase("thePictureTheTreeChangesItToReplacesIt", proves: [
                 Covered(ImageContract.source),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let wide = State(wrappedValue: false)
                 let frames = Received<[Double]>()
                 s.start {

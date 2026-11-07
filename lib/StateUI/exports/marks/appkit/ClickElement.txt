@@ -1,0 +1,5 @@
+# revision 1.1
+Button.clicked: ✅
+Link.clicked: ✅
+MenuItem.clicked: ✅
+ToolbarButton.clicked: ✓ activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched

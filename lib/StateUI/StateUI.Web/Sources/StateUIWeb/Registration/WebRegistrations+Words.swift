@@ -34,7 +34,7 @@ extension WebRegistrations {
 
         registry.add(ButtonContract.self, create: { reports in
             let button = WebButtonView()
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.listenForHolding(
                 pressed: { reports.raise(PressElementContract.pressed) }, released: { reports.raise(PressElementContract.released) })
             return button
@@ -74,7 +74,7 @@ extension WebRegistrations {
                 view.attribute("type", role == .primary ? "submit" : "button")
                 view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
             }
-            button.declares(ButtonContract.clicked)
+            button.declares(ClickElementContract.clicked)
             button.declares(PressElementContract.pressed)
             button.declares(PressElementContract.released)
         })

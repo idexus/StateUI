@@ -13,7 +13,7 @@
         [
             ConformanceCase("aTextsSpansStandInPlaceOfItsOwnWords", proves: [
                 Covered(TextSpansContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let spanned = State(wrappedValue: true)
                 s.start {
                     VStack {

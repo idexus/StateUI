@@ -30,7 +30,7 @@ NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 10
+Button 11
 ButtonMenu 2
 appkit Button 2
 uikit Button 2
@@ -96,7 +96,7 @@ WebView 4
 ZStack 2
 Popover 6
 TextualElement 2
-Link 2
+Link 3
 TextAndIconElement 2
 BottomBar 5
 appkit MotionLayout 2
@@ -106,3 +106,4 @@ Marker 2
 MenuToggle 2
 Sheet 2
 BarItemElement 2
+ActionElement 2

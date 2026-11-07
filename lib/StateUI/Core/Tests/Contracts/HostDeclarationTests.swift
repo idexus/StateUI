@@ -126,7 +126,7 @@ final class HostDeclarationTests: XCTestCase {
             // A host's first slice already has a button: its own member reaches it through its own contract.
             XCTAssertTrue(realization.elements.contains("Button"), "\(host) realizes no Button")
             XCTAssertTrue(realization.members.contains(
-                HostRealizedMember(element: "Button", owner: "Button", member: "clicked")))
+                HostRealizedMember(element: "Button", owner: "ClickElement", member: "clicked")))
 
             // The drift this road exists to end: `contentMode` reaches an Image
             // through the tier declaring it, whatever the host called the member.

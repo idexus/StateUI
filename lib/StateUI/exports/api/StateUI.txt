@@ -162,6 +162,9 @@ swift.conformance CheckBoxContract: Swift.Sendable
 swift.conformance ChosenFile: Swift.Equatable
 swift.conformance ChosenFile: Swift.Hashable
 swift.conformance ChosenFile: Swift.Sendable
+swift.conformance ClickElementContract: StateUI.Tier
+swift.conformance ClickElementContract: StateUI.WornContract
+swift.conformance ClickElementContract: Swift.Sendable
 swift.conformance Clipboard: Swift.Sendable
 swift.conformance ClockTime: Swift.Comparable
 swift.conformance ClockTime: Swift.Equatable
@@ -1017,6 +1020,7 @@ swift.enum Cadence: enum Cadence
 swift.enum CanvasContract: enum CanvasContract
 swift.enum CapsuleContract: enum CapsuleContract
 swift.enum CheckBoxContract: enum CheckBoxContract
+swift.enum ClickElementContract: enum ClickElementContract
 swift.enum ColorPickerContract: enum ColorPickerContract
 swift.enum ColorScheme: enum ColorScheme
 swift.enum Complaints: enum Complaints
@@ -1868,9 +1872,6 @@ swift.method @SwiftNever.translationY(_:): @MainActor func translationY(_ state:
 swift.method @SwiftNever.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method @SwiftNever.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method ActionElement.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
-swift.method ActionElement.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method ActionElement.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ActionElement.role(_:): @MainActor func role(_ role: ActionRole) -> Self.Modified
 swift.method Aim.evaluateJavaScript(_:): @MainActor func evaluateJavaScript(_ script: String) async throws -> String
 swift.method Aim.focus(): @discardableResult @MainActor func focus() async throws -> Bool
@@ -2184,9 +2185,9 @@ swift.method Button.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ val
 swift.method Button.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method Button.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
 swift.method Button.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method Button.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Button.Modified
-swift.method Button.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Button.Modified
-swift.method Button.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Button.Modified
+swift.method Button.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Button.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -2967,6 +2968,9 @@ swift.method CheckBox.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) 
 swift.method ChosenFile.launch(): @discardableResult func launch() async throws -> Bool
 swift.method ChosenFile.read(): func read() async throws -> [UInt8]
 swift.method ChosenFile.read(atMost:): func read(atMost maximum: Int) async throws -> [UInt8]
+swift.method ClickElement.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ClickElement.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ClickElement.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Clipboard.read(): @MainActor func read() async throws -> String?
 swift.method Clipboard.write(_:): @MainActor func write(_ text: String) async throws
 swift.method Color.opacity(_:): func opacity(_ fraction: Double) -> Color
@@ -6180,9 +6184,9 @@ swift.method Link.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value
 swift.method Link.onChanged(_:gate:_:): @MainActor func onChanged<Value>(_ value: Value, gate: Gate, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
 swift.method Link.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Value : Equatable
 swift.method Link.onChanged(_:policy:_:): @MainActor func onChanged<Value>(_ value: Value, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value, Value>) -> Self.Modified where Value : Equatable
-swift.method Link.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Link.Modified
-swift.method Link.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Link.Modified
-swift.method Link.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Link.Modified
+swift.method Link.onClicked(_:): @MainActor func onClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Link.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onCreated(_:): @MainActor func onCreated(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDestroying(_:): @MainActor func onDestroying(_ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDisappearing(_:): @MainActor func onDisappearing(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -13536,7 +13540,6 @@ swift.type.method ViewTransform.tilt(_:): static func tilt(_ degrees: Double) ->
 swift.type.method ViewTransform.translate(_:_:): static func translate(_ x: Double, _ y: Double) -> ViewTransform
 swift.type.method ViewTransform.turn(_:): static func turn(_ degrees: Double) -> ViewTransform
 swift.type.property @SwiftDouble.axes: static var axes: [WritableKeyPath<Double, Double>] { get }
-swift.type.property ActionElementContract.clicked: static let clicked: ElementEvent<ActionElementContract, Void>
 swift.type.property ActionElementContract.name: static let name: String
 swift.type.property ActionElementContract.role: static let role: ElementProperty<ActionElementContract, ActionRole>
 swift.type.property AnchorContract.name: static var name: String { get }
@@ -13564,7 +13567,6 @@ swift.type.property BorderElementContract.shape: static let shape: ElementProper
 swift.type.property BorderElementContract.stroke: static let stroke: ElementProperty<BorderElementContract, Brush>
 swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
-swift.type.property ButtonContract.clicked: static let clicked: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.icon: static let icon: ElementProperty<ButtonContract, ImageSource>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
 swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementProperty<ButtonContract, Double>
@@ -13580,6 +13582,8 @@ swift.type.property CanvasContract.drawing: static let drawing: ElementProperty<
 swift.type.property CanvasContract.name: static var name: String { get }
 swift.type.property CapsuleContract.name: static var name: String { get }
 swift.type.property CheckBoxContract.name: static var name: String { get }
+swift.type.property ClickElementContract.clicked: static let clicked: ElementEvent<ClickElementContract, Void>
+swift.type.property ClickElementContract.name: static let name: String
 swift.type.property Color.accent: static let accent: Color
 swift.type.property Color.black: static let black: Color
 swift.type.property Color.blue: static let blue: Color
@@ -13743,7 +13747,6 @@ swift.type.property LineContract.to: static let to: ElementProperty<LineContract
 swift.type.property LineHeightElementContract.lineHeight: static let lineHeight: ElementProperty<LineHeightElementContract, Double>
 swift.type.property LineHeightElementContract.name: static let name: String
 swift.type.property LinkContract.address: static let address: ElementProperty<LinkContract, String>
-swift.type.property LinkContract.clicked: static let clicked: ElementEvent<LinkContract, Void>
 swift.type.property LinkContract.name: static var name: String { get }
 swift.type.property LocalizationCatalog.defaultLanguage: static var defaultLanguage: Self.CatalogLanguage { get }
 swift.type.property MapContract.isScrollEnabled: static let isScrollEnabled: ElementProperty<MapContract, Bool>

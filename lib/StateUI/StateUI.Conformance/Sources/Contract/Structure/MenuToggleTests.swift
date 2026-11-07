@@ -13,7 +13,7 @@
         [
             ConformanceCase("anEntryStandsCheckedAsTheTreeSays", proves: [
                 Covered(MenuToggleContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 s.start {
                     VStack {

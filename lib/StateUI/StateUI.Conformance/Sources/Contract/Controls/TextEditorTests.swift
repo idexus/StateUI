@@ -39,7 +39,7 @@
             },
             ConformanceCase("anEditorGrowsWithItsWordsOnlyWhereItIsToldTo", proves: [
                 Covered(TextEditorContract.growsWithText),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let words = State(wrappedValue: "one")
                 let (growing, fixed) = (Received<[Double]>(), Received<[Double]>())
                 s.start {

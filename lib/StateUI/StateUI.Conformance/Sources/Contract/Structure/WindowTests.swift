@@ -79,7 +79,7 @@
             },
             ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", proves: [
                 Covered(WindowContract.floatsOnTop),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -98,7 +98,7 @@
             },
             ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", proves: [
                 Covered(WindowContract.hidesWhenInactive),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -129,7 +129,7 @@
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
             Covered(WindowContract.background),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thick))
             let changed = Material.blur(.ultraThin)
             s.start {
@@ -152,7 +152,7 @@
     static var groundsItsSheets: ConformanceCase {
         ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
             Covered(WindowContract.background),
-        ], needs: [Covered(ButtonContract.clicked), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             let value = State(wrappedValue: first)
             s.start {
@@ -181,7 +181,7 @@
     ) -> ConformanceCase {
         ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
             Covered(member),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 WindowSessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],

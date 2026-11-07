@@ -10,33 +10,12 @@
 @_spi(Host) public enum ButtonTests: ConformanceFamily {
     public static let name = "Button"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.map { $0.provingOwn() }.filter { !$0.proves.isEmpty } }
+
+    /// Every case written for the element: its own members, and its tiers' a tier's family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             Aspects.standsAlone("Button"),
-            ConformanceCase("eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", proves: [
-                Covered(ButtonContract.clicked),
-            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
-                let count = State(wrappedValue: 0)
-                let heard = Received<Int>()
-                s.start {
-                    VStack {
-                        Text("count \(count.wrappedValue)").id("label")
-                        Button("Add").onClicked {
-                            count.wrappedValue += 1
-                            heard.values.append(count.wrappedValue)
-                        }.id("button")
-                    }
-                }
-                let button = try s.element("button")
-
-                try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 1" }
-                try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 2" }
-
-                s.expect(heard.values, [1, 2], "each click heard once")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "count 2")
-            },
             Aspects.holds(ButtonContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
                           with: [Write(TextualElementContract.text, "Go")]),
             Aspects.holds(ButtonContract.iconPosition, on: "Button", .start, then: .top, with: [
@@ -50,7 +29,7 @@
                 then: KeyboardShortcut(.return, modifiers: [.primary, .shift])),
             ConformanceCase("aShortcutPressesTheButton", proves: [
                 Covered(ButtonContract.keyboardShortcut),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
@@ -75,7 +54,7 @@
             },
             ConformanceCase("aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
                 Covered(ButtonContract.keyboardShortcut),
-            ], needs: [Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(FocusElementContract.focus, on: "TextField")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
@@ -96,7 +75,7 @@
                           with: [Write(TextualElementContract.text, "Go")]),
             ConformanceCase("aRolesKeyPressesTheButtonUnlessItStatesOne", proves: [
                 Covered(ButtonContract.role), Covered(ButtonContract.keyboardShortcut),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {
@@ -121,7 +100,7 @@
             },
             ConformanceCase("returnIsTheFieldsWhileItIsTypedInto", proves: [
                 Covered(ButtonContract.role),
-            ], needs: [Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(FocusElementContract.focus, on: "TextField")]) { s in
                 let heard = Received<String>()
                 s.start {
                     VStack {

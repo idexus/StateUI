@@ -16,7 +16,7 @@
         [
             ConformanceCase("theVisiblePagesItemsStandOnItsBar", proves: [
                 Covered(ToolbarGroupContract.self),
-            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "ToolbarButton")]) { s in
                 let path = State(wrappedValue: [Int]())
                 let heard = Received<String>()
                 s.start {
@@ -175,7 +175,7 @@
             },
             ConformanceCase("aBottomToolbarsItemsStandAtThePagesFoot", proves: [
                 Covered(ToolbarGroupContract.barEdge),
-            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "ToolbarButton")]) { s in
                 let path = State(wrappedValue: [Int]())
                 let heard = Received<String>()
                 s.start {
@@ -248,7 +248,7 @@
             },
             ConformanceCase("anItemWhosePartChangesMovesToTheOther", proves: [
                 Covered(ToolbarGroupContract.part),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let inDetail = State(wrappedValue: false)
                 s.start {
                     SplitView {
