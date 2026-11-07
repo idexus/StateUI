@@ -6,6 +6,4 @@ Button.iconPosition: ✅
 Button.iconSpacing: ✅
 Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
-Button.pressed: ✅
-Button.released: ✅
 Button.role: ✅

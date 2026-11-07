@@ -63,7 +63,6 @@ swift.conformance AutomationElement: StateUI.PropertyContainer
 swift.conformance AutomationElementContract: StateUI.Contract
 swift.conformance BarButtonElement: StateUI.BarItemElement
 swift.conformance BarButtonElement: StateUI.PropertyContainer
-swift.conformance BarButtonElementContract: StateUI.Contract
 swift.conformance BarElement: StateUI.PropertyContainer
 swift.conformance BarElementContract: StateUI.Contract
 swift.conformance BarItemElement: StateUI.PropertyContainer
@@ -86,6 +85,7 @@ swift.conformance Button: StateUI.ImageElement
 swift.conformance Button: StateUI.KeyboardElement
 swift.conformance Button: StateUI.ModifiableElement
 swift.conformance Button: StateUI.PaddingElement
+swift.conformance Button: StateUI.PressElement
 swift.conformance Button: StateUI.PropertyContainer
 swift.conformance Button: StateUI.StyleTarget
 swift.conformance Button: StateUI.TextAndIconElement
@@ -738,6 +738,10 @@ swift.conformance PositionDots: StateUI.ViewProperties
 swift.conformance PositionDots: StateUI.VisualElement
 swift.conformance PositionDots: StateUI.VisualElementProperties
 swift.conformance PresentedElementContract: StateUI.Contract
+swift.conformance PressElement: StateUI.Element
+swift.conformance PressElement: StateUI.ModifiableElement
+swift.conformance PressElement: StateUI.PropertyContainer
+swift.conformance PressElementContract: StateUI.Contract
 swift.conformance ProgressBar: StateUI.AutomationElement
 swift.conformance ProgressBar: StateUI.Element
 swift.conformance ProgressBar: StateUI.ElementView
@@ -876,6 +880,7 @@ swift.conformance Slider: StateUI.ElementView
 swift.conformance Slider: StateUI.FocusElement
 swift.conformance Slider: StateUI.KeyboardElement
 swift.conformance Slider: StateUI.ModifiableElement
+swift.conformance Slider: StateUI.PressElement
 swift.conformance Slider: StateUI.PropertyContainer
 swift.conformance Slider: StateUI.SliderProperties
 swift.conformance Slider: StateUI.StyleTarget
@@ -2533,6 +2538,7 @@ swift.protocol PickerProperties: @MainActor protocol PickerProperties : Property
 swift.protocol PolygonProperties: @MainActor protocol PolygonProperties : PropertyContainer
 swift.protocol PolylineProperties: @MainActor protocol PolylineProperties : PropertyContainer
 swift.protocol PopupElement: @MainActor protocol PopupElement : ElementView
+swift.protocol PressElement: @MainActor protocol PressElement : ModifiableElement
 swift.protocol PropertyContainer: @MainActor protocol PropertyContainer
 swift.protocol RectangleProperties: @MainActor protocol RectangleProperties : PropertyContainer
 swift.protocol RefreshElement: @MainActor protocol RefreshElement : View
@@ -2803,9 +2809,6 @@ swift.type.property ApplicationContract.nodeType: static let nodeType: NodeType
 swift.type.property ApplicationContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property AutomationElementContract.members: static let members: [any ContractMember]
 swift.type.property AutomationElementContract.tiers: static var tiers: [any Tier.Type] { get }
-swift.type.property BarButtonElementContract.members: static let members: [any ContractMember]
-swift.type.property BarButtonElementContract.tiers: static let tiers: [any Tier.Type]
-swift.type.property BarButtonElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarElementContract.members: static let members: [any ContractMember]
 swift.type.property BarElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarItemElementContract.members: static let members: [any ContractMember]
@@ -3126,6 +3129,8 @@ swift.type.property PopupElementContract.members: static let members: [any Contr
 swift.type.property PopupElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property PresentedElementContract.members: static let members: [any ContractMember]
 swift.type.property PresentedElementContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property PressElementContract.members: static let members: [any ContractMember]
+swift.type.property PressElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ProgressBar.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ProgressBarContract.layer: static let layer: ElementLayer
 swift.type.property ProgressBarContract.layer: static var layer: ElementLayer { get }

@@ -87,9 +87,6 @@ swift.conformance AutomationElementContract: Swift.Sendable
 swift.conformance AxisValues: Swift.Equatable
 swift.conformance AxisValues: Swift.ExpressibleByArrayLiteral
 swift.conformance AxisValues: Swift.Sendable
-swift.conformance BarButtonElementContract: StateUI.Tier
-swift.conformance BarButtonElementContract: StateUI.WornContract
-swift.conformance BarButtonElementContract: Swift.Sendable
 swift.conformance BarElementContract: StateUI.Tier
 swift.conformance BarElementContract: StateUI.WornContract
 swift.conformance BarElementContract: Swift.Sendable
@@ -628,6 +625,9 @@ swift.conformance PositionDots: Swift.Sendable
 swift.conformance PresentedElementContract: StateUI.Tier
 swift.conformance PresentedElementContract: StateUI.WornContract
 swift.conformance PresentedElementContract: Swift.Sendable
+swift.conformance PressElementContract: StateUI.Tier
+swift.conformance PressElementContract: StateUI.WornContract
+swift.conformance PressElementContract: Swift.Sendable
 swift.conformance ProgressBar: StateUI.View
 swift.conformance ProgressBar: StateUI.Views
 swift.conformance ProgressBar: Swift.Sendable
@@ -989,7 +989,6 @@ swift.enum ApplicationBuilder: @MainActor @resultBuilder enum ApplicationBuilder
 swift.enum ApplicationContract: enum ApplicationContract
 swift.enum Area: enum Area
 swift.enum AutomationElementContract: enum AutomationElementContract
-swift.enum BarButtonElementContract: enum BarButtonElementContract
 swift.enum BarElementContract: enum BarElementContract
 swift.enum BarItemElementContract: enum BarItemElementContract
 swift.enum BatteryPowerSource: enum BatteryPowerSource
@@ -1089,6 +1088,7 @@ swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
 swift.enum PopupElementContract: enum PopupElementContract
 swift.enum PresentedElementContract: enum PresentedElementContract
+swift.enum PressElementContract: enum PressElementContract
 swift.enum ProgressBarContract: enum ProgressBarContract
 swift.enum RectangleContract: enum RectangleContract
 swift.enum RefreshElementContract: enum RefreshElementContract
@@ -2241,12 +2241,12 @@ swift.method Button.onPointerPressed(gate:_:): @MainActor func onPointerPressed(
 swift.method Button.onPointerReleased(_:): @MainActor func onPointerReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
 swift.method Button.onPointerReleased(_:_:): @MainActor func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
 swift.method Button.onPointerReleased(gate:_:): @MainActor func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method Button.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Button.Modified
-swift.method Button.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Button.Modified
-swift.method Button.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Button.Modified
-swift.method Button.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Button.Modified
-swift.method Button.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Button.Modified
-swift.method Button.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Button.Modified
+swift.method Button.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Button.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Button.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method Button.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Button.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
@@ -8288,6 +8288,12 @@ swift.method PositionDots.translationY(_:): @MainActor func translationY(_ state
 swift.method PositionDots.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method PositionDots.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method PressElement.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PressElement.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PressElement.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PressElement.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PressElement.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PressElement.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9515,12 +9521,12 @@ swift.method Slider.onPointerPressed(gate:_:): @MainActor func onPointerPressed(
 swift.method Slider.onPointerReleased(_:): @MainActor func onPointerReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
 swift.method Slider.onPointerReleased(_:_:): @MainActor func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
 swift.method Slider.onPointerReleased(gate:_:): @MainActor func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method Slider.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Slider.Modified
-swift.method Slider.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Slider.Modified
-swift.method Slider.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Slider.Modified
-swift.method Slider.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Slider.Modified
-swift.method Slider.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Slider.Modified
-swift.method Slider.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Slider.Modified
+swift.method Slider.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Slider.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Slider.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method Slider.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Slider.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
@@ -13516,9 +13522,6 @@ swift.type.property ApplicationContract.name: static var name: String { get }
 swift.type.property AutomationElementContract.accessibilityIdentifier: static let accessibilityIdentifier: ElementProperty<AutomationElementContract, String>
 swift.type.property AutomationElementContract.name: static let name: String
 swift.type.property AxisValues.endpoints: static var endpoints: AxisValues { get }
-swift.type.property BarButtonElementContract.name: static let name: String
-swift.type.property BarButtonElementContract.pressed: static let pressed: ElementEvent<BarButtonElementContract, Void>
-swift.type.property BarButtonElementContract.released: static let released: ElementEvent<BarButtonElementContract, Void>
 swift.type.property BarElementContract.barBackground: static let barBackground: ElementProperty<BarElementContract, Material>
 swift.type.property BarElementContract.barForegroundColor: static let barForegroundColor: ElementProperty<BarElementContract, Color>
 swift.type.property BarElementContract.barScrollEdge: static let barScrollEdge: ElementProperty<BarElementContract, ScrollEdge>
@@ -13548,8 +13551,6 @@ swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementP
 swift.type.property ButtonContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<ButtonContract, KeyboardShortcut>
 swift.type.property ButtonContract.lineBreak: static let lineBreak: ElementProperty<ButtonContract, LineBreak>
 swift.type.property ButtonContract.name: static var name: String { get }
-swift.type.property ButtonContract.pressed: static let pressed: ElementEvent<ButtonContract, Void>
-swift.type.property ButtonContract.released: static let released: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.role: static let role: ElementProperty<ButtonContract, ButtonRole>
 swift.type.property ButtonMenuContract.name: static var name: String { get }
 swift.type.property ButtonMenuElementContract.menuKind: static let menuKind: ElementProperty<ButtonMenuElementContract, ButtonMenuKind>
@@ -13822,6 +13823,9 @@ swift.type.property PopupElementContract.opened: static let opened: ElementEvent
 swift.type.property PresentedElementContract.isPresented: static let isPresented: ElementProperty<PresentedElementContract, Bool>
 swift.type.property PresentedElementContract.isPresentedChanged: static let isPresentedChanged: ElementEvent<PresentedElementContract, Bool>
 swift.type.property PresentedElementContract.name: static let name: String
+swift.type.property PressElementContract.name: static let name: String
+swift.type.property PressElementContract.pressed: static let pressed: ElementEvent<PressElementContract, Void>
+swift.type.property PressElementContract.released: static let released: ElementEvent<PressElementContract, Void>
 swift.type.property ProgressBarContract.name: static var name: String { get }
 swift.type.property ProgressBarContract.progress: static let progress: ElementProperty<ProgressBarContract, Double>
 swift.type.property Rect.zero: static let zero: Rect
@@ -13868,8 +13872,6 @@ swift.type.property SheetContract.name: static var name: String { get }
 swift.type.property SliderContract.maximum: static let maximum: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.minimum: static let minimum: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.name: static var name: String { get }
-swift.type.property SliderContract.pressed: static let pressed: ElementEvent<SliderContract, Void>
-swift.type.property SliderContract.released: static let released: ElementEvent<SliderContract, Void>
 swift.type.property SliderContract.value: static let value: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.valueChanged: static let valueChanged: ElementEvent<SliderContract, Double>
 swift.type.property SpaceContract.name: static var name: String { get }

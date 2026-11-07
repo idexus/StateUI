@@ -96,6 +96,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBorderElement", testBorderElement),
             ("testImageElement", testImageElement),
             ("testTintElement", testTintElement),
+            ("testPressElement", testPressElement),
             ("testPresentedElement", testPresentedElement),
             ("testPopupElement", testPopupElement),
             ("testToggleElement", testToggleElement),
@@ -104,7 +105,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
             ("testBarItemElement", testBarItemElement),
-            ("testBarButtonElement", testBarButtonElement),
             ("testMenuItemElement", testMenuItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
@@ -198,6 +198,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testImageElement() throws { try conform(ImageElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testPressElement() throws { try conform(PressElementTests.self) }
     func testPresentedElement() throws { try conform(PresentedElementTests.self) }
     func testPopupElement() throws { try conform(PopupElementTests.self) }
     func testToggleElement() throws { try conform(ToggleElementTests.self) }
@@ -206,7 +207,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
     func testBarItemElement() throws { try conform(BarItemElementTests.self) }
-    func testBarButtonElement() throws { try conform(BarButtonElementTests.self) }
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }

@@ -840,6 +840,9 @@ struct InboxPage: View {
 }
 ```
 
+A bar's button and toggle are `BarButtonElement`s: the pointer over one and a
+press on it are the states their style follows, as a button's are.
+
 ## A bar at the foot
 
 `.bottomBar { }` stands a view at the foot of the page, declared where the

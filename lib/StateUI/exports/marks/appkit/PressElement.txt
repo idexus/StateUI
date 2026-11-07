@@ -1,0 +1,9 @@
+# revision 1.1
+Button.pressed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.released: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
+Slider.pressed: cannot drag on Slider - AppKit's driver has no path for it yet
+Slider.released: cannot drag on Slider - AppKit's driver has no path for it yet
+ToolbarButton.pressed: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.released: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pressed: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.released: – The Mac's toolbar draws its items in the Mac's own look.

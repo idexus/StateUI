@@ -1,4 +1,8 @@
-# revision 1.1
+# revision 0.0
+Button.pressed: ✅
+Button.released: ✅
+Slider.pressed: not realized
+Slider.released: not realized
 ToolbarButton.pressed: – The title bar's commands stand in WinUI's own look.
 ToolbarButton.released: – The title bar's commands stand in WinUI's own look.
 ToolbarToggle.pressed: – The title bar's commands stand in WinUI's own look.

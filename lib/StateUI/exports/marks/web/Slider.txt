@@ -2,7 +2,5 @@
 Slider: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
-Slider.pressed: ✅
-Slider.released: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅

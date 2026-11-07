@@ -12,7 +12,7 @@ extension WebRegistrations {
             let slider = WebSliderView()
             slider.onValueChanged = { moved in reports.report(SliderContract.value, moved, as: SliderContract.valueChanged) }
             slider.listenForHolding(
-                pressed: { reports.raise(SliderContract.pressed) }, released: { reports.raise(SliderContract.released) })
+                pressed: { reports.raise(PressElementContract.pressed) }, released: { reports.raise(PressElementContract.released) })
             return slider
         }, members: { slider in
             slider.applies(SliderContract.value, SliderContract.minimum, SliderContract.maximum) { view, values in
@@ -26,8 +26,8 @@ extension WebRegistrations {
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.declares(SliderContract.valueChanged)
-            slider.declares(SliderContract.pressed)
-            slider.declares(SliderContract.released)
+            slider.declares(PressElementContract.pressed)
+            slider.declares(PressElementContract.released)
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = WebStepperView()

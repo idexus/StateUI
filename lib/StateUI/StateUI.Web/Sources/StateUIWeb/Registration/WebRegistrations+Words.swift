@@ -36,7 +36,7 @@ extension WebRegistrations {
             let button = WebButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
             button.listenForHolding(
-                pressed: { reports.raise(ButtonContract.pressed) }, released: { reports.raise(ButtonContract.released) })
+                pressed: { reports.raise(PressElementContract.pressed) }, released: { reports.raise(PressElementContract.released) })
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
@@ -75,8 +75,8 @@ extension WebRegistrations {
                 view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
             }
             button.declares(ButtonContract.clicked)
-            button.declares(ButtonContract.pressed)
-            button.declares(ButtonContract.released)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 

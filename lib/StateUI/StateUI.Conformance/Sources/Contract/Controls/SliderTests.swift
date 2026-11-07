@@ -144,29 +144,6 @@
                 s.expect(try s.held(SliderContract.value, on: slider), 0.75, within: 1e-9,
                          "the render left the thumb where the hand put it")
             },
-            ConformanceCase("aDragIsHeardAsItStartsAndAsItEnds", proves: [
-                Covered(SliderContract.pressed), Covered(SliderContract.released),
-            ]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        Slider(0.5)
-                            .onEvent(SliderContract.pressed) { heard.values.append("started") }
-                            .onEvent(SliderContract.released) { heard.values.append("completed") }
-                            .width(200).id("slider")
-                    }
-                    .horizontalAlignment(.start)
-                }
-                let slider = try s.element("slider")
-
-                try s.perform(.pressDown(at: Point(100, 10)), on: slider)
-                s.settle { heard.values == ["started"] }
-                s.expect(heard.values, ["started"], "heard as it starts, before it ends")
-                try s.perform(.drag(to: Point(150, 10)), on: slider)
-                try s.perform(.lift(at: Point(150, 10)), on: slider)
-                s.settle { heard.values.count == 2 }
-                s.expect(heard.values, ["started", "completed"])
-            },
             ConformanceCase("aValueOutsideItsRangeStandsAtTheNearestEnd", proves: [
                 Covered(SliderContract.value), Covered(SliderContract.minimum), Covered(SliderContract.maximum),
             ]) { s in

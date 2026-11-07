@@ -176,9 +176,9 @@ enum GTKRealization {
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),
         .complete(SceneContract.windowClosed),
-        .notPlanned(SliderContract.released, reason: "GTK's scale tells no one it is held: its range claims the "
+        .notPlanned(PressElementContract.released, on: SliderContract.self, reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
-        .notPlanned(SliderContract.pressed, reason: "GTK's scale tells no one it is held: its range claims the "
+        .notPlanned(PressElementContract.pressed, on: SliderContract.self, reason: "GTK's scale tells no one it is held: its range claims the "
             + "press, and GTK denies every other gesture on it."),
         .complete(TextSpanContract.background),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),

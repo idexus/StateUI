@@ -24,13 +24,13 @@
     private static func records(
         tier: (any ContractMember) -> HostRecord, item: (any ContractMember, any Contract.Type) -> HostRecord
     ) -> [HostRecord] {
-        let own = BarItemElementContract.members + BarButtonElementContract.members
-            + [BarElementContract.toolbarSpacing as any ContractMember]
+        let own = BarItemElementContract.members + [BarElementContract.toolbarSpacing as any ContractMember]
         let box = BorderElementContract.members + PaddingElementContract.members
         let words = TextColorElementContract.members + FontElementContract.members
         let buttons: [any Contract.Type] = [ToolbarButtonContract.self, ToolbarToggleContract.self]
         let items: [any Contract.Type] = buttons + [ToolbarGroupContract.self]
-        return own.map(tier)
+        let pressed = PressElementContract.members.flatMap { member in buttons.map { item(member, $0) } }
+        return own.map(tier) + pressed
             + [item(ToolbarGroupContract.spacing, ToolbarGroupContract.self)]
             + items.flatMap { element in box.map { item($0, element) } }
             + buttons.flatMap { element in words.map { item($0, element) } }

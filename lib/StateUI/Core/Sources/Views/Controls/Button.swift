@@ -52,7 +52,7 @@ extension ButtonProperties {
 /// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement {
     /// The node this control describes.
     public var node: Node
 
@@ -117,38 +117,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
-    /// Runs the moment a press begins, before it ends.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.pressed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.pressed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.pressed, gate: gate, handler)
-    }
-
-    /// Runs when the press ends, wherever the pointer ends up - unlike
-    /// `onClicked`, which needs it to end on the button.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.released, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.released, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.released, gate: gate, handler)
-    }
 }
 
 /// Which side of a button's caption its picture is on.

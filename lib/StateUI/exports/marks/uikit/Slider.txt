@@ -2,7 +2,5 @@
 Slider: ✅
 Slider.maximum: ✅
 Slider.minimum: ✅
-Slider.pressed: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.released: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.value: ✅
 Slider.valueChanged: ✅

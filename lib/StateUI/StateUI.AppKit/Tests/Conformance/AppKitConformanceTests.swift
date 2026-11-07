@@ -131,6 +131,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
     @MainActor func testImageElement() { conform(ImageElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testPressElement() { conform(PressElementTests.self) }
     @MainActor func testPresentedElement() { conform(PresentedElementTests.self) }
     @MainActor func testPopupElement() { conform(PopupElementTests.self) }
     @MainActor func testToggleElement() { conform(ToggleElementTests.self) }
@@ -139,7 +140,6 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
     @MainActor func testBarItemElement() { conform(BarItemElementTests.self) }
-    @MainActor func testBarButtonElement() { conform(BarButtonElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testActionElement() { conform(ActionElementTests.self) }
     @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }

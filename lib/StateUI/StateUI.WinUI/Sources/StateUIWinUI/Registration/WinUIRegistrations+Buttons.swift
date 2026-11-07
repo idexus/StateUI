@@ -12,8 +12,8 @@ extension WinUIRegistrations {
             let button = WinUIButtonView(
                 menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
             button.onClicked = { reports.raise(ButtonContract.clicked) }
-            button.onPressed = { reports.raise(ButtonContract.pressed) }
-            button.onReleased = { reports.raise(ButtonContract.released) }
+            button.onPressed = { reports.raise(PressElementContract.pressed) }
+            button.onReleased = { reports.raise(PressElementContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
@@ -57,8 +57,8 @@ extension WinUIRegistrations {
                 view.setEnabled(enabled ?? true)
             }
             button.declares(ButtonContract.clicked)
-            button.declares(ButtonContract.pressed)
-            button.declares(ButtonContract.released)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 }

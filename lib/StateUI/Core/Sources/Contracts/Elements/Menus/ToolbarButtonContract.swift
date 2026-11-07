@@ -13,8 +13,9 @@ public enum ToolbarButtonContract: ElementContract {
     /// itself, its look is the application's to say.
     public static let tiers: [any Tier.Type] = [
         MenuItemElementContract.self, ActionElementContract.self, ButtonMenuElementContract.self,
-        TextAndIconElementContract.self, BarButtonElementContract.self, BorderElementContract.self,
+        TextAndIconElementContract.self, BarItemElementContract.self, BorderElementContract.self,
         TextColorElementContract.self, FontElementContract.self, PaddingElementContract.self,
+        PressElementContract.self,
     ]
 
     /// The element's own members.

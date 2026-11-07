@@ -27,7 +27,7 @@ extension SliderProperties {
 /// number it shows that, and `.onValueChanged` is how the drag gets anywhere.
 ///
 /// The range is 0 to 1 until `.minimum` and `.maximum` say otherwise.
-public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
+public struct Slider: ElementView, TintElement, SliderProperties, FocusElement, PressElement {
     /// The node this control describes.
     public var node: Node
 
@@ -86,39 +86,6 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
         onEvent(SliderContract.valueChanged, gate: gate, handler)
     }
 
-    /// Runs when the thumb is grabbed - the start of a drag whose every step
-    /// is an `onValueChanged`.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(SliderContract.pressed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SliderContract.pressed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SliderContract.pressed, gate: gate, handler)
-    }
-
-    /// Runs when the thumb is let go - where work too heavy for every step of
-    /// the drag belongs.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(SliderContract.released, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SliderContract.released, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(SliderContract.released, gate: gate, handler)
-    }
 }
 
 extension Slider {

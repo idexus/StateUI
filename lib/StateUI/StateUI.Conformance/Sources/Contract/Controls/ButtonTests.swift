@@ -37,29 +37,6 @@
                 s.expect(heard.values, [1, 2], "each click heard once")
                 s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "count 2")
             },
-            ConformanceCase("aPressIsHeardAsItGoesDownAndAsItIsLetGo", proves: [
-                Covered(ButtonContract.pressed), Covered(ButtonContract.released),
-            ]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        Button("Hold")
-                            .onPressed { heard.values.append("pressed") }
-                            .onReleased { heard.values.append("released") }
-                            .width(120).height(40).id("button")
-                    }
-                    .horizontalAlignment(.start)
-                }
-                let button = try s.element("button")
-
-                try s.perform(.pressDown(at: Point(60, 20)), on: button)
-                s.settle { heard.values == ["pressed"] }
-                s.expect(heard.values, ["pressed"], "heard as it goes down, before it is let go")
-
-                try s.perform(.lift(at: Point(60, 20)), on: button)
-                s.settle { heard.values.count == 2 }
-                s.expect(heard.values, ["pressed", "released"])
-            },
             Aspects.holds(ButtonContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
                           with: [Write(TextualElementContract.text, "Go")]),
             Aspects.holds(ButtonContract.iconPosition, on: "Button", .start, then: .top, with: [

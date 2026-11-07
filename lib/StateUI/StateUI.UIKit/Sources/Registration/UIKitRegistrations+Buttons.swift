@@ -13,8 +13,8 @@ extension UIKitRegistrations {
         registry.add(ButtonContract.self, create: { reports in
             let button = UIKitButtonView()
             button.onClicked = { reports.raise(ButtonContract.clicked) }
-            button.onPressed = { reports.raise(ButtonContract.pressed) }
-            button.onReleased = { reports.raise(ButtonContract.released) }
+            button.onPressed = { reports.raise(PressElementContract.pressed) }
+            button.onReleased = { reports.raise(PressElementContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in
@@ -68,8 +68,8 @@ extension UIKitRegistrations {
                 }
             }
             button.declares(ButtonContract.clicked)
-            button.declares(ButtonContract.pressed)
-            button.declares(ButtonContract.released)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 }

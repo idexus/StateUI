@@ -877,7 +877,7 @@ extension ControlDictionary {
                 }
             """#),
 
-        (BarButtonElementContract.self, #"""
+        (PressElementContract.self, #"""
             Text("Inbox")
                 .toolbar {
                     ToolbarButton("Sign out")

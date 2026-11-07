@@ -106,7 +106,7 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRealization(Self.realization)
         HostBoundary.setRegister(HostRegister(records: [
             .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
-            .notPlanned(SliderContract.pressed, reason: "a range input says no press."),
+            .notPlanned(PressElementContract.pressed, reason: "a range input says no press."),
             .partial(SliderContract.value, missing: "steps"),
         ], unrealized: [ButtonContract.self]))
         defer { HostBoundary.setRegister(nil) }
@@ -115,7 +115,7 @@ final class HostRealizationTests: XCTestCase {
             HostRealizations.unhonored(TintElementContract.tint.token.key, on: SliderContract.nodeType),
             "`Slider.tint` is not realized on this host: a range input takes no tint.")
         XCTAssertEqual(
-            HostRealizations.unhonored(SliderContract.pressed.token.key, on: SliderContract.nodeType),
+            HostRealizations.unhonored(PressElementContract.pressed.token.key, on: SliderContract.nodeType),
             "`Slider.pressed` is never realized on this host: a range input says no press.")
         XCTAssertNil(HostRealizations.unhonored(SliderContract.value.token.key, on: SliderContract.nodeType))
         XCTAssertNil(HostRealizations.unhonored(SliderContract.maximum.token.key, on: SliderContract.nodeType),

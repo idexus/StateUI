@@ -13,8 +13,8 @@ extension AndroidRegistrations {
             slider.onValueChanged = { moved in
                 reports.report(SliderContract.value, moved, as: SliderContract.valueChanged)
             }
-            slider.onPressed = { reports.raise(SliderContract.pressed) }
-            slider.onReleased = { reports.raise(SliderContract.released) }
+            slider.onPressed = { reports.raise(PressElementContract.pressed) }
+            slider.onReleased = { reports.raise(PressElementContract.released) }
             return slider
         }, members: { slider in
             slider.applies(SliderContract.value, SliderContract.minimum, SliderContract.maximum) { view, values in
@@ -28,8 +28,8 @@ extension AndroidRegistrations {
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.declares(SliderContract.valueChanged)
-            slider.declares(SliderContract.pressed)
-            slider.declares(SliderContract.released)
+            slider.declares(PressElementContract.pressed)
+            slider.declares(PressElementContract.released)
         })
 
         registry.add(StepperContract.self, create: { reports in

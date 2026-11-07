@@ -348,10 +348,10 @@ extension NodeType {
     static let pointerPressed = ViewContract.pointerPressed.token
     static let pointerReleased = ViewContract.pointerReleased.token
     static let popped = NavigationStackContract.popped.token
-    static let pressed = ButtonContract.pressed.token
+    static let pressed = PressElementContract.pressed.token
     static let processTerminated = WebViewContract.processTerminated.token
     static let refreshRequested = RefreshElementContract.refreshRequested.token
-    static let released = ButtonContract.released.token
+    static let released = PressElementContract.released.token
     static let rotationUpdated = ViewContract.rotationUpdated.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token
     static let selectedIndexChanged = PickerContract.selectedIndexChanged.token

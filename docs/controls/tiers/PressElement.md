@@ -1,8 +1,8 @@
 <!-- Rendered by ControlDictionaryTests from the contracts and the verdicts each host's runs of its tests wrote under lib/StateUI/exports/marks: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# BarButtonElement
+# PressElement
 
-A button on a bar - an action or a setting: the press its visual states follow, beside the pointer over it every item on a bar reports.
+What a control held down and let go of reports: a button, a slider, a bar's button.
 
 ```swift
 Text("Inbox")
@@ -13,11 +13,9 @@ Text("Inbox")
     }
 ```
 
-Wears: [BarItemElement](BarItemElement.md)
+Worn by: [Button](../Button.md) · [Slider](../Slider.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarToggle](../ToolbarToggle.md)
 
-Worn by: [ToolbarButton](../ToolbarButton.md) · [ToolbarToggle](../ToolbarToggle.md)
-
-Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BarButtonElementContract.swift`.
+Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/PressElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 
