@@ -311,6 +311,14 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Slider>().value(0.5)"#,
             open: #"_ = Slider(0.5)"#),
         Road(
+            name: "a spinner's turning given by a style",
+            closed: #"_ = Style<Spinner>().isAnimating(true)"#,
+            open: #"_ = Spinner(true)"#),
+        Road(
+            name: "a canvas's drawing given by a modifier",
+            closed: #"_ = Canvas().drawing { Draw.lineWidth(2) }"#,
+            open: #"_ = Canvas { Draw.lineWidth(2) }"#),
+        Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,
             open: #"_ = Button().text("Save")"#),

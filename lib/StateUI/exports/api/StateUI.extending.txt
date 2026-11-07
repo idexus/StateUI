@@ -112,7 +112,6 @@ swift.conformance CalendarDate: StateUI.HostRepresentable
 swift.conformance CalendarDate: StateUI.LaneValue
 swift.conformance CalendarDate: StateUI.StateValue
 swift.conformance Canvas: StateUI.AutomationElement
-swift.conformance Canvas: StateUI.CanvasProperties
 swift.conformance Canvas: StateUI.Element
 swift.conformance Canvas: StateUI.ElementView
 swift.conformance Canvas: StateUI.ModifiableElement
@@ -123,7 +122,6 @@ swift.conformance Canvas: StateUI.VisualElement
 swift.conformance Canvas: StateUI.VisualElementProperties
 swift.conformance CanvasContract: StateUI.Contract
 swift.conformance CanvasContract: StateUI.ElementContract
-swift.conformance CanvasProperties: StateUI.PropertyContainer
 swift.conformance Capsule: StateUI.AutomationElement
 swift.conformance Capsule: StateUI.Element
 swift.conformance Capsule: StateUI.ElementView
@@ -911,7 +909,6 @@ swift.conformance Spinner: StateUI.Element
 swift.conformance Spinner: StateUI.ElementView
 swift.conformance Spinner: StateUI.ModifiableElement
 swift.conformance Spinner: StateUI.PropertyContainer
-swift.conformance Spinner: StateUI.SpinnerProperties
 swift.conformance Spinner: StateUI.StyleTarget
 swift.conformance Spinner: StateUI.TintElement
 swift.conformance Spinner: StateUI.ViewProperties
@@ -919,7 +916,6 @@ swift.conformance Spinner: StateUI.VisualElement
 swift.conformance Spinner: StateUI.VisualElementProperties
 swift.conformance SpinnerContract: StateUI.Contract
 swift.conformance SpinnerContract: StateUI.ElementContract
-swift.conformance SpinnerProperties: StateUI.PropertyContainer
 swift.conformance SplitView: StateUI.AutomationElement
 swift.conformance SplitView: StateUI.BarElement
 swift.conformance SplitView: StateUI.Element
@@ -986,7 +982,6 @@ swift.conformance Styling: StateUI.BarItemElement where Target : BarItemElement,
 swift.conformance Styling: StateUI.BorderElement where Target : BorderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ButtonMenuElement where Target : ButtonMenuElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ButtonProperties where Target == Button
-swift.conformance Styling: StateUI.CanvasProperties where Target == Canvas
 swift.conformance Styling: StateUI.ColorPickerProperties where Target == ColorPicker
 swift.conformance Styling: StateUI.CorneredShapeProperties where Target : CorneredShape, Target : StyleTarget
 swift.conformance Styling: StateUI.DatePickerProperties where Target == DatePicker
@@ -1029,7 +1024,6 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget,
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : View
 swift.conformance Styling: StateUI.PropertyContainer where Target : StyleTarget, Target : VisualElement
 swift.conformance Styling: StateUI.PropertyContainer where Target == Button
-swift.conformance Styling: StateUI.PropertyContainer where Target == Canvas
 swift.conformance Styling: StateUI.PropertyContainer where Target == ColorPicker
 swift.conformance Styling: StateUI.PropertyContainer where Target == DatePicker
 swift.conformance Styling: StateUI.PropertyContainer where Target == Grid
@@ -1043,7 +1037,6 @@ swift.conformance Styling: StateUI.PropertyContainer where Target == Rectangle
 swift.conformance Styling: StateUI.PropertyContainer where Target == ScrollView
 swift.conformance Styling: StateUI.PropertyContainer where Target == SearchField
 swift.conformance Styling: StateUI.PropertyContainer where Target == Slider
-swift.conformance Styling: StateUI.PropertyContainer where Target == Spinner
 swift.conformance Styling: StateUI.PropertyContainer where Target == Stepper
 swift.conformance Styling: StateUI.PropertyContainer where Target == Text
 swift.conformance Styling: StateUI.PropertyContainer where Target == TextEditor
@@ -1058,7 +1051,6 @@ swift.conformance Styling: StateUI.ShapeProperties where Target : CorneredShape,
 swift.conformance Styling: StateUI.ShapeProperties where Target : FilledShape, Target : StyleTarget
 swift.conformance Styling: StateUI.ShapeProperties where Target : Shape, Target : StyleTarget
 swift.conformance Styling: StateUI.SliderProperties where Target == Slider
-swift.conformance Styling: StateUI.SpinnerProperties where Target == Spinner
 swift.conformance Styling: StateUI.StackProperties where Target : Stack, Target : StyleTarget
 swift.conformance Styling: StateUI.StepperProperties where Target == Stepper
 swift.conformance Styling: StateUI.TextAlignmentElement where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
@@ -3640,7 +3632,6 @@ swift.protocol BarItemElement: @MainActor protocol BarItemElement : PropertyCont
 swift.protocol BorderElement: @MainActor protocol BorderElement : PropertyContainer
 swift.protocol ButtonMenuElement: @MainActor protocol ButtonMenuElement : PropertyContainer
 swift.protocol ButtonProperties: @MainActor protocol ButtonProperties : PropertyContainer
-swift.protocol CanvasProperties: @MainActor protocol CanvasProperties : PropertyContainer
 swift.protocol ColorPickerProperties: @MainActor protocol ColorPickerProperties : PropertyContainer
 swift.protocol Contract: protocol Contract : Sendable
 swift.protocol ContractMember: protocol ContractMember : Sendable
@@ -3676,7 +3667,6 @@ swift.protocol ScrollViewProperties: @MainActor protocol ScrollViewProperties : 
 swift.protocol SearchFieldProperties: @MainActor protocol SearchFieldProperties : PropertyContainer
 swift.protocol ShapeProperties: @MainActor protocol ShapeProperties : ViewProperties
 swift.protocol SliderProperties: @MainActor protocol SliderProperties : PropertyContainer
-swift.protocol SpinnerProperties: @MainActor protocol SpinnerProperties : PropertyContainer
 swift.protocol StackProperties: @MainActor protocol StackProperties : LayoutProperties
 swift.protocol StateChoice: protocol StateChoice : LaneValue, RawRepresentable where Self.RawValue == Int32
 swift.protocol StateValue: protocol StateValue : Equatable, Sendable

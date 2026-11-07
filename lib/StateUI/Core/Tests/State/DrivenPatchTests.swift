@@ -486,46 +486,48 @@ final class DrivenPatchTests: XCTestCase {
             "and take the value's own type: they are the journey's, not any binding's")
     }
 
-    /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
-    ///
-    /// `Slider($v)` and `Slider($v)` are one thing said twice - the
-    /// initializer is the short way to say what gives a control its purpose,
-    /// the modifier is how every other property is written, and neither is the
-    /// real one. What this holds is that they describe the SAME NODE: the
-    /// initializers delegate to the modifiers, so a change to one cannot leave
-    /// the other behind.
-    ///
-    /// It is the pairing that matters rather than the exact bytes, so the
-    /// comparison is the node's props and the events it handles - a handler's
-    /// ID is issued per registration and differs by construction.
-    func testEveryPurposeValueIsWritableBothWays() {
-        func same(_ one: Node, _ other: Node, _ what: String) {
-            XCTAssertEqual(
-                one.props, other.props,
-                "\(what): the two spellings describe different values")
-            XCTAssertEqual(
-                Set(one.events.keys), Set(other.events.keys),
-                "\(what): the two spellings report different events")
-        }
-
+    /// A CONTROL'S PURPOSE VALUE FROM A STATE IS CARRIED: `Slider($v)` hands the state to the host, which shows
+    /// each new value and reports back what the user changes; the node describes no copy of it.
+    func testAPurposeValueFromAStateIsCarried() {
+        Renderer.shared.clearStates()
         let number = State(wrappedValue: 0.5)
         let flag = State(wrappedValue: true)
+        let text = State(wrappedValue: "a")
+        let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
+        let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
+        let changed: [(Node, Prop, String)] = [
+            (Slider(number.projectedValue).node, SliderContract.value.token, "Slider"),
+            (Stepper(number.projectedValue).node, StepperContract.value.token, "Stepper"),
+            (Switch(flag.projectedValue).node, SwitchContract.isOn.token, "Switch"),
+            (CheckBox(flag.projectedValue).node, CheckBoxContract.isOn.token, "CheckBox"),
+            (TextField(text.projectedValue).node, TextualElementContract.text.token, "TextField"),
+            (TextEditor(text.projectedValue).node, TextualElementContract.text.token, "TextEditor"),
+            (SearchField(text.projectedValue).node, TextualElementContract.text.token, "SearchField"),
+            (DatePicker(due.projectedValue).node, DatePickerContract.date.token, "DatePicker"),
+            (TimePicker(alarm.projectedValue).node, TimePickerContract.time.token, "TimePicker"),
+        ]
+        let shown: [(Node, Prop, String)] = [
+            (ProgressBar(number.projectedValue).node, ProgressBarContract.progress.token, "ProgressBar"),
+            (Spinner(flag.projectedValue).node, SpinnerContract.isAnimating.token, "Spinner"),
+        ]
 
-        same(Slider(number.projectedValue).node,
-             Slider(number.projectedValue).node, "Slider.value")
-        same(Stepper(number.projectedValue).node,
-             Stepper(number.projectedValue).node, "Stepper.value")
-        same(Switch(flag.projectedValue).node,
-             Switch(flag.projectedValue).node, "Switch.isOn")
-        same(CheckBox(flag.projectedValue).node,
-             CheckBox(flag.projectedValue).node, "CheckBox.isOn")
-        same(ProgressBar(number.projectedValue).node,
-             ProgressBar(number.projectedValue).node, "ProgressBar.progress")
-        same(Spinner(flag.projectedValue).node,
-             Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
-        same(Switch("Sound", isOn: flag.projectedValue).node,
-             Switch(flag.projectedValue).text("Sound").node, "Switch's words")
-        same(CheckBox("Agree", isOn: true).node, CheckBox(true).text("Agree").node, "CheckBox's words")
+        for (node, member, what) in changed + shown {
+            XCTAssertNotNil(node.driven[member], "\(what) hands its state to the host")
+            XCTAssertNil(node.props[member], "\(what) describes no copy of it")
+        }
+        for (node, member, what) in changed {
+            XCTAssertEqual(node.driven[member]?.mode, .inOut, "\(what): the user's change comes back")
+        }
+    }
+
+    /// A TOGGLE'S WORDS IN ITS INITIALIZER ARE ITS CAPTION, AS `.text` SAYS IT.
+    func testAToggleSaysItsWordsEitherWay() {
+        let flag = State(wrappedValue: true)
+
+        XCTAssertEqual(
+            Switch("Sound", isOn: flag.projectedValue).node.props,
+            Switch(flag.projectedValue).text("Sound").node.props, "Switch's words")
+        XCTAssertEqual(CheckBox("Agree", isOn: true).node.props, CheckBox(true).text("Agree").node.props, "CheckBox's words")
     }
 
     /// A PROPERTY CROSSING AS IT IS TAKES A STATE: a map's settings, a picker's range and form, a bar's look and an
@@ -563,65 +565,5 @@ final class DrivenPatchTests: XCTestCase {
             XCTAssertNotNil(node.driven[property], "\(what) drives its member")
             XCTAssertNil(node.props[property], "\(what) is carried, not described")
         }
-    }
-
-    /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
-    /// `Slider($level)` says - over a `Journey`, and over a
-    /// plain `Double`, which the host carries as a journey too. An author
-    /// writes `Slider($x)` and the host walks it either way; what the
-    /// declaration says is what can be read back.
-    func testADrivenPurposeValueIsWritableBothWays() {
-        Renderer.shared.clearStates()
-
-        let level = State(wrappedValue: 0.5)
-        let steps = State(wrappedValue: 3.0)
-
-        func registers<Control: View>(
-            _ one: Control, _ other: Control, _ what: String
-        ) {
-            let mine = one.node.driven
-            let theirs = other.node.driven
-
-            XCTAssertEqual(
-                Set(mine.keys), Set(theirs.keys),
-                "\(what): the two spellings drive different properties")
-
-            for (property, registration) in mine {
-                let twin = theirs[property]
-
-                XCTAssertEqual(
-                    registration.mode, twin?.mode,
-                    "\(what).\(property.name): the two spellings cross differently")
-                XCTAssertEqual(
-                    registration.kind, twin?.kind,
-                    "\(what).\(property.name): the two spellings use different doors")
-            }
-
-            XCTAssertFalse(mine.isEmpty, "\(what): nothing was driven at all")
-        }
-
-        registers(Slider(level.projectedValue),
-                  Slider(level.projectedValue), "Slider")
-        registers(Stepper(steps.projectedValue),
-                  Stepper(steps.projectedValue), "Stepper")
-
-        // And over a plain `Double`, which the host walks as a journey too.
-        let plain = State(wrappedValue: 0.5)
-
-        registers(Slider(plain.projectedValue),
-                  Slider(plain.projectedValue), "Slider over a Double")
-        registers(Stepper(plain.projectedValue),
-                  Stepper(plain.projectedValue), "Stepper over a Double")
-
-        // The fields and the pickers, which the host carries both ways too.
-        let text = State(wrappedValue: "a")
-        let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
-        let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
-
-        registers(TextField(text.projectedValue), TextField(text.projectedValue), "TextField")
-        registers(TextEditor(text.projectedValue), TextEditor(text.projectedValue), "TextEditor")
-        registers(SearchField(text.projectedValue), SearchField(text.projectedValue), "SearchField")
-        registers(DatePicker(due.projectedValue), DatePicker(due.projectedValue), "DatePicker")
-        registers(TimePicker(alarm.projectedValue), TimePicker(alarm.projectedValue), "TimePicker")
     }
 }

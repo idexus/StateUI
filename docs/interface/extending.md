@@ -157,12 +157,11 @@ extension Styling: RatingBarProperties where Target == RatingBar {}
 type a style resolves by (`nodeType`, its contract's). `Styling` is the type
 behind `Style<Target>`. A library control with settings a style may give has
 a protocol of this kind:
-`ButtonProperties`, `CanvasProperties`, `ColorPickerProperties`,
-`DatePickerProperties`, `GridProperties`, `HStackProperties`,
-`ImageProperties`, `MapProperties`, `PickerProperties`,
-`PolygonProperties`, `PolylineProperties`, `RectangleProperties`,
-`ScrollViewProperties`, `SearchFieldProperties`, `SliderProperties`,
-`SpinnerProperties`, `StepperProperties`, `TextEditorProperties`,
+`ButtonProperties`, `ColorPickerProperties`, `DatePickerProperties`,
+`GridProperties`, `HStackProperties`, `ImageProperties`, `MapProperties`,
+`PickerProperties`, `PolygonProperties`, `PolylineProperties`,
+`RectangleProperties`, `ScrollViewProperties`, `SearchFieldProperties`,
+`SliderProperties`, `StepperProperties`, `TextEditorProperties`,
 `TextFieldProperties`, `TextProperties`, `TimePickerProperties`,
 `ToolbarGroupProperties` and `WebViewProperties`. What a control is for -
 a switch's position, a slider's value, a field's words, the place of its

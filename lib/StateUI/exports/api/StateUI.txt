@@ -1339,7 +1339,6 @@ swift.init Button.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init Button.init(_:): @MainActor init(_ text: String)
 swift.init CalendarDate.init(_:): init?(_ text: String)
 swift.init CalendarDate.init(year:month:day:): init(year: Int, month: Int, day: Int)
-swift.init Canvas.init(): @MainActor init()
 swift.init Canvas.init(drawing:): @MainActor init(@DrawingBuilder drawing: () -> [DrawCommand])
 swift.init Capsule.init(): @MainActor init()
 swift.init CheckBox.init(_:): @MainActor init(_ isOn: Bool)
@@ -1460,7 +1459,6 @@ swift.init Separator.init(): @MainActor init()
 swift.init Slider.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Slider.init(_:): @MainActor init(_ value: Double)
 swift.init Space.init(): @MainActor init()
-swift.init Spinner.init(): @MainActor init()
 swift.init Spinner.init(_:): @MainActor init(_ isAnimating: Bool)
 swift.init Spinner.init(_:): @MainActor init(_ state: Binding<Bool>)
 swift.init SplitView.init(sidebar:detail:): @MainActor init<Sidebar, Detail>(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Sidebar : View, Detail : View
@@ -2216,7 +2214,6 @@ swift.method Canvas.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ 
 swift.method Canvas.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Canvas.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
 swift.method Canvas.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
-swift.method Canvas.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Self.Modified
 swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Canvas.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -2390,7 +2387,6 @@ swift.method Canvas.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Canvas.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Canvas.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method CanvasProperties.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Self.Modified
 swift.method Capsule.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9680,7 +9676,6 @@ swift.method Spinner.height(_:): @MainActor func height(_ state: Binding<Double>
 swift.method Spinner.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
-swift.method Spinner.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Spinner.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Spinner.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9843,7 +9838,6 @@ swift.method Spinner.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method Spinner.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Spinner.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method SpinnerProperties.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
 swift.method SplitView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -10303,7 +10297,6 @@ swift.method Styling.cornerRadius(_:): @MainActor func cornerRadius(_ value: Dou
 swift.method Styling.cornerRadius(topLeft:topRight:bottomLeft:bottomRight:): @MainActor func cornerRadius(topLeft: Double, topRight: Double, bottomLeft: Double, bottomRight: Double) -> Self.Modified
 swift.method Styling.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Styling.dashPhase(_:): @MainActor func dashPhase(_ value: Double) -> Self.Modified
-swift.method Styling.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Self.Modified
 swift.method Styling.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Styling.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Styling.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified

@@ -31,13 +31,11 @@ extension Styling: TextInputProperties where Target: TextInput {}
 
 // And each control's own properties.
 
-extension Styling: SpinnerProperties where Target == Spinner {}
 extension Styling: ButtonProperties where Target == Button {}
 extension Styling: ColorPickerProperties where Target == ColorPicker {}
 extension Styling: DatePickerProperties where Target == DatePicker {}
 extension Styling: TextEditorProperties where Target == TextEditor {}
 extension Styling: TextFieldProperties where Target == TextField {}
-extension Styling: CanvasProperties where Target == Canvas {}
 extension Styling: GridProperties where Target == Grid {}
 extension Styling: ImageProperties where Target == Image {}
 extension Styling: TextProperties where Target == Text {}

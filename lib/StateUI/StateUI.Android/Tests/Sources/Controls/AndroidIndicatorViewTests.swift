@@ -31,7 +31,7 @@ final class AndroidIndicatorViewTests: XCTestCase {
             let running = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
                 VStack {
-                    Spinner().isAnimating(running.wrappedValue)
+                    Spinner(running.wrappedValue)
                     Button("Run").onClicked { running.wrappedValue = true }
                 }
             }

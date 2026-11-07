@@ -46,8 +46,7 @@ struct SpinnerSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("No two-way binding, unlike the inputs: nothing about a spinner is the "
-                + "user's to change, so the value only goes one way - `.isAnimating($loading)` "
-                + "would carry a state one way too.")
+                + "user's to change, so `Spinner($loading)` carries the state one way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -48,7 +48,7 @@ final class WebLeaveTests: XCTestCase {
                     .fill(gradient)
                     .height(20)
                     .onFrameChanged { _ in }
-                Canvas().height(20)
+                Canvas {}.height(20)
                 ItemsView(["one", "two", "three"]) { Text($0) }.height(80)
             }
         }

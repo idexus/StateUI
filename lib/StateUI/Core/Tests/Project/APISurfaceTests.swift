@@ -184,6 +184,31 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(styling.filter { $0.contains("Binding<") }.map(String.init), [], "a style modifier takes a state")
     }
 
+    /// A control takes its purpose value in its initializer alone: what its one-parameter initializer names -
+    /// `Spinner(_ isAnimating:)`, `Canvas(drawing:)` - no method of the control or of its own properties names
+    /// again. Captions and a picker's presentation still take a second road; they leave `pending` as they go.
+    func testAPurposeValueHasOneRoad() throws {
+        let lines = try String(contentsOf: Self.record, encoding: .utf8).split(separator: "\n").map(String.init)
+        let purposes = lines.compactMap { line -> String? in
+            guard let match = line.firstMatch(
+                of: #/^swift\.init (\w+)\.init\((\w+|_):\): .*?init(?:<[^>]*>)?\((?:@\w+ )*(?:\w+ )?(\w+): /#)
+            else { return nil }
+            let name = match.2 == "_" ? match.3 : match.2
+            return name == "state" ? nil : "\(match.1).\(name)"
+        }
+        let methods = Set(lines.compactMap { line in
+            line.firstMatch(of: #/^swift\.method (\w+)\.(\w+)\(/#).map { "\($0.1).\($0.2)" }
+        })
+        let pending: Set = ["Button.text", "MenuItem.text", "Styling.presentation", "ToolbarButton.text"]
+        let doubled = purposes.filter { purpose in
+            let parts = purpose.split(separator: ".")
+            return methods.contains(purpose) || methods.contains("\(parts[0])Properties.\(parts[1])")
+        }
+
+        XCTAssertGreaterThan(purposes.count, 40, "the record holds almost no initializer")
+        XCTAssertEqual(Set(doubled).subtracting(pending).sorted(), [], "a control takes its purpose value twice")
+    }
+
     /// Every type of the application surface is one an application meets: one it writes itself - a protocol it
     /// adopts, an object it makes, a view, a scene, an error it catches, a namespace it calls, a contract - or one
     /// another of its declarations names. A value only a contract's member or a host takes is the extending

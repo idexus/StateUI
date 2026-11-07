@@ -17,7 +17,7 @@
         switch element {
         case "Spinner": return dressing.dress(Spinner(true))
         case "Button": return dressing.dress(Button())
-        case "Canvas": return dressing.dress(Canvas())
+        case "Canvas": return dressing.dress(Bare(contract: CanvasContract.self))
         case "Capsule": return dressing.dress(Capsule())
         case "CheckBox": return dressing.dress(Bare(contract: CheckBoxContract.self))
         case "ColorPicker": return dressing.dress(ColorPicker(Color(hex: 0x4682B4)))

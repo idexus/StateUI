@@ -18,7 +18,7 @@ final class UIKitAccessibilityTests: XCTestCase {
             VStack {
                 DatePicker(State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 28)).projectedValue)
                     .accessibilityPresence(.hidden)
-                Spinner().isAnimating(true).accessibilityPresence(.hidden)
+                Spinner(true).accessibilityPresence(.hidden)
                 VStack { Text("Met") }.accessibilityPresence(.hidden)
             }
         }

@@ -253,7 +253,6 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Spinner", source: "Spinner.swift",
                 Spinner(true)
-                    .isAnimating(true)
                     .tint(.cornflowerBlue)),
 
             ControlCase("ProgressBar", source: "ProgressBar.swift",
