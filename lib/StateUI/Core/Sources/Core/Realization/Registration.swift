@@ -63,8 +63,8 @@
     /// a tier it wears - any other is left out, and said once - and the view
     /// is applied once whenever any of them changes.
     ///
-    ///     registration.applies(SwitchContract.isOn, VisualElementContract.isEnabled) { toggle, values in
-    ///         toggle.apply(toggled: values[SwitchContract.isOn] ?? false,
+    ///     registration.applies(ToggleElementContract.isOn, VisualElementContract.isEnabled) { toggle, values in
+    ///         toggle.apply(toggled: values[ToggleElementContract.isOn] ?? false,
     ///                      enabled: values[VisualElementContract.isEnabled] ?? true)
     ///     }
     ///

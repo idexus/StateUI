@@ -139,7 +139,7 @@ so the platform contract names them with no mark rather than one that says
 both.
 
 A host writes its records with the contracts' members, so a misspelled name
-does not compile: `.complete(SwitchContract.isOn)` judges a member on every
+does not compile: `.complete(ToggleElementContract.isOn)` judges a member on every
 element wearing its contract, and `on:` judges it on one element alone -
 `.notPlanned(VisualElementContract.background, on: SliderContract.self,
 reason:)`. The elements it realizes none of, never has, or leaves to the

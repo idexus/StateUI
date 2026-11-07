@@ -15,7 +15,7 @@
 /// form uses; a `Picker` presented as radio buttons
 /// (`.presentation(.radio)`) is what to reach for once there are more than two
 /// answers.
-public struct Switch: ElementView, TextualElement, TintElement, FocusElement {
+public struct Switch: ElementView, TextualElement, TintElement, FocusElement, ToggleElement {
     /// The node this control describes.
     public var node: Node
 
@@ -28,7 +28,7 @@ public struct Switch: ElementView, TextualElement, TintElement, FocusElement {
     /// `.onToggled`.
     public init(_ isOn: Bool) {
         node = Node(contract: SwitchContract.self)
-        node.write(SwitchContract.isOn, isOn)
+        node.write(ToggleElementContract.isOn, isOn)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
@@ -50,30 +50,12 @@ public struct Switch: ElementView, TextualElement, TintElement, FocusElement {
 
     /// Whether it is on.
     func isOn(_ value: Bool) -> Modified {
-        setValue(SwitchContract.isOn, value)
+        setValue(ToggleElementContract.isOn, value)
     }
 
     /// Whether it is on, from a state carried both ways.
     func isOn(_ state: Binding<Bool>) -> Modified {
-        plain(SwitchContract.isOn.token, by: state, mode: .inOut)
+        plain(ToggleElementContract.isOn.token, by: state, mode: .inOut)
     }
 
-    // MARK: Events
-
-    /// Fires when it is flipped, with the way it was flipped to. Runs after a
-    /// binding's write.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
-        onEvent(SwitchContract.toggled, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        onEvent(SwitchContract.toggled, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        onEvent(SwitchContract.toggled, gate: gate, handler)
-    }
 }

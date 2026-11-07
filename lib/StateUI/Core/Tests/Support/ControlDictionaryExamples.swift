@@ -791,6 +791,13 @@ extension ControlDictionary {
                 .tint(.green)
             """#),
 
+        (ToggleElementContract.self, #"""
+            @State var wifi = true
+
+            Switch("Wi-Fi", isOn: $wifi)
+                .onToggled { on in print("Wi-Fi \(on)") }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

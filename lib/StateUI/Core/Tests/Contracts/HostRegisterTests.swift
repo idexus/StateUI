@@ -13,10 +13,10 @@ import Darwin
 final class HostRegisterTests: XCTestCase {
     /// A member the runtime realizes is judged whole, so a test of it runs; one realized nowhere runs nothing.
     func testWhatTheRuntimeRealizesRuns() {
-        let register = HostRegister(records: []).and([.complete(SwitchContract.isOn)])
+        let register = HostRegister(records: []).and([.complete(ToggleElementContract.isOn)])
 
-        XCTAssertEqual(register.judgment(of: "isOn", on: "Switch", from: nil), .complete)
-        XCTAssertTrue(register.realizes("isOn", on: "Switch", from: nil), "a test of it runs")
+        XCTAssertEqual(register.judgment(of: "isOn", on: "Switch", from: "ToggleElement"), .complete)
+        XCTAssertTrue(register.realizes("isOn", on: "Switch", from: "ToggleElement"), "a test of it runs")
         XCTAssertNil(register.judgment(of: "value", on: "Stepper", from: nil))
         XCTAssertFalse(register.realizes("value", on: "Stepper", from: nil), "nothing realized, nothing runs")
     }
@@ -125,7 +125,7 @@ final class HostRegisterTests: XCTestCase {
     func testTheProblemsOfWhatAHostWroteAreNamed() {
         let register = HostRegister(
             records: [
-                .complete(TextualElementContract.text, on: ButtonContract.self), .complete(TextualElementContract.text, on: ButtonContract.self), .complete(SwitchContract.isOn, on: ButtonContract.self),
+                .complete(TextualElementContract.text, on: ButtonContract.self), .complete(TextualElementContract.text, on: ButtonContract.self), .complete(ToggleElementContract.isOn, on: ButtonContract.self),
                 .complete(TextualElementContract.textCase), .partial(TextContract.maximumLines, missing: ""),
                 .notPlanned(TextContract.lineBreak,
                     reason: ""), .unrealized(TextualElementContract.textCase, on: TextContract.self, why: ""),

@@ -498,8 +498,8 @@ final class DrivenPatchTests: XCTestCase {
         let changed: [(Node, Prop, String)] = [
             (Slider(number.projectedValue).node, SliderContract.value.token, "Slider"),
             (Stepper(number.projectedValue).node, StepperContract.value.token, "Stepper"),
-            (Switch(flag.projectedValue).node, SwitchContract.isOn.token, "Switch"),
-            (CheckBox(flag.projectedValue).node, CheckBoxContract.isOn.token, "CheckBox"),
+            (Switch(flag.projectedValue).node, ToggleElementContract.isOn.token, "Switch"),
+            (CheckBox(flag.projectedValue).node, ToggleElementContract.isOn.token, "CheckBox"),
             (TextField(text.projectedValue).node, TextualElementContract.text.token, "TextField"),
             (TextEditor(text.projectedValue).node, TextualElementContract.text.token, "TextEditor"),
             (SearchField(text.projectedValue).node, TextualElementContract.text.token, "SearchField"),

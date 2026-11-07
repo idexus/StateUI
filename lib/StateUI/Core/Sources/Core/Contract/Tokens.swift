@@ -174,7 +174,7 @@ extension NodeType {
     static let step = StepperContract.step.token
     static let ignoresInput = VisualElementContract.ignoresInput.token
     static let isAnimating = ImageContract.isAnimating.token
-    static let isOn = CheckBoxContract.isOn.token
+    static let isOn = ToggleElementContract.isOn.token
     static let clipsContent = LayoutContract.clipsContent.token
     static let isEnabled = VisualElementContract.isEnabled.token
     static let isMaximizable = WindowContract.isMaximizable.token
@@ -360,7 +360,7 @@ extension NodeType {
     static let tapped = ViewContract.tapped.token
     static let textChanged = TextInputContract.textChanged.token
     static let timeChanged = TimePickerContract.timeChanged.token
-    static let toggled = CheckBoxContract.toggled.token
+    static let toggled = ToggleElementContract.toggled.token
     static let valueChanged = SliderContract.valueChanged.token
     static let windowClosed = SceneContract.windowClosed.token
 }

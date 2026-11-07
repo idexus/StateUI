@@ -70,7 +70,7 @@ public struct ControlReports<Realized: ElementContract> {
     /// state or in a handler.
     ///
     ///     toggle.onToggled = { on in
-    ///         reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled)
+    ///         reports.report(ToggleElementContract.isOn, on, as: ToggleElementContract.toggled)
     ///     }
     ///
     /// The two members need not come from one contract: a field's words are

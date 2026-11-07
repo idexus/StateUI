@@ -91,6 +91,7 @@
         BorderElementTests.self,
         ImageElementTests.self,
         TintElementTests.self,
+        ToggleElementTests.self,
         KeyboardElementTests.self,
         FocusElementTests.self,
         RefreshElementTests.self,

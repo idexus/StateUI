@@ -30,8 +30,7 @@
     /// What tells an item of `element`'s kind was chosen: an action's click, a setting's turn.
     static func choosing(_ element: String) -> Covered {
         switch element {
-        case "MenuToggle": Covered(MenuToggleContract.toggled)
-        case "ToolbarToggle": Covered(ToolbarToggleContract.toggled)
+        case "MenuToggle", "ToolbarToggle": Covered(ToggleElementContract.toggled, on: element)
         default: Covered(ActionElementContract.clicked, on: element)
         }
     }

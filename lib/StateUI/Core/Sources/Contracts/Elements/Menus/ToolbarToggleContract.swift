@@ -14,18 +14,12 @@ public enum ToolbarToggleContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         MenuItemElementContract.self, TextAndIconElementContract.self, BarButtonElementContract.self,
         BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
-        PaddingElementContract.self,
+        PaddingElementContract.self, ToggleElementContract.self,
     ]
-
-    /// Whether it stands on.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
 
     /// The picture it shows while on, in place of its own; unwritten, its own picture both ways.
     public static let onIcon = ElementProperty<Self, ImageSource>("onIcon", layer: .adaptive)
 
-    /// The user chose it, turning it the other way: the way it turned to.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, onIcon, toggled]
+    public static let members: [any ContractMember] = [onIcon]
 }

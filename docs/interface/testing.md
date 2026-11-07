@@ -76,7 +76,7 @@ read-only field, fails and says why, and words typed are held as the field
 holds them - in its case, within its bound.
 
 `value(_:)` reads a contract member - `TextualElementContract.text`,
-`SwitchContract.isOn`, `VisualElementContract.accessibilityValue` - as the
+`ToggleElementContract.isOn`, `VisualElementContract.accessibilityValue` - as the
 member's own type, nil where the view holds none. Like `perform(_:)`, it
 fails where no view, or two, is the one it names - a view gone with its
 window included - and where the view wears no contract of the member's.

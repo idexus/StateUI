@@ -131,6 +131,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
     @MainActor func testImageElement() { conform(ImageElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testToggleElement() { conform(ToggleElementTests.self) }
     @MainActor func testKeyboardElement() { conform(KeyboardElementTests.self) }
     @MainActor func testFocusElement() { conform(FocusElementTests.self) }
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }

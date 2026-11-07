@@ -23,13 +23,13 @@ final class AppKitToggleRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["Switch", "CheckBox"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Switch", owner: "Switch", member: "isOn")))
+            HostRealizedMember(element: "Switch", owner: "ToggleElement", member: "isOn")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Switch", owner: "Switch", member: "toggled")))
+            HostRealizedMember(element: "Switch", owner: "ToggleElement", member: "toggled")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Switch", owner: "VisualElement", member: "isEnabled")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "CheckBox", owner: "CheckBox", member: "isOn")))
+            HostRealizedMember(element: "CheckBox", owner: "ToggleElement", member: "isOn")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "CheckBox", owner: "TintElement", member: "tint")))
     }

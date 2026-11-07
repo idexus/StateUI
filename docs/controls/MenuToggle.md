@@ -16,7 +16,7 @@ Text("Draft")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [MenuItemElement](tiers/MenuItemElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [ToggleElement](tiers/ToggleElement.md) · [MenuItemElement](tiers/MenuItemElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -37,22 +37,18 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (7)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️</td><td>an <code>NSMenuItem</code> whose <code>state</code> is on or off</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️</td><td>a <code>UIAction</code> whose <code>state</code> is on or off</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 –</td><td>a checkable <code>MenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>7 ✅</td><td><code>ToggleMenuFlyoutItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>5 ✅ · 2 –</td><td>a <code>GMenu</code> item of a stateful action</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>7 ✅</td><td><code>role=menuitemcheckbox</code> with <code>aria-checked</code> in an ARIA <code>menu</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>4 ✅ · 1 ☑️</td><td>a <code>UIAction</code> whose <code>state</code> is on or off</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>3 ✅ · 2 –</td><td>a checkable <code>MenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>5 ✅</td><td><code>ToggleMenuFlyoutItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>3 ✅ · 2 –</td><td>a <code>GMenu</code> item of a stateful action</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>5 ✅</td><td><code>role=menuitemcheckbox</code> with <code>aria-checked</code> in an ARIA <code>menu</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuToggleContract.swift`.
 
 ## MenuToggle's own members
 
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>isOn</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>onToggled</code> (<code>toggled</code>)</td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-</table>
+MenuToggle declares no members of its own.
 
 ## From [AutomationElement](tiers/AutomationElement.md)
 
@@ -62,6 +58,16 @@ What an element the platform's automation meets has - a drawn element, a menu's 
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityIdentifier</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.<br>Android Views: An Android menu entry holds no identifier: automation finds it by its title.<br>GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
+</table>
+
+## From [ToggleElement](tiers/ToggleElement.md)
+
+What a control turned on and off holds and reports: a check box, a switch, a menu's and a toolbar's toggle.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isOn</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onToggled</code> (<code>toggled</code>)</td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)

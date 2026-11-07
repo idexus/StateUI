@@ -534,7 +534,7 @@ the entry acts. A window with no such field does nothing.
 ## A checked entry
 
 A setting's entry - a `MenuToggle` - stands checked or not
-(`MenuToggleContract.isOn`), which each host shows as its toolkit marks a
+(`ToggleElementContract.isOn`), which each host shows as its toolkit marks a
 setting: a check beside it. Choosing an entry is one rule on every host
 (`MountedElement.chosen`): a setting's turns the other way - `toggled` with
 the way it turned to, written through a binding - and a `MenuItem`, which

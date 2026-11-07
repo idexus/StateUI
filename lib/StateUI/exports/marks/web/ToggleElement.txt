@@ -1,0 +1,9 @@
+# revision 0.0
+CheckBox.isOn: ✅
+CheckBox.toggled: ✅
+MenuToggle.isOn: ✅
+MenuToggle.toggled: ✅
+Switch.isOn: ✅
+Switch.toggled: ✅
+ToolbarToggle.isOn: ✅
+ToolbarToggle.toggled: ✅

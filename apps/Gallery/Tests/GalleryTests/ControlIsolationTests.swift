@@ -20,7 +20,7 @@ final class ControlIsolationTests: XCTestCase {
             """,
             """
             func callback(_ reports: ControlReports<SwitchContract>) {
-                reports.report(SwitchContract.isOn, true, as: SwitchContract.toggled)
+                reports.report(ToggleElementContract.isOn, true, as: ToggleElementContract.toggled)
             }
             """,
             """

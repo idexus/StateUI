@@ -859,6 +859,9 @@ swift.conformance TintElementContract: StateUI.WornContract
 swift.conformance TintElementContract: Swift.Sendable
 swift.conformance TitleViewContract: StateUI.WornContract
 swift.conformance TitleViewContract: Swift.Sendable
+swift.conformance ToggleElementContract: StateUI.Tier
+swift.conformance ToggleElementContract: StateUI.WornContract
+swift.conformance ToggleElementContract: Swift.Sendable
 swift.conformance ToolbarBuilder: Swift.Sendable
 swift.conformance ToolbarButton: StateUI.ToolbarItem
 swift.conformance ToolbarButton: Swift.Sendable
@@ -1124,6 +1127,7 @@ swift.enum TimeFormat: enum TimeFormat
 swift.enum TimePickerContract: enum TimePickerContract
 swift.enum TintElementContract: enum TintElementContract
 swift.enum TitleViewContract: enum TitleViewContract
+swift.enum ToggleElementContract: enum ToggleElementContract
 swift.enum ToolbarBuilder: @MainActor @resultBuilder enum ToolbarBuilder
 swift.enum ToolbarButtonContract: enum ToolbarButtonContract
 swift.enum ToolbarEdge: enum ToolbarEdge
@@ -2875,9 +2879,9 @@ swift.method CheckBox.onTapped(count:_:): @MainActor func onTapped(count: Int, _
 swift.method CheckBox.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method CheckBox.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> CheckBox.Modified
-swift.method CheckBox.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> CheckBox.Modified
-swift.method CheckBox.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> CheckBox.Modified
+swift.method CheckBox.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
+swift.method CheckBox.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
+swift.method CheckBox.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method CheckBox.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method CheckBox.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method CheckBox.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -6546,12 +6550,12 @@ swift.method MenuSeparator.id(_:): @MainActor func id(_ value: some Hashable) ->
 swift.method MenuToggle.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method MenuToggle.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MenuToggle.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
-swift.method MenuToggle.id(_:): @MainActor func id(_ value: some Hashable) -> MenuToggle.Modified
+swift.method MenuToggle.id(_:): @MainActor func id(_ value: some Hashable) -> MenuToggle
 swift.method MenuToggle.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method MenuToggle.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
-swift.method MenuToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> MenuToggle
-swift.method MenuToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
-swift.method MenuToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> MenuToggle.Modified
+swift.method MenuToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
+swift.method MenuToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
+swift.method MenuToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method MenuToggle.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MessageContext.date(_:format:): func date(_ day: CalendarDate, format: DateFormat = .short) -> String
 swift.method MessageContext.isolated(_:): func isolated(_ text: String) -> String
@@ -10685,9 +10689,9 @@ swift.method Switch.onTapped(count:_:): @MainActor func onTapped(count: Int, _ h
 swift.method Switch.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Switch.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Switch.Modified
-swift.method Switch.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Switch.Modified
-swift.method Switch.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Switch.Modified
+swift.method Switch.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
+swift.method Switch.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
+swift.method Switch.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method Switch.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method Switch.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method Switch.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -11912,6 +11916,9 @@ swift.method TimePicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>
 swift.method TimePickerProperties.format(_:): @MainActor func format(_ format: TimeFormat) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
 swift.method TintElement.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
+swift.method ToggleElement.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
+swift.method ToggleElement.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
+swift.method ToggleElement.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method ToolbarButton.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method ToolbarButton.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ToolbarButton.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
@@ -11991,15 +11998,15 @@ swift.method ToolbarToggle.fontSize(_:): @MainActor func fontSize(_ value: Doubl
 swift.method ToolbarToggle.fontWeight(_:): @MainActor func fontWeight(_ value: FontWeight) -> Self.Modified
 swift.method ToolbarToggle.hidesWithSidebar(_:): @MainActor func hidesWithSidebar(_ value: Bool) -> ToolbarToggle.Modified
 swift.method ToolbarToggle.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
-swift.method ToolbarToggle.icon(_:on:): @MainActor func icon(_ value: ImageSource, on: ImageSource) -> ToolbarToggle.Modified
+swift.method ToolbarToggle.icon(_:on:): @MainActor func icon(_ value: ImageSource, on: ImageSource) -> ToolbarToggle
 swift.method ToolbarToggle.id(_:): @MainActor func id(_ value: some Hashable) -> ToolbarToggle.Modified
 swift.method ToolbarToggle.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method ToolbarToggle.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ value: Bool) -> Self.Modified
 swift.method ToolbarToggle.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
 swift.method ToolbarToggle.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -> Self.Modified
-swift.method ToolbarToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> ToolbarToggle
-swift.method ToolbarToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> ToolbarToggle.Modified
-swift.method ToolbarToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> ToolbarToggle.Modified
+swift.method ToolbarToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
+swift.method ToolbarToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
+swift.method ToolbarToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method ToolbarToggle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ToolbarToggle.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method ToolbarToggle.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -13531,9 +13538,7 @@ swift.type.property ButtonMenuElementContract.showsMenuArrow: static let showsMe
 swift.type.property CanvasContract.drawing: static let drawing: ElementProperty<CanvasContract, [DrawCommand]>
 swift.type.property CanvasContract.name: static var name: String { get }
 swift.type.property CapsuleContract.name: static var name: String { get }
-swift.type.property CheckBoxContract.isOn: static let isOn: ElementProperty<CheckBoxContract, Bool>
 swift.type.property CheckBoxContract.name: static var name: String { get }
-swift.type.property CheckBoxContract.toggled: static let toggled: ElementEvent<CheckBoxContract, Bool>
 swift.type.property Color.accent: static let accent: Color
 swift.type.property Color.black: static let black: Color
 swift.type.property Color.blue: static let blue: Color
@@ -13728,9 +13733,7 @@ swift.type.property MenuItemElementContract.keyboardShortcut: static let keyboar
 swift.type.property MenuItemElementContract.name: static let name: String
 swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
 swift.type.property MenuSeparatorContract.name: static var name: String { get }
-swift.type.property MenuToggleContract.isOn: static let isOn: ElementProperty<MenuToggleContract, Bool>
 swift.type.property MenuToggleContract.name: static var name: String { get }
-swift.type.property MenuToggleContract.toggled: static let toggled: ElementEvent<MenuToggleContract, Bool>
 swift.type.property Motion.inherited: static let inherited: Motion
 swift.type.property Motion.none: static let none: Motion
 swift.type.property Motion.standard: static let standard: Motion
@@ -13876,9 +13879,7 @@ swift.type.property SwipeDirections.down: static let down: SwipeDirections
 swift.type.property SwipeDirections.left: static let left: SwipeDirections
 swift.type.property SwipeDirections.right: static let right: SwipeDirections
 swift.type.property SwipeDirections.up: static let up: SwipeDirections
-swift.type.property SwitchContract.isOn: static let isOn: ElementProperty<SwitchContract, Bool>
 swift.type.property SwitchContract.name: static var name: String { get }
-swift.type.property SwitchContract.toggled: static let toggled: ElementEvent<SwitchContract, Bool>
 swift.type.property TabViewContract.name: static var name: String { get }
 swift.type.property TabViewContract.selectedTab: static let selectedTab: ElementProperty<TabViewContract, Int>
 swift.type.property TabViewContract.selectedTabChanged: static let selectedTabChanged: ElementEvent<TabViewContract, Int>
@@ -13929,6 +13930,9 @@ swift.type.property TimePickerContract.timeChanged: static let timeChanged: Elem
 swift.type.property TintElementContract.name: static let name: String
 swift.type.property TintElementContract.tint: static let tint: ElementProperty<TintElementContract, Color>
 swift.type.property TitleViewContract.name: static var name: String { get }
+swift.type.property ToggleElementContract.isOn: static let isOn: ElementProperty<ToggleElementContract, Bool>
+swift.type.property ToggleElementContract.name: static let name: String
+swift.type.property ToggleElementContract.toggled: static let toggled: ElementEvent<ToggleElementContract, Bool>
 swift.type.property ToolbarButtonContract.name: static var name: String { get }
 swift.type.property ToolbarGroupContract.barEdge: static let barEdge: ElementProperty<ToolbarGroupContract, ToolbarEdge>
 swift.type.property ToolbarGroupContract.hidesWithSidebar: static let hidesWithSidebar: ElementProperty<ToolbarGroupContract, Bool>
@@ -13942,10 +13946,8 @@ swift.type.property ToolbarGroupContract.standsAlone: static let standsAlone: El
 swift.type.property ToolbarLabelContract.icon: static let icon: ElementProperty<ToolbarLabelContract, ImageSource>
 swift.type.property ToolbarLabelContract.name: static var name: String { get }
 swift.type.property ToolbarLabelContract.text: static let text: ElementProperty<ToolbarLabelContract, String>
-swift.type.property ToolbarToggleContract.isOn: static let isOn: ElementProperty<ToolbarToggleContract, Bool>
 swift.type.property ToolbarToggleContract.name: static var name: String { get }
 swift.type.property ToolbarToggleContract.onIcon: static let onIcon: ElementProperty<ToolbarToggleContract, ImageSource>
-swift.type.property ToolbarToggleContract.toggled: static let toggled: ElementEvent<ToolbarToggleContract, Bool>
 swift.type.property TrackingElementContract.name: static let name: String
 swift.type.property TrackingElementContract.tracking: static let tracking: ElementProperty<TrackingElementContract, Double>
 swift.type.property VStackContract.name: static var name: String { get }

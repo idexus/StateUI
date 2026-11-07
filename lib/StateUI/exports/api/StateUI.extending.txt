@@ -142,6 +142,7 @@ swift.conformance CheckBox: StateUI.StyleTarget
 swift.conformance CheckBox: StateUI.TextColorElement
 swift.conformance CheckBox: StateUI.TextualElement
 swift.conformance CheckBox: StateUI.TintElement
+swift.conformance CheckBox: StateUI.ToggleElement
 swift.conformance CheckBox: StateUI.ViewProperties
 swift.conformance CheckBox: StateUI.VisualElement
 swift.conformance CheckBox: StateUI.VisualElementProperties
@@ -579,6 +580,7 @@ swift.conformance MenuToggle: StateUI.AutomationElement
 swift.conformance MenuToggle: StateUI.Element
 swift.conformance MenuToggle: StateUI.MenuItemElement
 swift.conformance MenuToggle: StateUI.PropertyContainer
+swift.conformance MenuToggle: StateUI.ToggleElement
 swift.conformance MenuToggleContract: StateUI.Contract
 swift.conformance MenuToggleContract: StateUI.ElementContract
 swift.conformance ModifiableElement: StateUI.Element
@@ -1080,6 +1082,7 @@ swift.conformance Switch: StateUI.StyleTarget
 swift.conformance Switch: StateUI.TextColorElement
 swift.conformance Switch: StateUI.TextualElement
 swift.conformance Switch: StateUI.TintElement
+swift.conformance Switch: StateUI.ToggleElement
 swift.conformance Switch: StateUI.ViewProperties
 swift.conformance Switch: StateUI.VisualElement
 swift.conformance Switch: StateUI.VisualElementProperties
@@ -1238,6 +1241,8 @@ swift.conformance TintElement: StateUI.PropertyContainer
 swift.conformance TintElementContract: StateUI.Contract
 swift.conformance TitleViewContract: StateUI.Contract
 swift.conformance TitleViewContract: StateUI.ElementContract
+swift.conformance ToggleElement: StateUI.PropertyContainer
+swift.conformance ToggleElementContract: StateUI.Contract
 swift.conformance ToolbarButton: StateUI.ActionElement
 swift.conformance ToolbarButton: StateUI.AutomationElement
 swift.conformance ToolbarButton: StateUI.BarButtonElement
@@ -1287,6 +1292,7 @@ swift.conformance ToolbarToggle: StateUI.PropertyContainer
 swift.conformance ToolbarToggle: StateUI.StyleTarget
 swift.conformance ToolbarToggle: StateUI.TextAndIconElement
 swift.conformance ToolbarToggle: StateUI.TextColorElement
+swift.conformance ToolbarToggle: StateUI.ToggleElement
 swift.conformance ToolbarToggleContract: StateUI.Contract
 swift.conformance ToolbarToggleContract: StateUI.ElementContract
 swift.conformance TrackingElement: StateUI.PropertyContainer
@@ -2535,6 +2541,7 @@ swift.protocol TextProperties: @MainActor protocol TextProperties : PropertyCont
 swift.protocol TextualElement: @MainActor protocol TextualElement : TextColorElement
 swift.protocol TimePickerProperties: @MainActor protocol TimePickerProperties : PropertyContainer
 swift.protocol TintElement: @MainActor protocol TintElement : PropertyContainer
+swift.protocol ToggleElement: @MainActor protocol ToggleElement : PropertyContainer
 swift.protocol ToolbarGroupProperties: @MainActor protocol ToolbarGroupProperties : PropertyContainer
 swift.protocol TrackingElement: @MainActor protocol TrackingElement : PropertyContainer
 swift.protocol ViewProperties: @MainActor protocol ViewProperties : VisualElementProperties
@@ -3298,6 +3305,8 @@ swift.type.property TitleViewContract.layer: static var layer: ElementLayer { ge
 swift.type.property TitleViewContract.members: static let members: [any ContractMember]
 swift.type.property TitleViewContract.nodeType: static let nodeType: NodeType
 swift.type.property TitleViewContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property ToggleElementContract.members: static let members: [any ContractMember]
+swift.type.property ToggleElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ToolbarButton.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarButtonContract.layer: static let layer: ElementLayer
 swift.type.property ToolbarButtonContract.layer: static var layer: ElementLayer { get }

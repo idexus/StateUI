@@ -38,7 +38,7 @@ final class TestWindowTests: XCTestCase {
         try await lamp.perform(.toggle)
 
         XCTAssertEqual(try window.element("form.greeting").value(TextualElementContract.text), "Hello, Ada - lit")
-        XCTAssertEqual(try lamp.value(SwitchContract.isOn), true)
+        XCTAssertEqual(try lamp.value(ToggleElementContract.isOn), true)
     }
 
     /// A view is found by the aim put on it, as the application aims at it.
