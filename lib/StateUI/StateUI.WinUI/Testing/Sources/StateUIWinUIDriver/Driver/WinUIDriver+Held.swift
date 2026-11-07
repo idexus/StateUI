@@ -188,8 +188,9 @@ extension WinUIDriver {
         let judgment = WinUIRealization.register.judgment(
             of: "accessibilityPresence", on: element.type.name, from: "VisualElement")
         let partsStay = if case .partial? = judgment { true } else { false }
-        let alone = facts.children > 0 && !partsStay
-            || facts.children == 0 && element.accessibilityWords.presence == .hidden
+        // Nothing it holds met, or parts the register records staying either way: the two read alike, as said.
+        let alike = facts.children == 0 || partsStay
+        let alone = alike ? element.accessibilityWords.presence == .hidden : true
         return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
     }
 

@@ -26,7 +26,7 @@ final class GTKWebViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     WebView(html: second.wrappedValue ? "<p>Second</p>" : "<p>First</p>").aim(web)
-                        .onNavigating { heard.values.append("\($0.type)") }
+                        .onNavigating { heard.values.append("\($0.kind)") }
                         .onNavigated { _ in arrived.values.append(true) }
                         .height(200)
                     Button("Back").onClicked(.ignoreWhileRunning) {

@@ -36,7 +36,11 @@ extension UIKitDriver {
         case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
         case .accessibilityPresence:
             guard !met(view).isAccessibilityElement else { return AccessibilityPresence.element.propValue }
-            return (met(view).accessibilityElementsHidden ? AccessibilityPresence.hiddenWithContents : .hidden).propValue
+            guard met(view).accessibilityElementsHidden else { return AccessibilityPresence.hidden.propValue }
+            // Holding nothing of the tree's, a view hidden alone hides its own parts too: the two read alike, as said.
+            let alike = native?.element.children.isEmpty ?? true
+            let alone = alike && native?.element.accessibilityWords.presence == .hidden
+            return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .keyboardShortcut:

@@ -115,7 +115,7 @@ final class GTKGesturesTests: XCTestCase {
         try onUIThread {
             var taps = 0
             let host = GTKRenderer.running {
-                VStack { Slider().onTapped { taps += 1 }.width(80).height(40) }.horizontalAlignment(.start)
+                VStack { Slider(0.5).onTapped { taps += 1 }.width(80).height(40) }.horizontalAlignment(.start)
             }
             let slider = try XCTUnwrap(host.views(GTKSliderView.self).first)
             XCTAssertLessThan(gtk_widget_get_height(slider.widget), 30, "the slider's content is shorter than its box")

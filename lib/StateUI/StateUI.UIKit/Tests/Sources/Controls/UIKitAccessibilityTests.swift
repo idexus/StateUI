@@ -54,7 +54,7 @@ final class UIKitAccessibilityTests: XCTestCase {
         let view = UIView()
         let own = view.isAccessibilityElement
         view.accessibility(
-            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: .met),
+            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: .element),
             holdingNoChildren: false, standing: own)
         XCTAssertTrue(view.isAccessibilityElement)
 

@@ -128,8 +128,8 @@ private struct BrowsingPage: View {
                 .aim(browser)
                 .canGoBack(into: $back)
                 .canGoForward(into: $forward)
-                .onNavigating { heard.values.append("navigating \($0.type) \($0.address)") }
-                .onNavigated { heard.values.append("navigated \($0.result) \($0.type) \($0.address)") }
+                .onNavigating { heard.values.append("navigating \($0.kind) \($0.address)") }
+                .onNavigated { heard.values.append("navigated \($0.result) \($0.kind) \($0.address)") }
                 .onProcessTerminated { heard.values.append("gone") }
                 .height(200)
             Button("Reload").onClicked(.ignoreWhileRunning) { try await browser.reload() }
