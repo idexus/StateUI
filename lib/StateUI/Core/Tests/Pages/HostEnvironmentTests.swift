@@ -105,7 +105,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.application.info.packageName = ""
         StandardEnvironment.application.info.versionString = ""
         StandardEnvironment.application.info.buildString = ""
-        StandardEnvironment.application.info.colorScheme = .system
+        StandardEnvironment.application.info.colorScheme = .light
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
@@ -122,7 +122,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.locale.uses24HourClock = false
         StandardEnvironment.locale.firstDayOfWeek = .sunday
         StandardEnvironment.locale.isMetric = true
-        StandardEnvironment.locale.layoutDirection = .leftToRight
+        StandardEnvironment.locale.writingDirection = .leftToRight
         Renderer.shared.clearInvalidation()
     }
 
@@ -169,7 +169,7 @@ final class HostEnvironmentTests: XCTestCase {
         let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wifi])
         let locale = HostLocaleInfo(
             language: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
-            firstDayOfWeek: .saturday, isMetric: true, layoutDirection: .rightToLeft)
+            firstDayOfWeek: .saturday, isMetric: true, writingDirection: .rightToLeft)
         HostBoundary.setBatteryInfo(battery)
         HostBoundary.setConnectivityInfo(network)
         HostBoundary.setLocaleInfo(locale)
@@ -321,19 +321,19 @@ final class HostEnvironmentTests: XCTestCase {
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl-PL", timeZone: "Europe/Warsaw",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .rightToLeft))
         XCTAssertEqual(StandardEnvironment.locale.language, "pl-PL")
         XCTAssertEqual(StandardEnvironment.locale.language?.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl-PL", timeZone: nil,
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .rightToLeft))
         XCTAssertNil(StandardEnvironment.locale.timeZone, "a zone the host has not said is none, never an empty name")
         XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)
         XCTAssertEqual(StandardEnvironment.locale.firstDayOfWeek, .monday)
         XCTAssertTrue(StandardEnvironment.locale.isMetric)
-        XCTAssertEqual(StandardEnvironment.locale.layoutDirection, .rightToLeft)
+        XCTAssertEqual(StandardEnvironment.locale.writingDirection, .rightToLeft)
 
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",

@@ -153,10 +153,10 @@ final class UIKitEnvironmentTests: XCTestCase {
         let before = HostLocaleInfo(
             language: locale.language, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
-            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection, languages: locale.languages)
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         locale.language = nil
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
 
         UIKitEnvironment(core: CoreLink()).reportLocale()
 
@@ -166,7 +166,7 @@ final class UIKitEnvironmentTests: XCTestCase {
         XCTAssertFalse(locale.languages.isEmpty)
         XCTAssertEqual(locale.timeZone?.identifier, TimeZone.current.identifier)
         XCTAssertEqual(
-            locale.layoutDirection,
+            locale.writingDirection,
             Locale.current.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
     }
 

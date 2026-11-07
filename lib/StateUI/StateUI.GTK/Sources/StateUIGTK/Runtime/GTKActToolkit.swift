@@ -78,11 +78,11 @@ final class GTKActToolkit: ActToolkit {
     }
 
     /// Shows the application in `theme`: libadwaita's color scheme, the system's own for the system's.
-    func useColorScheme(_ theme: ColorScheme) {
+    func useColorScheme(_ theme: ColorScheme?) {
         let scheme: AdwColorScheme = switch theme {
-        case .light: ADW_COLOR_SCHEME_FORCE_LIGHT
-        case .dark: ADW_COLOR_SCHEME_FORCE_DARK
-        case .system: ADW_COLOR_SCHEME_DEFAULT
+        case .light?: ADW_COLOR_SCHEME_FORCE_LIGHT
+        case .dark?: ADW_COLOR_SCHEME_FORCE_DARK
+        case nil: ADW_COLOR_SCHEME_DEFAULT
         }
         adw_style_manager_set_color_scheme(adw_style_manager_get_default(), scheme)
     }

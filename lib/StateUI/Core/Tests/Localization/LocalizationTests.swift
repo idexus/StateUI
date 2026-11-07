@@ -114,7 +114,7 @@ final class LocalizationTests: XCTestCase {
     override func tearDown() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
-            isMetric: true, layoutDirection: .leftToRight))
+            isMetric: true, writingDirection: .leftToRight))
         Renderer.shared.clearInvalidation()
     }
 
@@ -124,7 +124,7 @@ final class LocalizationTests: XCTestCase {
         let tag = LocaleTag(name)
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: tag, timeZone: "Europe/Warsaw",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight,
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight,
             languages: languages.map { LocaleTag($0) }))
     }
 

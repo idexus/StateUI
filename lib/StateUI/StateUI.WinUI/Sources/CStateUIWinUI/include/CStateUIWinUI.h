@@ -251,9 +251,9 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIItemsShapeGrid,
 } StateUIItemsShape;
 
-/// A theme an element stands in: the system's, light, dark.
+/// A theme an element stands in: light or dark; 0, none, is the system's.
 // Swift: ColorScheme
-typedef enum { StateUIColorSchemeSystem, StateUIColorSchemeLight, StateUIColorSchemeDark } StateUIColorScheme;
+typedef enum { StateUIColorSchemeLight = 1, StateUIColorSchemeDark = 2 } StateUIColorScheme;
 
 /// What a question for the user is.
 typedef enum STATEUI_CLOSED_ENUM {

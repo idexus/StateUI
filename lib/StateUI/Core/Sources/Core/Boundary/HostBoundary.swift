@@ -109,13 +109,13 @@
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
-        update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+        update(locale, \.writingDirection, info.writingDirection)
         update(locale, \.languages, info.languages)
     }
 
     /// The way the user's language is written, as the host last reported it.
     public static var languageDirection: LayoutDirection {
-        StandardEnvironment.locale.layoutDirection
+        StandardEnvironment.locale.writingDirection == .rightToLeft ? .rightToLeft : .leftToRight
     }
 
     /// Hands StateUI a window the platform made, before its first render.

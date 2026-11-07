@@ -826,6 +826,11 @@ swift.conformance WindowKind: Swift.Sendable
 swift.conformance WindowSession: Swift.Sendable
 swift.conformance Windows: StateUI.Scene
 swift.conformance Windows: Swift.Sendable
+swift.conformance WritingDirection: Swift.CaseIterable
+swift.conformance WritingDirection: Swift.Equatable
+swift.conformance WritingDirection: Swift.Hashable
+swift.conformance WritingDirection: Swift.RawRepresentable
+swift.conformance WritingDirection: Swift.Sendable
 swift.conformance ZStack: StateUI.Layout
 swift.conformance ZStack: StateUI.View
 swift.conformance ZStack: StateUI.Views
@@ -1011,6 +1016,7 @@ swift.enum WebViewContract: enum WebViewContract
 swift.enum Weekday: enum Weekday
 swift.enum WindowContract: enum WindowContract
 swift.enum WindowError: enum WindowError
+swift.enum WritingDirection: enum WritingDirection
 swift.enum ZStackContract: enum ZStackContract
 swift.enum.case AccessibilityAdjustment.decrement: case decrement
 swift.enum.case AccessibilityAdjustment.increment: case increment
@@ -1070,7 +1076,6 @@ swift.enum.case Cadence.always: case always
 swift.enum.case Cadence.every(_:): case every(Duration)
 swift.enum.case ColorScheme.dark: case dark
 swift.enum.case ColorScheme.light: case light
-swift.enum.case ColorScheme.system: case system
 swift.enum.case ConnectionProfile.bluetooth: case bluetooth
 swift.enum.case ConnectionProfile.cellular: case cellular
 swift.enum.case ConnectionProfile.ethernet: case ethernet
@@ -1314,6 +1319,8 @@ swift.enum.case WindowError.notOpen: case notOpen
 swift.enum.case WindowError.undeclared(_:): case undeclared(String)
 swift.enum.case WindowError.unsupported: case unsupported
 swift.enum.case WindowError.wrongValue(_:): case wrongValue(String)
+swift.enum.case WritingDirection.leftToRight: case leftToRight
+swift.enum.case WritingDirection.rightToLeft: case rightToLeft
 swift.func.op CalendarDate.<(_:_:): static func < (left: CalendarDate, right: CalendarDate) -> Bool
 swift.func.op ClockTime.<(_:_:): static func < (left: ClockTime, right: ClockTime) -> Bool
 swift.init @_ConcurrencyTask.init(gate:operation:): @discardableResult @MainActor init(gate: Gate, operation: @escaping EventHandler)
@@ -1321,7 +1328,7 @@ swift.init AccessibilitySettings.init(reducesMotion:prefersHigherContrast:isScre
 swift.init Aim.init(_:): @MainActor init(_ target: Target.Type)
 swift.init AnyView.init(_:): @MainActor init<Held>(_ view: Held) where Held : View
 swift.init Application.init(): @MainActor init()
-swift.init ApplicationInfo.init(name:packageName:versionString:buildString:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", versionString: String = "", buildString: String = "", colorScheme: ColorScheme = .system, accentColor: Color? = nil)
+swift.init ApplicationInfo.init(name:packageName:versionString:buildString:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", versionString: String = "", buildString: String = "", colorScheme: ColorScheme = .light, accentColor: Color? = nil)
 swift.init ApplicationSession.init(): @MainActor init()
 swift.init AxisValues.init(arrayLiteral:): init(arrayLiteral values: Double...)
 swift.init Battery.init(chargeLevel:state:powerSource:energySaverStatus:): @MainActor init(chargeLevel: Double? = nil, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown, energySaverStatus: EnergySaverStatus = .unknown)
@@ -1404,7 +1411,7 @@ swift.init Line.init(from:to:): @MainActor init(from start: Binding<Point>, to e
 swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
 swift.init Link.init(_:address:): @MainActor init(_ text: String, address: String)
-swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
+swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:writingDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, writingDirection: WritingDirection = .leftToRight, languages: [LocaleTag] = [])
 swift.init LocaleTag.init(_:): init(_ text: String)
 swift.init LocaleTag.init(stringLiteral:): init(stringLiteral value: String)
 swift.init Localization.init(_:language:formatLocale:timeZone:): @MainActor init(_ catalog: Catalog.Type, language: LocaleChoice<Catalog.CatalogLanguage> = .system, formatLocale: LocaleChoice<LocaleTag> = .system, timeZone: LocaleChoice<TimeZoneName> = .system)
@@ -12788,13 +12795,13 @@ swift.property ApplicationInfo.name: @MainActor var name: String { get }
 swift.property ApplicationInfo.packageName: @MainActor var packageName: String { get }
 swift.property ApplicationInfo.versionString: @MainActor var versionString: String { get }
 swift.property ApplicationSession.$accentColor: @MainActor var $accentColor: Binding<Color?> { get }
-swift.property ApplicationSession.$colorScheme: @MainActor var $colorScheme: Binding<ColorScheme> { get }
+swift.property ApplicationSession.$colorScheme: @MainActor var $colorScheme: Binding<ColorScheme?> { get }
 swift.property ApplicationSession.$motion: @MainActor var $motion: Binding<Motion> { get }
 swift.property ApplicationSession.$styles: @MainActor var $styles: Binding<StyleSheet?> { get }
 swift.property ApplicationSession.accentColor: @State @MainActor var accentColor: Color? { get set }
 swift.property ApplicationSession.clipboard: @MainActor var clipboard: Clipboard { get }
 swift.property ApplicationSession.clock: @MainActor var clock: WallClock { get }
-swift.property ApplicationSession.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
+swift.property ApplicationSession.colorScheme: @State @MainActor var colorScheme: ColorScheme? { get set }
 swift.property ApplicationSession.info: @MainActor let info: ApplicationInfo
 swift.property ApplicationSession.motion: @State @MainActor var motion: Motion { get set }
 swift.property ApplicationSession.phase: @MainActor var phase: SessionPhase { get }
@@ -12917,9 +12924,9 @@ swift.property LocaleInfo.firstDayOfWeek: @MainActor var firstDayOfWeek: Weekday
 swift.property LocaleInfo.isMetric: @MainActor var isMetric: Bool { get }
 swift.property LocaleInfo.language: @MainActor var language: LocaleTag? { get }
 swift.property LocaleInfo.languages: @MainActor var languages: [LocaleTag] { get }
-swift.property LocaleInfo.layoutDirection: @MainActor var layoutDirection: LayoutDirection { get }
 swift.property LocaleInfo.timeZone: @MainActor var timeZone: TimeZoneName? { get }
 swift.property LocaleInfo.uses24HourClock: @MainActor var uses24HourClock: Bool { get }
+swift.property LocaleInfo.writingDirection: @MainActor var writingDirection: WritingDirection { get }
 swift.property LocaleTag.description: var description: String { get }
 swift.property LocaleTag.direction: var direction: LayoutDirection { get }
 swift.property LocaleTag.identifier: let identifier: String
@@ -13373,7 +13380,7 @@ swift.type.property ApplicationContract.saveFile: static let saveFile: ElementAc
 swift.type.property ApplicationContract.sendRequest: static let sendRequest: ElementAct<ApplicationContract, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>
 swift.type.property ApplicationContract.share: static let share: ElementAct<ApplicationContract, (Name, Name, String?, String?), Bool>
 swift.type.property ApplicationContract.useAccentColor: static let useAccentColor: ElementAct<ApplicationContract, Color?, Void>
-swift.type.property ApplicationContract.useColorScheme: static let useColorScheme: ElementAct<ApplicationContract, ColorScheme, Void>
+swift.type.property ApplicationContract.useColorScheme: static let useColorScheme: ElementAct<ApplicationContract, ColorScheme?, Void>
 swift.type.property ApplicationContract.utcOffset: static let utcOffset: ElementAct<ApplicationContract, (String?, CalendarDate?), Int>
 swift.type.property ApplicationContract.writeClipboard: static let writeClipboard: ElementAct<ApplicationContract, String, Void>
 swift.type.property AutomationElementContract.accessibilityIdentifier: static let accessibilityIdentifier: ElementProperty<AutomationElementContract, String>

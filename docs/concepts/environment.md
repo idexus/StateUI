@@ -138,8 +138,8 @@ contract:
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numbers are nil and enums `.unknown` until reported, the rate nil where the platform does not say |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
-| `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written; the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported, the release compiled in |
+| `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `writingDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written (a `WritingDirection`, left to right or right to left); the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, the theme in force and the user's accent, live; text starts empty, theme `.light` and accent `#0A84FF` until reported, the release compiled in |
 | `application.phase` - `SessionPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
@@ -165,9 +165,9 @@ The closed vocabulary used by these fields is:
 | `DisplayOrientation` | `unknown`, `portrait`, `landscape` |
 | `DisplayRotation` | `unknown`, `rotation0`, `rotation90`, `rotation180`, `rotation270` |
 | `Weekday` | `sunday` through `saturday` |
-| `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
+| `WritingDirection` | `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
-| `ColorScheme` | `system`, `light`, `dark` |
+| `ColorScheme` | `light`, `dark` |
 | `SessionPhase` | `active`, `inactive`, `background` |
 
 No conformance case gives a verdict for the standard facts: each host's page

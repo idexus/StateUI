@@ -21,7 +21,7 @@ private final class Toolkit: ActToolkit {
     var announced: [String] = []
     var clipboard: String?
     var shares: [(shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)] = []
-    var themes: [ColorScheme] = []
+    var themes: [ColorScheme?] = []
     var accents: [Color?] = []
     var takesAccent = true
     var focusable: Set<ElementID> = []
@@ -55,7 +55,7 @@ private final class Toolkit: ActToolkit {
         shares.append((shared, answered))
         return window ?? self.window
     }
-    func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
+    func useColorScheme(_ theme: ColorScheme?) { themes.append(theme) }
     func useAccentColor(_ accent: Color?) -> Bool {
         accents.append(accent)
         return takesAccent
@@ -391,7 +391,7 @@ final class HostActPerformerTests: XCTestCase {
     func testTheApplicationsThemeIsShownAndInForce() {
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers)
-        defer { acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: nil)) }
+        defer { acts.perform(HostActCall(act: .useColorScheme, arguments: [.nothing], completion: nil)) }
         CoreLink().setColorScheme(.light)
 
         acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.dark.propValue], completion: 1))
@@ -402,8 +402,8 @@ final class HostActPerformerTests: XCTestCase {
         CoreLink().setColorScheme(.light)
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark, "a system report leaves it held")
 
-        acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: 2))
-        XCTAssertEqual(toolkit.themes, [.dark, .system])
+        acts.perform(HostActCall(act: .useColorScheme, arguments: [.nothing], completion: 2))
+        XCTAssertEqual(toolkit.themes, [.dark, nil])
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light, "the system's again")
     }
 

@@ -290,7 +290,7 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertTrue(phase.hasSuffix("{ get }"), "a reported fact has no public setter: \(phase)")
         XCTAssertTrue(surface.contains {
             $0.hasPrefix("swift.property ApplicationSession.$colorScheme:")
-                && $0.contains("@MainActor") && $0.contains("Binding<ColorScheme>") && $0.hasSuffix("{ get }")
+                && $0.contains("@MainActor") && $0.contains("Binding<ColorScheme?>") && $0.hasSuffix("{ get }")
         }, "a setting's projected binding and its isolation are public API")
     }
 

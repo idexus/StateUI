@@ -922,8 +922,8 @@ enum Listings {
         @Environment(\.device) private var device
 
         /// The themes the application may hold, in the order they are offered.
-        private static let themes: [(name: String, scheme: ColorScheme)] = [
-            ("The system's", .system), ("Light", .light), ("Dark", .dark),
+        private static let themes: [(name: String, scheme: ColorScheme?)] = [
+            ("The system's", nil), ("Light", .light), ("Dark", .dark),
         ]
 
         /// How the bars' buttons may stand, in the order they are offered.

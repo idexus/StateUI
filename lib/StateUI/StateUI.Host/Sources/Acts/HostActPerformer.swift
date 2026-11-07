@@ -95,7 +95,7 @@
                 }
             }
         case .useColorScheme:
-            let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:)) ?? .system
+            let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:))
             toolkit.useColorScheme(theme)
             CoreLink().holdColorScheme(theme)
             reply(call, [])

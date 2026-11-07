@@ -41,19 +41,18 @@ public final class ApplicationSession {
     ///     Text("\(application.scenes.count) open")
     public var scenes: [SceneSession] { OpenScenes.shared.list.map(\.session) }
 
-    /// The theme the application shows in: `.system` - the default - follows
-    /// the user's setting, `.light` and `.dark` hold it whatever the system
-    /// asks.
+    /// The theme the application shows in: nil - the default - follows the
+    /// user's setting, `.light` and `.dark` hold it whatever the system asks.
     ///
     ///     application.colorScheme = .dark
-    ///     Picker([ColorScheme.system, .light, .dark], selection: application.$colorScheme)
+    ///     Picker([nil, .light, .dark], selection: application.$colorScheme) { $0.map { "\($0)" } ?? "As the system" }
     ///
     /// The host shows every window in it, natively, and reports the theme in
     /// force as `info.colorScheme`, which color pairs resolve against.
-    @State public var colorScheme = ColorScheme.system
+    @State public var colorScheme: ColorScheme? = nil
 
     /// The theme last handed to the host.
-    private var sentColorScheme = ColorScheme.system
+    private var sentColorScheme: ColorScheme?
 
     /// The application's own accent, which its controls and `Color.accent`
     /// take where the user chooses none for the system - the Web, iOS and

@@ -24,7 +24,7 @@ public enum SystemFacts {
             uses24HourClock: hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour,
             firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
             isMetric: locale.measurementSystem != .us,
-            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
+            writingDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
             languages: Locale.preferredLanguages.map { LocaleTag($0) })
     }
 

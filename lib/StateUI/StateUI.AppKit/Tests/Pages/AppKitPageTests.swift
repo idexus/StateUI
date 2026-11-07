@@ -48,11 +48,11 @@ final class AppKitPageTests: XCTestCase {
         let before = HostLocaleInfo(
             language: locale.language, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
-            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection, languages: locale.languages)
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
-            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, layoutDirection: .leftToRight))
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, writingDirection: .leftToRight))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.finish() }
 

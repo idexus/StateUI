@@ -28,7 +28,7 @@ final class WebLocaleFactsTests: XCTestCase {
         XCTAssertEqual(invalid.language?.isValid, false)
         XCTAssertNil(invalid.timeZone)
         XCTAssertEqual(invalid.languages, ["not??"], "an empty entry is no language")
-        XCTAssertEqual(invalid.layoutDirection, .rightToLeft)
+        XCTAssertEqual(invalid.writingDirection, .rightToLeft)
         XCTAssertEqual(invalid.firstDayOfWeek, .sunday)
         XCTAssertFalse(invalid.uses24HourClock)
 

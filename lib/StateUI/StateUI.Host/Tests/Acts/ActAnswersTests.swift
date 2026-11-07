@@ -59,11 +59,11 @@ final class ActAnswersTests: XCTestCase {
     func testAQuestionsOwnCaptionsSpeakTheSystemsLanguage() throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl-PL", timeZone: nil, uses24HourClock: true, firstDayOfWeek: .monday,
-            isMetric: true, layoutDirection: .leftToRight))
+            isMetric: true, writingDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
                 language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
-                isMetric: true, layoutDirection: .leftToRight))
+                isMetric: true, writingDirection: .leftToRight))
         }
         let confirm = try XCTUnwrap(HostQuestion(HostActCall(
             act: .confirm, arguments: HostActCall.usersWindow + [.string("Usunąć?")], completion: 1)))

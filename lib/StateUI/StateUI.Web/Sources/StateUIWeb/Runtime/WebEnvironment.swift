@@ -55,7 +55,7 @@ enum WebEnvironment {
             language: LocaleTag(words[0]), timeZone: words[2].isEmpty ? nil : TimeZoneName(words[2]),
             uses24HourClock: words[3] == "h23" || words[3] == "h24", firstDayOfWeek: firstDay,
             isMetric: !["US", "LR", "MM"].contains(region),
-            layoutDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight,
+            writingDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight,
             languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }

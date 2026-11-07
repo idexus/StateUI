@@ -50,7 +50,7 @@ public final class ApplicationInfo {
         set { _colorScheme = newValue }
     }
 
-    @State private var _colorScheme: ColorScheme = .system
+    @State private var _colorScheme: ColorScheme = .light
 
     /// The accent the user chose for the system - where the platform has
     /// none, the application's own (`application.accentColor`), else the
@@ -76,7 +76,7 @@ public final class ApplicationInfo {
     /// An application as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(
         name: String = "", packageName: String = "", versionString: String = "", buildString: String = "",
-        colorScheme: ColorScheme = .system, accentColor: Color? = nil
+        colorScheme: ColorScheme = .light, accentColor: Color? = nil
     ) {
         self.name = name
         self.packageName = packageName

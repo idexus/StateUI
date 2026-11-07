@@ -32,7 +32,7 @@ final class SessionBindingTests: XCTestCase {
 
     func testAnOrdinaryBindingOutlivesItsModel() {
         @MainActor final class Model {
-            @State var value = ColorScheme.system
+            @State var value = ColorScheme.light
         }
         var model: Model? = Model()
         weak let released = model

@@ -57,27 +57,27 @@ public final class LocaleInfo {
     @State private var _isMetric = true
 
     /// The way the language is written: left to right, or right to left - what a view left at
-    /// `.inherited` lays out in.
-    public internal(set) var layoutDirection: LayoutDirection {
-        get { _layoutDirection }
-        set { _layoutDirection = newValue }
+    /// `LayoutDirection.inherited` lays out in at the root.
+    public internal(set) var writingDirection: WritingDirection {
+        get { _writingDirection }
+        set { _writingDirection = newValue }
     }
 
-    @State private var _layoutDirection: LayoutDirection = .leftToRight
+    @State private var _writingDirection: WritingDirection = .leftToRight
 
     /// A locale as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts as a
     /// headless host's does.
     public init(
         language: LocaleTag? = nil, timeZone: TimeZoneName? = nil,
         uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true,
-        layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = []
+        writingDirection: WritingDirection = .leftToRight, languages: [LocaleTag] = []
     ) {
         self.language = language
         self.timeZone = timeZone
         self.uses24HourClock = uses24HourClock
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
-        self.layoutDirection = layoutDirection
+        self.writingDirection = writingDirection
         self.languages = languages
     }
 }

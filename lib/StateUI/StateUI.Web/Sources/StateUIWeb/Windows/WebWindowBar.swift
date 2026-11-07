@@ -146,7 +146,7 @@ final class WebWindowBar: WebDOMView {
     static func look(of style: ToolbarStyle) -> String? {
         switch style {
         case .glass: nil
-        case .system, .plain: "plain"
+        case .automatic, .plain: "plain"
         case .rounded: "rounded"
         }
     }

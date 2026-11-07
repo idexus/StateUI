@@ -25,7 +25,7 @@ final class AppKitMenuBarTests: XCTestCase {
     private static func speak(_ language: String) {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: language.isEmpty ? nil : LocaleTag(language), timeZone: nil, uses24HourClock: true,
-            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+            firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight))
     }
 
     /// The bar's own menus and entries say the library's words in the system's language, as AppKit translates no

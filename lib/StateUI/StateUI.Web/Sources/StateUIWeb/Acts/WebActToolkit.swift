@@ -83,7 +83,7 @@ final class WebActToolkit: ActToolkit {
         WebRelay.readClipboard(listener)
     }
 
-    func useColorScheme(_ theme: ColorScheme) {
+    func useColorScheme(_ theme: ColorScheme?) {
         WebRelay.useColorScheme(theme)
     }
 

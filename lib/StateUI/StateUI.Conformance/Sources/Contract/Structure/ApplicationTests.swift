@@ -692,7 +692,7 @@ private struct ThemeChoices: View {
             Text("\(application.info.colorScheme)").id("inForce")
             Button("Dark").onClicked { application.colorScheme = .dark }.id("dark")
             Button("Light").onClicked { application.colorScheme = .light }.id("light")
-            Button("System").onClicked { application.colorScheme = .system }.id("system")
+            Button("System").onClicked { application.colorScheme = nil }.id("system")
         }
     }
 }

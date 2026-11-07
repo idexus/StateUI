@@ -36,10 +36,10 @@ final class WinUIMenuBarView: WinUIView {
 
         painted = (background, foreground)
         let words = BandWords.color(on: background, written: foreground)?.argb
-        let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
+        let theme: ColorScheme? = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light }
         // A color or a gradient over the bar's box.
         WinUIBrush(background).withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
-            stateui_winui_menu_bar_set_colors(handle, painted, words != nil, words ?? 0, theme.rawValue)
+            stateui_winui_menu_bar_set_colors(handle, painted, words != nil, words ?? 0, theme?.rawValue ?? 0)
         }
     }
 

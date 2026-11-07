@@ -21,7 +21,7 @@ final class HostLocalePayloadTests: XCTestCase {
         XCTAssertTrue(locale.uses24HourClock)
         XCTAssertEqual(locale.firstDayOfWeek, .monday)
         XCTAssertTrue(locale.isMetric)
-        XCTAssertEqual(locale.layoutDirection, .leftToRight)
+        XCTAssertEqual(locale.writingDirection, .leftToRight)
     }
 
     func testUnavailableFieldsAreAbsentAndInvalidTagsRemainAvailable() throws {
@@ -54,12 +54,12 @@ final class HostLocalePayloadTests: XCTestCase {
         let before = HostLocaleInfo(
             language: current.language, timeZone: current.timeZone, uses24HourClock: current.uses24HourClock,
             firstDayOfWeek: current.firstDayOfWeek, isMetric: current.isMetric,
-            layoutDirection: current.layoutDirection, languages: current.languages)
+            writingDirection: current.writingDirection, languages: current.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         let invalid = LocaleTag("not??")
         let report = HostLocaleInfo(
             language: invalid, timeZone: nil, uses24HourClock: true, firstDayOfWeek: .saturday,
-            isMetric: false, layoutDirection: .rightToLeft, languages: ["sr-Latn-RS", invalid, ""])
+            isMetric: false, writingDirection: .rightToLeft, languages: ["sr-Latn-RS", invalid, ""])
 
         HostBoundary.setLocaleInfo(report)
 
@@ -70,6 +70,6 @@ final class HostLocalePayloadTests: XCTestCase {
         XCTAssertEqual(current.uses24HourClock, report.uses24HourClock)
         XCTAssertEqual(current.firstDayOfWeek, report.firstDayOfWeek)
         XCTAssertEqual(current.isMetric, report.isMetric)
-        XCTAssertEqual(current.layoutDirection, report.layoutDirection)
+        XCTAssertEqual(current.writingDirection, report.writingDirection)
     }
 }

@@ -128,11 +128,11 @@ final class FormattingTests: XCTestCase {
     func testTheSystemsClockDecidesWhereTheFormatsAreTheSystems() {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "en-US", timeZone: "America/New_York", uses24HourClock: true,
-            firstDayOfWeek: .sunday, isMetric: false, layoutDirection: .leftToRight))
+            firstDayOfWeek: .sunday, isMetric: false, writingDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
                 language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
-                isMetric: true, layoutDirection: .leftToRight))
+                isMetric: true, writingDirection: .leftToRight))
         }
 
         XCTAssertEqual(Localization(TestCatalog.self).time(ClockTime(hour: 7, minute: 30)), "07:30")

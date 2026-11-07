@@ -33,7 +33,7 @@ extension GTKEnvironment {
             uses24HourClock: !time.contains("%r") && !time.contains("%I") && !time.contains("%p"),
             firstDayOfWeek: firstDayOfWeek,
             isMetric: nl_langinfo(nl_item(_NL_MEASUREMENT_MEASUREMENT)).pointee != 2,
-            layoutDirection: gtk_get_locale_direction() == GTK_TEXT_DIR_RTL ? .rightToLeft : .leftToRight,
+            writingDirection: gtk_get_locale_direction() == GTK_TEXT_DIR_RTL ? .rightToLeft : .leftToRight,
             languages: languages(of: names).map { LocaleTag($0) })
     }
 

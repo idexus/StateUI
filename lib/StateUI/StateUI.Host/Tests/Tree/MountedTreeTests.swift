@@ -210,7 +210,7 @@ final class MountedTreeTests: XCTestCase {
     func testTheLanguagesDirectionTurningArrangesEveryLayout() {
         let (tree, log) = Self.tree()
         let locale = StandardEnvironment.locale
-        defer { locale.layoutDirection = .leftToRight }
+        defer { locale.writingDirection = .leftToRight }
         tree.apply(Self.stack("stack", ["a"]), complete: true)
         tree.followTheLanguagesDirection()
         log.arranged.removeAll()
@@ -218,7 +218,7 @@ final class MountedTreeTests: XCTestCase {
         tree.followTheLanguagesDirection()
         XCTAssertEqual(log.arranged, [], "the language did not turn")
 
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
         tree.followTheLanguagesDirection()
         XCTAssertEqual(tree.root?.layoutDirection, .rightToLeft)
         XCTAssertEqual(log.arranged, ["stack"])
@@ -357,7 +357,7 @@ final class MountedTreeTests: XCTestCase {
     func testALayoutsRunTurnsWithItsDirection() {
         let (tree, log) = Self.tree(viewless: [])
         let locale = StandardEnvironment.locale
-        defer { locale.layoutDirection = .leftToRight }
+        defer { locale.writingDirection = .leftToRight }
         func layout(_ name: String, mirrors: Bool) -> HostPatch {
             var layout = HostPatch(id: .manual(name), type: .motionLayout)
             layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
@@ -373,7 +373,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual([mirrored.runDirection, written.runDirection], [.leftToRight, .leftToRight])
         log.presented.removeAll()
 
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
         tree.followTheLanguagesDirection()
 
         XCTAssertEqual(log.presented["mirrored"], [.area], "its run presented again")
@@ -900,7 +900,7 @@ final class MountedTreeTests: XCTestCase {
     /// keeps it under any parent, and the root takes the language's, as the host reported the locale.
     @MainActor
     func testALayoutDirectionIsInheritedFromTheParentAndAtTheRootFromTheLocale() {
-        defer { StandardEnvironment.locale.layoutDirection = .leftToRight }
+        defer { StandardEnvironment.locale.writingDirection = .leftToRight }
         let (tree, _) = Self.tree()
         var outer = Self.stack("outer", [])
         outer.properties[.layoutDirection] = LayoutDirection.rightToLeft.propValue
@@ -918,7 +918,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(outerElement?.children.last?.layoutDirection, .leftToRight, "its own, under any parent")
         XCTAssertEqual(rootElement?.children.last?.layoutDirection, .leftToRight, "the language's at the root")
 
-        StandardEnvironment.locale.layoutDirection = .rightToLeft
+        StandardEnvironment.locale.writingDirection = .rightToLeft
         XCTAssertEqual(rootElement?.children.last?.layoutDirection, .rightToLeft, "a language written right to left")
     }
 

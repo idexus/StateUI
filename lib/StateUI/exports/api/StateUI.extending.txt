@@ -1378,6 +1378,7 @@ swift.conformance WebViewSource: Swift.Equatable
 swift.conformance WebViewSource: Swift.Sendable
 swift.conformance WindowContract: StateUI.Contract
 swift.conformance WindowContract: StateUI.ElementContract
+swift.conformance WritingDirection: StateUI.HostRepresentable
 swift.conformance ZStack: StateUI.AutomationElement
 swift.conformance ZStack: StateUI.BorderElement
 swift.conformance ZStack: StateUI.Element
@@ -1664,6 +1665,8 @@ swift.init WebNavigationResult.init(propValue:): init?(propValue: PropValue)
 swift.init WebNavigationResult.init(rawValue:): init?(rawValue: Int32)
 swift.init WebViewSource.init(propValue:): init?(propValue: PropValue)
 swift.init Weekday.init(rawValue:): init?(rawValue: Int32)
+swift.init WritingDirection.init(propValue:): init?(propValue: PropValue)
+swift.init WritingDirection.init(rawValue:): init?(rawValue: Int32)
 swift.method @SwiftArray.value(_:): func value(_ index: Int = 0) -> PropValue?
 swift.method @SwiftNever.modified(_:): @MainActor func modified(_ change: (inout Node) -> Void) -> Never
 swift.method @SwiftNever.onEvent(_:_:): @MainActor func onEvent<Owner, First, Second, Third, Fourth>(_ event: ElementEvent<Owner, (First, Second, Third, Fourth)>, _ handler: @escaping @MainActor @Sendable (First, Second, Third, Fourth) throws -> Void) -> Self.Modified where Owner : Contract, First : HostRepresentable, Second : HostRepresentable, Third : HostRepresentable, Fourth : HostRepresentable
@@ -3624,6 +3627,7 @@ swift.property WebNavigationResult.propValue: var propValue: PropValue { get }
 swift.property WebView.node: @MainActor var node: Node
 swift.property WebView.nodes: @MainActor var nodes: [Node] { get }
 swift.property WebViewSource.propValue: var propValue: PropValue { get }
+swift.property WritingDirection.propValue: var propValue: PropValue { get }
 swift.property ZStack.node: @MainActor var node: Node
 swift.property ZStack.nodes: @MainActor var nodes: [Node] { get }
 swift.protocol ActionElement: @MainActor protocol ActionElement : AutomationElement
@@ -3904,6 +3908,8 @@ swift.type.method WebNavigationResult.list(from:): static func list(from value: 
 swift.type.method WebNavigationResult.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method WebViewSource.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method WebViewSource.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method WritingDirection.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method WritingDirection.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.property @SwiftBool.laneKind: static var laneKind: LaneKind { get }
 swift.type.property @SwiftBool.lanes: static var lanes: Int { get }
 swift.type.property @SwiftBool.moving: static var moving: MotionValues { get }

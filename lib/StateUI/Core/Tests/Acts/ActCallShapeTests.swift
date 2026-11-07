@@ -143,7 +143,7 @@ final class ActCallShapeTests: XCTestCase {
     func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
-            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+            firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight))
 
         try await check("prompt", Self.usersWindow + [
             .string("Rename"), .string(""), .string("OK"), .string("Anuluj"), .nothing, .nothing,
@@ -165,7 +165,7 @@ final class ActCallShapeTests: XCTestCase {
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
-            isMetric: true, layoutDirection: .leftToRight))
+            isMetric: true, writingDirection: .leftToRight))
     }
 
     func testFocusingAViewCrossesWithItsArgumentsInPlace() async throws {
@@ -301,8 +301,8 @@ final class ActCallShapeTests: XCTestCase {
 
         application.colorScheme = .dark
         XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
-        application.colorScheme = .system
-        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+        application.colorScheme = nil
+        taken(drain(), "useColorScheme", [.nothing], awaited: false)
 
         // The theme is a state: written through its binding - a control's, a picker's - it crosses the same way.
         application.$colorScheme.wrappedValue = .light

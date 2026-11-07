@@ -17,7 +17,7 @@ extension HostLocaleInfo {
             language: words[0].isEmpty ? nil : LocaleTag(words[0]),
             timeZone: words[1].isEmpty ? nil : TimeZoneName(words[1]), uses24HourClock: words[2] == "1",
             firstDayOfWeek: Weekday(rawValue: day) ?? .sunday,
-            isMetric: words[4] == "1", layoutDirection: words[5] == "1" ? .rightToLeft : .leftToRight,
+            isMetric: words[4] == "1", writingDirection: words[5] == "1" ? .rightToLeft : .leftToRight,
             languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }

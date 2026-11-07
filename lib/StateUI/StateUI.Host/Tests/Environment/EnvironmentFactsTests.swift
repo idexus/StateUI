@@ -19,7 +19,7 @@ final class EnvironmentFactsTests: XCTestCase {
         XCTAssertTrue(locale.uses24HourClock)
         XCTAssertEqual(locale.firstDayOfWeek, .saturday)
         XCTAssertTrue(locale.isMetric)
-        XCTAssertEqual(locale.layoutDirection, .rightToLeft)
+        XCTAssertEqual(locale.writingDirection, .rightToLeft)
         XCTAssertEqual(locale.languages, [])
         XCTAssertEqual(HostLocaleInfo(words: words + ["ar-EG", "en-GB"])?.languages, ["ar-EG", "en-GB"])
         XCTAssertNil(HostLocaleInfo(words: ["en", "US"]))

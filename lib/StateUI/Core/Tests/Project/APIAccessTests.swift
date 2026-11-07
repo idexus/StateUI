@@ -14,7 +14,7 @@ final class APIAccessTests: XCTestCase {
         ("DeviceDisplay()", ["width", "height", "density", "orientation", "rotation", "refreshRate"]),
         ("DeviceInfo()", ["formFactor", "platform", "model", "manufacturer", "name", "versionString", "isVirtual"]),
         ("Gate(.ignoreWhileRunning)", ["isBusy"]),
-        ("LocaleInfo()", ["language", "languages", "timeZone", "uses24HourClock", "firstDayOfWeek", "isMetric", "layoutDirection"]),
+        ("LocaleInfo()", ["language", "languages", "timeZone", "uses24HourClock", "firstDayOfWeek", "isMetric", "writingDirection"]),
         ("SceneSession()", ["phase"]),
         ("Ticker(every: .seconds(1))", ["ticks", "isRunning"]),
         ("WindowSession()", ["phase"]),

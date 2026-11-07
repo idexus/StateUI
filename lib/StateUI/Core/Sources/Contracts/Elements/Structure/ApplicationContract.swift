@@ -75,7 +75,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// which follows the user's setting again.
     ///
     /// See `ApplicationSession.colorScheme`.
-    public static let useColorScheme = ElementAct<Self, ColorScheme, Void>("useColorScheme")
+    public static let useColorScheme = ElementAct<Self, ColorScheme?, Void>("useColorScheme")
 
     /// Draws the application's controls in its own accent where the user
     /// chooses none for the system; nil gives the platform's back.

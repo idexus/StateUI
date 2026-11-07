@@ -18,8 +18,8 @@
     /// Whether the locale uses metric units.
     public let isMetric: Bool
 
-    /// The way the language is written, `.leftToRight` or `.rightToLeft`.
-    public let layoutDirection: LayoutDirection
+    /// The way the language is written.
+    public let writingDirection: WritingDirection
 
     /// The user's languages as tags, most wanted first; empty where the host says only `language`.
     public let languages: [LocaleTag]
@@ -31,7 +31,7 @@
         uses24HourClock: Bool,
         firstDayOfWeek: Weekday,
         isMetric: Bool,
-        layoutDirection: LayoutDirection,
+        writingDirection: WritingDirection,
         languages: [LocaleTag] = []
     ) {
         self.language = language
@@ -39,7 +39,7 @@
         self.uses24HourClock = uses24HourClock
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
-        self.layoutDirection = layoutDirection
+        self.writingDirection = writingDirection
         self.languages = languages
     }
 }
