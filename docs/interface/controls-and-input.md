@@ -767,7 +767,7 @@ aim, which slides the map there:
 
 Button("Kraków")
     .onClicked(.cancelPrevious) {
-        try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
+        try await map.show(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
     }
 ```
 
@@ -812,7 +812,7 @@ struct ContactsPage: View {
             .gridRow(0)
 
             Button("Back to the top")
-                .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .onClicked(.cancelPrevious) { try await list.scroll(to: contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
         .rows(.fill, .automatic)
@@ -843,7 +843,7 @@ one, or a row of a grid that fills.
 `ItemsView(sections:)` takes `Section`s, each known by its `.id` and each
 with a `.header` and a `.footer`; `.header` and `.footer` on the list stand
 before and after everything. An item's value stands once in the whole list,
-whatever section holds it: a choice, an activation and `scrollTo` name the
+whatever section holds it: a choice, an activation and `scroll(to:)` name the
 item alone, and an item moved to another section is the same item. Where one
 thing shows in two sections - a favorite among all the contacts - give each
 row its own id, the section's and the thing's together.

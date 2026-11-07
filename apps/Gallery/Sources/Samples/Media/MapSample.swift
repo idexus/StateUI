@@ -46,13 +46,13 @@ struct MapSample: SampleContent, ExampleContent {
             HStack {
                 Button("Old Town")
                     .onClicked(.cancelPrevious) {
-                        try await map.moveToRegion(
+                        try await map.show(
                             MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     }
 
                 Button("Poland")
                     .onClicked(.cancelPrevious) {
-                        try await map.moveToRegion(
+                        try await map.show(
                             MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                     }
 
@@ -145,7 +145,7 @@ struct MapSample: SampleContent, ExampleContent {
             Text("Where the map opens is the initializer's: that region is kept until the "
                 + "platform's map has connected, while the same move from `.onCreated` can "
                 + "land an instant too early and be overwritten. Moving later is the act "
-                + "the buttons perform - `moveToRegion` through the map's `@Aim`, with the "
+                + "the buttons perform - `show(_:)` through the map's `@Aim`, with the "
                 + "radius in meters.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

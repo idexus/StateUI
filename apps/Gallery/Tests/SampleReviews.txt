@@ -2,7 +2,7 @@
 # notes were last read against them. SampleReviewTests compares; only after the reading,
 # STATEUI_UPDATE_SAMPLES=1 records.
 AccessibilitySettingsSample.swift fa38044121b2ffbd
-AimSample.swift 2bf98217c17d5d7f
+AimSample.swift 0dd87d843f89ee88
 AnalogClockSample.swift b812972d23ed6c3e
 AnimatedInputSample.swift c8318a56dc2830ce
 AnimatedPropertySample.swift 8f5793298a0bd27e
@@ -13,7 +13,7 @@ AppearanceSample.swift ec8fdfa689ba07de
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
 BatterySample.swift 128720d18b4dffd2
 BindingReaderSample.swift 73dcef2911b104df
-BottomBarSample.swift 958ec025905cb33d
+BottomBarSample.swift cacd9f70509e0781
 BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift d2d891c981a4703d
 BuilderSample.swift eda47ffd0dda692b
@@ -23,7 +23,7 @@ ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift b31634f0ee2057b2
 ChangingDeckSample.swift aa1d2426381d76e8
 CheckBoxSample.swift 8f6cafea9e0a162d
-ChoosingItemsSample.swift 2a8b4b79d6efc7f8
+ChoosingItemsSample.swift fbfa1eeec9d71de0
 ClipboardSample.swift afdfd0a2d1c8f00e
 ColorPickerSample.swift 9ff08e2266d67783
 ComplaintsSample.swift a3ccbb2c9f352274
@@ -80,7 +80,7 @@ LoadingItemsSample.swift d137ae58c27e7004
 LocaleInfoSample.swift feb36c49b5e60da9
 LocalizationSample.swift 1636a0f168875c65
 MainQueueSample.swift 142b7947497fae78
-MapSample.swift 883d9aaf4c4031bb
+MapSample.swift d71bb6a9c7982e6e
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
 ModalSample.swift b00e99d255fb508f

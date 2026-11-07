@@ -6,7 +6,7 @@ extension Aim {
     /// platform scrolls.
     ///
     /// The list finds the item itself, whatever section holds it, and throws where it holds no such item.
-    public func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws
+    public func scroll<ID>(to item: ID, anchor: ScrollAnchor = .nearest) async throws
     where Target == ItemsView<ID> {
         try await call(ItemsViewContract.scrollTo, try identity(of: item), anchor)
     }

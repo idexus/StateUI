@@ -1383,9 +1383,9 @@ enum Listings {
                     }
                     .itemsLayout(.list())
                     .aim(list)
-                    .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                    .onCreated { try await list.scroll(to: messages.count - 1, anchor: .end) }
                     .onChanged(messages.count, policy: .cancelPrevious) {
-                        try await list.scrollTo(messages.count - 1, anchor: .end)
+                        try await list.scroll(to: messages.count - 1, anchor: .end)
                     }
                 }
                 .ignoresSafeArea(.all)
@@ -7224,13 +7224,13 @@ enum Listings {
                 HStack {
                     Button("Old Town")
                         .onClicked(.cancelPrevious) {
-                            try await map.moveToRegion(
+                            try await map.show(
                                 MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                         }
 
                     Button("Poland")
                         .onClicked(.cancelPrevious) {
-                            try await map.moveToRegion(
+                            try await map.show(
                                 MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                         }
 
@@ -9012,10 +9012,10 @@ enum Listings {
             Grid {
                 HStack {
                     Button("Top")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                        .onClicked(.cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
 
                     Button("Row 500")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                        .onClicked(.cancelPrevious) { try await list.scroll(to: 500, anchor: .start) }
 
                     Button("Clear")
                         .isEnabled(!chosen.isEmpty)

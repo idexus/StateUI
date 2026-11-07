@@ -170,7 +170,7 @@
                 let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
                     VStack {
-                        Button("To 80").onClicked(.ignoreWhileRunning) { try await aim.scrollTo(80, anchor: .start) }.id("go")
+                        Button("To 80").onClicked(.ignoreWhileRunning) { try await aim.scroll(to: 80, anchor: .start) }.id("go")
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
                 }
@@ -192,7 +192,7 @@
                     VStack {
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
-                    .onCreated { try await aim.scrollTo(999, anchor: .end) }
+                    .onCreated { try await aim.scroll(to: 999, anchor: .end) }
                 }
                 let list = try s.place(of: s.element("list"))
                 let foot = { (try? s.place(of: item(999, in: s))).map { $0.y + $0.height } }

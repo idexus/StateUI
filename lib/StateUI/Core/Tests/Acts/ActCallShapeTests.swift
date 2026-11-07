@@ -229,7 +229,7 @@ final class ActCallShapeTests: XCTestCase {
         drain()
         try await check("scrollTo", [.values([.string("list")]), .string(entries.sections[0].items[500]),
                                      .enumeration(ScrollAnchor.start.rawValue)]) {
-            try await list.scrollTo(500, anchor: .start)
+            try await list.scroll(to: 500, anchor: .start)
         }
         withExtendedLifetime(renders) {}
     }
@@ -242,7 +242,7 @@ final class ActCallShapeTests: XCTestCase {
         renders.render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
         drain()
 
-        let task = Self.begin { try await list.scrollTo("Pear") }
+        let task = Self.begin { try await list.scroll(to: "Pear") }
         let batch = drain()
 
         XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Pear"))
@@ -256,7 +256,7 @@ final class ActCallShapeTests: XCTestCase {
     /// METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
         try await check("moveToRegion", [.values([.string("map")]), .numbers([52.2297, 21.0122, 3000])]) {
-            try await named("map", Map.self).moveToRegion(
+            try await named("map", Map.self).show(
                 MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
         }
     }

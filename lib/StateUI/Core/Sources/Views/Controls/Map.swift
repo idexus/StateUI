@@ -49,7 +49,7 @@ extension MapProperties {
 /// still - rather than a place inside a ScrollView.
 ///
 /// Where it looks is an act: put an `@Aim(Map.self)` on it with `.aim(_:)` and
-/// call `map.moveToRegion(_:)`. Where it opens
+/// call `map.show(_:)`. Where it opens
 /// is the initializer below.
 ///
 /// The platform's own map draws it where the platform ships one; elsewhere
@@ -70,7 +70,7 @@ public struct Map: ElementView, MapProperties {
     ///
     /// Where a map opens belongs here, not in an act from `.onCreated`, which
     /// the platform's own opening region overwrites. Moving later is the act,
-    /// `map.moveToRegion(_:)`.
+    /// `map.show(_:)`.
     ///
     /// - Parameter region: what the map opens on.
     public init(region: MapRegion) {
@@ -338,7 +338,7 @@ extension Aim where Target == Map {
     ///         .aim(map)
     ///
     ///     Button("Old Town").onClicked(.cancelPrevious) {
-    ///         try await map.moveToRegion(
+    ///         try await map.show(
     ///             MapRegion(center: Location(latitude: 52.2497, longitude: 21.0135), radiusMeters: 800))
     ///     }
     ///
@@ -348,7 +348,7 @@ extension Aim where Target == Map {
     /// - Parameter region: what the map is to show.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public func moveToRegion(_ region: MapRegion) async throws {
+    public func show(_ region: MapRegion) async throws {
         try await call(MapContract.moveToRegion, region)
     }
 }

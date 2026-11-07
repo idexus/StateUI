@@ -119,8 +119,8 @@ final class ContractRoadsTests: XCTestCase {
             open: "let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })"),
         Road(
             name: "a list scrolled to an identity of another type",
-            closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
-            open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),
+            closed: #"try await Aim(ItemsView<Int>.self).scroll(to: "500")"#,
+            open: "try await Aim(ItemsView<Int>.self).scroll(to: 500)"),
         Road(
             name: "an @Observable model held in a state, whose writes would redraw nothing",
             closed: "let held = State(wrappedValue: ObservedProfile()); _ = held",

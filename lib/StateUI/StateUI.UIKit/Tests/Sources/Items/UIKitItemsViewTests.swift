@@ -57,7 +57,7 @@ private struct OpeningAtTheEnd: View {
     var body: some View {
         ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
             .aim(list)
-            .onCreated { try await list.scrollTo(99, anchor: .end) }
+            .onCreated { try await list.scroll(to: 99, anchor: .end) }
             .width(300).height(400)
     }
 }

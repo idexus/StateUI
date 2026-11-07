@@ -1709,9 +1709,9 @@ swift.method Aim.evaluateJavaScript(_:): @MainActor func evaluateJavaScript(_ sc
 swift.method Aim.focus(): @discardableResult @MainActor func focus() async throws -> Bool
 swift.method Aim.goBack(): @MainActor func goBack() async throws
 swift.method Aim.goForward(): @MainActor func goForward() async throws
-swift.method Aim.moveToRegion(_:): @MainActor func moveToRegion(_ region: MapRegion) async throws
 swift.method Aim.reload(): @MainActor func reload() async throws
-swift.method Aim.scrollTo(_:anchor:): @MainActor func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
+swift.method Aim.scroll(to:anchor:): @MainActor func scroll<ID>(to item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
+swift.method Aim.show(_:): @MainActor func show(_ region: MapRegion) async throws
 swift.method Aim.unfocus(): @MainActor func unfocus() async throws
 swift.method AnyView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified

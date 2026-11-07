@@ -318,13 +318,13 @@ extension ItemsView {
         return copy
     }
 
-    /// Aims `aim` at this list, for `scrollTo` - an item named by the list's
+    /// Aims `aim` at this list, for `scroll(to:)` - an item named by the list's
     /// own identity type.
     ///
     ///     @Aim(ItemsView<Int>.self) private var list
     ///
     ///     ItemsView(0..<500) { Text("Row \($0)") }.aim(list)
-    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
     public func aim(_ aim: Aim<Self>) -> Self {
         var copy = self
         copy.aimed = aim

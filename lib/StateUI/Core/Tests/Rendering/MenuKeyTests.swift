@@ -70,7 +70,7 @@ final class MenuKeyTests: XCTestCase {
     func testAnUnbuiltListAimDoesNotInventAnItemToken() async throws {
         _ = drainedActs()
         do {
-            try await Aim(ItemsView<Int>.self).scrollTo(500)
+            try await Aim(ItemsView<Int>.self).scroll(to: 500)
             XCTFail("an unbuilt list has no target")
         } catch StateUIError.aimOnNoView {
         } catch {
