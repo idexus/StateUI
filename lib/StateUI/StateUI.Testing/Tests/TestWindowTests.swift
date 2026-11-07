@@ -12,12 +12,12 @@ final class TestWindowTests: XCTestCase {
     func testAClickIsCounted() async throws {
         let window = try await TestWindow(motion: .none) { CounterPage() }
         let button = try window.element("counter.add")
-        XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 0 times")
+        XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 0 times")
 
         try await button.perform(.activate)
         try await button.perform(.activate)
 
-        XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 2 times")
+        XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 2 times")
     }
 
     /// Words typed reach the state the field is bound to, and a switch turned reaches its own.
@@ -30,7 +30,7 @@ final class TestWindowTests: XCTestCase {
         try await lamp.perform(.toggle)
 
         XCTAssertEqual(try window.element("form.greeting").value(TextualElementContract.text), "Hello, Ada - lit")
-        XCTAssertEqual(lamp.value(SwitchContract.isOn), true)
+        XCTAssertEqual(try lamp.value(SwitchContract.isOn), true)
     }
 
     /// A view is found by the aim put on it, as the application aims at it.
@@ -41,7 +41,7 @@ final class TestWindowTests: XCTestCase {
 
         try await field.perform(.type("Grace"))
 
-        XCTAssertEqual(field.value(TextualElementContract.text), "Grace")
+        XCTAssertEqual(try field.value(TextualElementContract.text), "Grace")
     }
 
     /// The walk every host's suite takes a window through holds with no toolkit too.
@@ -87,12 +87,12 @@ final class TestWindowTests: XCTestCase {
     func testANewWindowTakesThePlaceOfTheLast() async throws {
         let last = try await TestWindow(motion: .none) { CounterPage() }
         let button = try last.element("counter.add")
-        XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 0 times")
+        XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 0 times")
 
         let next = try await TestWindow(motion: .none) { FormPage() }
 
         XCTAssertNotNil(try next.element("form.name"))
-        XCTAssertNil(button.value(TextualElementContract.text), "the last window closed")
+        XCTAssertThrowsError(try button.value(TextualElementContract.text), "the last window closed")
         XCTAssertThrowsError(try last.element("counter.add"))
     }
 
@@ -126,7 +126,7 @@ final class TestWindowTests: XCTestCase {
         try await action.value
 
         XCTAssertTrue(held.returned)
-        XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
+        XCTAssertEqual(try button.value(TextualElementContract.text), "done", "its last write shown")
     }
 
     /// An act waits on its handler wherever the test does it from - a task through a gate too, whose run is not
@@ -150,7 +150,7 @@ final class TestWindowTests: XCTestCase {
         await action.value
 
         XCTAssertTrue(held.returned)
-        XCTAssertEqual(button.value(TextualElementContract.text), "done", "its last write shown")
+        XCTAssertEqual(try button.value(TextualElementContract.text), "done", "its last write shown")
     }
 
     /// An act holds on nothing an earlier service begins while the act runs: the service the page began as it

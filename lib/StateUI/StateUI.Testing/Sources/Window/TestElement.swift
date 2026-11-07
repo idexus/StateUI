@@ -49,14 +49,18 @@ public struct TestElement {
     }
 
     /// What the view holds of `member` now - its words, its value, whether it is enabled - as the window shows it;
-    /// nil where it holds none, or the view is gone.
+    /// nil where it holds none. It fails where no view, or two, is the one it names, as `perform` does.
     ///
-    ///     XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 1 time")
-    public func value<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
-        guard let element = try? mounted(), let held = try? window.driver.held(member.token, on: element) else {
-            return nil
+    ///     XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 1 time")
+    public func value<Owner: Contract, Value: HostRepresentable>(
+        _ member: ElementProperty<Owner, Value>
+    ) throws -> Value? {
+        let element = try mounted()
+        do {
+            return try window.driver.held(member.token, on: element).flatMap { Value(propValue: $0) }
+        } catch let cannot as DriverCannot {
+            throw TestFailure(description: "\(self) cannot read \(member.name): \(cannot.because ?? cannot.ability)")
         }
-        return Value(propValue: held)
     }
 
     /// The view standing now: the one element the finding names.

@@ -13,12 +13,12 @@ final class SemanticsSampleTests: XCTestCase {
     func testAReaderStepsTheRatingAndClearsIt() async throws {
         let window = try await TestWindow(motion: .none) { SemanticsSample() }
         let rating = try window.element("semantics.rating")
-        XCTAssertEqual(rating.value(VisualElementContract.accessibilityValue), "3 of 5")
+        XCTAssertEqual(try rating.value(VisualElementContract.accessibilityValue), "3 of 5")
 
         try await rating.perform(.adjust(.increment))
-        XCTAssertEqual(rating.value(VisualElementContract.accessibilityValue), "4 of 5")
+        XCTAssertEqual(try rating.value(VisualElementContract.accessibilityValue), "4 of 5")
 
         try await rating.perform(.performAccessibilityAction("Clear"))
-        XCTAssertEqual(rating.value(VisualElementContract.accessibilityValue), "0 of 5")
+        XCTAssertEqual(try rating.value(VisualElementContract.accessibilityValue), "0 of 5")
     }
 }

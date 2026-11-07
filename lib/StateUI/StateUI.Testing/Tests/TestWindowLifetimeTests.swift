@@ -59,7 +59,7 @@ final class TestWindowLifetimeTests: XCTestCase {
         for _ in 0..<1000 { if farewell.began { break }; await Task.yield() }
         XCTAssertTrue(farewell.began)
         XCTAssertFalse(returned, "close waits for the lifecycle handler")
-        XCTAssertNil(element.value(TextualElementContract.text), "the view is gone while its cleanup waits")
+        XCTAssertThrowsError(try element.value(TextualElementContract.text), "the view is gone while its cleanup waits")
         farewell.release?.resume()
         farewell.release = nil
         try await closing.value
