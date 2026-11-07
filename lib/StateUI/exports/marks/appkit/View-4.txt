@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.tapped: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -37,8 +37,6 @@ HStack.swiped: ✓ pan on HStack: handed to the host's recognizer or handler, no
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
-Image.pointerEntered: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
-Image.pointerExited: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerMoved: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerPressed: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerReleased: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -74,8 +72,6 @@ Polygon.swiped: ✓ pan on Polygon: handed to the host's recognizer or handler, 
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
-Polyline.pointerEntered: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.pointerExited: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.pointerMoved: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.pointerPressed: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.pointerReleased: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
@@ -105,8 +101,6 @@ Space.panYChannel: ✓ pan on Space: handed to the host's recognizer or handler,
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅
 Spinner.gridRow: ✅
-Spinner.pointerEntered: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.pointerExited: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.pointerMoved: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.pointerPressed: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.pointerReleased: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
@@ -131,8 +125,6 @@ TextField.swiped: ✓ pan on TextField: handed to the host's recognizer or handl
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
-TimePicker.pointerEntered: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.pointerExited: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.pointerMoved: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.pointerPressed: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.pointerReleased: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

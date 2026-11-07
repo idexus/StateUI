@@ -13,7 +13,7 @@ Text("Tapped \(taps) times")
     .onTapped { taps += 1 }
 ```
 
-Wears: [VisualElement](VisualElement.md)
+Wears: [VisualElement](VisualElement.md) · [HoverElement](HoverElement.md)
 
 Worn by: [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [ColorPicker](../ColorPicker.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Link](../Link.md) · [Map](../Map.md) · [MotionLayout](../MotionLayout.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Separator](../Separator.md) · [Slider](../Slider.md) · [Space](../Space.md) · [Spinner](../Spinner.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 
@@ -49,8 +49,6 @@ How each of them realizes these members is on its own page.
 | `panYChannel` | property | `Int` | structure |
 | `layoutBody` | property | `LayoutBody` | stateUI |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |
-| `onPointerExited` (`pointerExited`) | event |  | native |
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |

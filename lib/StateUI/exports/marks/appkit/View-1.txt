@@ -1,9 +1,7 @@
-# revision 22.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
-Button.pointerEntered: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.pointerExited: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerMoved: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerPressed: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerReleased: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -45,8 +43,6 @@ Image.swiped: ✓ pan on Image: handed to the host's recognizer or handler, no N
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-ItemsView.pointerEntered: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.pointerExited: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerMoved: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerPressed: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerReleased: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
@@ -84,8 +80,6 @@ Polyline.swiped: ✓ pan on Polyline: handed to the host's recognizer or handler
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
-ProgressBar.pointerEntered: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-ProgressBar.pointerExited: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerMoved: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerPressed: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.pointerReleased: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
@@ -137,8 +131,6 @@ TimePicker.swiped: ✓ pan on TimePicker: handed to the host's recognizer or han
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅
-VStack.pointerEntered: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.pointerExited: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.pointerMoved: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.pointerPressed: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.pointerReleased: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent

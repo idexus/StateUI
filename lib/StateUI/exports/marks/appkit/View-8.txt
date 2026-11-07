@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.panYChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.area: ✅
 Canvas.frameChanged: ✅
@@ -18,8 +18,6 @@ ColorPicker.swiped: ✓ pan on ColorPicker: handed to the host's recognizer or h
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-DatePicker.pointerEntered: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-DatePicker.pointerExited: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.pointerMoved: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -52,8 +50,6 @@ Link.swiped: ✓ pan on Link: handed to the host's recognizer or handler, no NSE
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Map.pointerEntered: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
-Map.pointerExited: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerMoved: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerPressed: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerReleased: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -101,8 +97,6 @@ Slider.swiped: ✓ pan on Slider: handed to the host's recognizer or handler, no
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
-Space.pointerEntered: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
-Space.pointerExited: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.pointerMoved: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.pointerPressed: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.pointerReleased: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent

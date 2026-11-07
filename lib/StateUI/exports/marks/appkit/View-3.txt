@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -14,8 +14,6 @@ Capsule.swiped: ✓ pan on Capsule: handed to the host's recognizer or handler, 
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-CheckBox.pointerEntered: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerExited: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.pointerMoved: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.pointerPressed: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.pointerReleased: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -51,8 +49,6 @@ ItemsView.tapped: ✓ tap on ItemsView: handed to the host's recognizer or handl
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
-Line.pointerEntered: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.pointerExited: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerMoved: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerPressed: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.pointerReleased: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -95,8 +91,6 @@ ScrollView.swiped: ✓ pan on ScrollView: handed to the host's recognizer or han
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
-SearchField.pointerEntered: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.pointerExited: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.pointerMoved: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.pointerPressed: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.pointerReleased: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent

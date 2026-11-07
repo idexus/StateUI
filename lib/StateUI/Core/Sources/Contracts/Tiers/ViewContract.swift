@@ -8,7 +8,7 @@ public enum ViewContract: Tier {
     public static let name = "View"
 
     /// Every view is drawn.
-    public static let tiers: [any Tier.Type] = [VisualElementContract.self]
+    public static let tiers: [any Tier.Type] = [VisualElementContract.self, HoverElementContract.self]
 
     /// Whether the view accepts what is dropped on it.
     public static let allowsDrop = ElementProperty<Self, Bool>("allowsDrop", layer: .native, cleared: false)
@@ -108,12 +108,6 @@ public enum ViewContract: Tier {
     public static let rotationUpdated = ElementEvent<Self, (GesturePhase, Double, Double)>(
         "rotationUpdated", layer: .native)
 
-    /// A pointer entered the view.
-    public static let pointerEntered = ElementEvent<Self, Void>("pointerEntered", layer: .native)
-
-    /// A pointer left the view.
-    public static let pointerExited = ElementEvent<Self, Void>("pointerExited", layer: .native)
-
     /// A pointer moved over the view, where the platform says where.
     public static let pointerMoved = ElementEvent<Self, Point?>("pointerMoved", layer: .native)
 
@@ -146,12 +140,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        allowsDrop, area, dragEntered,
-        dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
-        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
-        panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
-        pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped,
-        tapCount, tapped, verticalAlignment,
-    ]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount, panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

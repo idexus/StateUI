@@ -215,10 +215,10 @@ final class LibraryContractTests: XCTestCase {
     /// listing the protocol-level tier gets the chain: View wears
     /// VisualElement, which wears AutomationElement.
     func testATierWearsTheChainItsProtocolRefines() {
-        XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "AutomationElement"])
+        XCTAssertEqual(ViewContract.worn.map { $0.name }, ["View", "VisualElement", "AutomationElement", "HoverElement"])
         XCTAssertEqual(StackContract.worn.map { $0.name }, [
-            "Stack", "Layout", "View", "VisualElement", "AutomationElement", "PaddingElement", "BorderElement",
-            "KeyboardElement",
+            "Stack", "Layout", "View", "VisualElement", "AutomationElement", "HoverElement", "PaddingElement",
+            "BorderElement", "KeyboardElement",
         ])
     }
 

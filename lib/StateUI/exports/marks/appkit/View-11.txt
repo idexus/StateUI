@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -17,8 +17,6 @@ CheckBox.swiped: ✓ pan on CheckBox: handed to the host's recognizer or handler
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumn: ✅
 ColorPicker.gridRow: ✅
-ColorPicker.pointerEntered: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
-ColorPicker.pointerExited: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.pointerMoved: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.pointerPressed: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.pointerReleased: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -53,8 +51,6 @@ Line.swiped: ✓ pan on Line: handed to the host's recognizer or handler, no NSE
 Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridRow: ✅
-Link.pointerEntered: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
-Link.pointerExited: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.pointerMoved: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.pointerPressed: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.pointerReleased: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
@@ -98,8 +94,6 @@ Separator.panXChannel: ✓ pan on Separator: handed to the host's recognizer or 
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Slider.pointerEntered: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Slider.pointerExited: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerMoved: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerPressed: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.pointerReleased: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent

@@ -18,6 +18,8 @@ Text("Inbox")
     }
 ```
 
+Wears: [HoverElement](HoverElement.md)
+
 Worn by: [ToolbarButton](../ToolbarButton.md) · [ToolbarGroup](../ToolbarGroup.md) · [ToolbarToggle](../ToolbarToggle.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BarItemElementContract.swift`.
@@ -28,5 +30,3 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `style` | property | `Name` | structure |
 | `background` | property | `Material` | adaptive |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |
-| `onPointerExited` (`pointerExited`) | event |  | native |

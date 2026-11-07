@@ -15,12 +15,9 @@ public enum BarItemElementContract: Tier {
     /// glass.
     public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
-    /// A pointer entered the item.
-    public static let pointerEntered = ElementEvent<Self, Void>("pointerEntered", layer: .native)
-
-    /// A pointer left the item.
-    public static let pointerExited = ElementEvent<Self, Void>("pointerExited", layer: .native)
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [HoverElementContract.self]
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [style, background, pointerEntered, pointerExited]
+    public static let members: [any ContractMember] = [style, background]
 }

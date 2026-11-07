@@ -1,0 +1,7 @@
+# revision 0.0
+ToolbarButton.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarButton.pointerExited: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerExited: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerExited: – A bar's items stand in the system's own look.

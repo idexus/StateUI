@@ -45,7 +45,7 @@ Picker 5
 Image 3
 Page 9
 PageElement 4
-View 22
+View 23
 VisualElement 25
 Shape 5
 BorderElement 14
@@ -105,3 +105,4 @@ web MotionLayout 2
 Marker 2
 MenuToggle 2
 Sheet 2
+BarItemElement 2

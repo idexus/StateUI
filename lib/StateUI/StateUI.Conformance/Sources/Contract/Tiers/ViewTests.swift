@@ -634,20 +634,28 @@
     @MainActor
     static func pointed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).thePointerIsHeardComingMovingPressingAndGoing", proves: [
-            Covered(ViewContract.pointerEntered, on: element), Covered(ViewContract.pointerMoved, on: element),
-            Covered(ViewContract.pointerPressed, on: element), Covered(ViewContract.pointerReleased, on: element),
-            Covered(ViewContract.pointerExited, on: element),
-        ]) { s in
+            Covered(ViewContract.pointerMoved, on: element), Covered(ViewContract.pointerPressed, on: element),
+            Covered(ViewContract.pointerReleased, on: element),
+        ], needs: [
+            Covered(HoverElementContract.pointerEntered, on: element), Covered(HoverElementContract.pointerExited, on: element),
+        ], pointing(element))
+    }
+
+    /// The pointer coming over the view, pressing, letting go and leaving: what `pointed` and the hover's case on a
+    /// view both run.
+    @MainActor
+    static func pointing(_ element: String) -> @MainActor (Session) throws -> Void {
+        { s in
             let heard = Received<String>()
             s.start {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        HearDone(ViewContract.pointerEntered) { heard.values.append("entered") },
+                        HearDone(HoverElementContract.pointerEntered) { heard.values.append("entered") },
                         Hear(ViewContract.pointerMoved) { heard.values.append("moved \(Self.at($0))") },
                         Hear(ViewContract.pointerPressed) { heard.values.append("pressed \(Self.at($0))") },
                         Hear(ViewContract.pointerReleased) { heard.values.append("released \(Self.at($0))") },
-                        HearDone(ViewContract.pointerExited) { heard.values.append("exited") },
+                        HearDone(HoverElementContract.pointerExited) { heard.values.append("exited") },
                     ])
                 }
                 .horizontalAlignment(.start)

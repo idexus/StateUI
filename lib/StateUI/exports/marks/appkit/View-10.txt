@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.pinchUpdated: ✓ pinch on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -31,8 +31,6 @@ Fill.swiped: ✓ pan on Fill: handed to the host's recognizer or handler, no NSE
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
-Grid.pointerEntered: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
-Grid.pointerExited: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.pointerMoved: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.pointerPressed: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.pointerReleased: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -66,8 +64,6 @@ Path.swiped: ✓ pan on Path: handed to the host's recognizer or handler, no NSE
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Picker.pointerEntered: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerExited: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.pointerMoved: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.pointerPressed: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.pointerReleased: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
@@ -120,8 +116,6 @@ Text.isDraggable: ✓ dragAndDrop on Text: the drag source and the window's drop
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
-TextEditor.pointerEntered: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerExited: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerMoved: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerPressed: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerReleased: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

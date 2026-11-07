@@ -397,6 +397,7 @@ swift.conformance HStackContract: StateUI.ElementContract
 swift.conformance HStackProperties: StateUI.PropertyContainer
 swift.conformance HostEventSubscription: Swift.Sendable
 swift.conformance HostEvents: Swift.Sendable
+swift.conformance HoverElementContract: StateUI.Contract
 swift.conformance Icon: StateUI.HostRepresentable
 swift.conformance IconPosition: StateUI.HostRepresentable
 swift.conformance IconPosition: StateUI.LaneValue
@@ -2812,6 +2813,7 @@ swift.type.property AutomationElementContract.tiers: static var tiers: [any Tier
 swift.type.property BarElementContract.members: static let members: [any ContractMember]
 swift.type.property BarElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarItemElementContract.members: static let members: [any ContractMember]
+swift.type.property BarItemElementContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property BarItemElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BorderElementContract.members: static let members: [any ContractMember]
 swift.type.property BorderElementContract.tiers: static var tiers: [any Tier.Type] { get }
@@ -2948,6 +2950,8 @@ swift.type.property HStackContract.members: static let members: [any ContractMem
 swift.type.property HStackContract.nodeType: static let nodeType: NodeType
 swift.type.property HStackContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property HStackContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property HoverElementContract.members: static let members: [any ContractMember]
+swift.type.property HoverElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property IconPosition.laneKind: static var laneKind: LaneKind { get }
 swift.type.property IconPosition.lanes: static var lanes: Int { get }
 swift.type.property IconPosition.moving: static var moving: MotionValues { get }

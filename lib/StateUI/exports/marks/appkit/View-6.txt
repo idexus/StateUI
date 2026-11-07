@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.holdDuration: ✅
 Canvas.frameChanged: ✅
 Canvas.margin: ✅
@@ -8,8 +8,6 @@ Canvas.swiped: ✓ pan on Canvas: handed to the host's recognizer or handler, no
 Capsule.frameChanged: ✅
 Capsule.gridColumn: ✅
 Capsule.gridRow: ✅
-Capsule.pointerEntered: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
-Capsule.pointerExited: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.pointerMoved: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.pointerPressed: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 Capsule.pointerReleased: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
@@ -56,8 +54,6 @@ Map.verticalAlignment: ✅
 MotionLayout.frameChanged: ✅
 MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
-MotionLayout.pointerEntered: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-MotionLayout.pointerExited: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -82,8 +78,6 @@ Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handl
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridRow: ✅
-ScrollView.pointerEntered: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
-ScrollView.pointerExited: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.pointerMoved: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.pointerPressed: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.pointerReleased: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
@@ -143,8 +137,6 @@ WebView.swiped: ✓ pan on WebView: handed to the host's recognizer or handler, 
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
-ZStack.pointerEntered: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.pointerExited: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerMoved: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerPressed: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerReleased: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent

@@ -342,8 +342,8 @@ extension NodeType {
     static let colorChanged = ColorPickerContract.colorChanged.token
     static let panUpdated = ViewContract.panUpdated.token
     static let pinchUpdated = ViewContract.pinchUpdated.token
-    static let pointerEntered = ViewContract.pointerEntered.token
-    static let pointerExited = ViewContract.pointerExited.token
+    static let pointerEntered = HoverElementContract.pointerEntered.token
+    static let pointerExited = HoverElementContract.pointerExited.token
     static let pointerMoved = ViewContract.pointerMoved.token
     static let pointerPressed = ViewContract.pointerPressed.token
     static let pointerReleased = ViewContract.pointerReleased.token

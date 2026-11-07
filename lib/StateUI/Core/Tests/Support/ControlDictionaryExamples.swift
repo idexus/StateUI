@@ -817,6 +817,15 @@ extension ControlDictionary {
                 }
             """#),
 
+        (HoverElementContract.self, #"""
+            @State var over = false
+
+            Rectangle()
+                .fill(over ? .steelBlue : .lightGray)
+                .onPointerEntered { over = true }
+                .onPointerExited { over = false }
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

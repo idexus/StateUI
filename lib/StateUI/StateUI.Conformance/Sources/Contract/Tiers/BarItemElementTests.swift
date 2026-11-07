@@ -15,7 +15,6 @@
             [
                 Aspects.holds(BarItemElementContract.background, on: element, .color(.steelBlue), then: .color(.firebrick)),
                 styled(element),
-                pointed(element),
             ]
         }
     }
@@ -40,8 +39,8 @@
     @MainActor
     static func pointed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).followsThePointerOverIt", proves: [
-            Covered(BarItemElementContract.pointerEntered, on: element),
-            Covered(BarItemElementContract.pointerExited, on: element),
+            Covered(HoverElementContract.pointerEntered, on: element),
+            Covered(HoverElementContract.pointerExited, on: element),
         ], needs: [Covered(BarItemElementContract.background, on: element)]) { s in
             s.start { BarItemStates.page(element, .pointerOver) }
             let item = try s.element("specimen")

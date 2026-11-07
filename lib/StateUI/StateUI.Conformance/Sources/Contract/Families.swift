@@ -91,6 +91,7 @@
         BorderElementTests.self,
         ImageElementTests.self,
         TintElementTests.self,
+        HoverElementTests.self,
         PressElementTests.self,
         PresentedElementTests.self,
         PopupElementTests.self,

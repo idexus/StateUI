@@ -373,34 +373,34 @@ extension View {
     /// A pointer is a mouse, a trackpad or a pen; on a touch-only device these
     /// never fire.
     public func onPointerEntered(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.pointerEntered, handler)
+        onEvent(HoverElementContract.pointerEntered, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onPointerEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerEntered, policy: policy, handler)
+        onEvent(HoverElementContract.pointerEntered, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPointerEntered(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerEntered, gate: gate, handler)
+        onEvent(HoverElementContract.pointerEntered, gate: gate, handler)
     }
 
     /// Runs when a pointer leaves the view - the other half of a hover.
     public func onPointerExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.pointerExited, handler)
+        onEvent(HoverElementContract.pointerExited, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onPointerExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerExited, policy: policy, handler)
+        onEvent(HoverElementContract.pointerExited, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPointerExited(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerExited, gate: gate, handler)
+        onEvent(HoverElementContract.pointerExited, gate: gate, handler)
     }
 
     /// Runs as the pointer moves over the view, with where it is in the view's
