@@ -75,9 +75,9 @@ final class LocaleTagTests: XCTestCase {
     }
 
     func testRightToLeftScriptsAreKnown() {
-        XCTAssertEqual(LocaleTag("ar").direction, .rightToLeft)
-        XCTAssertEqual(LocaleTag("he-IL").direction, .rightToLeft)
-        XCTAssertEqual(LocaleTag("pl").direction, .leftToRight)
-        XCTAssertEqual(LocaleTag("pa-Arab").direction, .rightToLeft, "a script said decides")
+        XCTAssertEqual(LocaleTag("ar").writingDirection, .rightToLeft)
+        XCTAssertEqual(LocaleTag("he-IL").writingDirection, .rightToLeft)
+        XCTAssertEqual(LocaleTag("pl").writingDirection, .leftToRight)
+        XCTAssertEqual(LocaleTag("pa-Arab").writingDirection, .rightToLeft, "a script said decides")
     }
 }

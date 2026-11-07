@@ -12928,13 +12928,13 @@ swift.property LocaleInfo.timeZone: @MainActor var timeZone: TimeZoneName? { get
 swift.property LocaleInfo.uses24HourClock: @MainActor var uses24HourClock: Bool { get }
 swift.property LocaleInfo.writingDirection: @MainActor var writingDirection: WritingDirection { get }
 swift.property LocaleTag.description: var description: String { get }
-swift.property LocaleTag.direction: var direction: LayoutDirection { get }
 swift.property LocaleTag.identifier: let identifier: String
 swift.property LocaleTag.isValid: let isValid: Bool
 swift.property LocaleTag.language: let language: String
 swift.property LocaleTag.likelyScript: var likelyScript: String { get }
 swift.property LocaleTag.region: let region: String?
 swift.property LocaleTag.script: let script: String?
+swift.property LocaleTag.writingDirection: var writingDirection: WritingDirection { get }
 swift.property Localization.formatLocale: @MainActor var formatLocale: LocaleChoice<LocaleTag> { get set }
 swift.property Localization.language: @MainActor var language: LocaleChoice<Catalog.CatalogLanguage> { get set }
 swift.property Localization.resolvedLanguage: @MainActor var resolvedLanguage: Catalog.CatalogLanguage { get }

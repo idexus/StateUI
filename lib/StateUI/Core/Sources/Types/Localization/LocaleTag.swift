@@ -63,7 +63,7 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
     }
 
     /// The way the tag's script is written: right to left for Arabic, Hebrew and their kin.
-    public var direction: LayoutDirection {
+    public var writingDirection: WritingDirection {
         Self.rightToLeft.contains(likelyScript) ? .rightToLeft : .leftToRight
     }
 
