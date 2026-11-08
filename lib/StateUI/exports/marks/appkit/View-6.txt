@@ -8,9 +8,9 @@ Canvas.swiped: ✓ pan on Canvas: handed to the host's recognizer or handler, no
 Capsule.frameChanged: ✅
 Capsule.gridColumn: ✅
 Capsule.gridRow: ✅
-Capsule.pointerMoved: waits on Capsule.pointerEntered
-Capsule.pointerPressed: waits on Capsule.pointerEntered
-Capsule.pointerReleased: waits on Capsule.pointerEntered
+Capsule.pointerMoved: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerPressed: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerReleased: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the window's drop routing told the driver's files, no dragging session
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the window's drop routing told the driver's files, no dragging session
 CheckBox.tapped: ✓ pressDown on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -54,9 +54,9 @@ Map.verticalAlignment: ✅
 MotionLayout.frameChanged: ✅
 MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
-MotionLayout.pointerMoved: waits on MotionLayout.pointerEntered
-MotionLayout.pointerPressed: waits on MotionLayout.pointerEntered
-MotionLayout.pointerReleased: waits on MotionLayout.pointerEntered
+MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerReleased: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.held: ✓ hold on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.layoutBody: ✅
 Picker.panYChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
@@ -78,9 +78,9 @@ Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handl
 ScrollView.frameChanged: ✅
 ScrollView.gridColumn: ✅
 ScrollView.gridRow: ✅
-ScrollView.pointerMoved: waits on ScrollView.pointerEntered
-ScrollView.pointerPressed: waits on ScrollView.pointerEntered
-ScrollView.pointerReleased: waits on ScrollView.pointerEntered
+ScrollView.pointerMoved: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.pointerPressed: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.pointerReleased: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.tapped: ✓ pressDown on SearchField: handed to the host's recognizer or handler, no NSEvent sent
@@ -137,6 +137,6 @@ WebView.swiped: ✓ pan on WebView: handed to the host's recognizer or handler, 
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
-ZStack.pointerMoved: waits on ZStack.pointerEntered
-ZStack.pointerPressed: waits on ZStack.pointerEntered
-ZStack.pointerReleased: waits on ZStack.pointerEntered
+ZStack.pointerMoved: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.pointerPressed: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.pointerReleased: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent

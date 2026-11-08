@@ -3,10 +3,10 @@
 
 @_spi(Host) import StateUI
 
-/// The members of the look a bar's items wear where a host draws the bar itself: the tiers only they wear -
-/// `BarItemElement`'s and `BarButtonElement`'s - the room between the bar's groups and inside a group, and, on each
-/// item, the box and the words its tiers shared with controls say - `BorderElement`'s, `PaddingElement`'s,
-/// `TextColorElement`'s and `FontElement`'s. A host judges them all alike.
+/// The members of the look a bar's items wear where a host draws the bar itself: on each item, `BarItemElement`'s and
+/// those of the tiers it wears, a press on a button, the box and the words - `BorderElement`'s, `PaddingElement`'s,
+/// `TextColorElement`'s and `FontElement`'s - and the room between the bar's groups and inside a group. Each is
+/// judged on the items alone, never on a view wearing the same tier. A host judges them all alike.
 /// Design: docs/design/host/pages.md#a-bars-items-in-the-applications-look
 @_spi(Host) public enum BarItemLook {
     /// Each member, on every item wearing it, realized in full.
@@ -24,15 +24,15 @@
     private static func records(
         tier: (any ContractMember) -> HostRecord, item: (any ContractMember, any Contract.Type) -> HostRecord
     ) -> [HostRecord] {
-        let own = BarItemElementContract.worn.flatMap { $0.members } + [BarElementContract.toolbarSpacing as any ContractMember]
+        let own = BarItemElementContract.worn.flatMap { $0.members }
         let box = BorderElementContract.members + PaddingElementContract.members
         let words = TextColorElementContract.members + FontElementContract.members
         let buttons: [any Contract.Type] = [ToolbarButtonContract.self, ToolbarToggleContract.self]
         let items: [any Contract.Type] = buttons + [ToolbarGroupContract.self]
         let pressed = PressElementContract.members.flatMap { member in buttons.map { item(member, $0) } }
-        return own.map(tier) + pressed
+        return [tier(BarElementContract.toolbarSpacing)] + pressed
             + [item(ToolbarGroupContract.spacing, ToolbarGroupContract.self)]
-            + items.flatMap { element in box.map { item($0, element) } }
+            + items.flatMap { element in (own + box).map { item($0, element) } }
             + buttons.flatMap { element in words.map { item($0, element) } }
     }
 }

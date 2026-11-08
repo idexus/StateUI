@@ -20,9 +20,9 @@ DatePicker.swiped: ✓ pan on DatePicker: handed to the host's recognizer or han
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Ellipse.pointerMoved: waits on Ellipse.pointerEntered
-Ellipse.pointerPressed: waits on Ellipse.pointerEntered
-Ellipse.pointerReleased: waits on Ellipse.pointerEntered
+Ellipse.pointerMoved: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.pointerPressed: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.pointerReleased: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
 Fill.filesDropped: ✓ dropFiles on Fill: the window's drop routing told the driver's files, no dragging session
 Fill.tapped: ✓ pressDown on Fill: handed to the host's recognizer or handler, no NSEvent sent
@@ -89,9 +89,9 @@ SearchField.tapped: ✓ tap on SearchField: handed to the host's recognizer or h
 Separator.frameChanged: ✅
 Separator.gridColumn: ✅
 Separator.gridRow: ✅
-Separator.pointerMoved: waits on Separator.pointerEntered
-Separator.pointerPressed: waits on Separator.pointerEntered
-Separator.pointerReleased: waits on Separator.pointerEntered
+Separator.pointerMoved: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerPressed: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerReleased: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.holdDuration: ✅
 Space.frameChanged: ✅
 Space.margin: ✅
@@ -108,9 +108,9 @@ Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag source and the window'
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Stepper.pointerMoved: waits on Stepper.pointerEntered
-Stepper.pointerPressed: waits on Stepper.pointerEntered
-Stepper.pointerReleased: waits on Stepper.pointerEntered
+Stepper.pointerMoved: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.pointerPressed: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.pointerReleased: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the window's drop routing told the driver's files, no dragging session
 Switch.filesDropped: ✓ dropFiles on Switch: the window's drop routing told the driver's files, no dragging session
 Switch.tapped: ✓ pressDown on Switch: handed to the host's recognizer or handler, no NSEvent sent

@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 31 ✓ · 3 –</td><td><code>NSStepper</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSStepper</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>1 ✅ · 2 ✓ · 3 –</td><td><code>UIStepper</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>1 ✅ · 2 ✓ · 3 –</td><td>custom <code>LinearLayout</code> of two <code>Button</code>s</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>6 ✅</td><td><code>NumberBox</code></td></tr></tbody>
@@ -163,12 +163,12 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>layoutBody</code></td><td>property</td><td><code>LayoutBody</code></td><td>stateUI</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: waits on Stepper.pointerEntered, not realized yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: waits on Stepper.pointerEntered, not realized yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: waits on Stepper.pointerEntered, not realized yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
@@ -221,10 +221,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

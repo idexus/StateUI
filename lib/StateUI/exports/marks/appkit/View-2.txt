@@ -27,9 +27,9 @@ Ellipse.swiped: ✓ pan on Ellipse: handed to the host's recognizer or handler, 
 Fill.frameChanged: ✅
 Fill.gridColumn: ✅
 Fill.gridRow: ✅
-Fill.pointerMoved: waits on Fill.pointerEntered
-Fill.pointerPressed: waits on Fill.pointerEntered
-Fill.pointerReleased: waits on Fill.pointerEntered
+Fill.pointerMoved: ✓ hover on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.pointerPressed: ✓ hover on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.pointerReleased: ✓ hover on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
 Grid.filesDropped: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
 Grid.tapped: ✓ pressDown on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -61,9 +61,9 @@ MotionLayout.panYChannel: ✓ pan on MotionLayout: handed to the host's recogniz
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
-Path.pointerMoved: waits on Path.pointerEntered
-Path.pointerPressed: waits on Path.pointerEntered
-Path.pointerReleased: waits on Path.pointerEntered
+Path.pointerMoved: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
+Path.pointerPressed: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
+Path.pointerReleased: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.filesDropped: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.tapped: ✓ pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent
@@ -112,9 +112,9 @@ Stepper.swiped: ✓ pan on Stepper: handed to the host's recognizer or handler, 
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
-Switch.pointerMoved: waits on Switch.pointerEntered
-Switch.pointerPressed: waits on Switch.pointerEntered
-Switch.pointerReleased: waits on Switch.pointerEntered
+Switch.pointerMoved: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerPressed: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerReleased: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.held: ✓ hold on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.layoutBody: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the window's drop routing told the driver's files, no dragging session

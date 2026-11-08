@@ -17,9 +17,9 @@ CheckBox.swiped: ✓ pan on CheckBox: handed to the host's recognizer or handler
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumn: ✅
 ColorPicker.gridRow: ✅
-ColorPicker.pointerMoved: waits on ColorPicker.pointerEntered
-ColorPicker.pointerPressed: waits on ColorPicker.pointerEntered
-ColorPicker.pointerReleased: waits on ColorPicker.pointerEntered
+ColorPicker.pointerMoved: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
+ColorPicker.pointerPressed: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
+ColorPicker.pointerReleased: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the window's drop routing told the driver's files, no dragging session
 DatePicker.tapped: ✓ pressDown on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -51,9 +51,9 @@ Line.swiped: ✓ pan on Line: handed to the host's recognizer or handler, no NSE
 Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridRow: ✅
-Link.pointerMoved: waits on Link.pointerEntered
-Link.pointerPressed: waits on Link.pointerEntered
-Link.pointerReleased: waits on Link.pointerEntered
+Link.pointerMoved: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
+Link.pointerPressed: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
+Link.pointerReleased: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.droppedFileTypes: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.tapped: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -94,9 +94,9 @@ Separator.panXChannel: ✓ pan on Separator: handed to the host's recognizer or 
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Slider.pointerMoved: waits on Slider.pointerEntered
-Slider.pointerPressed: waits on Slider.pointerEntered
-Slider.pointerReleased: waits on Slider.pointerEntered
+Slider.pointerMoved: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
+Slider.pointerPressed: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
+Slider.pointerReleased: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.droppedFileTypes: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
 Space.filesDropped: ✓ dropFiles on Space: the window's drop routing told the driver's files, no dragging session
 Space.tapped: ✓ pressDown on Space: handed to the host's recognizer or handler, no NSEvent sent

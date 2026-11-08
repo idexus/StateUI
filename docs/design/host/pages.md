@@ -336,15 +336,17 @@ buttons](../platforms/winui/pages.md#a-bars-buttons)).
 ## A bar's items in the application's look
 
 A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
-the look of a control where a host draws its bar itself: their own tiers,
-`BarItemElement` (a style, a background, the pointer over it) and
-`BarButtonElement` (a press), the room between a group's buttons
-(`spacing`) and between the bar's groups (`toolbarSpacing`), and on each item
-the box and the words they share with controls - `BorderElement`,
-`PaddingElement`, `TextColorElement` and `FontElement`.
+the look of a control where a host draws its bar itself: `BarItemElement` and
+the tiers it wears (a style, a background, the pointer over it), a press on a
+button (`PressElement`), the room between a group's buttons (`spacing`) and
+between the bar's groups (`toolbarSpacing`), and the box and the words they
+share with controls - `BorderElement`, `PaddingElement`, `TextColorElement`
+and `FontElement`.
 Which members those are is said once (`BarItemLook`): a host judges them all
 alike, realized where it draws the bar (the Web), not planned where the bar is
-the platform's own. The style and the states are resolved by StateUI before
+the platform's own. Each is judged on the items, never on its tier: a view
+wears the pointer's and the background's tiers too, and keeps its own
+judgment (`BarItemLookTests`). The style and the states are resolved by StateUI before
 the patch, as a control's are; a host shows the values an item holds and tells
 its element the pointer and the press. Every group on the bar wears the group
 style - a lone item's own too - so a button standing alone stands in the same
