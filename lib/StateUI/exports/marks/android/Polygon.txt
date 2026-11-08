@@ -1,4 +1,2 @@
 # revision 2.1
 Polygon: ✅
-Polygon.fillRule: ✅
-Polygon.points: ✅

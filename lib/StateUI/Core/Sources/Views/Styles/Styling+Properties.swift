@@ -45,8 +45,7 @@ extension Styling: ImageProperties where Target == Image {}
 extension Styling: TextProperties where Target == Text {}
 extension Styling: MapProperties where Target == Map {}
 extension Styling: PickerProperties where Target == Picker {}
-extension Styling: PolygonProperties where Target == Polygon {}
-extension Styling: PolylineProperties where Target == Polyline {}
+extension Styling: PointsShape where Target: PointsShape {}
 extension Styling: RectangleProperties where Target == Rectangle {}
 extension Styling: ScrollViewProperties where Target == ScrollView {}
 extension Styling: StepperProperties where Target == Stepper {}

@@ -66,7 +66,7 @@ winui Layout 2
 gtk Layout 2
 TextField 6
 SearchField 6
-Polyline 3
+Polyline 4
 FilledShape 3
 AutomationElement 8
 Layout 3
@@ -86,7 +86,7 @@ ItemsView 5
 Line 3
 Map 4
 Path 2
-Polygon 2
+Polygon 3
 ProgressBar 3
 TabView 2
 VStack 3

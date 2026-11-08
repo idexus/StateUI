@@ -120,8 +120,8 @@
         switch element {
         case "Line":
             [Write(LineContract.from, Point(0, 0)), Write(LineContract.to, Point(10, 10))]
-        case "Polygon": [Write(PolygonContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
-        case "Polyline": [Write(PolylineContract.points, [Point(0, 0), Point(10, 10)])]
+        case "Polygon": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
+        case "Polyline": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 10)])]
         case "Path": [Write(PathContract.data, "M 0 0 L 10 0 L 10 10 Z")]
         default: []
         }
@@ -134,9 +134,9 @@
         case "Line":
             [Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(40, 20))]
         case "Polygon":
-            [Write(PolygonContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
+            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
         case "Polyline":
-            [Write(PolylineContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
+            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
         case "Path":
             [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ContentModeElementContract.contentMode, ContentMode.stretch)]
         default:

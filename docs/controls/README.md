@@ -47,8 +47,8 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [MotionLayout](MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 6 ✅ · 1 ☑️ · 11 ✓ · 1 – | 11 ✅ · 6 ✓ · 1 – | 9 ✅ · 8 ✓ · 3 – | 6 ✅ · 9 ✓ · 3 – | 15 ✅ · 1 ☑️ · 4 ✓ · 1 – |
 | [Path](Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [Picker](Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 10 ✅ · 2 ✓ · 3 – | 9 ✅ · 2 ✓ · 3 – | 15 ✅ | 10 ✅ · 2 ✓ · 3 – | 13 ✅ |
-| [Polygon](Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
-| [Polyline](Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
+| [Polygon](Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ · 1 ☑️ |
+| [Polyline](Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ · 1 ☑️ |
 | [ProgressBar](ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 1 ✅ · 1 ✓ · 1 – | 3 ✅ |
 | [Rectangle](Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [ScrollView](ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 11 ✅ · 2 ✓ · 3 – | 12 ✅ · 3 ✓ · 3 – | 15 ✅ · 3 – | 12 ✅ · 2 ✓ · 4 – | 12 ✅ · 6 – |
@@ -66,10 +66,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 230 | 237 | 308 | 222 | 313 |
+| ✅ |  | 1665 | 226 | 233 | 304 | 218 | 309 |
 | ✓ |  | 1355 | 56 | 45 | 8 | 63 | 5 |
 | – |  | 57 | 48 | 43 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **334** | **325** | **332** | **335** | **332** |
+| **Met** | 3210 | **3077** | **330** | **321** | **328** | **331** | **328** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 <!-- controls:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element drawing its words itself has: the case they are drawn in, their color, and the words.
+- [PointsShape](tiers/PointsShape.md) - What a shape drawn through a list of points has: the points, and which parts of a self-crossing outline count as inside it - a polygon's, joined last back to first, and a polyline's, left open.
 - [LineBreakElement](tiers/LineBreakElement.md) - What happens to words too long for their room: they wrap, or they are cut and say so - a text's, a button's caption.
 - [PlaceholderElement](tiers/PlaceholderElement.md) - The words an element shows while it holds nothing: a field while it is empty, a picker while nothing is chosen.
 - [StyledElement](tiers/StyledElement.md) - The keyed style an element wears from the application's style sheet: a view's, a bar item's.

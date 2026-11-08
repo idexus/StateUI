@@ -164,8 +164,7 @@ behind `Style<Target>`. A library control with settings a style may give has
 a protocol of this kind:
 `ButtonProperties`, `ColorPickerProperties`, `DatePickerProperties`,
 `GridProperties`, `HStackProperties`, `ImageProperties`, `MapProperties`,
-`PickerProperties`, `PolygonProperties`, `PolylineProperties`,
-`RectangleProperties`, `ScrollViewProperties`, `StepperProperties`,
+`PickerProperties`, `RectangleProperties`, `ScrollViewProperties`, `StepperProperties`,
 `TextEditorProperties`, `TextFieldProperties`, `TextProperties`,
 `TimePickerProperties`, `ToolbarGroupProperties` and `WebViewProperties`. What a control is for -
 a switch's position, a slider's value, a field's words, the place of its

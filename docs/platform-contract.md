@@ -123,8 +123,8 @@ of its members each meets, and why a cell is empty.
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Picker](controls/Picker.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
-| [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Polygon](controls/Polygon.md) | stateUI | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
+| [Polyline](controls/Polyline.md) | stateUI | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Popover](controls/Popover.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -489,8 +489,8 @@ Every control, and every part an application, its windows and its pages are made
 | [MotionLayout](controls/MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 6 ✅ · 1 ☑️ · 11 ✓ · 1 – | 11 ✅ · 6 ✓ · 1 – | 9 ✅ · 8 ✓ · 3 – | 6 ✅ · 9 ✓ · 3 – | 15 ✅ · 1 ☑️ · 4 ✓ · 1 – |
 | [Path](controls/Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [Picker](controls/Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 10 ✅ · 2 ✓ · 3 – | 9 ✅ · 2 ✓ · 3 – | 15 ✅ | 10 ✅ · 2 ✓ · 3 – | 13 ✅ |
-| [Polygon](controls/Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
-| [Polyline](controls/Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
+| [Polygon](controls/Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ · 1 ☑️ |
+| [Polyline](controls/Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ · 1 ☑️ |
 | [ProgressBar](controls/ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 1 ✅ · 1 ✓ · 1 – | 3 ✅ |
 | [Rectangle](controls/Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [ScrollView](controls/ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 11 ✅ · 2 ✓ · 3 – | 12 ✅ · 3 ✓ · 3 – | 15 ✅ · 3 – | 12 ✅ · 2 ✓ · 4 – | 12 ✅ · 6 – |
@@ -508,10 +508,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 230 | 237 | 308 | 222 | 313 |
+| ✅ |  | 1665 | 226 | 233 | 304 | 218 | 309 |
 | ✓ |  | 1355 | 56 | 45 | 8 | 63 | 5 |
 | – |  | 57 | 48 | 43 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **334** | **325** | **332** | **335** | **332** |
+| **Met** | 3210 | **3077** | **330** | **321** | **328** | **331** | **328** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 
 ### Application structure
@@ -577,6 +577,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `textCase` | 1 |
+| [PointsShape](controls/tiers/PointsShape.md) | `points`, `fillRule` | 2 |
 | [LineBreakElement](controls/tiers/LineBreakElement.md) | `lineBreak` | 1 |
 | [PlaceholderElement](controls/tiers/PlaceholderElement.md) | `placeholder` | 1 |
 | [StyledElement](controls/tiers/StyledElement.md) | `style` | 1 |
@@ -636,8 +637,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Picker](controls/Picker.md) | `options`, `presentation`, `selectedIndex`, `onSelectionChanged` (`selectedIndexChanged`) | 4 | 3 ✅ · 1 ✓ |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `windowClosed` | 1 | 1 ✅ |  |  |  |  |  |

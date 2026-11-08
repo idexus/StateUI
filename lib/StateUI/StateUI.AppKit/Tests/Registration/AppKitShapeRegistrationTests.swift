@@ -32,7 +32,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Path", owner: "Path", member: "data")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Polygon", owner: "Polygon", member: "fillRule")))
+            HostRealizedMember(element: "Polygon", owner: "PointsShape", member: "fillRule")))
     }
 
     /// What the shapes SHARE is recorded on every one of them, from the single

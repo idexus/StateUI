@@ -18,6 +18,7 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
+        PointsShapeContract.self,
         LineBreakElementContract.self,
         PlaceholderElementContract.self,
         StyledElementContract.self,

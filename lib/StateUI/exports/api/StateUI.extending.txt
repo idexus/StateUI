@@ -711,6 +711,8 @@ swift.conformance Point: StateUI.HostRepresentable
 swift.conformance Point: StateUI.LaneValue
 swift.conformance Point: StateUI.StateValue
 swift.conformance Point: StateUI.Walked
+swift.conformance PointsShape: StateUI.PropertyContainer
+swift.conformance PointsShapeContract: StateUI.Contract
 swift.conformance Polygon: StateUI.AutomationElement
 swift.conformance Polygon: StateUI.ContentModeElement
 swift.conformance Polygon: StateUI.CorneredShapeProperties
@@ -718,7 +720,6 @@ swift.conformance Polygon: StateUI.Element
 swift.conformance Polygon: StateUI.ElementView
 swift.conformance Polygon: StateUI.FilledShapeProperties
 swift.conformance Polygon: StateUI.ModifiableElement
-swift.conformance Polygon: StateUI.PolygonProperties
 swift.conformance Polygon: StateUI.PropertyContainer
 swift.conformance Polygon: StateUI.ShapeProperties
 swift.conformance Polygon: StateUI.StyleTarget
@@ -727,7 +728,6 @@ swift.conformance Polygon: StateUI.VisualElement
 swift.conformance Polygon: StateUI.VisualElementProperties
 swift.conformance PolygonContract: StateUI.Contract
 swift.conformance PolygonContract: StateUI.ElementContract
-swift.conformance PolygonProperties: StateUI.PropertyContainer
 swift.conformance Polyline: StateUI.AutomationElement
 swift.conformance Polyline: StateUI.ContentModeElement
 swift.conformance Polyline: StateUI.CorneredShapeProperties
@@ -735,7 +735,6 @@ swift.conformance Polyline: StateUI.Element
 swift.conformance Polyline: StateUI.ElementView
 swift.conformance Polyline: StateUI.FilledShapeProperties
 swift.conformance Polyline: StateUI.ModifiableElement
-swift.conformance Polyline: StateUI.PolylineProperties
 swift.conformance Polyline: StateUI.PropertyContainer
 swift.conformance Polyline: StateUI.ShapeProperties
 swift.conformance Polyline: StateUI.StyleTarget
@@ -744,7 +743,6 @@ swift.conformance Polyline: StateUI.VisualElement
 swift.conformance Polyline: StateUI.VisualElementProperties
 swift.conformance PolylineContract: StateUI.Contract
 swift.conformance PolylineContract: StateUI.ElementContract
-swift.conformance PolylineProperties: StateUI.PropertyContainer
 swift.conformance PopoverContract: StateUI.Contract
 swift.conformance PopoverContract: StateUI.ElementContract
 swift.conformance PopupElement: StateUI.AutomationElement
@@ -1033,8 +1031,6 @@ swift.conformance Styling: StateUI.MapProperties where Target == Map
 swift.conformance Styling: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PickerProperties where Target == Picker
 swift.conformance Styling: StateUI.PlaceholderElement where Target : PlaceholderElement, Target : StyleTarget
-swift.conformance Styling: StateUI.PolygonProperties where Target == Polygon
-swift.conformance Styling: StateUI.PolylineProperties where Target == Polyline
 swift.conformance Styling: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : BorderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : ButtonMenuElement, Target : StyleTarget
@@ -1048,6 +1044,7 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : LineBreakEle
 swift.conformance Styling: StateUI.PropertyContainer where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PaddingElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PlaceholderElement, Target : StyleTarget
+swift.conformance Styling: StateUI.PropertyContainer where Target : PointsShape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : RangeElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Shape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Stack, Target : StyleTarget
@@ -1070,8 +1067,6 @@ swift.conformance Styling: StateUI.PropertyContainer where Target == HStack
 swift.conformance Styling: StateUI.PropertyContainer where Target == Image
 swift.conformance Styling: StateUI.PropertyContainer where Target == Map
 swift.conformance Styling: StateUI.PropertyContainer where Target == Picker
-swift.conformance Styling: StateUI.PropertyContainer where Target == Polygon
-swift.conformance Styling: StateUI.PropertyContainer where Target == Polyline
 swift.conformance Styling: StateUI.PropertyContainer where Target == Rectangle
 swift.conformance Styling: StateUI.PropertyContainer where Target == ScrollView
 swift.conformance Styling: StateUI.PropertyContainer where Target == Stepper
@@ -2587,8 +2582,6 @@ swift.protocol ModifiableElement: @MainActor protocol ModifiableElement : Elemen
 swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyContainer
 swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
 swift.protocol PlaceholderElement: @MainActor protocol PlaceholderElement : PropertyContainer
-swift.protocol PolygonProperties: @MainActor protocol PolygonProperties : PropertyContainer
-swift.protocol PolylineProperties: @MainActor protocol PolylineProperties : PropertyContainer
 swift.protocol PopupElement: @MainActor protocol PopupElement : ElementView
 swift.protocol PressElement: @MainActor protocol PressElement : ModifiableElement
 swift.protocol PropertyContainer: @MainActor protocol PropertyContainer
@@ -3169,6 +3162,8 @@ swift.type.property Placement.moving: static var moving: MotionValues { get }
 swift.type.property Point.laneKind: static var laneKind: LaneKind { get }
 swift.type.property Point.lanes: static var lanes: Int { get }
 swift.type.property Point.moving: static var moving: MotionValues { get }
+swift.type.property PointsShapeContract.members: static let members: [any ContractMember]
+swift.type.property PointsShapeContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Polygon.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PolygonContract.layer: static let layer: ElementLayer
 swift.type.property PolygonContract.layer: static var layer: ElementLayer { get }

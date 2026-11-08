@@ -611,8 +611,12 @@ swift.conformance Placement: Swift.Equatable
 swift.conformance Placement: Swift.Sendable
 swift.conformance Point: Swift.Equatable
 swift.conformance Point: Swift.Sendable
+swift.conformance PointsShapeContract: StateUI.Tier
+swift.conformance PointsShapeContract: StateUI.WornContract
+swift.conformance PointsShapeContract: Swift.Sendable
 swift.conformance Polygon: StateUI.CorneredShape
 swift.conformance Polygon: StateUI.FilledShape
+swift.conformance Polygon: StateUI.PointsShape
 swift.conformance Polygon: StateUI.Shape
 swift.conformance Polygon: StateUI.View
 swift.conformance Polygon: StateUI.Views
@@ -621,6 +625,7 @@ swift.conformance PolygonContract: StateUI.WornContract
 swift.conformance PolygonContract: Swift.Sendable
 swift.conformance Polyline: StateUI.CorneredShape
 swift.conformance Polyline: StateUI.FilledShape
+swift.conformance Polyline: StateUI.PointsShape
 swift.conformance Polyline: StateUI.Shape
 swift.conformance Polyline: StateUI.View
 swift.conformance Polyline: StateUI.Views
@@ -786,6 +791,7 @@ swift.conformance StyleKey: Swift.Sendable
 swift.conformance StyledElementContract: StateUI.Tier
 swift.conformance StyledElementContract: StateUI.WornContract
 swift.conformance StyledElementContract: Swift.Sendable
+swift.conformance Styling: StateUI.PointsShape where Target : PointsShape, Target : StyleTarget
 swift.conformance Styling: Swift.Sendable
 swift.conformance SubmitElementContract: StateUI.Tier
 swift.conformance SubmitElementContract: StateUI.WornContract
@@ -1121,6 +1127,7 @@ swift.enum PathContract: enum PathContract
 swift.enum PickerContract: enum PickerContract
 swift.enum PickerPresentation: enum PickerPresentation
 swift.enum PlaceholderElementContract: enum PlaceholderElementContract
+swift.enum PointsShapeContract: enum PointsShapeContract
 swift.enum PolygonContract: enum PolygonContract
 swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
@@ -7693,6 +7700,8 @@ swift.method Picker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) ->
 swift.method PickerProperties.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
 swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
+swift.method PointsShape.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
+swift.method PointsShape.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7728,7 +7737,7 @@ swift.method Polygon.fill(_:): @MainActor func fill(_ state: Binding<Material>) 
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Polygon.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polygon.Modified
+swift.method Polygon.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
 swift.method Polygon.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Polygon.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polygon.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -7905,7 +7914,6 @@ swift.method Polygon.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method Polygon.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Polygon.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PolygonProperties.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -7941,7 +7949,7 @@ swift.method Polyline.fill(_:): @MainActor func fill(_ state: Binding<Material>)
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Polyline.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polyline.Modified
+swift.method Polyline.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
 swift.method Polyline.frame(into:): @MainActor func frame(into state: Binding<Rect>) -> Self.Modified
 swift.method Polyline.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polyline.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -8118,7 +8126,6 @@ swift.method Polyline.visualState(_:): @MainActor func visualState(_ state: Visu
 swift.method Polyline.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Polyline.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PolylineProperties.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
 swift.method PopupElement.isOpen(_:): @MainActor func isOpen(_ state: Binding<Bool>) -> Self.Modified
 swift.method PopupElement.isOpen(_:): @MainActor func isOpen(_ value: Bool) -> Self.Modified
 swift.method PopupElement.onClosed(_:): @MainActor func onClosed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -13266,6 +13273,7 @@ swift.protocol LayoutParameters: protocol LayoutParameters : Walked
 swift.protocol LocalizationCatalog: protocol LocalizationCatalog
 swift.protocol LocalizedResources: @MainActor protocol LocalizedResources
 swift.protocol PersistentValue: protocol PersistentValue
+swift.protocol PointsShape: @MainActor protocol PointsShape : PropertyContainer
 swift.protocol Scene: @MainActor protocol Scene
 swift.protocol Shape: @MainActor protocol Shape : ContentModeElement, ElementView, ShapeProperties
 swift.protocol Stack: @MainActor protocol Stack : Layout, StackProperties
@@ -13850,12 +13858,11 @@ swift.type.property PickerContract.selectedIndexChanged: static let selectedInde
 swift.type.property PlaceholderElementContract.name: static let name: String
 swift.type.property PlaceholderElementContract.placeholder: static let placeholder: ElementProperty<PlaceholderElementContract, String>
 swift.type.property Point.zero: static let zero: Point
-swift.type.property PolygonContract.fillRule: static let fillRule: ElementProperty<PolygonContract, FillRule>
+swift.type.property PointsShapeContract.fillRule: static let fillRule: ElementProperty<PointsShapeContract, FillRule>
+swift.type.property PointsShapeContract.name: static let name: String
+swift.type.property PointsShapeContract.points: static let points: ElementProperty<PointsShapeContract, [Point]>
 swift.type.property PolygonContract.name: static var name: String { get }
-swift.type.property PolygonContract.points: static let points: ElementProperty<PolygonContract, [Point]>
-swift.type.property PolylineContract.fillRule: static let fillRule: ElementProperty<PolylineContract, FillRule>
 swift.type.property PolylineContract.name: static var name: String { get }
-swift.type.property PolylineContract.points: static let points: ElementProperty<PolylineContract, [Point]>
 swift.type.property PopoverContract.name: static var name: String { get }
 swift.type.property PopupElementContract.closed: static let closed: ElementEvent<PopupElementContract, Void>
 swift.type.property PopupElementContract.isOpen: static let isOpen: ElementProperty<PopupElementContract, Bool>

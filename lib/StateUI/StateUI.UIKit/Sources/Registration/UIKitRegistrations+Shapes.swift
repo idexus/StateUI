@@ -44,20 +44,20 @@ extension UIKitRegistrations {
         }
         registry.add(PolygonContract.self, create: { _ in UIKitShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolygonContract.points] ?? [], closed: true),
-                    evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: true),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
         registry.add(PolylineContract.self, create: { _ in UIKitShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolylineContract.points] ?? [], closed: false),
-                    evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: false),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
     }

@@ -141,7 +141,7 @@ extension NodeType {
     static let droppedFileTypes = ViewContract.droppedFileTypes.token
     static let drawing = CanvasContract.drawing.token
     static let fill = FilledShapeContract.fill.token
-    static let fillRule = PolygonContract.fillRule.token
+    static let fillRule = PointsShapeContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token
     static let layoutDirection = VisualElementContract.layoutDirection.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
@@ -236,7 +236,7 @@ extension NodeType {
     static let parameters = MotionLayoutContract.parameters.token
     static let placeholder = PlaceholderElementContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token
-    static let points = PolygonContract.points.token
+    static let points = PointsShapeContract.points.token
     static let progress = ProgressBarContract.progress.token
     static let region = MapContract.region.token
     static let geometryTransform = ShapeContract.geometryTransform.token

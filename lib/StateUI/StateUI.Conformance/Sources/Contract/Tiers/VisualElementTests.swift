@@ -496,8 +496,8 @@
             Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(80, 20)),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
-        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]
-        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Polygon": [Write(PointsShapeContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Polyline": [Write(PointsShapeContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, redFill), atItsSize]
         case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, redFill), atItsSize]
         case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
         default: []

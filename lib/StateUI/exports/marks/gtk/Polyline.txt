@@ -1,4 +1,2 @@
 # revision 3.1
 Polyline: ✅
-Polyline.fillRule: ✅
-Polyline.points: ✅

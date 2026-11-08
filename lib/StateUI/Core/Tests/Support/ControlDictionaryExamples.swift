@@ -880,6 +880,12 @@ extension ControlDictionary {
                 .width(120)
             """#),
 
+        (PointsShapeContract.self, #"""
+            Polygon([Point(20, 0), Point(40, 40), Point(0, 15), Point(40, 15), Point(0, 40)])
+                .fillRule(.evenOdd)
+                .fill(.gold)
+            """#),
+
         (ShortcutElementContract.self, #"""
             Button("Save")
                 .keyboardShortcut("s")
