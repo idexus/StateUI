@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIConformance
 @_spi(Host) import StateUIHost
 
 /// A view of a test's window, found again each time it is used - by its identifier or its aim - so it stays the same
@@ -42,7 +41,7 @@ public struct TestElement {
     private func does(_ act: UserAct) throws {
         let element = try mounted()
         do {
-            try window.driver.perform(act, on: element)
+            try window.driver.perform(act.driven(on: element), on: element)
         } catch let cannot as DriverCannot {
             throw TestFailure(description: "\(self) cannot \(act): \(cannot.because ?? cannot.ability)")
         }

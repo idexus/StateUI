@@ -13,14 +13,12 @@ let package = Package(
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
         .package(name: "StateUIHost", path: "../StateUI.Host"),
-        .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
     ],
     targets: [
         .target(
             name: "StateUITesting",
             dependencies: [.product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHost", package: "StateUIHost"),
-                .product(name: "StateUIConformance", package: "StateUIConformance")],
+                .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

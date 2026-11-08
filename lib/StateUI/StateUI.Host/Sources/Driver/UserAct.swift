@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import StateUI
-import StateUIHost
 
 /// What a user does to a control, a page or a window, which a driver does through its toolkit's own path.
-public enum UserAct: Equatable, Sendable, CustomStringConvertible {
+@_spi(Host) public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     /// A button's click, a menu's or a toolbar's item chosen.
     case activate
     /// A switch's, a check box's or a radio button's turn; a split view's sidebar shown or hidden.
@@ -152,15 +151,6 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .pressKeys: "pressKeys"
         case .performAccessibilityAction: "performAccessibilityAction"
         case .adjust: "adjust"
-        }
-    }
-
-    /// Whether how fast the act goes is read off the host's clock as its steps are heard: a pan, a pinch, two fingers
-    /// turning.
-    var goesAtTheClocksPace: Bool {
-        switch self {
-        case .pan, .pinch, .rotate: true
-        default: false
         }
     }
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A clock a test winds by hand, in milliseconds: a host's display frames run at the time it says.
-@MainActor
+@_spi(Host) @MainActor
 public final class TestClock {
     /// The time now, in milliseconds.
     public var now = 0.0

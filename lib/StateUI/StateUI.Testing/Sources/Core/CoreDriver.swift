@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIConformance
 @_spi(Host) import StateUIHost
 
 /// The window of a test with no platform's toolkit: the core and the host layer on a clock the window winds, each
@@ -20,6 +19,9 @@ final class CoreDriver: HostDriver {
 
     /// The window's presentation: what a host's window controller keeps, so the page hears it is shown.
     private var presentation = WindowPresentation()
+
+    /// The element holding the keyboard; nil for none.
+    private weak var focused: MountedElement?
 
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
@@ -59,10 +61,12 @@ final class CoreDriver: HostDriver {
         clock.held = false
         clock.onFrame = nil
         presentation = WindowPresentation()
+        focused = nil
     }
 
-    func perform(_ act: UserAct, on element: MountedElement) throws {
-        // As the user: nothing on a disabled view, no words into a read-only field, words as the field holds them.
+    func perform(_ act: StateUIHost.UserAct, on element: MountedElement) throws {
+        // As the user: nothing on a disabled view, no words into a read-only field, words as the field holds them;
+        // a step, a day, a time and a color as the control offers them, by the host layer's rules.
         // Design: docs/design/host/testing.md#a-window-with-no-toolkit
         guard let runtime else { throw DriverCannot(act, on: element) }
         guard element.isEffectivelyEnabled else { throw DriverCannot("\(act) on \(element.type.name)", because: "it is disabled") }
@@ -90,6 +94,27 @@ final class CoreDriver: HostDriver {
             element.reportUserChange(.value, .valueChanged, .number(value), in: runtime)
         case .choose(let place):
             element.reportUserChange(.selectedIndex, .selectedIndexChanged, place.propValue, in: runtime)
+        case .step(let up) where element.type == .stepper:
+            try step(up: up, on: element, in: runtime)
+        case .pickDate(let day) where element.type == .datePicker:
+            let range = (element.value(DatePickerContract.minimum.token), element.value(DatePickerContract.maximum.token))
+            guard CalendarArithmetic.held(day, earliest: range.0.flatMap(CalendarDate.init(propValue:)),
+                                          latest: range.1.flatMap(CalendarDate.init(propValue:))) == day else {
+                throw DriverCannot("\(act) on \(element.type.name)", because: "its calendar offers no such day")
+            }
+            element.reportUserChange(DatePickerContract.date.token, .dateChanged, day.propValue, in: runtime)
+        case .pickTime(let time) where element.type == .timePicker:
+            guard CalendarArithmetic.clock(time) == time else {
+                throw DriverCannot("\(act) on \(element.type.name)", because: "its clock shows no such time")
+            }
+            element.reportUserChange(.time, .timeChanged, time.propValue, in: runtime)
+        case .pickColor(let color) where element.type == .colorPicker:
+            let chosen = ColorChoice.reported(
+                color.propValue.fractions ?? (0, 0, 0, 1),
+                choosesOpacity: element.bool(ColorPickerContract.choosesOpacity.token) ?? false)
+            element.reportUserChange(.color, .colorChanged, chosen.propValue, in: runtime)
+        case .focus where Wearing.element(element.type, wears: FocusElementContract.self) != false:
+            moveFocus(to: element, in: runtime)
         case .performAccessibilityAction(let name):
             guard element.hear(.accessibilityAction(name), in: runtime) else { throw DriverCannot(act, on: element) }
         case .adjust(let step):
@@ -101,6 +126,27 @@ final class CoreDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         element.presented(property)
+    }
+
+    /// One step of a stepper, as its buttons take it: none where its way is at the range's end.
+    private func step(up: Bool, on element: MountedElement, in runtime: HostRuntime) throws {
+        let ends = ValueArithmetic.range(
+            element.number(RangeElementContract.minimum.token) ?? 0, element.number(RangeElementContract.maximum.token) ?? 100)
+        let value = element.number(RangeElementContract.value.token) ?? ends.lower
+        let ways = ValueArithmetic.stepsWay(value, lower: ends.lower, upper: ends.upper)
+        guard up ? ways.up : ways.down else {
+            throw DriverCannot("step on \(element.type.name)", because: "it stands at the end of its range")
+        }
+        let stepped = ValueArithmetic.step(
+            from: value, up: up, step: element.number(StepperContract.step.token) ?? 1, lower: ends.lower, upper: ends.upper)
+        element.reportUserChange(RangeElementContract.value.token, .valueChanged, .number(stepped), in: runtime)
+    }
+
+    /// The keyboard moved to `element`: every element following the focus hears where it now is, as a host's
+    /// toolkit tells it.
+    private func moveFocus(to element: MountedElement, in runtime: HostRuntime) {
+        focused = element
+        runtime.tree.root?.reportFocus(in: runtime) { $0 === self.focused }
     }
 }
 
@@ -120,7 +166,9 @@ extension CoreDriver: HostPresenter {
 
     func open(link address: String) {}
 
-    func focus(_ element: MountedElement) {}
+    func focus(_ element: MountedElement) {
+        if let runtime { moveFocus(to: element, in: runtime) }
+    }
 }
 
 /// The clock a test's window winds, a frame at a time.

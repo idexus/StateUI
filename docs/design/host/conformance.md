@@ -100,11 +100,12 @@ driver beside it (`WinUIDriver.backends`, `GTKDriver.backends`).
 
 ## The driver
 
-Each host supplies a driver: how its toolkit starts a page,
-turns, steps and draws a frame, what a user's act is through its toolkit's
-own input path, and what a native control holds of a member, as the contract
-writes the value. A driver reads through the element a case found by its
-`.id()`, and names no widget to the case. What a driver cannot read or do
+Each host supplies a driver (`HostDriver`, with the acts it does, in the host
+layer, where an application's test window drives one too): how its toolkit
+starts a page, turns, steps and draws a frame, what a user's act is through
+its toolkit's own input path, and what a native control holds of a member,
+as the contract writes the value. A driver reads through the element a case
+found by its `.id()`, and names no widget to the case. What a driver cannot read or do
 throws; where the driver says why it cannot, the case says so and does not
 fail, and otherwise it fails - a nil never stands for "unknown". What its
 platform holds nothing of - a value no control of it keeps, its effect proven

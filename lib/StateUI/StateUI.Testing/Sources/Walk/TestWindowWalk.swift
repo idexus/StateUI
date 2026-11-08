@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIConformance
+@_spi(Host) import StateUIHost
 
 /// What a test's window does on a host, walked through the host's own driver: a click counted, words typed and a
 /// switch turned reaching their states, a view found by its aim - so an application's test reads alike on every

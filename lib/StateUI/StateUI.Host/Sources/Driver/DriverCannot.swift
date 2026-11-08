@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
 
 /// What a driver cannot do on its host: an act on an element, or a read of one.
 @_spi(Host) public struct DriverCannot: Error, Equatable, CustomStringConvertible {
@@ -34,5 +33,6 @@
         self.because = because
     }
 
+    /// What cannot be done.
     public var description: String { ability }
 }

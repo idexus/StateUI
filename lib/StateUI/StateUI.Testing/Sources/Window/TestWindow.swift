@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIConformance
 @_spi(Host) import StateUIHost
 
 /// A window an application's test shows a page in, and uses as the application's user does: it finds a view by the

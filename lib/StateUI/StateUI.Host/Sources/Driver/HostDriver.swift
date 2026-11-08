@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
-@_spi(Host) import StateUIHost
 
 /// A host as the conformance suite drives it: what a user does to its native controls, and what they hold. Each
 /// host's tests implement one over its toolkit, which names no widget to a case.
@@ -111,15 +110,6 @@
     /// The accent the platform draws the application's controls in now.
     func accent() throws -> Color
 
-    /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
-    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
-    /// request's own `X-Asked` said, and the request's body.
-    func served() throws -> String
-
-    /// How many requests for `/held` the driver's server took, and how many of them their client stopped - the
-    /// connection closed before the answer.
-    func held() throws -> (taken: Int, stopped: Int)
-
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
@@ -159,52 +149,65 @@
 }
 
 extension HostDriver {
+    /// What `cannot` says of `ability`.
     public func reason(cannot ability: String) -> String? {
         cannot[ability]
     }
 
+    /// Nothing: the platform holds what every case reads.
     public var platformHasNone: [String: String] {
         [:]
     }
 
+    /// None: every act and read goes through the toolkit.
     public func byHost(_ ability: String) -> String? {
         nil
     }
 
+    /// Nothing to forget: the host keeps nothing.
     public func forgetWhatIsKept() {}
 
+    /// None counted.
     public var liveViews: Int? {
         nil
     }
 
+    /// None counted.
     public var liveViewKinds: [String: Int]? {
         nil
     }
 
+    /// None: the driver runs one page alone.
     public func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         throw DriverCannot("start an application")
     }
 
+    /// None read: the driver has no path for it yet.
     public func menu(of element: MountedElement) throws -> String {
         throw DriverCannot("read the menu of \(element.type.name)")
     }
 
+    /// None read: the driver has no path for it yet.
     public func buttonMenu(of button: MountedElement) throws -> String {
         throw DriverCannot("read the menu \(button.type.name) opens")
     }
 
+    /// None read: the driver has no path for it yet.
     public func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
         throw DriverCannot("read the bar of \(page.type.name)")
     }
 
+    /// None read: the driver has no path for it yet.
     public func focused(_ element: MountedElement) throws -> Bool {
         throw DriverCannot("read the focus of \(element.type.name)")
     }
 
+    /// None read: the driver has no path for it yet.
     public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
         throw DriverCannot("read what reaches \(element.type.name)")
     }
 
+    /// None read: the driver has no path for it yet.
     public func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
         throw DriverCannot("read the drawing order of \(layout.type.name)")
     }
@@ -214,71 +217,72 @@ extension HostDriver {
         (try held(.accessibilityHeading, on: element)?.enumeration ?? 0) > 0
     }
 
+    /// None read: the driver has no path for it yet.
     public func question(over element: MountedElement) throws -> Question? {
         throw DriverCannot("read a question")
     }
 
+    /// None read: the driver has no path for it yet.
     public func announced() throws -> [String] {
         throw DriverCannot("read what the screen reader said")
     }
 
+    /// Nothing: the window stands under no bars.
     public func standUnderSystemBars(top: Double, bottom: Double) {}
 
+    /// None read: the driver has no path for it yet.
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
     }
 
+    /// None read: the driver has no path for it yet.
     public func accent() throws -> Color {
         throw DriverCannot("read the accent the application draws in")
     }
 
-    public func served() throws -> String {
-        guard let server = LoopbackServer.shared else { throw DriverCannot("serve a request") }
-        return server.address
-    }
-
-    public func held() throws -> (taken: Int, stopped: Int) {
-        guard LoopbackServer.shared != nil else { throw DriverCannot("count the requests held") }
-        return (
-            LoopbackServer.heldStarted.load(ordering: .sequentiallyConsistent),
-            LoopbackServer.heldStopped.load(ordering: .sequentiallyConsistent))
-    }
-
+    /// None read: the driver has no path for it yet.
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {
         throw DriverCannot("read a file dialog")
     }
 
+    /// None read: the driver has no path for it yet.
     public func shared(over element: MountedElement) throws -> String? {
         throw DriverCannot("read a share sheet")
     }
 
+    /// None read: the driver has no path for it yet.
     public func launched() throws -> [String] {
         throw DriverCannot("read what was launched")
     }
 
+    /// None read: the driver has no path for it yet.
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
         throw DriverCannot("read the color of \(element.type.name)")
     }
 
+    /// Each point's color, read one at a time.
     public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
         try points.map { try color(of: element, at: $0) }
     }
 
+    /// None read: the driver has no path for it yet.
     public func place(of element: MountedElement) throws -> Rect {
         throw DriverCannot("read where \(element.type.name) stands")
     }
 
+    /// None read: the driver has no path for it yet.
     public func logged() throws -> [String] {
         throw DriverCannot("read the log")
     }
 
+    /// None read: the driver has no path for it yet.
     public func kept(_ key: String, inScene: Bool) throws -> String? {
         throw DriverCannot("read what is kept")
     }
 }
 
 /// A question a window shows the user: its words, and its buttons' captions.
-public struct Question: Equatable, Sendable {
+@_spi(Host) public struct Question: Equatable, Sendable {
     /// Its title.
     public var title: String
 
@@ -301,7 +305,7 @@ public struct Question: Equatable, Sendable {
 }
 
 /// A file dialog a window shows the user: one that opens files, or one that saves.
-public enum FileDialog: Equatable, Sendable {
+@_spi(Host) public enum FileDialog: Equatable, Sendable {
     /// It asks for files to open.
     case open
     /// It asks for a place to save.

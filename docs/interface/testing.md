@@ -62,8 +62,10 @@ page leaving an application that keeps running.
 
 ## Acting and reading
 
-`perform(_:)` takes a `UserAct`, what a user does - `.activate`, `.toggle`, `.type("Ada")`,
-`.submit`, `.choose(2)`, `.slide(to: 0.5)`, `.tap(count: 2)`, a screen reader's
+`perform(_:)` takes a `UserAct`, what a user does - `.activate`,
+`.tap(count: 2)`, `.toggle`, `.type("Ada")`, `.submit`, `.focus`,
+`.slide(to: 0.5)`, `.step(up: true)`, `.choose("Week")` by the words the
+picker shows, `.pickDate`, `.pickTime`, `.pickColor`, a screen reader's
 `.performAccessibilityAction("Clear")` and `.adjust(.increment)` - and returns
 once the work it began is done: its handlers, what they started, and the
 frames they asked for, whatever task the test calls it from. Work the page
@@ -71,9 +73,11 @@ began before the act, a service begun as it appeared, is not waited on, nor
 is what that work begins. Work the act began that is still under way after
 ten seconds fails the act, saying how many runs stand. `motion: .none`
 shows every change at once. The window
-acts as the user can: an act on a disabled view, or words typed into a
-read-only field, fails and says why, and words typed are held as the field
-holds them - in its case, within its bound.
+acts as the user can: an act on a disabled view, words typed into a
+read-only field, a step past a stepper's range, a day its calendar leaves out
+or a choice the picker does not offer fails and says why; words typed are
+held as the field holds them - in its case, within its bound - and a color
+picked keeps its opacity only where the picker chooses it.
 
 `value(_:)` reads a contract member - `TextElementContract.text`,
 `ToggleElementContract.isOn`, `VisualElementContract.accessibilityValue` - as the

@@ -137,6 +137,7 @@ final class KeyGuardTests: XCTestCase {
         // The register and its exports.
         "HostDeclaration.swift": register, "HostRegister.swift": register, "HostVerdict.swift": register,
         "CoreLink.swift": register + ", and " + diagnostic,
+        "HostDriver.swift": "a driver's abilities, as its verdicts word them, and " + toolkit + ": its views' kinds",
         // Diagnostics.
         "HostBoundary+Inspection.swift": diagnostic, "Complaint.swift": diagnostic, "Inspection.swift": diagnostic,
         "InspectorModel.swift": diagnostic, "HostRealizations.swift": diagnostic + ": the names nearest a miss",

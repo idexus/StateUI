@@ -2,9 +2,10 @@
 
 `StateUITesting` is what an application's tests import to show a page and use
 it as its user does: a window found by what automation knows a view by, acts a
-user makes, and reads of what a view holds. It stands on the conformance
-suite's driving - a driver, the user's acts - so what a test does on a
-window is what a host's driver does on its toolkit.
+user makes, and reads of what a view holds. It stands on the host layer's
+driving - a driver (`HostDriver`) and the acts it does - which every host's
+conformance suite drives its toolkit through, so what a test does on a window
+is what a host's driver does on its toolkit. It links no conformance suite.
 
 ## A window with no toolkit
 
@@ -20,7 +21,13 @@ user can, no further: an act the window cannot make of a view - one its
 contract does not take - fails naming the view, and so does one the user
 cannot make, on a view in a disabled branch or words into a read-only field,
 saying why; words typed are held as the field holds them, in its case and to
-its bound, by the host layer's one rule (`InputWords.held`). A question or a
+its bound, by the host layer's one rule (`InputWords.held`); a stepper takes
+a step its buttons take (`ValueArithmetic.step`), none past an end; a day is
+one its calendar offers and a time one a clock shows (`CalendarArithmetic`);
+a color keeps its opacity only where the picker chooses it
+(`ColorChoice.reported`); and the keyboard moved to a view leaves the last,
+each element following the focus told where it now is, as a host tells it.
+A question or a
 file the page asks for is answered as a host answers an act it cannot
 perform. One window stands at a time, as the core runs one application; a new
 window closes the last (`HostDriver.close`), whose views are found no more.
@@ -48,6 +55,16 @@ while the test waits, without rendering another page. A closed host offers
 no controls or new host acts to the handlers: an awaited host act fails
 with `StateUIError.notPerformed`, and one with no waiter is diagnosed and
 left out. Cleanup that needs those must finish before the host is closed.
+
+## The acts a window offers
+
+A test's window offers the acts it does and no others: its own `UserAct`, the
+part of the driver's acts that the window performs with no toolkit. An act the
+window cannot do is no case to write, rather than a failure at run time; a
+host's driver does every act of the driver's, which the window's map onto.
+A choice is made by the words the user sees - a picker's options - which the
+window finds once among them and hands the driver as their place; words the
+picker does not offer, or offers twice, fail naming them.
 
 ## A view found as automation finds it
 
