@@ -13,8 +13,9 @@ extension RangeElement {
         setValue(RangeElementContract.minimum, value)
     }
 
-    /// The value at the far end of its range, 1 until told otherwise - so a
-    /// slider meant to run to 100 must say so.
+    /// The value at the far end of its range until told otherwise: 1 on a
+    /// slider - so a slider meant to run to 100 must say so - and 100 on a
+    /// stepper.
     public func maximum(_ value: Double) -> Modified {
         setValue(RangeElementContract.maximum, value)
     }
