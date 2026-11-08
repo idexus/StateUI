@@ -1,9 +1,5 @@
-# revision 8.1
-MenuItem.keyboardShortcut: ✅
+# revision 9.1
 MenuItem.text: ✅
-MenuToggle.keyboardShortcut: ✅
 MenuToggle.text: ✅
-ToolbarButton.keyboardShortcut: ✅
 ToolbarButton.text: ✅
-ToolbarToggle.keyboardShortcut: ✅
 ToolbarToggle.text: ✅

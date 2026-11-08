@@ -860,6 +860,12 @@ extension ControlDictionary {
                 .onClicked { saved = true }
             """#),
 
+        (ShortcutElementContract.self, #"""
+            Button("Save")
+                .keyboardShortcut("s")
+                .onClicked { print("saved") }
+            """#),
+
         (EnabledElementContract.self, #"""
             @State var name = ""
 

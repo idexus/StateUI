@@ -76,7 +76,7 @@ enum WinUIRealization {
         .complete(IconElementContract.icon, on: MenuItemElementContract.self),
         .complete(ActionElementContract.role),
         .complete(EnabledElementContract.isEnabled, on: MenuItemElementContract.self),
-        .complete(MenuItemElementContract.keyboardShortcut),
+        .complete(ShortcutElementContract.keyboardShortcut, on: MenuItemElementContract.self),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
         .complete(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self),
         .complete(ButtonMenuElementContract.showsMenuArrow, on: ButtonContract.self),

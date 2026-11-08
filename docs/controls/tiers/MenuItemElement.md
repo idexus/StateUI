@@ -16,7 +16,7 @@ Text(saved ? "Saved" : "Draft")
     }
 ```
 
-Wears: [AutomationElement](AutomationElement.md) · [EnabledElement](EnabledElement.md) · [IconElement](IconElement.md)
+Wears: [AutomationElement](AutomationElement.md) · [EnabledElement](EnabledElement.md) · [IconElement](IconElement.md) · [ShortcutElement](ShortcutElement.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [MenuToggle](../MenuToggle.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarToggle](../ToolbarToggle.md)
 
@@ -26,5 +26,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `keyboardShortcut` | property | `KeyboardShortcut` | native |
 | `text` | property | `String` | native |

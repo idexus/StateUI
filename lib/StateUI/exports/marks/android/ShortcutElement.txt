@@ -1,0 +1,6 @@
+# revision 0.0
+Button.keyboardShortcut: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
+MenuItem.keyboardShortcut: ✅
+MenuToggle.keyboardShortcut: ✅
+ToolbarButton.keyboardShortcut: ✅
+ToolbarToggle.keyboardShortcut: ✅

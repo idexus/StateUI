@@ -52,7 +52,8 @@ extension ButtonProperties {
 /// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement, ClickElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement, ClickElement,
+    ShortcutElement {
     /// The node this control describes.
     public var node: Node
 
@@ -73,16 +74,6 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// - Parameter state: the state the caption is read from.
     public init(_ state: Binding<String>) {
         self = Button().text(state)
-    }
-
-    /// Keys that press the button from the keyboard while its window is in
-    /// front: `key` with `modifiers` - the platform's Command or Control
-    /// unless said otherwise.
-    ///
-    ///     Button("Save").keyboardShortcut("s")
-    ///     Button("Send").keyboardShortcut(.return, modifiers: [])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
-        setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 
     /// What the button stands for in its window: `.normal`, an ordinary action, as a button of no role is; `.primary`,

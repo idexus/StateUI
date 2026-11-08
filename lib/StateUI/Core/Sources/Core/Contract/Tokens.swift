@@ -92,7 +92,7 @@ extension NodeType {
     static let accessibilityHeading = VisualElementContract.accessibilityHeading.token
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let tooltip = VisualElementContract.tooltip.token
-    static let keyboardShortcut = ButtonContract.keyboardShortcut.token
+    static let keyboardShortcut = ShortcutElementContract.keyboardShortcut.token
     static let role = ButtonContract.role.token
     static let keysTaken = KeyboardElementContract.keysTaken.token
     static let accessibilityIdentifier = AutomationElementContract.accessibilityIdentifier.token

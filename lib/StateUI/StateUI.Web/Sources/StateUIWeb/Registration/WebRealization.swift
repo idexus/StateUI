@@ -48,7 +48,7 @@ enum WebRealization {
         .complete(IconElementContract.icon, on: MenuItemElementContract.self),
         .complete(ActionElementContract.role),
         .complete(EnabledElementContract.isEnabled, on: MenuItemElementContract.self),
-        .complete(MenuItemElementContract.keyboardShortcut),
+        .complete(ShortcutElementContract.keyboardShortcut, on: MenuItemElementContract.self),
         .complete(MenuItemElementContract.text),
         .complete(IconElementContract.icon, on: PageElementContract.self),
         .complete(PageElementContract.title),

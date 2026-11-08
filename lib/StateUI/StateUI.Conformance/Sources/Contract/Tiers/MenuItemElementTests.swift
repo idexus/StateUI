@@ -22,7 +22,7 @@
                 Aspects.holds(IconElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
                 Aspects.holds(EnabledElementContract.isEnabled, on: element, true, then: false),
                 Aspects.holds(
-                    MenuItemElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),
+                    ShortcutElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),
                     then: KeyboardShortcut("s", modifiers: [.primary, .shift])),
                 chosenByItsShortcut(element),
                 givesWayToTyping(element),
@@ -96,7 +96,7 @@ extension MenuItemElementTests {
     @MainActor
     static func chosenByItsShortcut(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aShortcutChoosesTheItemInItsWindow", proves: [
-            Covered(MenuItemElementContract.keyboardShortcut, on: element),
+            Covered(ShortcutElementContract.keyboardShortcut, on: element),
         ], needs: [choosing(element)]) { s in
             let heard = Received<String>()
             s.start { Shortcuts.page(element, heard: heard) }
@@ -120,7 +120,7 @@ extension MenuItemElementTests {
     @MainActor
     static func givesWayToTyping(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
-            Covered(MenuItemElementContract.keyboardShortcut, on: element),
+            Covered(ShortcutElementContract.keyboardShortcut, on: element),
         ], needs: [
             choosing(element),
             Covered(FocusElementContract.focus, on: "TextField"),

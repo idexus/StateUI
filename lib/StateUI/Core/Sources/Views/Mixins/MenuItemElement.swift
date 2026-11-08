@@ -10,7 +10,7 @@
 ///         .icon("trash.png")
 ///         .keyboardShortcut(.delete)
 ///         .onClicked { delete() }
-public protocol MenuItemElement: AutomationElement {}
+public protocol MenuItemElement: AutomationElement, ShortcutElement {}
 
 extension MenuItemElement {
     /// What the item says. Usually given in the initializer instead.
@@ -28,16 +28,5 @@ extension MenuItemElement {
     /// is disabled with it.
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(EnabledElementContract.isEnabled, value)
-    }
-
-    /// Keys that choose it from the keyboard while its window is in front:
-    /// `key` with `modifiers` - the platform's Command or Control unless said
-    /// otherwise. A bar's item and a menu bar's entry are chosen by them; a
-    /// context menu's entry shows them beside its words.
-    ///
-    ///     MenuItem("Save").keyboardShortcut("s")
-    ///     ToolbarButton("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
-        setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 }

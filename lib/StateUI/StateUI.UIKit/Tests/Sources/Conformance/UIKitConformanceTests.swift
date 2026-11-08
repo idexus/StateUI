@@ -130,6 +130,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
     @MainActor func testImageElement() { conform(ImageElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testShortcutElement() { conform(ShortcutElementTests.self) }
     @MainActor func testIconElement() { conform(IconElementTests.self) }
     @MainActor func testBackgroundElement() { conform(BackgroundElementTests.self) }
     @MainActor func testEnabledElement() { conform(EnabledElementTests.self) }

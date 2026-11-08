@@ -9,15 +9,11 @@ public enum MenuItemElementContract: Tier {
     public static let name = "MenuItemElement"
 
     /// An item is found by automation.
-    public static let tiers: [any Tier.Type] = [AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self]
-
-    /// Keys that choose the item while its window is in front - a bar's item, a menu bar's entry; a context menu's
-    /// entry shows them beside its words.
-    public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
+    public static let tiers: [any Tier.Type] = [AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self, ShortcutElementContract.self]
 
     /// The caption.
     public static let text = ElementProperty<Self, String>("text", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [keyboardShortcut, text]
+    public static let members: [any ContractMember] = [text]
 }

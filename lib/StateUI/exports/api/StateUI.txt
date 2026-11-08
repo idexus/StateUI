@@ -732,6 +732,9 @@ swift.conformance ShapeContract: StateUI.WornContract
 swift.conformance ShapeContract: Swift.Sendable
 swift.conformance SheetContract: StateUI.WornContract
 swift.conformance SheetContract: Swift.Sendable
+swift.conformance ShortcutElementContract: StateUI.Tier
+swift.conformance ShortcutElementContract: StateUI.WornContract
+swift.conformance ShortcutElementContract: Swift.Sendable
 swift.conformance Slider: StateUI.View
 swift.conformance Slider: StateUI.Views
 swift.conformance Slider: Swift.Sendable
@@ -1134,6 +1137,7 @@ swift.enum SessionElementContract: enum SessionElementContract
 swift.enum SessionPhase: enum SessionPhase
 swift.enum ShapeContract: enum ShapeContract
 swift.enum SheetContract: enum SheetContract
+swift.enum ShortcutElementContract: enum ShortcutElementContract
 swift.enum SliderContract: enum SliderContract
 swift.enum SpaceContract: enum SpaceContract
 swift.enum SpinnerContract: enum SpinnerContract
@@ -2169,7 +2173,7 @@ swift.method Button.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bo
 swift.method Button.isFocused(into:): @MainActor func isFocused(into state: Binding<Bool>) -> Self.Modified
 swift.method Button.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
-swift.method Button.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Button.Modified
+swift.method Button.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
 swift.method Button.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Button.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
 swift.method Button.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Button.Modified
@@ -6587,7 +6591,6 @@ swift.method MenuItem.role(_:): @MainActor func role(_ role: ActionRole) -> Self
 swift.method MenuItem.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MenuItemElement.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method MenuItemElement.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
-swift.method MenuItemElement.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
 swift.method MenuItemElement.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MenuSeparator.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MenuSeparator.id(_:): @MainActor func id(_ value: some Hashable) -> MenuSeparator
@@ -9422,6 +9425,7 @@ swift.method ShapeProperties.lineCap(_:): @MainActor func lineCap(_ value: LineC
 swift.method ShapeProperties.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -> Self.Modified
 swift.method ShapeProperties.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
 swift.method ShapeProperties.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
+swift.method ShortcutElement.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
 swift.method Slider.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13582,7 +13586,6 @@ swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
 swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementProperty<ButtonContract, Double>
-swift.type.property ButtonContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<ButtonContract, KeyboardShortcut>
 swift.type.property ButtonContract.lineBreak: static let lineBreak: ElementProperty<ButtonContract, LineBreak>
 swift.type.property ButtonContract.name: static var name: String { get }
 swift.type.property ButtonContract.role: static let role: ElementProperty<ButtonContract, ButtonRole>
@@ -13786,7 +13789,6 @@ swift.type.property MenuBarContract.order: static let order: ElementProperty<Men
 swift.type.property MenuContract.name: static var name: String { get }
 swift.type.property MenuContract.text: static let text: ElementProperty<MenuContract, String>
 swift.type.property MenuItemContract.name: static var name: String { get }
-swift.type.property MenuItemElementContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<MenuItemElementContract, KeyboardShortcut>
 swift.type.property MenuItemElementContract.name: static let name: String
 swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
 swift.type.property MenuSeparatorContract.name: static var name: String { get }
@@ -13910,6 +13912,8 @@ swift.type.property ShapeContract.lineWidth: static let lineWidth: ElementProper
 swift.type.property ShapeContract.name: static let name: String
 swift.type.property ShapeContract.stroke: static let stroke: ElementProperty<ShapeContract, Brush>
 swift.type.property SheetContract.name: static var name: String { get }
+swift.type.property ShortcutElementContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<ShortcutElementContract, KeyboardShortcut>
+swift.type.property ShortcutElementContract.name: static let name: String
 swift.type.property SliderContract.name: static var name: String { get }
 swift.type.property SpaceContract.name: static var name: String { get }
 swift.type.property SpinnerContract.isAnimating: static let isAnimating: ElementProperty<SpinnerContract, Bool>

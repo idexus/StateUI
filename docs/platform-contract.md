@@ -578,6 +578,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `text`, `textCase` | 2 |
+| [ShortcutElement](controls/tiers/ShortcutElement.md) | `keyboardShortcut` | 1 |
 | [IconElement](controls/tiers/IconElement.md) | `icon` | 1 |
 | [BackgroundElement](controls/tiers/BackgroundElement.md) | `background` | 1 |
 | [EnabledElement](controls/tiers/EnabledElement.md) | `isEnabled` | 1 |
@@ -605,7 +606,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
 | [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `barScrollEdge`, `toolbarStyle`, `toolbarSpacing` | 5 |
 | [BarItemElement](controls/tiers/BarItemElement.md) | `style` | 1 |
-| [MenuItemElement](controls/tiers/MenuItemElement.md) | `keyboardShortcut`, `text` | 2 |
+| [MenuItemElement](controls/tiers/MenuItemElement.md) | `text` | 1 |
 | [ActionElement](controls/tiers/ActionElement.md) | `role` | 1 |
 | [ButtonMenuElement](controls/tiers/ButtonMenuElement.md) | `menuKind`, `showsMenuArrow` | 2 |
 | [TextAndIconElement](controls/tiers/TextAndIconElement.md) | `showsText` | 1 |
@@ -616,7 +617,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [BottomBar](controls/BottomBar.md) | `scrollEdge` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
-| [Button](controls/Button.md) | `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `role` | 5 | 4 ✅ · 1 – |  |  |  |  |  |
+| [Button](controls/Button.md) | `iconPosition`, `iconSpacing`, `lineBreak`, `role` | 4 | 3 ✅ · 1 – |  |  |  |  |  |
 | [Canvas](controls/Canvas.md) | `drawing` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
 | [DatePicker](controls/DatePicker.md) | `date`, `onDateChanged` (`dateChanged`), `format`, `maximum`, `minimum` | 5 | 3 ✅ · 1 ✓ · 1 – |  |  |  |  |  |

@@ -90,6 +90,7 @@ swift.conformance Button: StateUI.ModifiableElement
 swift.conformance Button: StateUI.PaddingElement
 swift.conformance Button: StateUI.PressElement
 swift.conformance Button: StateUI.PropertyContainer
+swift.conformance Button: StateUI.ShortcutElement
 swift.conformance Button: StateUI.StyleTarget
 swift.conformance Button: StateUI.TextAndIconElement
 swift.conformance Button: StateUI.TextColorElement
@@ -579,10 +580,12 @@ swift.conformance MenuItem: StateUI.ClickElement
 swift.conformance MenuItem: StateUI.Element
 swift.conformance MenuItem: StateUI.MenuItemElement
 swift.conformance MenuItem: StateUI.PropertyContainer
+swift.conformance MenuItem: StateUI.ShortcutElement
 swift.conformance MenuItemContract: StateUI.Contract
 swift.conformance MenuItemContract: StateUI.ElementContract
 swift.conformance MenuItemElement: StateUI.AutomationElement
 swift.conformance MenuItemElement: StateUI.PropertyContainer
+swift.conformance MenuItemElement: StateUI.ShortcutElement
 swift.conformance MenuItemElementContract: StateUI.Contract
 swift.conformance MenuSeparator: StateUI.Element
 swift.conformance MenuSeparatorContract: StateUI.Contract
@@ -591,6 +594,7 @@ swift.conformance MenuToggle: StateUI.AutomationElement
 swift.conformance MenuToggle: StateUI.Element
 swift.conformance MenuToggle: StateUI.MenuItemElement
 swift.conformance MenuToggle: StateUI.PropertyContainer
+swift.conformance MenuToggle: StateUI.ShortcutElement
 swift.conformance MenuToggle: StateUI.ToggleElement
 swift.conformance MenuToggleContract: StateUI.Contract
 swift.conformance MenuToggleContract: StateUI.ElementContract
@@ -886,6 +890,8 @@ swift.conformance ShapeProperties: StateUI.ViewProperties
 swift.conformance ShapeProperties: StateUI.VisualElementProperties
 swift.conformance SheetContract: StateUI.Contract
 swift.conformance SheetContract: StateUI.ElementContract
+swift.conformance ShortcutElement: StateUI.PropertyContainer
+swift.conformance ShortcutElementContract: StateUI.Contract
 swift.conformance Slider: StateUI.AutomationElement
 swift.conformance Slider: StateUI.Element
 swift.conformance Slider: StateUI.ElementView
@@ -1288,6 +1294,7 @@ swift.conformance ToolbarButton: StateUI.FontElement
 swift.conformance ToolbarButton: StateUI.MenuItemElement
 swift.conformance ToolbarButton: StateUI.PaddingElement
 swift.conformance ToolbarButton: StateUI.PropertyContainer
+swift.conformance ToolbarButton: StateUI.ShortcutElement
 swift.conformance ToolbarButton: StateUI.StyleTarget
 swift.conformance ToolbarButton: StateUI.TextAndIconElement
 swift.conformance ToolbarButton: StateUI.TextColorElement
@@ -1323,6 +1330,7 @@ swift.conformance ToolbarToggle: StateUI.FontElement
 swift.conformance ToolbarToggle: StateUI.MenuItemElement
 swift.conformance ToolbarToggle: StateUI.PaddingElement
 swift.conformance ToolbarToggle: StateUI.PropertyContainer
+swift.conformance ToolbarToggle: StateUI.ShortcutElement
 swift.conformance ToolbarToggle: StateUI.StyleTarget
 swift.conformance ToolbarToggle: StateUI.TextAndIconElement
 swift.conformance ToolbarToggle: StateUI.TextColorElement
@@ -2548,7 +2556,7 @@ swift.protocol LaneValue: protocol LaneValue : StateValue
 swift.protocol LayoutProperties: @MainActor protocol LayoutProperties : ViewProperties
 swift.protocol LineHeightElement: @MainActor protocol LineHeightElement : PropertyContainer
 swift.protocol MapProperties: @MainActor protocol MapProperties : PropertyContainer
-swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : AutomationElement
+swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : AutomationElement, ShortcutElement
 swift.protocol ModifiableElement: @MainActor protocol ModifiableElement : Element, PropertyContainer where Self.Modified : Element
 swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyContainer
 swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
@@ -2562,6 +2570,7 @@ swift.protocol RectangleProperties: @MainActor protocol RectangleProperties : Pr
 swift.protocol RefreshElement: @MainActor protocol RefreshElement : View
 swift.protocol ScrollViewProperties: @MainActor protocol ScrollViewProperties : PropertyContainer
 swift.protocol ShapeProperties: @MainActor protocol ShapeProperties : ViewProperties
+swift.protocol ShortcutElement: @MainActor protocol ShortcutElement : PropertyContainer
 swift.protocol StackProperties: @MainActor protocol StackProperties : LayoutProperties
 swift.protocol StateChoice: protocol StateChoice : LaneValue, RawRepresentable where Self.RawValue == Int32
 swift.protocol StateValue: protocol StateValue : Equatable, Sendable
@@ -3232,6 +3241,8 @@ swift.type.property SheetContract.members: static let members: [any ContractMemb
 swift.type.property SheetContract.nodeType: static let nodeType: NodeType
 swift.type.property SheetContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property SheetContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property ShortcutElementContract.members: static let members: [any ContractMember]
+swift.type.property ShortcutElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Slider.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SliderContract.layer: static let layer: ElementLayer
 swift.type.property SliderContract.layer: static var layer: ElementLayer { get }

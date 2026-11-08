@@ -41,9 +41,9 @@ extension GTKRegistrations {
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
             // suggested action and a destructive one.
-            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
+            button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
-                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role))
                 view.setRole(role)
             }
             button.property(EnabledElementContract.isEnabled) { view, enabled in

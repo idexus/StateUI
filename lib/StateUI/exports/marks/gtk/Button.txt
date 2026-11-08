@@ -2,6 +2,5 @@
 Button: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
-Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
 Button.role: ✅

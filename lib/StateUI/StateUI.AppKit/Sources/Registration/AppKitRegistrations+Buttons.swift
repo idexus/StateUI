@@ -84,9 +84,9 @@ extension AppKitRegistrations {
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
-            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { control, values in
+            button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { control, values in
                 let role = values[ButtonContract.role]
-                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)
             }
             button.declares(ClickElementContract.clicked)
