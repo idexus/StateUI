@@ -1,0 +1,131 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
+
+/// A page: its content under its title where the window heads it; its bottom bar beneath the content above its bar at
+/// its foot, beside the content as Windows' bars stand (`BottomBarPlace`); and the line along each bar's edge while
+/// rows go on past it.
+/// Design: docs/design/platforms/winui/pages.md#a-pages-view
+@MainActor
+final class WinUIPageView: WinUISingleChildView {
+    /// The page's bottom bar beneath its content; nil for none.
+    private var bottomBar: WinUILayoutItem?
+
+    /// The line along the bar's top while rows go on past it - its hard edge, which WinUI draws for none.
+    private let line = WinUIStackPartView.separator()
+
+    /// The edge the bar shows while rows go on past it.
+    private(set) var edge = ScrollEdge.automatic
+
+    /// The page's scroller, whose rows going on the lines follow.
+    private weak var scroller: WinUIPageScroller?
+
+    /// The line along the page's top, under the bar standing over it, while rows go on past the bar's foot - its edge
+    /// (`barScrollEdge`), the hard one where the edge is the platform's.
+    private let topLine = WinUIStackPartView.separator()
+
+    /// The edge the bar over the page shows while rows go on past its foot.
+    private(set) var topEdge = ScrollEdge.automatic
+
+    /// The page's bar at its foot, beneath its bottom bar; nil while it holds no action.
+    private(set) var toolbar: WinUIFootBarView?
+
+    override init() {
+        super.init()
+        showLines()
+    }
+
+    /// Shows `bar` - the page's bottom bar - beneath its content, with `edge` while `scroller`'s rows go on past it;
+    /// nil for none.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func showBottomBar(_ bar: WinUILayoutItem?, edge: ScrollEdge, scroller: WinUIPageScroller?) {
+        let held = bar?.view !== bottomBar?.view
+        (bottomBar, self.edge) = (bar, edge)
+        follow(scroller)
+        guard held else { return }
+        holdChildren()
+        invalidateMeasurements()
+    }
+
+    /// Shows `edge` under the bar over the page while `scroller`'s rows go on past its foot.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge(_ edge: ScrollEdge, scroller: WinUIPageScroller?) {
+        topEdge = edge
+        follow(scroller)
+    }
+
+    /// Shows `actions` on the bar at the page's foot, beneath its bottom bar; none takes the bar away.
+    func showToolbar(_ actions: ChromeActions) {
+        let made = actions.isEmpty ? nil : toolbar ?? WinUIFootBarView()
+        made?.show(actions)
+        guard made !== toolbar else { return }
+        toolbar?.detach()
+        toolbar = made
+        holdChildren()
+        invalidateMeasurements()
+    }
+
+    /// Follows `scroller`'s rows with the lines.
+    private func follow(_ scroller: WinUIPageScroller?) {
+        self.scroller = scroller
+        scroller?.standingChanged = { [weak self] in self?.showLines() }
+        showLines()
+    }
+
+    /// Shows each line while its bar shows an edge and rows go on past it.
+    private func showLines() {
+        line.setShown(
+            (bottomBar != nil || toolbar != nil) && edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+        topLine.setShown(topEdge != .none && TopBarEdge.continues(scrollerOffset: scroller?.standing.offset))
+    }
+
+    override func heldViews() -> [WinUIView] {
+        super.heldViews() + (bottomBar.map { [$0.view] } ?? []) + (toolbar.map { [$0] } ?? [])
+            + (bottomBar != nil || toolbar != nil ? [line] : []) + [topLine]
+    }
+
+    override func detach() {
+        super.detach()
+        toolbar?.detach()
+    }
+
+    /// How tall the bottom bar and the bar at the foot stand at `width`; nought for neither.
+    private func footHeight(width: Double?) -> Double {
+        (shownBar.map { SingleChildArithmetic.size(of: $0, width: width).height } ?? 0)
+            + (toolbar?.measured(width: width).height ?? 0)
+    }
+
+    override func contentSize(width: Double?) -> LayoutSize {
+        var size = super.contentSize(width: width)
+        let foot = footHeight(width: width)
+        if foot > 0 { size = RowEdge.size(page: size, row: foot) }
+        guard let heading else { return size }
+        return RowEdge.size(page: size, row: heading.height(width: width))
+    }
+
+    override func arrange(in bounds: Rect) {
+        var room = heading?.place(in: bounds) ?? bounds
+        topLine.layout(Rect(x: room.x, y: room.y, width: room.width, height: 1))
+        // Measured at the width the measure offered, which WinUI answers inside an arrangement from what it kept.
+        let foot = footHeight(width: room.width)
+        if foot > 0 {
+            let place = BottomBarPlace(height: foot, safe: room, whole: room)
+            let barHeight = shownBar.map { SingleChildArithmetic.size(of: $0, width: room.width).height } ?? 0
+            if let bar = shownBar {
+                let barRoom = Rect(x: place.bar.x, y: place.bar.y, width: place.bar.width, height: barHeight)
+                bar.view.layout(SingleChildArithmetic.place(of: bar, in: barRoom, direction: direction))
+            }
+            toolbar?.layout(Rect(x: room.x, y: place.bar.y + barHeight, width: room.width, height: foot - barHeight))
+            line.layout(Rect(x: room.x, y: place.bar.y, width: room.width, height: 1))
+            room = place.above
+        }
+        super.arrange(in: room)
+    }
+
+    /// The bottom bar while it shows.
+    private var shownBar: WinUILayoutItem? {
+        bottomBar.flatMap { $0.isShown ? $0 : nil }
+    }
+}

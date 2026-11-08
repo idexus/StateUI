@@ -177,6 +177,16 @@ title names what the tabs are tabs of. The window heads one page at a time,
 the one its chrome composes from, and takes the heading from the one it
 headed before.
 
+## A page's view
+
+A page is a panel of its own: its content under its heading, its bottom bar
+beneath the content above the bar at its foot, and the line along each bar's
+edge, which shows while rows go on past the bar. Each line is hidden from
+the page's first moment and shows only once the window tells the page which
+edge its bar shows. An overlay, a list's row and a popover are plain panels
+of one child: none holds a page's bars or their lines, so none draws a
+page's edge.
+
 ## The way back
 
 The way back is the chrome's back button, the mouse's back button, Alt+Left

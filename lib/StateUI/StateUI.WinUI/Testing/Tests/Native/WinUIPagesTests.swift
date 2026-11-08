@@ -10,11 +10,13 @@ import StateUIConformance
 import XCTest
 
 final class WinUIPagesTests: XCTestCase {
-    /// A bar's edge shows only where a bar stands: a list's row, a popover and a page no bar stands over draw no line
-    /// along their top.
+    /// A bar's edge shows only where a window told a bar stands: a list's row, a popover, an overlay and a page no
+    /// window told of a bar draw no line.
     func testABarsEdgeShowsOnlyWhereABarStands() {
         onUIThread {
-            let containers: [WinUISingleChildView] = [WinUIItemCell(), WinUIPopoverView(), WinUISingleChildView()]
+            let containers: [WinUISingleChildView] = [
+                WinUIItemCell(), WinUIPopoverView(), WinUISingleChildView(), WinUIPageView(),
+            ]
             for container in containers {
                 container.layout(Rect(x: 0, y: 0, width: 300, height: 40))
                 let lines = container.heldViews().filter { $0 is WinUIStackPartView && $0.isShown }

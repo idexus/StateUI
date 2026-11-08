@@ -18,10 +18,10 @@ extension WinUIDriver {
         }
         if let value = backendHolds(property, on: element) { return value }
         if property == .barScrollEdge {
-            return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUISingleChildView)?.topEdge.propValue
+            return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUIPageView)?.topEdge.propValue
         }
         if property == .scrollEdge,
-           let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
+           let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUIPageView {
             return page.edge.propValue
         }
         let view = (element.native as? WinUIElement)?.view
@@ -646,7 +646,7 @@ extension WinUIDriver {
 
     /// The bar at `page`'s foot under `root`, read as the title bar's is; nothing while it shows none.
     private func footBar(of page: MountedElement, in root: MountedElement) throws -> String {
-        guard let foot = ((page.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar else {
+        guard let foot = ((page.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar else {
             return BarWords.said(leading: [], trailing: [], overflow: [])
         }
         let read = Self.saidActions(try self.read(foot, "footBar"))
@@ -672,7 +672,7 @@ extension WinUIDriver {
         var root = element
         while let parent = root.parent { root = parent }
         func search(_ each: MountedElement) -> (bar: WinUIFootBarView, place: Int)? {
-            if each.type == .page, let foot = ((each.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar,
+            if each.type == .page, let foot = ((each.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar,
                let place = foot.drawn.firstIndex(where: { $0.mount == element.mount }) {
                 return (foot, place)
             }
