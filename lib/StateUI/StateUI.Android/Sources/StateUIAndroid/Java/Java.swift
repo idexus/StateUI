@@ -19,10 +19,12 @@ public enum Java {
     /// Design: docs/design/platforms/android/jni.md#what-a-frame-writes
     static var crossings = 0
 
-    /// The main thread's environment, taken when the activity starts the host.
+    /// The main thread's environment, taken when the activity starts the host: valid on the main thread while the
+    /// host runs, for what `call` and `callStatic` do not cover.
     public internal(set) static var env: UnsafeMutablePointer<JNIEnv?>!
 
-    /// The function table every call goes through.
+    /// The function table every call goes through. A call made through it directly is the caller's own: on the main
+    /// thread, its exceptions its own to clear.
     public static var jni: JNINativeInterface { env.pointee!.pointee }
 
     /// Runs `body` inside a frame of local references, let go when it returns.
@@ -135,6 +137,26 @@ public enum Java {
         return JavaObject(local!)
     }
 
+    /// Calls a method, its answer read as the type the call stands for - `let width: Int32 = Java.call(…)`.
+    public static func call<Result: JavaResult>(
+        _ object: jobject, _ method: jmethodID, _ arguments: jvalue...
+    ) -> Result {
+        crossings += 1
+        let result = arguments.withUnsafeBufferPointer { Result.answer(of: object, method, $0.baseAddress) }
+        check("a call")
+        return result
+    }
+
+    /// Calls a static method, its answer read as the type the call stands for.
+    public static func callStatic<Result: JavaResult>(
+        _ owner: jclass, _ method: jmethodID, _ arguments: jvalue...
+    ) -> Result {
+        crossings += 1
+        let result = arguments.withUnsafeBufferPointer { Result.answer(ofStatic: owner, method, $0.baseAddress) }
+        check("a static call")
+        return result
+    }
+
     /// Calls a method returning nothing.
     public static func call(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) {
         crossings += 1
@@ -143,7 +165,7 @@ public enum Java {
     }
 
     /// Calls a method returning an int.
-    public static func callInt(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+    static func callInt(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallIntMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -151,7 +173,7 @@ public enum Java {
     }
 
     /// Calls a method returning a boolean.
-    public static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+    static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallBooleanMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -166,7 +188,7 @@ public enum Java {
     }
 
     /// Calls a static method returning a long.
-    public static func callStaticLong(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int64 {
+    static func callStaticLong(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int64 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallStaticLongMethodA(env, owner, method, $0.baseAddress) }
         check("a static call")
@@ -174,7 +196,7 @@ public enum Java {
     }
 
     /// Calls a static method returning a boolean.
-    public static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+    static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticBooleanMethodA(env, owner, method, $0.baseAddress)
@@ -184,7 +206,7 @@ public enum Java {
     }
 
     /// Calls a static method returning an int.
-    public static func callStaticInt(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+    static func callStaticInt(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticIntMethodA(env, owner, method, $0.baseAddress)
@@ -194,7 +216,7 @@ public enum Java {
     }
 
     /// Calls a static method returning a float.
-    public static func callStaticFloat(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+    static func callStaticFloat(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticFloatMethodA(env, owner, method, $0.baseAddress)
@@ -204,7 +226,7 @@ public enum Java {
     }
 
     /// Calls a method returning a float.
-    public static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+    static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallFloatMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -212,7 +234,7 @@ public enum Java {
     }
 
     /// Calls a method returning an object, as a local reference.
-    public static func callObject(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+    static func callObject(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallObjectMethodA(env, object, method, $0.baseAddress) }
         check("a call")
@@ -220,7 +242,7 @@ public enum Java {
     }
 
     /// Calls a static method returning an object, as a local reference.
-    public static func callStaticObject(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+    static func callStaticObject(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
         crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticObjectMethodA(env, owner, method, $0.baseAddress)
