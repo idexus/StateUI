@@ -38,7 +38,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (12)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>11 ✅ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>12 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>7 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>10 ✅ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>8 ✅ · 1 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>9 ✅</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>9 ✅</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
@@ -56,7 +56,7 @@ What every element drawing its words itself has: the case they are drawn in, the
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [TextElement](tiers/TextElement.md)
@@ -65,7 +65,7 @@ The words an element shows: a control's caption, a text's or a field's words, a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [BackgroundElement](tiers/BackgroundElement.md)
@@ -74,7 +74,7 @@ What an element is painted on: a view's, a page's, a window's, a bar item's and 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [TextColorElement](tiers/TextColorElement.md)
