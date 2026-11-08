@@ -36,9 +36,9 @@ extension GTKDriver {
         switch (property, picker) {
         case (.isOpen, _): picker.isOpen.propValue
         case (.date, let dates as GTKDatePickerView): dates.date.propValue
-        case (.minimum, let dates as GTKDatePickerView): .some(dates.range.earliest?.propValue)
-        case (.maximum, let dates as GTKDatePickerView): .some(dates.range.latest?.propValue)
-        case (.format, let dates as GTKDatePickerView):
+        case (DatePickerContract.minimum.token, let dates as GTKDatePickerView): .some(dates.range.earliest?.propValue)
+        case (DatePickerContract.maximum.token, let dates as GTKDatePickerView): .some(dates.range.latest?.propValue)
+        case (DatePickerContract.format.token, let dates as GTKDatePickerView):
             (Self.words(of: dates) == Self.shortForm(of: dates) ? DateFormat.short : .long).propValue
         case (.time, let times as GTKTimePickerView): times.time.propValue
         default: nil

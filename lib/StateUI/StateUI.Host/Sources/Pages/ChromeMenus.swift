@@ -21,7 +21,7 @@
         var joined: [[Placed]] = []
         var byId: [HostMenuKey: Int] = [:]
         for (index, declaration) in declared.enumerated() {
-            let order = declaration.element.whole(.order) ?? 0
+            let order = declaration.element.whole(MenuBarContract.order.token) ?? 0
             for (position, menu) in declaration.element.children.filter({ $0.type == .menu }).enumerated() {
                 let placed = Placed(menu: menu, key: (order, declaration.level, index, position))
                 if let key = menu.menuKey, let at = byId[key] {

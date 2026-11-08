@@ -42,8 +42,8 @@ final class AppKitValueRegistrationTests: XCTestCase {
         defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
-        slider.properties[.minimum] = .number(0)
-        slider.properties[.maximum] = .number(10)
+        slider.properties[RangeElementContract.minimum.token] = .number(0)
+        slider.properties[RangeElementContract.maximum.token] = .number(10)
         slider.properties[.value] = .number(2.5)
         renderer.applyForTesting(tree(slider))
 
@@ -68,8 +68,8 @@ final class AppKitValueRegistrationTests: XCTestCase {
         defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
-        slider.properties[.minimum] = .number(0)
-        slider.properties[.maximum] = .number(1)
+        slider.properties[RangeElementContract.minimum.token] = .number(0)
+        slider.properties[RangeElementContract.maximum.token] = .number(1)
         slider.properties[.value] = .number(0.25)
         renderer.applyForTesting(tree(slider))
 

@@ -856,7 +856,7 @@ final class InvalidationTests: XCTestCase {
         }
 
         XCTAssertFalse(Renderer.shared.needsRender, "the streak ended with the change dropped")
-        XCTAssertEqual(reported.map { $0.name }, ["handlerFailed"], "and reported exactly once")
+        XCTAssertEqual(reported.map { $0.name }, ["Application.handlerFailed"], "and reported exactly once")
         XCTAssertTrue(
             reported.first?.arguments.first?.string?.contains("writes state while it is being built")
                 == true,

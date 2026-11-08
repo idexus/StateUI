@@ -14,16 +14,16 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     /// Declared by no test, so a handler listening for it hears nothing.
-    static let unheard = ElementEvent<Self, String>("InteropTest.Unheard")
+    static let unheard = ElementEvent<Self, String>("unheard")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke, unheard]
 }
@@ -134,7 +134,7 @@ final class AppKitInteropTests: XCTestCase {
 
         let answer = try XCTUnwrap(said(renderer))
         XCTAssertTrue(answer.hasPrefix("thrown:"), answer)
-        XCTAssertTrue(answer.contains("InteropTest.Unregistered"), answer)
+        XCTAssertTrue(answer.contains("InteropTest.unregistered"), answer)
     }
 
     /// An event the application raises reaches every subscription to it, carrying the values its contract
@@ -168,8 +168,8 @@ final class AppKitInteropTests: XCTestCase {
         XCTAssertTrue(HostBoundary.realizes(WebViewContract.self))
         XCTAssertFalse(HostBoundary.realizes(DialContract.self))
         let spoke = InteropTestContract.spoke, unheard = InteropTestContract.unheard
-        XCTAssertNil(HostRealizations.unraised(owner: spoke.owner, event: spoke.token.key))
-        XCTAssertNotNil(HostRealizations.unraised(owner: unheard.owner, event: unheard.token.key))
+        XCTAssertNil(HostRealizations.unraised(spoke.token.key))
+        XCTAssertNotNil(HostRealizations.unraised(unheard.token.key))
     }
 }
 #endif

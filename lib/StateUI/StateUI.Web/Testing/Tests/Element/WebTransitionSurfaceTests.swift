@@ -10,14 +10,14 @@ import XCTest
 final class WebTransitionSurfaceTests: XCTestCase {
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
         XCTAssertTrue(WebTransitionSurface.presents(.fill, on: .rectangle))
-        XCTAssertTrue(WebTransitionSurface.presents(.width, on: .rectangle))
+        XCTAssertTrue(WebTransitionSurface.presents(VisualElementContract.width.token, on: .rectangle))
         XCTAssertTrue(WebTransitionSurface.presents(.cornerRadius, on: .rectangle))
         XCTAssertTrue(WebTransitionSurface.presents(.opacity, on: .text))
         XCTAssertTrue(WebTransitionSurface.presents(.translationX, on: .button))
         XCTAssertTrue(WebTransitionSurface.presents(.value, on: .slider))
-        XCTAssertTrue(WebTransitionSurface.presents(.spacing, on: .vStack))
+        XCTAssertTrue(WebTransitionSurface.presents(StackContract.spacing.token, on: .vStack))
         XCTAssertFalse(WebTransitionSurface.presents(.value, on: .text))
-        XCTAssertFalse(WebTransitionSurface.presents(.width, on: .window), "the browser keeps its window")
+        XCTAssertFalse(WebTransitionSurface.presents(WindowContract.width.token, on: .window), "the browser keeps its window")
         XCTAssertFalse(WebTransitionSurface.presents(Prop("custom"), on: .text))
     }
 }

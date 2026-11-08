@@ -66,7 +66,7 @@ extension AndroidElement {
         var row = AndroidTabView.Row()
         row.tabs = arranged.map { tab in
             AndroidTabView.Tab(
-                title: tab.value(.title)?.string ?? "",
+                title: tab.value(PageElementContract.title.token)?.string ?? "",
                 picture: HostPicture(tab.value(.icon)))
         }
         let colors = element.barColors
@@ -137,7 +137,7 @@ extension AndroidElement {
         var content = AndroidBarView.Content()
         // A page showing no title leaves the bar's place for it empty; the window keeps its name.
         let titled = element.titledPage
-        content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(.title)?.string ?? ""
+        content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(PageElementContract.title.token)?.string ?? ""
         content.subtitle = titled?.value(.showsTitle)?.bool == false ? nil : titled?.barSubtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
@@ -264,7 +264,7 @@ extension AndroidElement {
 
         var content = AndroidBarView.Content()
         let titled = page.value(.showsTitle)?.bool != false
-        content.title = titled ? page.value(.title)?.string ?? "" : nil
+        content.title = titled ? page.value(PageElementContract.title.token)?.string ?? "" : nil
         content.subtitle = titled ? page.barSubtitle : nil
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)

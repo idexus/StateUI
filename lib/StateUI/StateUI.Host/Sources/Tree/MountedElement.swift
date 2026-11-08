@@ -753,12 +753,12 @@
         }
         values.horizontal = value(.horizontalAlignment)?.enumeration ?? NodeType.unsaidHorizontal[type] ?? 3
         values.vertical = value(.verticalAlignment)?.enumeration ?? 3
-        values.width = stated(.width)
-        values.height = stated(.height)
-        values.minimumWidth = stated(.minimumWidth)
-        values.minimumHeight = stated(.minimumHeight)
-        values.maximumWidth = stated(.maximumWidth)
-        values.maximumHeight = stated(.maximumHeight)
+        values.width = stated(VisualElementContract.width.token)
+        values.height = stated(VisualElementContract.height.token)
+        values.minimumWidth = stated(VisualElementContract.minimumWidth.token)
+        values.minimumHeight = stated(VisualElementContract.minimumHeight.token)
+        values.maximumWidth = stated(VisualElementContract.maximumWidth.token)
+        values.maximumHeight = stated(VisualElementContract.maximumHeight.token)
         values.row = whole(.gridRow) ?? 0
         values.column = whole(.gridColumn) ?? 0
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
@@ -832,9 +832,10 @@
         switch property {
         case .margin, .padding:
             return .numbers([0, 0, 0, 0])
-        case .spacing, .rowSpacing, .columnSpacing:
+        case StackContract.spacing.token, ToolbarGroupContract.spacing.token, GridContract.rowSpacing.token,
+             HStackContract.rowSpacing.token, .columnSpacing:
             return .number(0)
-        case .lineWidth:
+        case ShapeContract.lineWidth.token, BorderElementContract.lineWidth.token:
             return .number(1)
         case .dashPhase:
             return .number(0)

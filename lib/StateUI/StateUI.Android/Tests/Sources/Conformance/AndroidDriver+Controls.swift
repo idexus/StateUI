@@ -15,12 +15,12 @@ import CStateUIAndroid
 extension AndroidDriver {
     static func controlHolds(_ property: Prop, _ view: AndroidView) -> HostValue? {
         // A field's outline as the box it draws in place of the theme's underline holds it: none while it draws none.
-        if let field = view as? AndroidTextFieldView, [.stroke, .lineWidth, .shape].contains(property) {
+        if let field = view as? AndroidTextFieldView, [BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape].contains(property) {
             let drawn = field.drawnOutline
             switch property {
-            case .stroke: return drawn?.stroke.flatMap { HostBrush($0).firstColor }.flatMap(Color.init(propValue:))
+            case BorderElementContract.stroke.token: return drawn?.stroke.flatMap { HostBrush($0).firstColor }.flatMap(Color.init(propValue:))
                 .map { Brush.solidColor($0).propValue }
-            case .lineWidth: return (drawn?.width ?? 0).propValue
+            case BorderElementContract.lineWidth.token: return (drawn?.width ?? 0).propValue
             default:
                 switch drawn?.shape {
                 case .rounded(let radii)?: return ContainerShape.roundedRectangle(radii.first ?? 0).propValue

@@ -38,8 +38,8 @@ extension GTKElement {
                 return chrome
             }
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()
-            chrome.title = element.titledPage?.value(.title)?.string
-                ?? element.enclosing(type: .window)?.value(.title)?.string ?? ""
+            chrome.title = element.titledPage?.value(PageElementContract.title.token)?.string
+                ?? element.enclosing(type: .window)?.value(WindowContract.title.token)?.string ?? ""
             chrome.showsTitle = element.titledPage?.value(.showsTitle)?.bool != false
             chrome.tabs = (view as? GTKTabView)?.switcher
             chrome.showsBar = value(.showsNavigationBar)?.bool != false
@@ -92,7 +92,7 @@ extension GTKElement {
                 }
                 frame.show(chrome)
                 navigation.describe(
-                    frame, title: page.element.visiblePage?.value(.title)?.string ?? "", canPop: chrome.offersBack)
+                    frame, title: page.element.visiblePage?.value(PageElementContract.title.token)?.string ?? "", canPop: chrome.offersBack)
                 page.composeChrome()
             }
         case .splitView:
@@ -134,7 +134,7 @@ extension GTKElement {
             (view as? GTKNavigationView)?.onPopped = { [weak self] remaining in self?.userPopped(remaining: remaining) }
         case .tabView:
             guard let tabs = view as? GTKTabView else { return }
-            tabs.show(arranged.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
+            tabs.show(arranged.map { $0.value(PageElementContract.title.token)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }

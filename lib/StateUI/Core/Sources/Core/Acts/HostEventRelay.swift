@@ -6,14 +6,14 @@
 
 /// One `.onHostEvent` as a render wrote it.
 struct HostEventListen {
-    let event: EventMember
+    let event: Event
     let handler: ValueHandler<[PropValue]>
 }
 
 /// An element's subscription to one event, subscribed once and handing each raise to the last render's handler.
 @MainActor
 final class HostEventRelay {
-    let event: EventMember
+    let event: Event
     var handler: ValueHandler<[PropValue]>
     private var subscription: HostEventSubscription?
 

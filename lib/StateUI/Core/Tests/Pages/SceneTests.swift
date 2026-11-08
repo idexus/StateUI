@@ -580,14 +580,14 @@ final class SceneTests: XCTestCase {
         let named = renders.render(tree(), changed: Renderer.shared.pendingChanges)
         let window = try XCTUnwrap(named.children.first?.children.first)
 
-        XCTAssertEqual(window.props[.title], .string("Named"))
-        XCTAssertEqual(window.props[.width], .number(640))
+        XCTAssertEqual(window.props[WindowContract.title.token], .string("Named"))
+        XCTAssertEqual(window.props[WindowContract.width.token], .number(640))
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(button("rename", in: first))))
 
         let renamed = renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(renamed.children.first?.children.first?.props[.title], .string("Renamed"))
+        XCTAssertEqual(renamed.children.first?.children.first?.props[WindowContract.title.token], .string("Renamed"))
     }
 
     /// A window's phase follows the events its platform window raises.
@@ -1023,8 +1023,8 @@ final class SceneTests: XCTestCase {
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
         let (studio, fonts, about) = (ElementID.window(1), ElementID.window(2, kind: "fonts"), ElementID.window(1, kind: "about"))
-        let sceneEvents = ["activated", "deactivated", "stopped", "windowClosed"]
-        let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
+        let sceneEvents: Set<Event> = ["activated", "deactivated", "stopped", "windowClosed"]
+        let windowEvents: Set<Event> = ["activated", "created", "deactivated", "destroying", "stopped"]
 
         XCTAssertEqual(opened.patch.arrangement, [.scene("1"), .scene("2")])
         XCTAssertEqual(opened.patch.at(.scene("1"))?.arrangement, [studio, fonts])
@@ -1034,14 +1034,14 @@ final class SceneTests: XCTestCase {
 
         // Every window named on its own session, its lifetime its own handlers.
         XCTAssertEqual(opened.patch.at(.scene("1"), studio)?.props, [
-            "title": .string("Studio"), "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
+            "Window.title": .string("Studio"), "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
         ])
         XCTAssertEqual(opened.patch.at(.scene("1"), fonts)?.props, [
-            "title": .string("Fonts"), "windowKind": .name("fonts"),
+            "Window.title": .string("Fonts"), "windowKind": .name("fonts"),
             "floatsOnTop": .bool(true), "hidesWhenInactive": .bool(true),
         ])
         XCTAssertEqual(opened.patch.at(.scene("2"), about)?.props, [
-            "title": .string("About"), "windowKind": .name("about"),
+            "Window.title": .string("About"), "windowKind": .name("about"),
             "floatsOnTop": .bool(false), "hidesWhenInactive": .bool(false),
         ])
         for path in [[.scene("1"), studio], [.scene("1"), fonts], [.scene("2"), about]] as [[ElementID]] {

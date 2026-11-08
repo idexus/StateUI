@@ -11,13 +11,13 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke]
 }
@@ -68,7 +68,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
@@ -231,7 +231,7 @@ final class AndroidInteropTests: XCTestCase {
             host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
             let said = host.views(AndroidTextView.self).first?.text ?? ""
-            XCTAssertTrue(said.hasPrefix("thrown:") && said.contains("InteropTest.Unregistered"), said)
+            XCTAssertTrue(said.hasPrefix("thrown:") && said.contains("InteropTest.unregistered"), said)
         }
     }
 

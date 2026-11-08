@@ -17,7 +17,7 @@ extension UIKitDriver {
             throw DriverCannot(reading: property, of: element)
         }
         switch property {
-        case .title: return (window.windowScene?.title ?? "").propValue
+        case WindowContract.title.token: return (window.windowScene?.title ?? "").propValue
         case .background: return window.backgroundColor.map { StandIns.material(painted: Self.color($0)).propValue }
         default: throw DriverCannot(reading: property, of: element)
         }
@@ -31,7 +31,7 @@ extension UIKitDriver {
             case .text: return command.title.propValue
             case .icon: return command.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!command.attributes.contains(.disabled)).propValue
-            case .role: return (command.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
+            case ActionElementContract.role.token: return (command.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (command.state == .on).propValue
             case .accessibilityIdentifier: return command.accessibilityIdentifier.map { .string($0) }
             case .keyboardShortcut: return UIKitKeys.shortcut(of: command)?.propValue
@@ -57,7 +57,7 @@ extension UIKitDriver {
             case .text: return action.title.propValue
             case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
-            case .role: return (action.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
+            case ActionElementContract.role.token: return (action.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (action.state == .on).propValue
             case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
             default: break
@@ -68,16 +68,16 @@ extension UIKitDriver {
             return ((element.visiblePage?.native as? UIKitElement)?.controller as? UIKitPageController)?.topEdge.propValue
         }
         if [.barBackground, .barForegroundColor].contains(property)
-            || property == .subtitle && element.type == .page {
+            || property == PageContract.subtitle.token && element.type == .page {
             return Self.barHolds(property, of: element)
         }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
         else { return nil }
         let onTab = controller.tabBarController != nil
         switch property {
-        case .title where onTab: return (controller.tabBarItem.title ?? "").propValue
+        case PageElementContract.title.token where onTab: return (controller.tabBarItem.title ?? "").propValue
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
-        case .title: return (controller.navigationItem.title ?? "").propValue
+        case PageElementContract.title.token: return (controller.navigationItem.title ?? "").propValue
         case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
         case .showsCloseButton: return (Self.closeAction(on: controller) != nil).propValue
         // The bar shows the title where it holds no view in its place.
@@ -130,7 +130,7 @@ extension UIKitDriver {
             return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
-        case .subtitle: return item.subtitle.map { .string($0) }
+        case PageContract.subtitle.token: return item.subtitle.map { .string($0) }
         default: return nil
         }
     }

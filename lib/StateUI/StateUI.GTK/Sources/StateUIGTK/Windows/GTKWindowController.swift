@@ -116,11 +116,11 @@ final class GTKWindowController {
         for (page, sheet) in sheets {
             let chrome = page.gtk.chrome
             sheet.frame?.show(chrome)
-            sheet.setTitle(page.visiblePage?.value(.title)?.string ?? chrome.title)
+            sheet.setTitle(page.visiblePage?.value(PageElementContract.title.token)?.string ?? chrome.title)
             page.gtk.composeChrome()
         }
         let title = WindowChrome(window: element, arrangement: presentation.arrangement).title
-        window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string)
+        window.setTitle(title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(WindowContract.title.token)?.string)
         shortcuts.hold(KeyboardShortcuts.stated(under: element))
     }
 

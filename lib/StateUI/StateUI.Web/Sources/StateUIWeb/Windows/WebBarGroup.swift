@@ -25,6 +25,6 @@ final class WebBarGroup: WebDOMView {
     func show(_ group: MountedElement?) {
         self.group = group
         showBarLook { group?.value($0) }
-        style("gap", WebCSS.pixels(group?.value(.spacing)?.number))
+        style("gap", WebCSS.pixels(group?.value(ToolbarGroupContract.spacing.token)?.number))
     }
 }

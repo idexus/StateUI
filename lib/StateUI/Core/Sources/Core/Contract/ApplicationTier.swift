@@ -7,8 +7,8 @@
 ///     enum NotesContract: ApplicationTier {
 ///         static let name = "Notes"
 ///
-///         static let batteryLevel = ElementAct<Self, Void, Double>("Notes.BatteryLevel")
-///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Notes.BatteryChanged")
+///         static let batteryLevel = ElementAct<Self, Void, Double>("batteryLevel")
+///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
 ///
 ///         static let members: [any ContractMember] = [batteryLevel, batteryChanged]
 ///     }

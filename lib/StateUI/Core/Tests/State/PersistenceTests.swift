@@ -179,7 +179,7 @@ final class PersistenceTests: XCTestCase {
         let acts = drainedActs()
 
         XCTAssertEqual(acts.count, 1)
-        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.name, "Application.persistValue")
         XCTAssertEqual(acts.first?.arguments, [.name("test.count"), .number(3)])
     }
 
@@ -235,7 +235,7 @@ final class PersistenceTests: XCTestCase {
         let acts = drainedActs()
 
         XCTAssertEqual(acts.count, 1)
-        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.name, "Application.persistValue")
         XCTAssertEqual(acts.first?.arguments, [.name("test.name"), .string("Grace")])
 
         // Nothing is waiting on a save: the value is already in state, and the
@@ -302,7 +302,7 @@ final class PersistenceTests: XCTestCase {
         Renderer.shared.send(.hideOnScreenKeyboard, [], completion: nil)
         Sidebar().count = 3
 
-        XCTAssertEqual(drainedActs().map(\.name), ["hideOnScreenKeyboard", "persistValue"])
+        XCTAssertEqual(drainedActs().map(\.name), ["Application.hideOnScreenKeyboard", "Application.persistValue"])
     }
 
     /// Assigning the same value still saves. The state is unchanged and the

@@ -73,8 +73,8 @@ final class AppKitWindowContentTests: XCTestCase {
         var action = HostPatch(id: .manual("action"), type: .button)
         action.properties = [
             .text: .string("Inspector action"),
-            .width: .number(120),
-            .height: .number(32),
+            VisualElementContract.width.token: .number(120),
+            VisualElementContract.height.token: .number(32),
             .horizontalAlignment: .enumeration(2),
             .verticalAlignment: .enumeration(2),
         ]
@@ -122,7 +122,7 @@ final class AppKitWindowContentTests: XCTestCase {
         var window = HostPatch(id: .manual("window"), type: .window)
         if withOverlay {
             var panel = HostPatch(id: .manual("panel"), type: .rectangle)
-            panel.properties[.width] = .number(60)
+            panel.properties[VisualElementContract.width.token] = .number(60)
             panel.properties[.horizontalAlignment] = .enumeration(2)
             var overlay = HostPatch(id: .manual("overlay"), type: .overlay)
             overlay.children = .arranged([panel])

@@ -120,9 +120,13 @@ name and its number - with the library's entries as static members. A token is
 a key and only a key; a host reads it by its name. That is what makes the
 library's tokens and an application's the same thing.
 
-Nobody writes a token by hand. A member's token is made from its name - a
-token's `init(_ name:)` is the host's alone, behind `@_spi(Host)` - and each
-name is spelled once, where a contract declares its member; the library's
+Nobody writes a token by hand. A member's token is made from its contract's
+name, a dot, and its own name - `TextContract.maximumLines` crosses as
+`Text.maximumLines`, an application's `log` in `Gallery` as `Gallery.log` - so
+two contracts' members of one name are two keys, and a member a library tier
+gains never meets an application's. A token's `init(_ name:)` is the host's
+alone, behind `@_spi(Host)`, and each name is spelled once, where a contract
+declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Node
@@ -132,10 +136,11 @@ are ([a key is a number](#a-key-is-a-number)).
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host
-visible without hiding the rest of the interface. An application's act shares
-the one vocabulary with the library's, and the library's case is consulted
-first, so a registration can never shadow it; prefixing an application's names
-with its own keeps the two sets apart.
+visible without hiding the rest of the interface. A contract's name is its own
+in a process (`ContractNames`): a second contract of one name stops it as its
+first member is made, as a second name of one number does - so no application
+act crosses as the library's, and no two of an application's tiers write each
+other's keys.
 
 ## A key is a number
 

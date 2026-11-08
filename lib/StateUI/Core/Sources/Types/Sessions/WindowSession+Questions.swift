@@ -87,7 +87,7 @@ extension WindowSession {
         guard let chosen else { return nil }
         guard choices.indices.contains(chosen) else {
             throw StateUIError.unreadableAnswer(
-                act: ApplicationContract.chooseAction.name, answered: "action \(chosen)",
+                act: ApplicationContract.chooseAction.token.name, answered: "action \(chosen)",
                 declared: "one of the \(choices.count) offered")
         }
         return choices[chosen]

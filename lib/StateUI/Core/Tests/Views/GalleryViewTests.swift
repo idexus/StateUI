@@ -387,8 +387,8 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertEqual(cards.count, 3)
         for card in cards {
-            XCTAssertEqual(card.properties[.width], .number(176))
-            XCTAssertEqual(card.properties[.height], .number(248))
+            XCTAssertEqual(card.properties["VisualElement.width"], .number(176))
+            XCTAssertEqual(card.properties["VisualElement.height"], .number(248))
         }
     }
 

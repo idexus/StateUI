@@ -23,7 +23,7 @@ extension ModifiableElement {
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, handler))
+        hearing(event.token, HostEvents.heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
@@ -32,7 +32,7 @@ extension ModifiableElement {
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: .own(policy), handler))
+        hearing(event.token, HostEvents.heard(event, gate: .own(policy), handler))
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
@@ -41,11 +41,11 @@ extension ModifiableElement {
         gate: Gate,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> Modified {
-        hearing(EventMember(event), HostEvents.heard(event, gate: .shared(gate), handler))
+        hearing(event.token, HostEvents.heard(event, gate: .shared(gate), handler))
     }
 
     /// The view hearing `event` through `handler` while it stands.
-    private func hearing(_ event: EventMember, _ handler: ValueHandler<[PropValue]>) -> Modified {
+    private func hearing(_ event: Event, _ handler: ValueHandler<[PropValue]>) -> Modified {
         modified { $0.hostEvents.append(HostEventListen(event: event, handler: handler)) }
     }
 }

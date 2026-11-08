@@ -39,7 +39,7 @@ extension AndroidDriver {
               let place = tabs.children.firstIndex(where: { $0 === element })
         else { throw DriverCannot(reading: property, of: element) }
         switch property {
-        case .title:
+        case PageElementContract.title.token:
             return Java.frame {
                 Java.callStaticObject(Self.testTabs, Self.tabTitle, .object(row.reference), .int(Int32(place)))
                     .map { .string(Java.text($0)) }

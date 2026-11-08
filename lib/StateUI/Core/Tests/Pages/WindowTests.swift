@@ -56,11 +56,11 @@ final class WindowTests: XCTestCase {
         let node = Node.window(Home(), session: desktop()).built
 
         XCTAssertEqual(node.type, "Window")
-        XCTAssertEqual(node.props["title"], .string("My Application"))
-        XCTAssertEqual(node.props["width"], .number(1200))
-        XCTAssertEqual(node.props["height"], .number(800))
-        XCTAssertEqual(node.props["minimumWidth"], .number(600))
-        XCTAssertEqual(node.props["minimumHeight"], .number(400))
+        XCTAssertEqual(node.props["Window.title"], .string("My Application"))
+        XCTAssertEqual(node.props["Window.width"], .number(1200))
+        XCTAssertEqual(node.props["Window.height"], .number(800))
+        XCTAssertEqual(node.props["Window.minimumWidth"], .number(600))
+        XCTAssertEqual(node.props["Window.minimumHeight"], .number(400))
         XCTAssertEqual(node.props["x"], .number(100))
         XCTAssertEqual(node.props["y"], .number(100))
     }
@@ -164,8 +164,8 @@ final class WindowTests: XCTestCase {
 
         let node = Node.window(Home(), session: session).built
 
-        XCTAssertEqual(node.props["maximumWidth"], .number(1600))
-        XCTAssertEqual(node.props["maximumHeight"], .number(1200))
+        XCTAssertEqual(node.props["Window.maximumWidth"], .number(1600))
+        XCTAssertEqual(node.props["Window.maximumHeight"], .number(1200))
     }
 
     /// A window whose session says nothing about its size sends nothing about
@@ -178,7 +178,7 @@ final class WindowTests: XCTestCase {
 
         let node = Node.window(Home(), session: session).built
 
-        XCTAssertEqual(node.propNames, ["title"])
+        XCTAssertEqual(node.propNames, ["Window.title"])
     }
 
     /// The page is still the child, whatever else the window carries - the
@@ -195,8 +195,8 @@ final class WindowTests: XCTestCase {
     func testTheSessionsSizeIsTheWindowsProperties() {
         let patch = Renders().render(Node.window(Home(), session: desktop()))
 
-        XCTAssertEqual(patch.props["width"], .number(1200))
-        XCTAssertEqual(patch.props["minimumHeight"], .number(400))
+        XCTAssertEqual(patch.props["Window.width"], .number(1200))
+        XCTAssertEqual(patch.props["Window.minimumHeight"], .number(400))
     }
 
     /// A window resized through its session is a property change like any
@@ -215,7 +215,7 @@ final class WindowTests: XCTestCase {
             Node.window(Home(), session: session),
             changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(patch.propNames, ["width"])
+        XCTAssertEqual(patch.propNames, ["Window.width"])
         XCTAssertEqual(patch.children.count, 0)
     }
 
@@ -225,7 +225,7 @@ final class WindowTests: XCTestCase {
         let patch = Renders().render(Node.window(Home(), session: WindowSession()))
 
         XCTAssertEqual(
-            patch.events?.keys.sorted(),
+            patch.events.map { Set($0.keys) },
             ["activated", "created", "deactivated", "destroying", "stopped"])
     }
 

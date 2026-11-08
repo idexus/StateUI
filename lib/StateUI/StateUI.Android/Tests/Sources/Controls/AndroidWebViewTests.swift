@@ -49,7 +49,7 @@ final class AndroidWebViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running { BrowsingPage(heard: Received<String>()) }
             let web = try XCTUnwrap(host.views(AndroidWebView.self).first)
-            let source: () -> HostValue? = { (try? AndroidDriver.webHolds(.source, web)) ?? nil }
+            let source: () -> HostValue? = { (try? AndroidDriver.webHolds(WebViewContract.source.token, web)) ?? nil }
             host.settle { source() != nil }
             let shown = try XCTUnwrap(source(), "the page shown")
 

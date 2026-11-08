@@ -19,22 +19,22 @@ public enum GalleryContract: ApplicationTier {
     public static let name = "Gallery"
 
     /// Writes a line to the platform's own log, where its tools read it.
-    public static let log = ElementAct<Self, String, Void>("Gallery.Log")
+    public static let log = ElementAct<Self, String, Void>("log")
 
     /// The battery's level, 0 through 1, and whether it is charging.
-    public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+    public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("batteryLevel")
 
     /// Declared here and registered nowhere: calling it shows what an act no
     /// performer answers does.
-    public static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+    public static let nobody = ElementAct<Self, Void, Void>("nobody")
 
     /// The battery reported: its level and whether it is charging.
     public static let batteryChanged =
-        ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+        ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
     /// The network came or went: whether the internet is reachable.
     public static let connectivityChanged =
-        ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+        ElementEvent<Self, Bool>("connectivityChanged")
 
     public static let members: [any ContractMember] = [
         log, batteryLevel, nobody, batteryChanged, connectivityChanged,

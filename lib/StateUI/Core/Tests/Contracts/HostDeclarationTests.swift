@@ -163,6 +163,10 @@ final class HostDeclarationTests: XCTestCase {
         ])
         XCTAssertEqual(declaration.shared, HostDeclaration.Element(members: ["opacity"], events: ["tapped"]))
         XCTAssertEqual(declaration.acts, ["focus"])
+        XCTAssertTrue(
+            declaration.realization.members.contains(
+                HostRealizedMember(element: "Slider", owner: "FocusElement", member: "focus")),
+            "an act is found by its name among the contracts its element wears")
         XCTAssertEqual(declaration.text, """
             Slider
               valueChanged()

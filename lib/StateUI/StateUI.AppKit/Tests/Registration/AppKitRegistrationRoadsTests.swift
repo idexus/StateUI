@@ -33,7 +33,7 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
             static let tiers: [any Tier.Type] = [ViewContract.self]
 
             static let lit = ElementProperty<Self, Bool>("lit")
-            static let flash = ElementAct<Self, Void, Void>("Test.Flash")
+            static let flash = ElementAct<Self, Void, Void>("flash")
 
             static let members: [any ContractMember] = [lit, flash]
         }
@@ -43,8 +43,8 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
         enum NotesContract: ApplicationTier {
             static let name = "Notes"
 
-            static let log = ElementAct<Self, String, Void>("Notes.Log")
-            static let changed = ElementEvent<Self, Bool>("Notes.Changed")
+            static let log = ElementAct<Self, String, Void>("log")
+            static let changed = ElementEvent<Self, Bool>("changed")
 
             static let members: [any ContractMember] = [log, changed]
         }

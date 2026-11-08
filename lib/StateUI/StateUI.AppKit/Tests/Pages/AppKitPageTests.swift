@@ -736,20 +736,20 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.finish() }
 
         var library = navigation([page("shelf", title: "Shelf", events: 100)])
-        library.properties[.title] = .string("Library")
+        library.properties[PageElementContract.title.token] = .string("Library")
         library.properties[.icon] = .string("books.png")
         var mail = flyout(
             presented: true,
             menu: page("folders", title: "Folders", events: 200),
             detail: page("inbox", title: "Inbox", events: 300))
-        mail.properties[.title] = .string("Mail")
+        mail.properties[PageElementContract.title.token] = .string("Mail")
         mail.properties[.icon] = .string("mail.png")
         var more = tabbed(
             [page("settings", title: "Settings", events: 400)],
             selected: 0,
             changed: 903,
             id: "more")
-        more.properties[.title] = .string("More")
+        more.properties[PageElementContract.title.token] = .string("More")
         more.properties[.icon] = .string("more.png")
         var home = page("home", title: "Home", events: 500)
         home.properties[.icon] = .string("home.png")
@@ -1042,7 +1042,7 @@ final class AppKitPageTests: XCTestCase {
             item.properties = [
                 .text: .string(title),
                 .isEnabled: .bool(enabled),
-                .role: (destructive ? ActionRole.destructive : ActionRole.normal).propValue,
+                ActionElementContract.role.token: (destructive ? ActionRole.destructive : ActionRole.normal).propValue,
             ]
             if let icon { item.properties[.icon] = .string(icon) }
             return item
@@ -1051,7 +1051,7 @@ final class AppKitPageTests: XCTestCase {
             _ id: String, order: Double, at position: ToolbarPosition = .end, _ items: [HostPatch]
         ) -> HostPatch {
             var group = HostPatch(id: .manual(id), type: .toolbarGroup)
-            group.properties = [.order: .number(order), .position: .enumeration(position.rawValue)]
+            group.properties = [ToolbarGroupContract.order.token: .number(order), .position: .enumeration(position.rawValue)]
             group.children = .arranged(items)
             return group
         }
@@ -1376,7 +1376,7 @@ private extension AppKitPageTests {
         width: Double? = nil
     ) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
-        if let width { window.properties[.width] = .number(width) }
+        if let width { window.properties[WindowContract.width.token] = .number(width) }
         // The window's page presents the sheets, each a slot of its own holding its page.
         var root = page
         if let modals, !modals.isEmpty {
@@ -1437,7 +1437,7 @@ private extension AppKitPageTests {
         label.properties[.text] = .string(id)
 
         var page = HostPatch(id: .manual(id), type: .page)
-        if let title { page.properties[.title] = .string(title) }
+        if let title { page.properties[PageElementContract.title.token] = .string(title) }
         page.events = .replace([
             .appearing: base,
             .disappearing: base + 1,

@@ -1080,7 +1080,7 @@ final class CatalogTests: XCTestCase {
         let shownPane = try XCTUnwrap(first.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
-        XCTAssertNotNil(prop(shownPane, .title), "the sidebar pane has no native title")
+        XCTAssertNotNil(prop(shownPane, PageElementContract.title.token), "the sidebar pane has no native title")
 
         let detail = split.children[1].built
 
@@ -1095,13 +1095,13 @@ final class CatalogTests: XCTestCase {
     func testTheMainWindowCarriesItsNativePropertyPolicy() {
         let shown = firstPatch(mainPage(Place().nav))
 
-        XCTAssertEqual(prop(shown, .title), .string("StateUI Gallery"))
-        XCTAssertEqual(prop(shown, .width), .number(1_100))
-        XCTAssertEqual(prop(shown, .height), .number(800))
-        XCTAssertEqual(prop(shown, .minimumWidth), .number(700))
-        XCTAssertEqual(prop(shown, .minimumHeight), .number(500))
-        XCTAssertNil(prop(shown, .maximumWidth))
-        XCTAssertNil(prop(shown, .maximumHeight))
+        XCTAssertEqual(prop(shown, WindowContract.title.token), .string("StateUI Gallery"))
+        XCTAssertEqual(prop(shown, WindowContract.width.token), .number(1_100))
+        XCTAssertEqual(prop(shown, WindowContract.height.token), .number(800))
+        XCTAssertEqual(prop(shown, WindowContract.minimumWidth.token), .number(700))
+        XCTAssertEqual(prop(shown, WindowContract.minimumHeight.token), .number(500))
+        XCTAssertNil(prop(shown, WindowContract.maximumWidth.token))
+        XCTAssertNil(prop(shown, WindowContract.maximumHeight.token))
         XCTAssertEqual(prop(shown, .isMaximizable), .bool(true))
         XCTAssertEqual(prop(shown, .isMinimizable), .bool(true))
         XCTAssertNil(prop(shown, .x))
@@ -1119,7 +1119,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(split.type, .splitView)
         XCTAssertEqual(menu.type, .page)
-        XCTAssertEqual(prop(menu, .title), .string("StateUI"))
+        XCTAssertEqual(prop(menu, PageElementContract.title.token), .string("StateUI"))
         XCTAssertEqual(prop(menu, .icon), .string("stateui_mark.png"))
         XCTAssertFalse(actions(on: split).contains("Surprise me"), "no action until the sample asks for one")
 
@@ -1340,9 +1340,9 @@ final class CatalogTests: XCTestCase {
         let second = try XCTUnwrap(tabbed.children.last)
 
         XCTAssertEqual(stack.type, "NavigationStack")
-        XCTAssertEqual(prop(stack, .title), .string("Stack"))
+        XCTAssertEqual(prop(stack, PageElementContract.title.token), .string("Stack"))
         XCTAssertNotNil(prop(stack, .icon), "a tab with no picture")
-        XCTAssertEqual(prop(second, .title), .string("Second"))
+        XCTAssertEqual(prop(second, PageElementContract.title.token), .string("Second"))
         XCTAssertNotNil(prop(second, .icon))
     }
 
@@ -1561,7 +1561,7 @@ final class CatalogTests: XCTestCase {
         var engines = 0
 
         func walk(_ node: RenderedNode) {
-            if node.driven[.height] != nil { heights.append(node.type.name) }
+            if node.driven[VisualElementContract.height.token] != nil { heights.append(node.type.name) }
             if node.driven[.frame] != nil { rooms.append(node.type.name) }
             if node.driven[.opacity] != nil { fades.append(node.type.name) }
 
@@ -1695,7 +1695,7 @@ final class CatalogTests: XCTestCase {
 
             func walk(_ node: Node, scrolled: Bool) {
                 let scrolled = scrolled || node.type == "ScrollView"
-                let handled = node.events.keys.map(\.name).filter { gestures.contains($0) }
+                let handled = node.events.keys.map(\.memberName).filter { gestures.contains($0) }
 
                 found += handled.count
 

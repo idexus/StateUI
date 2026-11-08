@@ -4,18 +4,6 @@
 // Events the host raises by name, with no element behind them.
 // Design: docs/design/core/acts.md#host-events
 
-/// An application's event by its contract and its member: two tiers may name an event alike.
-/// Design: docs/design/core/acts.md#host-events
-struct EventMember: Hashable, Sendable {
-    let owner: KeyName
-    let member: KeyName
-
-    init<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        owner = event.owner
-        member = event.token.key
-    }
-}
-
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
 /// Keep it - one not kept is a warning - and `cancel()` when the listener
@@ -25,11 +13,11 @@ struct EventMember: Hashable, Sendable {
 @MainActor
 public final class HostEventSubscription {
     /// Which event, and which entry in its list.
-    private let event: EventMember
+    private let event: Event
     private let id: Int
 
     /// Made by `HostEvents.on` and nothing else.
-    init(event: EventMember, id: Int) {
+    init(event: Event, id: Int) {
         self.event = event
         self.id = id
     }
@@ -47,7 +35,7 @@ public final class HostEventSubscription {
 ///
 ///     enum NotesContract: ApplicationTier {
 ///         static let name = "Notes"
-///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Notes.BatteryChanged")
+///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
 ///         static let members: [any ContractMember] = [batteryChanged]
 ///     }
 ///
@@ -67,7 +55,7 @@ public final class HostEventSubscription {
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
     private static var subscriptions:
-        [EventMember: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
+        [Event: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
     private static var nextId = 1
@@ -75,10 +63,10 @@ public enum HostEvents {
     /// Subscribes a handler to what the host raises under an event's name, the values
     /// as they crossed; an event the host says it does not raise is said once.
     static func subscribe(
-        _ event: EventMember,
+        _ event: Event,
         _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
-        if let unraised = HostRealizations.unraised(owner: event.owner, event: event.member) {
+        if let unraised = HostRealizations.unraised(event.key) {
             complain(unraised)
         }
 
@@ -108,7 +96,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, handler))
+        subscribe(event.token, heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
@@ -117,7 +105,7 @@ public enum HostEvents {
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+        subscribe(event.token, heard(event, gate: .own(policy), handler))
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
@@ -126,7 +114,7 @@ public enum HostEvents {
         gate: Gate,
         _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
+        subscribe(event.token, heard(event, gate: .shared(gate), handler))
     }
 
     // MARK: - What a handler hears
@@ -161,7 +149,7 @@ public enum HostEvents {
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
-    static func remove(_ event: EventMember, _ id: Int) {
+    static func remove(_ event: Event, _ id: Int) {
         subscriptions[event]?.first { $0.id == id }?.owner.orphan()
         subscriptions[event]?.removeAll { $0.id == id }
     }
@@ -169,7 +157,7 @@ public enum HostEvents {
     /// Runs every handler subscribed to an event, each through its gate, and answers how many - the list as
     /// it stands when the raise is delivered on the UI thread, which may be after it was raised.
     @discardableResult
-    static func dispatch(_ event: EventMember, _ payload: [PropValue]) -> Int {
+    static func dispatch(_ event: Event, _ payload: [PropValue]) -> Int {
         let handlers = subscriptions[event] ?? []
 
         for entry in handlers {

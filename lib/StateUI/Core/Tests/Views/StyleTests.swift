@@ -81,7 +81,7 @@ final class StyleTests: XCTestCase {
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
 
-        XCTAssertEqual(style.props["lineWidth"], .number(2))
+        XCTAssertEqual(style.props["BorderElement.lineWidth"], .number(2))
         XCTAssertEqual(style.states, [
             DeclaredState(key: KeyName("Disabled"), setters: ["textColor": Color(hex: 0x808080).propValue]),
         ])
@@ -503,15 +503,15 @@ final class StyleTests: XCTestCase {
         func both() -> Node { Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png")).node }
 
         XCTAssertEqual(
-            both().props["source"],
+            both().props["Image.source"],
             .themed(light: .string("nav_home.png"), dark: .string("nav_home_dark.png")))
-        XCTAssertEqual(Renders().render(both()).props["source"], .string("nav_home.png"))
+        XCTAssertEqual(Renders().render(both()).props["Image.source"], .string("nav_home.png"))
 
         withTheme(.dark) {
-            XCTAssertEqual(Renders().render(both()).props["source"], .string("nav_home_dark.png"))
+            XCTAssertEqual(Renders().render(both()).props["Image.source"], .string("nav_home_dark.png"))
         }
 
-        XCTAssertEqual(Image("nav_home.png").node.props["source"], .string("nav_home.png"),
+        XCTAssertEqual(Image("nav_home.png").node.props["Image.source"], .string("nav_home.png"),
                        "and one drawn once is the same name in both")
     }
 
@@ -900,7 +900,7 @@ final class StyleTests: XCTestCase {
         XCTAssertTrue(button.children.isEmpty)
 
         // A card's style, and the default label's inside it.
-        XCTAssertEqual(stack.at(.auto(7))?.props["lineWidth"], .number(1))
+        XCTAssertEqual(stack.at(.auto(7))?.props["BorderElement.lineWidth"], .number(1))
         XCTAssertEqual(stack.at(.auto(7), .auto(8))?.props["fontSize"], .number(14))
 
         XCTAssertFalse(

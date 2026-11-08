@@ -55,7 +55,7 @@ final class TabViewTests: XCTestCase {
         XCTAssertEqual(patch.type, "TabView")
         XCTAssertEqual(Set(patch.children.map(\.id)).count, 3)
         XCTAssertNotNil(patch.arrangement)
-        XCTAssertEqual(patch.children.map { $0.props["title"] },
+        XCTAssertEqual(patch.children.map { $0.props["PageElement.title"] },
                        [.string("home"), .string("browse"), .string("settings")])
     }
 
@@ -65,7 +65,7 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let patch = Renders().settled(tabs(selection.projectedValue).node)
 
-        XCTAssertEqual(patch.children.first?.props["title"], .string("home"))
+        XCTAssertEqual(patch.children.first?.props["PageElement.title"], .string("home"))
         XCTAssertEqual(patch.children.first?.props["icon"],
                        ImageSource("home.png").propValue)
     }
@@ -173,7 +173,7 @@ final class TabViewTests: XCTestCase {
 
         XCTAssertEqual(stack.type, "NavigationStack")
         XCTAssertEqual(patch.children.count, 1, "one tab holds the whole stack")
-        XCTAssertEqual(stack.props["title"], .string("Home"))
+        XCTAssertEqual(stack.props["PageElement.title"], .string("Home"))
         XCTAssertEqual(stack.props["icon"], ImageSource("house.png").propValue)
         XCTAssertEqual(stack.children.count, 2, "the root and the one route")
     }
@@ -209,7 +209,7 @@ final class TabViewTests: XCTestCase {
                 .built
                 .props
                 .keys
-                .map(\.name))
+                .map { $0.memberName })
 
         let declared = try SourceTree.propertyKeys(in: "TabView.swift")
 
@@ -267,9 +267,9 @@ final class TabViewTests: XCTestCase {
         XCTAssertEqual(Set(tabs.children.map(\.id)).count, 2)
 
         let home = try XCTUnwrap(tabs.children.first)
-        XCTAssertEqual(home.props, ["icon": .string("house.png"), "title": .string("Home")])
-        XCTAssertEqual(home.child("root")?.props, ["icon": .string("home.png"), "title": .string("home")])
-        XCTAssertEqual(tabs.children.dropFirst().first?.props, ["icon": .string("settings.png"), "title": .string("settings")])
+        XCTAssertEqual(home.props, ["icon": .string("house.png"), "PageElement.title": .string("Home")])
+        XCTAssertEqual(home.child("root")?.props, ["icon": .string("home.png"), "PageElement.title": .string("home")])
+        XCTAssertEqual(tabs.children.dropFirst().first?.props, ["icon": .string("settings.png"), "PageElement.title": .string("settings")])
     }
 
     // MARK: - What comes back

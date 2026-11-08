@@ -33,14 +33,17 @@ enum WinUIRealization {
     /// The entries Windows will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
-    /// Every record, the tiers' first.
     /// Why a list is not pulled to refresh here.
     private static let noListPull = "WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a "
         + "ScrollView it does not pull."
 
-    static let records: [HostRecord] = [
+    /// Every record, the tiers' first.
+    static let records: [HostRecord] = tierRecords + entryRecords + pageRecords + HostRecord.motionLayout
+        + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
+
+    /// A tier's member every wearer realizes alike.
+    private static let tierRecords: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
-        // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),
         .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),
@@ -102,7 +105,10 @@ enum WinUIRealization {
         .complete(VisualElementContract.layoutDirection),
         .complete(StyledElementContract.style, on: VisualElementContract.self),
 
-        // MARK: Entries - a control's or a part's own
+    ]
+
+    /// A control's or a part's own.
+    private static let entryRecords: [HostRecord] = [
         .notPlanned(PageContract.backButtonTitle, reason: "WinUI's way back is an arrow, with no words."),
         .notPlanned(TextInputContract.cursorPosition, on: SearchFieldContract.self, reason: searchCaret),
         .notPlanned(TextInputContract.selectionLength, on: SearchFieldContract.self, reason: searchCaret),
@@ -177,6 +183,10 @@ enum WinUIRealization {
         .complete(PresentedElementContract.isPresented, on: SheetContract.self),
         .complete(PresentedElementContract.isPresentedChanged, on: SheetContract.self),
         .complete(NavigationStackContract.popped),
+    ]
+
+    /// A page's, a presentation's, a scene's and the rest, in order.
+    private static let pageRecords: [HostRecord] = [
         .complete(PageContract.appearing),
         .complete(BackgroundElementContract.background, on: PageElementContract.self),
         .complete(PageElementContract.linkOpened),
@@ -239,7 +249,7 @@ enum WinUIRealization {
         .complete(ViewContract.layoutBody),
         .complete(IconElementContract.icon, on: ToolbarLabelContract.self),
         .complete(TextElementContract.text, on: ToolbarLabelContract.self),
-        .notPlanned(EnabledElementContract.isEnabled, on: VisualElementContract.self, on: WebViewContract.self,
+        .notPlanned(EnabledElementContract.isEnabled, on: WebViewContract.self,
             reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
             + "its page takes the user's hand whatever the tree says."),
         .notPlanned(ViewContract.panTouchCount, on: WebViewContract.self, reason: webViewTakesTheHand),
@@ -248,8 +258,8 @@ enum WinUIRealization {
         .notPlanned(ViewContract.panXChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panYChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pinchUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(HoverElementContract.pointerEntered, on: ViewContract.self, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(HoverElementContract.pointerExited, on: ViewContract.self, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(HoverElementContract.pointerEntered, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(HoverElementContract.pointerExited, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerMoved, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerPressed, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerReleased, on: WebViewContract.self, reason: webViewTakesTheHand),
@@ -281,8 +291,7 @@ enum WinUIRealization {
         .complete(WindowContract.windowValue),
         .complete(WindowContract.x),
         .complete(WindowContract.y),
-    ] + HostRecord.motionLayout
-        + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
+    ]
 
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."

@@ -17,6 +17,7 @@ final class LibraryContractTests: XCTestCase {
     private struct Declared {
         let contract: String
         let name: String
+        let key: KeyName?
         let facts: MemberFacts
     }
 
@@ -27,6 +28,7 @@ final class LibraryContractTests: XCTestCase {
                 Declared(
                     contract: contract.name,
                     name: member.name,
+                    key: (member as? any KeyedMember)?.memberKey,
                     facts: (member as? any DeclaredMember)?.facts
                         ?? MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: []))
             }
@@ -35,40 +37,15 @@ final class LibraryContractTests: XCTestCase {
 
     // MARK: - The facts
 
-    /// The members of one name say the same of their travel, clearing and
-    /// motion: the differ and the hosts hold a token, which is a name, and read
-    /// what it says by the name - two members of one name that disagreed would
-    /// each be half wrong. A member's layer is its own and its element's: no
-    /// token carries it, so a page's line under its title and a provider's
-    /// marker's are one name.
-    func testTheMembersOfOneNameShareTheirFacts() {
-        var first: [String: Declared] = [:]
-        var wrong: [String] = []
-
-        for member in declared where member.facts.kind != .act {
-            let key = "\(member.facts.kind) \(member.name)"
-            guard let earlier = first[key] else {
-                first[key] = member
-                continue
-            }
-
-            if (earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
-                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
-                wrong.append("\(member.contract).\(member.name) differs from \(earlier.contract)'s")
-            }
-        }
-
-        XCTAssertEqual(wrong, [])
-    }
-
-    /// A token's facts are its members': what the differ reads by a name is
-    /// what the contracts declare under it - and a name no contract declares,
+    /// A token's facts are its member's: what the differ reads by a key is
+    /// what the contract declares under it - and a key no contract declares,
     /// an application's own, travels, is cleared and says nothing of motion.
     func testATokensFactsAreItsMembers() {
         var wrong: [String] = []
 
         for member in declared where member.facts.kind == .property {
-            let read = Prop(member.name).facts
+            guard let key = member.key else { continue }
+            let read = Prop(key: key).facts
             if (read.travels, read.cleared, read.moves)
                 != (member.facts.travels, member.facts.cleared, member.facts.moves) {
                 wrong.append("\(member.contract).\(member.name)")
@@ -100,8 +77,9 @@ final class LibraryContractTests: XCTestCase {
 
     // MARK: - The names
 
-    /// A member crosses under its name, so a library member's name is a token
-    /// the library declares in Tokens.swift.
+    /// A library member whose name is its own has a token the library declares
+    /// in Tokens.swift; one whose name another contract shares has none, and
+    /// each place reading it names its member (`HostContractTests`).
     func testEveryMemberIsATokenTheLibraryDeclares() throws {
         let tokens: [MemberFacts.Kind: Set<String>] = [
             .property: try SourceTree.tokenNames(of: "Prop"),
@@ -109,7 +87,8 @@ final class LibraryContractTests: XCTestCase {
             .act: try SourceTree.tokenNames(of: "Act"),
         ]
 
-        let stranded = declared.filter { tokens[$0.facts.kind]?.contains($0.name) != true }
+        let shared = Set(Dictionary(grouping: declared.map(\.name)) { $0 }.filter { $1.count > 1 }.keys)
+        let stranded = declared.filter { !shared.contains($0.name) && tokens[$0.facts.kind]?.contains($0.name) != true }
 
         XCTAssertEqual(stranded.map { "\($0.contract).\($0.name)" }, [])
     }
@@ -209,6 +188,15 @@ final class LibraryContractTests: XCTestCase {
         }
 
         XCTAssertEqual(twice, [])
+    }
+
+    /// No name is two kinds of member - a property and an event of one name - so a test reading a key by its name
+    /// finds one kind of it.
+    func testNoNameIsTwoKindsOfMember() {
+        var kinds: [String: Set<String>] = [:]
+        for member in declared { kinds[member.name, default: []].insert("\(member.facts.kind)") }
+
+        XCTAssertEqual(kinds.filter { $0.value.count > 1 }.keys.sorted(), [])
     }
 
     /// A tier owns a member: one declaring none promises nothing, and its

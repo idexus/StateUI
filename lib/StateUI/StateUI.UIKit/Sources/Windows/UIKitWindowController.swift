@@ -146,8 +146,8 @@ final class UIKitWindowController {
         presentation.arrangement?.uiKit.composeChrome()
         presentation.sheets.forEach { $0.uiKit.composeChrome() }
         presentation.sheets.forEach(askSize)
-        let title = presentation.arrangement?.titledPage?.value(.title)?.string
-        window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
+        let title = presentation.arrangement?.titledPage?.value(PageElementContract.title.token)?.string
+        window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(WindowContract.title.token)?.string
         // Every page shows the window's background where it paints none of its own, the arrangement in place.
         if changes.traits != nil { window?.rootViewController?.showPageBackgrounds() }
     }

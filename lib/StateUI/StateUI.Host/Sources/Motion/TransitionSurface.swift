@@ -104,22 +104,24 @@
 
     private static let sharedViewProperties: Set<Prop> = [
         .opacity, .background,
-        .width, .height,
-        .minimumWidth, .minimumHeight,
-        .maximumWidth, .maximumHeight,
+        VisualElementContract.width.token, VisualElementContract.height.token,
+        VisualElementContract.minimumWidth.token, VisualElementContract.minimumHeight.token,
+        VisualElementContract.maximumWidth.token, VisualElementContract.maximumHeight.token,
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .translationX, .translationY,
         .margin,
     ]
 
     private static let contentPageProperties: Set<Prop> = [.background]
 
-    private static let stackProperties: Set<Prop> = [.padding, .spacing]
+    private static let stackProperties: Set<Prop> = [.padding, StackContract.spacing.token]
 
     /// What a layout, a space or a fill draws of its own box.
-    private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .lineWidth, .shape]
+    private static let layoutBoxProperties: Set<Prop> = [
+        .background, BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape,
+    ]
 
     private static let gridProperties: Set<Prop> = [
-        .padding, .rowSpacing, .columnSpacing, .rows, .columns,
+        .padding, GridContract.rowSpacing.token, .columnSpacing, .rows, .columns,
     ]
 
     private static let labelProperties: Set<Prop> = [
@@ -133,7 +135,8 @@
     private static let textControlProperties: Set<Prop> = [.fontSize, .textColor]
 
     private static let buttonProperties: Set<Prop> = [
-        .padding, .fontSize, .textColor, .stroke, .lineWidth, .shape,
+        .padding, .fontSize, .textColor, BorderElementContract.stroke.token, BorderElementContract.lineWidth.token,
+        .shape,
     ]
 
 
@@ -149,11 +152,11 @@
     private static let barProperties: Set<Prop> = [.barBackground, .barForegroundColor]
 
     private static let shapeProperties: Set<Prop> = [
-        .fill, .stroke, .lineWidth, .dashPhase, .miterLimit,
+        .fill, ShapeContract.stroke.token, ShapeContract.lineWidth.token, .dashPhase, .miterLimit,
         .geometryTransform,
     ]
 
     private static let lineProperties: Set<Prop> = [.from, .to]
 
-    private static let windowProperties: Set<Prop> = [.x, .y, .width, .height]
+    private static let windowProperties: Set<Prop> = [.x, .y, WindowContract.width.token, WindowContract.height.token]
 }

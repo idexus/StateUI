@@ -152,7 +152,7 @@ extension MountedElement {
     /// The line under this page's title on its bar: its own subtitle; nil where it says none, or an empty one.
     /// Design: docs/design/host/pages.md#a-pages-title-area
     public var barSubtitle: String? {
-        value(.subtitle)?.string.flatMap { $0.isEmpty ? nil : $0 }
+        value(PageContract.subtitle.token)?.string.flatMap { $0.isEmpty ? nil : $0 }
     }
 
     /// What this page's bar says where it names the application - a sidebar's page's: its title, else the

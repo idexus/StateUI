@@ -34,7 +34,7 @@ extension AppKitDriver {
             return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue
         case .showsMenuArrow where view is AppKitButtonView:
             return (view as! AppKitButtonView).showsMenuMark.propValue
-        case .role where view is NSButton:
+        case ButtonContract.role.token where view is NSButton:
             // As AppKit holds it: the destructive mark, the main action's accent, the way out's Escape.
             let button = view as! NSButton
             if button.hasDestructiveAction { return ButtonRole.destructive.propValue }
@@ -160,7 +160,7 @@ extension AppKitDriver {
     func tabTitle(of element: MountedElement, in tabs: MountedElement) throws -> HostValue? {
         let control = try controller(of: element).tabRowForTesting.controlForTesting
         guard let place = tabs.children.firstIndex(where: { $0 === element }), place < control.segmentCount else {
-            throw DriverCannot(reading: .title, of: element)
+            throw DriverCannot(reading: PageElementContract.title.token, of: element)
         }
         return control.label(forSegment: place)?.propValue
     }
@@ -176,7 +176,7 @@ extension AppKitDriver {
                 return AppKitKeys.shortcut(key: item.keyEquivalent, modifiers: item.keyEquivalentModifierMask)?.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
             case .icon: return pictureName(item.image)
-            case .role:
+            case ActionElementContract.role.token:
                 let words = item.attributedTitle
                 let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
                 let destructive = (red as? NSColor) == .systemRed

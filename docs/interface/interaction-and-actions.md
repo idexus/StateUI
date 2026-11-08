@@ -522,7 +522,7 @@ arguments and its answer:
 enum NotesContract: ApplicationTier {
     static let name = "Notes"
 
-    static let exportDocument = ElementAct<Self, String, String>("Notes.ExportDocument")
+    static let exportDocument = ElementAct<Self, String, String>("exportDocument")
 
     static let members: [any ContractMember] = [exportDocument]
 }
@@ -570,7 +570,7 @@ by the handler the last render wrote:
 enum NotesContract: ApplicationTier {
     static let name = "Notes"
 
-    static let importFinished = ElementEvent<Self, String>("Notes.ImportFinished")
+    static let importFinished = ElementEvent<Self, String>("importFinished")
 
     static let members: [any ContractMember] = [importFinished]
 }

@@ -397,7 +397,7 @@ final class CarriedStateTests: XCTestCase {
         let grid = Renders().render(Grid {}.rowSpacing(rows.projectedValue).columnSpacing(columns.projectedValue).node)
         let text = Renders().render(Text("Words").lineHeight(line.projectedValue).node)
 
-        XCTAssertEqual(grid.driven?[.rowSpacing]?.kind, .property)
+        XCTAssertEqual(grid.driven?["Grid.rowSpacing"]?.kind, .property)
         XCTAssertEqual(grid.driven?[.columnSpacing]?.kind, .property)
         XCTAssertEqual(text.driven?[.lineHeight]?.kind, .property)
     }

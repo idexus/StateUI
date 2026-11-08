@@ -73,7 +73,7 @@
             byElement[element.name] = []
         }
         for member in realization.members where byElement[member.element.name] != nil {
-            byElement[member.element.name, default: []].insert(member.member.name)
+            byElement[member.element.name, default: []].insert(member.name)
         }
 
         var elements: [String: Element] = [:]

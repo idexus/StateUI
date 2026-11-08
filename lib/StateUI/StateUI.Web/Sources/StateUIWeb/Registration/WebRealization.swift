@@ -221,12 +221,12 @@ enum WebRealization {
             ViewContract.swipeDirections, ViewContract.swipeThreshold, ViewContract.pointerReleased,
         ]
         return pressing.map { .notPlanned($0, on: PickerContract.self, reason: pressed) } + [
-            .notPlanned(PopupElementContract.isOpen, on: DatePickerContract.self, reason: opens), .notPlanned(PopupElementContract.opened, reason: opened),
-            .notPlanned(PopupElementContract.closed, on: DatePickerContract.self, reason: closed), .notPlanned(PopupElementContract.isOpen, reason: opens),
-            .notPlanned(PopupElementContract.opened, on: PickerContract.self, reason: opened), .notPlanned(PopupElementContract.closed, reason: closed),
-            .notPlanned(PopupElementContract.isOpen, on: TimePickerContract.self, reason: opens), .notPlanned(PopupElementContract.opened, reason: opened),
-            .notPlanned(PopupElementContract.closed, on: TimePickerContract.self, reason: closed),
-        ]
+        ] + ([DatePickerContract.self, PickerContract.self, TimePickerContract.self] as [any Contract.Type]).flatMap {
+            picker -> [HostRecord] in [
+            .notPlanned(PopupElementContract.isOpen, on: picker, reason: opens),
+            .notPlanned(PopupElementContract.opened, on: picker, reason: opened),
+            .notPlanned(PopupElementContract.closed, on: picker, reason: closed),
+        ] }
     }()
 
     /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), the requests

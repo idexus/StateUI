@@ -34,7 +34,7 @@ final class WinUIWindowController {
         let view = page?.winUI.view as? WinUILayoutView
         if headed !== view { headed?.setHeading(nil, line: nil) }
         headed = view
-        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
+        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
     }
 
     init(_ element: MountedElement) {

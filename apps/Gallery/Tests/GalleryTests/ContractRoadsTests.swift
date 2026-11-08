@@ -51,9 +51,9 @@ final class ContractRoadsTests: XCTestCase {
         enum NotesContract: ApplicationTier {
             static let name = "Notes"
 
-            static let export = ElementAct<Self, String, String>("Notes.Export")
-            static let log = ElementAct<Self, String, Void>("Notes.Log")
-            static let changed = ElementEvent<Self, Bool>("Notes.Changed")
+            static let export = ElementAct<Self, String, String>("export")
+            static let log = ElementAct<Self, String, Void>("log")
+            static let changed = ElementEvent<Self, Bool>("changed")
 
             static let members: [any ContractMember] = [export, log, changed]
         }
@@ -99,15 +99,15 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
-            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.Export"), [.string("draft")])"#,
+            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.export"), [.string("draft")])"#,
             open: #"_ = try await Environment(\.application).wrappedValue.call(NotesContract.export, "draft")"#),
         Road(
             name: "an act sent by its token",
-            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.Log"), [.string("opened")])"#,
+            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.log"), [.string("opened")])"#,
             open: #"Environment(\.application).wrappedValue.tell(NotesContract.log, "opened")"#),
         Road(
             name: "an application's event heard by its token",
-            closed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,
+            closed: #"_ = HostEvents.on(Event("Notes.changed")) { payload in _ = payload }"#,
             open: "_ = HostEvents.on(NotesContract.changed) { online in _ = online }"),
         Road(
             name: "an aim's identity taken to aim by hand",
@@ -419,7 +419,7 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = BeaconContract.tapped"),
         Road(
             name: "an act's key made from its name",
-            closed: #"_ = Act("Notes.Export")"#,
+            closed: #"_ = Act("Notes.export")"#,
             open: "_ = NotesContract.export"),
         Road(
             name: "a type of an application's own taken as properties",

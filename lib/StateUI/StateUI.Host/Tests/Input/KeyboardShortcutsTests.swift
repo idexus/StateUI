@@ -93,7 +93,7 @@ final class KeyboardShortcutsTests: XCTestCase {
     func testARolesKeyPressesTheButtonUnlessItStatesOne() throws {
         func button(_ id: String, _ role: ButtonRole, _ shortcut: KeyboardShortcut? = nil) -> HostPatch {
             var made = element(id, .button, shortcut)
-            made.properties[.role] = role.propValue
+            made.properties[ButtonContract.role.token] = role.propValue
             return made
         }
         let returnKey = KeyboardShortcut(.return, modifiers: []), escape = KeyboardShortcut(.escape, modifiers: [])

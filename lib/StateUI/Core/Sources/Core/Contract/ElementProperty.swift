@@ -84,11 +84,12 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.remakes = remakes
         self.unsaid = unsaid?.propValue
         self.writtenByStateUI = writtenByStateUI
-        token = Prop(name)
+        token = Prop("\(Owner.name).\(name)")
         owner = KeyName(Owner.name)
+        ContractNames.claim(Owner.self, named: owner)
     }
 
-    /// The key the property crosses the boundary under, made once.
+    /// The key the property crosses the boundary under, made once: its owner's name, a dot, and its own.
     @_spi(Host) public let token: Prop
 
     /// The key of the contract declaring it, made once.

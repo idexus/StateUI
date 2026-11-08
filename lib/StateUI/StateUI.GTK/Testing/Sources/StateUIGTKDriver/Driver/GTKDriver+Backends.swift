@@ -40,7 +40,7 @@ extension GTKDriver {
     var backendRecords: [HostRecord] {
         HostRegister.records(
             ofBackends: Self.backends.values.map { $0.contract }, in: GTKRegistrations.registry.realization,
-            performed: Set(GTKInterop.acts.performers.keys.map(\.name)))
+            performed: Set(GTKInterop.acts.performers.keys))
     }
 
     /// Performs `act` through a backend's driver; false where none performs it.

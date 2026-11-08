@@ -27,7 +27,7 @@ enum GTKTransitionSurface {
 
     /// What else a class paints on one kind of widget, and a window's place and size, which the desktop keeps.
     static let atRest: [NodeType: Set<Prop>] = [
-        .button: [.stroke, .lineWidth, .shape],
+        .button: [BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape],
         .textField: [.fontSize, .textColor, .placeholderColor],
         .searchField: [.fontSize, .textColor, .placeholderColor],
         .textEditor: [.fontSize, .textColor, .placeholderColor],
@@ -37,6 +37,6 @@ enum GTKTransitionSurface {
         .navigationStack: [.barBackground, .barForegroundColor],
         .tabView: [.barBackground, .barForegroundColor],
         .splitView: [.barBackground, .barForegroundColor],
-        .window: [.x, .y, .width, .height],
+        .window: [.x, .y, WindowContract.width.token, WindowContract.height.token],
     ]
 }

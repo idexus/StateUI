@@ -10,12 +10,22 @@
     /// The property's stable StateUI name.
     public var name: String { key.name }
 
+    /// The property's own name, without its contract's: the name of the static member declaring it.
+    @_spi(Host) public var memberName: String {
+        key.name.lastIndex(of: ".").map { String(key.name[key.name.index(after: $0)...]) } ?? key.name
+    }
+
     /// The name and the number the key is worked by (`KeyName`).
     @_spi(Host) public let key: KeyName
 
     /// A property key from its name - what a member's token is made from.
     @_spi(Host) public init(_ name: String) {
         key = KeyName(name)
+    }
+
+    /// The property key a member already holds, made again from nothing.
+    init(key: KeyName) {
+        self.key = key
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.

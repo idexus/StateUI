@@ -281,7 +281,7 @@ private extension AppKitBarTests {
         label.properties[.text] = .string("Page")
 
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties[.title] = .string("Page")
+        page.properties[PageElementContract.title.token] = .string("Page")
         page.children = .arranged([label])
 
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
@@ -310,7 +310,7 @@ private extension AppKitBarTests {
 
     /// What a sidebar's page says of itself: its title, the line under it and its picture.
     func menu(title: String = "Notes", subtitle: String = "Personal") -> [Prop: HostValue] {
-        [.title: .string(title), .subtitle: .string(subtitle), .icon: .string("notes.png")]
+        [PageElementContract.title.token: .string(title), PageContract.subtitle.token: .string(subtitle), .icon: .string("notes.png")]
     }
 
     /// A window whose page is a split view declaring `bar`: a menu saying `menu` of itself beside a stack over a long
@@ -322,13 +322,13 @@ private extension AppKitBarTests {
             return row
         }
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.properties[.spacing] = .number(12)
+        stack.properties[StackContract.spacing.token] = .number(12)
         stack.children = .arranged(rows)
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.children = .arranged([stack])
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties[.title] = .string("Page")
-        page.properties[.subtitle] = line.map { .string($0) } ?? .nothing
+        page.properties[PageElementContract.title.token] = .string("Page")
+        page.properties[PageContract.subtitle.token] = line.map { .string($0) } ?? .nothing
         page.children = .arranged([scroll])
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])

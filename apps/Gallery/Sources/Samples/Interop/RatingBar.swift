@@ -31,7 +31,7 @@ public enum RatingBarContract: ElementContract {
 
     /// Draws attention to one bar: the performer the aim reaches fades the
     /// view it is aimed at.
-    public static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
+    public static let flash = ElementAct<Self, Void, Void>("flash")
 
     public static let members: [any ContractMember] = [rating, maximum, ratingChanged, flash]
 }

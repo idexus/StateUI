@@ -43,9 +43,9 @@ final class PatchShapeTests: XCTestCase {
 
     /// The window of that page, with the tree under it.
     private func window(count: Int, items: [String], sized: Bool = true) -> Node {
-        Node(type: "Window", props: ["title": .string("StateUI")], children: [
-            Node(type: "Page", props: ["title": .string("Counter")], children: [
-                Node(type: "VStack", props: ["spacing": .number(20)], children: [
+        Node(type: "Window", props: ["Window.title": .string("StateUI")], children: [
+            Node(type: "Page", props: ["PageElement.title": .string("Counter")], children: [
+                Node(type: "VStack", props: ["Stack.spacing": .number(20)], children: [
                     counter(count: count, sized: sized),
                     Node(type: "Button",
                          props: ["text": .string("Increment")],
@@ -133,9 +133,9 @@ final class PatchShapeTests: XCTestCase {
     func testTheWindowsLifetimeIsTheWindowsEvents() throws {
         let window = Node(
             type: "Window",
-            props: ["title": .string("StateUI")],
+            props: ["Window.title": .string("StateUI")],
             children: [
-                Node(type: "Page", props: ["title": .string("Home")], children: [
+                Node(type: "Page", props: ["PageElement.title": .string("Home")], children: [
                     Node(type: "Text", props: ["text": .string("one")]),
                 ]),
             ],
@@ -156,7 +156,7 @@ final class PatchShapeTests: XCTestCase {
         let handlers = try XCTUnwrap(patch.at(.scene("1"), .window(1))?.events?.handlers)
 
         XCTAssertEqual(
-            handlers.keys.map(\.name).sorted(),
+            Set(handlers.keys),
             ["activated", "created", "deactivated", "destroying", "stopped"])
         XCTAssertEqual(Set(handlers.values).count, 5, "one handler id for each moment")
     }

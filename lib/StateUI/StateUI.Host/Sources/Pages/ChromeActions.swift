@@ -87,7 +87,7 @@
             self.element = element
             self.depth = depth
             part = element.value(.part)?.enumeration.flatMap { ToolbarPart(rawValue: Int32($0)) } ?? declarersPart
-            order = element.whole(.order) ?? 0
+            order = element.whole(ToolbarGroupContract.order.token) ?? 0
             hidesWithSidebar = element.value(.hidesWithSidebar)?.bool ?? false
             position = element.value(.position)?.enumeration.map { ToolbarPosition(rawValue: Int32($0)) } ?? .end
         }

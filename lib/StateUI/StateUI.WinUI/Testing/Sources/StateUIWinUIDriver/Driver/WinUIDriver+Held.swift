@@ -13,7 +13,7 @@ import CStateUIWinUI
 extension WinUIDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         // What WinUI holds nothing of is not read: the case does not apply here.
-        if platformHasNone["read \(property.name) of \(element.type.name)"] != nil {
+        if platformHasNone["read \(property.memberName) of \(element.type.name)"] != nil {
             throw DriverCannot(reading: property, of: element)
         }
         if let value = backendHolds(property, on: element) { return value }
@@ -28,42 +28,42 @@ extension WinUIDriver {
         let cannot = DriverCannot(reading: property, of: element)
         switch element.type {
         case .textSpan:
-            if let held = try spanHolds(property.name, element) { return held }
+            if let held = try spanHolds(property.memberName, element) { return held }
             throw cannot
         case .menuItem, .menuToggle, .menu:
-            if let held = try menuHolds(property.name, element) { return held }
+            if let held = try menuHolds(property.memberName, element) { return held }
             throw cannot
         case .toolbarButton, .toolbarToggle, .toolbarLabel:
-            if let held = try actionHolds(property.name, element) { return held }
+            if let held = try actionHolds(property.memberName, element) { return held }
             throw cannot
-        case .toolbarGroup where property.name == "standsAlone":
+        case .toolbarGroup where property.memberName == "standsAlone":
             // A lone item's own stands bare on the bar; a group its author declared, on a capsule.
             guard let first = element.children.first, let place = try actionPlace(of: first) else { throw cannot }
             return (try read(window(of: first).titleBar, "action \(place) capsule") == "bare").propValue
         case .window:
-            if let held = try windowHolds(property.name, element) { return held }
+            if let held = try windowHolds(property.memberName, element) { return held }
             throw cannot
-        case .sheet where property.name == "background":
+        case .sheet where property.memberName == "background":
             return Self.ground(try read(sheet(of: element), "ground"))
         case .page, .navigationStack, .splitView, .tabView:
-            if let held = try pageHolds(property.name, element, view) { return held }
-        case .popover where property.name == "isPresented":
+            if let held = try pageHolds(property.memberName, element, view) { return held }
+        case .popover where property.memberName == "isPresented":
             guard let popover = view as? WinUIPopoverView else { throw cannot }
             return popover.flyoutShows.propValue
-        case .button where property.name == "icon":
+        case .button where property.memberName == "icon":
             guard let view else { throw cannot }
             return Self.picture(try read(view, "icon"), named: element)
         default: break
         }
         guard let view else { throw cannot }
-        if property.name == "layoutDirection" { return try direction(of: view, element) }
-        if property.name == "accessibilityPresence" { return presence(view, element) }
-        if let held = try viewHolds(property.name, view) { return held }
-        if let held = try wordsHold(property.name, view) { return held }
-        if let held = try boxHolds(property.name, view) { return held }
-        if let held = try shapeHolds(property.name, view) { return held }
-        if let held = try fieldHolds(property.name, view) { return held }
-        if let held = try controlHolds(property.name, view) { return held }
+        if property.memberName == "layoutDirection" { return try direction(of: view, element) }
+        if property.memberName == "accessibilityPresence" { return presence(view, element) }
+        if let held = try viewHolds(property.memberName, view) { return held }
+        if let held = try wordsHold(property.memberName, view) { return held }
+        if let held = try boxHolds(property.memberName, view) { return held }
+        if let held = try shapeHolds(property.memberName, view) { return held }
+        if let held = try fieldHolds(property.memberName, view) { return held }
+        if let held = try controlHolds(property.memberName, view) { return held }
         throw cannot
     }
 

@@ -192,7 +192,7 @@ final class PagesTests: XCTestCase {
     /// A page's bar says its title; a sidebar's page that says none - itself, or the root of a stack there - shows the
     /// application's name, as a sidebar stands under it; any other page says none.
     func testAnUntitledSidebarShowsTheApplicationsName() throws {
-        let titled = [Prop.title: HostValue.string("Folders")]
+        let titled = [PageElementContract.title.token: HostValue.string("Folders")]
         let runtime = runtime(node("window", .window, children: [
             node("split", .splitView, children: [
                 node("menu", .navigationStack, children: [node("sidebar", .page)]),
@@ -418,8 +418,8 @@ final class PagesTests: XCTestCase {
     func testTheBackButtonSpeaksTheSystemsLanguage() throws {
         let runtime = runtime(node("window", .window, children: [
             node("stack", .navigationStack, children: [
-                node("home", .page, [.title: .string("Home")]),
-                node("detail", .page, [.title: .string("Detail")]),
+                node("home", .page, [PageElementContract.title.token: .string("Home")]),
+                node("detail", .page, [PageElementContract.title.token: .string("Detail")]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
@@ -437,7 +437,7 @@ final class PagesTests: XCTestCase {
     func testAPageShowingNoTitleStillNamesTheWindow() throws {
         let runtime = runtime(node("window", .window, children: [
             node("stack", .navigationStack, children: [
-                node("home", .page, [.title: .string("Home"), .showsTitle: .bool(false)]),
+                node("home", .page, [PageElementContract.title.token: .string("Home"), .showsTitle: .bool(false)]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
@@ -454,7 +454,7 @@ final class PagesTests: XCTestCase {
         let runtime = runtime(node("window", .window, children: [
             node("stack", .navigationStack, [.barBackground: .string("stack")], children: [
                 node("home", .page, [.backButtonTitle: .string("Home")]),
-                node("detail", .page, [.title: .string("Detail")], children: [
+                node("detail", .page, [PageElementContract.title.token: .string("Detail")], children: [
                     toolbarGroup("items", [toolbarAction("first"), toolbarAction("next")]),
                     toolbarGroup("tucked", [toolbarAction("more")], at: .overflow),
                     node("view", .titleView, children: [node("words", .text)]),
@@ -497,7 +497,7 @@ final class PagesTests: XCTestCase {
         _ id: String, _ items: [HostPatch], at position: ToolbarPosition = .end, order: Double = 0,
         part: ToolbarPart? = nil, hidesWithSidebar: Bool = false, bar: ToolbarEdge = .top
     ) -> HostPatch {
-        var properties: [Prop: HostValue] = [.position: .enumeration(position.rawValue), .order: .number(order)]
+        var properties: [Prop: HostValue] = [.position: .enumeration(position.rawValue), ToolbarGroupContract.order.token: .number(order)]
         if let part { properties[.part] = .enumeration(part.rawValue) }
         if bar != .top { properties[.barEdge] = .enumeration(bar.rawValue) }
         if hidesWithSidebar { properties[.hidesWithSidebar] = .bool(true) }
@@ -962,7 +962,7 @@ final class PagesTests: XCTestCase {
                 node("split", .splitView, [.barForegroundColor: .string("split")], children: [
                     node("menu", .page),
                     node("stack", .navigationStack, [.barBackground: .string("stack")], children: [
-                        node("detail", .page, [.title: .string("Detail")], children: [
+                        node("detail", .page, [PageElementContract.title.token: .string("Detail")], children: [
                             presenting(node("sheet", .page)),
                         ]),
                     ]),
@@ -995,9 +995,9 @@ final class PagesTests: XCTestCase {
     func testAPageSaysItsTitleArea() throws {
         let runtime = runtime(node("window", .window, children: [
             node("split", .splitView, children: [
-                node("menu", .page, [.subtitle: .string("Fundamentals"), .icon: .string("mark.png")]),
+                node("menu", .page, [PageContract.subtitle.token: .string("Fundamentals"), .icon: .string("mark.png")]),
                 node("stack", .navigationStack, children: [
-                    node("detail", .page, [.title: .string("Detail"), .subtitle: .string("Buttons")]),
+                    node("detail", .page, [PageElementContract.title.token: .string("Detail"), PageContract.subtitle.token: .string("Buttons")]),
                 ]),
             ]),
         ])) { _ in }
@@ -1015,7 +1015,7 @@ final class PagesTests: XCTestCase {
             "a sidebar's page that says no title names the application")
 
         let bare = self.runtime(node("window", .window, children: [
-            node("page", .page, [.title: .string("Page"), .subtitle: .string("")]),
+            node("page", .page, [PageElementContract.title.token: .string("Page"), PageContract.subtitle.token: .string("")]),
         ])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)
         let alone = WindowChrome(window: bareRoot, arrangement: bareRoot.first(id: .manual("page")))
@@ -1026,17 +1026,17 @@ final class PagesTests: XCTestCase {
     /// Tabs pushed onto a stack keep the title of the page beneath them; tabs with nothing beneath name the window by
     /// the chosen tab, and a stack in a tab by its top page.
     func testTabsPushedOntoAStackKeepTheTitleBeneathThem() throws {
-        let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
+        let runtime = runtime(node("window", .window, [WindowContract.title.token: .string("Window")], children: [
             node("stack", .navigationStack, children: [
-                node("group", .page, [.title: .string("Items and Cards")]),
+                node("group", .page, [PageElementContract.title.token: .string("Items and Cards")]),
                 node("tabs", .tabView, [.selectedTab: .number(1)], children: [
-                    node("one", .page, [.title: .string("Example 1")]),
-                    node("two", .page, [.title: .string("Example 2")]),
+                    node("one", .page, [PageElementContract.title.token: .string("Example 1")]),
+                    node("two", .page, [PageElementContract.title.token: .string("Example 2")]),
                 ]),
             ]),
-            node("alone", .tabView, children: [node("tab", .page, [.title: .string("Tab")])]),
+            node("alone", .tabView, children: [node("tab", .page, [PageElementContract.title.token: .string("Tab")])]),
             node("stacked", .tabView, children: [
-                node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
+                node("inner", .navigationStack, children: [node("top", .page, [PageElementContract.title.token: .string("Top")])]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
@@ -1050,18 +1050,18 @@ final class PagesTests: XCTestCase {
     /// Tabs pushed onto a stack are its last place: a title of their own names the window, never what the tabs show.
     /// A window's own tabs name it by the chosen tab, and a stack in the chosen tab by its top page, titled or not.
     func testTabsWithATitleNameTheWindowByItOnAStack() throws {
-        let runtime = runtime(node("window", .window, [.title: .string("Window")], children: [
+        let runtime = runtime(node("window", .window, [WindowContract.title.token: .string("Window")], children: [
             node("stack", .navigationStack, children: [
-                node("group", .page, [.title: .string("Items and Cards")]),
-                node("tabs", .tabView, [.title: .string("ItemsView")], children: [
-                    node("one", .page, [.title: .string("Example 1")]),
+                node("group", .page, [PageElementContract.title.token: .string("Items and Cards")]),
+                node("tabs", .tabView, [PageElementContract.title.token: .string("ItemsView")], children: [
+                    node("one", .page, [PageElementContract.title.token: .string("Example 1")]),
                 ]),
             ]),
-            node("alone", .tabView, [.title: .string("Tabs")], children: [
-                node("tab", .page, [.title: .string("Tab")]),
+            node("alone", .tabView, [PageElementContract.title.token: .string("Tabs")], children: [
+                node("tab", .page, [PageElementContract.title.token: .string("Tab")]),
             ]),
-            node("stacked", .tabView, [.title: .string("Tabs")], children: [
-                node("inner", .navigationStack, children: [node("top", .page, [.title: .string("Top")])]),
+            node("stacked", .tabView, [PageElementContract.title.token: .string("Tabs")], children: [
+                node("inner", .navigationStack, children: [node("top", .page, [PageElementContract.title.token: .string("Top")])]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
@@ -1080,7 +1080,7 @@ final class PagesTests: XCTestCase {
                 node("open", .menuItem, [.text: .string("Open"), .icon: .string("folder")]),
                 node("line", .menuSeparator),
                 node("erase", .menuItem, [
-                    .text: .string("Erase"), .role: ActionRole.destructive.propValue, .icon: .string(""),
+                    .text: .string("Erase"), ActionElementContract.role.token: ActionRole.destructive.propValue, .icon: .string(""),
                 ]),
                 node("recent", .menu, [.text: .string("Recent")], children: [
                     node("one", .menuItem, [.text: .string("One"), .isEnabled: .bool(false)]),
@@ -1101,7 +1101,7 @@ final class PagesTests: XCTestCase {
 
     /// A menu bar the path declares, holding `menus`, in `order`.
     private func menuBar(_ id: String, _ menus: [HostPatch], order: Double = 0) -> HostPatch {
-        node(id, .menuBar, [.order: .number(order)], children: menus)
+        node(id, .menuBar, [MenuBarContract.order.token: .number(order)], children: menus)
     }
 
     /// A menu captioned `text`.

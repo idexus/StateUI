@@ -44,7 +44,7 @@ final class AnchorsTests: XCTestCase {
     func testAnArrangementAnAnchorHoldsIsTheWindows() throws {
         let (runtime, window) = try mounted(node("window", .window, [
             node("anchor", .anchor, [
-                node("split", .splitView, [node("sidebar", .page), node("detail", .page, [], [.title: .string("Inbox")])]),
+                node("split", .splitView, [node("sidebar", .page), node("detail", .page, [], [PageElementContract.title.token: .string("Inbox")])]),
             ]),
         ]))
 

@@ -79,8 +79,8 @@ extension Node {
             var events: Set<Event> = []
             for case let member as any DeclaredMember in contract.worn.flatMap({ $0.members }) {
                 switch member.facts.kind {
-                case .property: props.insert(Prop(member.name))
-                case .event: events.insert(Event(member.name))
+                case .property: props.insert(Prop(key: member.memberKey))
+                case .event: events.insert(Event(key: member.memberKey))
                 case .act: break
                 }
             }

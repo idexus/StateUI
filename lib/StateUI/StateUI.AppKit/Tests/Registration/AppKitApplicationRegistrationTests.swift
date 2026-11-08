@@ -21,7 +21,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }

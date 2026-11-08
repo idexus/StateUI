@@ -13,7 +13,7 @@ struct WinUITab: Equatable {
 
     /// The tab of the page `page` - a page, or an arrangement a tabbed view presents.
     @MainActor init(of page: MountedElement) {
-        title = page.value(.title)?.string ?? ""
+        title = page.value(PageElementContract.title.token)?.string ?? ""
         icon = WinUIPictures.lines(HostPicture(page.value(.icon)))
     }
 }

@@ -35,7 +35,7 @@ extension MountedElement {
         case .tabView:
             if let tab = selectedTab, tab.type != .page { return tab.titledPage }
             guard let stack = placingParent, stack.type == .navigationStack else { return selectedTab }
-            if value(.title) != nil { return self }
+            if value(PageElementContract.title.token) != nil { return self }
             let pages = stack.arrangedChildren
             let place = pages.firstIndex { $0 === self } ?? 0
             return place > 0 ? pages[place - 1].titledPage : selectedTab

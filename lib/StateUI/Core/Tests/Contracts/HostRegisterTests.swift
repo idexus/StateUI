@@ -114,7 +114,7 @@ final class HostRegisterTests: XCTestCase {
             HostRealizedMember(element: "Text", owner: "TextElement", member: "text"),
         ])
         let records = HostRegister.records(
-            ofBackends: [WebViewContract.self], in: realization, performed: ["goBack", "scrollTo"])
+            ofBackends: [WebViewContract.self], in: realization, performed: ["WebView.goBack", "ItemsView.scrollTo"])
 
         XCTAssertEqual(records.map { "\($0.owner).\($0.member)" }, ["WebView.goBack", "WebView.navigated"])
     }

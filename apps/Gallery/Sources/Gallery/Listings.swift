@@ -4237,22 +4237,22 @@ enum Listings {
             public static let name = "Gallery"
 
             /// Writes a line to the platform's own log, where its tools read it.
-            public static let log = ElementAct<Self, String, Void>("Gallery.Log")
+            public static let log = ElementAct<Self, String, Void>("log")
 
             /// The battery's level, 0 through 1, and whether it is charging.
-            public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+            public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("batteryLevel")
 
             /// Declared here and registered nowhere: calling it shows what an act no
             /// performer answers does.
-            public static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+            public static let nobody = ElementAct<Self, Void, Void>("nobody")
 
             /// The battery reported: its level and whether it is charging.
             public static let batteryChanged =
-                ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+                ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
             /// The network came or went: whether the internet is reachable.
             public static let connectivityChanged =
-                ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+                ElementEvent<Self, Bool>("connectivityChanged")
 
             public static let members: [any ContractMember] = [
                 log, batteryLevel, nobody, batteryChanged, connectivityChanged,
@@ -14659,7 +14659,7 @@ extension Listings {
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
         /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// it: `RatingBarView.register()` performs `flash`. `GalleryContract.nobody` is registered nowhere on purpose: the
         /// "Calling AppKit" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the
@@ -14708,7 +14708,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling GTK" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.
@@ -14755,7 +14755,7 @@ extension Listings {
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
         /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// it: `RatingBarView.register()` performs `flash`. `GalleryContract.nobody` is registered nowhere on purpose: the
         /// "Calling UIKit" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the
@@ -14825,7 +14825,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling Web" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.
@@ -14908,7 +14908,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling WinUI" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.

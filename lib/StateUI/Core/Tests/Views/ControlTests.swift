@@ -672,8 +672,8 @@ final class ControlTests: XCTestCase {
         let first = renders.render(Button("Save").role(.primary).id("save").node)
         let then = renders.render(Button("Save").role(.normal).id("save").node)
 
-        XCTAssertEqual(first.props["role"], ButtonRole.primary.propValue)
-        XCTAssertEqual(then.props["role"], ButtonRole.normal.propValue, "the same button, its role changed")
+        XCTAssertEqual(first.props["Button.role"], ButtonRole.primary.propValue)
+        XCTAssertEqual(then.props["Button.role"], ButtonRole.normal.propValue, "the same button, its role changed")
         XCTAssertFalse(then.replace, "no new button")
     }
 
@@ -700,7 +700,7 @@ final class ControlTests: XCTestCase {
                     .union(element.cleared.map(\.name))
                     .union(element.driven?.bindings.keys.map(\.name) ?? [])
                     .union(element.transitions.keys.map(\.name))
-                    .union(element.eventNames)
+                    .union(element.eventNames.map(\.name))
 
                 XCTAssertEqual(
                     carried.subtracting(Self.names(wornBy: contract)).sorted(), [],
@@ -715,10 +715,9 @@ final class ControlTests: XCTestCase {
     /// Every member name a contract lets its element carry: its own, and its
     /// tiers' with theirs.
     private static func names(wornBy contract: any Contract.Type) -> Set<String> {
-        contract.tiers.reduce(into: Set(contract.members.map(\.name))) { names, tier in
-            names.formUnion(Self.names(wornBy: tier))
-        }
+        Set(contract.worn.flatMap { $0.members }.compactMap(keyName(of:)))
     }
+
 
     // MARK: - The set, kept honest
 
@@ -820,7 +819,7 @@ final class ControlTests: XCTestCase {
     /// is written - and a value that makes its element anew, which a state
     /// the host carries past the tree cannot.
     func testEveryValueModifierHasABindingTwin() throws {
-        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let remaking = Set(LibraryContracts.remaking.map { $0.memberName })
         let allowed: Set<String> = remaking.union([
             // A button's purpose in its window, said where it is written.
             "role",
@@ -919,7 +918,7 @@ final class ControlTests: XCTestCase {
     /// A member that makes its element anew takes no binding twin: a state the host carries past the tree never
     /// reaches the patch the element is made from, so later writes would change nothing on screen.
     func testNoRemakingMemberHasABindingTwin() throws {
-        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let remaking = Set(LibraryContracts.remaking.map { $0.memberName })
         var twinned: [String] = []
 
         for (path, text) in try SourceTree.allSources() where path.contains("Views") {
@@ -951,7 +950,7 @@ final class ControlTests: XCTestCase {
         // Anywhere in the active Swift suites: an event is proved by a test
         // firing it or by a case carrying it.
         let named = try (SourceTree.testSources().map(\.text)
-            + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap(\.eventNames) })
+            + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap { $0.eventNames.map(\.name) } })
             .joined(separator: "\n")
 
         let missing = subscribed
@@ -1035,7 +1034,7 @@ final class ControlTests: XCTestCase {
             for member in contract.members
             where member is any PropertyMember
                 && !rendered.contains(member.name)
-                && !Self.reads(member.name, in: tests) {
+                && !Self.reads(member.name, in: tests) && !Self.reads("\(contract.name).\(member.name)", in: tests) {
                 missing.append("\(contract.name).\(member.name) is carried by no case and built by no test")
             }
         }
@@ -1060,7 +1059,7 @@ final class ControlTests: XCTestCase {
         node.materialize()
         node.readAsDescribed()
 
-        let own = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+        let own = Set(node.props.keys.map { $0.memberName }).union(node.driven.keys.map { $0.memberName })
 
         return node.children.reduce(into: own) { names, child in
             names.formUnion(carriedNames(in: child))
@@ -1439,7 +1438,7 @@ final class ControlTests: XCTestCase {
         node.readAsDescribed()
 
         // A property driven from a state is carried as much as one stated.
-        let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+        let carried = Set(node.props.keys.map { $0.memberName }).union(node.driven.keys.map { $0.memberName })
 
         return node.children.reduce(into: carried) { names, child in
             names.formUnion(propNames(in: child))

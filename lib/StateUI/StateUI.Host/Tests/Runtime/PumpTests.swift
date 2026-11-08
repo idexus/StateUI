@@ -121,7 +121,7 @@ final class PumpTests: XCTestCase {
 
         runtime.pump.dispatch(runtime.addAndAct)
 
-        XCTAssertEqual(runtime.performed, ["hideOnScreenKeyboard on count 1"])
+        XCTAssertEqual(runtime.performed, ["Application.hideOnScreenKeyboard on count 1"])
     }
 
     /// A render about a tree the runtime no longer holds is refused and asked for whole once: the log hears why,

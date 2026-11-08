@@ -133,8 +133,8 @@ final class AppKitSessionTests: XCTestCase {
         defer { renderer.finish() }
 
         var initial = window("window 1")
-        initial.properties[.width] = .number(640)
-        initial.properties[.height] = .number(480)
+        initial.properties[WindowContract.width.token] = .number(640)
+        initial.properties[WindowContract.height.token] = .number(480)
         renderer.applyForTesting(tree(scene("1", windows: [initial])))
 
         let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -142,7 +142,7 @@ final class AppKitSessionTests: XCTestCase {
         native.setFrameOrigin(NSPoint(x: 137, y: 211))
 
         var width = HostPatch(id: .manual("window 1"), type: .window)
-        width.properties[.width] = .number(820)
+        width.properties[WindowContract.width.token] = .number(820)
         renderer.applyForTesting(tree(scene("1", windows: [width])))
 
         var contentSize = native.contentRect(forFrameRect: native.frame).size
@@ -151,7 +151,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
 
         var relinquishedWidth = HostPatch(id: .manual("window 1"), type: .window)
-        relinquishedWidth.clearedProperties = [.width]
+        relinquishedWidth.clearedProperties = [WindowContract.width.token]
         native.setContentSize(NSSize(width: 910, height: 610))
         renderer.applyForTesting(tree(scene("1", windows: [relinquishedWidth])))
 
@@ -176,15 +176,15 @@ final class AppKitSessionTests: XCTestCase {
 
         var authored = window("window 1")
         authored.properties.merge([
-            .title: .string("Workspace"),
+            WindowContract.title.token: .string("Workspace"),
             .x: .number(137),
             .y: .number(73),
-            .width: .number(640),
-            .height: .number(480),
-            .minimumWidth: .number(320),
-            .minimumHeight: .number(240),
-            .maximumWidth: .number(1_200),
-            .maximumHeight: .number(900),
+            WindowContract.width.token: .number(640),
+            WindowContract.height.token: .number(480),
+            WindowContract.minimumWidth.token: .number(320),
+            WindowContract.minimumHeight.token: .number(240),
+            WindowContract.maximumWidth.token: .number(1_200),
+            WindowContract.maximumHeight.token: .number(900),
             .isMaximizable: .bool(false),
             .isMinimizable: .bool(false),
         ]) { _, authored in authored }
@@ -215,9 +215,9 @@ final class AppKitSessionTests: XCTestCase {
         let standingFrame = native.frame
         var cleared = HostPatch(id: .manual("window 1"), type: .window)
         cleared.clearedProperties = [
-            .title, .x, .y, .width, .height,
-            .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
-            .isMaximizable, .isMinimizable,
+            WindowContract.title.token, .x, .y, WindowContract.width.token, WindowContract.height.token,
+            WindowContract.minimumWidth.token, WindowContract.minimumHeight.token, WindowContract.maximumWidth.token,
+            WindowContract.maximumHeight.token, .isMaximizable, .isMinimizable,
         ]
         renderer.applyForTesting(tree(scene("1", windows: [cleared])))
 
@@ -238,8 +238,8 @@ final class AppKitSessionTests: XCTestCase {
         defer { renderer.finish() }
 
         var authored = window("window 1")
-        authored.properties[.minimumWidth] = .number(640)
-        authored.properties[.maximumWidth] = .number(320)
+        authored.properties[WindowContract.minimumWidth.token] = .number(640)
+        authored.properties[WindowContract.maximumWidth.token] = .number(320)
         renderer.applyForTesting(tree(scene("1", windows: [authored])))
 
         let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -549,7 +549,7 @@ final class AppKitSessionTests: XCTestCase {
         page.children = .arranged([label])
 
         var window = HostPatch(id: .manual(id), type: .window)
-        window.properties[.title] = .string(id)
+        window.properties[WindowContract.title.token] = .string(id)
         if let kind { window.properties[.windowKind] = .name(kind) }
         if let eventBase {
             window.events = .replace([

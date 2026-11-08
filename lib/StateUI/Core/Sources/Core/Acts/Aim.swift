@@ -95,7 +95,7 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
         Wearing.takes(box.declaration, act)
         let reply = try await Renderer.shared.call(
             act.token, [aimed] + MemberValues.encode(repeat each arguments))
-        return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
+        return try MemberValues.answer(reply, of: act.token.name, as: repeat (each Answer).self)
     }
 }
 

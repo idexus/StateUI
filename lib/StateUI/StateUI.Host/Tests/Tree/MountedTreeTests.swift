@@ -316,7 +316,7 @@ final class MountedTreeTests: XCTestCase {
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {
         let (tree, log) = Self.tree(viewless: ["bare"])
         var child = HostPatch(id: .manual("child"), type: .text)
-        child.properties = [.width: .number(10)]
+        child.properties = [VisualElementContract.width.token: .number(10)]
         var bare = HostPatch(id: .manual("bare"), type: .zStack)
         bare.children = .arranged([child])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -325,7 +325,7 @@ final class MountedTreeTests: XCTestCase {
         log.arranged.removeAll()
 
         let childMount = tree.root!.children[0].children[0].mount
-        tree.present(states: [:], properties: [childMount: [.width]])
+        tree.present(states: [:], properties: [childMount: [VisualElementContract.width.token]])
 
         XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
@@ -402,9 +402,9 @@ final class MountedTreeTests: XCTestCase {
         var asked = 0
         tree.onAnimation = { asked += 1 }
         var label = HostPatch(id: .manual("label"), type: .text)
-        label.properties = [.text: .string("7"), .width: .number(90), .opacity: .number(0.5)]
+        label.properties = [.text: .string("7"), VisualElementContract.width.token: .number(90), .opacity: .number(0.5)]
         var row = HostPatch(id: .manual("row"), type: .hStack)
-        row.properties = [.spacing: .number(12)]
+        row.properties = [StackContract.spacing.token: .number(12)]
         row.children = .arranged([label])
 
         tree.apply(row, complete: true)
@@ -506,7 +506,7 @@ final class MountedTreeTests: XCTestCase {
     func testWhatAFrameAsksFollowsWhatMoved() {
         let (tree, log) = Self.tree(viewless: [])
         var label = HostPatch(id: .manual("label"), type: .text)
-        label.properties = [.width: .number(10)]
+        label.properties = [VisualElementContract.width.token: .number(10)]
         let bars = HostPatch(id: .manual("bars"), type: .navigationStack)
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label, bars])
@@ -519,7 +519,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertFalse(color.windowChrome)
 
         log.arranged.removeAll()
-        tree.present(states: [:], properties: [labelMount: [.width]])
+        tree.present(states: [:], properties: [labelMount: [VisualElementContract.width.token]])
         XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
 
         let bar = tree.present(states: [:], properties: [barsMount: [.barBackground]])
@@ -532,7 +532,7 @@ final class MountedTreeTests: XCTestCase {
     func testAPagesWordsOnItsBarMovedComposeTheChrome() {
         let (tree, _) = Self.tree(viewless: [])
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties = [.title: .string("Notes")]
+        page.properties = [PageElementContract.title.token: .string("Notes")]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([page])
         tree.apply(stack, complete: true)
@@ -684,7 +684,8 @@ final class MountedTreeTests: XCTestCase {
         let registry = Registry<AnyObject>()
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementTakesAccessibilityActions()
-        let unrealized = Set(MountedElement.accessibilityProperties.map(\.name)).subtracting(registry.sharedNames)
+        let unrealized = Set(MountedElement.accessibilityProperties.map(\.memberName))
+            .subtracting(registry.sharedNames)
         XCTAssertEqual(unrealized, [])
     }
 
@@ -1005,7 +1006,7 @@ final class MountedTreeTests: XCTestCase {
 
         XCTAssertTrue(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, which size it")
         XCTAssertFalse(changed("a") { $0.properties[.opacity] = .number(0.5) }, "a child's opacity, drawn in its place")
-        XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
+        XCTAssertTrue(changed("a") { $0.properties[VisualElementContract.width.token] = .number(80) }, "a child's size")
         XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
         XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")
         XCTAssertTrue(changed("a") { $0.replace = true }, "a child made anew")
@@ -1022,7 +1023,7 @@ final class MountedTreeTests: XCTestCase {
             tree.apply(sparse, complete: false)
             return holder.childrenNeedArranging
         }
-        XCTAssertTrue(paged { $0.properties[.title] = .string("Inbox") }, "a page's own title")
+        XCTAssertTrue(paged { $0.properties[PageElementContract.title.token] = .string("Inbox") }, "a page's own title")
         XCTAssertFalse(paged { $0.children = .changed([]) }, "something inside a page")
     }
 

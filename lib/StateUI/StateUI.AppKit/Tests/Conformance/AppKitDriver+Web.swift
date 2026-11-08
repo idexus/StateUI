@@ -16,7 +16,7 @@ extension AppKitDriver {
     func webHolds(_ property: Prop, _ web: WebKitView) -> HostValue? {
         switch property {
         case .userAgent: web.customUserAgent.propValue
-        case .source: Self.shown(by: web)?.propValue
+        case WebViewContract.source.token: Self.shown(by: web)?.propValue
         default: nil
         }
     }

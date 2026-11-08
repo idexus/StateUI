@@ -31,9 +31,9 @@ final class IntegerBoundsTests: XCTestCase {
         for number in invalid {
             let runtime = HostRuntime.still()
             runtime.tree.apply(node("root", .vStack, children: [
-                node("first", .toolbarGroup, [.order: .number(number)], children: [node("one", .toolbarButton)]),
+                node("first", .toolbarGroup, [ToolbarGroupContract.order.token: .number(number)], children: [node("one", .toolbarButton)]),
                 node("second", .toolbarGroup, children: [node("two", .toolbarButton)]),
-                node("barOne", .menuBar, [.order: .number(number)], children: [node("menuOne", .menu, [.text: .string("One")])]),
+                node("barOne", .menuBar, [MenuBarContract.order.token: .number(number)], children: [node("menuOne", .menu, [.text: .string("One")])]),
                 node("barTwo", .menuBar, children: [node("menuTwo", .menu, [.text: .string("Two")])]),
             ]), complete: true)
             let children = try XCTUnwrap(runtime.tree.root).children
@@ -100,7 +100,7 @@ final class IntegerBoundsTests: XCTestCase {
         for number in invalid {
             XCTAssertThrowsError(try runtime.tree.aimed(HostActCall(
                 act: .focus, arguments: [.number(number)], completion: nil))) { error in
-                XCTAssertEqual((error as? ActFailure)?.reason, "focus has to say which view it is for")
+                XCTAssertEqual((error as? ActFailure)?.reason, "FocusElement.focus has to say which view it is for")
             }
         }
     }

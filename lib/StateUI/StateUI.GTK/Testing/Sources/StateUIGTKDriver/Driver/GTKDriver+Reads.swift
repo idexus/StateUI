@@ -21,7 +21,7 @@ extension GTKDriver {
         if property == .keyboardShortcut, let shortcut = (view as? GTKButtonView)?.shortcutForTesting {
             return .some(GTKKeys.shortcut(keyval: shortcut.keyval, modifiers: shortcut.modifiers)?.propValue)
         }
-        if property == .role, let button = view as? GTKButtonView {
+        if property == ButtonContract.role.token, let button = view as? GTKButtonView {
             // As the classes libadwaita draws a role by; the way out wears none, its Escape its only mark.
             let has = { (name: String) in gtk_widget_has_css_class(button.widget, name) != 0 }
             if has("suggested-action") { return .some(ButtonRole.primary.propValue) }
@@ -32,7 +32,7 @@ extension GTKDriver {
         if property == .tooltip {
             return .some(view.flatMap { gtk_widget_get_tooltip_text($0.widget) }.map { String(cString: $0) }?.propValue)
         }
-        if property == .title, let tab = tabTitle(of: element) { return .some(tab.propValue) }
+        if property == PageElementContract.title.token, let tab = tabTitle(of: element) { return .some(tab.propValue) }
         switch view {
         case let field as GTKTextFieldView: return fieldHolds(property, field)
         case let editor as GTKTextEditorView: return editorHolds(property, editor)
@@ -306,8 +306,8 @@ extension GTKDriver {
         gtk_spin_button_get_range(stepper.widget.opaque, &low, &high)
         gtk_spin_button_get_increments(stepper.widget.opaque, &step, &page)
         switch property {
-        case .minimum: return low.propValue
-        case .maximum: return high.propValue
+        case RangeElementContract.minimum.token: return low.propValue
+        case RangeElementContract.maximum.token: return high.propValue
         case .step: return step.propValue
         default: return nil
         }

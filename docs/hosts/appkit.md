@@ -354,7 +354,7 @@ StateUIEvents.declares(GalleryContract.batteryChanged)
 The host tells the core what it realizes when it starts: every element of the
 library's it shows, the controls the application added, and the events
 declared. A `HostEvents.on` for an event nothing declared is then said once -
-*the host raises no `Gallery.BatteryChanged`: the handler will not hear it* -
+*the host raises no `Gallery.batteryChanged`: the handler will not hear it* -
 with the declared names nearest to it; so is an element the host shows none
 of, the first time it is described.
 

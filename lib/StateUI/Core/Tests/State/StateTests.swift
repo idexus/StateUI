@@ -345,7 +345,7 @@ final class StateTests: XCTestCase {
         let first = renders.settled(Node.page(TitledPage(titled: true)))
         let clicked = first.children[0].events?["clicked"] ?? -1
 
-        XCTAssertEqual(first.props["title"], .string("Named"), "the title the page wrote on its way in")
+        XCTAssertEqual(first.props["PageElement.title"], .string("Named"), "the title the page wrote on its way in")
 
         renders.fire(clicked)
 
@@ -353,7 +353,7 @@ final class StateTests: XCTestCase {
             Node.page(TitledPage(titled: false)), changed: Renderer.shared.pendingChanges)
 
         XCTAssertFalse(second.replace, "the page is not built again")
-        XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
+        XCTAssertEqual(second.cleared, ["PageElement.title"], "the property that went away is named instead")
 
         // The counter was never taken down, so the handler it registered on the
         // FIRST render is still the one it answers to, and the tap it was given
@@ -387,7 +387,7 @@ final class StateTests: XCTestCase {
         // the typed query; the search bar shows it from the state.
         let second = renders.settled(Node.page(QueryPage()), changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(second.props["title"], .string("Results: alpha"))
+        XCTAssertEqual(second.props["PageElement.title"], .string("Results: alpha"))
         XCTAssertEqual(second.children.first { $0.type == "Text" }?.props["text"],
                        .string("alpha"))
     }

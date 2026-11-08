@@ -169,8 +169,8 @@ final class AppKitSharedMemberTests: XCTestCase {
             func placed(_ id: String, ignoresInput: Bool) -> HostPatch {
                 var view = HostPatch(id: .manual(id), type: type)
                 view.properties = [
-                    .width: .number(40),
-                    .height: .number(20),
+                    VisualElementContract.width.token: .number(40),
+                    VisualElementContract.height.token: .number(20),
                     .horizontalAlignment: .enumeration(Alignment.start.rawValue),
                     .ignoresInput: .bool(ignoresInput),
                 ]
@@ -206,8 +206,8 @@ final class AppKitSharedMemberTests: XCTestCase {
             defer { renderer.finish() }
             var child = HostPatch(id: .manual("child"), type: .rectangle)
             child.properties = [
-                .width: .number(20),
-                .height: .number(20),
+                VisualElementContract.width.token: .number(20),
+                VisualElementContract.height.token: .number(20),
                 .horizontalAlignment: .enumeration(Alignment.start.rawValue),
                 .verticalAlignment: .enumeration(Alignment.start.rawValue),
             ]

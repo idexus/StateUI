@@ -82,16 +82,15 @@
     /// Every contract.
     static let all: [any Contract.Type] = tiers + elements.map { $0 as any Contract.Type }
 
-    /// Every property's facts, by the name it crosses under - what the differ
-    /// asks of a property it holds only a token for. The first member met
-    /// answers for every member of its name.
-    /// Design: docs/design/contracts/member-facts.md#one-name-one-set-of-facts
+    /// Every property's facts, by the key it crosses under - what the differ
+    /// asks of a property it holds only a token for.
+    /// Design: docs/design/contracts/member-facts.md#one-key-one-set-of-facts
     static let facts: [Prop: MemberFacts] = {
         var facts: [Prop: MemberFacts] = [:]
 
         for contract in all {
-            for case let member as any PropertyMember in contract.members where facts[Prop(member.name)] == nil {
-                facts[Prop(member.name)] = member.facts
+            for case let member as any PropertyMember in contract.members {
+                facts[Prop(key: member.memberKey)] = member.facts
             }
         }
 

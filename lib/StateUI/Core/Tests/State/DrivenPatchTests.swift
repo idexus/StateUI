@@ -200,13 +200,14 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
         // The number is state 1, the color 2 and the insets 3, in the walk.
-        XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3)), tied(["Stack.spacing"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
             tied([
-                "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
+                "VisualElement.height", "VisualElement.maximumHeight", "VisualElement.maximumWidth",
+                "VisualElement.minimumHeight", "VisualElement.minimumWidth", "opacity",
                 "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
-                "lineWidth", "translationX", "translationY", "width",
+                "BorderElement.lineWidth", "translationX", "translationY", "VisualElement.width",
             ], to: 1, .inOut, .property, .number)
                 .merging(tied(["background"], to: 2, .inOut, .property, .color)) { $1 }
                 .merging(tied(["margin", "padding"], to: 3, .inOut, .property, .number)) { $1 })
@@ -216,10 +217,10 @@ final class DrivenPatchTests: XCTestCase {
                 .merging(tied(["textColor"], to: 2, .inOut, .property, .color)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(6)),
-            tied(["dashPhase", "miterLimit", "lineWidth"], to: 1, .inOut, .property, .number))
+            tied(["dashPhase", "miterLimit", "Shape.lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(7)),
-            tied(["lineWidth"], to: 1, .inOut, .property, .number))
+            tied(["BorderElement.lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property, .color))
         XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["fill"], to: 2, .inOut, .property, .color))
     }
@@ -298,7 +299,7 @@ final class DrivenPatchTests: XCTestCase {
         }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["VisualElement.width"], to: 1, .inOut, .property, .number))
     }
 
     /// A LAYOUT PLACED BY DRIVEN STATE, which says where its views go and nothing

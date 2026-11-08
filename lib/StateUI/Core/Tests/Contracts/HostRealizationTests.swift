@@ -22,7 +22,7 @@ final class HostRealizationTests: XCTestCase {
     /// it realizes until it says otherwise.
     func testNothingIsSaidUntilTheHostSaysWhatItRealizes() {
         XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
-        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.MemoryLow")))
+        XCTAssertNil(HostRealizations.unraised(KeyName("Test.MemoryLow")))
     }
 
     /// A node type the host realizes goes by without a word.
@@ -57,10 +57,10 @@ final class HostRealizationTests: XCTestCase {
     func testAnEventTheHostDoesNotRaiseIsSaidWithTheNamesItLikelyMeant() {
         HostBoundary.setRealization(Self.realization)
 
-        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChanged")))
+        XCTAssertNil(HostRealizations.unraised(KeyName("TestHostEvents.batteryChanged")))
         XCTAssertEqual(
-            HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChangd")),
-            "the host raises no `Test.BatteryChangd` (nearest: `Test.BatteryChanged`): "
+            HostRealizations.unraised(KeyName("TestHostEvents.batteryChangd")),
+            "the host raises no `TestHostEvents.batteryChangd` (nearest: `TestHostEvents.batteryChanged`): "
                 + "the handler will not hear it.")
     }
 
@@ -73,7 +73,7 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRealization(registry.realization)
 
         XCTAssertTrue(registry.realization.members.contains(
-            HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")))
+            HostRealizedMember(element: "Application", owner: "TestHostEvents", member: "batteryChanged")))
         XCTAssertTrue(HostBoundary.realizes(TestHostEvents.batteryChanged))
     }
 
@@ -94,8 +94,8 @@ final class HostRealizationTests: XCTestCase {
         let said = ContinuousClock.now - started
 
         XCTAssertLessThan(said, .milliseconds(500), "50 starts took \(said)")
-        XCTAssertTrue(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner7")))
-        XCTAssertFalse(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner8")))
+        XCTAssertTrue(HostRealizations.honors(KeyName("Owner7.member7"), of: KeyName("Owner7")))
+        XCTAssertFalse(HostRealizations.honors(KeyName("Owner7.member7"), of: KeyName("Owner8")))
         HostBoundary.setRegister(nil)
     }
 
@@ -171,7 +171,7 @@ final class HostRealizationTests: XCTestCase {
     /// A host realizing a label and a lamp, and raising one application event.
     private static let realization = HostRealization(
         elements: ["Text", "Test.Lamp"],
-        members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")])
+        members: [HostRealizedMember(element: "Application", owner: "TestHostEvents", member: "batteryChanged")])
 }
 
 /// A window whose page has a toolbar, saying nothing of its position or of the window's behavior.
@@ -187,9 +187,9 @@ private struct LeadingApp: Application {
 /// The application's events these tests name, declared the way an application
 /// declares its own.
 private enum TestHostEvents: ApplicationTier {
-    static let name = "Test"
+    static let name = "TestHostEvents"
 
-    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
+    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
     static let members: [any ContractMember] = [batteryChanged]
 }

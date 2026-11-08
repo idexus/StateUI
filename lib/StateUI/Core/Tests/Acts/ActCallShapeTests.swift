@@ -42,7 +42,7 @@ final class ActCallShapeTests: XCTestCase {
     /// finished. Takes Void so the compiler does not have to prove an
     /// arbitrary result Sendable; a call with a result wraps itself in `_ =`.
     private func check(
-        _ act: String,
+        _ act: StateUI.Act,
         _ arguments: [PropValue],
         file: StaticString = #filePath,
         line: UInt = #line,
@@ -62,13 +62,13 @@ final class ActCallShapeTests: XCTestCase {
     /// with a completion id exactly when a caller waits for it.
     private func taken(
         _ batch: [HostActCall],
-        _ act: String,
+        _ act: StateUI.Act,
         _ arguments: [PropValue],
         awaited: Bool,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        XCTAssertEqual(batch.map(\.name), [act], file: file, line: line)
+        XCTAssertEqual(batch.map(\.name), [act.name], file: file, line: line)
         XCTAssertEqual(batch.first?.arguments, arguments, file: file, line: line)
         XCTAssertEqual(batch.first?.completion != nil, awaited, "whether a caller waits", file: file, line: line)
     }

@@ -20,13 +20,13 @@ extension AndroidDriver {
         case .time:
             guard let time = shown(field, Self.fieldTime) else { throw DriverCannot("read a time in a form of its own") }
             return .some(ClockTime(hour: Int(time[0]), minute: Int(time[1])).propValue)
-        case .minimum: return .some(bound(Self.earliest, of: field))
-        case .maximum: return .some(bound(Self.latest, of: field))
-        case .format where field.kind == .date:
+        case DatePickerContract.minimum.token: return .some(bound(Self.earliest, of: field))
+        case DatePickerContract.maximum.token: return .some(bound(Self.latest, of: field))
+        case DatePickerContract.format.token where field.kind == .date:
             let format = Java.frame { objectField(field, Self.format).map { Java.text($0) } ?? "" }
             let style = [DateFormat.short, .medium, .long].first { AndroidDateFieldView.letter(of: $0) == format }
             return .some(style?.propValue)
-        case .format:
+        case TimePickerContract.format.token:
             let format = Java.frame { objectField(field, Self.format).map { Java.text($0) } ?? "" }
             let style = [TimeFormat.short, .medium].first { AndroidDateFieldView.letter(of: $0) == format }
             return .some(style?.propValue)

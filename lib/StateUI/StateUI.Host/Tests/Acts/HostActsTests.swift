@@ -123,6 +123,18 @@ final class HostActsTests: XCTestCase {
         XCTAssertNotNil(acts.performers[InteropWheelContract.shake.token])
     }
 
+    /// A second performer of one act is said: the first is replaced, which an application registering its act
+    /// twice did not mean.
+    func testASecondPerformerOfOneActIsSaid() {
+        let acts = InteropActs<String>()
+        acts.add(InteropTestActs.greet) { name in "Hello, \(name)" }
+        XCTAssertFalse(hasComplained("`\(InteropTestActs.greet.token)` was registered twice"))
+
+        acts.add(InteropTestActs.greet) { name in "Hi, \(name)" }
+
+        XCTAssertTrue(hasComplained("`\(InteropTestActs.greet.token)` was registered twice"))
+    }
+
     /// A host's log writes one line a message, begun by the host's name.
     func testALogLineNamesItsHost() {
         let written = Written()
@@ -144,7 +156,7 @@ private final class Written: @unchecked Sendable {
 private enum InteropTestActs: ApplicationTier {
     static let name = "Interop"
 
-    static let greet = ElementAct<Self, String, String>("Interop.Greet")
+    static let greet = ElementAct<Self, String, String>("greet")
 
     static let members: [any ContractMember] = [greet]
 }
@@ -153,7 +165,7 @@ private enum InteropTestActs: ApplicationTier {
 private enum InteropWheelContract: ElementContract {
     static let nodeType: NodeType = "Interop.Wheel"
 
-    static let shake = ElementAct<Self, Void, String>("Interop.Shake")
+    static let shake = ElementAct<Self, Void, String>("shake")
 
     static let members: [any ContractMember] = [shake]
 }

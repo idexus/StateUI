@@ -278,8 +278,8 @@ final class AppKitButtonViewTests: XCTestCase {
             button("padded", [
                 .text: .string("Save"),
                 .padding: .numbers([20, 10, 20, 10]),
-                .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
-                .lineWidth: .number(2),
+                BorderElementContract.stroke.token: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
+                BorderElementContract.lineWidth.token: .number(2),
                 .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
             button("stretched", icon(.stretch)),

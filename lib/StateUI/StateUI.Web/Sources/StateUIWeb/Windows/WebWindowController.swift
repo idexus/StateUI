@@ -162,7 +162,7 @@ final class WebWindowController {
     func refreshChrome() {
         guard let element else { return }
         let chrome = WindowChrome(window: element, arrangement: presentation.arrangement)
-        var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
+        var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(WindowContract.title.token)?.string ?? ""
         let split = chrome.splitView?.web.view as? WebSplitView
         window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
         window.bar.follow(page: presentation.arrangement?.visiblePage, sidebar: presentation.arrangement?.sidebarPage)

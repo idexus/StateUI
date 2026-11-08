@@ -25,11 +25,12 @@ public struct ElementAct<Owner: Contract, Arguments, Answer>: ContractMember {
     public init(_ name: String, layer: ElementLayer = .provider) {
         self.name = name
         self.layer = layer
-        token = Act(name)
+        token = Act("\(Owner.name).\(name)")
         owner = KeyName(Owner.name)
+        ContractNames.claim(Owner.self, named: owner)
     }
 
-    /// The key the act crosses the boundary under, made once.
+    /// The key the act crosses the boundary under, made once: its owner's name, a dot, and its own.
     @_spi(Host) public let token: Act
 
     /// The key of the contract declaring it, made once.

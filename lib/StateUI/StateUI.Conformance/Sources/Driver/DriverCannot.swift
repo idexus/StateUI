@@ -20,7 +20,7 @@
 
     /// `property` of `element`, which the driver cannot read.
     @MainActor public init(reading property: Prop, of element: MountedElement) {
-        ability = "read \(property.name) of \(element.type.name)"
+        ability = "read \(property.memberName) of \(element.type.name)"
     }
 
     /// What a driver cannot do, said in its own words: "find the window", "read what is kept".

@@ -114,14 +114,18 @@ final class PlacesRulesTests: XCTestCase {
     func testOnlyWhatChangesASizeIsMeasuredAgain() {
         let drawn: Set<Prop> = [
             .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
-            .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
-            .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
+            .isOn, .value, RangeElementContract.minimum.token, RangeElementContract.maximum.token,
+            DatePickerContract.minimum.token, DatePickerContract.maximum.token, .progress, .cursorPosition, .selectionLength,
+            ShapeContract.stroke.token, BorderElementContract.stroke.token, .fill, ShapeContract.lineWidth.token,
+            BorderElementContract.lineWidth.token, .dash, .dashPhase, .lineCap, .lineJoin,
             .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackground, .barForegroundColor,
             .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough,
         ]
         XCTAssertEqual(drawn.subtracting(MountedElement.unmeasuredProperties), [])
         XCTAssertEqual(
-            MountedElement.unmeasuredProperties.intersection([.text, .fontSize, .fontFamily, .padding, .width, .isVisible]),
+            MountedElement.unmeasuredProperties.intersection([
+                .text, .fontSize, .fontFamily, .padding, VisualElementContract.width.token, .isVisible,
+            ]),
             [])
     }
 

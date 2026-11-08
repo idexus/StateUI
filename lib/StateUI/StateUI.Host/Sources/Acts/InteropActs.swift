@@ -30,11 +30,12 @@
     }
 
     /// Performs an act of the application's own with `perform`, handed the values its contract declares; a second
-    /// registration replaces the first.
+    /// registration replaces the first, and is said.
     public func add<Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable>(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
     ) {
+        sayTwice(act.token)
         performers[act.token] = .application { values in
             guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
                 throw Self.miscalled(act.name, values, declaring: MemberValues.describe(repeat (each Argument).self))
@@ -45,7 +46,8 @@
     }
 
     /// Performs an act aimed at an element with `perform`, handed the control `control` finds in the element's
-    /// view and the values its contract declares; an element shown otherwise fails the call.
+    /// view and the values its contract declares; an element shown otherwise fails the call. A second
+    /// registration replaces the first, and is said.
     public func add<
         Owner: WornContract, Made, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
@@ -53,6 +55,7 @@
         control: @escaping @MainActor (View) -> Made?,
         _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
     ) {
+        sayTwice(act.token)
         performers[act.token] = .aimed { view, values in
             guard let made = control(view) else {
                 throw ActFailure("`\(act.name)` is aimed at an element this host shows otherwise, "
@@ -63,6 +66,13 @@
             }
             let answer = try await perform(made, repeat each arguments)
             return MemberValues.encode(repeat each answer)
+        }
+    }
+
+    /// Says that `act` already has a performer, which the one registered now replaces.
+    private func sayTwice(_ act: Act) {
+        if performers[act] != nil {
+            Complaints.say("`\(act)` was registered twice: the second performer replaces the first.")
         }
     }
 

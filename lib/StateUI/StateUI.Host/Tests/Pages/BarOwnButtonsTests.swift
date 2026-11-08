@@ -20,7 +20,7 @@ final class BarOwnButtonsTests: XCTestCase {
                        Material.color(Color(hex: 0x008000)).propValue)
         XCTAssertEqual(BarOwnButtons.look(pressed: false, pointerOver: true)[.background],
                        Material.color(Color(hex: 0x0000FF)).propValue)
-        XCTAssertEqual(BarOwnButtons.look(pressed: false, pointerOver: false)[.stroke],
+        XCTAssertEqual(BarOwnButtons.look(pressed: false, pointerOver: false)[BorderElementContract.stroke.token],
                        Brush.solidColor(Color(hex: 0x808080)).propValue, "the group's outline")
     }
 }

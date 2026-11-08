@@ -27,7 +27,7 @@ final class RenderedChromeTests: XCTestCase {
     /// WHAT THE CHROME IS MADE OF TOUCHES IT: the page's title, and what an action holds.
     func testWhatTheChromeIsMadeOfTouchesIt() {
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties[.title] = .string("Drafts")
+        page.properties[PageElementContract.title.token] = .string("Drafts")
         XCTAssertTrue(touches(Self.window(page: page)), "the page's title")
 
         var words = HostPatch(id: .manual("action words"), type: .text)

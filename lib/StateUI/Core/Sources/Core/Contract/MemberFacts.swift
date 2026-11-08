@@ -40,7 +40,7 @@ struct MemberFacts: Equatable {
 }
 
 /// A member whose facts the library can read out of a list of members.
-protocol DeclaredMember: ContractMember {
+protocol DeclaredMember: KeyedMember {
     /// What it says about itself.
     var facts: MemberFacts { get }
 }

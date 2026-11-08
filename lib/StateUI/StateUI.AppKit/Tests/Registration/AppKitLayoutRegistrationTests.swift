@@ -95,7 +95,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         defer { renderer.finish() }
 
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.properties[.spacing] = .number(12)
+        stack.properties[StackContract.spacing.token] = .number(12)
         stack.properties[.padding] = .numbers([4, 8, 12, 16])
         renderer.applyForTesting(tree(stack))
 
@@ -107,7 +107,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         XCTAssertEqual(native.padding.bottom, 16)
 
         var closer = HostPatch(id: .manual("stack"), type: .vStack)
-        closer.properties[.spacing] = .number(2)
+        closer.properties[StackContract.spacing.token] = .number(2)
         renderer.applyForTesting(changedTree(closer))
 
         XCTAssertEqual(native.spacing, 2)
@@ -130,7 +130,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         grid.properties[.columns] = .values([
             .values([.enumeration(1), .number(1)]),
         ])
-        grid.properties[.rowSpacing] = .number(6)
+        grid.properties[GridContract.rowSpacing.token] = .number(6)
         grid.properties[.columnSpacing] = .number(9)
         renderer.applyForTesting(tree(grid))
 

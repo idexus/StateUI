@@ -35,8 +35,8 @@ final class AppKitMeasurementTests: XCTestCase {
         let measuredBeforeMotion = code.nativeMeasurementCountForTesting
 
         var growing = HostPatch(id: .manual("box"), type: .rectangle)
-        growing.properties[.width] = .number(300)
-        growing.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
+        growing.properties[VisualElementContract.width.token] = .number(300)
+        growing.transitions[VisualElementContract.width.token] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(path(to: growing))
         scroll.layoutSubtreeIfNeeded()
 
@@ -54,8 +54,8 @@ final class AppKitMeasurementTests: XCTestCase {
         defer { renderer.finish() }
 
         var card = HostPatch(id: .manual("card"), type: .rectangle)
-        card.properties[.width] = .number(120)
-        card.properties[.height] = .number(60)
+        card.properties[VisualElementContract.width.token] = .number(120)
+        card.properties[VisualElementContract.height.token] = .number(60)
         card.driven = .replace([
             .translationX: HostStateBinding(state: handMadeState(91), mode: .inOut, kind: .property, laneKind: .number),
         ])
@@ -174,7 +174,7 @@ final class AppKitMeasurementTests: XCTestCase {
         defer { renderer.finish() }
 
         var image = HostPatch(id: .manual("image"), type: .image)
-        image.properties[.source] = .string("picture.png")
+        image.properties[ImageContract.source.token] = .string("picture.png")
         renderer.applyForTesting(image)
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("image")) as? AppKitImageView)
@@ -246,7 +246,7 @@ final class AppKitMeasurementTests: XCTestCase {
         var card = HostPatch(id: .manual("card"), type: .rectangle)
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
-        layout.properties[.height] = .number(120)
+        layout.properties[VisualElementContract.height.token] = .number(120)
         layout.driven = .replace([
             .area: HostStateBinding(state: handMadeState(96), mode: .out, kind: .placement, laneKind: .number),
         ])
@@ -476,8 +476,8 @@ final class AppKitMeasurementTests: XCTestCase {
         }
 
         var box = HostPatch(id: .manual("box"), type: .rectangle)
-        box.properties[.width] = .number(120)
-        box.properties[.height] = .number(56)
+        box.properties[VisualElementContract.width.token] = .number(120)
+        box.properties[VisualElementContract.height.token] = .number(56)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.start.rawValue)
         var button = HostPatch(id: .manual("size"), type: .button)
         button.properties[.text] = .string("Size")
@@ -491,24 +491,24 @@ final class AppKitMeasurementTests: XCTestCase {
         ], [
             node("content", .vStack, [
                 .padding: .numbers([24, 24, 24, 24]),
-                .spacing: .number(16),
+                StackContract.spacing.token: .number(16),
             ], [
-                node("part", .vStack, [.spacing: .number(16)], [
+                node("part", .vStack, [StackContract.spacing.token: .number(16)], [
                     label("title", "EXAMPLE"),
                     node("frame", .zStack, [:], [
                         node("boxed", .vStack, [
                             .padding: .numbers([16, 16, 16, 16]),
-                            .spacing: .number(10),
+                            StackContract.spacing.token: .number(10),
                         ], [
-                            node("sample", .vStack, [.spacing: .number(10)], [
+                            node("sample", .vStack, [StackContract.spacing.token: .number(10)], [
                                 box,
-                                node("buttons", .hStack, [.spacing: .number(8)], [button]),
+                                node("buttons", .hStack, [StackContract.spacing.token: .number(8)], [button]),
                             ]),
                             label("notes", "Press Size."),
                         ]),
                     ]),
                 ]),
-                node("listing", .vStack, [.spacing: .number(8)], [
+                node("listing", .vStack, [StackContract.spacing.token: .number(8)], [
                     label("heading", "IN SWIFT"),
                     node("codeFrame", .zStack, [:], [
                         node("codeScroll", .scrollView, [

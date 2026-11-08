@@ -196,7 +196,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(
             answers.failures[1], "the address '/api/parcels' names no scheme, and no page stands to read it against")
         XCTAssertEqual(network.sent.map(\.address), ["/api/parcels"], "sent where a page reads it")
-        XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'sendRequest'"), true)
+        XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'Application.sendRequest'"), true)
         XCTAssertFalse(HostRequest(address: "parcels/42").namesItsScheme)
         XCTAssertTrue(HostRequest(address: "http://localhost:8080").namesItsScheme)
     }

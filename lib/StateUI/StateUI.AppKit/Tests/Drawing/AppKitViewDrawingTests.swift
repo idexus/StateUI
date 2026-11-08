@@ -112,7 +112,7 @@ final class AppKitViewDrawingTests: XCTestCase {
         defer { renderer.finish() }
         func drawnBox(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
             var box = HostPatch(id: .manual(id), type: .rectangle)
-            box.properties = properties.merging([.width: .number(100), .height: .number(60)]) { $1 }
+            box.properties = properties.merging([VisualElementContract.width.token: .number(100), VisualElementContract.height.token: .number(60)]) { $1 }
             return box
         }
         renderer.applyForTesting(tree(stack(
@@ -158,8 +158,8 @@ final class AppKitViewDrawingTests: XCTestCase {
     private func box(id: String = "box", rotation: Double) -> HostPatch {
         var box = HostPatch(id: .manual(id), type: .rectangle)
         box.properties[.rotation] = .number(rotation)
-        box.properties[.width] = .number(100)
-        box.properties[.height] = .number(60)
+        box.properties[VisualElementContract.width.token] = .number(100)
+        box.properties[VisualElementContract.height.token] = .number(60)
         return box
     }
 

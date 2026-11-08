@@ -130,24 +130,24 @@ extension AppKitElement {
 
         if let layout = view as? AppKitTravelingLayout {
             layout.decoration.apply(
-                background: element.drawnBackground, stroke: value(.stroke),
-                lineWidth: value(.lineWidth)?.number, shape: value(.shape),
+                background: element.drawnBackground, stroke: value(BorderElementContract.stroke.token),
+                lineWidth: value(BorderElementContract.lineWidth.token)?.number, shape: value(.shape),
                 clips: value(.clipsContent)?.bool ?? false, to: layout)
         }
 
-        let minimumWidth = requested(.minimumWidth)
-        let minimumHeight = requested(.minimumHeight)
-        let maximumWidth = requested(.maximumWidth).map { max($0, minimumWidth ?? 0) }
-        let maximumHeight = requested(.maximumHeight).map { max($0, minimumHeight ?? 0) }
+        let minimumWidth = requested(VisualElementContract.minimumWidth.token)
+        let minimumHeight = requested(VisualElementContract.minimumHeight.token)
+        let maximumWidth = requested(VisualElementContract.maximumWidth.token).map { max($0, minimumWidth ?? 0) }
+        let maximumHeight = requested(VisualElementContract.maximumHeight.token).map { max($0, minimumHeight ?? 0) }
         widthConstraint = reconciledConstraint(
             widthConstraint,
-            value: requested(.width).map {
+            value: requested(VisualElementContract.width.token).map {
                 CGFloat(Extent.bounded(Double($0), minimum: minimumWidth.map(Double.init), maximum: maximumWidth.map(Double.init)))
             },
             make: { view.widthAnchor.constraint(equalToConstant: $0).stated })
         heightConstraint = reconciledConstraint(
             heightConstraint,
-            value: requested(.height).map {
+            value: requested(VisualElementContract.height.token).map {
                 CGFloat(Extent.bounded(Double($0), minimum: minimumHeight.map(Double.init), maximum: maximumHeight.map(Double.init)))
             },
             make: { view.heightAnchor.constraint(equalToConstant: $0).stated })

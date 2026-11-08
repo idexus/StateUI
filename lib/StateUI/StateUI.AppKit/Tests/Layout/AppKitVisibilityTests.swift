@@ -108,11 +108,11 @@ final class AppKitVisibilityTests: XCTestCase {
             stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
             var first = HostPatch(id: .manual("first"), type: .rectangle)
             first.properties = [
-                .width: .number(100), .height: .number(40), .isVisible: .bool(firstVisible),
+                VisualElementContract.width.token: .number(100), VisualElementContract.height.token: .number(40), .isVisible: .bool(firstVisible),
             ]
             first.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), curve: .linear), lanes: .all)
             var second = HostPatch(id: .manual("second"), type: .rectangle)
-            second.properties = [.width: .number(100), .height: .number(40)]
+            second.properties = [VisualElementContract.width.token: .number(100), VisualElementContract.height.token: .number(40)]
             stack.children = .arranged([first, second])
             return stack
         }

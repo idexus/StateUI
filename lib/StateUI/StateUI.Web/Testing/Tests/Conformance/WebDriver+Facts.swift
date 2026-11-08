@@ -238,14 +238,15 @@ extension WebDriver {
                 return try WebBrowser.evaluate("e.getAttribute('aria-label') ?? e.querySelector('span').textContent", on: e)?
                     .propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
-            case .role:
+            case ActionElementContract.role.token:
                 let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e)
                 return (destructive ? ActionRole.destructive : .normal).propValue
             case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: e)?.propValue)
             case .icon: return .some(try picture("e.querySelector('img')", on: e))
             case .keyboardShortcut: return .some(try shortcut(on: e))
             // The look the application gives it: its box, and its words.
-            case .background, .stroke, .lineWidth, .shape: return try boxHolds(property, button)
+            case .background, BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape:
+                return try boxHolds(property, button)
             case .textColor, .fontSize, .fontWeight, .fontFamily, .fontAttributes, .textStyle, .isFontAutoScalingEnabled,
                  .padding:
                 return try wordsHolds(property, e)

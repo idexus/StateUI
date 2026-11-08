@@ -94,7 +94,7 @@ final class AppKitContextMenuTests: XCTestCase {
             .text: .string("Delete"),
             .icon: .string("trash.png"),
             .isEnabled: .bool(false),
-            .role: ActionRole.destructive.propValue,
+            ActionElementContract.role.token: ActionRole.destructive.propValue,
             .accessibilityIdentifier: .string("menu.delete"),
         ]
         var top = HostPatch(id: .manual("top"), type: .menuItem)

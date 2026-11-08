@@ -41,16 +41,18 @@ extension HostPatch {
         [self] + children.flatMap(\.subtree)
     }
 
-    /// The events this element's handlers answer to, by name.
-    var eventNames: [String] {
-        events.map { $0.keys.map(\.name).sorted() } ?? []
+    /// The events this element's handlers answer to.
+    var eventNames: Set<Event> {
+        events.map { Set($0.keys) } ?? []
     }
 
-    /// The six reports every page hears, by name.
-    static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
+    /// The six reports every page hears.
+    static let pageEvents: Set<Event> = [
+        "appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom",
+    ]
 
-    /// The six reports every window hears, by name.
-    static let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
+    /// The five reports every window hears.
+    static let windowEvents: Set<Event> = ["activated", "created", "deactivated", "destroying", "stopped"]
 }
 
 extension HostDrivenUpdate {

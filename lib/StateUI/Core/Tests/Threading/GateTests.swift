@@ -247,7 +247,7 @@ final class GateTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(chimes.node)
         for event in ChimesContract.events.reversed() {
-            renders.fire(try XCTUnwrap(patch.events?[Event(event.name)]))
+            renders.fire(try XCTUnwrap(patch.events?[event.token]))
         }
         XCTAssertEqual(latch.waiting, ChimesContract.events.count)
 
@@ -300,7 +300,7 @@ final class GateTests: XCTestCase {
         try await waitUntil { failures.count >= 1 }
 
         XCTAssertEqual(failures.first, true, "the cancelled run's act failed as cancelled")
-        XCTAssertEqual(drainedActs().filter { $0.name == "alert" }.count, 1, "only the live run's act left")
+        XCTAssertEqual(drainedActs().filter { $0.name == "Application.alert" }.count, 1, "only the live run's act left")
     }
 
     /// A superseded run's post is refused too.

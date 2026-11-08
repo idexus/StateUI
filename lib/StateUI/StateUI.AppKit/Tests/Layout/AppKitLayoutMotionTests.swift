@@ -24,8 +24,8 @@ final class AppKitLayoutMotionTests: XCTestCase {
         if let motion { stack.motion = HostLayoutMotion(motion: motion, lanes: .all) }
         stack.children = .arranged(order.map { name in
             var box = HostPatch(id: .manual(name), type: .rectangle)
-            box.properties[.width] = .number(100)
-            box.properties[.height] = .number(heights[name] ?? 40)
+            box.properties[VisualElementContract.width.token] = .number(100)
+            box.properties[VisualElementContract.height.token] = .number(heights[name] ?? 40)
             if name == watched { box.events = .replace([.frameChanged: 7]) }
             return box
         })
@@ -253,8 +253,8 @@ final class AppKitLayoutMotionTests: XCTestCase {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         var box = HostPatch(id: .manual("box"), type: .rectangle)
-        box.properties[.width] = .number(50)
-        box.properties[.height] = .number(50)
+        box.properties[VisualElementContract.width.token] = .number(50)
+        box.properties[VisualElementContract.height.token] = .number(50)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.end.rawValue)
         layout.children = .arranged([box])
 

@@ -46,7 +46,7 @@ extension MountedElement {
     /// application's name, as a sidebar stands under it; nothing for any other page that says none.
     /// Design: docs/design/host/pages.md#a-sidebars-title
     @MainActor public func barTitle(applicationName: String) -> String {
-        if let title = value(.title)?.string { return title }
+        if let title = value(PageElementContract.title.token)?.string { return title }
         return standsInSidebar ? applicationName : ""
     }
 

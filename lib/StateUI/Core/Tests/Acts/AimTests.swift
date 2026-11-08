@@ -327,7 +327,7 @@ final class AimTests: XCTestCase {
         // arguments, which is the order every act of the library's uses.
         let queued = drainedActs()
 
-        XCTAssertEqual(queued.first?.name, "Test.Spin")
+        XCTAssertEqual(queued.first?.name, "Test.Wheel.spin")
         XCTAssertEqual(queued.first?.arguments.first, .values([.string("root"), .number(1)]), "the element it was put on")
         XCTAssertEqual(queued.first?.arguments.last, .number(90))
 
@@ -348,7 +348,7 @@ private enum WheelContract: ElementContract {
     static let nodeType: NodeType = "Test.Wheel"
     static let tiers: [any Tier.Type] = [ViewContract.self]
 
-    static let spin = ElementAct<Self, Double, Void>("Test.Spin")
+    static let spin = ElementAct<Self, Double, Void>("spin")
 
     static let members: [any ContractMember] = [spin]
 }

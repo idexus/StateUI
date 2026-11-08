@@ -105,8 +105,8 @@ struct InteropActsSample: SampleContent, ExampleContent {
 
             Text("A performer that throws, a name nothing registered, and an answer of "
                 + "another shape than the contract's resume the handler by throwing "
-                + "`StateUIError` with the reason. Prefix the names with the application's "
-                + "own, so they never meet the library's.")
+                + "`StateUIError` with the reason. An act crosses under its contract's name "
+                + "and its own - `Gallery.log` - so it never meets the library's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -250,9 +250,9 @@ final class AppKitImageViewTests: XCTestCase {
         defer { renderer.finish() }
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [
-            .source: .string("picture.png"),
+            ImageContract.source.token: .string("picture.png"),
             .contentMode: .enumeration(ContentMode.fill.rawValue),
-            .isAnimating: .bool(true),
+            ImageContract.isAnimating.token: .bool(true),
         ]
 
         renderer.applyForTesting(tree(picture))

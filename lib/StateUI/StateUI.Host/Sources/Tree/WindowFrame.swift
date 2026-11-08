@@ -31,8 +31,8 @@
     @MainActor public init(of window: MountedElement) {
         let place = { (property: Prop) in window.value(property)?.number.flatMap { $0.isFinite ? $0 : nil } }
         self.init(
-            x: place(.x), y: place(.y), width: Self.extent(.width, of: window),
-            height: Self.extent(.height, of: window))
+            x: place(.x), y: place(.y), width: Self.extent(WindowContract.width.token, of: window),
+            height: Self.extent(WindowContract.height.token, of: window))
     }
 
     /// What of this frame the tree changed since `last`: each request alone, nil where it kept one or asks none -

@@ -91,8 +91,8 @@ final class AppKitPickerRegistrationTests: XCTestCase {
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
         due.properties[.date] = .numbers([2026, 9, 16])
-        due.properties[.minimum] = .numbers([2026, 1, 1])
-        due.properties[.maximum] = .numbers([2026, 12, 31])
+        due.properties[DatePickerContract.minimum.token] = .numbers([2026, 1, 1])
+        due.properties[DatePickerContract.maximum.token] = .numbers([2026, 12, 31])
         renderer.applyForTesting(tree(due))
 
         let native = try XCTUnwrap(

@@ -315,7 +315,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         try XCTUnwrap(runtime.tree.root?.first(id: .manual(scene))?.first(id: .manual(name)))
     }
 
-    /// What was told, as "scene event" and "scene/window event".
+    /// What was told, as "scene event" and "scene/window event", each event by its own name.
     private static func names(_ told: [ApplicationLifecycle.Told]) -> [String] {
         told.map { each in
             let name = { (element: MountedElement?) in
@@ -324,7 +324,7 @@ final class ApplicationLifecycleTests: XCTestCase {
             }
             let scene = each.element.enclosing(type: .scene)
             let path = each.element.type == .scene ? name(scene) : "\(name(scene))/\(name(each.element))"
-            return "\(path) \(each.event.name)"
+            return "\(path) \(each.event.memberName)"
         }
     }
 }

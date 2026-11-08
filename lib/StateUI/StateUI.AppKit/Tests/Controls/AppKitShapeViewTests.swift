@@ -159,8 +159,8 @@ final class AppKitShapeViewTests: XCTestCase {
         var line = HostPatch(id: .manual("line"), type: .line)
         line.properties[.from] = .numbers([1, 2])
         line.properties[.to] = .numbers([41, 22])
-        line.properties[.stroke] = brush(.black)
-        line.properties[.lineWidth] = .number(3)
+        line.properties[ShapeContract.stroke.token] = brush(.black)
+        line.properties[ShapeContract.lineWidth.token] = .number(3)
         line.properties[.dash] = .numbers([2, 1])
         line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         renderer.applyForTesting(tree(line))
@@ -207,8 +207,8 @@ final class AppKitShapeViewTests: XCTestCase {
             defer { renderer.finish() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
-                .stroke: brush(.black),
-                .lineWidth: .number(2),
+                ShapeContract.stroke.token: brush(.black),
+                ShapeContract.lineWidth.token: .number(2),
                 .dash: .numbers([3, 1]),
                 .dashPhase: .number(0.5),
                 .lineCap: .enumeration(LineCap.square.rawValue),
@@ -239,8 +239,8 @@ final class AppKitShapeViewTests: XCTestCase {
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
                 .fill: brush(.red),
-                .stroke: brush(.blue),
-                .lineWidth: .number(4),
+                ShapeContract.stroke.token: brush(.blue),
+                ShapeContract.lineWidth.token: .number(4),
             ]) { $1 }
             renderer.applyForTesting(tree(shape))
 
