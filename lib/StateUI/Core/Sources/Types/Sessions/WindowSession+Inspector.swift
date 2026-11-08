@@ -7,11 +7,14 @@
 extension WindowSession {
     /// Where the inspector of this window's scene shows - along the bottom or the side, or in the scene's own
     /// inspector window - nil while it shows nowhere. Writing a place shows it there, docked in this window where
-    /// it docks, and records from now on; writing nil hides it, wherever it shows.
+    /// it docks, and records from now on; writing nil hides it, wherever it shows. It is the scene's place, which
+    /// every window of the scene reads, so it lends no binding.
     ///
     ///     @Environment(\.window) private var window
     ///
     ///     Button("Inspect").onClicked { window.debugInspector = .side }
+    ///
+    /// Design: docs/design/views/inspector.md#where-it-docks
     public var debugInspector: DebugInspector.Place? {
         get { record.flatMap { InspectorModel.shared.places[$0.id] } }
         set {
