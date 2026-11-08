@@ -25,18 +25,14 @@ public final class Ticker {
     /// beat - an interval after its end where it overran a whole one.
     public typealias Tick = @MainActor () async -> Void
 
-    @State private var storedInterval: Duration
     private var storedTick: Tick?
 
     /// Which run the loop belongs to: a loop waking with an old number returns.
     private var run = 0
 
     /// How long between ticks; written while running, it applies from the next tick.
-    /// A millisecond is the floor.
-    public var interval: Duration {
-        get { storedInterval }
-        set { storedInterval = Ticker.usable(newValue) }
-    }
+    /// The loop sleeps a millisecond at least, whatever it says.
+    @State public var interval: Duration
 
     /// How many ticks to run for, or nil to go on until stopped. A countdown is
     /// this and `ticks`: `limit - ticks` is what is left.
@@ -124,7 +120,7 @@ public final class Ticker {
         limit: Int? = nil,
         onTick: Tick? = nil
     ) {
-        _storedInterval = State(wrappedValue: Ticker.usable(interval))
+        _interval = State(wrappedValue: interval)
         _limit = State(wrappedValue: limit)
         storedTick = onTick
     }
@@ -147,8 +143,8 @@ public final class Ticker {
         libraryTask { [weak self] in
             var deadline = ContinuousClock.now
 
-            while let interval = self?.storedInterval {
-                deadline += interval
+            while let interval = self?.interval {
+                deadline += Ticker.usable(interval)
                 try? await Task.sleep(until: deadline)
                 guard await self?.lap(mine, after: &deadline) == true else { return }
             }
@@ -193,7 +189,7 @@ public final class Ticker {
         // A lap longer than a whole interval restarts the deadline from now, so missed
         // laps do not all come due at once.
         // Design: docs/design/core/cycle.md#the-ticker
-        if deadline + storedInterval < .now { deadline = .now }
+        if deadline + Ticker.usable(interval) < .now { deadline = .now }
         return true
     }
 

@@ -13200,8 +13200,9 @@ swift.property TabView.body: @MainActor var body: Never { get }
 swift.property Text.body: @MainActor var body: Never { get }
 swift.property TextEditor.body: @MainActor var body: Never { get }
 swift.property TextField.body: @MainActor var body: Never { get }
+swift.property Ticker.$interval: @MainActor var $interval: Binding<Duration> { get }
 swift.property Ticker.$limit: @MainActor var $limit: Binding<Int?> { get }
-swift.property Ticker.interval: @MainActor var interval: Duration { get set }
+swift.property Ticker.interval: @State @MainActor var interval: Duration { get set }
 swift.property Ticker.isFinished: @MainActor var isFinished: Bool { get }
 swift.property Ticker.isRunning: @MainActor var isRunning: Bool { get }
 swift.property Ticker.limit: @State @MainActor var limit: Int? { get set }

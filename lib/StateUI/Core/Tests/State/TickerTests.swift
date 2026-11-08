@@ -372,14 +372,15 @@ final class TickerTests: XCTestCase {
 
     /// Zero is not a very fast ticker and a negative one is not a ticker at
     /// all: the deadline would never move ahead of the clock and the loop would
-    /// spin on the thread the host draws on. A millisecond is the floor.
+    /// spin on the thread the host draws on. A millisecond is the floor the loop
+    /// sleeps, whatever the interval says - written through its binding too.
     func testAnIntervalOfNothingIsGivenAFloor() {
-        XCTAssertEqual(Ticker(every: .zero).interval, .milliseconds(1))
-        XCTAssertEqual(Ticker(every: .seconds(-5)).interval, .milliseconds(1))
+        let ticker = Ticker(every: .seconds(1), limit: 3)
+        ticker.$interval.wrappedValue = .seconds(-5)
 
-        let ticker = Ticker(every: .seconds(1))
-        ticker.interval = .zero
-        XCTAssertEqual(ticker.interval, .milliseconds(1), "the floor is the setter's too")
+        ticker.start()
+
+        XCTAssertTrue(drain(until: { ticker.isFinished }, within: 2), "a ticker written no interval never finished")
     }
 
     /// And the floor is what makes such a ticker END: it counts its limit and

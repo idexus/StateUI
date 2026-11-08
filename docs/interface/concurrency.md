@@ -321,8 +321,8 @@ current description to that ticker. A tick, and each change to `interval` or
 `limit`, requests a render; setting `onTick` does not.
 
 `ticks` and `isRunning` are read-only facts. Use `start()`, `stop()` and
-`reset()` to control them; the writable setting `limit` also offers a
-binding for controls.
+`reset()` to control them; the writable settings `interval` and `limit` also
+offer bindings for controls, `ticker.$interval` and `ticker.$limit`.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
@@ -334,8 +334,9 @@ among it, so such a ticker is stopped in `.onDestroying`, as the poll below. A
 ticker a handler starts belongs to no run: it goes on after that run is
 superseded, until it is stopped or nobody holds it.
 
-Intervals shorter than one millisecond are clamped to one millisecond. The
-platform scheduler may have a coarser practical resolution.
+An interval shorter than one millisecond sleeps one millisecond; the
+interval itself holds what was written. The platform scheduler may have a
+coarser practical resolution.
 
 ## Work on each tick
 
