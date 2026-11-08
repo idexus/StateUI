@@ -52,26 +52,6 @@
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 0, "the program's choice shown")
                 s.expect(written.values, ["L"], "and come back from nobody")
             },
-            ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", proves: [
-                Covered(PickerContract.placeholder),
-            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
-                let named = State(wrappedValue: false)
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .placeholder(named.wrappedValue ? "Size" : "Pick").id("picker")
-                        Button("Name").onClicked { named.wrappedValue = true }.id("change")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.choose(2), on: picker)
-                try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 2 }
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(PickerContract.placeholder, on: picker) == "Size" }
-                s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the user's choice, not argued with")
-            },
             ConformanceCase("choicesTheTreeChangesAreOffered", proves: [
                 Covered(PickerContract.options),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
@@ -94,8 +74,6 @@
             takesTheUsersChoice(as: .segmented),
             offersItsValues(as: .radio),
             takesTheUsersChoice(as: .radio),
-            Aspects.holds(PickerContract.placeholder, on: "Picker", "Size", then: "Color",
-                          with: [Write(PickerContract.options, ["S", "M"])]),
         ]
     }
 

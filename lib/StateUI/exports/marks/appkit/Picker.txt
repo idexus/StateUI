@@ -1,7 +1,6 @@
-# revision 5.1
+# revision 6.1
 Picker: ✅
 Picker.options: ✅
-Picker.placeholder: ✅
 Picker.presentation: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✓ choose on Picker: the host's action called, not the pop-up's

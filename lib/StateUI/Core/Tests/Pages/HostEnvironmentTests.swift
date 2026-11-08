@@ -372,7 +372,7 @@ final class HostEnvironmentTests: XCTestCase {
         let device = Device()
 
         XCTAssertTrue(device.honors(PopupElementContract.isOpen))
-        XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
+        XCTAssertFalse(device.honors(PlaceholderElementContract.placeholder), "a member its host leaves out")
         XCTAssertFalse(device.honors(PopupElementContract.opened), "an event its host raises not")
         XCTAssertTrue(device.honors(MapContract.moveToRegion), "an act its host performs")
         XCTAssertFalse(device.honors(WebViewContract.goBack), "and one it does not")
@@ -416,7 +416,7 @@ final class HostEnvironmentTests: XCTestCase {
 
         XCTAssertFalse(device.honors(VisualElementContract.tooltip), "never on this family")
         XCTAssertTrue(device.honors(PopupElementContract.isOpen), "in part")
-        XCTAssertFalse(device.honors(PickerContract.placeholder), "said nowhere")
+        XCTAssertFalse(device.honors(PlaceholderElementContract.placeholder), "said nowhere")
     }
 
     /// A tier's member the register records element by element - realized on one wearer, never on another - is

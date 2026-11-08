@@ -601,6 +601,9 @@ swift.conformance PickerPresentation: Swift.RawRepresentable
 swift.conformance PickerPresentation: Swift.Sendable
 swift.conformance PinchUpdate: Swift.Equatable
 swift.conformance PinchUpdate: Swift.Sendable
+swift.conformance PlaceholderElementContract: StateUI.Tier
+swift.conformance PlaceholderElementContract: StateUI.WornContract
+swift.conformance PlaceholderElementContract: Swift.Sendable
 swift.conformance Placement: Swift.Equatable
 swift.conformance Placement: Swift.Sendable
 swift.conformance Point: Swift.Equatable
@@ -1113,6 +1116,7 @@ swift.enum PageElementContract: enum PageElementContract
 swift.enum PathContract: enum PathContract
 swift.enum PickerContract: enum PickerContract
 swift.enum PickerPresentation: enum PickerPresentation
+swift.enum PlaceholderElementContract: enum PlaceholderElementContract
 swift.enum PolygonContract: enum PolygonContract
 swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
@@ -7641,7 +7645,7 @@ swift.method Picker.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> 
 swift.method Picker.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotX(_:): @MainActor func pivotX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Picker.Modified
+swift.method Picker.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Picker.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Picker.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
@@ -7681,8 +7685,9 @@ swift.method Picker.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Picker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Picker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PickerProperties.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method PickerProperties.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
+swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
+swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -11718,7 +11723,6 @@ swift.method TextInput.maximumLength(_:): @MainActor func maximumLength(_ state:
 swift.method TextInput.onTextChanged(_:): @MainActor func onTextChanged(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextInput.onTextChanged(_:_:): @MainActor func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextInput.onTextChanged(gate:_:): @MainActor func onTextChanged(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method TextInput.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method TextInput.placeholderColor(_:): @MainActor func placeholderColor(_ state: Binding<Color>) -> Self.Modified
 swift.method TextInput.selectionLength(_:): @MainActor func selectionLength(_ state: Binding<Int>) -> Self.Modified
 swift.method TextInput.selectionLength(_:): @MainActor func selectionLength(_ value: Int) -> Self.Modified
@@ -11727,7 +11731,6 @@ swift.method TextInputProperties.isReadOnly(_:): @MainActor func isReadOnly(_ va
 swift.method TextInputProperties.isSpellCheckEnabled(_:): @MainActor func isSpellCheckEnabled(_ value: Bool) -> Self.Modified
 swift.method TextInputProperties.isTextPredictionEnabled(_:): @MainActor func isTextPredictionEnabled(_ value: Bool) -> Self.Modified
 swift.method TextInputProperties.maximumLength(_:): @MainActor func maximumLength(_ value: Int) -> Self.Modified
-swift.method TextInputProperties.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method TextInputProperties.placeholderColor(_:): @MainActor func placeholderColor(_ value: Color) -> Self.Modified
 swift.method TextProperties.isSelectable(_:): @MainActor func isSelectable(_ value: Bool) -> Self.Modified
 swift.method TextProperties.lineBreak(_:): @MainActor func lineBreak(_ value: LineBreak) -> Self.Modified
@@ -13264,7 +13267,7 @@ swift.protocol PersistentValue: protocol PersistentValue
 swift.protocol Scene: @MainActor protocol Scene
 swift.protocol Shape: @MainActor protocol Shape : ElementView, ShapeProperties
 swift.protocol Stack: @MainActor protocol Stack : Layout, StackProperties
-swift.protocol TextInput: @MainActor protocol TextInput : ElementView, FocusElement, TextInputProperties
+swift.protocol TextInput: @MainActor protocol TextInput : ElementView, FocusElement, PlaceholderElement, TextInputProperties
 swift.protocol Tier: protocol Tier : WornContract
 swift.protocol ToolbarItem: @MainActor protocol ToolbarItem : Element
 swift.protocol View: @MainActor protocol View : ViewProperties, Views, VisualElement where Self.Modified : View
@@ -13838,10 +13841,11 @@ swift.type.property PathContract.data: static let data: ElementProperty<PathCont
 swift.type.property PathContract.name: static var name: String { get }
 swift.type.property PickerContract.name: static var name: String { get }
 swift.type.property PickerContract.options: static let options: ElementProperty<PickerContract, [String]>
-swift.type.property PickerContract.placeholder: static let placeholder: ElementProperty<PickerContract, String>
 swift.type.property PickerContract.presentation: static let presentation: ElementProperty<PickerContract, PickerPresentation>
 swift.type.property PickerContract.selectedIndex: static let selectedIndex: ElementProperty<PickerContract, Int>
 swift.type.property PickerContract.selectedIndexChanged: static let selectedIndexChanged: ElementEvent<PickerContract, Int>
+swift.type.property PlaceholderElementContract.name: static let name: String
+swift.type.property PlaceholderElementContract.placeholder: static let placeholder: ElementProperty<PlaceholderElementContract, String>
 swift.type.property Point.zero: static let zero: Point
 swift.type.property PolygonContract.fillRule: static let fillRule: ElementProperty<PolygonContract, FillRule>
 swift.type.property PolygonContract.name: static var name: String { get }
@@ -13966,7 +13970,6 @@ swift.type.property TextInputContract.isSpellCheckEnabled: static let isSpellChe
 swift.type.property TextInputContract.isTextPredictionEnabled: static let isTextPredictionEnabled: ElementProperty<TextInputContract, Bool>
 swift.type.property TextInputContract.maximumLength: static let maximumLength: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.name: static let name: String
-swift.type.property TextInputContract.placeholder: static let placeholder: ElementProperty<TextInputContract, String>
 swift.type.property TextInputContract.placeholderColor: static let placeholderColor: ElementProperty<TextInputContract, Color>
 swift.type.property TextInputContract.selectionLength: static let selectionLength: ElementProperty<TextInputContract, Int>
 swift.type.property TextInputContract.textChanged: static let textChanged: ElementEvent<TextInputContract, String>

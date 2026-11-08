@@ -77,7 +77,7 @@ extension UIKitRegistrations {
     /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
-        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
@@ -94,9 +94,9 @@ extension UIKitRegistrations {
         }
         if values.changed(TextualElementContract.textCase) { view.typing.textCase = values[TextualElementContract.textCase] }
         if let words = TextMembers.words(values) { view.setText(words) }
-        if values.changed(TextInputContract.placeholder) || values.changed(TextInputContract.placeholderColor) {
+        if values.changed(PlaceholderElementContract.placeholder) || values.changed(TextInputContract.placeholderColor) {
             view.setPlaceholder(
-                values[TextInputContract.placeholder],
+                values[PlaceholderElementContract.placeholder],
                 color: values[TextInputContract.placeholderColor].flatMap { UIColor(stateUI: $0.propValue) })
         }
         if values.changed(EnabledElementContract.isEnabled) || values.changed(TextInputContract.isReadOnly)

@@ -30,7 +30,7 @@ extension AppKitRegistrations {
                     text: words,
                     writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
@@ -72,7 +72,7 @@ extension AppKitRegistrations {
                     text: words,
                     writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
@@ -114,7 +114,7 @@ extension AppKitRegistrations {
                     text: words,
                     writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
@@ -141,7 +141,7 @@ extension AppKitRegistrations {
 
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers = PropertyList(
-        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
         TextInputContract.placeholderColor, TextColorElementContract.textColor, BackgroundElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontWeight, FontElementContract.textStyle,

@@ -9,16 +9,19 @@
 @_spi(Host) public enum TextInputTests: ConformanceFamily {
     public static let name = "TextInput"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(TextInputContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(TextInputContract.self).flatMap { element in
             [
-                typed(element), bounded(element), written(element), readOnly(element), closed(element),
+                typed(element), bounded(element), writtenByTheProgram(element), readOnly(element), closed(element),
                 filled(element),
                 Aspects.holds(TextInputContract.maximumLength, on: element, 10, then: 3),
-                Aspects.holds(TextInputContract.placeholder, on: element, "Name", then: "E-mail"),
+                Aspects.holds(PlaceholderElementContract.placeholder, on: element, "Name", then: "E-mail"),
                 Aspects.holds(
                     TextInputContract.placeholderColor, on: element, .red, then: .blue,
-                    with: [Write(TextInputContract.placeholder, "Name")]),
+                    with: [Write(PlaceholderElementContract.placeholder, "Name")]),
                 Aspects.holds(TextInputContract.inputPurpose, on: element, .email, then: .url),
                 Aspects.holds(TextInputContract.isReadOnly, on: element, false, then: true),
                 Aspects.holds(TextInputContract.isSpellCheckEnabled, on: element, true, then: false),
@@ -38,13 +41,13 @@
     @MainActor
     static func standsAsWideAsItsWords(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAsWideAsItsWords", proves: [
-            Covered(TextInputContract.placeholder, on: element),
+            Covered(PlaceholderElementContract.placeholder, on: element),
         ], needs: [
             Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.frameChanged, on: "Text"),
         ]) { s in
             for words in ["Search every note, folder and tag", nil] {
                 let field = Received<[Double]>(), measure = Received<[Double]>()
-                let said = words.map { [Write(TextInputContract.placeholder, $0)] as [any Worn] } ?? []
+                let said = words.map { [Write(PlaceholderElementContract.placeholder, $0)] as [any Worn] } ?? []
                 s.start {
                     VStack {
                         HStack { ViewTests.reporting(element, field, said) }
@@ -181,7 +184,7 @@
 
     /// The program's words are shown, and not heard as typing.
     @MainActor
-    static func written(_ element: String) -> ConformanceCase {
+    static func writtenByTheProgram(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", proves: [
             Covered(TextInputContract.textChanged, on: element),
         ], needs: [Covered(TextElementContract.text, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in

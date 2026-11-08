@@ -867,6 +867,13 @@ extension ControlDictionary {
                 .onClicked { count += 1 }
             """#),
 
+        (PlaceholderElementContract.self, #"""
+            @State var city = ""
+
+            TextField($city)
+                .placeholder("City")
+            """#),
+
         (ShortcutElementContract.self, #"""
             Button("Save")
                 .keyboardShortcut("s")

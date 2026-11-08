@@ -680,6 +680,7 @@ swift.conformance Picker: StateUI.FontElement
 swift.conformance Picker: StateUI.KeyboardElement
 swift.conformance Picker: StateUI.ModifiableElement
 swift.conformance Picker: StateUI.PickerProperties
+swift.conformance Picker: StateUI.PlaceholderElement
 swift.conformance Picker: StateUI.PopupElement
 swift.conformance Picker: StateUI.PropertyContainer
 swift.conformance Picker: StateUI.StyleTarget
@@ -693,6 +694,8 @@ swift.conformance PickerContract: StateUI.Contract
 swift.conformance PickerContract: StateUI.ElementContract
 swift.conformance PickerPresentation: StateUI.HostRepresentable
 swift.conformance PickerProperties: StateUI.PropertyContainer
+swift.conformance PlaceholderElement: StateUI.PropertyContainer
+swift.conformance PlaceholderElementContract: StateUI.Contract
 swift.conformance Placement: StateUI.LaneValue
 swift.conformance Placement: StateUI.StateValue
 swift.conformance Point: StateUI.HostRepresentable
@@ -844,6 +847,7 @@ swift.conformance SearchField: StateUI.FocusElement
 swift.conformance SearchField: StateUI.FontElement
 swift.conformance SearchField: StateUI.KeyboardElement
 swift.conformance SearchField: StateUI.ModifiableElement
+swift.conformance SearchField: StateUI.PlaceholderElement
 swift.conformance SearchField: StateUI.PropertyContainer
 swift.conformance SearchField: StateUI.StyleTarget
 swift.conformance SearchField: StateUI.SubmitElement
@@ -1014,6 +1018,7 @@ swift.conformance Styling: StateUI.LineHeightElement where Target : LineHeightEl
 swift.conformance Styling: StateUI.MapProperties where Target == Map
 swift.conformance Styling: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PickerProperties where Target == Picker
+swift.conformance Styling: StateUI.PlaceholderElement where Target : PlaceholderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PolygonProperties where Target == Polygon
 swift.conformance Styling: StateUI.PolylineProperties where Target == Polyline
 swift.conformance Styling: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
@@ -1027,6 +1032,7 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : ImageElement
 swift.conformance Styling: StateUI.PropertyContainer where Target : Layout, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PaddingElement, Target : StyleTarget
+swift.conformance Styling: StateUI.PropertyContainer where Target : PlaceholderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : RangeElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Shape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Stack, Target : StyleTarget
@@ -1182,6 +1188,7 @@ swift.conformance TextEditor: StateUI.FocusElement
 swift.conformance TextEditor: StateUI.FontElement
 swift.conformance TextEditor: StateUI.KeyboardElement
 swift.conformance TextEditor: StateUI.ModifiableElement
+swift.conformance TextEditor: StateUI.PlaceholderElement
 swift.conformance TextEditor: StateUI.PropertyContainer
 swift.conformance TextEditor: StateUI.StyleTarget
 swift.conformance TextEditor: StateUI.TextAlignmentElement
@@ -1204,6 +1211,7 @@ swift.conformance TextField: StateUI.FocusElement
 swift.conformance TextField: StateUI.FontElement
 swift.conformance TextField: StateUI.KeyboardElement
 swift.conformance TextField: StateUI.ModifiableElement
+swift.conformance TextField: StateUI.PlaceholderElement
 swift.conformance TextField: StateUI.PropertyContainer
 swift.conformance TextField: StateUI.StyleTarget
 swift.conformance TextField: StateUI.SubmitElement
@@ -1224,6 +1232,7 @@ swift.conformance TextInput: StateUI.ElementView
 swift.conformance TextInput: StateUI.FocusElement
 swift.conformance TextInput: StateUI.KeyboardElement
 swift.conformance TextInput: StateUI.ModifiableElement
+swift.conformance TextInput: StateUI.PlaceholderElement
 swift.conformance TextInput: StateUI.PropertyContainer
 swift.conformance TextInput: StateUI.TextInputProperties
 swift.conformance TextInput: StateUI.ViewProperties
@@ -2560,6 +2569,7 @@ swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : Automation
 swift.protocol ModifiableElement: @MainActor protocol ModifiableElement : Element, PropertyContainer where Self.Modified : Element
 swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyContainer
 swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
+swift.protocol PlaceholderElement: @MainActor protocol PlaceholderElement : PropertyContainer
 swift.protocol PolygonProperties: @MainActor protocol PolygonProperties : PropertyContainer
 swift.protocol PolylineProperties: @MainActor protocol PolylineProperties : PropertyContainer
 swift.protocol PopupElement: @MainActor protocol PopupElement : ElementView
@@ -3132,6 +3142,8 @@ swift.type.property PickerContract.members: static let members: [any ContractMem
 swift.type.property PickerContract.nodeType: static let nodeType: NodeType
 swift.type.property PickerContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property PickerContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property PlaceholderElementContract.members: static let members: [any ContractMember]
+swift.type.property PlaceholderElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property Placement.laneKind: static var laneKind: LaneKind { get }
 swift.type.property Placement.lanes: static var lanes: Int { get }
 swift.type.property Placement.moving: static var moving: MotionValues { get }

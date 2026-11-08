@@ -18,11 +18,11 @@ extension AndroidRegistrations {
             picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
-            picker.applies(PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) {
+            picker.applies(PickerContract.options, PickerContract.selectedIndex, PlaceholderElementContract.placeholder) {
                 view, values in
                 view.setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
-                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder] ?? "")
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PlaceholderElementContract.placeholder] ?? "")
             }
             picker.property(PopupElementContract.isOpen) { view, open in
                 if open == true { view.openList() }

@@ -69,7 +69,7 @@ extension AndroidRegistrations {
     private static let inputMembers = PropertyList(TextElementContract.text, TextualElementContract.textCase)
         + TextMembers.lookMembers
         + PropertyList(
-            TextInputContract.placeholder, TextInputContract.placeholderColor,
+            PlaceholderElementContract.placeholder, TextInputContract.placeholderColor,
             TextAlignmentElementContract.horizontalTextAlignment, TextInputContract.inputPurpose,
             TextInputContract.isTextPredictionEnabled, TextInputContract.maximumLength,
             TextInputContract.cursorPosition, TextInputContract.selectionLength, TextInputContract.isReadOnly,
@@ -87,8 +87,8 @@ extension AndroidRegistrations {
             view.setText(words)
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
-        if values.changed(TextInputContract.placeholder) {
-            view.setPlaceholder(values[TextInputContract.placeholder])
+        if values.changed(PlaceholderElementContract.placeholder) {
+            view.setPlaceholder(values[PlaceholderElementContract.placeholder])
         }
         if values.changed(TextInputContract.placeholderColor) {
             view.setPlaceholderColor(values[TextInputContract.placeholderColor]?.propValue)

@@ -5,12 +5,6 @@
 public protocol PickerProperties: PropertyContainer {}
 
 extension PickerProperties {
-    /// What the field says while nothing is chosen. A host can also reuse it
-    /// as the heading of a separate native choice surface.
-    public func placeholder(_ value: String) -> Modified {
-        setValue(PickerContract.placeholder, value)
-    }
-
     /// How the values are offered: `.menu`, the default - a field opening the
     /// list - `.segmented`, a row of segments, or `.radio`, a radio button
     /// for each. A list opens only from a menu.
@@ -37,7 +31,7 @@ extension PickerProperties {
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
 public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties, FocusElement, PopupElement {
+    PickerProperties, FocusElement, PopupElement, PlaceholderElement {
     /// The node this control describes.
     public var node: Node
 
@@ -103,15 +97,5 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSelectionChanged(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.selectedIndexChanged, gate: gate) { (_: Int) in try await handler() }
-    }
-
-}
-
-extension Picker {
-
-    /// `placeholder` from a state, `$x`: the host writes each new text, and no
-    /// view is rebuilt for it.
-    public func placeholder(_ state: Binding<String>) -> Modified {
-        words(PickerContract.placeholder, by: state)
     }
 }

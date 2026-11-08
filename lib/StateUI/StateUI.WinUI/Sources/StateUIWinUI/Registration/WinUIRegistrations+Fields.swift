@@ -71,7 +71,7 @@ extension WinUIRegistrations {
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
     /// many it holds, whether it takes them, and their font and color.
     private static let wordMembers = PropertyList(
-        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled)
         + TextMembers.lookMembers
 
@@ -82,7 +82,7 @@ extension WinUIRegistrations {
         if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) {
             view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
-        if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
+        if values.changed(PlaceholderElementContract.placeholder) { view.setPlaceholder(values[PlaceholderElementContract.placeholder]) }
         if values.changed(EnabledElementContract.isEnabled) {
             view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }

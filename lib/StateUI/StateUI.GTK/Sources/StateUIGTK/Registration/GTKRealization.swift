@@ -177,7 +177,7 @@ enum GTKRealization {
         .notPlanned(PopupElementContract.opened, on: PickerContract.self, reason: "GTK's drop-down tells no one its list opened or closed."),
         .notPlanned(TintElementContract.tint, on: PickerContract.self,
             reason: "A GNOME drop-down wears no accent: a check in its words' color marks the choice."),
-        .notPlanned(PickerContract.placeholder,
+        .notPlanned(PlaceholderElementContract.placeholder, on: PickerContract.self,
             reason: "GTK's drop-down shows a choice or nothing: it has no words standing for none."),
         .complete(SessionElementContract.activated, on: SceneContract.self),
         .complete(SessionElementContract.deactivated, on: SceneContract.self),

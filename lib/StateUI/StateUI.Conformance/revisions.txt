@@ -39,7 +39,7 @@ FontElement 5
 winui PageElement 2
 DatePicker 6
 TimePicker 6
-Picker 5
+Picker 6
 Image 3
 Page 9
 PageElement 6
@@ -47,7 +47,7 @@ View 23
 VisualElement 28
 Shape 5
 BorderElement 14
-TextInput 8
+TextInput 9
 Application 14
 TextSpan 5
 Separator 4

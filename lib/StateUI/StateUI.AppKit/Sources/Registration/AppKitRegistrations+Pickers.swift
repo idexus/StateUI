@@ -24,7 +24,7 @@ extension AppKitRegistrations {
             return picker
         }, members: { (picker: Registration<PickerContract, NSView>) in
             picker.applies(
-                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder, PopupElementContract.isOpen,
+                PickerContract.options, PickerContract.selectedIndex, PlaceholderElementContract.placeholder, PopupElementContract.isOpen,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TextColorElementContract.textColor,
                 TintElementContract.tint, TextAlignmentElementContract.horizontalTextAlignment,
@@ -33,7 +33,7 @@ extension AppKitRegistrations {
                     items: values[PickerContract.options] ?? [],
                     selectedIndex: values[PickerContract.selectedIndex] ?? -1,
                     writeSelection: values.changed(PickerContract.selectedIndex),
-                    title: values[PickerContract.placeholder],
+                    title: values[PlaceholderElementContract.placeholder],
                     font: Self.font(values),
                     textColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,

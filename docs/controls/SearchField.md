@@ -16,7 +16,7 @@ SearchField($query)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [SubmitElement](tiers/SubmitElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [PlaceholderElement](tiers/PlaceholderElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [SubmitElement](tiers/SubmitElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -37,11 +37,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (104)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>55 ✅ · 5 ☑️ · 36 ✓ · 5 –</td><td><code>NSSearchField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>25 ✅ · 2 ✓</td><td><code>UISearchTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>23 ✅ · 2 ✓ · 1 –</td><td>one-line <code>EditText</code> with a search key</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>23 ✅ · 2 ☑️ · 2 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>19 ✅ · 1 ☑️ · 6 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>27 ✅</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>15 ✅ · 2 ✓</td><td><code>UISearchTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>14 ✅ · 2 ✓</td><td>one-line <code>EditText</code> with a search key</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>16 ✅ · 1 ☑️</td><td><code>AutoSuggestBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>11 ✅ · 5 ✓ · 1 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>17 ✅</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -187,21 +187,19 @@ What every field a user types into has: the text's limits and caret, the keyboar
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.<br>WinUI 3: Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a name, a password and a code get their keys and checking all the same.<br>GTK 4: Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a password and a code get their keys and checking all the same.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet<br>Android Views: Android has no switch for spell checking alone: its marks go with the suggestions, which <code>isTextPredictionEnabled</code> turns off.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: only through the host's own: read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>selectionLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet<br>WinUI 3: WinUI's search box keeps its caret in the text box of its template, and offers no caret or selection of its own.</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>onTextChanged</code> (<code>textChanged</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>cursorPosition</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>inputPurpose</code></td><td>property</td><td><code>InputPurpose</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isReadOnly</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isSpellCheckEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read isSpellCheckEnabled of SearchField - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isTextPredictionEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>maximumLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>placeholderColor</code></td><td>property</td><td><code>Color</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>selectionLength</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read selectionLength of SearchField - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onTextChanged</code> (<code>textChanged</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [TextualElement](tiers/TextualElement.md)
@@ -211,6 +209,15 @@ What every element drawing its words itself has: the case they are drawn in, the
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
+## From [PlaceholderElement](tiers/PlaceholderElement.md)
+
+The words an element shows while it holds nothing: a field while it is empty, a picker while nothing is chosen.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [StyledElement](tiers/StyledElement.md)

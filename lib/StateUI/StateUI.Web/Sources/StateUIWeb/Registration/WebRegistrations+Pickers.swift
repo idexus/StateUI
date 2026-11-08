@@ -20,10 +20,10 @@ extension WebRegistrations {
             return picker
         }, members: { (picker: Registration<PickerContract, WebDOMView>) in
             picker.applies(
-                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) { view, values in
+                PickerContract.options, PickerContract.selectedIndex, PlaceholderElementContract.placeholder) { view, values in
                 (view as! any WebChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
-                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PlaceholderElementContract.placeholder])
             }
             picker.applies(TextMembers.lookMembers) { view, values in
                 (view as! any WebChoosing).setLook(TextMembers.look(of: values))

@@ -14,7 +14,7 @@ Picker(["Small", "Medium", "Large"], selection: $size)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [PopupElement](tiers/PopupElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [PlaceholderElement](tiers/PlaceholderElement.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [PopupElement](tiers/PopupElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -49,7 +49,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>options</code></td><td>property</td><td><code>[String]</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>presentation</code></td><td>property</td><td><code>PickerPresentation</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onSelectionChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
@@ -185,6 +184,15 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
+## From [PlaceholderElement](tiers/PlaceholderElement.md)
+
+The words an element shows while it holds nothing: a field while it is empty, a picker while nothing is chosen.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>placeholder</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [StyledElement](tiers/StyledElement.md)

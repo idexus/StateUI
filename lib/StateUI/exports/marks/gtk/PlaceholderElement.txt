@@ -1,0 +1,5 @@
+# revision 0.0
+Picker.placeholder: – GTK's drop-down shows a choice or nothing: it has no words standing for none.
+SearchField.placeholder: ✅
+TextEditor.placeholder: ✅
+TextField.placeholder: ✅

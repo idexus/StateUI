@@ -234,7 +234,7 @@ extension NodeType {
     static let panYChannel = ViewContract.panYChannel.token
     static let layoutBody = ViewContract.layoutBody.token
     static let parameters = MotionLayoutContract.parameters.token
-    static let placeholder = TextInputContract.placeholder.token
+    static let placeholder = PlaceholderElementContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token
     static let points = PolygonContract.points.token
     static let progress = ProgressBarContract.progress.token

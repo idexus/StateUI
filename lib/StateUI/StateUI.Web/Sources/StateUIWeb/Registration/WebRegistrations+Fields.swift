@@ -68,7 +68,7 @@ extension WebRegistrations {
     /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
-        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
@@ -85,7 +85,7 @@ extension WebRegistrations {
             let textCase = values[TextualElementContract.textCase] ?? .none
             view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
-        if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
+        if values.changed(PlaceholderElementContract.placeholder) { view.setPlaceholder(values[PlaceholderElementContract.placeholder]) }
         if values.changed(EnabledElementContract.isEnabled) {
             view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }

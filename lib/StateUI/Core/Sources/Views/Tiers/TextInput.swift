@@ -7,7 +7,7 @@
 public protocol TextInputProperties: ViewProperties {}
 
 /// A view the user types into.
-public protocol TextInput: ElementView, TextInputProperties, FocusElement {}
+public protocol TextInput: ElementView, TextInputProperties, FocusElement, PlaceholderElement {}
 
 extension TextInput {
     /// Fires on every edit, with the whole of the new text. Runs after a
@@ -43,11 +43,6 @@ extension TextInputProperties {
     /// the same fields.
     public func isTextPredictionEnabled(_ value: Bool) -> Modified {
         setValue(TextInputContract.isTextPredictionEnabled, value)
-    }
-
-    /// What the field says while it is empty.
-    public func placeholder(_ value: String) -> Modified {
-        setValue(TextInputContract.placeholder, value)
     }
 
     /// The placeholder's color.
@@ -117,12 +112,6 @@ extension TextInput {
     /// stands, and no view is rebuilt for it.
     public func maximumLength(_ state: Binding<Int>) -> Modified {
         twin(TextInputContract.maximumLength, by: state)
-    }
-
-    /// `placeholder` from a state, `$x`: the host writes each new text, and no
-    /// view is rebuilt for it.
-    public func placeholder(_ state: Binding<String>) -> Modified {
-        words(TextInputContract.placeholder, by: state)
     }
 
     /// `placeholderColor` from a state, `$x`: the host animates the property to

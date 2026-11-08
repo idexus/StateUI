@@ -494,7 +494,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ProgressBar](controls/ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 1 ✅ · 1 ✓ · 1 – | 3 ✅ |
 | [Rectangle](controls/Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 10 ✅ · 1 ☑️ · 1 – | 11 ✅ · 1 ☑️ |
 | [ScrollView](controls/ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 11 ✅ · 2 ✓ · 3 – | 12 ✅ · 3 ✓ · 3 – | 15 ✅ · 3 – | 12 ✅ · 2 ✓ · 4 – | 12 ✅ · 6 – |
-| [SearchField](controls/SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 25 ✅ · 2 ✓ | 23 ✅ · 2 ✓ · 1 – | 23 ✅ · 2 ☑️ · 2 – | 19 ✅ · 1 ☑️ · 6 ✓ · 1 – | 27 ✅ |
+| [SearchField](controls/SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 15 ✅ · 2 ✓ | 14 ✅ · 2 ✓ | 16 ✅ · 1 ☑️ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [Separator](controls/Separator.md) | 74 | 34 ✅ · 3 ☑️ · 36 ✓ · 1 – | 1 ✅ | 1 ✅ | 1 ✅ | 1 – | 1 ✅ |
 | [Slider](controls/Slider.md) | 86 | 43 ✅ · 3 ☑️ · 36 ✓ · 2 – | 2 ✅ · 2 ✓ · 3 – | 2 ✅ · 2 ✓ · 3 – | 7 ✅ | 3 ✅ · 3 ✓ · 1 – | 7 ✅ |
 | [Space](controls/Space.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – | 4 ✅ |
@@ -502,16 +502,16 @@ Every control, and every part an application, its windows and its pages are made
 | [Stepper](controls/Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 1 ✅ · 2 ✓ · 3 – | 1 ✅ · 2 ✓ · 3 – | 6 ✅ | 3 ✅ · 2 ✓ · 1 – | 6 ✅ |
 | [Switch](controls/Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ · 2 ✓ · 3 – | 2 ✅ · 2 ✓ · 3 – | 8 ✅ | 4 ✅ · 3 ✓ · 1 – | 8 ✅ |
 | [Text](controls/Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 16 ✅ | 16 ✅ | 17 ✅ | 15 ✅ · 1 ✓ · 1 – | 17 ✅ |
-| [TextEditor](controls/TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 26 ✅ · 2 ✓ | 24 ✅ · 2 ✓ · 1 – | 27 ✅ · 1 ☑️ | 20 ✅ · 1 ☑️ · 6 ✓ · 1 – | 28 ✅ |
-| [TextField](controls/TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 25 ✅ · 2 ✓ | 23 ✅ · 2 ✓ · 1 – | 26 ✅ · 1 ☑️ | 19 ✅ · 1 ☑️ · 6 ✓ · 1 – | 27 ✅ |
+| [TextEditor](controls/TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 16 ✅ · 2 ✓ | 15 ✅ · 2 ✓ | 18 ✅ | 12 ✅ · 5 ✓ · 1 – | 18 ✅ |
+| [TextField](controls/TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 15 ✅ · 2 ✓ | 14 ✅ · 2 ✓ | 17 ✅ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [TimePicker](controls/TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 4 ✅ · 2 ✓ · 7 – | 7 ✅ · 2 ✓ · 3 – | 13 ✅ | 10 ✅ · 2 ✓ · 1 – | 13 ✅ |
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 313 | 318 | 388 | 300 | 398 |
-| ✓ |  | 1355 | 56 | 45 | 8 | 67 | 5 |
-| – |  | 57 | 48 | 46 | 18 | 50 | 14 |
-| **Met** | 3210 | **3077** | **417** | **409** | **414** | **417** | **417** |
+| ✅ |  | 1665 | 283 | 291 | 363 | 276 | 368 |
+| ✓ |  | 1355 | 56 | 45 | 8 | 64 | 5 |
+| – |  | 57 | 48 | 43 | 16 | 50 | 14 |
+| **Met** | 3210 | **3077** | **387** | **379** | **387** | **390** | **387** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 
 ### Application structure
@@ -572,11 +572,12 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDropped` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 36 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
-| [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
+| [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 9 |
 | [Shape](controls/tiers/Shape.md) | `contentMode`, `geometryTransform`, `stroke`, `dashPhase`, `dash`, `lineCap`, `lineWidth` | 7 |
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `textCase` | 1 |
+| [PlaceholderElement](controls/tiers/PlaceholderElement.md) | `placeholder` | 1 |
 | [StyledElement](controls/tiers/StyledElement.md) | `style` | 1 |
 | [TextElement](controls/tiers/TextElement.md) | `text` | 1 |
 | [ShortcutElement](controls/tiers/ShortcutElement.md) | `keyboardShortcut` | 1 |
@@ -633,7 +634,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Picker](controls/Picker.md) | `options`, `placeholder`, `presentation`, `selectedIndex`, `onSelectionChanged` (`selectedIndexChanged`) | 5 | 4 ✅ · 1 ✓ |  |  |  |  |  |
+| [Picker](controls/Picker.md) | `options`, `presentation`, `selectedIndex`, `onSelectionChanged` (`selectedIndexChanged`) | 4 | 3 ✅ · 1 ✓ |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
