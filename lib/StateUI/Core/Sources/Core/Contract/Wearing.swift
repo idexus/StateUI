@@ -35,9 +35,16 @@
     /// does not; an element made with no contract takes anything.
     @discardableResult
     static func takes<Member: KeyedMember>(_ element: (any ElementContract.Type)?, _ member: Member) -> Bool {
+        takes(element, member, of: Member.Owner.self)
+    }
+
+    /// The judgment, one body for every member's type.
+    /// Design: docs/design/platforms/web/runtime.md#the-modules-size
+    private static func takes(
+        _ element: (any ElementContract.Type)?, _ member: any KeyedMember, of owner: any Contract.Type
+    ) -> Bool {
         guard let element else { return true }
 
-        let owner = Member.Owner.self
         let key = Judged(element: ObjectIdentifier(element), owner: ObjectIdentifier(owner), member: member.memberKey)
         if let known = judged[key] { return known }
 

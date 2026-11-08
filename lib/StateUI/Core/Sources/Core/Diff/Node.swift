@@ -420,9 +420,15 @@ public struct Node {
         id: String? = nil,
         children: [Node] = []
     ) {
-        self.init(type: Declaration.nodeType, id: id, children: children)
-        declaration = Declaration.self
-        Wearing.declare(Declaration.self)
+        self.init(declaration: Declaration.self, id: id, children: children)
+    }
+
+    /// A node of `declaration`'s type: one body for every element's contract.
+    /// Design: docs/design/platforms/web/runtime.md#the-modules-size
+    private init(declaration: any ElementContract.Type, id: String?, children: [Node]) {
+        self.init(type: declaration.nodeType, id: id, children: children)
+        self.declaration = declaration
+        Wearing.declare(declaration)
     }
 }
 

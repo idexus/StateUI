@@ -263,7 +263,7 @@ extension State {
             #if DEBUG
             HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
             #endif
-            return HandlerRun.admits("a write of `\(origin ?? "a state")`") && admits(value)
+            return HandlerRun.admitsWrite(of: origin) && admits(value)
         }
 
         /// Whether the state takes `value` - asked on every road a value comes in by, before it lands: a value

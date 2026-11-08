@@ -306,3 +306,10 @@ HelloWorld's and the Gallery's - and CI runs it after the Web tests. A module
 past its budget fails the run: what grew it is found, or the budget is raised
 in the same change, with the reason. One a twentieth or more under its budget
 says so, and the budget comes down with it, so a gain stays won.
+
+A generic function is compiled once for each type it is called with. One
+the library calls with every member's or every contract's type - a hundred
+of them - keeps its body non-generic behind a generic call that only names
+the type (`Node(contract:)`, `Wearing.takes`, `ContractNames.claim`, a
+state's write asking `HandlerRun`): the body stands in the module once, not a
+hundred times.

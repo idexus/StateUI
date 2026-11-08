@@ -81,6 +81,12 @@ final class HandlerRun: Sendable {
             + "- a save after the sheet closed - goes to a task of its own, `Task.detached { await model.save() }`.")
         return false
     }
+
+    /// Whether a write of the state `origin` names may land (`admits`), one body for every state's value type.
+    /// Design: docs/design/platforms/web/runtime.md#the-modules-size
+    static func admitsWrite(of origin: String?) -> Bool {
+        admits("a write of `\(origin ?? "a state")`")
+    }
 }
 
 /// Starts a task of the library's own on `MainActor` - a ticker's loop, a late reading, a post's job: it belongs to no

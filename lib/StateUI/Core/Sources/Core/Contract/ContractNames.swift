@@ -17,12 +17,12 @@ struct ContractNames {
         return nil
     }
 
-    /// Takes `Owner`'s name, `name`, for it. No two contracts of one name make members in one process: the second
-    /// stops it.
-    static func claim<Owner: Contract>(_ owner: Owner.Type, named name: KeyName) {
+    /// Takes `owner`'s name, `name`: a second contract of one name stops the process. One body for every contract.
+    /// Design: docs/design/platforms/web/runtime.md#the-modules-size
+    static func claim(_ owner: any Contract.Type, named name: KeyName) {
         let described = String(reflecting: owner)
         let holder = taken.withLock { $0.take(name, for: ObjectIdentifier(owner), described: described) }
-        precondition(holder == nil, "the contracts \(holder ?? "") and \(described) are both named `\(Owner.name)`: "
+        precondition(holder == nil, "the contracts \(holder ?? "") and \(described) are both named `\(owner.name)`: "
             + "a member of one would cross under the other's keys")
     }
 
