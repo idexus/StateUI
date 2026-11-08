@@ -59,17 +59,17 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [Spinner](Spinner.md) | 76 | 34 ✅ · 3 ☑️ · 37 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 2 ✅ · 1 – | 3 ✅ |
 | [Stepper](Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 1 ✅ · 2 ✓ · 3 – | 1 ✅ · 2 ✓ · 3 – | 6 ✅ | 3 ✅ · 2 ✓ · 1 – | 6 ✅ |
 | [Switch](Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ · 2 ✓ · 3 – | 2 ✅ · 2 ✓ · 3 – | 8 ✅ | 4 ✅ · 3 ✓ · 1 – | 8 ✅ |
-| [Text](Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 16 ✅ | 16 ✅ | 17 ✅ | 15 ✅ · 1 ✓ · 1 – | 17 ✅ |
+| [Text](Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 13 ✅ | 12 ✅ | 13 ✅ | 11 ✅ · 1 ✓ · 1 – | 13 ✅ |
 | [TextEditor](TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 16 ✅ · 2 ✓ | 15 ✅ · 2 ✓ | 18 ✅ | 12 ✅ · 5 ✓ · 1 – | 18 ✅ |
 | [TextField](TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 15 ✅ · 2 ✓ | 14 ✅ · 2 ✓ | 17 ✅ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [TimePicker](TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 4 ✅ · 2 ✓ · 7 – | 7 ✅ · 2 ✓ · 3 – | 13 ✅ | 10 ✅ · 2 ✓ · 1 – | 13 ✅ |
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 233 | 241 | 312 | 226 | 317 |
+| ✅ |  | 1665 | 230 | 237 | 308 | 222 | 313 |
 | ✓ |  | 1355 | 56 | 45 | 8 | 63 | 5 |
 | – |  | 57 | 48 | 43 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **337** | **329** | **336** | **339** | **336** |
+| **Met** | 3210 | **3077** | **334** | **325** | **332** | **335** | **332** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 <!-- controls:end -->
 
@@ -129,6 +129,7 @@ Members many elements share, declared once.
 - [FilledShape](tiers/FilledShape.md) - A shape enclosing an area its fill paints - every shape but a line.
 - [CorneredShape](tiers/CorneredShape.md) - A shape whose outline turns corners - a rectangle, a polygon, a polyline, a path; neither a line nor an ellipse.
 - [TextualElement](tiers/TextualElement.md) - What every element drawing its words itself has: the case they are drawn in, their color, and the words.
+- [LineBreakElement](tiers/LineBreakElement.md) - What happens to words too long for their room: they wrap, or they are cut and say so - a text's, a button's caption.
 - [PlaceholderElement](tiers/PlaceholderElement.md) - The words an element shows while it holds nothing: a field while it is empty, a picker while nothing is chosen.
 - [StyledElement](tiers/StyledElement.md) - The keyed style an element wears from the application's style sheet: a view's, a bar item's.
 - [TextElement](tiers/TextElement.md) - The words an element shows: a control's caption, a text's or a field's words, a menu's caption and its items', a bar's label.

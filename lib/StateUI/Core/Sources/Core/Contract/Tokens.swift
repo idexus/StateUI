@@ -201,7 +201,7 @@ extension NodeType {
     static let options = PickerContract.options.token
     static let inputPurpose = TextInputContract.inputPurpose.token
     static let lineAlignment = HStackContract.lineAlignment.token
-    static let lineBreak = ButtonContract.lineBreak.token
+    static let lineBreak = LineBreakElementContract.lineBreak.token
     static let menuKind = ButtonMenuElementContract.menuKind.token
     static let showsMenuArrow = ButtonMenuElementContract.showsMenuArrow.token
     static let lineHeight = LineHeightElementContract.lineHeight.token

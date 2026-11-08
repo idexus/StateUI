@@ -137,7 +137,7 @@ enum AppKitRealization {
         .complete(TextAlignmentElementContract.horizontalTextAlignment, on: TextContract.self),
         .complete(VisualElementContract.ignoresInput, on: TextContract.self),
         .complete(TextContract.isSelectable),
-        .complete(TextContract.lineBreak),
+        .complete(LineBreakElementContract.lineBreak, on: TextContract.self),
         .complete(TextContract.maximumLines),
         .complete(PaddingElementContract.padding, on: TextContract.self),
         .complete(TextualElementContract.textCase, on: TextContract.self),

@@ -8,6 +8,7 @@
 extension Styling: VisualElementProperties where Target: VisualElement {}
 extension Styling: BarItemElement where Target: BarItemElement {}
 extension Styling: PlaceholderElement where Target: PlaceholderElement {}
+extension Styling: LineBreakElement where Target: LineBreakElement {}
 extension Styling: ViewProperties where Target: View {}
 extension Styling: LayoutProperties where Target: Layout {}
 extension Styling: StackProperties where Target: Stack {}

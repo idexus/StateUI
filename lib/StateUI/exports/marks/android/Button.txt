@@ -2,5 +2,4 @@
 Button: ✅
 Button.iconPosition: cannot read iconPosition of Button - Android's driver has no path for it yet
 Button.iconSpacing: cannot read iconSpacing of Button - Android's driver has no path for it yet
-Button.lineBreak: ✅
 Button.role: ☑️ Android draws no look for the way out or a destructive action, only the main action's colored button.

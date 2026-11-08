@@ -38,7 +38,7 @@ extension GTKRegistrations {
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }
-            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
+            button.property(LineBreakElementContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
             // suggested action and a destructive one.
             button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { view, values in

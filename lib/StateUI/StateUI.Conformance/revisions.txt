@@ -30,7 +30,7 @@ NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 13
+Button 14
 ButtonMenu 2
 appkit Button 2
 uikit Button 2
@@ -57,7 +57,7 @@ Stepper 6
 KeyboardElement 7
 LineHeightElement 2
 TextAlignmentElement 2
-Text 4
+Text 5
 TextColorElement 4
 TintElement 3
 ContextMenu 3

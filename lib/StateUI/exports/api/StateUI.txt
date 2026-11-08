@@ -466,6 +466,9 @@ swift.conformance LineBreak: Swift.Equatable
 swift.conformance LineBreak: Swift.Hashable
 swift.conformance LineBreak: Swift.RawRepresentable
 swift.conformance LineBreak: Swift.Sendable
+swift.conformance LineBreakElementContract: StateUI.Tier
+swift.conformance LineBreakElementContract: StateUI.WornContract
+swift.conformance LineBreakElementContract: Swift.Sendable
 swift.conformance LineCap: Swift.Equatable
 swift.conformance LineCap: Swift.Hashable
 swift.conformance LineCap: Swift.RawRepresentable
@@ -1087,6 +1090,7 @@ swift.enum KeyboardElementContract: enum KeyboardElementContract
 swift.enum LayoutContract: enum LayoutContract
 swift.enum LayoutDirection: enum LayoutDirection
 swift.enum LineBreak: enum LineBreak
+swift.enum LineBreakElementContract: enum LineBreakElementContract
 swift.enum LineCap: enum LineCap
 swift.enum LineContract: enum LineContract
 swift.enum LineHeightElementContract: enum LineHeightElementContract
@@ -2180,7 +2184,7 @@ swift.method Button.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bo
 swift.method Button.keyboardShortcut(_:modifiers:): @MainActor func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self.Modified
 swift.method Button.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Button.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
-swift.method Button.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Button.Modified
+swift.method Button.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Self.Modified
 swift.method Button.lineWidth(_:): @MainActor func lineWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method Button.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
@@ -2369,7 +2373,6 @@ swift.method ButtonMenuElement.showsMenuArrow(_:): @MainActor func showsMenuArro
 swift.method ButtonProperties.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method ButtonProperties.iconPosition(_:): @MainActor func iconPosition(_ value: IconPosition) -> Self.Modified
 swift.method ButtonProperties.iconSpacing(_:): @MainActor func iconSpacing(_ value: Double) -> Self.Modified
-swift.method ButtonProperties.lineBreak(_:): @MainActor func lineBreak(_ value: LineBreak) -> Self.Modified
 swift.method Canvas.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -6137,6 +6140,8 @@ swift.method Line.visualState(_:): @MainActor func visualState(_ state: VisualSt
 swift.method Line.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Line.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method LineBreakElement.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Self.Modified
+swift.method LineBreakElement.lineBreak(_:): @MainActor func lineBreak(_ value: LineBreak) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ value: Double) -> Self.Modified
 swift.method Link.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -11073,7 +11078,7 @@ swift.method Text.isSelectable(_:): @MainActor func isSelectable(_ value: Bool) 
 swift.method Text.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Text.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
-swift.method Text.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Text.Modified
+swift.method Text.lineBreak(_:): @MainActor func lineBreak(_ state: Binding<LineBreak>) -> Self.Modified
 swift.method Text.lineHeight(_:): @MainActor func lineHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method Text.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
@@ -11731,7 +11736,6 @@ swift.method TextInputProperties.isTextPredictionEnabled(_:): @MainActor func is
 swift.method TextInputProperties.maximumLength(_:): @MainActor func maximumLength(_ value: Int) -> Self.Modified
 swift.method TextInputProperties.placeholderColor(_:): @MainActor func placeholderColor(_ value: Color) -> Self.Modified
 swift.method TextProperties.isSelectable(_:): @MainActor func isSelectable(_ value: Bool) -> Self.Modified
-swift.method TextProperties.lineBreak(_:): @MainActor func lineBreak(_ value: LineBreak) -> Self.Modified
 swift.method TextProperties.maximumLines(_:): @MainActor func maximumLines(_ value: Int) -> Self.Modified
 swift.method TextProperties.verticalTextAlignment(_:): @MainActor func verticalTextAlignment(_ value: TextAlignment) -> Self.Modified
 swift.method TextSpan.background(_:): @MainActor func background(_ value: Color) -> TextSpan.Modified
@@ -13585,7 +13589,6 @@ swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
 swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementProperty<ButtonContract, Double>
-swift.type.property ButtonContract.lineBreak: static let lineBreak: ElementProperty<ButtonContract, LineBreak>
 swift.type.property ButtonContract.name: static var name: String { get }
 swift.type.property ButtonContract.role: static let role: ElementProperty<ButtonContract, ButtonRole>
 swift.type.property ButtonMenuContract.name: static var name: String { get }
@@ -13759,6 +13762,8 @@ swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: Layou
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutInterpolation.monotone: static var monotone: LayoutCurve { get }
 swift.type.property LayoutParameters.axes: static var axes: [WritableKeyPath<Self, Double>] { get }
+swift.type.property LineBreakElementContract.lineBreak: static let lineBreak: ElementProperty<LineBreakElementContract, LineBreak>
+swift.type.property LineBreakElementContract.name: static let name: String
 swift.type.property LineContract.from: static let from: ElementProperty<LineContract, Point>
 swift.type.property LineContract.name: static var name: String { get }
 swift.type.property LineContract.to: static let to: ElementProperty<LineContract, Point>
@@ -13947,7 +13952,6 @@ swift.type.property TextAndIconElementContract.showsText: static let showsText: 
 swift.type.property TextColorElementContract.name: static let name: String
 swift.type.property TextColorElementContract.textColor: static let textColor: ElementProperty<TextColorElementContract, Color>
 swift.type.property TextContract.isSelectable: static let isSelectable: ElementProperty<TextContract, Bool>
-swift.type.property TextContract.lineBreak: static let lineBreak: ElementProperty<TextContract, LineBreak>
 swift.type.property TextContract.maximumLines: static let maximumLines: ElementProperty<TextContract, Int>
 swift.type.property TextContract.name: static var name: String { get }
 swift.type.property TextContract.verticalTextAlignment: static let verticalTextAlignment: ElementProperty<TextContract, TextAlignment>

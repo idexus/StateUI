@@ -5,11 +5,6 @@
 public protocol ButtonProperties: PropertyContainer {}
 
 extension ButtonProperties {
-    /// What happens to a caption too long for the button.
-    public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(ButtonContract.lineBreak, value)
-    }
-
     /// The picture beside the caption - a file among the application's image
     /// resources, by name; see `Image`. A button standing for its picture
     /// alone keeps its words, which name it to assistive technology:
@@ -53,7 +48,7 @@ extension ButtonProperties {
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
     ContentModeElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement,
-    ClickElement, ShortcutElement {
+    ClickElement, ShortcutElement, LineBreakElement {
     /// The node this control describes.
     public var node: Node
 
@@ -117,11 +112,5 @@ extension Button {
     /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {
         twin(ButtonContract.iconSpacing, by: state)
-    }
-
-    /// `lineBreak` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        twin(ButtonContract.lineBreak, carrying: state)
     }
 }

@@ -125,10 +125,12 @@ final class HostRegisterTests: XCTestCase {
     func testTheProblemsOfWhatAHostWroteAreNamed() {
         let register = HostRegister(
             records: [
-                .complete(TextElementContract.text, on: ButtonContract.self), .complete(TextElementContract.text, on: ButtonContract.self), .complete(ToggleElementContract.isOn, on: ButtonContract.self),
+                .complete(TextElementContract.text, on: ButtonContract.self),
+                .complete(TextElementContract.text, on: ButtonContract.self),
+                .complete(ToggleElementContract.isOn, on: ButtonContract.self),
                 .complete(TextualElementContract.textCase), .partial(TextContract.maximumLines, missing: ""),
-                .notPlanned(TextContract.lineBreak,
-                    reason: ""), .unrealized(TextualElementContract.textCase, on: TextContract.self, why: ""),
+                .notPlanned(LineBreakElementContract.lineBreak, on: TextContract.self, reason: ""),
+                .unrealized(TextualElementContract.textCase, on: TextContract.self, why: ""),
             ],
             unrealized: [MapContract.self], notPlanned: [(MapContract.self, "No maps."), (MenuBarContract.self, "")])
 

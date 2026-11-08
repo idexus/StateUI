@@ -96,6 +96,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBorderElement", testBorderElement),
             ("testContentModeElement", testContentModeElement),
             ("testTintElement", testTintElement),
+            ("testLineBreakElement", testLineBreakElement),
             ("testPlaceholderElement", testPlaceholderElement),
             ("testStyledElement", testStyledElement),
             ("testTextElement", testTextElement),
@@ -208,6 +209,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testContentModeElement() throws { try conform(ContentModeElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testLineBreakElement() throws { try conform(LineBreakElementTests.self) }
     func testPlaceholderElement() throws { try conform(PlaceholderElementTests.self) }
     func testStyledElement() throws { try conform(StyledElementTests.self) }
     func testTextElement() throws { try conform(TextElementTests.self) }

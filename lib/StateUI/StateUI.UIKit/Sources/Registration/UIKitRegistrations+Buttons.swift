@@ -57,7 +57,7 @@ extension UIKitRegistrations {
                     accent: look.fillsInAccent)
                 view.setCriticalWords(look.wordsInCritical)
             }
-            button.property(ButtonContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
+            button.property(LineBreakElementContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
             // UIKit's own role; its key is the window root's (`KeyboardShortcuts.pressing`).
             button.property(ButtonContract.role) { view, role in
                 view.role = switch role {

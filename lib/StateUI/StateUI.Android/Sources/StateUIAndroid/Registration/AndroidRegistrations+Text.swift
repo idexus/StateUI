@@ -10,9 +10,9 @@ extension AndroidRegistrations {
     static func text(_ registry: Registry<AndroidView>) {
         registry.add(TextContract.self, create: { _ in AndroidTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
+            label.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(
-                    breaking: values[TextContract.lineBreak] ?? .wordWrap,
+                    breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap,
                     maximum: values[TextContract.maximumLines])
             }
             label.applies(

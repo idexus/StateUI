@@ -27,7 +27,7 @@ extension AppKitRegistrations {
         }, members: { button in
             button.applies(
                 TextElementContract.text, TextualElementContract.textCase, IconElementContract.icon,
-                ButtonContract.iconPosition, ContentModeElementContract.contentMode, ButtonContract.lineBreak,
+                ButtonContract.iconPosition, ContentModeElementContract.contentMode, LineBreakElementContract.lineBreak,
                 TextColorElementContract.textColor, BackgroundElementContract.background, BorderElementContract.shape,
                 BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
@@ -65,7 +65,7 @@ extension AppKitRegistrations {
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])
                 let strokeColor = lineWidth > 0 ? AppKitBrush(stroke).lineColor : nil
-                let breaking = NSLineBreakMode(values[ButtonContract.lineBreak] ?? .wordWrap)
+                let breaking = NSLineBreakMode(values[LineBreakElementContract.lineBreak] ?? .wordWrap)
 
                 view.apply(
                     text: caption,

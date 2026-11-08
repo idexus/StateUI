@@ -140,7 +140,7 @@ of its members each meets, and why a cell is empty.
 | [Stepper](controls/Stepper.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Switch](controls/Switch.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TabView](controls/TabView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Text](controls/Text.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TextEditor](controls/TextEditor.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TextField](controls/TextField.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [TextSpan](controls/TextSpan.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
@@ -501,17 +501,17 @@ Every control, and every part an application, its windows and its pages are made
 | [Spinner](controls/Spinner.md) | 76 | 34 ✅ · 3 ☑️ · 37 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 2 ✅ · 1 – | 3 ✅ |
 | [Stepper](controls/Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 1 ✅ · 2 ✓ · 3 – | 1 ✅ · 2 ✓ · 3 – | 6 ✅ | 3 ✅ · 2 ✓ · 1 – | 6 ✅ |
 | [Switch](controls/Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ · 2 ✓ · 3 – | 2 ✅ · 2 ✓ · 3 – | 8 ✅ | 4 ✅ · 3 ✓ · 1 – | 8 ✅ |
-| [Text](controls/Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 16 ✅ | 16 ✅ | 17 ✅ | 15 ✅ · 1 ✓ · 1 – | 17 ✅ |
+| [Text](controls/Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 13 ✅ | 12 ✅ | 13 ✅ | 11 ✅ · 1 ✓ · 1 – | 13 ✅ |
 | [TextEditor](controls/TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 16 ✅ · 2 ✓ | 15 ✅ · 2 ✓ | 18 ✅ | 12 ✅ · 5 ✓ · 1 – | 18 ✅ |
 | [TextField](controls/TextField.md) | 106 | 59 ✅ · 5 ☑️ · 36 ✓ · 3 – | 15 ✅ · 2 ✓ | 14 ✅ · 2 ✓ | 17 ✅ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [TimePicker](controls/TimePicker.md) | 92 | 45 ✅ · 3 ☑️ · 37 ✓ · 7 – | 4 ✅ · 2 ✓ · 7 – | 7 ✅ · 2 ✓ · 3 – | 13 ✅ | 10 ✅ · 2 ✓ · 1 – | 13 ✅ |
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 233 | 241 | 312 | 226 | 317 |
+| ✅ |  | 1665 | 230 | 237 | 308 | 222 | 313 |
 | ✓ |  | 1355 | 56 | 45 | 8 | 63 | 5 |
 | – |  | 57 | 48 | 43 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **337** | **329** | **336** | **339** | **336** |
+| **Met** | 3210 | **3077** | **334** | **325** | **332** | **335** | **332** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 
 ### Application structure
@@ -577,6 +577,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [FilledShape](controls/tiers/FilledShape.md) | `fill` | 1 |
 | [CorneredShape](controls/tiers/CorneredShape.md) | `lineJoin`, `miterLimit` | 2 |
 | [TextualElement](controls/tiers/TextualElement.md) | `textCase` | 1 |
+| [LineBreakElement](controls/tiers/LineBreakElement.md) | `lineBreak` | 1 |
 | [PlaceholderElement](controls/tiers/PlaceholderElement.md) | `placeholder` | 1 |
 | [StyledElement](controls/tiers/StyledElement.md) | `style` | 1 |
 | [TextElement](controls/tiers/TextElement.md) | `text` | 1 |
@@ -617,7 +618,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [BottomBar](controls/BottomBar.md) | `scrollEdge` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
-| [Button](controls/Button.md) | `iconPosition`, `iconSpacing`, `lineBreak`, `role` | 4 | 3 ✅ · 1 – |  |  |  |  |  |
+| [Button](controls/Button.md) | `iconPosition`, `iconSpacing`, `role` | 3 | 2 ✅ · 1 – |  |  |  |  |  |
 | [Canvas](controls/Canvas.md) | `drawing` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
 | [DatePicker](controls/DatePicker.md) | `date`, `onDateChanged` (`dateChanged`), `format`, `maximum`, `minimum` | 5 | 3 ✅ · 1 ✓ · 1 – |  |  |  |  |  |
@@ -645,7 +646,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarToggle`, `showsSidebarChanged`, `sidebarBackground`, `sidebarOverlayBackground`, `sidebarOverlays` | 6 | 5 ✅ · 1 – | 4 ✅ · 2 ✓ | 1 ✅ · 2 ☑️ · 3 ✓ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ |
 | [Stepper](controls/Stepper.md) | `step` | 1 | 1 ✅ |  |  |  |  |  |
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [Text](controls/Text.md) | `lineBreak`, `maximumLines`, `verticalTextAlignment`, `isSelectable` | 4 | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
+| [Text](controls/Text.md) | `maximumLines`, `verticalTextAlignment`, `isSelectable` | 3 | 2 ✅ |  |  |  |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TextField](controls/TextField.md) | `isPassword`, `showsClearButton` | 2 | 1 ✅ · 1 – |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `format`, `time`, `onTimeChanged` (`timeChanged`) | 3 | 1 ✅ · 1 ✓ · 1 – |  |  |  |  |  |

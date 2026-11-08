@@ -874,6 +874,12 @@ extension ControlDictionary {
                 .placeholder("City")
             """#),
 
+        (LineBreakElementContract.self, #"""
+            Text("Words enough to take several lines of a narrow label")
+                .lineBreak(.tailTruncation)
+                .width(120)
+            """#),
+
         (ShortcutElementContract.self, #"""
             Button("Save")
                 .keyboardShortcut("s")

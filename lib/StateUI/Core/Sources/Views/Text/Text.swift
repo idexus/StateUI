@@ -5,12 +5,6 @@
 public protocol TextProperties: PropertyContainer {}
 
 extension TextProperties {
-    /// What happens to text too long for the space: wrap it, or cut it and say
-    /// so.
-    public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(TextContract.lineBreak, value)
-    }
-
     /// How many lines a wrapping text shows before it is cut; a `lineBreak`
     /// that keeps one line keeps it whatever this says. A count of -1 means
     /// no limit, which is the default.
@@ -40,7 +34,7 @@ extension TextProperties {
 ///         .fontWeight(.bold)
 ///         .horizontalTextAlignment(.center)
 public struct Text: ElementView, TextualElement, FontElement, TextAlignmentElement,
-    PaddingElement, LineHeightElement, TrackingElement, DecorableTextElement, TextProperties {
+    PaddingElement, LineHeightElement, TrackingElement, DecorableTextElement, TextProperties, LineBreakElement {
     /// The node this control describes.
     public var node: Node
 
@@ -135,13 +129,5 @@ extension Text {
     /// as it stands, and no view is rebuilt for it.
     public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
         twin(TextContract.verticalTextAlignment, by: state)
-    }
-}
-
-extension Text {
-    /// `lineBreak` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
-    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        twin(TextContract.lineBreak, carrying: state)
     }
 }

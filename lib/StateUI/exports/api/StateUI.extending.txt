@@ -85,6 +85,7 @@ swift.conformance Button: StateUI.ElementView
 swift.conformance Button: StateUI.FocusElement
 swift.conformance Button: StateUI.FontElement
 swift.conformance Button: StateUI.KeyboardElement
+swift.conformance Button: StateUI.LineBreakElement
 swift.conformance Button: StateUI.ModifiableElement
 swift.conformance Button: StateUI.PaddingElement
 swift.conformance Button: StateUI.PressElement
@@ -519,6 +520,8 @@ swift.conformance LineBreak: StateUI.HostRepresentable
 swift.conformance LineBreak: StateUI.LaneValue
 swift.conformance LineBreak: StateUI.StateChoice
 swift.conformance LineBreak: StateUI.StateValue
+swift.conformance LineBreakElement: StateUI.PropertyContainer
+swift.conformance LineBreakElementContract: StateUI.Contract
 swift.conformance LineCap: StateUI.HostRepresentable
 swift.conformance LineCap: StateUI.LaneValue
 swift.conformance LineCap: StateUI.StateChoice
@@ -1024,6 +1027,7 @@ swift.conformance Styling: StateUI.HStackProperties where Target == HStack
 swift.conformance Styling: StateUI.ImageProperties where Target == Image
 swift.conformance Styling: StateUI.LayoutProperties where Target : Layout, Target : StyleTarget
 swift.conformance Styling: StateUI.LayoutProperties where Target : Stack, Target : StyleTarget
+swift.conformance Styling: StateUI.LineBreakElement where Target : LineBreakElement, Target : StyleTarget
 swift.conformance Styling: StateUI.LineHeightElement where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.MapProperties where Target == Map
 swift.conformance Styling: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
@@ -1040,6 +1044,7 @@ swift.conformance Styling: StateUI.PropertyContainer where Target : DecorableTex
 swift.conformance Styling: StateUI.PropertyContainer where Target : FilledShape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : FontElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Layout, Target : StyleTarget
+swift.conformance Styling: StateUI.PropertyContainer where Target : LineBreakElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PaddingElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PlaceholderElement, Target : StyleTarget
@@ -1156,6 +1161,7 @@ swift.conformance Text: StateUI.DecorableTextElement
 swift.conformance Text: StateUI.Element
 swift.conformance Text: StateUI.ElementView
 swift.conformance Text: StateUI.FontElement
+swift.conformance Text: StateUI.LineBreakElement
 swift.conformance Text: StateUI.LineHeightElement
 swift.conformance Text: StateUI.ModifiableElement
 swift.conformance Text: StateUI.PaddingElement
@@ -2573,6 +2579,7 @@ swift.protocol ImageProperties: @MainActor protocol ImageProperties : PropertyCo
 swift.protocol KeyboardElement: @MainActor protocol KeyboardElement : View
 swift.protocol LaneValue: protocol LaneValue : StateValue
 swift.protocol LayoutProperties: @MainActor protocol LayoutProperties : ViewProperties
+swift.protocol LineBreakElement: @MainActor protocol LineBreakElement : PropertyContainer
 swift.protocol LineHeightElement: @MainActor protocol LineHeightElement : PropertyContainer
 swift.protocol MapProperties: @MainActor protocol MapProperties : PropertyContainer
 swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : AutomationElement, ShortcutElement
@@ -3041,6 +3048,8 @@ swift.type.property Line.nodeType: @MainActor static var nodeType: NodeType { ge
 swift.type.property LineBreak.laneKind: static var laneKind: LaneKind { get }
 swift.type.property LineBreak.lanes: static var lanes: Int { get }
 swift.type.property LineBreak.moving: static var moving: MotionValues { get }
+swift.type.property LineBreakElementContract.members: static let members: [any ContractMember]
+swift.type.property LineBreakElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property LineCap.laneKind: static var laneKind: LaneKind { get }
 swift.type.property LineCap.lanes: static var lanes: Int { get }
 swift.type.property LineCap.moving: static var moving: MotionValues { get }

@@ -24,9 +24,9 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
-            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
+            label.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
                 (view as! any UIKitLabel).setLines(
-                    breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
+                    breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             label.applies(
                 TextAlignmentElementContract.horizontalTextAlignment,

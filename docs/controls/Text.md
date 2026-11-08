@@ -14,7 +14,7 @@ Text("A description long enough to wrap onto a second line, and stop there.")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [TrackingElement](tiers/TrackingElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md) · [PaddingElement](tiers/PaddingElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [LineBreakElement](tiers/LineBreakElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [LineHeightElement](tiers/LineHeightElement.md) · [TrackingElement](tiers/TrackingElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md) · [PaddingElement](tiers/PaddingElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,11 +35,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>16 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>16 ✅</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>17 ✅</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>15 ✅ · 1 ✓ · 1 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>17 ✅</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>13 ✅</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>12 ✅</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>13 ✅</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>11 ✅ · 1 ✓ · 1 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>13 ✅</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -48,11 +48,10 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>lineBreak</code></td><td>property</td><td><code>LineBreak</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>maximumLines</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">·</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet<br>UIKit: cannot read verticalTextAlignment of Text - UIKit's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isSelectable</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>maximumLines</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>verticalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read verticalTextAlignment of Text - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isSelectable</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -192,6 +191,15 @@ What every element drawing its words itself has: the case they are drawn in, the
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+</table>
+
+## From [LineBreakElement](tiers/LineBreakElement.md)
+
+What happens to words too long for their room: they wrap, or they are cut and say so - a text's, a button's caption.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>lineBreak</code></td><td>property</td><td><code>LineBreak</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [StyledElement](tiers/StyledElement.md)

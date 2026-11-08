@@ -1,6 +1,5 @@
-# revision 13.2
+# revision 14.2
 Button: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: – AppKit's button stands its picture at its own gap from the words: it takes no other.
-Button.lineBreak: ✅
 Button.role: ✅

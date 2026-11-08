@@ -19,6 +19,7 @@ public enum ButtonContract: ElementContract {
         ClickElementContract.self,
         IconElementContract.self,
         ShortcutElementContract.self,
+        LineBreakElementContract.self,
     ]
 
     /// Which side of the caption the icon stands on.
@@ -27,13 +28,10 @@ public enum ButtonContract: ElementContract {
     /// The gap between the icon and the caption, in device units.
     public static let iconSpacing = ElementProperty<Self, Double>("iconSpacing", layer: .adaptive)
 
-    /// What happens to a caption too long for the button.
-    public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
-
     /// What the button stands for in its window - its main action, the way out, or one destroying something - drawn
     /// as each platform draws it; Return presses the main action and Escape the way out.
     public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [iconPosition, iconSpacing, lineBreak, role]
+    public static let members: [any ContractMember] = [iconPosition, iconSpacing, role]
 }

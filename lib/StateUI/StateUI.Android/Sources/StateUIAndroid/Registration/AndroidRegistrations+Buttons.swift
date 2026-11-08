@@ -34,7 +34,7 @@ extension AndroidRegistrations {
                     width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.property(ButtonContract.lineBreak) { view, breaking in
+            button.property(LineBreakElementContract.lineBreak) { view, breaking in
                 view.setLines(breaking: breaking ?? .wordWrap, maximum: nil)
             }
             button.property(EnabledElementContract.isEnabled) { view, enabled in

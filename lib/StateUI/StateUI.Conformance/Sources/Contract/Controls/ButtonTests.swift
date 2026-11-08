@@ -67,8 +67,6 @@
                 s.turn()
                 s.expect(heard.values, [], "Return ends what was typed, the button stays as it was")
             },
-            Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextElementContract.text, "Words enough to break across more than one line")]),
             ConformanceCase("aStyleThatLeavesTakesItsLookWithIt", proves: [
                 Covered(ButtonContract.self),
             ], needs: [Covered(StyledElementContract.style, on: "Button")]) { s in

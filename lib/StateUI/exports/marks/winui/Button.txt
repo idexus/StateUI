@@ -2,5 +2,4 @@
 Button: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
-Button.lineBreak: ✅
 Button.role: ✅

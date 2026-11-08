@@ -11,8 +11,8 @@ extension WebRegistrations {
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }
-            text.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
-                view.setLines(breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
+            text.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
+                view.setLines(breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             text.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
@@ -50,7 +50,7 @@ extension WebRegistrations {
                         values[TextAndIconElementContract.showsText],
                         hasPicture: HostPicture(values[IconElementContract.icon], dark: false) != nil, byDefault: true))
             }
-            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
+            button.property(LineBreakElementContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
             }
