@@ -9,7 +9,7 @@ import StateUI
     let page: @MainActor () -> any View
 
     /// An application showing `page` in its one window.
-    public init(@ViewBuilder page: @escaping @MainActor () -> any View) {
+    @_spi(Host) public init(@ViewBuilder page: @escaping @MainActor () -> any View) {
         self.page = page
     }
 
