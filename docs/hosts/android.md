@@ -57,6 +57,7 @@ which also says what it answers for the application:
 ```swift listing android.md.head
 // Platforms/Android/Swift/GalleryAndroid.swift
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head

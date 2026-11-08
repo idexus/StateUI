@@ -3,6 +3,7 @@
 
 // listing: web.md.head
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 // Name the application to the host, then say what this host answers for it

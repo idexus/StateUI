@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIWeb
 
 // Name the application to the host, then show it in the page; the browser

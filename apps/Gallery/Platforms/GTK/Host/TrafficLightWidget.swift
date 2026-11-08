@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 // listing: InteropControlSample.GTK.swift

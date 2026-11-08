@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 /// Stars in a row, as many lit as the rating: the gallery's own element, `<gallery-rating-bar>` of

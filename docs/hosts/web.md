@@ -72,6 +72,7 @@ the user acts and as the display draws. The Gallery's head:
 ```swift listing web.md.head
 // Platforms/Web/main.swift
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 // Name the application to the host, then say what this host answers for it

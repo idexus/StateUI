@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 // listing: Cube3DSample.WinUI.swift

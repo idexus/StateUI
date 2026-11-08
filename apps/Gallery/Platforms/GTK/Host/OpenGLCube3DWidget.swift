@@ -5,6 +5,7 @@
 @preconcurrency import CGalleryOpenGL
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 // listing: Cube3DSample.GTK.swift

@@ -3,6 +3,7 @@
 
 import Android
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 /// Stars, as many lit as the rating: the gallery's own Java view, com.stateui.gallery.RatingBarView. A tap sets the

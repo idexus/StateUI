@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // listing: InteropEventsSample.Android.swift

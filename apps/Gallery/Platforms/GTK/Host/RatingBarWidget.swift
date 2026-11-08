@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 /// Stars in a row, as many lit as the rating - a `GtkBox` of labels that knows nothing of StateUI.

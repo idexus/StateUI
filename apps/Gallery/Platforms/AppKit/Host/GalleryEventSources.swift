@@ -4,6 +4,7 @@
 import AppKit
 import GalleryUI
 import IOKit.ps
+import StateUI
 import StateUIAppKit
 
 // listing: InteropEventsSample.AppKit.swift

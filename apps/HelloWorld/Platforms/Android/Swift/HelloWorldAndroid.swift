@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIAndroid
 
 // What Android calls as it loads this library: the application is named to

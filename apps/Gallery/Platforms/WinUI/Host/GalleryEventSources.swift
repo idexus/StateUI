@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 // listing: InteropEventsSample.WinUI.swift

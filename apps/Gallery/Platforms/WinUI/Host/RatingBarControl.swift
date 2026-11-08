@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 /// Stars the user picks from - WinUI's own RatingControl, made by the gallery's relay - and a flash an aimed act asks

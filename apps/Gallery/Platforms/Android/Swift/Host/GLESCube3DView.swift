@@ -4,6 +4,7 @@
 import Android
 import CGalleryGLES
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // listing: Cube3DSample.Android.swift

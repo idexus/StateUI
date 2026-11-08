@@ -40,6 +40,7 @@ the Gallery's:
 ```swift listing appkit.md.head
 // Platforms/AppKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 GalleryApp.register()

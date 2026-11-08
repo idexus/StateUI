@@ -207,6 +207,7 @@ Gallery's head, which also registers its own controls, reads:
 ```swift listing appkit.md.head
 // Platforms/AppKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 GalleryApp.register()
@@ -256,6 +257,7 @@ The Gallery's GTK head registers both:
 ```swift listing gtk.md.head
 // Platforms/GTK/main.swift
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -321,13 +323,15 @@ apps/Notes/
 ```
 
 The application target depends only on the `StateUI` product, its tests on
-`StateUITesting` too. The executable
-target depends on the application target and `StateUIHead`
-(`lib/StateUI.Head`), which brings it the host the build is for -
-`StateUIAppKit` on an AppKit build - and on a backend's product where it
-registers one. Both targets
-enable `NonisolatedNonsendingByDefault`; [Concurrency](interface/concurrency.md) explains
-why that module-wide setting is part of the application contract.
+`StateUITesting` too. The executable target depends on the application
+target, `StateUI` and `StateUIHead` (`lib/StateUI.Head`), which brings it the
+host the build is for - `StateUIAppKit` on an AppKit build - and on a
+backend's product where it registers one. Every target enables
+`NonisolatedNonsendingByDefault`; [Concurrency](interface/concurrency.md)
+explains why that module-wide setting is part of the application contract.
+Every target enables `MemberImportVisibility` too, so each file imports what
+it uses by name: a head imports `StateUI` beside its host, a test `StateUI`
+beside `StateUITesting`.
 
 ## Controls and modifiers
 

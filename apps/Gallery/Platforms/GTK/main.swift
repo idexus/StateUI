@@ -3,6 +3,7 @@
 
 // listing: gtk.md.head
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 

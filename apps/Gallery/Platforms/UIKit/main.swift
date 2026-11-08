@@ -3,6 +3,7 @@
 
 // listing: uikit.md.head
 import GalleryUI
+import StateUI
 import StateUIUIKit
 
 GalleryApp.register()

@@ -16163,6 +16163,7 @@ extension Listings {
         "android.md.head": #"""
         // Platforms/Android/Swift/GalleryAndroid.swift
         import GalleryUI
+        import StateUI
         import StateUIAndroid
 
         // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
@@ -16297,6 +16298,7 @@ extension Listings {
         "appkit.md.head": #"""
         // Platforms/AppKit/main.swift
         import GalleryUI
+        import StateUI
         import StateUIAppKit
 
         GalleryApp.register()
@@ -16398,6 +16400,7 @@ extension Listings {
         "gtk.md.head": #"""
         // Platforms/GTK/main.swift
         import GalleryUI
+        import StateUI
         import StateUIGTK
         import StateUIWebViewGTK
 
@@ -16510,6 +16513,7 @@ extension Listings {
         "uikit.md.head": #"""
         // Platforms/UIKit/main.swift
         import GalleryUI
+        import StateUI
         import StateUIUIKit
 
         GalleryApp.register()
@@ -16618,6 +16622,7 @@ extension Listings {
         "web.md.head": #"""
         // Platforms/Web/main.swift
         import GalleryUI
+        import StateUI
         import StateUIWeb
 
         // Name the application to the host, then say what this host answers for it
@@ -16716,6 +16721,7 @@ extension Listings {
         "winui.md.head": #"""
         // Platforms/WinUI/main.swift
         import GalleryUI
+        import StateUI
         import StateUIWebViewWinUI
         import StateUIWinUI
 

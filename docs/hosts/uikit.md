@@ -48,6 +48,7 @@ never returns - here the Gallery's:
 ```swift listing uikit.md.head
 // Platforms/UIKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIUIKit
 
 GalleryApp.register()

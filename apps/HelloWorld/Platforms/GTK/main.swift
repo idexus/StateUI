@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIGTK
 
 // Name the application to the host, then hand GTK this thread until the last

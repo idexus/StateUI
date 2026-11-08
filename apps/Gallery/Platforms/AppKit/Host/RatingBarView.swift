@@ -3,6 +3,7 @@
 
 import AppKit
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 /// Stars, filled up to a rating - an ordinary `NSView` with two values.

@@ -3,6 +3,7 @@
 
 import AppKit
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 // listing: InteropControlSample.AppKit.swift

@@ -66,6 +66,7 @@ fails it. The Gallery's head:
 ```swift listing gtk.md.head
 // Platforms/GTK/main.swift
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 
