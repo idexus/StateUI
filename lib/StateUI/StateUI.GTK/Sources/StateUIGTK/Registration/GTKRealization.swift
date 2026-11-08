@@ -100,7 +100,7 @@ enum GTKRealization {
         .partial(BackgroundElementContract.background, on: VisualElementContract.self,
             missing: "A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it."),
         .complete(VisualElementContract.layoutDirection),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
 
         // MARK: Entries - a control's or a part's own
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),

@@ -79,7 +79,7 @@ enum AndroidRealization {
         .notPlanned(ViewContract.held, on: ScrollViewContract.self, reason: Self.ownPress),
         .notPlanned(ViewContract.held, on: SliderContract.self, reason: Self.ownPress),
         .notPlanned(ViewContract.held, on: StepperContract.self, reason: Self.ownPress),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
 
         // MARK: Entries - a control's or a part's own
         .partial(ImageElementContract.contentMode, on: ButtonContract.self,

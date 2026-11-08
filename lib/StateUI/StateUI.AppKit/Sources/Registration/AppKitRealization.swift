@@ -74,7 +74,7 @@ enum AppKitRealization {
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(VisualElementContract.layoutDirection),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
         .notPlanned(FontElementContract.isFontAutoScalingEnabled,
             reason: "macOS gives an application no text size of the user's to follow."),
         .notPlanned(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self,

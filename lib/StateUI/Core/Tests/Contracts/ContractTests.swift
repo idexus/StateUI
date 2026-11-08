@@ -113,7 +113,7 @@ final class ContractTests: XCTestCase {
     /// A name crosses as a name, never as prose - the type decides: a style
     /// key, a font family, a window's kind, a kept value's key alike.
     func testANameCrossesAsAName() {
-        let lamp = Lamp().setValue(VisualElementContract.style, "Card")
+        let lamp = Lamp().setValue(StyledElementContract.style, "Card")
 
         XCTAssertEqual(lamp.node.props["style"], .name("Card"))
         XCTAssertEqual(Name("Menlo").propValue, .name("Menlo"))

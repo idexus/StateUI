@@ -26,7 +26,6 @@ Button.rotationY: ✅
 Button.scale: ✅
 Button.scaleX: ✅
 Button.scaleY: ✅
-Button.style: ✅
 Button.tooltip: ✅
 Button.translationX: ✅
 Button.translationY: ✅
@@ -59,7 +58,6 @@ Canvas.rotationY: ✅
 Canvas.scale: ✅
 Canvas.scaleX: ✅
 Canvas.scaleY: ✅
-Canvas.style: ✅
 Canvas.tooltip: ✅
 Canvas.translationX: ✅
 Canvas.translationY: ✅
@@ -92,7 +90,6 @@ Capsule.rotationY: ✅
 Capsule.scale: ✅
 Capsule.scaleX: ✅
 Capsule.scaleY: ✅
-Capsule.style: ✅
 Capsule.tooltip: ✅
 Capsule.translationX: ✅
 Capsule.translationY: ✅
@@ -125,7 +122,6 @@ CheckBox.rotationY: ✅
 CheckBox.scale: ✅
 CheckBox.scaleX: ✅
 CheckBox.scaleY: ✅
-CheckBox.style: ✅
 CheckBox.tooltip: ✅
 CheckBox.translationX: ✅
 CheckBox.translationY: ✅
@@ -158,7 +154,6 @@ ColorPicker.rotationY: – Android has no color picker of its own: neither the p
 ColorPicker.scale: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.scaleX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.scaleY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
-ColorPicker.style: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.tooltip: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.translationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 ColorPicker.translationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
@@ -191,7 +186,6 @@ DatePicker.rotationY: ✅
 DatePicker.scale: ✅
 DatePicker.scaleX: ✅
 DatePicker.scaleY: ✅
-DatePicker.style: ✅
 DatePicker.tooltip: ✅
 DatePicker.translationX: ✅
 DatePicker.translationY: ✅
@@ -224,7 +218,6 @@ Ellipse.rotationY: ✅
 Ellipse.scale: ✅
 Ellipse.scaleX: ✅
 Ellipse.scaleY: ✅
-Ellipse.style: ✅
 Ellipse.tooltip: ✅
 Ellipse.translationX: ✅
 Ellipse.translationY: ✅
@@ -257,7 +250,6 @@ Fill.rotationY: ✅
 Fill.scale: ✅
 Fill.scaleX: ✅
 Fill.scaleY: ✅
-Fill.style: ✅
 Fill.tooltip: ✅
 Fill.translationX: ✅
 Fill.translationY: ✅
@@ -290,7 +282,6 @@ Grid.rotationY: ✅
 Grid.scale: ✅
 Grid.scaleX: ✅
 Grid.scaleY: ✅
-Grid.style: ✅
 Grid.tooltip: ✅
 Grid.translationX: ✅
 Grid.translationY: ✅
@@ -323,7 +314,6 @@ HStack.rotationY: ✅
 HStack.scale: ✅
 HStack.scaleX: ✅
 HStack.scaleY: ✅
-HStack.style: ✅
 HStack.tooltip: ✅
 HStack.translationX: ✅
 HStack.translationY: ✅
@@ -356,7 +346,6 @@ Image.rotationY: ✅
 Image.scale: ✅
 Image.scaleX: ✅
 Image.scaleY: ✅
-Image.style: ✅
 Image.tooltip: ✅
 Image.translationX: ✅
 Image.translationY: ✅
@@ -389,7 +378,6 @@ ItemsView.rotationY: ✅
 ItemsView.scale: ✅
 ItemsView.scaleX: ✅
 ItemsView.scaleY: ✅
-ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✅
 ItemsView.translationY: ✅
@@ -422,7 +410,6 @@ Line.rotationY: ✅
 Line.scale: ✅
 Line.scaleX: ✅
 Line.scaleY: ✅
-Line.style: ✅
 Line.tooltip: ✅
 Line.translationX: ✅
 Line.translationY: ✅
@@ -455,7 +442,6 @@ Link.rotationY: ✅
 Link.scale: ✅
 Link.scaleX: ✅
 Link.scaleY: ✅
-Link.style: ✅
 Link.tooltip: ✅
 Link.translationX: ✅
 Link.translationY: ✅
@@ -488,7 +474,6 @@ Map.rotationY: 🧩
 Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
-Map.style: 🧩
 Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
@@ -521,7 +506,6 @@ MotionLayout.rotationY: ✅
 MotionLayout.scale: ✅
 MotionLayout.scaleX: ✅
 MotionLayout.scaleY: ✅
-MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✅
 MotionLayout.translationY: ✅
@@ -554,7 +538,6 @@ Path.rotationY: ✅
 Path.scale: ✅
 Path.scaleX: ✅
 Path.scaleY: ✅
-Path.style: ✅
 Path.tooltip: ✅
 Path.translationX: ✅
 Path.translationY: ✅
@@ -587,7 +570,6 @@ Picker.rotationY: ✅
 Picker.scale: ✅
 Picker.scaleX: ✅
 Picker.scaleY: ✅
-Picker.style: ✅
 Picker.tooltip: ✅
 Picker.translationX: ✅
 Picker.translationY: ✅
@@ -620,7 +602,6 @@ Polygon.rotationY: ✅
 Polygon.scale: ✅
 Polygon.scaleX: ✅
 Polygon.scaleY: ✅
-Polygon.style: ✅
 Polygon.tooltip: ✅
 Polygon.translationX: ✅
 Polygon.translationY: ✅
@@ -653,7 +634,6 @@ Polyline.rotationY: ✅
 Polyline.scale: ✅
 Polyline.scaleX: ✅
 Polyline.scaleY: ✅
-Polyline.style: ✅
 Polyline.tooltip: ✅
 Polyline.translationX: ✅
 Polyline.translationY: ✅
@@ -686,7 +666,6 @@ ProgressBar.rotationY: ✅
 ProgressBar.scale: ✅
 ProgressBar.scaleX: ✅
 ProgressBar.scaleY: ✅
-ProgressBar.style: ✅
 ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
@@ -719,7 +698,6 @@ Rectangle.rotationY: ✅
 Rectangle.scale: ✅
 Rectangle.scaleX: ✅
 Rectangle.scaleY: ✅
-Rectangle.style: ✅
 Rectangle.tooltip: ✅
 Rectangle.translationX: ✅
 Rectangle.translationY: ✅
@@ -752,7 +730,6 @@ ScrollView.rotationY: ✅
 ScrollView.scale: ✅
 ScrollView.scaleX: ✅
 ScrollView.scaleY: ✅
-ScrollView.style: ✅
 ScrollView.tooltip: ✅
 ScrollView.translationX: ✅
 ScrollView.translationY: ✅
@@ -785,7 +762,6 @@ SearchField.rotationY: ✅
 SearchField.scale: ✅
 SearchField.scaleX: ✅
 SearchField.scaleY: ✅
-SearchField.style: ✅
 SearchField.tooltip: ✅
 SearchField.translationX: ✅
 SearchField.translationY: ✅
@@ -818,7 +794,6 @@ Separator.rotationY: ✅
 Separator.scale: ✅
 Separator.scaleX: ✅
 Separator.scaleY: ✅
-Separator.style: ✅
 Separator.tooltip: ✅
 Separator.translationX: ✅
 Separator.translationY: ✅
@@ -851,7 +826,6 @@ Slider.rotationY: ✅
 Slider.scale: ✅
 Slider.scaleX: ✅
 Slider.scaleY: ✅
-Slider.style: ✅
 Slider.tooltip: ✅
 Slider.translationX: ✅
 Slider.translationY: ✅
@@ -884,7 +858,6 @@ Space.rotationY: ✅
 Space.scale: ✅
 Space.scaleX: ✅
 Space.scaleY: ✅
-Space.style: ✅
 Space.tooltip: ✅
 Space.translationX: ✅
 Space.translationY: ✅
@@ -917,7 +890,6 @@ Spinner.rotationY: ✅
 Spinner.scale: ✅
 Spinner.scaleX: ✅
 Spinner.scaleY: ✅
-Spinner.style: ✅
 Spinner.tooltip: ✅
 Spinner.translationX: ✅
 Spinner.translationY: ✅
@@ -950,7 +922,6 @@ Stepper.rotationY: ✅
 Stepper.scale: ✅
 Stepper.scaleX: ✅
 Stepper.scaleY: ✅
-Stepper.style: ✅
 Stepper.tooltip: ✅
 Stepper.translationX: ✅
 Stepper.translationY: ✅
@@ -983,7 +954,6 @@ Switch.rotationY: ✅
 Switch.scale: ✅
 Switch.scaleX: ✅
 Switch.scaleY: ✅
-Switch.style: ✅
 Switch.tooltip: ✅
 Switch.translationX: ✅
 Switch.translationY: ✅
@@ -1016,7 +986,6 @@ Text.rotationY: ✅
 Text.scale: ✅
 Text.scaleX: ✅
 Text.scaleY: ✅
-Text.style: ✅
 Text.tooltip: ✅
 Text.translationX: ✅
 Text.translationY: ✅
@@ -1049,7 +1018,6 @@ TextEditor.rotationY: ✅
 TextEditor.scale: ✅
 TextEditor.scaleX: ✅
 TextEditor.scaleY: ✅
-TextEditor.style: ✅
 TextEditor.tooltip: ✅
 TextEditor.translationX: ✅
 TextEditor.translationY: ✅
@@ -1082,7 +1050,6 @@ TextField.rotationY: ✅
 TextField.scale: ✅
 TextField.scaleX: ✅
 TextField.scaleY: ✅
-TextField.style: ✅
 TextField.tooltip: ✅
 TextField.translationX: ✅
 TextField.translationY: ✅
@@ -1115,7 +1082,6 @@ TimePicker.rotationY: ✅
 TimePicker.scale: ✅
 TimePicker.scaleX: ✅
 TimePicker.scaleY: ✅
-TimePicker.style: ✅
 TimePicker.tooltip: ✅
 TimePicker.translationX: ✅
 TimePicker.translationY: ✅
@@ -1148,7 +1114,6 @@ VStack.rotationY: ✅
 VStack.scale: ✅
 VStack.scaleX: ✅
 VStack.scaleY: ✅
-VStack.style: ✅
 VStack.tooltip: ✅
 VStack.translationX: ✅
 VStack.translationY: ✅
@@ -1181,7 +1146,6 @@ WebView.rotationY: ✅
 WebView.scale: ✅
 WebView.scaleX: ✅
 WebView.scaleY: ✅
-WebView.style: ✅
 WebView.tooltip: ✅
 WebView.translationX: ✅
 WebView.translationY: ✅
@@ -1214,7 +1178,6 @@ ZStack.rotationY: ✅
 ZStack.scale: ✅
 ZStack.scaleX: ✅
 ZStack.scaleY: ✅
-ZStack.style: ✅
 ZStack.tooltip: ✅
 ZStack.translationX: ✅
 ZStack.translationY: ✅

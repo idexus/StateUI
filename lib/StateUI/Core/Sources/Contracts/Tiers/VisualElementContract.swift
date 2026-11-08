@@ -11,6 +11,7 @@ public enum VisualElementContract: Tier {
     /// Every drawn element is found by automation.
     public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self, EnabledElementContract.self, BackgroundElementContract.self,
+        StyledElementContract.self,
     ]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
@@ -118,9 +119,6 @@ public enum VisualElementContract: Tier {
     public static let scaleY = ElementProperty<Self, Double>(
         "scaleY", layer: .native, moves: .transform)
 
-    /// The keyed style the element wears, by its key.
-    public static let style = ElementProperty<Self, Name>("style", layer: .structure)
-
     /// How far the element is moved across from where its layout put it.
     public static let translationX = ElementProperty<Self, Double>(
         "translationX", layer: .native, moves: .place)
@@ -140,5 +138,5 @@ public enum VisualElementContract: Tier {
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX, translationY, width, zIndex]
+    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, tooltip, translationX, translationY, width, zIndex]
 }

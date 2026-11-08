@@ -96,6 +96,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBorderElement", testBorderElement),
             ("testImageElement", testImageElement),
             ("testTintElement", testTintElement),
+            ("testStyledElement", testStyledElement),
             ("testTextElement", testTextElement),
             ("testShortcutElement", testShortcutElement),
             ("testIconElement", testIconElement),
@@ -114,7 +115,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testFocusElement", testFocusElement),
             ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
-            ("testBarItemElement", testBarItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
             ("testLink", testLink),
@@ -207,6 +207,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testImageElement() throws { try conform(ImageElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testStyledElement() throws { try conform(StyledElementTests.self) }
     func testTextElement() throws { try conform(TextElementTests.self) }
     func testShortcutElement() throws { try conform(ShortcutElementTests.self) }
     func testIconElement() throws { try conform(IconElementTests.self) }
@@ -225,7 +226,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testFocusElement() throws { try conform(FocusElementTests.self) }
     func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
-    func testBarItemElement() throws { try conform(BarItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
     func testLink() throws { try conform(LinkTests.self) }

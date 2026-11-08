@@ -71,7 +71,7 @@
                           with: [Write(TextElementContract.text, "Words enough to break across more than one line")]),
             ConformanceCase("aStyleThatLeavesTakesItsLookWithIt", proves: [
                 Covered(ButtonContract.self),
-            ], needs: [Covered(VisualElementContract.style, on: "Button")]) { s in
+            ], needs: [Covered(StyledElementContract.style, on: "Button")]) { s in
                 let platform = State(wrappedValue: false)
                 s.start { LeavingStyle(platform: platform.projectedValue) }
                 let (styled, bare) = (try s.element("styled"), try s.element("bare"))

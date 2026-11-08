@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 0.0
 ToolbarButton.style: – A bar's items stand in the system's own look.
 ToolbarGroup.style: – A bar's items stand in the system's own look.
 ToolbarToggle.style: – A bar's items stand in the system's own look.

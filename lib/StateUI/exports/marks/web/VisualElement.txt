@@ -26,7 +26,6 @@ Button.rotationY: ✓ read rotationY of Button: the host's own transform: the pa
 Button.scale: ✓ read scale of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.scaleX: ✓ read scaleX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.scaleY: ✓ read scaleY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Button.style: ✅
 Button.tooltip: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.translationY: ✓ read translationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -59,7 +58,6 @@ Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform: the pa
 Canvas.scale: ✓ read scale of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Canvas.style: ✅
 Canvas.tooltip: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -92,7 +90,6 @@ Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform: the 
 Capsule.scale: ✓ read scale of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.scaleY: ✓ read scaleY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Capsule.style: ✅
 Capsule.tooltip: ✅
 Capsule.translationX: ✓ read translationX of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -125,7 +122,6 @@ CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform: th
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-CheckBox.style: ✅
 CheckBox.tooltip: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -158,7 +154,6 @@ ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transfo
 ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ColorPicker.style: ✅
 ColorPicker.tooltip: ✅
 ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -191,7 +186,6 @@ DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-DatePicker.style: ✅
 DatePicker.tooltip: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -224,7 +218,6 @@ Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform: the 
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Ellipse.style: ✅
 Ellipse.tooltip: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -257,7 +250,6 @@ Fill.rotationY: ✓ read rotationY of Fill: the host's own transform: the page h
 Fill.scale: ✓ read scale of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.scaleX: ✓ read scaleX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.scaleY: ✓ read scaleY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Fill.style: ✅
 Fill.tooltip: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Fill.translationY: ✓ read translationY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -290,7 +282,6 @@ Grid.rotationY: ✓ read rotationY of Grid: the host's own transform: the page h
 Grid.scale: ✓ read scale of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Grid.style: ✅
 Grid.tooltip: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -323,7 +314,6 @@ HStack.rotationY: ✓ read rotationY of HStack: the host's own transform: the pa
 HStack.scale: ✓ read scale of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-HStack.style: ✅
 HStack.tooltip: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -356,7 +346,6 @@ Image.rotationY: ✓ read rotationY of Image: the host's own transform: the page
 Image.scale: ✓ read scale of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.scaleX: ✓ read scaleX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.scaleY: ✓ read scaleY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Image.style: ✅
 Image.tooltip: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.translationY: ✓ read translationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -389,7 +378,6 @@ ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: 
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -422,7 +410,6 @@ Line.rotationY: ✓ read rotationY of Line: the host's own transform: the page h
 Line.scale: ✓ read scale of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.scaleX: ✓ read scaleX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.scaleY: ✓ read scaleY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Line.style: ✅
 Line.tooltip: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -455,7 +442,6 @@ Link.rotationY: ✓ read rotationY of Link: the host's own transform: the page h
 Link.scale: ✓ read scale of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.scaleX: ✓ read scaleX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.scaleY: ✓ read scaleY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Link.style: ✅
 Link.tooltip: ✅
 Link.translationX: ✓ read translationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Link.translationY: ✓ read translationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -488,7 +474,6 @@ Map.rotationY: 🧩
 Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
-Map.style: 🧩
 Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
@@ -521,7 +506,6 @@ MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own trans
 MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -554,7 +538,6 @@ Path.rotationY: ✓ read rotationY of Path: the host's own transform: the page h
 Path.scale: ✓ read scale of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.scaleX: ✓ read scaleX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.scaleY: ✓ read scaleY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Path.style: ✅
 Path.tooltip: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -587,7 +570,6 @@ Picker.rotationY: ✓ read rotationY of Picker: the host's own transform: the pa
 Picker.scale: ✓ read scale of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Picker.style: ✅
 Picker.tooltip: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -620,7 +602,6 @@ Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform: the 
 Polygon.scale: ✓ read scale of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Polygon.style: ✅
 Polygon.tooltip: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -653,7 +634,6 @@ Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform: th
 Polyline.scale: ✓ read scale of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Polyline.style: ✅
 Polyline.tooltip: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -686,7 +666,6 @@ ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transfo
 ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ProgressBar.style: ✅
 ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -719,7 +698,6 @@ Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: 
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Rectangle.style: ✅
 Rectangle.tooltip: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -752,7 +730,6 @@ ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform
 ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ScrollView.style: ✅
 ScrollView.tooltip: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -785,7 +762,6 @@ SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transfo
 SearchField.scale: ✓ read scale of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-SearchField.style: ✅
 SearchField.tooltip: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -818,7 +794,6 @@ Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: 
 Separator.scale: ✓ read scale of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Separator.style: ✅
 Separator.tooltip: ✅
 Separator.translationX: ✓ read translationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Separator.translationY: ✓ read translationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -851,7 +826,6 @@ Slider.rotationY: ✓ read rotationY of Slider: the host's own transform: the pa
 Slider.scale: ✓ read scale of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Slider.style: ✅
 Slider.tooltip: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -884,7 +858,6 @@ Space.rotationY: ✓ read rotationY of Space: the host's own transform: the page
 Space.scale: ✓ read scale of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.scaleX: ✓ read scaleX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.scaleY: ✓ read scaleY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Space.style: ✅
 Space.tooltip: ✅
 Space.translationX: ✓ read translationX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Space.translationY: ✓ read translationY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -917,7 +890,6 @@ Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: the 
 Spinner.scale: ✓ read scale of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spinner.style: ✅
 Spinner.tooltip: ✅
 Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -950,7 +922,6 @@ Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform: the 
 Stepper.scale: ✓ read scale of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Stepper.style: ✅
 Stepper.tooltip: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -983,7 +954,6 @@ Switch.rotationY: ✓ read rotationY of Switch: the host's own transform: the pa
 Switch.scale: ✓ read scale of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Switch.style: ✅
 Switch.tooltip: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1016,7 +986,6 @@ Text.rotationY: ✓ read rotationY of Text: the host's own transform: the page h
 Text.scale: ✓ read scale of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.scaleX: ✓ read scaleX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.scaleY: ✓ read scaleY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Text.style: ✅
 Text.tooltip: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.translationY: ✓ read translationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1049,7 +1018,6 @@ TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TextEditor.style: ✅
 TextEditor.tooltip: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1082,7 +1050,6 @@ TextField.rotationY: ✓ read rotationY of TextField: the host's own transform: 
 TextField.scale: ✓ read scale of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TextField.style: ✅
 TextField.tooltip: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1115,7 +1082,6 @@ TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform
 TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-TimePicker.style: ✅
 TimePicker.tooltip: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1148,7 +1114,6 @@ VStack.rotationY: ✓ read rotationY of VStack: the host's own transform: the pa
 VStack.scale: ✓ read scale of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-VStack.style: ✅
 VStack.tooltip: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1181,7 +1146,6 @@ WebView.rotationY: ✓ read rotationY of WebView: the host's own transform: the 
 WebView.scale: ✓ read scale of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-WebView.style: ✅
 WebView.tooltip: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -1214,7 +1178,6 @@ ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform: the pa
 ZStack.scale: ✓ read scale of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ZStack.style: ✅
 ZStack.tooltip: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart

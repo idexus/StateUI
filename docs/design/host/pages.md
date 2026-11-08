@@ -336,9 +336,9 @@ buttons](../platforms/winui/pages.md#a-bars-buttons)).
 ## A bar's items in the application's look
 
 A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
-the look of a control where a host draws its bar itself: `BarItemElement` and
-the tiers it wears (a style, a background, the pointer over it), a press on a
-button (`PressElement`), the room between a group's buttons (`spacing`) and
+the look of a control where a host draws its bar itself: a style, a
+background and the pointer over it (`StyledElement`, `BackgroundElement`,
+`HoverElement`), a press on a button (`PressElement`), the room between a group's buttons (`spacing`) and
 between the bar's groups (`toolbarSpacing`), and the box and the words they
 share with controls - `BorderElement`, `PaddingElement`, `TextColorElement`
 and `FontElement`.

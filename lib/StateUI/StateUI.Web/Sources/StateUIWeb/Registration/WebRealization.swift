@@ -64,7 +64,7 @@ enum WebRealization {
         .complete(TextElementContract.text, on: ToolbarToggleContract.self),
         .complete(IconElementContract.icon, on: PageElementContract.self),
         .complete(PageElementContract.title),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
         .partial(FilledShapeContract.fill, missing: "A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(BackgroundElementContract.background, on: VisualElementContract.self,
             missing: "A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in."),

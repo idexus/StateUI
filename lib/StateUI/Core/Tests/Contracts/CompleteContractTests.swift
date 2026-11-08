@@ -227,6 +227,7 @@ final class CompleteContractTests: XCTestCase {
         "View+Toolbar.swift": ["ToolbarGroup"],
         "StyleSheet.swift": ["VisualElement", "Button"],
         "MenuItemElement.swift": ["MenuItem", "MenuToggle", "ToolbarButton", "ToolbarToggle"],
+        "BarItemElement.swift": ["ToolbarButton", "ToolbarToggle", "ToolbarGroup"],
     ]
 
     /// The contracts a source names by its protocols and extensions -

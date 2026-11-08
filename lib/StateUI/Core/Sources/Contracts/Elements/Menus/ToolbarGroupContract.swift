@@ -12,8 +12,8 @@ public enum ToolbarGroupContract: ElementContract {
 
     /// Where its host draws the bar itself, the background its items share is the application's to say.
     public static let tiers: [any Tier.Type] = [
-        BarItemElementContract.self, BorderElementContract.self, PaddingElementContract.self,
-        EnabledElementContract.self,
+        HoverElementContract.self, BackgroundElementContract.self, StyledElementContract.self,
+        BorderElementContract.self, PaddingElementContract.self, EnabledElementContract.self,
     ]
 
     /// Whether it hides with its split view's sidebar rather than move over the detail while the sidebar is not shown.

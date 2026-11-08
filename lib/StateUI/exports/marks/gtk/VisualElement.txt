@@ -26,7 +26,6 @@ Button.rotationY: ✓ read rotationY of Button: the host's own transform: GTK re
 Button.scale: ✓ read scale of Button: the host's own transform: GTK reads back no part of one
 Button.scaleX: ✓ read scaleX of Button: the host's own transform: GTK reads back no part of one
 Button.scaleY: ✓ read scaleY of Button: the host's own transform: GTK reads back no part of one
-Button.style: ✅
 Button.tooltip: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: GTK reads back no part of one
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
@@ -59,7 +58,6 @@ Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform: GTK re
 Canvas.scale: ✓ read scale of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.style: ✅
 Canvas.tooltip: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
@@ -92,7 +90,6 @@ Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform: GTK 
 Capsule.scale: ✓ read scale of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.scaleY: ✓ read scaleY of Capsule: the host's own transform: GTK reads back no part of one
-Capsule.style: ✅
 Capsule.tooltip: ✅
 Capsule.translationX: ✓ read translationX of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: GTK reads back no part of one
@@ -125,7 +122,6 @@ CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform: GT
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.style: ✅
 CheckBox.tooltip: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
@@ -158,7 +154,6 @@ ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transfo
 ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: GTK reads back no part of one
-ColorPicker.style: ✅
 ColorPicker.tooltip: ✅
 ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: GTK reads back no part of one
@@ -191,7 +186,6 @@ DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.style: ✅
 DatePicker.tooltip: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
@@ -224,7 +218,6 @@ Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform: GTK 
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.style: ✅
 Ellipse.tooltip: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
@@ -257,7 +250,6 @@ Fill.rotationY: ✓ read rotationY of Fill: the host's own transform: GTK reads 
 Fill.scale: ✓ read scale of Fill: the host's own transform: GTK reads back no part of one
 Fill.scaleX: ✓ read scaleX of Fill: the host's own transform: GTK reads back no part of one
 Fill.scaleY: ✓ read scaleY of Fill: the host's own transform: GTK reads back no part of one
-Fill.style: ✅
 Fill.tooltip: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform: GTK reads back no part of one
 Fill.translationY: ✓ read translationY of Fill: the host's own transform: GTK reads back no part of one
@@ -290,7 +282,6 @@ Grid.rotationY: ✓ read rotationY of Grid: the host's own transform: GTK reads 
 Grid.scale: ✓ read scale of Grid: the host's own transform: GTK reads back no part of one
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: GTK reads back no part of one
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: GTK reads back no part of one
-Grid.style: ✅
 Grid.tooltip: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK reads back no part of one
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
@@ -323,7 +314,6 @@ HStack.rotationY: ✓ read rotationY of HStack: the host's own transform: GTK re
 HStack.scale: ✓ read scale of HStack: the host's own transform: GTK reads back no part of one
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: GTK reads back no part of one
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: GTK reads back no part of one
-HStack.style: ✅
 HStack.tooltip: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: GTK reads back no part of one
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
@@ -356,7 +346,6 @@ Image.rotationY: ✓ read rotationY of Image: the host's own transform: GTK read
 Image.scale: ✓ read scale of Image: the host's own transform: GTK reads back no part of one
 Image.scaleX: ✓ read scaleX of Image: the host's own transform: GTK reads back no part of one
 Image.scaleY: ✓ read scaleY of Image: the host's own transform: GTK reads back no part of one
-Image.style: ✅
 Image.tooltip: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: GTK reads back no part of one
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
@@ -389,7 +378,6 @@ ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: 
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
@@ -422,7 +410,6 @@ Line.rotationY: ✓ read rotationY of Line: the host's own transform: GTK reads 
 Line.scale: ✓ read scale of Line: the host's own transform: GTK reads back no part of one
 Line.scaleX: ✓ read scaleX of Line: the host's own transform: GTK reads back no part of one
 Line.scaleY: ✓ read scaleY of Line: the host's own transform: GTK reads back no part of one
-Line.style: ✅
 Line.tooltip: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: GTK reads back no part of one
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
@@ -455,7 +442,6 @@ Link.rotationY: ✓ read rotationY of Link: the host's own transform: GTK reads 
 Link.scale: ✓ read scale of Link: the host's own transform: GTK reads back no part of one
 Link.scaleX: ✓ read scaleX of Link: the host's own transform: GTK reads back no part of one
 Link.scaleY: ✓ read scaleY of Link: the host's own transform: GTK reads back no part of one
-Link.style: ✅
 Link.tooltip: ✅
 Link.translationX: ✓ read translationX of Link: the host's own transform: GTK reads back no part of one
 Link.translationY: ✓ read translationY of Link: the host's own transform: GTK reads back no part of one
@@ -488,7 +474,6 @@ Map.rotationY: 🧩
 Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
-Map.style: 🧩
 Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
@@ -521,7 +506,6 @@ MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own trans
 MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: GTK reads back no part of one
-MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: GTK reads back no part of one
@@ -554,7 +538,6 @@ Path.rotationY: ✓ read rotationY of Path: the host's own transform: GTK reads 
 Path.scale: ✓ read scale of Path: the host's own transform: GTK reads back no part of one
 Path.scaleX: ✓ read scaleX of Path: the host's own transform: GTK reads back no part of one
 Path.scaleY: ✓ read scaleY of Path: the host's own transform: GTK reads back no part of one
-Path.style: ✅
 Path.tooltip: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: GTK reads back no part of one
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
@@ -587,7 +570,6 @@ Picker.rotationY: ✓ read rotationY of Picker: the host's own transform: GTK re
 Picker.scale: ✓ read scale of Picker: the host's own transform: GTK reads back no part of one
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: GTK reads back no part of one
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: GTK reads back no part of one
-Picker.style: ✅
 Picker.tooltip: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: GTK reads back no part of one
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
@@ -620,7 +602,6 @@ Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform: GTK 
 Polygon.scale: ✓ read scale of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.style: ✅
 Polygon.tooltip: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
@@ -653,7 +634,6 @@ Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform: GT
 Polyline.scale: ✓ read scale of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.style: ✅
 Polyline.tooltip: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
@@ -686,7 +666,6 @@ ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transfo
 ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.style: ✅
 ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
@@ -719,7 +698,6 @@ Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: 
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.style: ✅
 Rectangle.tooltip: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
@@ -752,7 +730,6 @@ ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform
 ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.style: ✅
 ScrollView.tooltip: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
@@ -785,7 +762,6 @@ SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transfo
 SearchField.scale: ✓ read scale of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.style: ✅
 SearchField.tooltip: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
@@ -818,7 +794,6 @@ Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: 
 Separator.scale: ✓ read scale of Separator: the host's own transform: GTK reads back no part of one
 Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: GTK reads back no part of one
 Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: GTK reads back no part of one
-Separator.style: ✅
 Separator.tooltip: ✅
 Separator.translationX: ✓ read translationX of Separator: the host's own transform: GTK reads back no part of one
 Separator.translationY: ✓ read translationY of Separator: the host's own transform: GTK reads back no part of one
@@ -851,7 +826,6 @@ Slider.rotationY: ✓ read rotationY of Slider: the host's own transform: GTK re
 Slider.scale: ✓ read scale of Slider: the host's own transform: GTK reads back no part of one
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: GTK reads back no part of one
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: GTK reads back no part of one
-Slider.style: ✅
 Slider.tooltip: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: GTK reads back no part of one
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
@@ -884,7 +858,6 @@ Space.rotationY: ✓ read rotationY of Space: the host's own transform: GTK read
 Space.scale: ✓ read scale of Space: the host's own transform: GTK reads back no part of one
 Space.scaleX: ✓ read scaleX of Space: the host's own transform: GTK reads back no part of one
 Space.scaleY: ✓ read scaleY of Space: the host's own transform: GTK reads back no part of one
-Space.style: ✅
 Space.tooltip: ✅
 Space.translationX: ✓ read translationX of Space: the host's own transform: GTK reads back no part of one
 Space.translationY: ✓ read translationY of Space: the host's own transform: GTK reads back no part of one
@@ -917,7 +890,6 @@ Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: GTK 
 Spinner.scale: ✓ read scale of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: GTK reads back no part of one
-Spinner.style: ✅
 Spinner.tooltip: ✅
 Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: GTK reads back no part of one
@@ -950,7 +922,6 @@ Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform: GTK 
 Stepper.scale: ✓ read scale of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.style: ✅
 Stepper.tooltip: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
@@ -983,7 +954,6 @@ Switch.rotationY: ✓ read rotationY of Switch: the host's own transform: GTK re
 Switch.scale: ✓ read scale of Switch: the host's own transform: GTK reads back no part of one
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: GTK reads back no part of one
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: GTK reads back no part of one
-Switch.style: ✅
 Switch.tooltip: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: GTK reads back no part of one
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
@@ -1016,7 +986,6 @@ Text.rotationY: ✓ read rotationY of Text: the host's own transform: GTK reads 
 Text.scale: ✓ read scale of Text: the host's own transform: GTK reads back no part of one
 Text.scaleX: ✓ read scaleX of Text: the host's own transform: GTK reads back no part of one
 Text.scaleY: ✓ read scaleY of Text: the host's own transform: GTK reads back no part of one
-Text.style: ✅
 Text.tooltip: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: GTK reads back no part of one
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
@@ -1049,7 +1018,6 @@ TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.style: ✅
 TextEditor.tooltip: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
@@ -1082,7 +1050,6 @@ TextField.rotationY: ✓ read rotationY of TextField: the host's own transform: 
 TextField.scale: ✓ read scale of TextField: the host's own transform: GTK reads back no part of one
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: GTK reads back no part of one
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: GTK reads back no part of one
-TextField.style: ✅
 TextField.tooltip: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: GTK reads back no part of one
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
@@ -1115,7 +1082,6 @@ TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform
 TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.style: ✅
 TimePicker.tooltip: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
@@ -1148,7 +1114,6 @@ VStack.rotationY: ✓ read rotationY of VStack: the host's own transform: GTK re
 VStack.scale: ✓ read scale of VStack: the host's own transform: GTK reads back no part of one
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: GTK reads back no part of one
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: GTK reads back no part of one
-VStack.style: ✅
 VStack.tooltip: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: GTK reads back no part of one
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
@@ -1181,7 +1146,6 @@ WebView.rotationY: ✓ read rotationY of WebView: the host's own transform: GTK 
 WebView.scale: ✓ read scale of WebView: the host's own transform: GTK reads back no part of one
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: GTK reads back no part of one
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: GTK reads back no part of one
-WebView.style: ✅
 WebView.tooltip: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: GTK reads back no part of one
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
@@ -1214,7 +1178,6 @@ ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform: GTK re
 ZStack.scale: ✓ read scale of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.style: ✅
 ZStack.tooltip: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one

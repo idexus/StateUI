@@ -70,7 +70,7 @@ enum UIKitRealization {
             missing: "UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in."),
         .complete(VisualElementContract.ignoresInput),
         .complete(VisualElementContract.layoutDirection),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
 
         // MARK: Entries - a control's or a part's own
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: SpinnerContract.self, reason: Self.ownSteps),

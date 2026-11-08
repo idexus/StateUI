@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 0.0
 ToolbarButton.style: – The title bar's commands stand in WinUI's own look.
 ToolbarGroup.style: – The title bar's commands stand in WinUI's own look.
 ToolbarToggle.style: – The title bar's commands stand in WinUI's own look.

@@ -1,4 +1,0 @@
-# revision 3.1
-ToolbarButton.style: – The Mac's toolbar draws its items in the Mac's own look.
-ToolbarGroup.style: – The Mac's toolbar draws its items in the Mac's own look.
-ToolbarToggle.style: – The Mac's toolbar draws its items in the Mac's own look.

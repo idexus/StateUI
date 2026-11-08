@@ -96,7 +96,7 @@ public struct StyleSheet {
     /// it holds - a button's role, a picker's presentation - or else the one
     /// every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
-        let key = node.props[VisualElementContract.style.token]?.name
+        let key = node.props[StyledElementContract.style.token]?.name
         if key == platformStyle.name { return nil }
         if let key, let at = keyed[Filed(target: node.type, name: key)] {
             return written[at]
@@ -136,10 +136,10 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
     let style = sheet?.style(for: node)
 
     // Asked first: assigning nil to a missing key still copies the storage.
-    guard style != nil || node.props[VisualElementContract.style.token] != nil else { return node }
+    guard style != nil || node.props[StyledElementContract.style.token] != nil else { return node }
 
     var node = node
-    node.props[VisualElementContract.style.token] = nil
+    node.props[StyledElementContract.style.token] = nil
 
     guard let style = style else { return node }
 

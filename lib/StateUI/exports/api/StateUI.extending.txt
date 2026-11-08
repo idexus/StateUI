@@ -68,7 +68,6 @@ swift.conformance BarButtonElement: StateUI.PropertyContainer
 swift.conformance BarElement: StateUI.PropertyContainer
 swift.conformance BarElementContract: StateUI.Contract
 swift.conformance BarItemElement: StateUI.PropertyContainer
-swift.conformance BarItemElementContract: StateUI.Contract
 swift.conformance Blur.Thickness: StateUI.HostRepresentable
 swift.conformance BorderElement: StateUI.PropertyContainer
 swift.conformance BorderElementContract: StateUI.Contract
@@ -994,6 +993,7 @@ swift.conformance StepperContract: StateUI.Contract
 swift.conformance StepperContract: StateUI.ElementContract
 swift.conformance StepperProperties: StateUI.PropertyContainer
 swift.conformance StyleTarget: StateUI.PropertyContainer
+swift.conformance StyledElementContract: StateUI.Contract
 swift.conformance Styling: StateUI.BarItemElement where Target : BarItemElement, Target : StyleTarget
 swift.conformance Styling: StateUI.BorderElement where Target : BorderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ButtonMenuElement where Target : ButtonMenuElement, Target : StyleTarget
@@ -2839,9 +2839,6 @@ swift.type.property BackgroundElementContract.members: static let members: [any 
 swift.type.property BackgroundElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BarElementContract.members: static let members: [any ContractMember]
 swift.type.property BarElementContract.tiers: static var tiers: [any Tier.Type] { get }
-swift.type.property BarItemElementContract.members: static let members: [any ContractMember]
-swift.type.property BarItemElementContract.tiers: static let tiers: [any Tier.Type]
-swift.type.property BarItemElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BorderElementContract.members: static let members: [any ContractMember]
 swift.type.property BorderElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property BottomBarContract.layer: static let layer: ElementLayer
@@ -3283,6 +3280,8 @@ swift.type.property StepperContract.nodeType: static let nodeType: NodeType
 swift.type.property StepperContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property StepperContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property StyleTarget.nodeType: @MainActor static var nodeType: NodeType { get }
+swift.type.property StyledElementContract.members: static let members: [any ContractMember]
+swift.type.property StyledElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property SubmitElementContract.members: static let members: [any ContractMember]
 swift.type.property SubmitElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property SubmitLabel.laneKind: static var laneKind: LaneKind { get }

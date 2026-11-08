@@ -12,7 +12,7 @@
         [
             Aspects.holds(BackgroundElementContract.background, on: "TextSpan", .color(.yellow), then: .color(.cyan)),
         ] + (
-            WindowTests.written + TextSpanTests.written + BarItemElementTests.written + PageElementTests.written
+            WindowTests.written + TextSpanTests.written + BarItemElementCases.written + PageElementTests.written
                 + VisualElementTests.written
         ).proving(BackgroundElementContract.self)
     }

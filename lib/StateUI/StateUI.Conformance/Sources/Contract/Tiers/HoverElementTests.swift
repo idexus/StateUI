@@ -14,6 +14,6 @@
                 Covered(HoverElementContract.pointerEntered, on: element),
                 Covered(HoverElementContract.pointerExited, on: element),
             ], needs: [Covered(ViewContract.pointerMoved, on: element)], ViewTests.pointing(element))
-        } + Specimens.wearing(BarItemElementContract.self).map(BarItemElementTests.pointed)
+        } + BarItemElementCases.items.map(BarItemElementCases.pointed)
     }
 }

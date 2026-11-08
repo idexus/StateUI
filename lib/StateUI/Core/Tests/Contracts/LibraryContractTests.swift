@@ -222,11 +222,12 @@ final class LibraryContractTests: XCTestCase {
     /// VisualElement, which wears AutomationElement.
     func testATierWearsTheChainItsProtocolRefines() {
         XCTAssertEqual(ViewContract.worn.map { $0.name }, [
-            "View", "VisualElement", "AutomationElement", "EnabledElement", "BackgroundElement", "HoverElement",
+            "View", "VisualElement", "AutomationElement", "EnabledElement", "BackgroundElement", "StyledElement",
+            "HoverElement",
         ])
         XCTAssertEqual(StackContract.worn.map { $0.name }, [
-            "Stack", "Layout", "View", "VisualElement", "AutomationElement", "EnabledElement", "BackgroundElement", "HoverElement",
-            "PaddingElement", "BorderElement", "KeyboardElement",
+            "Stack", "Layout", "View", "VisualElement", "AutomationElement", "EnabledElement", "BackgroundElement",
+            "StyledElement", "HoverElement", "PaddingElement", "BorderElement", "KeyboardElement",
         ])
     }
 

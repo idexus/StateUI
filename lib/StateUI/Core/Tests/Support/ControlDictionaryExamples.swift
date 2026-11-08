@@ -937,18 +937,9 @@ extension ControlDictionary {
             }
             """#),
 
-        (BarItemElementContract.self, #"""
-            Text("Inbox")
-                .toolbar {
-                    ToolbarGroup {
-                        ToolbarButton("Archive")
-                        ToolbarButton("Move")
-                    }
-                    .background(.white)
-                    .shape(.roundedRectangle(12))
-                    .stroke(.gray)
-                    .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
-                }
+        (StyledElementContract.self, #"""
+            Button("Save")
+                .style(.platform)
             """#),
 
         (PressElementContract.self, #"""

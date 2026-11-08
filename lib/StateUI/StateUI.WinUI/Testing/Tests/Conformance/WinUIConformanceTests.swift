@@ -124,6 +124,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testStyledElement() { conform(StyledElementTests.self) }
     func testTextElement() { conform(TextElementTests.self) }
     func testShortcutElement() { conform(ShortcutElementTests.self) }
     func testIconElement() { conform(IconElementTests.self) }
@@ -142,7 +143,6 @@ final class WinUIConformanceTests: XCTestCase {
     func testFocusElement() { conform(FocusElementTests.self) }
     func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
-    func testBarItemElement() { conform(BarItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
     func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     func testLink() { conform(LinkTests.self) }

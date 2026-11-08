@@ -44,7 +44,7 @@ Image 3
 Page 9
 PageElement 6
 View 23
-VisualElement 27
+VisualElement 28
 Shape 5
 BorderElement 14
 TextInput 8
@@ -103,7 +103,6 @@ web MotionLayout 2
 Marker 2
 MenuToggle 2
 Sheet 2
-BarItemElement 3
 ActionElement 2
 Menu 3
 ToolbarLabel 3

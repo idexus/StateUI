@@ -843,7 +843,8 @@ struct InboxPage: View {
 }
 ```
 
-A bar's button and toggle are `BarButtonElement`s: the pointer over one and a
+Every item on a bar is a `BarItemElement`, which says its `background`; a
+bar's button and toggle are `BarButtonElement`s: the pointer over one and a
 press on it are the states their style follows, as a button's are.
 
 ## A bar at the foot

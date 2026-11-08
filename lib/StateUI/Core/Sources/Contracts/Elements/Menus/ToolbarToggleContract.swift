@@ -14,9 +14,9 @@ public enum ToolbarToggleContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self,
         ShortcutElementContract.self, TextElementContract.self, TextAndIconElementContract.self,
-        BarItemElementContract.self, BorderElementContract.self, TextColorElementContract.self,
-        FontElementContract.self, PaddingElementContract.self, ToggleElementContract.self,
-        PressElementContract.self,
+        HoverElementContract.self, BackgroundElementContract.self, StyledElementContract.self,
+        BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
+        PaddingElementContract.self, ToggleElementContract.self, PressElementContract.self,
     ]
 
     /// The picture it shows while on, in place of its own; unwritten, its own picture both ways.

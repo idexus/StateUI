@@ -4,17 +4,17 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `BarItemElementContract` on a host drawing its bar itself: an item on the bar - a button, a setting, a group -
-/// stands on the background the tree gives it, takes the values of the style it names, and follows the pointer
-/// over it.
-@_spi(Host) public enum BarItemElementTests: ConformanceFamily {
-    public static let name = "BarItemElement"
+/// The cases every item on a bar is held to where its host draws the bar itself - a button, a setting, a group: it
+/// stands on the background the tree gives it, takes the values of the style it names, and follows the pointer over
+/// it. The families of the tiers it wears take up the cases proving their members.
+enum BarItemElementCases {
+    /// The items: every element `BarItemElement` describes.
+    static let items: [String] = [ToolbarButtonContract.nodeType, ToolbarToggleContract.nodeType,
+        ToolbarGroupContract.nodeType].map { $0.name }
 
-    public static var cases: [ConformanceCase] { written.proving(BarItemElementContract.self) }
-
-    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    /// Every case written for the items, each made for every item.
     @MainActor static var written: [ConformanceCase] {
-        Specimens.wearing(BarItemElementContract.self).flatMap { element in
+        items.flatMap { element in
             [
                 Aspects.holds(BackgroundElementContract.background, on: element, .color(.steelBlue), then: .color(.firebrick)),
                 styled(element),
@@ -26,10 +26,10 @@
     @MainActor
     static func styled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", proves: [
-            Covered(BarItemElementContract.style, on: element),
+            Covered(StyledElementContract.style, on: element),
         ], needs: [Covered(BackgroundElementContract.background, on: element)]) { s in
             s.start {
-                Specimens.page(element, [Write(BarItemElementContract.style, Name(Styled.key(element)))], beside: [WearsStyledSheet()])
+                Specimens.page(element, [Write(StyledElementContract.style, Name(Styled.key(element)))], beside: [WearsStyledSheet()])
             }
             let item = try s.element("specimen")
 

@@ -536,10 +536,10 @@
     @MainActor
     static func styled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).takesTheValuesOfTheStyleItNames", proves: [
-            Covered(VisualElementContract.style, on: element),
+            Covered(StyledElementContract.style, on: element),
         ]) { s in
             s.start {
-                StyledPage(inner: Specimens.view(element, [Write(VisualElementContract.style, Name(Styled.key(element)))]))
+                StyledPage(inner: Specimens.view(element, [Write(StyledElementContract.style, Name(Styled.key(element)))]))
             }
             let view = try s.element("specimen")
 

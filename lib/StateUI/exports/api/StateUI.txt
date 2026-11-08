@@ -93,9 +93,6 @@ swift.conformance BackgroundElementContract: Swift.Sendable
 swift.conformance BarElementContract: StateUI.Tier
 swift.conformance BarElementContract: StateUI.WornContract
 swift.conformance BarElementContract: Swift.Sendable
-swift.conformance BarItemElementContract: StateUI.Tier
-swift.conformance BarItemElementContract: StateUI.WornContract
-swift.conformance BarItemElementContract: Swift.Sendable
 swift.conformance Battery: Swift.Sendable
 swift.conformance BatteryPowerSource: Swift.Equatable
 swift.conformance BatteryPowerSource: Swift.Hashable
@@ -780,6 +777,9 @@ swift.conformance StyleBuilder: Swift.Sendable
 swift.conformance StyleKey: Swift.Equatable
 swift.conformance StyleKey: Swift.Hashable
 swift.conformance StyleKey: Swift.Sendable
+swift.conformance StyledElementContract: StateUI.Tier
+swift.conformance StyledElementContract: StateUI.WornContract
+swift.conformance StyledElementContract: Swift.Sendable
 swift.conformance Styling: Swift.Sendable
 swift.conformance SubmitElementContract: StateUI.Tier
 swift.conformance SubmitElementContract: StateUI.WornContract
@@ -1018,7 +1018,6 @@ swift.enum Area: enum Area
 swift.enum AutomationElementContract: enum AutomationElementContract
 swift.enum BackgroundElementContract: enum BackgroundElementContract
 swift.enum BarElementContract: enum BarElementContract
-swift.enum BarItemElementContract: enum BarItemElementContract
 swift.enum BatteryPowerSource: enum BatteryPowerSource
 swift.enum BatteryState: enum BatteryState
 swift.enum Blur.Thickness: enum Thickness
@@ -1149,6 +1148,7 @@ swift.enum StyleBuilder: @MainActor @resultBuilder enum StyleBuilder
 swift.enum StyleScope.VisualState: enum VisualState
 swift.enum StyleScope.Whole: enum Whole
 swift.enum StyleScope: enum StyleScope
+swift.enum StyledElementContract: enum StyledElementContract
 swift.enum SubmitElementContract: enum SubmitElementContract
 swift.enum SubmitLabel: enum SubmitLabel
 swift.enum SwipeDirection: enum SwipeDirection
@@ -13571,8 +13571,6 @@ swift.type.property BarElementContract.barScrollEdge: static let barScrollEdge: 
 swift.type.property BarElementContract.name: static let name: String
 swift.type.property BarElementContract.toolbarSpacing: static let toolbarSpacing: ElementProperty<BarElementContract, Double>
 swift.type.property BarElementContract.toolbarStyle: static let toolbarStyle: ElementProperty<BarElementContract, ToolbarStyle>
-swift.type.property BarItemElementContract.name: static let name: String
-swift.type.property BarItemElementContract.style: static let style: ElementProperty<BarItemElementContract, Name>
 swift.type.property Blur.regular: static let regular: Blur
 swift.type.property Blur.thick: static let thick: Blur
 swift.type.property Blur.thin: static let thin: Blur
@@ -13927,6 +13925,8 @@ swift.type.property StackContract.spacing: static let spacing: ElementProperty<S
 swift.type.property StepperContract.name: static var name: String { get }
 swift.type.property StepperContract.step: static let step: ElementProperty<StepperContract, Double>
 swift.type.property StyleKey.platform: static var platform: StyleKey<Target> { get }
+swift.type.property StyledElementContract.name: static let name: String
+swift.type.property StyledElementContract.style: static let style: ElementProperty<StyledElementContract, Name>
 swift.type.property SubmitElementContract.name: static let name: String
 swift.type.property SubmitElementContract.submitLabel: static let submitLabel: ElementProperty<SubmitElementContract, SubmitLabel>
 swift.type.property SubmitElementContract.submitted: static let submitted: ElementEvent<SubmitElementContract, Void>
@@ -14065,7 +14065,6 @@ swift.type.property VisualElementContract.rotationY: static let rotationY: Eleme
 swift.type.property VisualElementContract.scale: static let scale: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.scaleX: static let scaleX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.scaleY: static let scaleY: ElementProperty<VisualElementContract, Double>
-swift.type.property VisualElementContract.style: static let style: ElementProperty<VisualElementContract, Name>
 swift.type.property VisualElementContract.tooltip: static let tooltip: ElementProperty<VisualElementContract, String>
 swift.type.property VisualElementContract.translationX: static let translationX: ElementProperty<VisualElementContract, Double>
 swift.type.property VisualElementContract.translationY: static let translationY: ElementProperty<VisualElementContract, Double>

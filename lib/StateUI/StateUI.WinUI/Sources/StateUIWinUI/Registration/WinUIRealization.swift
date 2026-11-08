@@ -100,7 +100,7 @@ enum WinUIRealization {
         .complete(PageElementContract.title),
         .complete(VisualElementContract.ignoresInput),
         .complete(VisualElementContract.layoutDirection),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
 
         // MARK: Entries - a control's or a part's own
         .notPlanned(PageContract.backButtonTitle, reason: "WinUI's way back is an arrow, with no words."),

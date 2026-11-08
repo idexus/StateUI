@@ -14,9 +14,10 @@ public enum ToolbarButtonContract: ElementContract {
     public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self,
         ShortcutElementContract.self, TextElementContract.self, ActionElementContract.self,
-        ButtonMenuElementContract.self, TextAndIconElementContract.self, BarItemElementContract.self,
-        BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
-        PaddingElementContract.self, PressElementContract.self,
+        ButtonMenuElementContract.self, TextAndIconElementContract.self, HoverElementContract.self,
+        BackgroundElementContract.self, StyledElementContract.self, BorderElementContract.self,
+        TextColorElementContract.self, FontElementContract.self, PaddingElementContract.self,
+        PressElementContract.self,
     ]
 
     /// The element's own members.
