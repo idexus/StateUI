@@ -1,4 +1,4 @@
-# revision 1.1
+# revision 2.1
 Button.pointerEntered: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerExited: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.pointerEntered: ✓ hover on Canvas: the view's listening handed the recognizer's states, no touch sent

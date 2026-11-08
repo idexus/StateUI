@@ -37,8 +37,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (106)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>59 ✅ · 5 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>UITextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>82 ✅ · 5 ☑️ · 12 ✓ · 3 –</td><td><code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>84 ✅ · 5 ☑️ · 12 ✓ · 3 –</td><td><code>EditText</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>17 ✅</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>11 ✅ · 5 ✓ · 1 –</td><td><code>GtkEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>80 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
@@ -286,10 +286,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on TextField: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on TextField: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 </table>
 
 ## From [TextColorElement](tiers/TextColorElement.md)

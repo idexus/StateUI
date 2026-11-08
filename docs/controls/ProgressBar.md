@@ -34,8 +34,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (76)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>35 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSProgressIndicator</code> bar</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 3 ☑️ · 34 ✓ · 2 –</td><td><code>UIProgressView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>horizontal <code>ProgressBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>35 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>UIProgressView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>59 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>horizontal <code>ProgressBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>3 ✅</td><td><code>ProgressBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅ · 1 ✓ · 1 –</td><td><code>GtkProgressBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>51 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;progress&gt;</code></td></tr></tbody>
@@ -222,10 +222,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 </table>
 
 ## From [TintElement](tiers/TintElement.md)

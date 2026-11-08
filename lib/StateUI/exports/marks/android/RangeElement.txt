@@ -1,9 +1,9 @@
-# revision 1.1
+# revision 2.1
 Slider.maximum: ✅
 Slider.minimum: ✅
 Slider.value: ✅
 Slider.valueChanged: ✅
-Stepper.maximum: does not apply - type words into a Stepper - Android's stepper is two buttons, with no field
+Stepper.maximum: ✅
 Stepper.minimum: ✅
-Stepper.value: ✓ read value of Stepper: the host's own number; Android's stepper is two buttons, which hold none
+Stepper.value: ✅
 Stepper.valueChanged: ✅

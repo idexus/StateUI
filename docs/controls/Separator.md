@@ -35,8 +35,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (74)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>34 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>an <code>NSBox</code> separator</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 3 ☑️ · 34 ✓ · 2 –</td><td>a hairline <code>UIView</code> in the separator color</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>55 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>a <code>View</code> in the theme's list divider</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>33 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td>a hairline <code>UIView</code> in the separator color</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>57 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>a <code>View</code> in the theme's list divider</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅</td><td>a line in <code>DividerStrokeColorDefaultBrush</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 –</td><td>a <code>GtkSeparator</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>49 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;hr&gt;</code></td></tr></tbody>
@@ -220,8 +220,8 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Separator: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Separator: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Separator: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Separator: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Separator: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Separator: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 </table>
