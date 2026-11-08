@@ -10,6 +10,19 @@ import StateUIConformance
 import XCTest
 
 final class WinUIPagesTests: XCTestCase {
+    /// A bar's edge shows only where a bar stands: a list's row, a popover and a page no bar stands over draw no line
+    /// along their top.
+    func testABarsEdgeShowsOnlyWhereABarStands() {
+        onUIThread {
+            let containers: [WinUISingleChildView] = [WinUIItemCell(), WinUIPopoverView(), WinUISingleChildView()]
+            for container in containers {
+                container.layout(Rect(x: 0, y: 0, width: 300, height: 40))
+                let lines = container.heldViews().filter { $0 is WinUIStackPartView && $0.isShown }
+                XCTAssertEqual(lines.count, 0, "\(type(of: container)) draws a bar's edge with no bar over it")
+            }
+        }
+    }
+
     /// A detail page beside the open sidebar is laid out in the room beside it, however the sidebar opened: a
     /// scroller's content there is as wide as the scroller.
     func testADetailBesideTheSidebarTakesTheRoomBesideIt() throws {
