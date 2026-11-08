@@ -124,6 +124,20 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "ValueArithmetic.clamped holds a value in its range")
     }
 
+    /// The ends of a range the tree gives none, and a step it gives none, are the host layer's alone: no host's
+    /// source fills in a slider's or a stepper's end or step of its own, so every host stands a control alike.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    func testOnlyTheHostLayerFillsInARangesEnds() throws {
+        let filled = try NSRegularExpression(
+            pattern: #"(RangeElementContract\.(minimum|maximum)|StepperContract\.step)(\]|\.token\))\s*\?\?"#)
+        let found = try SourceTree.runtimeSources()
+            .filter { !$0.path.hasPrefix("StateUI.Host/") }
+            .filter { filled.firstMatch(in: $0.text, range: NSRange($0.text.startIndex..., in: $0.text)) != nil }
+            .map(\.path)
+
+        XCTAssertEqual(found, [], "ValueArithmetic.ends and .step fill in what the tree leaves out")
+    }
+
     /// A scroller rests on the frame clock's time alone: no timer and no second clock in any runtime's scrolling
     /// decides when a movement is over, so a hand-wound clock reproduces every rest.
     func testAScrollersRestIsTimedByTheFrameClockAlone() throws {

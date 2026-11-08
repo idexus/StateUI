@@ -130,15 +130,18 @@ final class CoreDriver: HostDriver {
 
     /// One step of a stepper, as its buttons take it: none where its way is at the range's end.
     private func step(up: Bool, on element: MountedElement, in runtime: HostRuntime) throws {
-        let ends = ValueArithmetic.range(
-            element.number(RangeElementContract.minimum.token) ?? 0, element.number(RangeElementContract.maximum.token) ?? 100)
+        let given = ValueArithmetic.ends(
+            of: element.type, minimum: element.number(RangeElementContract.minimum.token),
+            maximum: element.number(RangeElementContract.maximum.token))
+        let ends = ValueArithmetic.range(given.minimum, given.maximum)
         let value = element.number(RangeElementContract.value.token) ?? ends.lower
         let ways = ValueArithmetic.stepsWay(value, lower: ends.lower, upper: ends.upper)
         guard up ? ways.up : ways.down else {
             throw DriverCannot("step on \(element.type.name)", because: "it stands at the end of its range")
         }
         let stepped = ValueArithmetic.step(
-            from: value, up: up, step: element.number(StepperContract.step.token) ?? 1, lower: ends.lower, upper: ends.upper)
+            from: value, up: up, step: ValueArithmetic.step(element.number(StepperContract.step.token)), lower: ends.lower,
+            upper: ends.upper)
         element.reportUserChange(RangeElementContract.value.token, .valueChanged, .number(stepped), in: runtime)
     }
 

@@ -14,6 +14,16 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertTrue(ValueArithmetic.range(2, 10) == (2, 10))
         XCTAssertEqual(ValueArithmetic.step(0.25), 0.25)
         XCTAssertEqual([0, -1, .nan, .infinity].map(ValueArithmetic.step), [1, 1, 1, 1])
+        XCTAssertEqual(ValueArithmetic.step(nil), 1, "a step the tree gives none is 1")
+    }
+
+    /// The ends of a range the tree gives none are its control's: a slider's a share, 0 to 1; a stepper's a count,
+    /// 0 to 100 - and the tree's where it gives one.
+    func testARangesEndsTheTreeLeavesOutAreItsControls() {
+        XCTAssertTrue(ValueArithmetic.ends(of: .slider, minimum: nil, maximum: nil) == (0, 1))
+        XCTAssertTrue(ValueArithmetic.ends(of: .stepper, minimum: nil, maximum: nil) == (0, 100))
+        XCTAssertTrue(ValueArithmetic.ends(of: .stepper, minimum: -5, maximum: nil) == (-5, 100))
+        XCTAssertTrue(ValueArithmetic.ends(of: .slider, minimum: nil, maximum: 11) == (0, 11))
     }
 
     /// A control of a range is written the tree's value where the tree changed it or an end - a range widened over a

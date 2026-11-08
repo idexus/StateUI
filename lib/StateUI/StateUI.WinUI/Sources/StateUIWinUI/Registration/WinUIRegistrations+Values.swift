@@ -20,8 +20,8 @@ extension WinUIRegistrations {
                     value: values.written(
                         RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
                         standing: view.value),
-                    minimum: values[RangeElementContract.minimum] ?? 0,
-                    maximum: values[RangeElementContract.maximum] ?? 1)
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum)
             }
             slider.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
@@ -39,9 +39,9 @@ extension WinUIRegistrations {
                 StepperContract.step) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.value),
-                    minimum: values[RangeElementContract.minimum] ?? 0,
-                    maximum: values[RangeElementContract.maximum] ?? 100,
-                    step: values[StepperContract.step] ?? 1)
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
+                    step: values.step)
             }
             stepper.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             stepper.declares(RangeElementContract.valueChanged)

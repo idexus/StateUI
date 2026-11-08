@@ -26,8 +26,8 @@ extension AppKitRegistrations {
                     value: values.written(
                         RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
                         standing: view.doubleValue),
-                    minimum: values[RangeElementContract.minimum] ?? 0,
-                    maximum: values[RangeElementContract.maximum] ?? 1,
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
                     enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
@@ -48,9 +48,9 @@ extension AppKitRegistrations {
                 EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.doubleValue),
-                    minimum: values[RangeElementContract.minimum] ?? 0,
-                    maximum: values[RangeElementContract.maximum] ?? 100,
-                    step: values[StepperContract.step] ?? 1,
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
+                    step: values.step,
                     enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             stepper.declares(RangeElementContract.valueChanged)
