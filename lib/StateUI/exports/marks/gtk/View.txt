@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began

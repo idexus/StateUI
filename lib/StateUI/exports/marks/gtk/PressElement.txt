@@ -1,4 +1,4 @@
-# revision 0.0
+# revision 1.1
 Button.pressed: ✅
 Button.released: ✅
 Slider.pressed: – GTK's scale tells no one it is held: its range claims the press, and GTK denies every other gesture on it.

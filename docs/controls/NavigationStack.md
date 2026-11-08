@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 2 –</td><td><code>UINavigationController</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 2 ☑️ · 1 ✓ · 2 –</td><td>custom <code>ViewGroup</code> stack + <code>Toolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>4 ✅ · 1 ☑️ · 2 –</td><td>custom <code>Panel</code> stack; title, back and actions in the window's <code>TitleBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>2 ✅ · 2 ☑️ · 3 –</td><td><code>AdwNavigationView</code> of <code>AdwNavigationPage</code>s</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 2 ☑️ · 1 ✓ · 4 –</td><td><code>AdwNavigationView</code> of <code>AdwNavigationPage</code>s</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 1 ☑️ · 1 ✓</td><td><code>&lt;div&gt;</code> stack; one History API entry to go back</td></tr></tbody>
 </table>
 
@@ -74,8 +74,8 @@ The picture an element shows beside or for its words: a button's, a toolbar labe
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 </table>
 
 ## From [BackgroundElement](tiers/BackgroundElement.md)
@@ -84,7 +84,8 @@ What an element is painted on: a view's, a page's, a window's, a bar item's and 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">·</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
 </table>
 
 ## From [BarElement](tiers/BarElement.md)
@@ -111,7 +112,7 @@ What a page shows about itself - a title and a picture where another container p
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: openLink on NavigationStack: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on NavigationStack: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on NavigationStack: the host's entry the activity's intent reaches, no intent sent<br>Web: only through the host's own: openLink on NavigationStack: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">⌛</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: openLink on NavigationStack: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on NavigationStack: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on NavigationStack: the host's entry the activity's intent reaches, no intent sent<br>GTK 4: only through the host's own: openLink on NavigationStack: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on NavigationStack: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

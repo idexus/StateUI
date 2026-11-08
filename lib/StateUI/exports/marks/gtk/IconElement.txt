@@ -1,4 +1,4 @@
-# revision 0.0
+# revision 1.1
 Button.icon: ✓ read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name
 MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
 MenuToggle.icon: – GNOME's menus show words alone, no picture beside them.

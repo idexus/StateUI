@@ -1,4 +1,4 @@
-# revision 25.1
+# revision 28.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.

@@ -1,4 +1,4 @@
-# revision 0.0
+# revision 1.1
 Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
