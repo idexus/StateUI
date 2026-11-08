@@ -225,8 +225,10 @@ final class WinUIItemsView: WinUILayoutView, WinUIPageScroller {
 
     /// The items WinUI holds chosen, in the order they show.
     var selectedForTesting: [String] {
-        let chosen = Set(WinUIStrings.read { stateui_winui_items_chosen(list.handle, $0, $1) }
-            .split(separator: "\n").map(String.init))
+        let count = stateui_winui_items_chosen_count(list.handle)
+        let chosen = Set((0..<count).map { index in
+            WinUIStrings.read { stateui_winui_items_chosen_at(list.handle, index, $0, $1) }
+        })
         return cells.identities.filter(chosen.contains)
     }
 

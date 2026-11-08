@@ -100,7 +100,7 @@ final class AndroidDriver: HostDriver {
     private func started(
         clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
     ) -> MountedTree {
-        finish()
+        close()
         written.listen()
         Renderer.shared.setApplication(application())
         let window = TestContext.window!
@@ -150,20 +150,15 @@ final class AndroidDriver: HostDriver {
 
     /// Lets the last host's tree go - the questions it put over the window, the keyboard and the focus with it - as
     /// an activity's end does: each case starts in a window as a new activity's.
-    func finish() {
-        Java.callStatic(Self.dialogs, Self.dismissAll)
-        AndroidRenderer.endActs()
-        if let root = renderer?.root.reference {
-            _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
-            Java.call(root, Self.clearFocus)
-        }
-        renderer?.runtime.tree.root?.leave()
+    func close() {
+        renderer?.finish()
         renderer = nil
     }
 
     func step() {
-        guard let renderer else { return }
         Self.runLooper(10)
+        _ = HostBoundary.runJobs()
+        guard let renderer else { return }
         renderer.runtime.pump.turn()
         layOut()
         if renderer.frameClock.held { renderer.frame() }

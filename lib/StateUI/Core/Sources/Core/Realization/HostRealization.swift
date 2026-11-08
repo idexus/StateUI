@@ -31,8 +31,11 @@
     /// The contract declaring it.
     public let owner: KeyName
 
-    /// The member itself.
+    /// The member, by the key its token crosses under: its owner's name, a dot, and its own.
     public let member: KeyName
+
+    /// The member's own name, without its owner's.
+    public var name: String { String(member.name.dropFirst(owner.name.count + 1)) }
 
     /// One member on one element, each named.
     ///
@@ -43,6 +46,6 @@
     public init(element: String, owner: String, member: String) {
         self.element = NodeType(element)
         self.owner = KeyName(owner)
-        self.member = KeyName(member)
+        self.member = KeyName("\(owner).\(member)")
     }
 }

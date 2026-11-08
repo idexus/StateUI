@@ -11,21 +11,17 @@ public enum ToolbarToggleContract: ElementContract {
 
     /// A setting on the bar is an item a user chooses; where its host draws the bar itself, its look is the
     /// application's to say.
-    public static let tiers: [any Contract.Type] = [
-        MenuItemElementContract.self, TextAndIconElementContract.self, BarButtonElementContract.self,
+    public static let tiers: [any Tier.Type] = [
+        AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self,
+        ShortcutElementContract.self, TextElementContract.self, TextAndIconElementContract.self,
+        HoverElementContract.self, BackgroundElementContract.self, StyledElementContract.self,
         BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
-        PaddingElementContract.self,
+        PaddingElementContract.self, ToggleElementContract.self, PressElementContract.self,
     ]
-
-    /// Whether it stands on.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
 
     /// The picture it shows while on, in place of its own; unwritten, its own picture both ways.
     public static let onIcon = ElementProperty<Self, ImageSource>("onIcon", layer: .adaptive)
 
-    /// The user chose it, turning it the other way: the way it turned to.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, onIcon, toggled]
+    public static let members: [any ContractMember] = [onIcon]
 }

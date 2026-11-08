@@ -16,7 +16,7 @@ enum AndroidInterop {
 /// A control of the application's own on this host: an object that holds the Android view it shows.
 ///
 /// The application makes the view with a Java class of its own, beside its head, through `Java` - handed the
-/// activity as `StateUIAndroid.context` - and hands the reference over: the host places, sizes and shows the view as
+/// activity as `AndroidHost.context` - and hands the reference over: the host places, sizes and shows the view as
 /// it does its own; the view's own `onMeasure` is what the host measures.
 @MainActor
 public protocol AndroidControl: AnyObject {
@@ -26,7 +26,7 @@ public protocol AndroidControl: AnyObject {
 
 /// The controls an application adds to this host - its own elements, each realized with a control of its own.
 ///
-/// Said once, from the application's Android head as its library loads, before `StateUIAndroid.load(_:)`.
+/// Said once, from the application's Android head as its library loads, before `AndroidHost.load(_:)`.
 @MainActor
 public enum StateUIControls {
     /// Adds an element of the APPLICATION'S OWN, realized with a control of its own: how the control is made, and
@@ -53,12 +53,12 @@ public enum StateUIControls {
     ///   - members: registers the members the control takes and raises.
     public static func add<Realized: ElementContract, Made: AndroidControl>(
         _ contract: Realized.Type,
-        create: @escaping (AndroidReports<Realized>) -> Made,
-        members: (AndroidRegistration<Realized, Made>) -> Void = { _ in }
+        create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+        members: @MainActor (AndroidRegistration<Realized, Made>) -> Void = { _ in }
     ) {
         AndroidRegistrations.registry.add(
             contract,
-            create: { reports in AndroidHostedView(create(AndroidReports(reports))) },
+            create: { reports in AndroidHostedView(create(reports)) },
             members: { registration in members(AndroidRegistration(registration)) })
     }
 }
@@ -66,7 +66,7 @@ public enum StateUIControls {
 /// The acts an application performs on this host - what its own `application.call` reaches.
 ///
 /// Said once, from the application's Android head as its library loads - `JNI_OnLoad` runs on the UI thread -
-/// before `StateUIAndroid.load(_:)`.
+/// before `AndroidHost.load(_:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
@@ -104,7 +104,7 @@ public enum StateUIActs {
     ///   - perform: given the element's control and the arguments the contract declares, answering the values it
     ///     declares.
     public static func add<
-        Owner: Contract, Made: AndroidControl, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, Made: AndroidControl, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         on control: Made.Type,
@@ -120,8 +120,8 @@ public enum StateUIEvents {
     ///
     /// Said once, where the application registers its acts.
     @MainActor
-    public static func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        AndroidRegistrations.registry.raises(event)
+    public static func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        AndroidRegistrations.registry.declares(event)
     }
 
     /// Raises an event of the application's - one no control raises - with the values its contract declares, from
@@ -138,46 +138,6 @@ public enum StateUIEvents {
         _ value: repeat each Value
     ) {
         CoreLink().raise(event, repeat each value)
-    }
-}
-
-/// What an element of the APPLICATION'S OWN tells the application: an event of its own or of a tier it wears, and a
-/// value its user changed. Handed to the control where it is made, so the control names members of its contract and
-/// never a handler.
-public struct AndroidReports<Realized: ElementContract> {
-    private let reports: Reports<Realized>
-
-    init(_ reports: Reports<Realized>) {
-        self.reports = reports
-    }
-
-    /// Raises an event with the values its contract declares - one of the
-    /// element's own, or one a tier it wears declares. An event of a contract
-    /// the element does not wear is refused, and said once.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - value: what it carries, in the order its contract declares.
-    public func raise<Owner: Contract, each Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, (repeat each Value)>,
-        _ value: repeat each Value
-    ) {
-        reports.raise(event, repeat each value)
-    }
-
-    /// A value the USER changed: it lands on the state the element's value is carried in, and the event is raised
-    /// with it.
-    ///
-    /// - Parameters:
-    ///   - property: the value's member, written with its contract.
-    ///   - value: what the user made it.
-    ///   - event: the member the element raises for that change.
-    public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
-        _ property: ElementProperty<Owner, Value>,
-        _ value: Value,
-        as event: ElementEvent<Raised, Value>
-    ) {
-        reports.report(property, value, as: event)
     }
 }
 
@@ -198,9 +158,9 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     /// - Parameters:
     ///   - member: the property, written with its contract.
     ///   - apply: puts the value on the control.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
-        _ apply: @escaping (Made, Value?) -> Void
+        _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
         registration.property(member) { hosted, value in apply(hosted.control, value) }
     }
@@ -217,9 +177,9 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     /// - Parameters:
     ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+    public func applies<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>,
-        apply: @escaping (Made, ControlValues<Realized>) -> Void
+        apply: @escaping @MainActor (Made, ControlValues<Realized>) -> Void
     ) {
         registration.applies(repeat each properties) { hosted, values in apply(hosted.control, ControlValues(values)) }
     }
@@ -227,8 +187,8 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        registration.raises(event)
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        registration.declares(event)
     }
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
@@ -247,40 +207,16 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     ///   - events: the children's events the control raises, written with their contracts.
     ///   - apply: hands the control every child of the contract.
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,
         events: repeat ElementEvent<each EventOwner, each Payload>,
-        apply: @escaping (Made, [AndroidChild<Child>]) -> Void
+        apply: @escaping @MainActor (Made, [ControlChild<Child>]) -> Void
     ) {
         registration.children(contract, properties: repeat each properties, events: repeat each events) { hosted, children in
-            apply(hosted.control, children.map(AndroidChild.init))
+            apply(hosted.control, children)
         }
-    }
-}
-
-/// A child element the control draws itself - a map's marker: its values as the types its contract declares, and the
-/// reports its events leave through. Two are equal when they are the same child, for as long as it lives, so a
-/// control keeps what it drew for one by it.
-public struct AndroidChild<Child: ElementContract>: Hashable {
-    private let child: ChildElement<Child>
-
-    init(_ child: ChildElement<Child>) {
-        self.child = child
-    }
-
-    /// One of the child's values, as the type its contract declares - nil where it is not described.
-    ///
-    /// - Parameter property: the member, written with its contract.
-    /// - Returns: the value, or nil.
-    public func value<Owner: Contract, Value: HostRepresentable>(_ property: ElementProperty<Owner, Value>) -> Value? {
-        child.value(property)
-    }
-
-    /// What the child's events and the user's values on it leave through.
-    public var reports: AndroidReports<Child> {
-        AndroidReports(child.reports)
     }
 }

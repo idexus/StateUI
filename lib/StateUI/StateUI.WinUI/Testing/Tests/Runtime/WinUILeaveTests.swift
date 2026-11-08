@@ -130,7 +130,7 @@ private struct LeavingToolApplication: Application {
 private struct LeavingToolScene: Scene {
     var body: some Scene {
         WindowGroup { LeavingOpeningPage() }
-        Window(WindowType("leave.tool")) { Text("A tool") }
+        Window(WindowKind("leave.tool")) { Text("A tool") }
     }
 }
 
@@ -140,8 +140,8 @@ private struct LeavingOpeningPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("leave.tool")) }
-            Button("Close").onClicked(.ignoreWhileRunning) { try await application.closeWindow(WindowType("leave.tool")) }
+            Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("leave.tool")) }
+            Button("Close").onClicked(policy: .ignoreWhileRunning) { try await application.closeWindow(WindowKind("leave.tool")) }
         }
     }
 }

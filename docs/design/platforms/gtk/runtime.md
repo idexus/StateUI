@@ -25,7 +25,7 @@ its panel and drops the reference it held.
 ## Starting
 
 The head's `main` names the application and hands the thread to
-`StateUIGTK.run(applicationID:)`, which makes an `AdwApplication` under that
+`GTKHost.run(applicationID:)`, which makes an `AdwApplication` under that
 name and runs GLib's main loop on the thread until the last window closes,
 then answers the code GLib's application ended with - a refused start, an
 unknown option, its own - which the head ends the process with; `run` holds
@@ -128,8 +128,10 @@ change of the rules never reaches it), read again as the style turns and,
 where libadwaita offers the user an accent to choose (1.6 on), as it changes; the locale - the language and region GLib
 reads from the environment, the local zone, and the clock, the first day of
 the week and the measures of the C library's locale, the week's first day
-read as GTK's own calendar reads it, and the direction GTK writes its
-language in; the power - UPower's display device, whether the machine
+read as GTK's own calendar reads it, the direction GTK writes its
+language in, and the user's languages as GLib's locale names in order, each
+a tag said once without its codeset and modifier, the C locale none
+(`GTKEnvironment.languages`); the power - UPower's display device, whether the machine
 is on mains, and whether the power profiles save energy, no battery where
 UPower stands nowhere; and the network - GIO's monitor, and the kind of
 connection NetworkManager calls the primary one; and the accessibility

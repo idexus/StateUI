@@ -20,7 +20,7 @@
         ConformanceCase("\(element).theKeyboardComingAndGoingIsHeard", proves: [
             Covered(FocusElementContract.focus, on: element), Covered(FocusElementContract.unfocus, on: element),
             Covered(FocusElementContract.isFocusedChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let aim = FocusAim()
             let heard = Received<Bool>()
             let took = Received<Bool>()
@@ -29,8 +29,8 @@
                     Opened.aimed(Specimens.view(element, [
                         Hear(FocusElementContract.isFocusedChanged) { heard.values.append($0) },
                     ]), by: aim)
-                    Button("Focus").onClicked(.ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
-                    Button("Unfocus").onClicked(.ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
+                    Button("Focus").onClicked(policy: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }.id("focus")
+                    Button("Unfocus").onClicked(policy: .ignoreWhileRunning) { try await aim.unfocus() }.id("unfocus")
                 }
             }
             let view = try s.element("specimen")

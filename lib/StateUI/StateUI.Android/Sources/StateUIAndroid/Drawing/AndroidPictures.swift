@@ -61,7 +61,7 @@ enum AndroidPictures {
     }
 
     /// The host's density, in pixels per inch: what every picture is read, measured and drawn at.
-    static var displayDensity: Int32 { Int32((AndroidRenderer.density * 160).rounded()) }
+    static var displayDensity: Int32 { AndroidPixels.distance(160, density: AndroidRenderer.density) }
 
     /// `picture`'s size in pixels at the display's density; nil where there is no such picture.
     ///
@@ -83,7 +83,9 @@ enum AndroidPictures {
         _ picture: HostPicture, size: (width: Int32, height: Int32), shown: (width: Int32, height: Int32)
     ) -> Int32 {
         let ratio = Double(density(of: picture)) / Double(displayDensity)
-        let own = (width: Int32(Double(size.width) * ratio), height: Int32(Double(size.height) * ratio))
+        let own = (
+            width: AndroidPixels.size(Double(size.width) * ratio, rounding: .towardZero),
+            height: AndroidPixels.size(Double(size.height) * ratio, rounding: .towardZero))
         guard own.width > 0, own.height > 0, shown.width > 0, shown.height > 0 else { return 1 }
         var sample: Int32 = 1
         while sample < thinnest, own.width / (sample * 2) >= shown.width, own.height / (sample * 2) >= shown.height {
@@ -129,7 +131,7 @@ enum AndroidPictures {
     }
 
     /// An icon's side in pixels at the display's density.
-    private static var iconPixels: Int32 { Int32((iconSide * AndroidRenderer.density).rounded()) }
+    private static var iconPixels: Int32 { AndroidPixels.size(iconSide, density: AndroidRenderer.density) }
 
     /// `picture` read at one pixel in `sample`; nil where there is no such picture.
     private static func decode(_ picture: HostPicture, sample: Int32) -> JavaObject? {
@@ -231,6 +233,6 @@ enum AndroidPictures {
     /// `size` pixels drawn at `density` pixels per inch, at the display's, rounded as Android rounds them.
     private static func scaled(_ size: (width: Int32, height: Int32), from density: Int32) -> (width: Int32, height: Int32) {
         let scale = Double(displayDensity) / Double(density)
-        return (Int32((Double(size.width) * scale).rounded()), Int32((Double(size.height) * scale).rounded()))
+        return (AndroidPixels.size(Double(size.width) * scale), AndroidPixels.size(Double(size.height) * scale))
     }
 }

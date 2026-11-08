@@ -13,16 +13,16 @@ extension WebRegistrations {
             picker.onChosen = { date in reports.report(DatePickerContract.date, date, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
-            picker.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate, DatePickerContract.date) {
+            picker.applies(DatePickerContract.minimum, DatePickerContract.maximum, DatePickerContract.date) {
                 view, values in
-                if values.changed(DatePickerContract.minimumDate) || values.changed(DatePickerContract.maximumDate) {
-                    view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+                if values.changed(DatePickerContract.minimum) || values.changed(DatePickerContract.maximum) {
+                    view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
                 }
                 if values.changed(DatePickerContract.date) { view.setDate(values[DatePickerContract.date]) }
             }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(DatePickerContract.dateChanged)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(DatePickerContract.dateChanged)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = WebTimePickerView()
@@ -31,8 +31,8 @@ extension WebRegistrations {
         }, members: { picker in
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(TimePickerContract.timeChanged)
         })
     }
 }

@@ -20,16 +20,16 @@ extension AppKitRegistrations {
             // A button holding a menu is made as it opens it from the first; another opening is made again.
             let button = AppKitButtonView(
                 menu: ButtonMenu.opening(made: reports.made), showsArrow: ButtonMenu.showsArrow(made: reports.made))
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
-            button.onPressed = { reports.raise(ButtonContract.pressed) }
-            button.onReleased = { reports.raise(ButtonContract.released) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
+            button.onPressed = { reports.raise(PressElementContract.pressed) }
+            button.onReleased = { reports.raise(PressElementContract.released) }
             return button
         }, members: { button in
             button.applies(
-                TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
-                ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
-                TextColorElementContract.textColor, VisualElementContract.background, BorderElementContract.shape,
-                BorderElementContract.stroke, BorderElementContract.lineWidth, VisualElementContract.isEnabled,
+                TextElementContract.text, TextualElementContract.textCase, IconElementContract.icon,
+                ButtonContract.iconPosition, ContentModeElementContract.contentMode, LineBreakElementContract.lineBreak,
+                TextColorElementContract.textColor, BackgroundElementContract.background, BorderElementContract.shape,
+                BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
                 FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
                 ButtonContract.role, TextAndIconElementContract.showsText) { view, values in
@@ -37,8 +37,8 @@ extension AppKitRegistrations {
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
                 let caption = (values[TextualElementContract.textCase] ?? .none)
-                    .applied(to: values[TextualElementContract.text] ?? "")
-                let source = values[ButtonContract.icon].flatMap { HostPicture($0.propValue) }
+                    .applied(to: values[TextElementContract.text] ?? "")
+                let source = values[IconElementContract.icon].flatMap { HostPicture($0.propValue) }
                 let icon: NSImage? = source.flatMap { view.picture?($0) }
                 // Words left out of sight stay the title, which names the button to assistive technology.
                 let alone = caption.isEmpty || !TextAndIcon.showsText(
@@ -50,11 +50,11 @@ extension AppKitRegistrations {
                 let scaling: NSImageScaling = if alone, case .icon? = source {
                     .scaleProportionallyDown
                 } else if alone {
-                    Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
+                    Self.imageScaling(values[ContentModeElementContract.contentMode] ?? .fit)
                 } else {
                     .scaleProportionallyDown
                 }
-                let background = paintedColor(values[VisualElementContract.background]?.propValue)
+                let background = paintedColor(values[BackgroundElementContract.background]?.propValue)
                 // A destructive action's words in the system's red where the tree colors them not.
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
@@ -65,7 +65,7 @@ extension AppKitRegistrations {
                 let lineWidth = BoxArithmetic.outlineWidth(
                     stroke: stroke, width: values[BorderElementContract.lineWidth])
                 let strokeColor = lineWidth > 0 ? AppKitBrush(stroke).lineColor : nil
-                let breaking = NSLineBreakMode(values[ButtonContract.lineBreak] ?? .wordWrap)
+                let breaking = NSLineBreakMode(values[LineBreakElementContract.lineBreak] ?? .wordWrap)
 
                 view.apply(
                     text: caption,
@@ -80,18 +80,18 @@ extension AppKitRegistrations {
                     lineWidth: lineWidth,
                     shape: BoxArithmetic.outline(values[BorderElementContract.shape]?.propValue),
                     lineBreakMode: breaking,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
-            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { control, values in
+            button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { control, values in
                 let role = values[ButtonContract.role]
-                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ClickElementContract.clicked)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 

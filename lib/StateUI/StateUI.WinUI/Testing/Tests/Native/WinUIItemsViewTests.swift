@@ -23,12 +23,12 @@ final class WinUIItemsViewTests: XCTestCase {
                         }
                         .padding(horizontal: 14, vertical: 10)
                     }
-                    .header(Text("N and N²").padding(horizontal: 14, vertical: 8))
+                    .header { Text("N and N²").padding(horizontal: 14, vertical: 8) }
                     .gridRow(0)
 
                     Text("Tap a row.").gridRow(1)
                 }
-                .rows(.fill, .auto)
+                .rows(.fill, .automatic)
             }
             let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
             let window = try XCTUnwrap(host.window)
@@ -95,10 +95,78 @@ final class WinUIItemsViewTests: XCTestCase {
         }
     }
 
-    /// What Narrator calls the row holding the item of `identity`; nil where no cell holds it.
+    /// A native choice keeps each authored string whole: an empty identity and a line feed are values too.
+    func testNativeSelectionKeepsEachAuthoredStringIdentityWhole() throws {
+        try onUIThread {
+            let chosen = State<Set<String>>(wrappedValue: [])
+            var heard: [Set<String>] = []
+            let driver = WinUIDriver()
+            defer { driver.close() }
+            _ = driver.start(clock: nil, reducesMotion: true) {
+                ItemsView(Self.choiceIdentities) { identity in
+                    Text(identity.isEmpty ? "empty item" : identity)
+                }
+                .selection(chosen.projectedValue)
+                .onSelectionChanged { heard.append(chosen.wrappedValue) }
+                .height(360)
+            }
+            let host = try XCTUnwrap(driver.renderer)
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            XCTAssertEqual(list.cells.identities, Self.choiceIdentities, "distinct authored strings reached the host whole")
+
+            let choices: [[String]] = [["ordinary"], ["a\nb"], [""], ["a\nb", ""], []]
+            for wanted in choices {
+                chosen.wrappedValue = Set(wanted)
+                host.settle { list.selectedForTesting == wanted }
+                XCTAssertEqual(list.selectedForTesting, wanted, "native choice for \(wanted.debugDescription)")
+                XCTAssertEqual(chosen.wrappedValue, Set(wanted), "a program's write is not a user report")
+            }
+            XCTAssertEqual(heard, [], "program selection raises no user event")
+        }
+    }
+
+    /// WinUI's SelectionChanged reaches the same state and event without splitting or dropping an identity.
+    func testNativeSelectionReportsEachAuthoredStringIdentityWhole() throws {
+        try onUIThread {
+            let chosen = State<Set<String>>(wrappedValue: [])
+            var heard: [Set<String>] = []
+            let driver = WinUIDriver()
+            defer { driver.close() }
+            _ = driver.start(clock: nil, reducesMotion: true) {
+                ItemsView(Self.choiceIdentities) { identity in
+                    Text(identity.isEmpty ? "empty item" : identity)
+                }
+                .selection(chosen.projectedValue)
+                .onSelectionChanged { heard.append(chosen.wrappedValue) }
+                .height(360)
+            }
+            let host = try XCTUnwrap(driver.renderer)
+            let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
+            XCTAssertEqual(list.cells.identities, Self.choiceIdentities)
+
+            for place in 0..<3 {
+                chosen.wrappedValue = []
+                host.settle { list.selectedForTesting.isEmpty }
+                heard = []
+                let wanted: Set<String> = [Self.choiceIdentities[place]]
+
+                list.chooseForTesting(place)
+                host.settle { chosen.wrappedValue == wanted && !heard.isEmpty }
+
+                XCTAssertEqual(chosen.wrappedValue, wanted, "native event for \(Self.choiceIdentities[place].debugDescription)")
+                XCTAssertEqual(heard, [wanted], "the event is heard once, the state holding exactly the chosen item")
+                XCTAssertEqual(list.selectedForTesting, [Self.choiceIdentities[place]], "the same item stays chosen natively")
+            }
+        }
+    }
+
+    private static let choiceIdentities = ["ordinary", "a\nb", "", "a", "b"]
+
+    /// What Narrator calls the row at `position`; nil where no cell holds it.
     @MainActor
-    private static func rowName(_ list: WinUIItemsView, _ identity: Int) -> String? {
-        guard let cell = list.cells.holding(of: "\(identity)") as? WinUIItemCell else { return nil }
+    private static func rowName(_ list: WinUIItemsView, _ position: Int) -> String? {
+        let ids = list.cells.entries.sections.flatMap(\.items)
+        guard ids.indices.contains(position), let cell = list.cells.holding(of: ids[position]) as? WinUIItemCell else { return nil }
         var bytes = [CChar](repeating: 0, count: 256)
         let length = stateui_winui_items_row_name(list.list.handle, cell.number, &bytes, Int32(bytes.count))
         return String(decoding: bytes.prefix(Int(max(length, 0))).map { UInt8(bitPattern: $0) }, as: UTF8.self)

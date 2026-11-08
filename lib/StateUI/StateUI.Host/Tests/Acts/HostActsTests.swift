@@ -56,8 +56,8 @@ final class HostActsTests: XCTestCase {
     /// otherwise, or one not on screen, fails with why, and an act nobody registered is not performed.
     func testAnAimedActIsHandedItsElementsControl() async throws {
         let acts = InteropActs<String>()
-        acts.add(InteropTestActs.shake, control: { view in view == "wheel" ? 7 : nil }) { control in "shook \(control)" }
-        guard case .aimed(let perform)? = acts.performers[InteropTestActs.shake.token] else {
+        acts.add(InteropWheelContract.shake, control: { view in view == "wheel" ? 7 : nil }) { control in "shook \(control)" }
+        guard case .aimed(let perform)? = acts.performers[InteropWheelContract.shake.token] else {
             return XCTFail("the act is not aimed")
         }
         let shaken = try await perform("wheel", [])
@@ -72,7 +72,7 @@ final class HostActsTests: XCTestCase {
         let runtime = HostRuntime.still()
         runtime.tree.apply(HostPatch(id: .manual("root"), type: .vStack), complete: true)
         var said: [String] = []
-        let gone = HostActCall(act: InteropTestActs.shake.token, arguments: [.string("gone")], completion: nil)
+        let gone = HostActCall(act: InteropWheelContract.shake.token, arguments: [.string("gone")], completion: nil)
         XCTAssertTrue(acts.perform(gone, in: runtime.tree, core: runtime.core, view: { _ in "wheel" }, log: { said.append($0) }))
         XCTAssertEqual(said.count, 1)
         XCTAssertTrue(said.first?.hasPrefix("there is no view") == true, "\(said)")
@@ -80,17 +80,59 @@ final class HostActsTests: XCTestCase {
         XCTAssertFalse(acts.perform(unknown, in: runtime.tree, core: runtime.core, view: { _ in nil }, log: { _ in }))
     }
 
+    /// An aimed act queued before its control left the tree holds nothing of the control meanwhile and, beginning,
+    /// fails with that rather than reach it; one whose control stands as it begins is handed the control.
+    func testAQueuedAimedActBeginsOnlyWhereItsControlStillStands() async throws {
+        let runtime = HostRuntime.still()
+        runtime.tree.apply(HostPatch(id: .manual("wheel"), type: .vStack), complete: true)
+        let acts = InteropActs<Wheel>()
+        var spun = 0
+        acts.add(InteropWheelContract.shake, control: { $0 }) { _ in spun += 1; return "spun" }
+        var wheel: Wheel? = Wheel()
+        weak let dropped = wheel
+        var said: [String] = []
+        let call = HostActCall(act: InteropWheelContract.shake.token, arguments: [.string("wheel")], completion: nil)
+
+        XCTAssertTrue(acts.perform(call, in: runtime.tree, core: runtime.core, view: { _ in wheel }, log: { said.append($0) }))
+        runtime.tree.apply(HostPatch(id: .manual("empty"), type: .vStack), complete: true)
+        wheel = nil
+        XCTAssertNil(dropped, "the queue holds no control the tree dropped")
+        for _ in 0..<100 { await Task.yield() }
+        XCTAssertEqual(spun, 0, "an act begins on no control that left")
+        XCTAssertEqual(said.count, 1)
+        XCTAssertTrue(said.first?.contains("left before") == true, "\(said)")
+
+        runtime.tree.apply(HostPatch(id: .manual("wheel"), type: .vStack), complete: true)
+        wheel = Wheel()
+        XCTAssertTrue(acts.perform(call, in: runtime.tree, core: runtime.core, view: { _ in wheel }, log: { said.append($0) }))
+        for _ in 0..<100 { await Task.yield() }
+        XCTAssertEqual(spun, 1, "a control standing as the act begins is handed over")
+        XCTAssertEqual(said.count, 1)
+    }
+
     /// An act forgotten is not performed, and every other registration stands - a backend's acts, which a host's
     /// tests register once for the whole run, among them.
     func testAnActForgottenLeavesTheOthersStanding() {
         let acts = InteropActs<String>()
         acts.add(InteropTestActs.greet) { name in "Hello, (name)" }
-        acts.add(InteropTestActs.shake, control: { _ in 7 }) { control in "\(control)" }
+        acts.add(InteropWheelContract.shake, control: { _ in 7 }) { control in "\(control)" }
 
         acts.forget(InteropTestActs.greet.token)
 
         XCTAssertNil(acts.performers[InteropTestActs.greet.token])
-        XCTAssertNotNil(acts.performers[InteropTestActs.shake.token])
+        XCTAssertNotNil(acts.performers[InteropWheelContract.shake.token])
+    }
+
+    /// A second performer of one act is said: the first is replaced, which an application registering its act
+    /// twice did not mean.
+    func testASecondPerformerOfOneActIsSaid() {
+        let acts = InteropActs<String>()
+        acts.add(InteropTestActs.greet) { name in "Hello, \(name)" }
+        XCTAssertFalse(hasComplained("`\(InteropTestActs.greet.token)` was registered twice"))
+
+        acts.add(InteropTestActs.greet) { name in "Hi, \(name)" }
+
+        XCTAssertTrue(hasComplained("`\(InteropTestActs.greet.token)` was registered twice"))
     }
 
     /// A host's log writes one line a message, begun by the host's name.
@@ -102,17 +144,28 @@ final class HostActsTests: XCTestCase {
     }
 }
 
+/// A control an aimed act is handed, counted as it goes.
+@MainActor private final class Wheel {}
+
 /// What a log wrote.
 private final class Written: @unchecked Sendable {
     var lines: [String] = []
 }
 
-/// Acts of an application's own, declared the way an application declares them.
+/// An act of an application's own, declared the way an application declares one.
 private enum InteropTestActs: ApplicationTier {
     static let name = "Interop"
 
-    static let greet = ElementAct<Self, String, String>("Interop.Greet")
-    static let shake = ElementAct<Self, Void, String>("Interop.Shake")
+    static let greet = ElementAct<Self, String, String>("greet")
 
-    static let members: [any ContractMember] = [greet, shake]
+    static let members: [any ContractMember] = [greet]
+}
+
+/// A control of an application's own, with the act aimed at it.
+private enum InteropWheelContract: ElementContract {
+    static let nodeType: NodeType = "Interop.Wheel"
+
+    static let shake = ElementAct<Self, Void, String>("shake")
+
+    static let members: [any ContractMember] = [shake]
 }

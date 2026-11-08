@@ -67,8 +67,7 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            Switch($platformLook)
-                .text("Platform look")
+            Switch("Platform look", isOn: $platformLook)
 
             Text("Last: \(last)")
                 .fontSize(14)

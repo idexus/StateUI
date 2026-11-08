@@ -21,16 +21,25 @@ public enum EngineAnswer: Sendable {
 
 /// What one run of an engine is handed, on the display's frame. This library's own.
 public struct EngineCycle: Sendable {
-    /// Milliseconds on the display's clock, as the host tells them; never before the last cycle's.
-    public let now: Double
+    /// Seconds on the display's clock, as the host tells them; never before the last cycle's.
+    public var nowSeconds: Double { now / 1000 }
 
-    /// Milliseconds since this engine last ran - nought or more, never more than
-    /// `mostElapsed`. Per engine: one that did not run is told the time it missed.
-    public let elapsed: Double
+    /// Seconds since this engine last ran - nought or more, never more than
+    /// `mostElapsedSeconds`. Per engine: one that did not run is told the time it missed.
+    public var elapsedSeconds: Double { elapsed / 1000 }
+
+    /// The display's clock, in the host's milliseconds.
+    let now: Double
+
+    /// Milliseconds since this engine last ran.
+    let elapsed: Double
 
     /// The most one cycle is told elapsed: a tenth of a second. A longer gap is an
     /// application that was asleep, and an animation interrupted that long arrives.
-    public static let mostElapsed = 100.0
+    public static let mostElapsedSeconds = mostElapsedMilliseconds / 1000
+
+    /// The same, on the host's clock.
+    static let mostElapsedMilliseconds = 100.0
 
     /// How many cycles this board has run, this one included.
     public let count: UInt64
@@ -197,7 +206,7 @@ extension ModifiableElement {
     ///
     ///     .engine(tracking: $y) { cycle in
     ///         let journey = $y.journey
-    ///         let seconds = cycle.elapsed / 1_000
+    ///         let seconds = cycle.elapsedSeconds
     ///         let displacement = journey.destination - journey.value
     ///         journey.velocity += (displacement * 40 - journey.velocity * 10) * seconds
     ///         journey.value += journey.velocity * seconds

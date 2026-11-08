@@ -38,16 +38,20 @@ private struct LongList: ExampleContent {
                 .spacing(12)
                 .padding(horizontal: 14, vertical: 10)
             }
-            .header(Text("N and N², a thousand times")
-                .fontSize(11)
-                .fontWeight(.bold)
-                .textColor(Palette.subtle)
-                .padding(horizontal: 14, vertical: 8)
-                .background(Palette.raised))
-            .footer(Text("That is all of them.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-                .padding(horizontal: 14, vertical: 8))
+            .header {
+                Text("N and N², a thousand times")
+                    .fontSize(11)
+                    .fontWeight(.bold)
+                    .textColor(Palette.subtle)
+                    .padding(horizontal: 14, vertical: 8)
+                    .background(Palette.raised)
+            }
+            .footer {
+                Text("That is all of them.")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
+                    .padding(horizontal: 14, vertical: 8)
+            }
             .selection($chosen)
             .gridRow(1)
 
@@ -61,7 +65,7 @@ private struct LongList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end
@@ -152,7 +156,7 @@ private struct GridList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end
@@ -188,7 +192,7 @@ private struct GroupedList: ExampleContent {
             SwitchRow("Counts", $counts)
                 .gridRow(0)
 
-            // A section per shelf, named so two shelves may hold the same item.
+            // A section per shelf, known by its name.
             ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                 let section = Section(shelf.items) { item in
                     Text(item)
@@ -196,18 +200,22 @@ private struct GroupedList: ExampleContent {
                         .padding(horizontal: 14, vertical: 10)
                 }
                 .id(shelf.name)
-                .header(Text(shelf.name)
-                    .fontSize(12)
-                    .fontWeight(.bold)
-                    .textColor(Palette.subtle)
-                    .padding(horizontal: 14, vertical: 8)
-                    .background(Palette.raised))
+                .header {
+                    Text(shelf.name)
+                        .fontSize(12)
+                        .fontWeight(.bold)
+                        .textColor(Palette.subtle)
+                        .padding(horizontal: 14, vertical: 8)
+                        .background(Palette.raised)
+                }
 
                 return counts
-                    ? section.footer(Text("\(shelf.items.count) items")
-                        .fontSize(12)
-                        .textColor(Palette.subtle)
-                        .padding(horizontal: 14, vertical: 6))
+                    ? section.footer {
+                        Text("\(shelf.items.count) items")
+                            .fontSize(12)
+                            .textColor(Palette.subtle)
+                            .padding(horizontal: 14, vertical: 6)
+                    }
                     : section
             })
             .gridRow(1)
@@ -216,7 +224,7 @@ private struct GroupedList: ExampleContent {
                 .gridRow(2)
                 .horizontalAlignment(.end)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end

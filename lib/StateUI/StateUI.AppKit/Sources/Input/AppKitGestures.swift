@@ -29,12 +29,28 @@ extension NSView {
     }
 }
 
+extension GesturePhase {
+    /// The phase a gesture of AppKit's at `state` tells; nil for one not under way.
+    init?(_ state: NSGestureRecognizer.State) {
+        switch state {
+        case .began: self = .began
+        case .changed: self = .changed
+        case .ended: self = .ended
+        case .cancelled, .failed: self = .cancelled
+        default: return nil
+        }
+    }
+}
+
 /// AppKit's drag recognizer: a press dragged, told as it starts, runs and ends, with how far it has come, from the top
 /// left.
 @MainActor
 final class AppKitPanRecognizer: NSPanGestureRecognizer {
     private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
+
+    /// The drag as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -54,25 +70,26 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
 
     /// A press dragged, at `phase`, `x` across and `y` down from where it began, `from`, in the view's points.
     func dragged(_ phase: GesturePhase, x: Double, y: Double, from: Point) {
+        gesture.told(phase)
         hearing(.drag(phase, x: x, y: y, from: from))
     }
 
     private func recognized(_ recognizer: NSPanGestureRecognizer) {
-        let moved = recognizer.translation(in: recognizer.view)
-        // AppKit's translation grows upward in a view drawn from the bottom.
-        let down = recognizer.view?.isFlipped == false ? -moved.y : moved.y
-        let phase: GesturePhase? = switch recognizer.state {
-        case .began: .began
-        case .changed: .changed
-        case .ended: .ended
-        case .cancelled, .failed: .cancelled
-        default: nil
+        recognized(recognizer.state, at: recognizer.location(in: nil), moved: recognizer.translation(in: nil))
+    }
+
+    /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began.
+    func recognized(_ state: NSGestureRecognizer.State, at now: NSPoint, moved: NSPoint) {
+        guard let phase = GesturePhase(state), let view, gesture.tells(phase) else { return }
+        // Where the press is now and where it began, each where the view is drawn, from the view's top left.
+        guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
+              let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
+        else {
+            // The view is flattened under the drag: the drag under way, if one, is taken away.
+            if gesture.takeAway(at: phase) { dragged(.cancelled, x: 0, y: 0, from: .zero) }
+            return
         }
-        guard let phase, let view = recognizer.view else { return }
-        // Where the press is now, from the view's top left, less how far it came: where it began.
-        let location = recognizer.location(in: view)
-        let top = view.isFlipped ? location.y : view.bounds.height - location.y
-        dragged(phase, x: Double(moved.x), y: Double(down), from: Point(x: Double(location.x - moved.x), y: Double(top) - Double(down)))
+        dragged(phase, x: at.x - from.x, y: at.y - from.y, from: from)
     }
 }
 
@@ -83,6 +100,9 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
     private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
     private var steps = PinchStep()
+
+    /// The pinch as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -102,23 +122,26 @@ final class AppKitPinchRecognizer: NSMagnificationGestureRecognizer {
 
     /// A pinch at `phase`, its magnification since it began `scale`, at `at` in shares of the view's size.
     func pinched(_ phase: GesturePhase, scale: Double, at: Point) {
+        gesture.told(phase)
         hearing(.pinch(phase, scale: steps.step(phase, scale: scale), at: at))
     }
 
     private func recognized(_ recognizer: NSMagnificationGestureRecognizer) {
-        let phase: GesturePhase? = switch recognizer.state {
-        case .began: .began
-        case .changed: .changed
-        case .ended: .ended
-        case .cancelled, .failed: .cancelled
-        default: nil
+        recognized(recognizer.state, magnification: Double(recognizer.magnification), at: recognizer.location(in: nil))
+    }
+
+    /// AppKit's pinch at `state`, magnified by `magnification` since it began, at `point` of the window.
+    func recognized(_ state: NSGestureRecognizer.State, magnification: Double, at point: NSPoint) {
+        guard let phase = GesturePhase(state), gesture.tells(phase) else { return }
+        let (width, height) = (Double(view?.bounds.width ?? 0), Double(view?.bounds.height ?? 0))
+        let drawn = view?.drawnPoint(fromWindow: point)
+        if view != nil, drawn == nil {
+            // The view is flattened under the pinch: the pinch under way, if one, is taken away.
+            if gesture.takeAway(at: phase) { pinched(.cancelled, scale: 1, at: Point(x: 0.5, y: 0.5)) }
+            return
         }
-        guard let phase else { return }
-        let view = recognizer.view
-        let at = PinchStep.share(
-            of: view.map { $0.topLeft(recognizer.location(in: $0)) },
-            width: Double(view?.bounds.width ?? 0), height: Double(view?.bounds.height ?? 0))
-        pinched(phase, scale: Double(1 + recognizer.magnification), at: at)
+        let at = PinchStep.share(of: drawn.map { view?.topLeft($0) ?? .zero }, width: width, height: height)
+        pinched(phase, scale: 1 + magnification, at: at)
     }
 }
 
@@ -129,6 +152,9 @@ final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
     private let hearing: AppKitHearing
     private let actionTarget: AppKitGestureAction
     private var steps = RotationStep()
+
+    /// The rotation as the host was told it.
+    private var gesture = ToldGesture()
 
     init(hearing: @escaping AppKitHearing) {
         self.hearing = hearing
@@ -148,19 +174,23 @@ final class AppKitRotationRecognizer: NSRotationGestureRecognizer {
 
     /// A rotation at `phase`, turned `degrees` clockwise since it began.
     func rotated(_ phase: GesturePhase, degrees: Double) {
+        gesture.told(phase)
         hearing(.rotation(phase, degrees: steps.step(phase, degrees: degrees)))
     }
 
     private func recognized(_ recognizer: NSRotationGestureRecognizer) {
-        let phase: GesturePhase? = switch recognizer.state {
-        case .began: .began
-        case .changed: .changed
-        case .ended: .ended
-        case .cancelled, .failed: .cancelled
-        default: nil
+        recognized(recognizer.state, degrees: -Double(recognizer.rotationInDegrees), at: recognizer.location(in: nil))
+    }
+
+    /// AppKit's rotation at `state`, turned `degrees` clockwise since it began, at `point` of the window.
+    func recognized(_ state: NSGestureRecognizer.State, degrees: Double, at point: NSPoint) {
+        guard let phase = GesturePhase(state), gesture.tells(phase) else { return }
+        if let view, view.drawnPoint(fromWindow: point) == nil {
+            // The view is flattened under the rotation: the rotation under way, if one, is taken away.
+            if gesture.takeAway(at: phase) { rotated(.cancelled, degrees: 0) }
+            return
         }
-        guard let phase else { return }
-        rotated(phase, degrees: -Double(recognizer.rotationInDegrees))
+        rotated(phase, degrees: degrees)
     }
 }
 
@@ -192,20 +222,22 @@ final class AppKitMirroredRecognizer: NSGestureRecognizer {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard Self.takes(event.modifierFlags) else { return state = .failed }
+        guard Self.takes(event.modifierFlags), let at = point(of: event) else { return state = .failed }
         state = .began
-        said(.began, event)
+        said(.began, at: at)
     }
 
     override func mouseDragged(with event: NSEvent) {
         guard state == .began || state == .changed else { return }
+        guard let at = point(of: event) else { return takenAway() }
         state = .changed
-        said(.changed, event)
+        said(.changed, at: at)
     }
 
     override func mouseUp(with event: NSEvent) {
         guard state == .began || state == .changed else { return }
-        said(.ended, event)
+        guard let at = point(of: event) else { return takenAway() }
+        said(.ended, at: at)
         state = .ended
     }
 
@@ -213,14 +245,23 @@ final class AppKitMirroredRecognizer: NSGestureRecognizer {
         other is NSPanGestureRecognizer
     }
 
-    /// `event` at `phase`, where it is in the view from its top left.
-    private func said(_ phase: GesturePhase, _ event: NSEvent) {
+    /// The view is flattened under the fingers: the press under way is taken away.
+    private func takenAway() {
+        said(.cancelled, at: .zero)
+        state = .cancelled
+    }
+
+    /// Where `event` is in the view, where the view is drawn, from its top left; nil where no point lands in the view.
+    private func point(of event: NSEvent) -> Point? {
+        guard let view else { return nil }
+        return view.drawnPoint(fromWindow: event.locationInWindow).map(view.topLeft)
+    }
+
+    /// The press at `phase`, at `at` of the view.
+    private func said(_ phase: GesturePhase, at: Point) {
         guard let view else { return }
-        let at = view.convert(event.locationInWindow, from: nil)
         let (width, height) = (Double(view.bounds.width), Double(view.bounds.height))
-        mirrored(
-            phase, at: Point(Double(at.x), view.isFlipped ? Double(at.y) : height - Double(at.y)),
-            middle: Point(width / 2, height / 2))
+        mirrored(phase, at: at, middle: Point(width / 2, height / 2))
     }
 }
 
@@ -231,6 +272,9 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
     private var hearing: AppKitHearing?
     private weak var trackedView: NSView?
     private var trackingArea: NSTrackingArea?
+
+    /// Whether the pointer was told to be over the view and not yet to have left.
+    private var over = false
 
     override init(target: Any?, action: Selector?) {
         super.init(target: target, action: action)
@@ -271,34 +315,45 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
 
     /// The pointer did `event` at `point` of the view, from its top left.
     func pointed(_ event: Event, at point: Point) {
+        if event == .pointerEntered || event == .pointerExited { over = event == .pointerEntered }
         hearing?(.pointer(event, point))
     }
 
     @objc func mouseEntered(with event: NSEvent) {
-        pointed(.pointerEntered, at: point(in: event))
+        told(.pointerEntered, event)
     }
 
     @objc func mouseExited(with event: NSEvent) {
-        pointed(.pointerExited, at: point(in: event))
+        told(.pointerExited, event)
     }
 
     @objc func mouseMoved(with event: NSEvent) {
-        pointed(.pointerMoved, at: point(in: event))
+        told(.pointerMoved, event)
     }
 
     override func mouseDown(with event: NSEvent) {
-        pointed(.pointerPressed, at: point(in: event))
+        told(.pointerPressed, event)
         state = .began
     }
 
     override func mouseDragged(with event: NSEvent) {
-        pointed(.pointerMoved, at: point(in: event))
+        told(.pointerMoved, event)
         state = .changed
     }
 
     override func mouseUp(with event: NSEvent) {
-        pointed(.pointerReleased, at: point(in: event))
+        told(.pointerReleased, event)
         state = .ended
+    }
+
+    /// The pointer did `did` at `event`'s place in the view; where no point lands in the view, flattened by its
+    /// drawing, the pointer is not over it: it is told to have left, once, and nothing else.
+    private func told(_ did: Event, _ event: NSEvent) {
+        if let at = point(in: event) {
+            pointed(did, at: at)
+        } else if over {
+            pointed(.pointerExited, at: .zero)
+        }
     }
 
     override func mouseCancelled(with event: NSEvent) {
@@ -313,9 +368,10 @@ final class AppKitPointerRecognizer: NSGestureRecognizer {
         false
     }
 
-    private func point(in event: NSEvent) -> Point {
-        guard let view = trackedView else { return Point(x: 0, y: 0) }
-        return view.topLeft(view.convert(event.locationInWindow, from: nil))
+    /// Where `event` is in the view, where the view is drawn, from its top left; nil where no point lands in the view.
+    private func point(in event: NSEvent) -> Point? {
+        guard let view = trackedView else { return nil }
+        return view.drawnPoint(fromWindow: event.locationInWindow).map(view.topLeft)
     }
 }
 

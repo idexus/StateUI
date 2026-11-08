@@ -5,11 +5,6 @@
 public protocol ButtonProperties: PropertyContainer {}
 
 extension ButtonProperties {
-    /// What happens to a caption too long for the button.
-    public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(ButtonContract.lineBreak, value)
-    }
-
     /// The picture beside the caption - a file among the application's image
     /// resources, by name; see `Image`. A button standing for its picture
     /// alone keeps its words, which name it to assistive technology:
@@ -17,7 +12,7 @@ extension ButtonProperties {
     ///     Button("Surprise me").icon("nav_surprise.png")
     ///     Button("Delete").icon("trash.png").showsText(false)
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(ButtonContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Which side of the caption the icon stands on. `.start`, the default,
@@ -38,16 +33,6 @@ extension ButtonProperties {
     }
 }
 
-extension ButtonProperties where Self: View {
-    /// The picture shown with the caption - the button's own, never the page's a view names with `.icon` where it
-    /// stands for its page.
-    ///
-    ///     Button("Surprise me").icon("nav_surprise.png")
-    public func icon(_ value: ImageSource) -> Modified {
-        setValue(ButtonContract.icon, value)
-    }
-}
-
 /// A button with a caption, and a handler for the press.
 ///
 ///     @State private var counter = 0
@@ -59,14 +44,15 @@ extension ButtonProperties where Self: View {
 ///
 /// A handler runs on the main actor. One that awaits passes through a gate,
 /// which says what a click does while it runs -
-/// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
+/// `.onClicked(policy: .ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement {
+    ContentModeElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement,
+    ClickElement, ShortcutElement, LineBreakElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Button>` is written against.
+    /// A button with no caption. Use `.text(_:)` to supply one.
     public init() {
         node = Node(contract: ButtonContract.self)
     }
@@ -74,7 +60,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// A button captioned `text`.
     public init(_ text: String) {
         node = Node(contract: ButtonContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// A button whose caption is carried from a state, written by the host as
@@ -85,78 +71,16 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
         self = Button().text(state)
     }
 
-    /// Keys that press the button from the keyboard while its window is in
-    /// front: `key` with `modifiers` - the platform's Command or Control
-    /// unless said otherwise.
-    ///
-    ///     Button("Save").keyboardShortcut("s")
-    ///     Button("Send").keyboardShortcut(.return, modifiers: [])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
-        setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
-    }
-
-    /// What the button stands for in its window: `.primary`, its main action, drawn with the platform's emphasis and
-    /// pressed by Return; `.cancel`, the way out, pressed by Escape; `.destructive`, an action that destroys
-    /// something. A shortcut the button states takes the place of its role's key, and a field being typed into
-    /// keeps Return.
+    /// What the button stands for in its window: `.normal`, an ordinary action, as a button of no role is; `.primary`,
+    /// its main action, drawn with the platform's emphasis and pressed by Return; `.cancel`, the way out, pressed by
+    /// Escape; `.destructive`, an action that destroys something. A shortcut the button states takes the place of its role's key, and a field being typed into
+    /// keeps Return. Said where the button is written, it takes no state: the window hands its keys to the buttons
+    /// it shows.
     ///
     ///     Button("Cancel").role(.cancel)
-    ///     Button("Save").role(.primary)
+    ///     Button("Save").role(isDefault ? .primary : .normal)
     public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
-    }
-
-    // MARK: Events
-
-    /// Runs when the button is pressed AND released on it - the ordinary one - all
-    /// of it before the click is over. A second `.onClicked` runs beside the first,
-    /// like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.clicked, handler)
-    }
-
-    /// Runs when the button is clicked, awaiting as it goes; its `policy` says what a
-    /// click does while a run is under way.
-    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.clicked, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.clicked, gate: gate, handler)
-    }
-
-    /// Runs the moment a press begins, before it ends.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.pressed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.pressed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.pressed, gate: gate, handler)
-    }
-
-    /// Runs when the press ends, wherever the pointer ends up - unlike
-    /// `onClicked`, which needs it to end on the button.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ButtonContract.released, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.released, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ButtonContract.released, gate: gate, handler)
     }
 }
 
@@ -188,11 +112,5 @@ extension Button {
     /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {
         twin(ButtonContract.iconSpacing, by: state)
-    }
-
-    /// `lineBreak` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        twin(ButtonContract.lineBreak, carrying: state)
     }
 }

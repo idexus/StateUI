@@ -29,6 +29,21 @@ pixel short breaks its last word onto a line its height never shows ("Layout"
 stood as "Layou"). A text's size is in scaled pixels, so the user's font
 scale applies to it as it does to every application's text.
 
+`AndroidPixels` checks the scaled and rounded number before an integer
+conversion, through the host layer's `GeometryArithmetic.pixels`. Signed coordinates use Android's `int` range; a measured size
+uses `View.MEASURED_SIZE_MASK`, the size bits `getMeasuredWidth` and
+`getMeasuredHeight` return. A distance outside that representation
+contributes zero. A rectangle's unrepresentable extent is empty on that
+axis; a representable negative position stays negative. Frame differences
+and padding sums are computed in a wider integer before they cross back.
+The measure-spec encoder refuses an out-of-range size instead of masking
+its high bits into a different size. These are native representation
+bounds, not limits on StateUI's shared distances.
+
+The relay moves an unchanged-size view by an offset only when the complete
+delta fits `int`; otherwise it uses the ordinary measure and layout call.
+Subtracting two valid coordinates must not wrap into an unrelated offset.
+
 ## Measured once
 
 A layout keeps the sizes it measured for each width offered. Anything that

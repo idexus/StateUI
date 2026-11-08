@@ -32,7 +32,7 @@ private struct DropPage: View {
         VStack {
             if shown {
                 Text("target")
-                    .onDrop { _ in }
+                    .onDropped { _ in }
             }
             Button("Hide")
                 .onClicked { shown = false }
@@ -48,7 +48,7 @@ final class AppKitLeaveTests: XCTestCase {
     func testAViewIsLetGoOfWhenItsElementLeaves() throws {
         // AppKit autoreleases what it hands back - a walk of `subviews` an array of them: each pool drained here.
         let renderer = autoreleasepool { AppKitRenderer.running { NotePage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let before = AppKitElement.liveViewCount
 
         autoreleasepool {
@@ -66,7 +66,7 @@ final class AppKitLeaveTests: XCTestCase {
     @MainActor
     func testADragEndedHoldsNoViewTakingDrops() throws {
         let renderer = autoreleasepool { AppKitRenderer.running { DropPage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let before = AppKitElement.liveViewCount
 
         try autoreleasepool {
@@ -90,7 +90,7 @@ final class AppKitLeaveTests: XCTestCase {
     @MainActor
     func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
         let driver = AppKitDriver()
-        defer { driver.renderer?.closeForTesting() }
+        defer { driver.renderer?.finish() }
         XCTAssertEqual(try Leaving.outlived(on: driver), [])
     }
 }

@@ -40,7 +40,7 @@ final class KeyGuardTests: XCTestCase {
     // MARK: - What is read
 
     private static let makesAKey =
-        #"\b(KeyName|Prop|Event|Act|NodeType|VisualState|SceneKey|WindowType|PersistentKey|StyleKey)(\((?!\))|\.init\b)"#
+        #"\b(KeyName|Prop|Event|Act|NodeType|VisualState|SceneKey|WindowKind|PersistentKey|StyleKey)(\((?!\))|\.init\b)"#
     /// A `static` declaration, or one at a file's top - unindented.
     private static let declaresOnce = #"\bstatic (let|var)\b|^(public |@_spi\(Host\) public )?let "#
     private static let looksUpAName = #"\.name\s*(==|!=)|\w\??\[[^\[\]]*\.name\]"#
@@ -99,7 +99,7 @@ final class KeyGuardTests: XCTestCase {
 
     private static let makingKeys: [String: String] = [
         "Act.swift": keyType, "Event.swift": keyType, "NodeType.swift": keyType, "Prop.swift": keyType,
-        "SceneKey.swift": keyType, "WindowType.swift": keyType, "StyleKey.swift": keyType,
+        "SceneKey.swift": keyType, "WindowKind.swift": keyType, "StyleKey.swift": keyType,
         "Persistence.swift": keyType,
         "ElementAct.swift": member, "ElementEvent.swift": member, "ElementProperty.swift": member,
         "HostRealization.swift": startUp, "HostRealizations.swift": startUp, "HostDeclaration.swift": startUp,
@@ -137,6 +137,7 @@ final class KeyGuardTests: XCTestCase {
         // The register and its exports.
         "HostDeclaration.swift": register, "HostRegister.swift": register, "HostVerdict.swift": register,
         "CoreLink.swift": register + ", and " + diagnostic,
+        "HostDriver.swift": "a driver's abilities, as its verdicts word them, and " + toolkit + ": its views' kinds",
         // Diagnostics.
         "HostBoundary+Inspection.swift": diagnostic, "Complaint.swift": diagnostic, "Inspection.swift": diagnostic,
         "InspectorModel.swift": diagnostic, "HostRealizations.swift": diagnostic + ": the names nearest a miss",

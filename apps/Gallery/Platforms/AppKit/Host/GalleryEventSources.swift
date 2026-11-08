@@ -4,6 +4,7 @@
 import AppKit
 import GalleryUI
 import IOKit.ps
+import StateUI
 import StateUIAppKit
 
 // listing: InteropEventsSample.AppKit.swift
@@ -25,10 +26,10 @@ enum GalleryEventSources {
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
     static func start() {
-        // listing: appkit.md.raises
+        // listing: appkit.md.declares
         // Declared where the source is wired: a handler listening for an
         // event nothing declared is told, once, that it will not hear it.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
         // listing: end
 
         // Named in full: a C function pointer carries no context at all, and

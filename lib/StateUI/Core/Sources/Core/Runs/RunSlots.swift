@@ -6,18 +6,30 @@
 /// Design: docs/design/core/runs.md#what-a-walk-runs
 @MainActor
 final class RunSlots {
-    private var owners: [(key: String, owner: RunOwner)] = []
+    enum Key: Hashable {
+        case watch(Int, ObjectIdentifier)
+        case visualState(Int, Set<KeyName>?)
+        case created(Int)
+    }
+
+    private var owners: [(key: Key, owner: RunOwner)] = []
 
     /// The events of the application's the element hears, by their place among its `.onHostEvent`s.
     private var relays: [HostEventRelay] = []
 
     /// Who starts the runs kept under `key`, made now if nobody does yet.
-    func owner(_ key: String) -> RunOwner {
+    func owner(_ key: Key) -> RunOwner {
         if let kept = owners.first(where: { $0.key == key }) { return kept.owner }
 
         let owner = RunOwner()
         owners.append((key, owner))
         return owner
+    }
+
+    /// A registration no longer written ends its runs without waiting for another event.
+    func keep(_ keys: Set<Key>) {
+        for entry in owners where !keys.contains(entry.key) { entry.owner.orphan() }
+        owners.removeAll { !keys.contains($0.key) }
     }
 
     /// Hears `listens` while the element stands: each place's event subscribed once, as the element is made or
@@ -40,6 +52,7 @@ final class RunSlots {
     /// it heard is heard no more.
     func orphan() {
         for entry in owners { entry.owner.orphan() }
+        owners = []
         for relay in relays { relay.cancel() }
         relays = []
     }

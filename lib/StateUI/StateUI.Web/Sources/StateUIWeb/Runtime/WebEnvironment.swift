@@ -10,13 +10,13 @@
 /// Design: docs/design/platforms/web/runtime.md#the-environment
 @MainActor
 enum WebEnvironment {
-    static func report(to core: CoreLink, applicationName: String) {
+    static func report(to core: CoreLink, applicationName: String, applicationID: String?) {
         let touch = WebRelay.touchScreen
         core.setDeviceInfo(HostDeviceInfo(
             formFactor: touch > 0 ? .touchScreen(smallestWidth: touch) : .desktop, platform: "Web", model: "",
-            manufacturer: "", name: "", versionString: "", isVirtual: nil))
+            manufacturer: "", name: "", platformVersion: "", isVirtual: nil))
         core.setApplicationInfo(HostApplicationInfo(
-            name: applicationName, packageName: applicationName, versionString: "", buildString: ""))
+            name: applicationName, packageName: applicationID ?? "", version: "", build: ""))
         reportChanging(to: core)
     }
 
@@ -52,9 +52,10 @@ enum WebEnvironment {
         let region = filled.dropFirst().first { $0.count == 2 && $0 == $0.uppercased() } ?? ""
         let firstDay = Int32(words[4]).map { Weekday(rawValue: $0 % 7) ?? .sunday } ?? .sunday
         return HostLocaleInfo(
-            language: filled.first?.lowercased() ?? "", region: region, name: words[0], timeZone: words[2],
+            language: LocaleTag(words[0]), timeZone: words[2].isEmpty ? nil : TimeZoneName(words[2]),
             uses24HourClock: words[3] == "h23" || words[3] == "h24", firstDayOfWeek: firstDay,
             isMetric: !["US", "LR", "MM"].contains(region),
-            layoutDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight, languages: Array(words.dropFirst(6)))
+            writingDirection: words[5] == "rtl" ? .rightToLeft : .leftToRight,
+            languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }

@@ -1,0 +1,6 @@
+# revision 1.1
+Button.keyboardShortcut: ✅
+MenuItem.keyboardShortcut: ✅
+MenuToggle.keyboardShortcut: ✅
+ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the shortcut controller's action run, no key event
+ToolbarToggle.keyboardShortcut: ✅

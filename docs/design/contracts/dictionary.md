@@ -139,15 +139,18 @@ so the platform contract names them with no mark rather than one that says
 both.
 
 A host writes its records with the contracts' members, so a misspelled name
-does not compile: `.complete(SwitchContract.isOn)` judges a member on every
+does not compile: `.complete(ToggleElementContract.isOn)` judges a member on every
 element wearing its contract, and `on:` judges it on one element alone -
-`.notPlanned(VisualElementContract.background, on: SliderContract.self,
+`.notPlanned(BackgroundElementContract.background, on: SliderContract.self,
 reason:)`. The elements it realizes none of, never has, or leaves to the
 application it names by their contracts too (`[MapContract.self]`).
 
 A tier's record reaches every element wearing the tier, and what the
 host's shared machinery realizes becomes one: it serves each view the host
-makes. Where an element wearing the tier does not take such a member - a
+makes. A record on a tier that wears the member's - `background` on
+`VisualElementContract`, its `BackgroundElement` worn through it - reaches the
+elements wearing that tier, the nearest such record first, before the record
+of the tier declaring the member. Where an element wearing the tier does not take such a member - a
 toolbar item AppKit holds as no view - the element's own record says so,
 `.unrealized(AutomationElementContract.accessibilityIdentifier, on:
 ToolbarButtonContract.self, why:)`, and stands over the tier's: the member's

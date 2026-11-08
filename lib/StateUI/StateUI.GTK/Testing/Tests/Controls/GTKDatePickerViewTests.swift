@@ -18,8 +18,8 @@ final class GTKDatePickerViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     DatePicker(due.projectedValue)
-                        .minimumDate(CalendarDate(year: 2026, month: 9, day: 1))
-                        .maximumDate(CalendarDate(year: 2026, month: 10, day: 31))
+                        .minimum(CalendarDate(year: 2026, month: 9, day: 1))
+                        .maximum(CalendarDate(year: 2026, month: 10, day: 31))
                 }
             }
             let picker = try XCTUnwrap(host.views(GTKDatePickerView.self).first)

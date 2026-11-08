@@ -56,8 +56,8 @@ extension UIKitDriver {
             if let shown = layout.box.backdropView?.shown { return material(shown).propValue }
             let fill = layers.first { $0.zPosition == -2 && !($0 is CAGradientLayer) }
             return fill?.backgroundColor.map { Material.color(color(UIColor(cgColor: $0))).propValue }
-        case .stroke: return outline?.strokeColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
-        case .lineWidth: return Double(outline?.lineWidth ?? 0).propValue
+        case BorderElementContract.stroke.token: return outline?.strokeColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
+        case BorderElementContract.lineWidth.token: return Double(outline?.lineWidth ?? 0).propValue
         default: return nil
         }
     }
@@ -81,7 +81,7 @@ extension UIKitDriver {
         let stroke = painted.first { ($0.mask as? CAShapeLayer)?.strokeColor != nil }
         let line = stroke?.mask as? CAShapeLayer
         let outlines: Set<Prop> = [
-            .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin, .miterLimit,
+            ShapeContract.lineWidth.token, .dash, .dashPhase, .lineCap, .lineJoin, .miterLimit,
         ]
         if line == nil, outlines.contains(property) { throw DriverCannot("read the line of a shape drawing no outline") }
         let width = Double(line?.lineWidth ?? 0)
@@ -89,8 +89,8 @@ extension UIKitDriver {
         case .fill:
             if let shown = shape.backdropForTesting?.shown { return material(shown).propValue }
             return fill?.backgroundColor.map { Material.color(color(UIColor(cgColor: $0))).propValue }
-        case .stroke: return stroke?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
-        case .lineWidth: return width.propValue
+        case ShapeContract.stroke.token: return stroke?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
+        case ShapeContract.lineWidth.token: return width.propValue
         case .dash:
             // Lengths in points on UIKit: back in the outline's widths.
             let lengths = line?.lineDashPattern?.map(\.doubleValue) ?? []
@@ -113,8 +113,8 @@ extension UIKitDriver {
         let box = configuration.background
         switch property {
         case .background: return box.backgroundColor.map { Material.color(color($0)).propValue }
-        case .stroke: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
-        case .lineWidth: return Double(box.strokeWidth).propValue
+        case BorderElementContract.stroke.token: return box.strokeColor.map { Brush.solidColor(color($0)).propValue }
+        case BorderElementContract.lineWidth.token: return Double(box.strokeWidth).propValue
         case .shape:
             if box.customView is UIKitOvalFace { return ContainerShape.ellipse.propValue }
             if configuration.cornerStyle == .capsule { return ContainerShape.capsule.propValue }
@@ -130,7 +130,7 @@ extension UIKitDriver {
         case .lineBreak: return lineBreak(configuration.titleLineBreakMode).propValue
         case .showsMenuArrow: return button.showsMenuMark.propValue
         case .showsText: return button.showsWordsForTesting.propValue
-        case .role:
+        case ButtonContract.role.token:
             let roles: [UIButton.Role: ButtonRole] = [.primary: .primary, .cancel: .cancel, .destructive: .destructive]
             return roles[button.role].map(\.propValue) ?? HostValue.nothing
         default: return nil
@@ -174,7 +174,7 @@ extension UIKitDriver {
         case .URL: .url
         case .phonePad: .telephone
         case .decimalPad: .numeric
-        default: spelling == .no ? .plain : .default
+        default: spelling == .no ? .plain : .automatic
         }
     }
 }

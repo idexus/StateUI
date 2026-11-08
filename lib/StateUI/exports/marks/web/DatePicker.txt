@@ -1,10 +1,7 @@
-# revision 5.1
+# revision 6.1
 DatePicker: ✅
-DatePicker.closed: – The browser says nothing as a picker's list or calendar closes.
 DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: not realized
-DatePicker.isOpen: – The browser opens a picker's list or calendar only at the user's press, and closes it at the user's hand alone.
-DatePicker.maximumDate: ✅
-DatePicker.minimumDate: ✅
-DatePicker.opened: – The browser says nothing as a picker's list or calendar opens.
+DatePicker.maximum: ✅
+DatePicker.minimum: ✅

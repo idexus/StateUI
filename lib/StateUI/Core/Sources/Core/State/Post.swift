@@ -97,16 +97,42 @@ final class Mailroom: Sendable {
     private struct Waiting {
         var entries: [any PostEntry] = []
         var booked = false
+
+        /// The mailroom of the state this one's was given up for, where every post goes from then on.
+        var forwarded: Mailroom?
     }
 
     private let waiting = Mutex(Waiting())
 
+    /// Where each post stands in the order posted, across every mailroom.
+    private static let posted = Atomic<UInt64>(0)
+
+    /// Sends every post from now on to `other`, and what waits here with them, each step at its place in the order
+    /// posted: this mailroom's state was given up for `other`'s - a view's state adopted.
+    func forward(to other: Mailroom) {
+        guard other !== self else { return }
+
+        let moved = waiting.withLock { waiting in
+            waiting.forwarded = other
+            defer { waiting.entries = [] }
+            return waiting.entries
+        }
+        if !moved.isEmpty { other.take(moved) }
+    }
+
     /// Replaces whatever waits for this part, and for every part of it, with a value - posted last, it lands last.
     func post<Target: PostTarget>(_ value: Target.Value, through target: Target) where Target.Value: Sendable {
-        book { entries in
+        post(value, through: target, order: Self.posted.add(1, ordering: .relaxed).newValue)
+    }
+
+    private func post<Target: PostTarget>(
+        _ value: Target.Value, through target: Target, order: UInt64
+    ) where Target.Value: Sendable {
+        let onward = book { entries in
             entries.removeAll { PartPath.covers(target.lent, $0.part) }
-            entries.append(PartPost(target: target, value: value))
+            entries.append(PartPost(target: target, value: (order, value)))
         }
+        onward?.post(value, through: target, order: order)
     }
 
     /// Queues a change after whatever waits - on the last entry where it is this part's, so a loop's changes are one
@@ -114,24 +140,56 @@ final class Mailroom: Sendable {
     func post<Target: PostTarget>(
         _ transform: @escaping @Sendable (Target.Value) -> Target.Value, through target: Target
     ) where Target.Value: Sendable {
-        book { entries in
-            if var last = entries.last as? PartPost<Target>, last.part == target.lent {
-                last.transforms.append(transform)
-                entries[entries.count - 1] = last
-            } else {
-                entries.append(PartPost(target: target, transforms: [transform]))
-            }
-        }
+        post(transform, through: target, order: Self.posted.add(1, ordering: .relaxed).newValue)
     }
 
-    /// Records a post, and books the job where none is booked.
-    private func book(_ post: (inout [any PostEntry]) -> Void) {
-        let first = waiting.withLock { waiting in
+    private func post<Target: PostTarget>(
+        _ transform: @escaping @Sendable (Target.Value) -> Target.Value, through target: Target, order: UInt64
+    ) where Target.Value: Sendable {
+        let onward = book { entries in
+            if var last = entries.last as? PartPost<Target>, last.part == target.lent {
+                last.transforms.append((order, transform))
+                entries[entries.count - 1] = last
+            } else {
+                entries.append(PartPost(target: target, transforms: [(order, transform)]))
+            }
+        }
+        onward?.post(transform, through: target, order: order)
+    }
+
+    /// Records a post, and books the job where none is booked - or answers the mailroom this one's posts go to.
+    private func book(_ post: (inout [any PostEntry]) -> Void) -> Mailroom? {
+        let (onward, first) = waiting.withLock { waiting -> (Mailroom?, Bool) in
+            if let onward = waiting.forwarded { return (onward, false) }
+
             post(&waiting.entries)
             defer { waiting.booked = true }
-            return !waiting.booked
+            return (nil, !waiting.booked)
         }
 
+        if first {
+            libraryTask { self.write() }
+        }
+        return onward
+    }
+
+    /// Takes what waited in a mailroom given up for this one: every step of every entry, in the order posted, a value
+    /// replacing what waits before it for its part as a post does.
+    private func take(_ moved: [any PostEntry]) {
+        let (onward, first) = waiting.withLock { waiting -> (Mailroom?, Bool) in
+            if let onward = waiting.forwarded { return (onward, false) }
+
+            var merged: [any PostEntry] = []
+            for step in (waiting.entries + moved).flatMap(\.steps).sorted(by: { $0.order < $1.order }) {
+                if step.replaces { merged.removeAll { PartPath.covers(step.part, $0.part) } }
+                merged.append(step)
+            }
+            waiting.entries = merged
+            defer { waiting.booked = true }
+            return (nil, !waiting.booked)
+        }
+
+        if let onward { return onward.take(moved) }
         if first {
             libraryTask { self.write() }
         }
@@ -141,7 +199,7 @@ final class Mailroom: Sendable {
     @MainActor
     private func write() {
         let taken = waiting.withLock { waiting in
-            defer { waiting = Waiting() }
+            defer { (waiting.entries, waiting.booked) = ([], false) }
             return waiting.entries
         }
 
@@ -154,20 +212,41 @@ protocol PostEntry: Sendable {
     /// Which part of the state it writes; nil for the whole.
     var part: PartPath? { get }
 
+    /// Where its first step stands in the order posted.
+    var order: UInt64 { get }
+
+    /// Whether its first step is a value, which replaces what waited before it for its part.
+    var replaces: Bool { get }
+
+    /// Each of its steps as an entry of its own, in order.
+    var steps: [any PostEntry] { get }
+
     /// Writes what waits.
     @MainActor func land()
 }
 
-/// What waits for one part: the last value posted and the changes posted after it, in order, written through a
-/// binding or that part - held only until the job runs.
+/// What waits for one part: the last value posted and the changes posted after it, in order, each with its place in
+/// the order posted, written through a binding or that part - held only until the job runs.
 struct PartPost<Target: PostTarget>: PostEntry where Target.Value: Sendable {
     let target: Target
-    var value: Target.Value?
-    var transforms: [@Sendable (Target.Value) -> Target.Value] = []
+    var value: (order: UInt64, value: Target.Value)?
+    var transforms: [(order: UInt64, change: @Sendable (Target.Value) -> Target.Value)] = []
 
     var part: PartPath? { target.lent }
 
-    init(target: Target, value: Target.Value? = nil, transforms: [@Sendable (Target.Value) -> Target.Value] = []) {
+    var order: UInt64 { value?.order ?? transforms.first?.order ?? 0 }
+
+    var replaces: Bool { value != nil }
+
+    var steps: [any PostEntry] {
+        (value.map { [PartPost(target: target, value: $0)] } ?? [])
+            + transforms.map { PartPost(target: target, transforms: [$0]) }
+    }
+
+    init(
+        target: Target, value: (order: UInt64, value: Target.Value)? = nil,
+        transforms: [(order: UInt64, change: @Sendable (Target.Value) -> Target.Value)] = []
+    ) {
         self.target = target
         self.value = value
         self.transforms = transforms
@@ -180,10 +259,10 @@ struct PartPost<Target: PostTarget>: PostEntry where Target.Value: Sendable {
                 + "job ran - was dropped. Post by the element's identity rather than its index.")
         }
 
-        var landing = value ?? target.standing
+        var landing = value?.value ?? target.standing
 
         for transform in transforms {
-            landing = transform(landing)
+            landing = transform.change(landing)
         }
 
         target.wrappedValue = landing

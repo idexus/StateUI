@@ -32,18 +32,18 @@ extension AndroidRegistrations {
         }
         registry.add(PolygonContract.self, create: { _ in AndroidShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 draw(view, values, .points(
-                    values[PolygonContract.points] ?? [], closed: true,
-                    evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd))
+                    values[PointsShapeContract.points] ?? [], closed: true,
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd))
             }
         }
         registry.add(PolylineContract.self, create: { _ in AndroidShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 draw(view, values, .points(
-                    values[PolylineContract.points] ?? [], closed: false,
-                    evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd))
+                    values[PointsShapeContract.points] ?? [], closed: false,
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd))
             }
         }
     }
@@ -65,7 +65,7 @@ extension AndroidRegistrations {
             cap: values[ShapeContract.lineCap]?.rawValue ?? 0,
             join: values[CorneredShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[CorneredShapeContract.miterLimit] ?? 10,
-            aspect: values[ShapeContract.contentMode]?.rawValue ?? 0,
+            aspect: values[ContentModeElementContract.contentMode]?.rawValue ?? 0,
             transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
     }
 }

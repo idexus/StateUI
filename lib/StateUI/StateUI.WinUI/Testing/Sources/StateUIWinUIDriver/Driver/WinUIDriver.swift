@@ -101,7 +101,7 @@ final class WinUIDriver: HostDriver {
         Self.emptyFiles()
         stateui_winui_hold_launches(true)
         launchesBefore = Self.launches().count
-        closeFileDialogs()
+        WinUITestHost.closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         renderer.actToolkit.holdsShareForTesting = true
         self.renderer = renderer
@@ -113,7 +113,16 @@ final class WinUIDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            WinUITestHost.pump(0.002)
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        renderer?.finish()
+        renderer = nil
     }
 
     func turn() {
@@ -430,15 +439,6 @@ final class WinUIDriver: HostDriver {
             WinUITestHost.pump(0.1)
         }
         throw DriverCannot("answer a file dialog by \(names)")
-    }
-
-    /// Cancels a file dialog a case before left showing, so it stands over no other case.
-    private func closeFileDialogs() {
-        for _ in 0..<50 {
-            guard stateui_winui_file_dialog() >= 0 else { break }
-            _ = stateui_winui_answer_file_dialog(0, nil, 0)
-            WinUITestHost.pump(0.05)
-        }
     }
 
     /// Types `words` as the whole of a field's words: written outside a program's write, which WinUI reports through

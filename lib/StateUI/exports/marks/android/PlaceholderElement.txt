@@ -1,0 +1,5 @@
+# revision 1.1
+Picker.placeholder: ✅
+SearchField.placeholder: ✅
+TextEditor.placeholder: ✅
+TextField.placeholder: ✅

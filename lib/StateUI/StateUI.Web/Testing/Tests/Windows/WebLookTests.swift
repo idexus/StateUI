@@ -127,7 +127,7 @@ final class WebLookTests: XCTestCase {
         defer { WebBrowser.ask([("safeTop", .number(0)), ("safeBottom", .number(0))]) }
         let under = State(wrappedValue: false)
         let host = WebRenderer.running {
-            ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content")
+            ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content")
         }
         let content = { (host.runtime.tree.root?.first(id: .manual("content"))?.native as? WebElement)?.view?.node }
         host.settle { content() != nil }
@@ -150,7 +150,7 @@ final class WebLookTests: XCTestCase {
         let under = State(wrappedValue: false)
         let host = WebRenderer.running {
             Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
-                .ignoresSafeArea(under.wrappedValue ? .all : .none)
+                .ignoresSafeArea(under.wrappedValue ? .all : [])
         }
         let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
         host.settle { rows() != nil }
@@ -495,7 +495,7 @@ final class WebLookTests: XCTestCase {
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery").subtitle("Every sample").icon("test_dot.png")
+                Text("Samples").title("Gallery").subtitle("Every sample").pageIcon("test_dot.png")
             } detail: {
                 Text("Detail").title("Page")
             }
@@ -588,7 +588,7 @@ final class WebLookTests: XCTestCase {
             Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
-                        .ignoresSafeArea(under.wrappedValue ? .all : .none)
+                        .ignoresSafeArea(under.wrappedValue ? .all : [])
                         .title("Sheet")
                 } destination: { _ in Text("Next") }
                 .barBackground(.transparent)

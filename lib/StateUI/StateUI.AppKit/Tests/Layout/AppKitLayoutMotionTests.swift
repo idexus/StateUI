@@ -24,8 +24,8 @@ final class AppKitLayoutMotionTests: XCTestCase {
         if let motion { stack.motion = HostLayoutMotion(motion: motion, lanes: .all) }
         stack.children = .arranged(order.map { name in
             var box = HostPatch(id: .manual(name), type: .rectangle)
-            box.properties[.width] = .number(100)
-            box.properties[.height] = .number(heights[name] ?? 40)
+            box.properties[VisualElementContract.width.token] = .number(100)
+            box.properties[VisualElementContract.height.token] = .number(heights[name] ?? 40)
             if name == watched { box.events = .replace([.frameChanged: 7]) }
             return box
         })
@@ -43,7 +43,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func caption(_ text: String) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -84,7 +84,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func row(filling: Bool) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -126,7 +126,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func row(_ words: String) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -169,7 +169,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func caption(_ text: String) -> HostPatch {
             var outer = HostPatch(id: .manual("outer"), type: .vStack)
@@ -212,7 +212,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(stack(["a", "b"]))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
@@ -248,13 +248,13 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         var box = HostPatch(id: .manual("box"), type: .rectangle)
-        box.properties[.width] = .number(50)
-        box.properties[.height] = .number(50)
+        box.properties[VisualElementContract.width.token] = .number(50)
+        box.properties[VisualElementContract.height.token] = .number(50)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.end.rawValue)
         layout.children = .arranged([box])
 
@@ -283,7 +283,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(stack(["a"]))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
@@ -316,7 +316,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { 0 },
             reducesMotion: { true })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(stack(["a", "b"]))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))

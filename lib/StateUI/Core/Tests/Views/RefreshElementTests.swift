@@ -18,7 +18,7 @@ final class RefreshElementTests: XCTestCase {
     /// stands in.
     func testAnEmptyListKeepsItsPull() throws {
         let heard = { (items: [String]) in
-            ItemsView(items) { Text($0) }.emptyView(Text("Nothing")).isRefreshEnabled(false).onRefreshRequested {}
+            ItemsView(items) { Text($0) }.emptyView { Text("Nothing") }.isRefreshEnabled(false).onRefreshRequested {}
                 .node.built
         }
 

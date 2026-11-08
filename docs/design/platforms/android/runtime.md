@@ -129,8 +129,9 @@ The user's locale, the battery and the network are read with them and again
 whenever one changes: the activity watches the zone, the clock, the battery,
 its saver and the default network from its creation to its destruction, each
 change read whole in one call per group. A change of language creates the
-activity again, so the locale - its direction with it - is read as the new one
-starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
+activity again, so the locale - its direction with it, and the user's
+languages as the configuration's locale list in order - is read as the new
+one starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
 asks for; without it the network is reported unknown.
 
 The accessibility settings are read with them: less motion where the
@@ -198,6 +199,27 @@ the threads' timing. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
 
+## Requests
+
+A request has one native record from before its worker starts until that
+worker ends (`StateUIRequests`). The record holds cancellation and the
+connection under the same lock. A request cancelled before the connection
+arrives starts no I/O; cancellation during I/O takes the connection and
+disconnects it away from the UI thread. Cancellation and completion each
+take the connection at most once, and every completed worker removes its
+record before posting the answer. A cancellation after that finds nothing,
+including while the answer still waits on the UI thread.
+
+The Swift callback's ticket remains until the UI answer arrives
+(`AndroidNetwork`): it owns the answer, not a native request still running.
+The common act performer decides whether that answer still has a caller.
+
+The method goes to `HttpURLConnection.setRequestMethod` as written. Android's
+implementation takes OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE and PATCH
+and refuses any other token ("Expected one of [...] but was ReadRecord"),
+which fails the request with that reason: `sendRequest` stands ☑️ in the
+register with what is missing.
+
 ## The clipboard
 
 The clipboard is the `ClipboardManager`'s primary clip: words are written as
@@ -240,7 +262,7 @@ contract declares and answered with those it returns, once the performer
 returns; an act nothing registered is refused by its name. An event the
 application raises (`StateUIEvents`) reaches every listener to it. Both are
 said as the library loads: `JNI_OnLoad` runs on the UI thread and says them
-before `StateUIAndroid.load(_:)`, which registers the host's natives; the
+before `AndroidHost.load(_:)`, which registers the host's natives; the
 activity starts the host after it.
 
 ## The application's own controls

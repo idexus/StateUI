@@ -207,7 +207,7 @@ final class MotionTests: XCTestCase {
             let alone = Renders()
             // On an element wearing it: one that does not leaves it out.
             let wearer = LibraryContracts.elements.first { element in
-                element.worn.contains { $0.members.contains { $0.name == property.name } }
+                element.worn.contains { $0.members.contains { keyName(of: $0) == property.name } }
             }
             let type = wearer?.nodeType ?? TextContract.nodeType
             let node = { (value: Double) in Node(type: type, id: "l", props: [property: .number(value)]) }
@@ -351,8 +351,8 @@ final class MotionTests: XCTestCase {
         renders.render(panel(100, Color(hex: 0x000000)))
         let patch = renders.render(panel(300, Color(hex: 0xFFFFFF)))
 
-        XCTAssertEqual(patch.props[.width], .number(300))
-        XCTAssertNil(patch.transitions[.width], "the size arrives")
+        XCTAssertEqual(patch.props["VisualElement.width"], .number(300))
+        XCTAssertNil(patch.transitions["VisualElement.width"], "the size arrives")
         XCTAssertNotNil(patch.transitions[.background], "the color still travels")
     }
 
@@ -372,16 +372,16 @@ final class MotionTests: XCTestCase {
         let sizeStill = Renders()
         sizeStill.render(panel(false, still: .size))
         let resized = sizeStill.render(panel(true, still: .size))
-        XCTAssertNil(resized.transitions[.width], "the size arrives")
+        XCTAssertNil(resized.transitions["VisualElement.width"], "the size arrives")
         XCTAssertNotNil(resized.transitions[.cornerRadius], "the corners travel")
-        XCTAssertNotNil(resized.transitions[.lineWidth], "the outline travels")
+        XCTAssertNotNil(resized.transitions["Shape.lineWidth"], "the outline travels")
 
         let shapeStill = Renders()
         shapeStill.render(panel(false, still: .shape))
         let reshaped = shapeStill.render(panel(true, still: .shape))
-        XCTAssertNotNil(reshaped.transitions[.width], "the size travels")
+        XCTAssertNotNil(reshaped.transitions["VisualElement.width"], "the size travels")
         XCTAssertNil(reshaped.transitions[.cornerRadius], "the corners arrive")
-        XCTAssertNil(reshaped.transitions[.lineWidth], "the outline arrives")
+        XCTAssertNil(reshaped.transitions["Shape.lineWidth"], "the outline arrives")
     }
 
     /// And a rule may say a motion rather than none.
@@ -402,7 +402,7 @@ final class MotionTests: XCTestCase {
         let patch = renders.render(panel(0.2, 300))
 
         XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
-        XCTAssertEqual(patch.transitions[.width]?.motion, .standard,
+        XCTAssertEqual(patch.transitions["VisualElement.width"]?.motion, .standard,
                        "what no rule names travels the way everything else does")
     }
 
@@ -423,7 +423,7 @@ final class MotionTests: XCTestCase {
         renders.render(panel(100))
         let patch = renders.render(panel(300))
 
-        XCTAssertEqual(patch.transitions[.width]?.motion, .eased(.milliseconds(500)))
+        XCTAssertEqual(patch.transitions["VisualElement.width"]?.motion, .eased(.milliseconds(500)))
     }
 
     /// A LAYOUT says which parts of a child's place travel, since a place is
@@ -457,8 +457,8 @@ final class MotionTests: XCTestCase {
         renders.render(room(0))
         let patch = renders.render(room(300))
 
-        XCTAssertEqual(patch.child("held")?.props[.width], .number(300))
-        XCTAssertNil(patch.child("held")?.transitions[.width], "the measured room's child takes its size at once")
+        XCTAssertEqual(patch.child("held")?.props["VisualElement.width"], .number(300))
+        XCTAssertNil(patch.child("held")?.transitions["VisualElement.width"], "the measured room's child takes its size at once")
     }
 
     func testASizeInARoomNobodyMeasuresStillTravels() {
@@ -471,7 +471,7 @@ final class MotionTests: XCTestCase {
         renders.render(room(0))
         let patch = renders.render(room(300))
 
-        XCTAssertEqual(patch.child("held")?.transitions[.width]?.motion, .standard)
+        XCTAssertEqual(patch.child("held")?.transitions["VisualElement.width"]?.motion, .standard)
     }
 
     /// A view that reports its own frame takes a new size at once: what it
@@ -486,8 +486,8 @@ final class MotionTests: XCTestCase {
         renders.render(panel(40))
         let patch = renders.render(panel(80))
 
-        XCTAssertEqual(patch.props[.height], .number(80))
-        XCTAssertNil(patch.transitions[.height])
+        XCTAssertEqual(patch.props["VisualElement.height"], .number(80))
+        XCTAssertNil(patch.transitions["VisualElement.height"])
     }
 
     /// Where ANY child of a layout is measured, none of that layout's children
@@ -508,7 +508,7 @@ final class MotionTests: XCTestCase {
         renders.render(room(100))
         let patch = renders.render(room(200))
 
-        XCTAssertNil(patch.child("beside")?.transitions[.width])
+        XCTAssertNil(patch.child("beside")?.transitions["VisualElement.width"])
     }
 
     /// And such a layout says so for the places it works out: its children's
@@ -683,6 +683,19 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(props[.rotation]?.number ?? 0, 26.5650511770780, accuracy: 0.000001)
         XCTAssertEqual(props[.scaleX]?.number ?? 0, 1.5811388300842, accuracy: 0.000001)
         XCTAssertEqual(props[.scaleY]?.number ?? 0, 1.2649110640674, accuracy: 0.000001)
+    }
+
+    /// A TRANSFORM WRITTEN OVER ONE OF ITS FIVE STANDS, and the library says so: `.transform` writes the rotation a
+    /// `.rotation` before it wrote.
+    func testATransformWrittenOverOneOfItsFiveStandsAndSaysSo() throws {
+        let renders = Renders()
+
+        let patch = renders.render(stack([
+            Text("x").rotation(10).transform(.rotate(30)).id("one").node,
+        ], id: "root"))
+
+        XCTAssertEqual(try XCTUnwrap(patch.child("one")?.props[.rotation]?.number), 30, accuracy: 0.000001)
+        XCTAssertTrue(hasComplained("`.transform` writes the view's `rotation` too"))
     }
 
     /// EVERY PART IS ALSO A STARTING POINT, and it has to mean the same thing

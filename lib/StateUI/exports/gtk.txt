@@ -55,8 +55,8 @@ DatePicker
   format
   isFontAutoScalingEnabled
   isOpen
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   textColor
   textStyle
   closed()
@@ -369,6 +369,7 @@ ZStack
   accessibilityHeading
   accessibilityHint
   accessibilityLabel
+  accessibilityPresence
   allowsDrop
   area
   background
@@ -380,11 +381,9 @@ ZStack
   gridRow
   gridRowSpan
   height
-  hidesChildrenFromAccessibility
   holdDuration
   horizontalAlignment
   ignoresInput
-  isAccessibilityHidden
   isDraggable
   isEnabled
   isVisible
@@ -406,7 +405,7 @@ ZStack
   scale
   scaleX
   scaleY
-  swipeDirection
+  swipeDirections
   swipeThreshold
   tapCount
   tooltip
@@ -416,10 +415,10 @@ ZStack
   width
   zIndex
   dragEnded()
-  dragLeave()
-  dragOver()
+  dragEntered()
+  dragExited()
   dragStarting()
-  drop()
+  dropped()
   filesDropped()
   frameChanged()
   held()

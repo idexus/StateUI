@@ -24,7 +24,7 @@ public struct ToolbarGroup: BarItemElement, BorderElement, PaddingElement, Toolb
         node = Node(contract: ToolbarGroupContract.self, children: items().items)
     }
 
-    /// A group with nothing in it - what a `Style<ToolbarGroup>` is written for.
+    /// A toolbar group with no items.
     public init() {
         node = Node(contract: ToolbarGroupContract.self)
     }
@@ -69,7 +69,7 @@ public struct ToolbarGroup: BarItemElement, BorderElement, PaddingElement, Toolb
     /// as a disabled view does what it holds.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
-        copy.node.write(ToolbarGroupContract.isEnabled, value)
+        copy.node.write(EnabledElementContract.isEnabled, value)
         return copy
     }
 }

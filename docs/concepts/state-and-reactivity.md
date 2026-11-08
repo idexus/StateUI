@@ -57,6 +57,13 @@ therefore continues to write the storage read by the current build. Removing
 the element ends that lifetime. See the ownership rules in
 [Architecture](architecture.md#deterministic-ownership).
 
+One view value placed in two places shares its `@State` between them: the
+boxes are what the value holds, so both places keep the one storage, and a
+write in either shows in both. Make a value for each place where each is to
+count on its own. An `@Environment` of such a value is resolved per place, so
+the value may stand twice only under one provider
+([environment](environment.md#providing-an-application-object)).
+
 The expression beside a state declaration is evaluated lazily. A newly built
 box that adopts existing storage does not evaluate and discard its proposed
 initial value. State declared on the `Application` instead lives for the
@@ -594,7 +601,7 @@ struct SampledProgress: View {
 
     var body: some View {
         VStack {
-            ProgressBar().progress($progress)
+            ProgressBar($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
                 $progress.journey.move(to: 1, .eased(.seconds(1), curve: .cubicOut))
@@ -621,7 +628,7 @@ cycle whether it has more to do - a spring, a stopwatch:
 
 ```swift
 struct SpringDot: View {
-    @State(motion: .custom) private var y = 0.0
+    @State(animatedBy: .engine) private var y = 0.0
 
     var body: some View {
         VStack {
@@ -638,7 +645,7 @@ struct SpringDot: View {
                         return .wait
                     }
 
-                    let seconds = cycle.elapsed / 1_000
+                    let seconds = cycle.elapsedSeconds
                     let displacement = journey.destination - journey.value
                     journey.velocity += (
                         displacement * 40 - journey.velocity * 10
@@ -669,9 +676,10 @@ The engine contract is deliberately narrow:
 - a write made by the engine itself does not wake that same engine;
 - `.again` requests the next display cycle, while `.wait` sleeps until a
   tracked state is written or a render rearms the declaration;
-- `EngineCycle.elapsed` is milliseconds since this engine last ran, capped at
-  `EngineCycle.mostElapsed`; `now`, `count`, `sync`, and `reducesMotion`
-  describe the same display board;
+- `EngineCycle.elapsedSeconds` is the seconds since this engine last ran,
+  capped at `EngineCycle.mostElapsedSeconds`, as a journey's velocity is per
+  second; `nowSeconds`, `count` and `reducesMotion` describe the same display
+  board;
 - engines run by ascending `priority`, with stable registration order breaking
   ties;
 - anything remembered between runs belongs in `@State` that the engine reads
@@ -686,7 +694,7 @@ An engine that always returns `.again` keeps the display clock active. Return
 `.wait` as soon as no visible work remains. Every engine that draws movement
 must make an explicit reduced-motion decision.
 
-Use `@State(motion: .custom)` only when the engine owns the journey. Ordinary
+Use `@State(animatedBy: .engine)` only when the engine owns the journey. Ordinary
 motion laws remain the host's responsibility and need no custom engine.
 
 ## Related contracts

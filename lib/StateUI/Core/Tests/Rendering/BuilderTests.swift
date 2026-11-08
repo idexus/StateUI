@@ -193,14 +193,16 @@ final class BuilderTests: XCTestCase {
         XCTAssertTrue(type(of: Field(editing: true).body) == Either<TextField, TextField>.self)
     }
 
-    /// A view handed to the library keeps its type: no public declaration takes or gives one as `any View`.
+    /// A view handed to the library keeps its type: no public declaration takes or gives one as `any View` - the
+    /// host's own interface (`@_spi(Host)`) apart, which a driver's page crosses.
     func testThePublicInterfaceTakesSomeViewNeverAnyView() throws {
         var found: [String] = []
 
         for (path, text) in try SourceTree.allSources() {
             for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
                 let code = line.trimmingCharacters(in: .whitespaces)
-                guard !code.hasPrefix("//"), code.contains("public "), code.contains("any View") else { continue }
+                guard !code.hasPrefix("//"), code.contains("public "), !code.contains("@_spi(Host)"),
+                      code.contains("any View") else { continue }
 
                 found.append("\(path):\(number + 1)")
             }

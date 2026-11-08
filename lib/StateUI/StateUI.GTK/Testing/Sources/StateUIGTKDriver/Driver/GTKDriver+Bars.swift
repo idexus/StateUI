@@ -94,7 +94,7 @@ extension GTKDriver {
             guard GTKTestHost.holds(button.widget, gtk_toggle_button_get_type()) else { return nil }
             return (gtk_toggle_button_get_active(button.widget.of(GtkToggleButton.self)) != 0).propValue
         case .keyboardShortcut: return element.value(.keyboardShortcut)
-        case .role:
+        case ActionElementContract.role.token:
             let destructive = gtk_widget_has_css_class(button.widget, "destructive-action") != 0
             return (destructive ? ActionRole.destructive : .normal).propValue
         case .icon:
@@ -137,7 +137,7 @@ extension GTKDriver {
                 height: Double(gtk_widget_get_height(frame.header)))?.propValue
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
-        case .subtitle:
+        case PageContract.subtitle.token:
             guard let heading = adw_header_bar_get_title_widget(frame.header.opaque),
                   GTKTestHost.holds(heading, adw_window_title_get_type()),
                   let subtitle = adw_window_title_get_subtitle(heading.opaque)

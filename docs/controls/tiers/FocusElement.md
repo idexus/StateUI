@@ -8,7 +8,7 @@ An element that takes the keyboard focus itself - a field, a button, a list - an
 @State var editing = false
 
 TextField("Name")
-    .isFocused($editing)
+    .isFocused(into: $editing)
 ```
 
 Wears: [KeyboardElement](KeyboardElement.md)
@@ -21,6 +21,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `focus` | act | `() -> Bool` |  |
+| `focus` | act | `() -> Bool` | native |
 | `isFocusedChanged` | event | `Bool` | native |
-| `unfocus` | act | `() -> Void` |  |
+| `unfocus` | act | `() -> Void` | native |

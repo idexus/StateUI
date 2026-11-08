@@ -1,0 +1,5 @@
+# revision 1.1
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the popover popped down as a click beside it pops it down, no click sent
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

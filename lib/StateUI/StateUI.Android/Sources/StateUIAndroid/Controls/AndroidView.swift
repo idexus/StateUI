@@ -266,9 +266,9 @@ class AndroidView {
         ownPresence = own
         // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
         let presence: Int32 = switch words.presence {
-        case .met?: 1
+        case .element?: 1
         case .hidden?: 2
-        case .hiddenWithChildren?: 4
+        case .hiddenWithContents?: 4
         case nil: own
         }
         Java.frame {
@@ -426,10 +426,7 @@ class AndroidView {
     func layout(_ place: Rect) {
         // Each edge outward to a whole pixel: never a pixel short of what the view measured, neighbors meeting.
         // Design: docs/design/platforms/android/layout.md#points-and-pixels
-        let frame = (
-            left: Int32((place.x * density).rounded(.down)), top: Int32((place.y * density).rounded(.down)),
-            right: Int32(((place.x + place.width) * density).rounded(.up)),
-            bottom: Int32(((place.y + place.height) * density).rounded(.up)))
+        let frame = AndroidPixels.frame(place, density: density)
         let resized = laidOut.map { $0.right - $0.left != frame.right - frame.left || $0.bottom - $0.top != frame.bottom - frame.top }
             ?? true
         laidOut = frame
@@ -484,7 +481,6 @@ class AndroidView {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// `points` in whole pixels.
     /// Pads the view's own content clear of `clearance`, in points: a bar reaching under the system's bars.
     func pad(_ clearance: Clearance) {
         Java.call(
@@ -492,8 +488,9 @@ class AndroidView {
             .int(pixels(clearance.right)), .int(pixels(clearance.bottom)))
     }
 
+    /// `points` in Android's whole pixels; a distance it cannot represent contributes none.
     func pixels(_ points: Double) -> Int32 {
-        Int32((points * density).rounded())
+        AndroidPixels.distance(points, density: density)
     }
 
     /// A color as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no color.
@@ -509,7 +506,7 @@ extension AndroidView {
         let (right, bottom) = (Java.callInt(outermost, JavaAPI.getRight), Java.callInt(outermost, JavaAPI.getBottom))
         return Rect(
             x: Double(left) / density, y: Double(top) / density,
-            width: Double(right - left) / density, height: Double(bottom - top) / density)
+            width: Double(Int64(right) - Int64(left)) / density, height: Double(Int64(bottom) - Int64(top)) / density)
     }
 }
 
@@ -523,7 +520,8 @@ extension AndroidView: PlacedView {
                 right: Java.callInt(reference, JavaAPI.getRight), bottom: Java.callInt(reference, JavaAPI.getBottom))
             return Rect(
                 x: Double(frame.left) / density, y: Double(frame.top) / density,
-                width: Double(frame.right - frame.left) / density, height: Double(frame.bottom - frame.top) / density)
+                width: Double(Int64(frame.right) - Int64(frame.left)) / density,
+                height: Double(Int64(frame.bottom) - Int64(frame.top)) / density)
         }
         set {
             layout(newValue)

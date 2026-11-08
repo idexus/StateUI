@@ -61,7 +61,7 @@ extension AndroidDriver {
             return Java.callStaticBool(testBars, barShown, .object(bar.reference)).propValue
         case .showsTitle:
             return Java.callStaticBool(testBars, barTitled, .object(bar.reference)).propValue
-        case .subtitle:
+        case PageContract.subtitle.token:
             return Java.frame {
                 Java.callStaticObject(testBars, barSubtitle, .object(bar.reference)).map { .string(Java.text($0)) }
             }

@@ -1,0 +1,7 @@
+# revision 1.1
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.stopped: ✅
+Window.activated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
+Window.deactivated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
+Window.stopped: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab

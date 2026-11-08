@@ -36,17 +36,50 @@ extension MountedElement {
     /// it.
     @discardableResult
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
-        // A disabled branch hears nothing of the hand; a drag it began still ends there, and a press it began goes out.
-        guard isEffectivelyEnabled || input == .dragEnded else {
-            if case .press = input { pressed(.cancelled, over: false, in: runtime) }
+        guard isEffectivelyEnabled else {
+            // A disabled branch hears no beginning: what began in it ends there, as cancelled, and takes nothing.
+            // Design: docs/design/host/runtime.md#a-disabled-branch
+            if let ending = ending(of: input) { take(ending, in: runtime) }
             return false
         }
+        return take(input, in: runtime)
+    }
+
+    /// `input` as a disabled view still hears it: the end, as cancelled, of what began on it - a press, a drag, a
+    /// pinch, a turn, the hand - a pointer over it leaving, a drag between views ending or leaving; nil for the rest.
+    private func ending(of input: HeardInput) -> HeardInput? {
+        switch input {
+        case .press(_, let at, let size, let byFinger):
+            return .press(.cancelled, at: at, size: size, byFinger: byFinger)
+        case .drag(let phase, let x, let y, let from) where Self.ends(phase) && panUnderWay:
+            return .drag(.cancelled, x: x, y: y, from: from)
+        case .pinch(let phase, _, let at) where Self.ends(phase) && (pinchFromStart != nil || hearsFingers):
+            return .pinch(.cancelled, scale: 1, at: at)
+        case .rotation(let phase, _) where Self.ends(phase) && (rotationFromStart != nil || hearsFingers):
+            return .rotation(.cancelled, degrees: 0)
+        case .mirrored(let phase, let at, let middle) where Self.ends(phase):
+            return .mirrored(.cancelled, at: at, middle: middle)
+        case .hand(let phase, let moved, _, let at, let point) where Self.ends(phase):
+            return .hand(.cancelled, moved: moved, speed: nil, at: at, point: point)
+        case .pointer(.pointerExited, _, _) where pointerIsOver, .dragEnded, .dragLeft:
+            return input
+        default:
+            return nil
+        }
+    }
+
+    /// Whether `phase` ends a gesture, lifted or taken away.
+    private static func ends(_ phase: GesturePhase) -> Bool { phase == .ended || phase == .cancelled }
+
+    /// What the view heard, as its events; whether it took it.
+    @discardableResult
+    private func take(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         switch input {
         case .press(let phase, let point, let size, let byFinger):
             let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
             pressed(phase, over: over, waits: byFinger && standsInAScroller, in: runtime)
         case .tap(let run):
-            let count = max(1, Int(number(.tapCount) ?? 1))
+            let count = max(1, whole(.tapCount) ?? 1)
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
         case .hold:
             // A held press is the hold's: no tap.
@@ -113,12 +146,12 @@ extension MountedElement {
         case .dragEnded:
             send(.dragEnded, [], in: runtime)
         case .dragOver:
-            if dropTarget.over() { send(.dragOver, [], in: runtime) }
+            if dropTarget.over() { send(.dragEntered, [], in: runtime) }
         case .dragLeft:
-            if dropTarget.left() { send(.dragLeave, [], in: runtime) }
+            if dropTarget.left() { send(.dragExited, [], in: runtime) }
         case .dropped(let words):
             dropTarget.dropped()
-            send(.drop, [.string(words)], in: runtime)
+            send(.dropped, [.string(words)], in: runtime)
         case .filesDropped(let files):
             dropTarget.dropped()
             let taken = dragAndDrop.taken(files)
@@ -330,7 +363,7 @@ extension MountedElement {
             switch said {
             case .lit: send(.pressed, [], in: runtime)
             case .out: send(.released, [], in: runtime)
-            case .tapped: if Int(number(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
+            case .tapped: if (whole(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
             }
         }
     }
@@ -368,6 +401,7 @@ extension MountedElement {
         // Design: docs/design/types/gestures.md#a-gestures-speed
         let now = runtime.clock.now()
         if phase == .began { (panFromStart, panSpeed) = (Point(x: 0, y: 0), SpeedReading()) }
+        panUnderWay = !Self.ends(phase)
         if phase == .changed {
             panSpeed.moved(Point(x - panFromStart.x, y - panFromStart.y), at: now)
             panFromStart = Point(x: x, y: y)
@@ -385,7 +419,7 @@ extension MountedElement {
         }
 
         guard phase == .ended, handler(.swiped) != nil else { return }
-        let listening = SwipeDirection(rawValue: value(.swipeDirection)?.enumeration ?? SwipeDirection.all.rawValue)
+        let listening = SwipeDirections(rawValue: value(.swipeDirections)?.enumeration ?? SwipeDirections.all.rawValue)
         if let direction = SwipeDirection.swiped(x: x, y: y, listening: listening, threshold: number(.swipeThreshold) ?? 40) {
             send(.swiped, [.enumeration(direction.rawValue)], in: runtime)
         }

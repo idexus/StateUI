@@ -5,7 +5,7 @@ import PackageDescription
 // StateUI runtime into the application instead of copying StateUI's object files into a second library.
 let package = Package(
     name: "StateUIUIKit",
-    platforms: [.iOS(.v26), .macOS(.v26)],
+    platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUIUIKit", type: .dynamic, targets: ["StateUIUIKit"]),
     ],

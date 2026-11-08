@@ -32,9 +32,9 @@ extension BorderElementTests {
     @MainActor
     static func boxFilled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fillsItsBoxInItsBackground", proves: [
-            Covered(VisualElementContract.background, on: element),
+            Covered(BackgroundElementContract.background, on: element),
         ]) { s in
-            s.start { VStack { Specimens.view(element, room + [Write(VisualElementContract.background, .color(.red))]) } }
+            s.start { VStack { Specimens.view(element, room + [Write(BackgroundElementContract.background, .color(.red))]) } }
             let layout = try s.specimen(element)
             try s.settle { try s.shows(.red, on: layout, at: Point(30, 20)) }
             s.expect(try s.color(of: layout, at: Point(30, 20)), shows: .red, "inside its box")
@@ -60,7 +60,7 @@ extension BorderElementTests {
     static func boxWidened(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxAsWideAsTheTreeSays", proves: [
             Covered(BorderElementContract.lineWidth, on: element),
-        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let wide = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -85,7 +85,7 @@ extension BorderElementTests {
     static func boxShaped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).outlinesItsBoxInItsShape", proves: [
             Covered(BorderElementContract.shape, on: element),
-        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let round = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -117,7 +117,7 @@ extension BorderElementTests {
     static func boxCapsuled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).roundsItsEndsWholeAsACapsule", proves: [
             Covered(BorderElementContract.shape, on: element),
-        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(BorderElementContract.stroke, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let tall = State(wrappedValue: false)
             s.start {
                 VStack {

@@ -17,29 +17,9 @@
                 _ = try s.element(ofType: SceneContract.nodeType)
                 s.expect(try s.held(VisualElementContract.isVisible, on: s.element("label")), true)
             },
-            ConformanceCase("aSceneHearsWhereItStands", proves: [
-                Covered(SceneContract.activated), Covered(SceneContract.deactivated), Covered(SceneContract.stopped),
-            ]) { s in
-                let log = Received<SessionPhase>()
-                s.start { ScenePhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.switchAway, on: window)
-                s.settle { log.values.last == .inactive }
-                s.expect(log.values.last, .inactive, "behind another application")
-                try s.perform(.switchBack, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "in front again")
-                try s.perform(.minimize, on: window)
-                s.settle { log.values.last == .background }
-                s.expect(log.values.last, .background, "out of sight")
-                try s.perform(.restore, on: window)
-                s.settle { log.values.last == .active }
-            },
             ConformanceCase("aWindowTheUserClosesIsHeardAndTheLastEndsItsScene", proves: [
                 Covered(SceneContract.windowClosed),
-            ], needs: [Covered(WindowContract.windowType)]) { s in
+            ], needs: [Covered(WindowContract.windowKind)]) { s in
                 let sessions = Received<ApplicationSession>()
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
@@ -59,7 +39,7 @@
             ConformanceCase("aWindowTheUserClosesTakesWhatItAskedWithIt", proves: [
                 Covered(SceneContract.windowClosed),
             ], needs: [
-                Covered(WindowContract.windowType), Covered(ApplicationContract.confirm), Covered(ButtonContract.clicked),
+                Covered(WindowContract.windowKind), Covered(ApplicationContract.confirm), Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let said = Received<Bool>()
                 try s.start(application: { AskingApplication(said: said) })
@@ -116,7 +96,7 @@ struct ApplicationPage: View {
 /// `said`.
 struct AskingApplication: Application {
     /// The kind of the draft's window.
-    static let draft = WindowType<Void>("conformance.draft")
+    static let draft = WindowKind<Void>("conformance.draft")
 
     var said = Received<Bool>()
 
@@ -144,11 +124,11 @@ struct AskingPage: View {
     var body: some View {
         let (application, window, said) = (self.application, self.window, self.said)
         return VStack {
-            Button("Ask").onClicked(.ignoreWhileRunning) {
+            Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                 said.values.append(try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
             }.id("ask")
-            Button("Open").onClicked(.ignoreWhileRunning) {
+            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                 try await application.openWindow(AskingApplication.draft)
             }.id("open")
         }
@@ -163,7 +143,7 @@ struct DraftPage: View {
     var body: some View {
         let (window, said) = (self.window, self.said)
         return VStack {
-            Button("Ask again").onClicked(.ignoreWhileRunning) {
+            Button("Ask again").onClicked(policy: .ignoreWhileRunning) {
                 said.values.append(try await window.confirm(
                     "Close draft?", message: "It is kept", accept: "Close", cancel: "Stay"))
             }.id("ask again")

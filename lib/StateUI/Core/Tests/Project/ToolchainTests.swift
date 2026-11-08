@@ -24,7 +24,7 @@ final class ToolchainTests: XCTestCase {
         // What a build writes, and the pages rendered from the contracts -
         // none of them names a toolchain.
         let skipped: Set<String> = [
-            ".build", ".git", ".gradle", "bin", "obj", "node_modules", "out",
+            ".build", ".git", ".gradle", "artifacts", "bin", "obj", "node_modules", "out",
             "docs/controls",
         ]
 
@@ -162,21 +162,30 @@ final class ToolchainTests: XCTestCase {
             "one Xcode: \(named.map { "\($0.place) \($0.value)" })")
     }
 
-    /// Every manifest, project, script and handbook page names one release of
-    /// Apple's systems as the oldest StateUI runs on: iOS, Mac Catalyst and
-    /// macOS alike.
+    /// Every manifest, project, script, editor and handbook page names one
+    /// release of Apple's systems as the oldest StateUI runs on: iOS, Mac
+    /// Catalyst and macOS alike, its minor release included.
     func testEveryPlaceThatNamesTheFloorNamesOne() throws {
+        let version = #"(\d+(?:\.\d+)?)"#
         let named = try [
             #"\.(?:iOS|macCatalyst|macOS)\(\.v(\d+)\)"#,
-            #"LSMinimumSystemVersion -string (\d+)"#,
-            #"\b(?:iOS|macOS|Mac Catalyst) (\d+) or newer"#,
-            #"minimum platforms are iOS (\d+)"#,
+            #"\.(?:iOS|macCatalyst|macOS)\(""# + version + #""\)"#,
+            #"(?:LSMinimumSystemVersion|MinimumOSVersion) -string "# + version,
+            #"--minimum-deployment-target "# + version,
+            #"arm64-apple-ios"# + version,
+            #"\b(?:iOS|iPadOS|macOS|Mac Catalyst) "# + version + #" or (?:newer|later)"#,
+            #"appleFloor = ""# + version + #"""#,
         ].flatMap(values(of:))
 
-        XCTAssertGreaterThan(named.count, 12, "the walk found almost none of the places that name the floor")
+        XCTAssertGreaterThan(named.count, 25, "the walk found almost none of the places that name the floor")
         XCTAssertEqual(
-            Set(named.map(\.value)).count, 1,
+            Set(named.map { floor($0.value) }).count, 1,
             "one floor: \(named.map { "\($0.place) \($0.value)" })")
+    }
+
+    /// One floor, two spellings: `26` and `26.0` name one release.
+    private func floor(_ version: String) -> String {
+        version.hasSuffix(".0") ? String(version.dropLast(2)) : version
     }
 
     /// The handbook names one NDK, the one the Swift SDK for Android is built

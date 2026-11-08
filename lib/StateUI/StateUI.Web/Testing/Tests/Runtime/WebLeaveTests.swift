@@ -35,7 +35,7 @@ final class WebLeaveTests: XCTestCase {
     /// A window closed lets go of every listener its views hung on the page - a box's size followed, a shape's and a
     /// canvas's, a frame read, a list's cells watched for nearness.
     func testAClosedWindowLetsGoOfEveryListenerItsViewsHung() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let before = WebRelay.listenerCount
         let gradient = Brush.linearGradient([GradientStop(.red, 0), GradientStop(.blue, 1)])
         let host = WebRenderer.running {
@@ -48,14 +48,14 @@ final class WebLeaveTests: XCTestCase {
                     .fill(gradient)
                     .height(20)
                     .onFrameChanged { _ in }
-                Canvas().height(20)
+                Canvas {}.height(20)
                 ItemsView(["one", "two", "three"]) { Text($0) }.height(80)
             }
         }
         host.step()
         XCTAssertGreaterThan(WebRelay.listenerCount, before, "the views hang listeners")
 
-        host.leave()
+        host.finish()
 
         XCTAssertEqual(WebRelay.listenerCount, before, "a listener outlived the window that hung it")
     }
@@ -63,7 +63,7 @@ final class WebLeaveTests: XCTestCase {
     /// A heading keeps its role whether the user taps it or not: one writer says the role, from everything the view
     /// is - a heading, a container tapped, one assistive technology skips.
     func testAHeadingKeepsItsRoleTappedOrNot() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let host = WebRenderer.running { VStack { Text("Section") }.accessibilityHeading(.h2).id("heading") }
         host.step()
         let heading = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("heading"))?.native as? WebElement)?.view)
@@ -74,16 +74,16 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(try role(), "heading", "a tap took the heading's role")
         heading.isTapped = false
         XCTAssertEqual(try role(), "heading", "the tap gone took the role with it")
-        host.leave()
+        host.finish()
     }
 
     /// A split button lets go of its arrow with itself, and a menu of no entries - never shown - of its popover.
     func testASplitButtonsArrowAndAnEmptyMenuLeaveNothing() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let before = (WebDOMView.liveCount, WebRelay.listenerCount)
         let host = WebRenderer.running { Button("Save").onClicked {}.menu(.split) { MenuItem("Save as") } }
         host.step()
-        host.leave()
+        host.finish()
         XCTAssertEqual(WebDOMView.liveCount, before.0, "a split button's arrow outlived it")
 
         do {
@@ -97,7 +97,7 @@ final class WebLeaveTests: XCTestCase {
     /// A DOM element's number, let go of, is no other element's: what reaches a view that went - an act that waited -
     /// reaches nothing, not the element made after it.
     func testAReleasedElementsNumberIsNoOneElses() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let first = State(wrappedValue: true)
         let second = State(wrappedValue: false)
         let host = WebRenderer.running {
@@ -116,13 +116,13 @@ final class WebLeaveTests: XCTestCase {
         let come = try XCTUnwrap(host.views(WebTextView.self).first?.node)
 
         XCTAssertNotEqual(come, gone, "the number of the element that went was made again")
-        host.leave()
+        host.finish()
     }
 
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
     /// sight, and stands again as the browser shows the page - a window going away would not.
     func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let host = WebRenderer.running { WindowPhaseText() }
         host.step()
         let phase = { (try? WebBrowser.evaluate("e.textContent", on: host.views(WebTextView.self).first?.node ?? 0)) ?? "" }
@@ -142,15 +142,15 @@ final class WebLeaveTests: XCTestCase {
             """)
         for _ in 0..<5 { host.step(); await Task.yield() }
         XCTAssertNotEqual(phase(), "background", "and stands again, as one gone would not")
-        host.leave()
+        host.finish()
     }
 
     /// A web view lets go, as it leaves, of the address of every document it was written - each its history could
     /// lead back to while it stood.
     func testAWebViewLetsGoOfItsDocumentsAddresses() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let document = State(wrappedValue: "<p>One</p>")
-        let host = WebRenderer.running { WebView().source(html: document.wrappedValue) }
+        let host = WebRenderer.running { WebView(html: document.wrappedValue) }
         host.step()
         let frame = try XCTUnwrap(host.views(WebFrameView.self).first?.named.node)
         let address = { try XCTUnwrap(WebBrowser.evaluate("e.src", on: frame)) }
@@ -166,7 +166,7 @@ final class WebLeaveTests: XCTestCase {
         }
         XCTAssertTrue(try reads(first), "a document its history leads back to")
 
-        host.leave()
+        host.finish()
 
         XCTAssertFalse(try reads(first), "a document's address outlived its web view")
         XCTAssertFalse(try reads(second), "a document's address outlived its web view")
@@ -175,7 +175,7 @@ final class WebLeaveTests: XCTestCase {
     /// A host that leaves takes off the page - its window, its document, its body, the appearance it follows -
     /// every handler it hung there: another host after it hears each key once.
     func testAHostThatLeavesTakesItsHandlersOffThePage() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         try WebBrowser.run("""
             const add = EventTarget.prototype.addEventListener, remove = EventTarget.prototype.removeEventListener;
             const page = (t) => t === window || t === document || t === document.body || t instanceof MediaQueryList;
@@ -192,14 +192,14 @@ final class WebLeaveTests: XCTestCase {
         host.step()
         XCTAssertGreaterThan(try XCTUnwrap(WebBrowser.number("__hung", on: 0)), 0, "the host hears the page")
 
-        host.leave()
+        host.finish()
 
         XCTAssertEqual(try WebBrowser.number("__hung", on: 0), 0, "a handler outlived its host on the page")
     }
 
     /// A list lets go of the cells of the entries it no longer shows in their order, the same every run.
     func testAListLetsGoOfItsCellsInTheirOrder() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let items = State(wrappedValue: (0..<12).map { "Item \($0)" })
         let host = WebRenderer.running { ItemsView(items.wrappedValue) { Text($0) }.height(600) }
         for _ in 0..<4 { host.step() }
@@ -219,13 +219,13 @@ final class WebLeaveTests: XCTestCase {
 
         let left = try WebBrowser.evaluate("__left.join('|')", on: 0) ?? ""
         XCTAssertEqual(left, (1..<12).map { "Item \($0)" }.joined(separator: "|"))
-        host.leave()
+        host.finish()
     }
 
     /// A page whose bars hold groups, menus, a setting, an overflow and a bar at its foot, pushed and taken off a
     /// stack again and again, leaves the host holding as many views each time.
     func testAPageWithAFullBarLeavesNothingAsItGoes() async throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let path = State(wrappedValue: [Int]())
         let host = WebRenderer.running { FullBarStack(path: path) }
         func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
@@ -244,17 +244,17 @@ final class WebLeaveTests: XCTestCase {
 
         let grown = (kinds.last ?? [:]).filter { $0.value > (kinds.first?[$0.key] ?? 0) }
         XCTAssertEqual(Set(counts).count, 1, "views left behind each visit: \(counts), grown: \(grown)")
-        host.leave()
+        host.finish()
     }
 
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let before = WebDOMView.liveCount
         let host = WebRenderer.running { Text("Shown") }
         XCTAssertGreaterThan(WebDOMView.liveCount, before, "the window shows its page")
 
-        host.leave()
+        host.finish()
 
         XCTAssertEqual(WebDOMView.liveCount, before, "a view of the closed window outlived it")
     }

@@ -4,7 +4,7 @@
 /// Collects the menus of a menu bar written as consecutive statements.
 ///
 ///     .menuBar {
-///         Menu("File") { … }.id(StandardMenu.file)
+///         Menu("File") { … }.joins(.file)
 ///
 ///         if hasDocument {
 ///             Menu("Format") { … }

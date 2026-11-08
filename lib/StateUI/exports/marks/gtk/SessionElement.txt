@@ -1,0 +1,7 @@
+# revision 1.1
+Scene.activated: ✅
+Scene.deactivated: ✅
+Scene.stopped: ✅
+Window.activated: ✓ switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.deactivated: ✓ switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows
+Window.stopped: ☑️ A Wayland desktop tells no window it was minimized, nor brought back.

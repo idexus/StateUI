@@ -22,8 +22,7 @@ struct SelectableTextSample: SampleContent, ExampleContent {
             Text("A caption the user only reads.")
                 .textStyle(.caption)
 
-            Switch($selectable)
-                .text("Selectable")
+            Switch("Selectable", isOn: $selectable)
                 .accessibilityIdentifier("selectable.on")
         }
         .spacing(12)

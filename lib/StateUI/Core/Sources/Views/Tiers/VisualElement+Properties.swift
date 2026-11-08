@@ -13,7 +13,7 @@ extension VisualElementProperties {
 
     /// Whether the view responds to the user. Disabling a container disables
     /// everything in it, the bar's actions and menu items declared in it too.
-    public func isEnabled(_ value: Bool) -> Modified { setValue(VisualElementContract.isEnabled, value) }
+    public func isEnabled(_ value: Bool) -> Modified { setValue(EnabledElementContract.isEnabled, value) }
 
     /// Whether the view and everything in it ignore input: a tap or a click
     /// goes through to whatever is behind it. Not the same as disabled - a
@@ -43,7 +43,7 @@ extension VisualElementProperties {
     ///
     /// A view's own background replaces its style's; a
     /// `Material(light:dark:)` follows the theme.
-    public func background(_ value: Material) -> Modified { setValue(VisualElementContract.background, value) }
+    public func background(_ value: Material) -> Modified { setValue(BackgroundElementContract.background, value) }
 
     /// The view's background in one color; a `Color(light:dark:)` follows the
     /// theme.
@@ -86,18 +86,25 @@ extension VisualElementProperties {
     ///
     /// The parts apply in the order written, each to what the parts before it
     /// made; see `ViewTransform`. It writes `translationX`, `translationY`,
-    /// `rotation`, `scaleX` and `scaleY`, so use it or those five, not both.
+    /// `rotation`, `scaleX` and `scaleY`, so use it or those five, not both:
+    /// written over one of them, it stands, and the library says so once.
     ///
     /// - Parameter transform: how the view is moved, turned and sized - a value
     ///   that can be held in `@State`.
     /// - Returns: the view, transformed.
     public func transform(_ transform: ViewTransform) -> Modified {
-        modified {
-            $0.write(VisualElementContract.translationX, transform.x)
-            $0.write(VisualElementContract.translationY, transform.y)
-            $0.write(VisualElementContract.rotation, transform.rotation)
-            $0.write(VisualElementContract.scaleX, transform.width)
-            $0.write(VisualElementContract.scaleY, transform.height)
+        modified { node in
+            let five = [VisualElementContract.translationX, VisualElementContract.translationY,
+                        VisualElementContract.rotation, VisualElementContract.scaleX, VisualElementContract.scaleY]
+            if let said = five.first(where: { node.props[$0.token] != nil }) {
+                complain("`.transform` writes the view's `\(said.name)` too: written after `.\(said.name)`, the "
+                    + "transform stands - use one or the other.")
+            }
+            node.write(VisualElementContract.translationX, transform.x)
+            node.write(VisualElementContract.translationY, transform.y)
+            node.write(VisualElementContract.rotation, transform.rotation)
+            node.write(VisualElementContract.scaleX, transform.width)
+            node.write(VisualElementContract.scaleY, transform.height)
         }
     }
 
@@ -161,13 +168,13 @@ extension VisualElement {
     /// `background` from a state, `$x`: the host animates the property to each
     /// new value, and no view is rebuilt for it.
     public func background(_ state: Binding<Color>) -> Modified {
-        twin(VisualElementContract.background, carrying: state)
+        twin(BackgroundElementContract.background, carrying: state)
     }
 
     /// `background` from a material state, `$x`: the host shows each new
     /// material as it stands, and no view is rebuilt for it.
     public func background(_ state: Binding<Material>) -> Modified {
-        twin(VisualElementContract.background, by: state)
+        twin(BackgroundElementContract.background, by: state)
     }
 
     /// `layoutDirection` from a state, `$x`: the host sets each new value as it
@@ -191,7 +198,7 @@ extension VisualElement {
     /// `isEnabled` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isEnabled(_ state: Binding<Bool>) -> Modified {
-        twin(VisualElementContract.isEnabled, by: state)
+        twin(EnabledElementContract.isEnabled, by: state)
     }
 
     /// `isVisible` from a state, `$x`: the host sets each new value as it

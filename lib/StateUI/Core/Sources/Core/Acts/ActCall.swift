@@ -89,7 +89,7 @@ func callAct<Owner: ApplicationTier, each Argument: HostRepresentable, each Answ
     _ arguments: repeat each Argument
 ) async throws -> (repeat each Answer) {
     let reply = try await Renderer.shared.call(act.token, MemberValues.encode(repeat each arguments))
-    return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
+    return try MemberValues.answer(reply, of: act.token.name, as: repeat (each Answer).self)
 }
 
 /// Asks the host to perform an act of the application's without waiting for it: `ApplicationSession.tell(_:_:)`.

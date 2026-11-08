@@ -32,7 +32,7 @@ public enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
 /// wears, and its members, each with its value's type.
 public enum TrafficLightContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.TrafficLight"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Which lamp is lit.
     public static let signal = ElementProperty<Self, TrafficSignal>("signal")

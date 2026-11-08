@@ -5,8 +5,8 @@
 ///
 ///     CalendarDate(year: 2026, month: 8, day: 2)
 ///
-/// What a `DatePicker` shows and reports, and what its `.minimumDate` and
-/// `.maximumDate` take. No time of day, no zone: `ClockTime` is the other half.
+/// What a `DatePicker` shows and reports, and what its `.minimum` and
+/// `.maximum` take. No time of day, no zone: `ClockTime` is the other half.
 ///
 /// Design: docs/design/types/dates-and-time.md#without-foundation
 public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepresentable {
@@ -35,19 +35,22 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepre
     /// Nil for any other shape, so text that is not a date shows up at the
     /// point it is read instead of becoming a silent 0-0-0.
     public init?(_ text: String) {
-        let before = text.hasPrefix("-")
-        let parts = text.dropFirst(before ? 1 : 0).split(separator: "-", omittingEmptySubsequences: false)
+        var parts = text.split(separator: "-", omittingEmptySubsequences: false)
+        // A minus before the year is an empty part before it; the year is read with its sign, as the year
+        // furthest before the first has no magnitude of its own.
+        let before = parts.count == 4 && parts[0].isEmpty
+        if before { parts.removeFirst() }
 
         guard parts.count == 3,
               parts.allSatisfy({ part in !part.isEmpty && part.allSatisfy { ("0"..."9").contains($0) } }),
-              let year = Int(parts[0]),
+              let year = Int((before ? "-" : "") + parts[0]),
               let month = Int(parts[1]),
               let day = Int(parts[2])
         else {
             return nil
         }
 
-        self.init(year: before ? -year : year, month: month, day: day)
+        self.init(year: year, month: month, day: day)
     }
 
     /// The day back from the three numbers a picker reports - year, month,

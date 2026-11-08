@@ -113,7 +113,7 @@ final class AndroidModals {
             most: LayoutSize(width: min(560, window.width - 48), height: window.height - 48))
         let size = SheetSize.size(of: element, in: room) { element.android.layoutItem?.size(offered: $0) ?? room.least }
         let density = AndroidRenderer.density
-        return (Int32((size.width * density).rounded()), Int32((size.height * density).rounded()))
+        return (AndroidPixels.size(size.width, density: density), AndroidPixels.size(size.height, density: density))
     }
 
     /// Takes the page in front down, and the one under it shows again.

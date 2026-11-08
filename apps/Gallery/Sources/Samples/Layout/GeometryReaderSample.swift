@@ -8,6 +8,12 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
     @State private var safe = Rect(0, 0, 0, 0)
 
     @State private var width = 220.0
+
+    // The rectangle fed into a state: the first, or the second while the
+    // switch says so. A state handed over reads it as it is handed over.
+    @State private var first = Rect(0, 0, 0, 0)
+    @State private var second = Rect(0, 0, 0, 0)
+    @State private var feedsSecond = false
     // listing: end
 
     static let id = "geometryReader"
@@ -56,6 +62,8 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .onFrameChanged { slot = $0 }
                 .onFrameChanged(in: .global) { window = $0 }
                 .onFrameChanged(in: .safeArea) { safe = $0 }
+                // Fed one way into a state, with no body reading it.
+                .frame(into: feedsSecond ? $second : $first)
             }
             .spacing(8)
             .padding(16)
@@ -66,6 +74,13 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Width")
                 .minimum(140)
                 .maximum(340)
+
+            Switch("Feed the rectangle into the second state", isOn: $feedsSecond)
+                .accessibilityIdentifier("frameReader.second")
+
+            Text("first · \(Int(first.width)) × \(Int(first.height))     second · \(Int(second.width)) × \(Int(second.height))")
+                .fontSize(13)
+                .horizontalTextAlignment(.center)
 
             // Where the panel sits, in three spaces. The first is against the
             // tinted box above, which is why that box is drawn at all.
@@ -115,6 +130,11 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 + "`.width($width)` and `Slider($width)` - so dragging the thumb "
                 + "resizes the panel without the page being described for it, and the "
                 + "button moves that same state.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("A state handed to `.frame` reads the rectangle as it is handed over: feed the second "
+                + "state while nothing moves, and it says the panel's size at once.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

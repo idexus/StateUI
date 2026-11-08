@@ -37,7 +37,7 @@ final class AndroidItemsViewTests: XCTestCase {
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
             }
-            defer { driver.finish() }
+            defer { driver.close() }
             let host = try XCTUnwrap(driver.renderer)
             Self.settleInTheWindow(host)
             let list = try XCTUnwrap(host.views(AndroidItemsView.self).first)
@@ -66,7 +66,7 @@ final class AndroidItemsViewTests: XCTestCase {
                         .width(300).height(400)
                 }
             }
-            defer { driver.finish() }
+            defer { driver.close() }
             let host = try XCTUnwrap(driver.renderer)
             Self.settleInTheWindow(host)
             let list = try XCTUnwrap(host.views(AndroidItemsView.self).first)
@@ -76,7 +76,7 @@ final class AndroidItemsViewTests: XCTestCase {
 
             numbers.wrappedValue.append(30)
             host.runtime.pump.turn()
-            list.scroll(to: "30", anchor: .end)
+            list.scroll(to: try XCTUnwrap(list.cells.entries.sections.first?.items.last), anchor: .end)
             TestWindow.run(for: 50)
             XCTAssertLessThan(list.standing.offset.y, list.standing.reach.y - 1, "on its way, not there at once (from \(start))")
 

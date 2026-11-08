@@ -80,6 +80,13 @@ one does not.
 
 ## Standing values
 
+An integer member is read through its contract's `Int(propValue:)`, also
+offered by `MountedElement.whole`. A number outside `Int`, infinity or NaN
+reads as absent, so the member's ordinary fallback applies. A host does not
+repeat the cast: a finite `Double` can still be outside `Int`. The numeric
+contract retains its precision limit above 2^53; this checked read does not
+make that transport exact.
+
 An animation starts where the value stands, never where the tree last said it
 was. A running animation's value comes first; then what the toolkit reads off
 the control - a window's live frame, a slider's position, a view's opacity;
@@ -284,6 +291,7 @@ left it.
 Where a toolkit's screen reader reads a row by its name alone - a list's
 container - the row is named by what its entry says (`spokenWords`): an
 element's label stands for all it holds; else its own words, a label's runs
-whole, then its children's, apart by commas; what is left out or hidden says
-nothing.
+whole, then its children's, apart by commas; what is left out says nothing,
+and an element hidden by itself says nothing of its own - not its label, not
+its words - while what it holds still speaks, as it is still met.
 

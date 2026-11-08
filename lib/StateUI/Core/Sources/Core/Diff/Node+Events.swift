@@ -2,24 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension Node {
-    /// Hears one of this node's events that carries nothing beside any handler already there - what an element wearing no
-    /// tier hears its events through; a view hears through `onEvent`. The handler runs whole inside the event.
+    /// Hears one of this node's events beside any handler already there, its values handed over as the types its
+    /// contract declares, in its order - what an element wearing no tier hears its events through; a view hears
+    /// through `onEvent`. The handler runs whole inside the event.
     ///
     ///     node.addHandler(TrafficLightContract.closed) { shown = false }
+    ///     node.addHandler(TrafficLightContract.signalChanged) { signal in shown = signal == .go }
     ///
     /// A payload that is not what the contract says is reported once and does not reach the handler.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping @MainActor () throws -> Void
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token) {
-            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+            guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
+            else { return }
 
-            try handler()
+            try handler(repeat each values)
         }
     }
 
@@ -30,264 +34,32 @@ extension Node {
     ///   - event: the member, written with its contract.
     ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract>(
-        _ event: ElementEvent<Owner, Void>,
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         policy: GatePolicy,
-        _ handler: @escaping EventHandler
+        _ handler: @escaping ValueEventHandler<repeat each Value>
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token, gate: .own(policy)) {
-            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+            guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
+            else { return }
 
-            try await handler()
+            try await handler(repeat each values)
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<Owner: Contract>(
-        _ event: ElementEvent<Owner, Void>,
+    public mutating func addHandler<Owner: WornContract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         gate: Gate,
-        _ handler: @escaping EventHandler
+        _ handler: @escaping ValueEventHandler<repeat each Value>
     ) {
+        Wearing.takes(declaration, event)
         addHandler(event.token, gate: .shared(gate)) {
-            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
-
-            try await handler()
-        }
-    }
-
-    /// Hears one of this node's events its value handed over as the type its contract declares, beside any handler already there - what an element wearing no
-    /// tier hears its events through; a view hears through `onEvent`. The handler runs whole inside the event.
-    ///
-    /// A payload that is not what the contract says is reported once and does not reach the handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping @MainActor (Value) throws -> Void
-    ) {
-        addHandler(event.token) {
-            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
-
-            try handler(value)
-        }
-    }
-
-    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
-    /// comes again while a run is under way.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - policy: what the handler passes through: what an event does while a run is under way.
-    ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) {
-        addHandler(event.token, gate: .own(policy)) {
-            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
-
-            try await handler(value)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<Owner: Contract, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) {
-        addHandler(event.token, gate: .shared(gate)) {
-            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self) else { return }
-
-            try await handler(value)
-        }
-    }
-
-    /// Hears one of this node's events that carries two values, handed over as the types its contract declares in its order, beside any handler already there - what an element wearing no
-    /// tier hears its events through; a view hears through `onEvent`. The handler runs whole inside the event.
-    ///
-    /// A payload that is not what the contract says is reported once and does not reach the handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping @MainActor (First, Second) throws -> Void
-    ) {
-        addHandler(event.token) {
-            guard let (first, second) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self)
+            guard let values = MemberValues.carried(EventBuffer.current, by: event.name, as: repeat (each Value).self)
             else { return }
 
-            try handler(first, second)
-        }
-    }
-
-    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
-    /// comes again while a run is under way.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - policy: what the handler passes through: what an event does while a run is under way.
-    ///   - handler: what runs.
-    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) {
-        addHandler(event.token, gate: .own(policy)) {
-            guard let (first, second) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try await handler(first, second)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) {
-        addHandler(event.token, gate: .shared(gate)) {
-            guard let (first, second) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try await handler(first, second)
-        }
-    }
-
-    /// Hears one of this node's events that carries three values, handed over as the types its contract declares in its order, beside any handler already there - what an element wearing no
-    /// tier hears its events through; a view hears through `onEvent`. The handler runs whole inside the event.
-    ///
-    /// A payload that is not what the contract says is reported once and does not reach the handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: what runs.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
-    ) {
-        addHandler(event.token) {
-            guard let (first, second, third) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try handler(first, second, third)
-        }
-    }
-
-    /// Hears one of this node's events with a handler that awaits; its `policy` says what the event does when it
-    /// comes again while a run is under way.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - policy: what the handler passes through: what an event does while a run is under way.
-    ///   - handler: what runs.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) {
-        addHandler(event.token, gate: .own(policy)) {
-            guard let (first, second, third) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try await handler(first, second, third)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) {
-        addHandler(event.token, gate: .shared(gate)) {
-            guard let (first, second, third) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try await handler(first, second, third)
-        }
-    }
-    /// Hears one of this node's events that carries four values, handed over as the types its contract declares in
-    /// its order, beside any handler already there. The handler runs whole inside the event.
-    ///
-    /// A payload that is not what the contract says is reported once and does not reach the handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: what runs.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
-        Fourth: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
-        _ handler: @escaping @MainActor (First, Second, Third, Fourth) throws -> Void
-    ) {
-        addHandler(event.token) {
-            guard let (first, second, third, fourth) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
-            else { return }
-
-            try handler(first, second, third, fourth)
-        }
-    }
-
-    /// Hears one of this node's events that carries four values with a handler that awaits; its `policy` says what
-    /// the event does when it comes again while a run is under way.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - policy: what the handler passes through: what an event does while a run is under way.
-    ///   - handler: what runs.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
-        Fourth: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
-    ) {
-        addHandler(event.token, gate: .own(policy)) {
-            guard let (first, second, third, fourth) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
-            else { return }
-
-            try await handler(first, second, third, fourth)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public mutating func addHandler<
-        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
-        Fourth: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
-    ) {
-        addHandler(event.token, gate: .shared(gate)) {
-            guard let (first, second, third, fourth) = MemberValues.carried(
-                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self, Fourth.self)
-            else { return }
-
-            try await handler(first, second, third, fourth)
+            try await handler(repeat each values)
         }
     }
 }

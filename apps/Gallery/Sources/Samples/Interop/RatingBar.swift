@@ -15,7 +15,7 @@ import StateUI
 /// and its members, each with its value's type.
 public enum RatingBarContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.RatingBar"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// How many stars are filled. Declared by every host's registration, so
     /// the host assigns it, walks it and lets a style set it.
@@ -31,7 +31,7 @@ public enum RatingBarContract: ElementContract {
 
     /// Draws attention to one bar: the performer the aim reaches fades the
     /// view it is aimed at.
-    public static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
+    public static let flash = ElementAct<Self, Void, Void>("flash")
 
     public static let members: [any ContractMember] = [rating, maximum, ratingChanged, flash]
 }
@@ -88,14 +88,14 @@ public struct RatingBar: ElementView, RatingBarProperties {
     ///
     ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
     ///
-    /// `.inOut`, because the host reports where the walk has got to, which is
-    /// what `$stars.journey.value` reads. A tap does not arrive this way;
-    /// `.onRatingChanged(_:)` hears it.
+    /// A `.journey`: the host walks it and reports where the walk has got to,
+    /// which is what `$stars.journey.value` reads. A tap does not arrive this
+    /// way; `.onRatingChanged(_:)` hears it.
     ///
     /// On the control and not on `RatingBarProperties`: a style wears that
     /// protocol, and a style has no state to follow.
     public func rating(_ state: Binding<Double>) -> Modified {
-        setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+        setValue(RatingBarContract.rating, on: state, as: .journey)
     }
 // listing: end
 

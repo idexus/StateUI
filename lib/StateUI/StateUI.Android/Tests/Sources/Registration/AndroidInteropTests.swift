@@ -11,13 +11,13 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke]
 }
@@ -30,7 +30,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked(.ignoreWhileRunning) {
+            Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     let doubled = try await application.call(InteropTestContract.doubled, 21)
                     answer = "\(doubled)"
@@ -38,7 +38,7 @@ private struct Calling: View {
                     answer = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked(.ignoreWhileRunning) {
+            Button("Ask nobody").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     try await application.call(InteropTestContract.unregistered)
                     answer = "that should have thrown"
@@ -59,7 +59,7 @@ private struct Calling: View {
 /// An element the APPLICATION declares, realized by a control the application wrote.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -68,7 +68,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
@@ -77,7 +77,7 @@ private enum LampContract: ElementContract {
 /// where an application makes one of its own Java classes.
 @MainActor
 private final class LampControl: AndroidControl {
-    let view = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(StateUIAndroid.context))
+    let view = Java.new(JavaAPI.textView, JavaAPI.newTextView, .object(AndroidHost.context))
 
     /// Whether it is lit, as the tree last said; how many times the act flashed it, and a user pulled it.
     var lit = false
@@ -122,7 +122,7 @@ private struct Pulling: View {
     var body: some View {
         VStack {
             Lamp().lit(true).onPulled { pulls in said = "pulled \(pulls)" }.aim(lamp)
-            Button("Flash").onClicked(.ignoreWhileRunning) {
+            Button("Flash").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"
@@ -157,7 +157,7 @@ final class AndroidInteropTests: XCTestCase {
             return lamp
         }) { lamp in
             lamp.property(LampContract.lit) { control, lit in control.lit = lit ?? false }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
         StateUIActs.add(LampContract.flash, on: LampControl.self) { lamp in lamp.flashes += 1 }
     }
@@ -211,7 +211,7 @@ final class AndroidInteropTests: XCTestCase {
         try onMainActor {
             defer { AndroidInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
@@ -224,14 +224,14 @@ final class AndroidInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onMainActor {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(AndroidButtonView.self).last).click()
             host.settle { host.views(AndroidTextView.self).first?.text != "-" }
 
             let said = host.views(AndroidTextView.self).first?.text ?? ""
-            XCTAssertTrue(said.hasPrefix("thrown:") && said.contains("InteropTest.Unregistered"), said)
+            XCTAssertTrue(said.hasPrefix("thrown:") && said.contains("InteropTest.unregistered"), said)
         }
     }
 
@@ -239,7 +239,7 @@ final class AndroidInteropTests: XCTestCase {
     /// declares.
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() {
         onMainActor {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = AndroidRenderer.running { Calling() }
 
             StateUIEvents.raise(InteropTestContract.spoke, "hello")

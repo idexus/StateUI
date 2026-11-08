@@ -18,7 +18,7 @@ public struct Ellipse: FilledShape {
     /// The node this control describes.
     public var node: Node
 
-    /// An ellipse - which is also what a `Style<Ellipse>` is written against.
+    /// An ellipse filling the room it is given; use `.fill(_:)` or `.stroke(_:)` to paint it.
     public init() {
         node = Node(contract: EllipseContract.self)
     }

@@ -30,11 +30,21 @@ as in code. A state it borrows is named `state` - `isOn(_ state:)`,
 the thing handed over. A modifier of what carries properties - a control, a
 tier, a style, a run of text - gives back `Modified`, which for a control is
 the control itself and for a composed view a `ModifiedContent`, so a chain
-offers the same modifiers after it as before. What configures itself gives
+offers the same modifiers after it as before. The library's own composed
+views - a list, a gallery, a motion layout, position dots - give back
+themselves: each carries what every view's modifiers wrote on it
+(`WrittenOnView`), the placeholder its body is built under, so its own
+modifiers and every view's come in any order, as a control's do. The walk
+passes that by, as it never meets a `ModifiedContent`'s: what is written on
+the view is the differ's to compare, never a reason to build its body anew. What configures itself gives
 back `Self`: a composed view's own settings (a gallery's position, a list's
 selection), a list's `Section`, a scene's declaration, and an entry of a menu
 or a map that wears no tier (`Menu`, `MenuSeparator`, `Marker`).
-`ModifierShapeTests` holds both rules, its list of what configures itself
+A state only the platform writes - a frame, the focus, a web view's history,
+a sidebar's place - is handed `into:` (`frame(into:)`), the one label that
+gives the direction: writing such a state moves nothing, so its spelling
+cannot look like a property's two-way `$x`.
+`ModifierShapeTests` holds these rules, its list of what configures itself
 saying why for each.
 
 ## Setting a property
@@ -158,11 +168,11 @@ draws a turn about the vertical axis that way.
 
 ## Accessibility and automation
 
-Eight modifiers say what a view is to somebody not looking at it, and they
+Seven modifiers say what a view is to somebody not looking at it, and they
 are two jobs that do not stand in for one another: an identifier for
 automation; and a label, a hint, a kind, a value, a heading level, and whether
-a screen reader skips the view (`isAccessibilityHidden`) or the view and
-everything in it (`hidesChildrenFromAccessibility`).
+a screen reader meets the view - skips it alone (`.hidden`) or with everything
+in it (`.hiddenWithContents`), one `accessibilityPresence`.
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where
@@ -232,7 +242,7 @@ A recognizer is added to the native view when the tree first carries a handler
 for it and kept for as long as it does, as a control's own events are
 subscribed once, so a render can change what a gesture does without anything
 being rebuilt. A recognizer's settings ride with its handler rather than
-becoming modifiers of their own: `.onSwiped(direction: .left)` says what it
+becoming modifiers of their own: `.onSwiped(directions: .left)` says what it
 listens for in the same breath as what it does, and there is no
 half-configured recognizer to leave lying about.
 

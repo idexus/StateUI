@@ -6,7 +6,7 @@ import PackageDescription
 // types; the host layer stays free of Foundation.
 let package = Package(
     name: "StateUIApple",
-    platforms: [.iOS(.v26), .macOS(.v26)],
+    platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUIApple", type: .dynamic, targets: ["StateUIApple"]),
     ],

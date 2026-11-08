@@ -1,0 +1,9 @@
+# revision 2.1
+Slider.maximum: ✅
+Slider.minimum: ✅
+Slider.value: ✅
+Slider.valueChanged: ✅
+Stepper.maximum: ✅
+Stepper.minimum: ✅
+Stepper.value: ✅
+Stepper.valueChanged: ✅

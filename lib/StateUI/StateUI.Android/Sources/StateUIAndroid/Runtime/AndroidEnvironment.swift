@@ -34,7 +34,7 @@ enum AndroidEnvironment {
                 quarterTurns: Int(display[3]), refreshRate: Double(display[4])))
             core.setApplicationInfo(HostApplicationInfo(
                 name: application[0], packageName: application[1],
-                versionString: application[2], buildString: application[3]))
+                version: application[2], build: application[3]))
             core.setColorScheme(display[6] == 1 ? .dark : .light)
             let accent = UInt32(bitPattern: Java.callStaticInt(JavaAPI.environment, JavaAPI.accent, .object(activity)))
             core.setAccentColor(Color(argb: accent))

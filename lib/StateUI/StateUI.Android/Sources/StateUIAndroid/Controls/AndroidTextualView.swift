@@ -177,7 +177,8 @@ class AndroidTextualView: AndroidView {
         let platform = platformPadding
         let sides = padding.map { $0.sides(in: direction) }
             .map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
-        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2 + rightRoom), .int(sides.3))
+        let right = Int32(exactly: Int64(sides.2) + Int64(rightRoom)) ?? 0
+        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(right), .int(sides.3))
     }
 
     /// The padding the view was made with, the platform's, read before the first change.

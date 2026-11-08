@@ -72,7 +72,7 @@ struct PopoverElement: ElementView {
     /// writes false.
     init(content: @escaping () -> [Node], presented state: Binding<Bool>) {
         node.producer = content
-        self = plain(PopoverContract.isPresented.token, by: state, mode: .inOut)
+        self = plain(PresentedElementContract.isPresented.token, by: state, mode: .inOut)
         node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
     }
 
@@ -81,8 +81,8 @@ struct PopoverElement: ElementView {
     init(content: @escaping () -> [Node], read: @escaping @MainActor () -> Bool,
          write: @escaping @MainActor (Bool) -> Void) {
         node.producer = content
-        self = described(PopoverContract.isPresented.token, read: read, write: write,
-                         on: PopoverContract.isPresentedChanged.token)
+        self = described(PresentedElementContract.isPresented.token, read: read, write: write,
+                         on: PresentedElementContract.isPresentedChanged.token)
         node.destroying.append { if read() { write(false) } }
     }
 }

@@ -47,8 +47,8 @@ ColorPicker
   colorChanged()
 DatePicker
   date
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   dateChanged()
 Ellipse
   contentMode
@@ -123,16 +123,16 @@ Link
 Map
   isScrollEnabled
   isZoomEnabled
+  kind
   region
   showsTraffic
   showsUserLocation
-  type
   locationTapped()
 Marker
+  kind
   location
   subtitle
   title
-  type
   detailsClicked()
   selected()
 MotionLayout
@@ -387,6 +387,7 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  accessibilityPresence
   accessibilityRole
   accessibilityValue
   allowsDrop
@@ -399,10 +400,8 @@ ZStack
   gridRow
   gridRowSpan
   height
-  hidesChildrenFromAccessibility
   holdDuration
   horizontalAlignment
-  isAccessibilityHidden
   isDraggable
   isEnabled
   isVisible
@@ -424,7 +423,7 @@ ZStack
   scale
   scaleX
   scaleY
-  swipeDirection
+  swipeDirections
   swipeThreshold
   tapCount
   translationX
@@ -435,10 +434,10 @@ ZStack
   accessibilityActionPerformed()
   accessibilityAdjusted()
   dragEnded()
-  dragLeave()
-  dragOver()
+  dragEntered()
+  dragExited()
   dragStarting()
-  drop()
+  dropped()
   filesDropped()
   frameChanged()
   held()

@@ -154,13 +154,13 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testHostPatchMapsShapeGeometryAndStrokeProperties() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
         line.properties[.from] = .numbers([1, 2])
         line.properties[.to] = .numbers([41, 22])
-        line.properties[.stroke] = brush(.black)
-        line.properties[.lineWidth] = .number(3)
+        line.properties[ShapeContract.stroke.token] = brush(.black)
+        line.properties[ShapeContract.lineWidth.token] = .number(3)
         line.properties[.dash] = .numbers([2, 1])
         line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         renderer.applyForTesting(tree(line))
@@ -177,7 +177,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testHostPatchMapsTheStructuredShapeRenderTransform() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
         line.properties[.from] = .numbers([1, 2])
@@ -204,11 +204,11 @@ final class AppKitShapeViewTests: XCTestCase {
     func testHostPatchStrokesEveryShapeAsItsPropertiesSay() throws {
         for (type, geometry) in Self.shapes {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
-                .stroke: brush(.black),
-                .lineWidth: .number(2),
+                ShapeContract.stroke.token: brush(.black),
+                ShapeContract.lineWidth.token: .number(2),
                 .dash: .numbers([3, 1]),
                 .dashPhase: .number(0.5),
                 .lineCap: .enumeration(LineCap.square.rawValue),
@@ -235,12 +235,12 @@ final class AppKitShapeViewTests: XCTestCase {
     func testEveryShapeDrawsItsFillAndItsStroke() throws {
         for (type, geometry) in Self.shapes {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
                 .fill: brush(.red),
-                .stroke: brush(.blue),
-                .lineWidth: .number(4),
+                ShapeContract.stroke.token: brush(.blue),
+                ShapeContract.lineWidth.token: .number(4),
             ]) { $1 }
             renderer.applyForTesting(tree(shape))
 
@@ -280,7 +280,7 @@ final class AppKitShapeViewTests: XCTestCase {
 
         for (type, geometry) in authored {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var fitted = HostPatch(id: .manual("fitted"), type: type)
             fitted.properties = geometry.merging([.contentMode: .enumeration(ContentMode.fit.rawValue)]) { $1 }
             var moved = HostPatch(id: .manual("moved"), type: type)
@@ -316,7 +316,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testARectanglesCornerRadiusRoundsItsOutline() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var rounded = HostPatch(id: .manual("rounded"), type: .rectangle)
         rounded.properties[.cornerRadius] = .number(8)
         let square = HostPatch(id: .manual("square"), type: .rectangle)

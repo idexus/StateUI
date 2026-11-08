@@ -19,13 +19,14 @@ final class WinUIDirectionTests: XCTestCase {
     func testAControlWritesInItsElementsDirection() throws {
         try onUIThread {
             let direction = State(wrappedValue: LayoutDirection.rightToLeft)
+            let typed = State(wrappedValue: "")
             let host = WinUIRenderer.running {
                 VStack {
                     Text("Words")
                     Button("Go")
-                    TextField()
-                    CheckBox()
-                    Slider()
+                    TextField(typed.projectedValue)
+                    CheckBox(false)
+                    Slider(0.5)
                 }
                 .layoutDirection(direction.wrappedValue)
             }

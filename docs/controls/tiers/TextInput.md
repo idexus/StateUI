@@ -13,7 +13,7 @@ TextField($email)
     .maximumLength(80)
 ```
 
-Wears: [View](View.md) · [FocusElement](FocusElement.md)
+Wears: [View](View.md) · [FocusElement](FocusElement.md) · [PlaceholderElement](PlaceholderElement.md)
 
 Worn by: [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
@@ -29,7 +29,6 @@ How each of them realizes these members is on its own page.
 | `isSpellCheckEnabled` | property | `Bool` | native |
 | `isTextPredictionEnabled` | property | `Bool` | native |
 | `maximumLength` | property | `Int` | native |
-| `placeholder` | property | `String` | native |
 | `placeholderColor` | property | `Color` | native |
 | `selectionLength` | property | `Int` | native |
 | `onTextChanged` (`textChanged`) | event | `String` | native |

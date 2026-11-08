@@ -93,7 +93,7 @@ final class HostEventsTests: XCTestCase {
         deliver()
         XCTAssertEqual(heard.lines, ["second 0.5"], "gone with the view")
         XCTAssertEqual(
-            HostEvents.dispatch(EventMember(TestEvents.batteryChanged), [.number(0.1), .bool(false)]), 0,
+            HostEvents.dispatch(TestEvents.batteryChanged.token, [.number(0.1), .bool(false)]), 0,
             "and its subscription with it")
     }
 
@@ -115,6 +115,24 @@ final class HostEventsTests: XCTestCase {
         deliver()
 
         XCTAssertEqual(heard.lines, ["online true", "ordered"])
+    }
+
+    /// Any number of values is heard as it is raised: four, as the contract declares them - by a subscription and by
+    /// a view alike.
+    func testFourValuesAreHeardAsRaised() {
+        let heard = Heard()
+        let subscription = HostEvents.on(TestEvents.moved) { x, y, width, label in
+            heard.lines.append("\(x) \(y) \(width) \(label)")
+        }
+        defer { subscription.cancel() }
+        let renders = Renders()
+        renders.render(Text("x").onHostEvent(TestEvents.moved) { _, _, _, label in heard.lines.append(label) }.node)
+        defer { renders.render(VStack {}.node) }
+
+        HostBoundary.raise(TestEvents.moved, 1, 2, 3, "pane")
+        deliver()
+
+        XCTAssertEqual(heard.lines, ["1.0 2.0 3.0 pane", "pane"])
     }
 
     /// A raise is one door in from any thread, as a post is: raised on another thread, the events are heard on the UI
@@ -148,12 +166,13 @@ final class HostEventsTests: XCTestCase {
 /// The events these tests raise, declared the way an application declares its
 /// own.
 private enum TestEvents: ApplicationTier {
-    static let name = "Test"
+    static let name = "TestEvents"
 
-    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
-    static let ordered = ElementEvent<Self, Void>("Test.Ordered")
-    static let cancelled = ElementEvent<Self, Bool>("Test.Cancelled")
-    static let connectivityChanged = ElementEvent<Self, Bool>("Test.ConnectivityChanged")
+    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
+    static let ordered = ElementEvent<Self, Void>("ordered")
+    static let cancelled = ElementEvent<Self, Bool>("cancelled")
+    static let connectivityChanged = ElementEvent<Self, Bool>("connectivityChanged")
+    static let moved = ElementEvent<Self, (Double, Double, Double, String)>("moved")
 
-    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled, connectivityChanged]
+    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled, connectivityChanged, moved]
 }

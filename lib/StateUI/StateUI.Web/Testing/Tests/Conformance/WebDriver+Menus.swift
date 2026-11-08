@@ -70,7 +70,7 @@ extension WebDriver {
         switch property {
         case .text: return try WebBrowser.evaluate("[...e.querySelectorAll('span')].pop()?.textContent ?? null", on: item)?.propValue
         case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: item)).propValue
-        case .role:
+        case ActionElementContract.role.token:
             let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: item)
             return (destructive ? ActionRole.destructive : .normal).propValue
         case .isOn: return try WebBrowser.truth("e.getAttribute('aria-checked') === 'true'", on: item).propValue

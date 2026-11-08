@@ -10,14 +10,11 @@ public enum MenuToggleContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// A setting's entry is an item a user chooses.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
-
-    /// Whether the entry stands checked - a mark beside it.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
-
-    /// The user chose the entry, turning it the other way: the way it turned to.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
+    public static let tiers: [any Tier.Type] = [
+        AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self,
+        ShortcutElementContract.self, TextElementContract.self, ToggleElementContract.self,
+    ]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, toggled]
+    public static let members: [any ContractMember] = []
 }

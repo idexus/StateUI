@@ -17,7 +17,7 @@ enum RefreshWorn {
         worn.reduce(element) { element, worn in
             switch worn {
             case .requested(let handler): element.onRefreshRequested(handler)
-            case .awaited(.own(let policy), let handler): element.onRefreshRequested(policy, handler)
+            case .awaited(.own(let policy), let handler): element.onRefreshRequested(policy: policy, handler)
             case .awaited(.shared(let gate), let handler): element.onRefreshRequested(gate: gate, handler)
             case .refreshing(let state): element.isRefreshing(state)
             case .enabled(let value): element.isRefreshEnabled(value)

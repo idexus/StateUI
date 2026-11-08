@@ -104,9 +104,10 @@ final class WinUIWindow {
         return (thickness.rawValue <= Blur.Thickness.thin.rawValue, Float(opacity), Float(tint))
     }
 
-    /// Shows the window in `theme`, the system's for `.system`.
-    func useTheme(_ theme: ColorScheme) {
-        stateui_winui_window_set_theme(handle, theme.rawValue)
+    /// Shows the window in `theme`, the system's for nil.
+    func useTheme(_ theme: ColorScheme?) {
+        // The relay takes the theme's number, 0 for the system's.
+        stateui_winui_window_set_theme(handle, theme?.rawValue ?? 0)
     }
 
     /// Shows `view` as the window's content - the first one activates the window, unless its scene hides it.

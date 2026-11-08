@@ -1,11 +1,10 @@
-# revision 8.1
+# revision 9.1
 SearchField.cursorPosition: ✅
 SearchField.inputPurpose: ☑️ Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a password and a code get their keys and checking all the same.
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
-SearchField.placeholder: ✅
 SearchField.placeholderColor: ✓ read placeholderColor of SearchField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 SearchField.selectionLength: ✅
 SearchField.textChanged: ✅
@@ -15,7 +14,6 @@ TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
 TextEditor.maximumLength: ✅
-TextEditor.placeholder: ✅
 TextEditor.placeholderColor: ✓ read placeholderColor of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 TextEditor.selectionLength: ✅
 TextEditor.textChanged: ✅
@@ -25,7 +23,6 @@ TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
-TextField.placeholder: ✅
 TextField.placeholderColor: ✓ read placeholderColor of TextField: the class of the host's style sheet the widget wears: GTK reads back no placeholderColor
 TextField.selectionLength: ✅
 TextField.textChanged: ✅

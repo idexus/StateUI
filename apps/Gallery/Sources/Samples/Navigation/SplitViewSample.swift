@@ -57,7 +57,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
         VStack {
             Text("The pane is an ordinary page. Every row is a view whose action writes "
                 + "where the gallery goes - closing the menu where it lies over the page, "
-                + "which `.sidebarOverlays($menuOverlays)` says - and a row the app does not "
+                + "which `.sidebarOverlays(into: $menuOverlays)` says - and a row the app does not "
                 + "want is an `if` around it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

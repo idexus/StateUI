@@ -13,7 +13,7 @@ final class AppKitTextViewTests: XCTestCase {
     @MainActor
     func testPlainTextMapsTypographySpacingDecorationAndPadding() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("StateUI"),
@@ -61,7 +61,7 @@ final class AppKitTextViewTests: XCTestCase {
                 Text("short").horizontalTextAlignment(.end)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
         content.frame = NSRect(x: 0, y: 0, width: 400, height: 180)
         content.layoutSubtreeIfNeeded()
@@ -94,7 +94,7 @@ final class AppKitTextViewTests: XCTestCase {
             }
             .layoutDirection(.rightToLeft)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
         content.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
         content.layoutSubtreeIfNeeded()
@@ -119,7 +119,7 @@ final class AppKitTextViewTests: XCTestCase {
             }
             .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         let cell = try XCTUnwrap(renderer.nativeViews(NSButton.self).first?.cell as? AppKitButtonCell)
         func settle(until done: () -> Bool) {
@@ -148,7 +148,7 @@ final class AppKitTextViewTests: XCTestCase {
             }
             .height(120)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
         content.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
         content.layoutSubtreeIfNeeded()
@@ -177,7 +177,7 @@ final class AppKitTextViewTests: XCTestCase {
                 Text("short").verticalTextAlignment(.end).height(60)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
         content.frame = NSRect(x: 0, y: 0, width: 400, height: 220)
         content.layoutSubtreeIfNeeded()
@@ -200,7 +200,7 @@ final class AppKitTextViewTests: XCTestCase {
     @MainActor
     func testFormattedSpansBecomeOneAttributedNativeString() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var first = HostPatch(id: .manual("first"), type: .textSpan)
         first.properties = [
             .text: .string("let "),
@@ -236,7 +236,7 @@ final class AppKitTextViewTests: XCTestCase {
     @MainActor
     func testSparseSpanPatchLeavesEveryOtherRunUnchanged() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var first = HostPatch(id: .manual("first"), type: .textSpan)
         first.properties = [.text: .string("A"), .textColor: .color(
             red: 0, green: 0, blue: 0, alpha: 255)]
@@ -333,7 +333,7 @@ final class AppKitTextViewTests: XCTestCase {
     @MainActor
     func testATextsFontFamilyComesThroughTheHost() throws {
         let renderer = AppKitRenderer.running { Text("Ada").fontFamily("Menlo") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
 
         let font = label.attributedStringValue.attribute(.font, at: 0, effectiveRange: nil)
@@ -356,7 +356,7 @@ final class AppKitTextViewTests: XCTestCase {
                 Text("Middle").lineBreak(.middleTruncation).maximumLines(3)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let texts = renderer.nativeViews(AppKitTextView.self).map {
             $0.subviews.compactMap { $0 as? NSTextField }.first
         }

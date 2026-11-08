@@ -14,9 +14,9 @@ import CStateUIGTK
 extension GTKDriver {
     /// What the host's record of `element` says of `property`; nil for a member this does not read.
     func recorded(_ property: Prop, on element: MountedElement, view: GTKView?) throws -> HostValue?? {
-        if element.type == .window, property == .windowType || property == .windowValue {
+        if element.type == .window, property == .windowKind || property == .windowValue {
             let kept = try keptWindow(element)
-            return property == .windowType ? .some(kept.kind.map { .name($0) }) : .some(kept.value.map { .string($0) })
+            return property == .windowKind ? .some(kept.kind.map { .name($0) }) : .some(kept.value.map { .string($0) })
         }
         guard let view else { return nil }
         if MountedElement.transformProperties.contains(property) { return .some(Self.transform(property, of: view)) }
@@ -40,9 +40,10 @@ extension GTKDriver {
             return .some(Material.blur(Blur(thickness)).propValue)
         case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Material.color($0).propValue })
-        case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),
-             (.shape, is GTKButtonView), (.stroke, is any GTKTextInputView), (.lineWidth, is any GTKTextInputView),
-             (.shape, is any GTKTextInputView):
+        case (.background, is GTKButtonView), (BorderElementContract.stroke.token, is GTKButtonView),
+             (BorderElementContract.lineWidth.token, is GTKButtonView), (.shape, is GTKButtonView),
+             (BorderElementContract.stroke.token, is any GTKTextInputView),
+             (BorderElementContract.lineWidth.token, is any GTKTextInputView), (.shape, is any GTKTextInputView):
             return .some(named("stateui-box").flatMap { Self.box(property, of: $0) })
         // Any other view wears its fill on its own widget.
         case (.background, _) where !(view is GTKLayoutView):
@@ -64,8 +65,8 @@ extension GTKDriver {
         let part = { (letter: Character) in parts.first { $0.first == letter }.map { String($0.dropFirst()) } }
         switch property {
         case .background: return part("f").flatMap(color).map { Material.color($0).propValue }
-        case .stroke: return part("s").flatMap(color).map { Brush.solidColor($0).propValue }
-        case .lineWidth: return part("w").flatMap { number(Substring($0)) }.map(\.propValue)
+        case BorderElementContract.stroke.token: return part("s").flatMap(color).map { Brush.solidColor($0).propValue }
+        case BorderElementContract.lineWidth.token: return part("w").flatMap { number(Substring($0)) }.map(\.propValue)
         default:
             guard let corners = part("r") else { return nil }
             let shape: ContainerShape? = switch corners {

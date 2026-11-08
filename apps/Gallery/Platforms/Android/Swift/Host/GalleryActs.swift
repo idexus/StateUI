@@ -3,6 +3,7 @@
 
 import Android
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // listing: InteropActsSample.Android.swift
@@ -29,7 +30,7 @@ enum GalleryActs {
     static func battery() -> (Double, Bool) {
         let reading = Java.frame { () -> [Double] in
             var values = [0.0, 0.0]
-            guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(StateUIAndroid.context))
+            guard let array: jobject = Java.callStatic(Self.device, Self.batteryNow, .object(AndroidHost.context))
             else { return values }
             values.withUnsafeMutableBufferPointer { Java.jni.GetDoubleArrayRegion(Java.env, array, 0, 2, $0.baseAddress) }
             return values

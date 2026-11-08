@@ -14,7 +14,7 @@
         [
             ConformanceCase("thePagesMenusStandOnItsWindowsBar", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(MenuContract.text), Covered(MenuItemElementContract.isEnabled, on: "MenuItem")]) { s in
+            ], needs: [Covered(TextElementContract.text, on: MenuContract.self), Covered(EnabledElementContract.isEnabled, on: "MenuItem")]) { s in
                 s.start { onAStack(MenusPage(heard: Received())) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 
@@ -23,7 +23,7 @@
             },
             ConformanceCase("anItemChosenFromTheBarRunsItsHandler", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start { onAStack(MenusPage(heard: heard)) }
 
@@ -35,7 +35,7 @@
             },
             ConformanceCase("theBarShowsTheMenusThePageDeclaresAgain", proves: [
                 Covered(MenuBarContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start { onAStack(MenusPage(heard: Received())) }
                 let window = try s.element(ofType: WindowContract.nodeType)
 
@@ -63,27 +63,31 @@
             },
             ConformanceCase("aMenuJoinsTheOneOfItsIdDeclaredAroundIt", proves: [Covered(MenuBarContract.self)]) { s in
                 let path = State(wrappedValue: [Int]())
+                let stackAim = Aim(NavigationStack.self)
                 s.start {
                     NavigationStack(path.projectedValue) {
                         Text("Home")
                     } destination: { _ in
                         Text("Document").menuBar {
                             Menu("File") {
-                                MenuItem("Save document").id("save")
+                                MenuItem("Save document").id(MenuIdentity(value: "save", words: "document save"))
                                 MenuItem("Export")
                             }
-                            .id("file")
-                            Menu("Format") { MenuItem("Bold") }
+                            .id(MenuIdentity(value: "file", words: "document file"))
+                            Menu("Format") { MenuItem("Bold") }.id(MenuIdentity(value: "format", words: "outer file"))
                         }
                     }
                     .menuBar {
                         Menu("File") {
                             MenuItem("New")
-                            MenuItem("Save").isEnabled(false).id("save")
+                            MenuItem("Save").isEnabled(false).id(MenuIdentity(value: "save", words: "outer save"))
                         }
-                        .id("file")
+                        .id(MenuIdentity(value: "file", words: "outer file"))
                     }
+                    .id(MenuIdentity(value: "stack", words: "stack"))
+                    .aim(stackAim)
                 }
+                s.expect(try s.element(stackAim).type, NavigationStackContract.nodeType)
                 let window = try s.element(ofType: WindowContract.nodeType)
                 try s.settle { try s.menu(of: window) == "File[New;!Save]" }
                 s.expect(try s.menu(of: window), "File[New;!Save]", "the stack's on its first page")
@@ -147,4 +151,12 @@ struct MenusPage: View {
                 Menu("Edit") { MenuItem("Undo").isEnabled(false) }
             }
     }
+}
+
+private struct MenuIdentity: Hashable, CustomStringConvertible {
+    let value: String
+    let words: String
+    static func == (lhs: Self, rhs: Self) -> Bool { lhs.value == rhs.value }
+    func hash(into hasher: inout Hasher) { hasher.combine(value) }
+    var description: String { words }
 }

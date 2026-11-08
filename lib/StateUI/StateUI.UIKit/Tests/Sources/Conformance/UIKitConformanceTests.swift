@@ -128,15 +128,30 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     @MainActor func testPaddingElement() { conform(PaddingElementTests.self) }
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
-    @MainActor func testImageElement() { conform(ImageElementTests.self) }
+    @MainActor func testContentModeElement() { conform(ContentModeElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testPointsShape() { conform(PointsShapeTests.self) }
+    @MainActor func testLineBreakElement() { conform(LineBreakElementTests.self) }
+    @MainActor func testPlaceholderElement() { conform(PlaceholderElementTests.self) }
+    @MainActor func testStyledElement() { conform(StyledElementTests.self) }
+    @MainActor func testTextElement() { conform(TextElementTests.self) }
+    @MainActor func testShortcutElement() { conform(ShortcutElementTests.self) }
+    @MainActor func testIconElement() { conform(IconElementTests.self) }
+    @MainActor func testBackgroundElement() { conform(BackgroundElementTests.self) }
+    @MainActor func testEnabledElement() { conform(EnabledElementTests.self) }
+    @MainActor func testClickElement() { conform(ClickElementTests.self) }
+    @MainActor func testRangeElement() { conform(RangeElementTests.self) }
+    @MainActor func testSubmitElement() { conform(SubmitElementTests.self) }
+    @MainActor func testSessionElement() { conform(SessionElementTests.self) }
+    @MainActor func testHoverElement() { conform(HoverElementTests.self) }
+    @MainActor func testPressElement() { conform(PressElementTests.self) }
+    @MainActor func testPresentedElement() { conform(PresentedElementTests.self) }
+    @MainActor func testPopupElement() { conform(PopupElementTests.self) }
+    @MainActor func testToggleElement() { conform(ToggleElementTests.self) }
     @MainActor func testKeyboardElement() { conform(KeyboardElementTests.self) }
     @MainActor func testFocusElement() { conform(FocusElementTests.self) }
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
-    @MainActor func testBarItemElement() { conform(BarItemElementTests.self) }
-    @MainActor func testBarButtonElement() { conform(BarButtonElementTests.self) }
-    @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testActionElement() { conform(ActionElementTests.self) }
     @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     @MainActor func testLink() { conform(LinkTests.self) }
@@ -150,7 +165,7 @@ final class UIKitConformanceTests: XCTestCase {
         let file = part == .whole ? family.name : "\(family.name)-\(part.number)"
         guard !UIKitExports.skips(family.name, at: "marks/uikit/\(file).txt") else { return }
         let driver = UIKitDriver()
-        defer { driver.finish() }
+        defer { driver.close() }
         let verdicts = Conformance.run(
             family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
         XCTAssertNoThrow(try UIKitExports.hold(

@@ -26,7 +26,7 @@
     static func clipped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).cutsWhatItHoldsToItsOutlineWhereItClips", proves: [
             Covered(LayoutContract.clipsContent, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clips = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -63,7 +63,7 @@
     static func throughIt(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).letsAPressThroughWhereItHoldsNothing", proves: [
             Covered(LayoutContract.letsInputThrough, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let through = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -105,7 +105,7 @@ extension LayoutTests {
         ConformanceCase("\(element).runsUnderWhatStandsOverItsPageWhereItIgnoresTheSafeArea", proves: [
             Covered(LayoutContract.ignoresSafeArea, on: element),
         ]) { s in
-            let edges = State(wrappedValue: SafeAreaEdges.none)
+            let edges = State<SafeAreaEdges>(wrappedValue: [])
             let frames = Received<[Double]>()
             s.start {
                 Holding.layout(element, ignores: edges.wrappedValue, heard: { frames.values.append($0) }) {
@@ -134,7 +134,7 @@ extension LayoutTests {
                 && under[2] <= clear[2] && under[3] >= clear[3]
             s.expect(holds && under != clear, true, "under what stands over it: \(under) around \(clear)")
 
-            edges.wrappedValue = .none
+            edges.wrappedValue = []
             s.settle { room() == clear }
             s.expect(room(), clear, "and clear of it again")
         }
@@ -148,7 +148,7 @@ enum Holding {
     /// said, as large as said where it is and then at its room's corner, its frames told to `heard`.
     static func layout(
         _ element: String, clips: Bool = false, through: Bool = false, width: Double? = nil, height: Double? = nil,
-        ignores: SafeAreaEdges = .none, heard: (@MainActor ([Double]) -> Void)? = nil, _ content: () -> any View
+        ignores: SafeAreaEdges = [], heard: (@MainActor ([Double]) -> Void)? = nil, _ content: () -> any View
     ) -> AnyView {
         let held = AnyView(content())
         var worn: [any Worn] = [

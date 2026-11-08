@@ -47,7 +47,7 @@ final class TextRulesTests: XCTestCase {
     /// them upright then; given nothing, the theme's own stands.
     func testASlantTheTreeGivesIsTheTrees() {
         let none = ElementValues<ButtonContract>(changed: [.fontAttributes]) {
-            $0 == .fontAttributes ? FontAttributes.none.propValue : nil
+            $0 == .fontAttributes ? ([] as FontAttributes).propValue : nil
         }
         XCTAssertTrue(TextMembers.look(of: none).attributesGiven, "upright given")
         XCTAssertFalse(TextMembers.look(of: ElementValues<ButtonContract>(changed: []) { _ in nil }).attributesGiven)
@@ -56,7 +56,7 @@ final class TextRulesTests: XCTestCase {
         run.attributesGiven = true
         var label = TextLook()
         label.attributes = .italic
-        XCTAssertEqual(run.over(label).attributes, .none, "a run given upright stands upright in an italic label")
+        XCTAssertEqual(run.over(label).attributes, [], "a run given upright stands upright in an italic label")
         XCTAssertEqual(TextLook().over(label).attributes, .italic, "a run given nothing takes its label's")
     }
 
@@ -194,6 +194,42 @@ final class TextRulesTests: XCTestCase {
         XCTAssertNil(InputWords.fitting("ADA", beside: "", in: .uppercase, toBound: 5))
     }
 
+    /// Words going in are measured as they will stand at the place they go in - a mark joining the letter before
+    /// it, a flag's second half joining its first - not as characters of their own beside the held: what joins fits
+    /// at the bound, and what stands alone does not.
+    func testWordsGoingInAreMeasuredAsTheyJoinWhereTheyGoIn() {
+        XCTAssertNil(InputWords.fitting("\u{301}", beside: "e", toBound: 1), "a mark joins the e before it")
+        XCTAssertNil(InputWords.fitting("🇱", beside: "🇵", toBound: 1), "a flag's second half joins its first")
+        XCTAssertEqual(InputWords.fitting("x", beside: "e", toBound: 1), "", "a letter of its own")
+        XCTAssertNil(InputWords.fitting("\u{301}", beside: "ex", atScalar: 1, toBound: 2), "joining the e inside")
+        XCTAssertEqual(InputWords.fitting("\u{301}y", beside: "ex", atScalar: 1, toBound: 2), "\u{301}", "the mark joins, the y stands alone")
+        XCTAssertEqual(InputWords.fitting("yz", beside: "ab", atScalar: 0, toBound: 3), "y", "at the start")
+        XCTAssertNil(InputWords.fitting("x", beside: "ab", atScalar: 9, toBound: 3), "a place past the words is their end")
+    }
+
+    /// What goes in is the longest first part of the words that fits beside the held, as the joined words count,
+    /// at every place and bound: the same answer a count of every first part gives.
+    func testWhatGoesInIsTheLongestFirstPartThatFitsAsJoined() {
+        let fragments = ["", "a", "e", "\u{301}", "\u{301}x", "🇵", "🇱", "🇵🇱", "👩🏽‍💻", "\u{200D}💻", "ab", "\r", "\n"]
+        for held in fragments {
+            let scalars = Array(held.unicodeScalars)
+            for inserted in fragments {
+                for place in 0...scalars.count {
+                    let before = String(String.UnicodeScalarView(scalars.prefix(place)))
+                    let after = String(String.UnicodeScalarView(scalars.dropFirst(place)))
+                    for bound in 0...3 {
+                        let parts = (0...inserted.count).map { String(inserted.prefix($0)) }
+                        let longest = parts.last { (before + $0 + after).count <= bound } ?? ""
+                        let going = InputWords.fitting(inserted, beside: held, atScalar: place, toBound: bound) ?? inserted
+                        XCTAssertEqual(
+                            going, longest,
+                            "\(inserted.debugDescription) into \(held.debugDescription) at \(place) within \(bound)")
+                    }
+                }
+            }
+        }
+    }
+
     /// A selection in characters reaches a toolkit in the UTF-16 units those characters take, its ends kept within
     /// the words.
     func testASelectionIsCountedInUTF16Units() {
@@ -201,6 +237,31 @@ final class TextRulesTests: XCTestCase {
         XCTAssertTrue(InputWords.utf16Selection(start: 1, length: 1, in: words) == (4, 1))
         XCTAssertTrue(InputWords.utf16Selection(start: 0, length: 9, in: words) == (0, 6))
         XCTAssertTrue(InputWords.utf16Selection(start: -2, length: 0, in: words) == (0, 0))
+    }
+
+    /// A selection in characters reaches a toolkit counting Unicode scalars in the scalars those characters take:
+    /// an emoji of several scalars is one character, and the one after it is not inside it.
+    func testASelectionIsCountedInScalars() {
+        let words = "👩🏽‍💻x"
+        XCTAssertTrue(InputWords.scalarSelection(start: 1, length: 1, in: words) == (4, 1))
+        XCTAssertTrue(InputWords.scalarSelection(start: 0, length: 1, in: words) == (0, 4))
+        XCTAssertTrue(InputWords.scalarSelection(start: 0, length: 9, in: words) == (0, 5))
+        XCTAssertTrue(InputWords.scalarSelection(start: -2, length: 0, in: words) == (0, 0))
+    }
+
+    /// Each end of a selection is kept within the words before any arithmetic: a start or a length as large as a
+    /// number gets - a program's, never a user's - selects nothing at the end, in either unit.
+    func testASelectionsEndsAreKeptWithinTheWordsBeforeAnyArithmetic() {
+        let cases: [(start: Int, length: Int, selects: (Int, Int))] = [
+            (Int.max, 1, (3, 0)), (1, Int.max, (1, 2)), (Int.max, Int.max, (3, 0)), (Int.min, Int.max, (0, 3)),
+            (Int.min, Int.min, (0, 0)),
+        ]
+        for (start, length, selects) in cases {
+            let utf16 = InputWords.utf16Selection(start: start, length: length, in: "abc")
+            let scalars = InputWords.scalarSelection(start: start, length: length, in: "abc")
+            XCTAssertTrue(utf16 == selects, "\(start), \(length): \(utf16)")
+            XCTAssertTrue(scalars == selects, "\(start), \(length): \(scalars)")
+        }
     }
 
     /// A picker is given its choices where they changed, and its choice only where the tree changed it or the

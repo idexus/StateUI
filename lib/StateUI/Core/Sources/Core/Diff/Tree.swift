@@ -6,22 +6,19 @@
 
 /// An element's key, stable for as long as the element lives.
 ///
-/// `.auto` is a number the differ assigns and `.manual` is what the author
-/// passed to `.id()`; the two never collide. An automatic key survives a render
-/// while the element is written in the same place in the source, or stands at
-/// the same position when put in by hand. A manual one survives anywhere, which
-/// is what a collection needs.
+/// `.manual` keeps a literal string name, including structural names StateUI
+/// assigns; `.auto` numbers every other element. Both survive while the element
+/// matches by its authored value, builder path or position. The representation
+/// does not decide how an element matches, and the two namespaces never collide.
 @_spi(Host) public enum ElementID: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
     case auto(Int)
 
-    /// Written by the author with `.id()`. Written as text, which is what
-    /// keeps the two namespaces from ever colliding.
+    /// A literal name, written as text in its own namespace.
     case manual(String)
 
-    /// Whether the author named this one - an element matched by its builder path
-    /// must not take an author's name.
+    /// Whether this key carries a literal name rather than a number.
     @_spi(Host) public var isManual: Bool {
         if case .manual = self { return true }
 
@@ -29,15 +26,20 @@
     }
 }
 
+/// An `@Environment` slot as a view was placed with it: the slot, and the provider it resolved to at that place.
+/// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+typealias PlacedSlot = (slot: ObjectIdentifier, object: ObjectIdentifier?)
+
 /// A composed view an element was built by: its type, its walk, its state boxes by path, what it was built with,
-/// the branch its content root stood in - and what the clean walk builds it again from: the node that held it, what
-/// its body read and the derived states it made.
+/// its slots as placed, the branch its content root stood in - and what the clean walk builds it again from: the
+/// node that held it, what its body read and the derived states it made.
 /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
 typealias BuiltView = (
     type: KeyName,
     walk: ViewWalk,
     boxes: [(path: PathNumber, box: StateBox)],
     inputs: [(path: PathNumber, input: Input)],
+    slots: [PlacedSlot],
     branch: PathNumber?,
     placeholder: Node,
     reads: Set<ObjectIdentifier>,
@@ -53,6 +55,10 @@ final class RenderedNode {
     /// The kind of control the host made; a change of it replaces the element.
     var type: NodeType
 
+    /// The aim on the root of this element's content - its own, for a leaf - which a walk that leaves the element
+    /// standing attaches again, as the walk that built it did (Aim.swift).
+    var contentAim: AimBox?
+
     /// Every property the host has been told about, as it was told.
     var props: [Prop: PropValue]
 
@@ -65,6 +71,8 @@ final class RenderedNode {
 
     /// The value the element was written as (`Node.identity`), a repeat's variant included.
     var identity: ElementIdentity?
+
+    var menuKey: MenuKeys.Key?
 
     /// The composed views this element was built by, outermost first: each one's
     /// type, its state boxes by path, what it was built with, and the branch its
@@ -81,6 +89,10 @@ final class RenderedNode {
     /// only the element read what moved; nil for an element that reads nothing itself.
     /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
     var expanded: Node?
+
+    /// Whether its view was refused its place - an anchor of no view, asked again by every walk.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+    var refused = false
 
     /// What the element itself read of a state it was handed - none of it a page value.
     var ownReads: Set<ObjectIdentifier> = []
@@ -99,6 +111,14 @@ final class RenderedNode {
 
     /// What this element provided to its subtree, pushed again by the clean walk.
     var provided: [(key: ObjectIdentifier, object: AnyObject)]
+
+    /// What this element says of its enablement, holding for its subtree - put on the walk's again by the clean
+    /// walk, as what it provided is.
+    var enablement: Enablement?
+
+    /// What the elements holding it said of their enablement, by key, where its composed view was built - which a
+    /// carry compares.
+    var branch: [Enablement.Key] = []
 
     /// The nearest provided object per type when the composed view here was built,
     /// which a carry compares.
@@ -225,6 +245,7 @@ extension HostPatch {
     /// Design: docs/design/core/identity-and-diffing.md#merging-patches
     var isEmpty: Bool {
         !replace
+            && menuKey == nil
             && motion == nil
             && properties.isEmpty
             && clearedProperties.isEmpty
@@ -263,6 +284,7 @@ extension HostPatch {
         merged.clearedProperties.sort()
 
         merged.motion = later.motion ?? motion
+        merged.menuKey = later.menuKey ?? menuKey
         merged.driven = later.driven ?? driven
         merged.events = later.events ?? events
         merged.children = HostChildrenUpdate.merging(children, with: later.children)

@@ -24,7 +24,7 @@ public struct ZStack: Layout {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ZStack>` is written against.
+    /// An overlay layout with no children.
     public init() {
         node = Node(contract: ZStackContract.self)
     }

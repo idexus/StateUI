@@ -69,7 +69,7 @@ private struct EveryPropertyPage: View {
             .title("Everything")
             .subtitle("All of it")
             .showsTitle(false)
-            .icon(ImageSource("tab.png"))
+            .pageIcon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
             // What it asks of a NavigationStack.
             .showsNavigationBar(false)
@@ -117,7 +117,7 @@ private struct KnobPage: View {
             .title(on ? "On" : "Off")
             .subtitle(on ? "Lit" : "Dark")
             .showsTitle(on)
-            .icon(ImageSource(on ? "on.png" : "off.png"))
+            .pageIcon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
             .showsNavigationBar(on)
             .showsBackButton(on)
@@ -256,17 +256,17 @@ final class PageTests: XCTestCase {
         let first = renders.render(Node.page(Named(name: "Home")))
         let again = renders.render(Node.page(Named(name: "Home")))
 
-        XCTAssertEqual(first.props[.title], .string("Home"))
-        XCTAssertNil(first.children.first?.props[.title], "the view's own carries none of it")
-        XCTAssertNil(again.props[.title], "the title stands, so nothing is said about it")
+        XCTAssertEqual(first.props["PageElement.title"], .string("Home"))
+        XCTAssertNil(first.children.first?.props["PageElement.title"], "the view's own carries none of it")
+        XCTAssertNil(again.props["PageElement.title"], "the title stands, so nothing is said about it")
         XCTAssertEqual(again.cleared, [], "and nothing is taken off the page")
     }
 
     /// What is written ON a composed view stands over what its body says, the way every modifier on one does.
     func testWhatIsWrittenOnAViewStandsOverItsBody() {
-        let page = Renders().render(Node.page(Named(name: "Home").title("Away").icon("away.png")))
+        let page = Renders().render(Node.page(Named(name: "Home").title("Away").pageIcon("away.png")))
 
-        XCTAssertEqual(page.props[.title], .string("Away"))
+        XCTAssertEqual(page.props["PageElement.title"], .string("Away"))
         XCTAssertEqual(page.props[.icon], .string("away.png"))
     }
 
@@ -279,9 +279,9 @@ final class PageTests: XCTestCase {
         let named = renders.render(Node.page(Named(name: "Away")))
 
         XCTAssertTrue(plain.replace, "the host makes the page anew")
-        XCTAssertNil(plain.props[.title], "the title was the view before's")
+        XCTAssertNil(plain.props["PageElement.title"], "the title was the view before's")
         XCTAssertTrue(named.replace)
-        XCTAssertEqual(named.props[.title], .string("Away"))
+        XCTAssertEqual(named.props["PageElement.title"], .string("Away"))
     }
 
     /// The same kind of view under another explicit id is another view, and so another page.
@@ -291,7 +291,7 @@ final class PageTests: XCTestCase {
         let other = renders.render(Node.page(Named(name: "Away").id("two")))
 
         XCTAssertTrue(other.replace)
-        XCTAssertEqual(other.props[.title], .string("Away"))
+        XCTAssertEqual(other.props["PageElement.title"], .string("Away"))
     }
 
     /// A write the view's page values read builds the view once and says them again on the page - on the walk
@@ -302,12 +302,12 @@ final class PageTests: XCTestCase {
         let first = renders.render(Node.page(Renaming(builds: builds)))
         let rename = try XCTUnwrap(first.children.first?.events?[.clicked])
 
-        XCTAssertEqual(first.props[.title], .string("Home"))
+        XCTAssertEqual(first.props["PageElement.title"], .string("Home"))
         XCTAssertTrue(renders.fire(rename))
 
         let walked = renders.revisit(changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(walked.props[.title], .string("Renamed"), "the page said the new title")
+        XCTAssertEqual(walked.props["PageElement.title"], .string("Renamed"), "the page said the new title")
         XCTAssertEqual(builds.count, 2, "the view built once for the write")
     }
 
@@ -318,9 +318,9 @@ final class PageTests: XCTestCase {
         let builds = Builds()
         let page = Renders().render(Node.page(Following(name: name.projectedValue, builds: builds)))
 
-        XCTAssertEqual(Self.channels(of: page), ["backButtonTitle", "title"], "the page carries their channels")
+        XCTAssertEqual(Self.channels(of: page), ["Page.backButtonTitle", "PageElement.title"], "the page carries their channels")
         XCTAssertEqual(Self.kinds(of: page), [.text, .text], "each as words, which a host writes as they change")
-        XCTAssertNil(page.props[.title], "and no value of it")
+        XCTAssertNil(page.props["PageElement.title"], "and no value of it")
         XCTAssertEqual(Self.channels(of: page.children[0]), [], "the view's own carries none of it")
 
         name.wrappedValue = "Away"
@@ -331,8 +331,8 @@ final class PageTests: XCTestCase {
     func testAPageValueSaidDeeperSaysNothing() {
         let page = Renders().render(Node.page(Deep()))
 
-        XCTAssertNil(page.props[.title])
-        XCTAssertFalse(page.subtree.contains { $0.props[.title] != nil }, "nowhere in the tree")
+        XCTAssertNil(page.props["PageElement.title"])
+        XCTAssertFalse(page.subtree.contains { $0.props["PageElement.title"] != nil }, "nowhere in the tree")
     }
 
     /// A view with no element of its own - a control, a stack - is shown the same way, and follows its parent:
@@ -343,7 +343,7 @@ final class PageTests: XCTestCase {
         let second = renders.render(Node.page(Text("two").title("two")))
 
         XCTAssertEqual(second.children.first?.props[.text], .string("two"))
-        XCTAssertEqual(second.props[.title], .string("two"))
+        XCTAssertEqual(second.props["PageElement.title"], .string("two"))
     }
 
     /// What is written ON a view shown as a page as its own stays the view's: a view's `background` is the view's,
@@ -361,6 +361,15 @@ final class PageTests: XCTestCase {
             XCTAssertEqual(page.props[.background], Color.blue.propValue, "the page's own")
             XCTAssertEqual(page.children.first?.props[.background], Color.red.propValue, "the view's own")
         }
+    }
+
+    /// A button standing for its page names its own picture and the page's apart: `.icon` is the button's,
+    /// `.pageIcon` the page's, as on every view.
+    func testAButtonsIconAndItsPagesStandApart() {
+        let page = Renders().render(Node.page(Button("plain").icon("own.png").pageIcon("page.png")))
+
+        XCTAssertEqual(page.props[.icon], .string("page.png"), "the page's own")
+        XCTAssertEqual(page.children.first?.props[.icon], .string("own.png"), "the button's own")
     }
 
     /// Every arrangement is a page already, and is shown as it is; the pages it arranges stand inside it.
@@ -387,13 +396,13 @@ final class PageTests: XCTestCase {
         let path = State<[Int]>([])
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
             .title("Home")
-            .icon("house.png")
+            .pageIcon("house.png")
             .showsNavigationBar(false)
 
         let patch = Renders().render(Node.page(stack))
 
         XCTAssertEqual(patch.type, .navigationStack)
-        XCTAssertEqual(patch.props[.title], .string("Home"))
+        XCTAssertEqual(patch.props["PageElement.title"], .string("Home"))
         XCTAssertEqual(patch.props[.icon], .string("house.png"))
         XCTAssertNil(patch.props[.showsNavigationBar], "a page's alone")
     }
@@ -457,7 +466,7 @@ final class PageTests: XCTestCase {
 
         let patch = Renders().render(Node.page(stack))
 
-        XCTAssertNil(patch.props["width"])
+        XCTAssertNil(patch.props["VisualElement.width"])
         XCTAssertFalse(patch.eventNames.contains("tapped"))
         XCTAssertNotNil(patch.props["barBackground"])
     }
@@ -490,8 +499,8 @@ final class PageTests: XCTestCase {
     /// carried too: a member nobody exercises is one the renderer can quietly not implement.
     func testEveryPageAndWindowValueIsCarried() throws {
         let page = Self.arrived(EveryPropertyPage())
-        let members = (PageContract.members + PageElementContract.members).map(\.name)
-        let carried = Set(page.props.keys.map(\.name)).union(page.eventNames)
+        let members = (PageContract.members + PageElementContract.members).compactMap(keyName(of:))
+        let carried = Set(page.props.keys.map(\.name)).union(page.eventNames.map(\.name))
 
         XCTAssertEqual(Set(members).subtracting(carried).sorted(), [], "a member the page never carries")
 
@@ -502,7 +511,8 @@ final class PageTests: XCTestCase {
         XCTAssertTrue(declared.contains("title"), "the scan found nothing View+PageValues.swift writes")
         XCTAssertEqual(declared.subtracting(sent).sorted(), [], "a value written and never carried")
         XCTAssertEqual(
-            try SourceTree.handlerKeys(in: "View+PageValues.swift").subtracting(page.eventNames).sorted(), [],
+            try SourceTree.handlerKeys(in: "View+PageValues.swift").subtracting(page.eventNames.map { $0.memberName })
+                .sorted(), [],
             "a phase heard and never carried")
     }
 
@@ -510,7 +520,8 @@ final class PageTests: XCTestCase {
     /// says - which describing the view it shows before the page itself relies on.
     func testEveryPageValueHasAHostDefault() {
         for member in PageContract.members + PageElementContract.members {
-            XCTAssertTrue(Prop(member.name).facts.cleared, "\(member.name) has no host default")
+            guard let key = keyName(of: member) else { continue }
+            XCTAssertTrue(Prop(key).facts.cleared, "\(key) has no host default")
         }
     }
 
@@ -525,7 +536,7 @@ final class PageTests: XCTestCase {
 
         let patch = renders.render(Node.page(KnobPage()), changed: Renderer.shared.pendingChanges)
         let values = (PageContract.members + PageElementContract.members)
-            .filter { $0 is any PropertyMember }.map(\.name)
+            .filter { $0 is any PropertyMember }.compactMap(keyName(of:))
 
         XCTAssertEqual(Set(values).subtracting(patch.props.keys.map(\.name)).sorted(), [])
     }
@@ -547,10 +558,10 @@ final class PageTests: XCTestCase {
     func testAPageAndAnArrangementNameThemselvesAlike() {
         let path = State<[Int]>([])
 
-        let page = Self.arrived(EveryPropertyPage()).props[.title]
+        let page = Self.arrived(EveryPropertyPage()).props["PageElement.title"]
         let arrangement = Renders().render(Node.page(
             NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }.title("Everything")))
-            .props[.title]
+            .props["PageElement.title"]
 
         XCTAssertEqual(page, .string("Everything"))
         XCTAssertEqual(page, arrangement)
@@ -572,7 +583,7 @@ final class PageTests: XCTestCase {
     func testAPageCarriesItsOwnValues() {
         let page = Self.arrived(EveryPropertyPage())
 
-        XCTAssertEqual(page.props["title"], .string("Everything"))
+        XCTAssertEqual(page.props["PageElement.title"], .string("Everything"))
         XCTAssertEqual(page.props["background"], Color(hex: 0xF5F5F5).propValue)
         XCTAssertNil(page.props["padding"], "a page keeps no room of its own: its view does")
     }
@@ -615,14 +626,14 @@ final class PageTests: XCTestCase {
 
     /// Every property name in one place, however deep it sits.
     private static func keys(in node: Node) -> Set<String> {
-        node.children.reduce(into: Set(node.props.keys.map(\.name))) { names, child in
+        node.children.reduce(into: Set(node.props.keys.map { $0.memberName })) { names, child in
             names.formUnion(keys(in: child))
         }
     }
 
     /// The same, in a patch.
     private static func keys(in patch: HostPatch) -> Set<String> {
-        patch.children.reduce(into: Set(patch.props.keys.map(\.name))) { names, child in
+        patch.children.reduce(into: Set(patch.props.keys.map { $0.memberName })) { names, child in
             names.formUnion(keys(in: child))
         }
     }
@@ -660,7 +671,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "title": .string("Everything"), "subtitle": .string("All of it"), "showsTitle": .bool(false),
+            "PageElement.title": .string("Everything"), "Page.subtitle": .string("All of it"), "showsTitle": .bool(false),
             "showsCloseButton": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
@@ -670,13 +681,13 @@ final class PageTests: XCTestCase {
 
         let group = content.children[1]
         XCTAssertEqual(group.props, [
-            "hidesWithSidebar": .bool(true), "order": .number(2), "part": ToolbarPart.sidebar.propValue,
+            "hidesWithSidebar": .bool(true), "ToolbarGroup.order": .number(2), "part": ToolbarPart.sidebar.propValue,
             "position": ToolbarPosition.overflow.propValue, "standsAlone": .bool(true),
         ])
         let item = try XCTUnwrap(group.children.first)
         XCTAssertEqual(item.props, [
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
-            "isEnabled": .bool(false), "role": ActionRole.destructive.propValue,
+            "isEnabled": .bool(false), "ActionElement.role": ActionRole.destructive.propValue,
             "showsText": .bool(true), "text": .string("Save"),
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])
@@ -693,10 +704,10 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(window.props, [
             "background": Material.blur(.thin.tint(Color(hex: 0x512BD4, opacity: 0.15))).propValue.resolvingTheme(),
-            "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
-            "maximumHeight": .number(1200), "maximumWidth": .number(1600),
-            "minimumHeight": .number(400), "minimumWidth": .number(600), "title": .string("Everything"),
-            "width": .number(1200), "x": .number(10), "y": .number(20),
+            "Window.height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
+            "Window.maximumHeight": .number(1200), "Window.maximumWidth": .number(1600),
+            "Window.minimumHeight": .number(400), "Window.minimumWidth": .number(600), "Window.title": .string("Everything"),
+            "Window.width": .number(1200), "x": .number(10), "y": .number(20),
         ])
         XCTAssertEqual(window.eventNames, HostPatch.windowEvents)
         XCTAssertEqual(window.children.map(\.type), [.page])

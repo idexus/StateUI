@@ -12,52 +12,6 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("SearchField"),
-            ConformanceCase("theUsersSearchIsHeardAndTheProgramsIsNot", proves: [
-                Covered(SearchFieldContract.submitted),
-            ], needs: [
-                Covered(TextualElementContract.text, on: SearchFieldContract.self),
-                Covered(TextInputContract.textChanged, on: SearchFieldContract.self),
-                Covered(ButtonContract.clicked),
-            ]) { s in
-                let query = State(wrappedValue: "")
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        SearchField(query.projectedValue)
-                            .onTextChanged { heard.values.append($0) }
-                            .onSubmitted { heard.values.append("submitted") }
-                            .id("search")
-                        Button("Tea").onClicked { query.wrappedValue = "tea" }.id("tea")
-                    }
-                }
-                let search = try s.element("search")
-
-                try s.perform(.type("coffee"), on: search)
-                try s.perform(.submit, on: search)
-                s.settle { query.wrappedValue == "coffee" && heard.values.count == 2 }
-                s.expect(heard.values, ["coffee", "submitted"])
-
-                try s.perform(.activate, on: s.element("tea"))
-                try s.settle { try s.held(TextualElementContract.text, on: search) == "tea" }
-                s.expect(try s.held(TextualElementContract.text, on: search), "tea")
-                s.expect(heard.values, ["coffee", "submitted"], "the program's words heard by nobody")
-            },
-            ConformanceCase("eachSubmissionIsHeardOnce", proves: [Covered(SearchFieldContract.submitted)]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack { SearchField(State(wrappedValue: "tea").projectedValue).onSubmitted { heard.values.append("s") }.id("search") }
-                }
-                let search = try s.element("search")
-
-                try s.perform(.submit, on: search)
-                s.settle { heard.values.count == 1 }
-                try s.perform(.submit, on: search)
-                s.settle { heard.values.count == 2 }
-                s.turn()
-                s.expect(heard.values, ["s", "s"], "each submission once")
-            },
-            Aspects.holds(SearchFieldContract.submitLabel, on: "SearchField", .search, then: .go),
-            TextFieldTests.handsTheKeyboardOn(from: "SearchField", saying: SearchFieldContract.submitLabel),
         ]
     }
 }

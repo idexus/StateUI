@@ -35,7 +35,7 @@ final class WinUITitleBarView: WinUIView {
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         // The bar's own theme: dark for light words on a dark bar.
-        let theme: ColorScheme = chrome.background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
+        let theme: ColorScheme? = chrome.background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light }
         // A title area stands in the title's place, as an application names itself on WinUI's title bar; else the
         // page's title and the line under it.
         let area = chrome.titleArea
@@ -48,7 +48,7 @@ final class WinUITitleBarView: WinUIView {
             stateui_winui_title_bar_set(
                 handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind,
                 ground.argb, ground.opacity, ground.tintOpacity, painted, foreground != nil, foreground ?? 0,
-                theme.rawValue)
+                theme?.rawValue ?? 0)
         }
 
         menuActions = actions.show(

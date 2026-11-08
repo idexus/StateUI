@@ -10,34 +10,23 @@
 ///         .icon("trash.png")
 ///         .keyboardShortcut(.delete)
 ///         .onClicked { delete() }
-public protocol MenuItemElement: AutomationElement {}
+public protocol MenuItemElement: AutomationElement, ShortcutElement {}
 
 extension MenuItemElement {
-    /// What the item says. Usually given in the initializer instead.
-    public func text(_ value: String) -> Modified {
-        setValue(MenuItemElementContract.text, value)
+    /// What the item says - what its initializer writes.
+    func text(_ value: String) -> Modified {
+        setValue(TextElementContract.text, value)
     }
 
     /// The picture on it, resolved from the application's image resources.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(MenuItemElementContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the
     /// user still knows the action exists. An item declared in a disabled view
     /// is disabled with it.
     public func isEnabled(_ value: Bool) -> Modified {
-        setValue(MenuItemElementContract.isEnabled, value)
-    }
-
-    /// Keys that choose it from the keyboard while its window is in front:
-    /// `key` with `modifiers` - the platform's Command or Control unless said
-    /// otherwise. A bar's item and a menu bar's entry are chosen by them; a
-    /// context menu's entry shows them beside its words.
-    ///
-    ///     MenuItem("Save").keyboardShortcut("s")
-    ///     ToolbarButton("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
-        setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
+        setValue(EnabledElementContract.isEnabled, value)
     }
 }

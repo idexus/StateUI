@@ -229,9 +229,10 @@ final class TickerTests: XCTestCase {
         XCTAssertEqual(ran, 3, "the closure ran \(ran) times for three ticks")
     }
 
-    func testATickerThatDoesNotRepeatTicksOnce() {
+    /// A delay is a ticker of one tick; started again, it counts from none.
+    func testADelayTicksOnceAndStartsOverFromNoTicks() {
         nonisolated(unsafe) var ran = 0
-        let ticker = Ticker(every: .milliseconds(10), isRepeating: false) { ran += 1 }
+        let ticker = Ticker(every: .milliseconds(10), limit: 1) { ran += 1 }
 
         ticker.start()
 
@@ -242,6 +243,12 @@ final class TickerTests: XCTestCase {
 
         XCTAssertEqual(ran, 1)
         XCTAssertEqual(ticker.ticks, 1)
+        XCTAssertTrue(ticker.isFinished)
+
+        ticker.start()
+        XCTAssertEqual(ticker.ticks, 0, "started again, it counts from none")
+        XCTAssertTrue(drain(until: { !ticker.isRunning }))
+        XCTAssertEqual(ran, 2)
     }
 
     /// The reason a last tick stops the ticker BEFORE running the closure: a
@@ -250,7 +257,7 @@ final class TickerTests: XCTestCase {
     /// no-op, and the round would be lost in silence.
     func testATickCanStartTheNextRoundWhenItsWorkIsDone() {
         nonisolated(unsafe) var rounds = 0
-        let ticker = Ticker(every: .milliseconds(10), isRepeating: false)
+        let ticker = Ticker(every: .milliseconds(10), limit: 1)
 
         ticker.onTick = { [ticker] in
             // Work of unknown length, off this thread - what a poll does.
@@ -344,12 +351,11 @@ final class TickerTests: XCTestCase {
     /// asks for the render that shows the new value.
     func testWritingAPropertyAsksForARender() {
         let ticker = Ticker(every: .milliseconds(10))
-        let reader = reading { _ = (ticker.interval, ticker.isRepeating, ticker.limit) }
+        let reader = reading { _ = (ticker.interval, ticker.limit) }
         defer { _ = reader }
 
         for write in [
             ("interval", { ticker.interval = .milliseconds(50) }),
-            ("isRepeating", { ticker.isRepeating = false }),
             ("limit", { ticker.limit = 3 }),
         ] as [(String, () -> Void)] {
             _ = Renderer.shared.renderHost(baseline: 0)
@@ -366,14 +372,15 @@ final class TickerTests: XCTestCase {
 
     /// Zero is not a very fast ticker and a negative one is not a ticker at
     /// all: the deadline would never move ahead of the clock and the loop would
-    /// spin on the thread the host draws on. A millisecond is the floor.
+    /// spin on the thread the host draws on. A millisecond is the floor the loop
+    /// sleeps, whatever the interval says - written through its binding too.
     func testAnIntervalOfNothingIsGivenAFloor() {
-        XCTAssertEqual(Ticker(every: .zero).interval, .milliseconds(1))
-        XCTAssertEqual(Ticker(every: .seconds(-5)).interval, .milliseconds(1))
+        let ticker = Ticker(every: .seconds(1), limit: 3)
+        ticker.$interval.wrappedValue = .seconds(-5)
 
-        let ticker = Ticker(every: .seconds(1))
-        ticker.interval = .zero
-        XCTAssertEqual(ticker.interval, .milliseconds(1), "the floor is the setter's too")
+        ticker.start()
+
+        XCTAssertTrue(drain(until: { ticker.isFinished }, within: 2), "a ticker written no interval never finished")
     }
 
     /// And the floor is what makes such a ticker END: it counts its limit and

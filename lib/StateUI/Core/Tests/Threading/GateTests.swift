@@ -43,7 +43,7 @@ final class GateTests: XCTestCase {
         var heard: [Bool] = []
         let renders = Renders()
         let patch = renders.render(
-            MenuToggle("Sync", isOn: false).onToggled(.ignoreWhileRunning) { on in
+            MenuToggle("Sync", isOn: false).onToggled(policy: .ignoreWhileRunning) { on in
                 heard.append(on)
                 await latch.wait()
             }.node)
@@ -81,8 +81,8 @@ final class GateTests: XCTestCase {
         let latch = Latch()
         var first = 0, second = 0
         let (renders, a, b) = twoButtons(
-            Button("A").onClicked(.ignoreWhileRunning) { first += 1; await latch.wait() },
-            Button("B").onClicked(.ignoreWhileRunning) { second += 1; await latch.wait() })
+            Button("A").onClicked(policy: .ignoreWhileRunning) { first += 1; await latch.wait() },
+            Button("B").onClicked(policy: .ignoreWhileRunning) { second += 1; await latch.wait() })
 
         renders.fire(a)
         renders.fire(b)
@@ -247,7 +247,7 @@ final class GateTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(chimes.node)
         for event in ChimesContract.events.reversed() {
-            renders.fire(try XCTUnwrap(patch.events?[Event(event.name)]))
+            renders.fire(try XCTUnwrap(patch.events?[event.token]))
         }
         XCTAssertEqual(latch.waiting, ChimesContract.events.count)
 
@@ -300,7 +300,7 @@ final class GateTests: XCTestCase {
         try await waitUntil { failures.count >= 1 }
 
         XCTAssertEqual(failures.first, true, "the cancelled run's act failed as cancelled")
-        XCTAssertEqual(drainedActs().filter { $0.name == "alert" }.count, 1, "only the live run's act left")
+        XCTAssertEqual(drainedActs().filter { $0.name == "Application.alert" }.count, 1, "only the live run's act left")
     }
 
     /// A superseded run's post is refused too.
@@ -499,11 +499,11 @@ final class GateTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             Button("Go")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     ignoring += 1
                     await latch.wait()
                 }
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     overlapping += 1
                     await latch.wait()
                 }
@@ -623,6 +623,46 @@ final class GateTests: XCTestCase {
         await settle()
 
         XCTAssertEqual(found.wrappedValue, "task", "the click's late write overwrote the task's")
+    }
+
+    /// A task started through a `.cancelPrevious` gate inside another's first step supersedes that run before its
+    /// task is in hand: the task is cancelled as it comes to hand, so what checks cancellation ends, and the gate is
+    /// free again.
+    func testARunSupersededInItsFirstStepIsCancelled() async throws {
+        let latch = Latch()
+        let search = Gate(.cancelPrevious)
+        var second: Task<Void, Never>?
+
+        let first = Task(gate: search) {
+            second = Task(gate: search) {}
+            await latch.wait()
+        }
+
+        XCTAssertTrue(first.isCancelled, "the run superseded in its first step was not cancelled")
+        latch.open()
+        await first.value
+        await second?.value
+        XCTAssertFalse(search.isBusy)
+    }
+
+    /// A handler whose own render takes its element out in its first step is orphaned before its task is in hand,
+    /// and resumes cancelled all the same.
+    func testAHandlerWhoseElementLeftInItsFirstStepIsCancelled() async throws {
+        let latch = Latch()
+        let gate = Gate(.ignoreWhileRunning)
+        var cancelled: Bool?
+        let renders = Renders()
+        let patch = renders.render(Button("Leave").onClicked(gate: gate) {
+            renders.render(Text("gone").node)
+            await latch.wait()
+            cancelled = Task.isCancelled
+        }.node)
+
+        renders.fire(try XCTUnwrap(patch.events?["clicked"]))
+        latch.open()
+        try await waitUntil { cancelled != nil }
+        XCTAssertEqual(cancelled, true, "the run orphaned in its first step was not cancelled")
+        XCTAssertFalse(gate.isBusy)
     }
 
     /// Tasks through a gate that waits run one after another, in the order they were started, and the gate is busy
@@ -811,9 +851,86 @@ final class GateTests: XCTestCase {
         return ids
     }
 
+    /// A run begun by a run - a task through a gate, started inside a handler - descends from it: a wait on the runs
+    /// begun since a mark counts it where the run it descends from began after the mark, and not where that began
+    /// before, however late it itself began; a later click's run, and what it begins, are since the mark.
+    func testARunDescendsFromTheRunThatBeganIt() async throws {
+        let latch = Latch()
+        let clicks = Gate(.runConcurrently), work = Gate(.runConcurrently)
+        let (renders, id) = button(gate: clicks) {
+            await latch.wait()
+            await Task(gate: work) { await latch.wait() }.value
+        }
+
+        renders.fire(id)
+        let mark = HostBoundary.runsBegun
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 0, "the click's run began before the mark")
+        latch.open()
+        try await waitUntil { latch.waiting == 1 }
+        XCTAssertEqual(RunSlot.underWay, 2, "the click's run and the work it began")
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 0, "the work descends from a run begun before the mark")
+
+        renders.fire(id)
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 1, "a later click's run is since the mark")
+        latch.open()
+        try await waitUntil { latch.waiting == 1 }
+        XCTAssertEqual(HostBoundary.runsUnderWay(since: mark), 2, "and so is the work it began, standing beside it")
+
+        latch.open()
+        try await waitUntil { RunSlot.underWay == 0 }
+    }
+
+    /// A handler the host begins - an event's, or one a render's walk found - begins a line of runs of its own,
+    /// whatever task called the host: inside a run's task too, as a test acts from a task through a gate. A wait on
+    /// the runs since a mark taken there counts each.
+    func testAHandlerTheHostBeginsDescendsFromNoRun() async throws {
+        let latch = Latch()
+        let counts = Counts()
+        func tree(_ value: Int) -> Node {
+            VStack { Button("Go").onClicked(policy: .runConcurrently) { await latch.wait() } }
+                .onChanged(value, policy: .runConcurrently) { await latch.wait() }
+                .node
+        }
+        let renders = Renders()
+        let id = clickedIds(in: renders.render(tree(1)))[0]
+
+        await Task(gate: Gate(.runConcurrently)) {
+            let mark = HostBoundary.runsBegun
+            renders.fire(id)
+            counts.values.append(HostBoundary.runsUnderWay(since: mark))
+            renders.render(tree(2))
+            counts.values.append(HostBoundary.runsUnderWay(since: mark))
+        }.value
+
+        XCTAssertEqual(counts.values, [1, 2], "the click's run, then the change's, each its own and since the mark")
+        latch.open()
+        try await waitUntil { RunSlot.underWay == 0 }
+    }
+
+    /// What a handler the host begins writes stands though the run whose task called the host is superseded: an
+    /// act from a cancelled task through a gate lands as the user's.
+    func testAHandlerTheHostBeginsWritesInsideASupersededRun() async throws {
+        let latch = Latch()
+        let count = State(wrappedValue: 0)
+        count.storage.origin = "countByTheUser"
+        let (renders, id) = rendered(Button("Go").onClicked { count.wrappedValue += 1 })
+
+        let caller = Task(gate: Gate(.runConcurrently)) {
+            await latch.wait()
+            renders.fire(id)
+        }
+        try await waitUntil { latch.waiting == 1 }
+        caller.cancel()
+        latch.open()
+        await caller.value
+
+        XCTAssertEqual(count.wrappedValue, 1, "the click's write lands")
+        XCTAssertFalse(hasComplained("`countByTheUser`"))
+    }
+
     /// A button whose click runs `handler` under its own `policy`, rendered, and its click's id.
     private func button(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> (Renders, Int) {
-        rendered(Button("Go").onClicked(policy, handler))
+        rendered(Button("Go").onClicked(policy: policy, handler))
     }
 
     /// A button whose click runs `handler` through `gate`, rendered, and its click's id.
@@ -875,4 +992,10 @@ private final class Latch {
         continuations = []
         for continuation in waiting { continuation.resume() }
     }
+}
+
+/// What a run counted, in order.
+@MainActor
+private final class Counts {
+    var values: [Int] = []
 }

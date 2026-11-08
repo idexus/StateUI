@@ -13,7 +13,7 @@ public enum ItemsViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A collection is a view, pulled to refresh its items.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, FocusElementContract.self, RefreshElementContract.self,
     ]
 
@@ -53,7 +53,7 @@ public enum ItemsViewContract: ElementContract {
 
     /// Scrolls until the item of an identity stands where the anchor says, as
     /// the platform scrolls.
-    public static let scrollTo = ElementAct<Self, (String, ScrollAnchor), Void>("scrollTo")
+    public static let scrollTo = ElementAct<Self, (String, ScrollAnchor), Void>("scrollTo", layer: .native)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [

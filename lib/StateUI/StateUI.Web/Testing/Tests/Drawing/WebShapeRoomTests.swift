@@ -33,7 +33,7 @@ final class WebShapeRoomTests: XCTestCase {
     /// placed over a room a hundred wide is red at its left edge and blue at its right.
     func testAShapesGradientLiesOverItsRoom() throws {
         let across = Brush.linearGradient(
-            [GradientStop(.red, 0), GradientStop(.blue, 1)], startPoint: Point(0, 0.5), endPoint: Point(1, 0.5))
+            [GradientStop(.red, 0), GradientStop(.blue, 1)], from: Point(0, 0.5), to: Point(1, 0.5))
         let host = WebRenderer.running {
             VStack { Path("M0 0 H10 V10 H0 Z").fill(across).contentMode(.fill).width(100).height(100) }
                 .horizontalAlignment(.start)

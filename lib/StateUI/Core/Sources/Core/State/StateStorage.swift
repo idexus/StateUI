@@ -55,7 +55,42 @@ extension State {
 
         /// Where posts to this state wait for their job, made at the first binding.
         /// Design: docs/design/core/state.md#posting
-        private(set) lazy var mailroom = Mailroom()
+        var mailroom: Mailroom {
+            if let made = madeMailroom { return made }
+
+            let made = Mailroom()
+            madeMailroom = made
+            return made
+        }
+
+        private var madeMailroom: Mailroom?
+
+        /// The storage this one was given up for - a view's state adopted - while that one stands.
+        private weak var adopted: Storage?
+        private var givenUp = false
+
+        /// Whether a box built later adopted this storage: the element keeps it from then on.
+        private var kept = false
+
+        /// Gives this storage up for `other`, which a box built later adopts: a conversion made from it stands for
+        /// `other` from now on, and what a binding made before posts here goes to `other`'s mailroom, in one queue
+        /// with its own posts. A storage the element keeps is given up for nothing - itself least of all: a view
+        /// rendered again after another instance adopted its state holds that state still.
+        /// Design: docs/design/core/state.md#storage-and-box
+        func giveUp(for other: Storage) {
+            other.kept = true
+            guard other !== self, !kept else { return }
+
+            givenUp = true
+            adopted = other
+            madeMailroom?.forward(to: other.mailroom)
+        }
+
+        /// The storage this one stands for: itself, or the one it was given up for while that stands - none once
+        /// that is gone.
+        var standsFor: Storage? {
+            givenUp ? adopted?.standsFor : self
+        }
 
         /// What the author calls this state (Builds.swift).
         var origin: String?
@@ -98,14 +133,15 @@ extension State {
         /// Design: docs/design/core/state.md#a-state-has-one-shape
         private(set) var journeyed = false
 
-        /// Puts the value there - where it is, where it is going, standing still; for a
-        /// plain value, a write.
+        /// Puts the value there - where it is, where it is going, standing still - and keeps it, as every road a
+        /// value comes in by does; for a plain value, a write.
         func snap(_ newValue: Value) {
             if let hostSnap {
                 themed = Self.wearsTheTheme(newValue) ? newValue : nil
                 hostSnap(newValue)
+                keep?(newValue)
             } else {
-                value = newValue
+                write(newValue)
             }
         }
 
@@ -128,7 +164,7 @@ extension State {
 
         /// The derived states worked out from this one, by the element and the line that
         /// wrote each conversion - known weakly: the element holds them.
-        var derivations: [PathNumber: Derivation] = [:]
+        var derivations: [DerivationKey: Derivation] = [:]
 
         /// The derived state a conversion written at `site` keeps - made once for the
         /// element being built, then kept while the element holds it.
@@ -220,16 +256,30 @@ extension State {
             }
         }
 
-        /// Whether a write may land: not from a run a later event, or its element leaving,
-        /// superseded.
+        /// Whether a write of `value` may land: not from a superseded run, and not a value the state refuses.
         /// Design: docs/design/core/runs.md#a-superseded-run
         @usableFromInline
-        func admitsWrite() -> Bool {
+        func admitsWrite(_ value: Value) -> Bool {
             #if DEBUG
             HandlerRun.noteWrite(of: self, named: "`\(origin ?? "a state")`")
             #endif
-            return HandlerRun.admits("a write of `\(origin ?? "a state")`")
+            return HandlerRun.admitsWrite(of: origin) && admits(value)
         }
+
+        /// Whether the state takes `value` - asked on every road a value comes in by, before it lands: a value
+        /// refused is said once and lands nowhere.
+        /// Design: docs/design/core/state.md#kept-state
+        @usableFromInline
+        func admits(_ value: Value) -> Bool {
+            guard let why = refuses?(value) else { return true }
+
+            complain(why)
+            return false
+        }
+
+        /// Why a state refuses a value it is handed - said once, nothing lands - or nil; set once, as `keep` is.
+        /// Design: docs/design/core/state.md#kept-state
+        @usableFromInline var refuses: ((Value) -> String?)?
 
         /// What a state does with every value it takes, whoever writes it - the
         /// program, a binding, the host: a kept state marks its key for saving, a
@@ -338,7 +388,12 @@ extension State.Storage where Value: Walked {
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
                     // The destination moved - a drag, a press: every reader is asked, and a
-                    // kept state keeps where it is going.
+                    // kept state keeps where it is going. One the state refuses is put back where
+                    // it stood, standing still, which the host hears as any write.
+                    guard self?.admits(now.destination) ?? true else {
+                        self?.hostSnap?(known.destination)
+                        return
+                    }
                     known.destination = now.destination
                     self?.themed = nil
                     self?.askForRender()
@@ -396,15 +451,13 @@ extension State.Storage where Value: Walked {
         noted?(destination)
     }
 
-    /// Takes the destination a movement sent as the state's value, as a write does - the
-    /// readers asked, a kept state keeping it - its journey laid already, on the
-    /// movement's own law.
+    /// Takes the destination a movement sent as the state's value, as a write does - the readers asked, a kept
+    /// state keeping it - its journey laid already, on the movement's own law.
     /// Design: docs/design/core/journeys.md#moving-and-waiting
     func moved(to destination: Value) {
         noteDestination(destination)
         askForRender()
         keep?(destination)
-        if keep != nil { UIThreadExecutor.shared.askForTurn() }
     }
 
     /// Lets go of the pair a stopped value no longer stands for.
@@ -499,12 +552,16 @@ extension State.Storage where Value: StateValue {
                 Renderer.shared.board.write(bytes, to: made)
             }
 
-            // A host write ends where this side's do, the storage deciding by its readers.
+            // A host write ends where this side's do, the storage deciding by its readers; a
+            // value it refuses is put back, which the host hears as any write.
             made.told = { [weak self, unowned made] _ in
                 let value = Self.lifted(from: made)
                 let now = StateImage.bytes(of: value.carried(in: .current))
 
                 guard now != known.bytes else { return }
+                guard self?.admits(value) ?? true else {
+                    return Renderer.shared.board.write(known.bytes, to: made)
+                }
 
                 known.bytes = now
                 self?.themed = nil
@@ -559,6 +616,6 @@ extension State.Storage where Value: StateValue {
     /// a trap.
     private static var nothing: Value {
         Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
-            ?? Value(carried: .text(""))!
+            ?? Value(carried: .string(""))!
     }
 }

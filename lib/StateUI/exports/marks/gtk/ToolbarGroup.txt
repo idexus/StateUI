@@ -1,8 +1,7 @@
-# revision 9.1
+# revision 10.1
 ToolbarGroup: ✅
 ToolbarGroup.barEdge: ✅
 ToolbarGroup.hidesWithSidebar: ✅
-ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅
 ToolbarGroup.part: ✅
 ToolbarGroup.position: ✅

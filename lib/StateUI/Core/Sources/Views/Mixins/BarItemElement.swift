@@ -15,7 +15,7 @@ public protocol BarItemElement: PropertyContainer {}
 extension BarItemElement {
     /// What the item's surface is made of: a color, a gradient, a blur of what lies behind it, or the platform's
     /// glass. An item's own background replaces its style's; a `Material(light:dark:)` follows the theme.
-    public func background(_ value: Material) -> Modified { setValue(BarItemElementContract.background, value) }
+    public func background(_ value: Material) -> Modified { setValue(BackgroundElementContract.background, value) }
 
     /// The item's background in one color; a `Color(light:dark:)` follows the theme.
     public func background(_ value: Color) -> Modified { background(.color(value)) }

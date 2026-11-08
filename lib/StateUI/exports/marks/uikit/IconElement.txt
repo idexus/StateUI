@@ -1,0 +1,11 @@
+# revision 1.1
+Button.icon: ✅
+MenuItem.icon: ✅
+MenuToggle.icon: ✅
+NavigationStack.icon: ✅
+Page.icon: ✅
+SplitView.icon: ✅
+TabView.icon: ✅
+ToolbarButton.icon: ✅
+ToolbarLabel.icon: ✅
+ToolbarToggle.icon: ✅

@@ -24,9 +24,9 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
-            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
+            label.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
                 (view as! any UIKitLabel).setLines(
-                    breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
+                    breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             label.applies(
                 TextAlignmentElementContract.horizontalTextAlignment,
@@ -35,10 +35,10 @@ extension UIKitRegistrations {
                     horizontal: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
                     vertical: values[TextContract.verticalTextAlignment] ?? .start)
             }
-            label.property(VisualElementContract.isEnabled) { view, enabled in
+            label.property(EnabledElementContract.isEnabled) { view, enabled in
                 (view as! any UIKitLabel).isEnabled = enabled ?? true
             }
-            label.property(VisualElementContract.background) { view, background in
+            label.property(BackgroundElementContract.background) { view, background in
                 (view as! any UIKitLabel).setBackground(background?.propValue)
             }
             label.property(TrackingElementContract.tracking) { view, spacing in
@@ -48,7 +48,7 @@ extension UIKitRegistrations {
                 (view as! any UIKitLabel).setLook { $0.lineHeight = height }
             }
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
-                (view as! any UIKitLabel).setLook { $0.decorations = decorations ?? .none }
+                (view as! any UIKitLabel).setLook { $0.decorations = decorations ?? [] }
             }
         }
     }

@@ -1,0 +1,41 @@
+# revision 1.1
+Button.style: ✅
+Canvas.style: ✅
+Capsule.style: ✅
+CheckBox.style: ✅
+ColorPicker.style: ✅
+DatePicker.style: ✅
+Ellipse.style: ✅
+Fill.style: ✅
+Grid.style: ✅
+HStack.style: ✅
+Image.style: ✅
+ItemsView.style: ✅
+Line.style: ✅
+Link.style: ✅
+Map.style: 🧩
+MotionLayout.style: ✅
+Path.style: ✅
+Picker.style: ✅
+Polygon.style: ✅
+Polyline.style: ✅
+ProgressBar.style: ✅
+Rectangle.style: ✅
+ScrollView.style: ✅
+SearchField.style: ✅
+Separator.style: ✅
+Slider.style: ✅
+Space.style: ✅
+Spinner.style: ✅
+Stepper.style: ✅
+Switch.style: ✅
+Text.style: ✅
+TextEditor.style: ✅
+TextField.style: ✅
+TimePicker.style: ✅
+ToolbarButton.style: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.style: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.style: – The title bar's commands stand in WinUI's own look.
+VStack.style: ✅
+WebView.style: ✅
+ZStack.style: ✅

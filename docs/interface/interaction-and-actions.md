@@ -36,7 +36,7 @@ its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
 A handler may throw. One that awaits says what its event does when it comes
-again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
+again while it runs - `.onClicked(policy: .ignoreWhileRunning) { … }` - and continues on
 StateUI's UI isolation domain after each suspension. An uncaught error is
 reported through the host rather than being discarded.
 [Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
@@ -59,7 +59,7 @@ HStack {
 }
 .padding(12)
 .onTapped { path.append(.details) }
-.onSwiped(direction: [.left, .right], threshold: 40) { direction in
+.onSwiped(directions: [.left, .right], threshold: 40) { direction in
     if direction == .left {
         path.append(.next)
     }
@@ -78,9 +78,9 @@ Style<ZStack>()
 ```
 
 Use `onTapped(count:_:)` for a double or higher tap, which keeps the
-platform's own run of taps. A swipe handler receives one dominant
-`SwipeDirection`; the option set on the modifier defines which directions are
-recognized.
+platform's own run of taps. A swipe handler receives the one dominant
+`SwipeDirection`; the `SwipeDirections` on the modifier say which directions
+are recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an
@@ -152,6 +152,13 @@ Rectangle()
     }
 ```
 
+A view drawn away from where it was laid out - moved, turned or sized - takes
+input where it is drawn, on every host: a tap on a turned card's corner is
+the card's, and a tap where its frame lies and nothing is drawn is nobody's
+(the Gallery's Drawn away sample). A control a platform tracks itself keeps
+the platform's own tracking: a button of the Mac's is found where it is drawn
+and follows its click by the frame it was laid out in.
+
 Each report also says how fast the gesture goes, a second - `velocity`, a
 `Point`, for a pan, and for a pinch's scale and a rotation's angle a number -
 nought as it begins and, at its end, as fast as it lifted, beside where it
@@ -207,9 +214,9 @@ Text(item.title)
     .onDragEnded { dragging = nil }
 
 ZStack { Text("Drop here") }
-    .onDrop { text in receive(text) }
-    .onDragOver { highlighted = true }
-    .onDragLeave { highlighted = false }
+    .onDropped { text in receive(text) }
+    .onDragEntered { highlighted = true }
+    .onDragExited { highlighted = false }
 ```
 
 The payload is declared before the native drag starts. A start handler may
@@ -218,19 +225,19 @@ carries. On a touch screen the drag begins once the finger has held the view a
 moment, as the platform's own drags do.
 
 Files dragged from the system - from a file manager, another application, the
-desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
-kinds it lists:
+desktop - land on a view through `onDropped(files:)`, as `ChosenFile`s of the
+kinds it lists, an empty list taking any file:
 
 ```swift
 @State private var report = ""
 
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+    .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
 
-A view may take words and files both; `onDragOver` and `onDragLeave` serve
+A view may take words and files both; `onDragEntered` and `onDragExited` serve
 either. Files of other kinds are not taken, and a drop holding none of the
 view's kinds is heard by nobody. A dropped file reads and launches as one the
 user opened ([Files and links](#files-and-links)).
@@ -251,8 +258,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
-            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
+            Button("Edit").onClicked(policy: .ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(policy: .ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -282,7 +289,7 @@ a view stands in - the session it reads with `@Environment(\.window)`:
 @Environment(\.window) private var window
 @State private var drafts = ["Plans"]
 
-Button("Delete").onClicked(.ignoreWhileRunning) {
+Button("Delete").onClicked(policy: .ignoreWhileRunning) {
     let confirmed = try await window.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -343,17 +350,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked(.ignoreWhileRunning) {
+            Button("Save report…").onClicked(policy: .ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await window.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked(.ignoreWhileRunning) {
+            Button("Open…").onClicked(policy: .ignoreWhileRunning) {
                 guard let file = try await window.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked(.ignoreWhileRunning) {
+            Button("Help").onClicked(policy: .ignoreWhileRunning) {
                 try await application.launch("https://www.swift.org")
             }
         }
@@ -389,7 +396,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked(.ignoreWhileRunning) {
+        Button("Open a note…").onClicked(policy: .ignoreWhileRunning) {
             guard let file = try await window.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -414,7 +421,7 @@ struct LinkRow: View {
     var body: some View {
         HStack {
             Text(link)
-            Button("Copy").onClicked(.ignoreWhileRunning) {
+            Button("Copy").onClicked(policy: .ignoreWhileRunning) {
                 try await application.clipboard.write(link)
             }
         }
@@ -439,7 +446,7 @@ struct TalkPage: View {
     let talk = "https://www.swift.org"
 
     var body: some View {
-        Button("Share the talk").onClicked(.ignoreWhileRunning) {
+        Button("Share the talk").onClicked(policy: .ignoreWhileRunning) {
             try await window.share(text: "The talk I mentioned", address: talk)
         }
     }
@@ -463,7 +470,7 @@ struct WeatherPage: View {
 
     var body: some View {
         VStack {
-            Button("Weather").onClicked(.cancelPrevious) {
+            Button("Weather").onClicked(policy: .cancelPrevious) {
                 let response = try await application.send(HTTPRequest(
                     "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
                 said = response.status == 200 ? response.text : "The server answered \(response.status)"
@@ -478,10 +485,23 @@ Any status is an answer - a 404 is the server's word; what throws is no
 answer at all: no connection, no server, an address the platform cannot
 read. A request carries a method - an `HTTPMethod`, `.get` unless said -
 headers and a body (`HTTPRequest(address, method: .post, headers:, body:)`),
-and a header's
-name is read in any case (`response.header("Content-Type")`). The platform
-keeps the cookies a server sets, as a browser does, so a session a server
-opens holds for the requests after it. A request ends with the run that sent
+and a header's name is read in any case (`response.header("Content-Type")`).
+Named methods use their standard uppercase tokens; a custom method such as
+`HTTPMethod("ReadRecord")` preserves its case, which is part of its identity.
+The host hands the method to its platform's networking, which may refuse
+it, and the request then fails with that reason: Android Views sends
+OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE and PATCH only, and a page on
+the Web cannot send CONNECT, TRACE or TRACK.
+
+Response headers are the combined view exposed by the platform's networking,
+with lowercase names. The provider can combine or filter fields, and each
+value stays intact, including any commas it contains. On the Web, the
+browser filters fields such as `Set-Cookie`. The platform's session manages
+cookies, so a session a server opens holds for the requests after it.
+Constructing an `HTTPResponse` from a dictionary combines names that differ
+only in case in the UTF-8 order of their original names.
+
+A request ends with the run that sent
 it: under `.cancelPrevious` the next tap stops the one under way, and a page
 left stops its own
 ([Concurrency](concurrency.md#when-the-event-comes-again)).
@@ -502,7 +522,7 @@ arguments and its answer:
 enum NotesContract: ApplicationTier {
     static let name = "Notes"
 
-    static let exportDocument = ElementAct<Self, String, String>("Notes.ExportDocument")
+    static let exportDocument = ElementAct<Self, String, String>("exportDocument")
 
     static let members: [any ContractMember] = [exportDocument]
 }
@@ -510,7 +530,7 @@ enum NotesContract: ApplicationTier {
 @Environment(\.application) var application
 @State var location = ""
 
-Button("Export").onClicked(.ignoreWhileRunning) {
+Button("Export").onClicked(policy: .ignoreWhileRunning) {
     location = try await application.call(NotesContract.exportDocument, "draft-7")
 }
 ```
@@ -550,7 +570,7 @@ by the handler the last render wrote:
 enum NotesContract: ApplicationTier {
     static let name = "Notes"
 
-    static let importFinished = ElementEvent<Self, String>("Notes.ImportFinished")
+    static let importFinished = ElementEvent<Self, String>("importFinished")
 
     static let members: [any ContractMember] = [importFinished]
 }
@@ -585,7 +605,7 @@ same contract the subscription is written against, from whatever thread the
 platform reports on; the subscriptions hear it on the UI thread soon after, in
 the order raised. A raise nobody hears is an ordinary one rather than a
 failure, so a host wires its sources unconditionally. The head declares what
-it raises, `StateUIEvents.raises(NotesContract.importFinished)`, and a
+it raises, `StateUIEvents.declares(NotesContract.importFinished)`, and a
 subscription to an event no head declared is said once, as a misspelled name
 would be. The Gallery's heads raise the battery's changes:
 [AppKit](../hosts/appkit.md#an-event-without-a-control),
@@ -650,7 +670,7 @@ struct Document: View {
                         .keyboardShortcut("e", modifiers: [.primary, .shift])
                         .onClicked { exported += 1 }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             .toolbar {
                 ToolbarButton("Mark")
@@ -691,8 +711,11 @@ struct Rename: View {
 }
 ```
 
-`.primary` is the window's main action: filled in the platform's accent and
-pressed by Return. `.cancel` is the way out, pressed by Escape, and stands as
+`.normal`, what a button saying no role is, is an ordinary action: the
+platform's plain button, with no key of its own - so `.role(main ? .primary :
+.normal)` changes what the button stands for in one spelling. `.primary` is
+the window's main action: filled in the platform's accent and pressed by
+Return. `.cancel` is the way out, pressed by Escape, and stands as
 the platform's plain button. `.destructive` marks an action that destroys
 something: its words stand in the platform's color for one - the red its
 alerts and menus give such an action. A fill or a color of words the button
@@ -811,9 +834,9 @@ Text("Order total")
 
 `accessibilityLabel` states what the element is, `accessibilityHint` explains the
 result of interacting with it, and heading level describes document structure.
-Use `isAccessibilityHidden` and
-`hidesChildrenFromAccessibility` to control exposure only when the composed
-semantics require it.
+Use `accessibilityPresence` - `.element`, `.hidden`, or `.hiddenWithContents`
+for the view and everything in it - to control exposure only when the
+composed semantics require it.
 
 A view composed of parts says what it is and holds with `accessibilityRole`
 and `accessibilityValue`, so a screen reader meets one thing where the screen

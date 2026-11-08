@@ -30,10 +30,10 @@ final class DrivenPatchTests: XCTestCase {
         var launched = Node(type: "Window", children: [
             Node(type: "Page", children: [content]),
         ])
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         return Node(type: "Application", children: [scene])
     }
@@ -42,7 +42,7 @@ final class DrivenPatchTests: XCTestCase {
     /// content, `.auto(3)` first.
     private func page(_ content: Node) throws -> HostPatch {
         try XCTUnwrap(Differ().reconcile(nil, with: rooted(content)).patch
-            .at(.manual("1"), .manual("window 1"), .auto(2)))
+            .at(.scene("1"), .window(1), .auto(2)))
     }
 
     /// The registrations of the element at `path` below `page`.
@@ -140,9 +140,9 @@ final class DrivenPatchTests: XCTestCase {
             ties(page, .auto(3), .auto(4)),
             tied(["fontSize"], to: 1, .inOut, .property, .number)
                 .merging(tied(["horizontalAlignment"], to: 2, .out, .plain, .choice)) { $1 }
-                .merging(tied(["isVisible"], to: 3, .out, .plain, .boolean)) { $1 })
+                .merging(tied(["isVisible"], to: 3, .out, .plain, .bool)) { $1 })
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text, nil))
-        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["isOn"], to: 5, .inOut, .plain, .boolean))
+        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["isOn"], to: 5, .inOut, .plain, .bool))
     }
 
     /// Every one of the thirty twins, on one element each of the tiers they
@@ -200,13 +200,14 @@ final class DrivenPatchTests: XCTestCase {
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
         // The number is state 1, the color 2 and the insets 3, in the walk.
-        XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3)), tied(["Stack.spacing"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
             tied([
-                "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
+                "VisualElement.height", "VisualElement.maximumHeight", "VisualElement.maximumWidth",
+                "VisualElement.minimumHeight", "VisualElement.minimumWidth", "opacity",
                 "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
-                "lineWidth", "translationX", "translationY", "width",
+                "BorderElement.lineWidth", "translationX", "translationY", "VisualElement.width",
             ], to: 1, .inOut, .property, .number)
                 .merging(tied(["background"], to: 2, .inOut, .property, .color)) { $1 }
                 .merging(tied(["margin", "padding"], to: 3, .inOut, .property, .number)) { $1 })
@@ -216,10 +217,10 @@ final class DrivenPatchTests: XCTestCase {
                 .merging(tied(["textColor"], to: 2, .inOut, .property, .color)) { $1 })
         XCTAssertEqual(
             ties(page, .auto(3), .auto(6)),
-            tied(["dashPhase", "miterLimit", "lineWidth"], to: 1, .inOut, .property, .number))
+            tied(["dashPhase", "miterLimit", "Shape.lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(7)),
-            tied(["lineWidth"], to: 1, .inOut, .property, .number))
+            tied(["BorderElement.lineWidth"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property, .color))
         XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["fill"], to: 2, .inOut, .property, .color))
     }
@@ -229,7 +230,7 @@ final class DrivenPatchTests: XCTestCase {
     func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        let page = try page(VStack { Text().text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
+        let page = try page(VStack { Text(caption.projectedValue); Button(caption.projectedValue) }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
@@ -275,8 +276,8 @@ final class DrivenPatchTests: XCTestCase {
         let steps = State(wrappedValue: 3.0)
 
         let page = try page(VStack {
-            Slider().value(level.projectedValue)
-            Stepper().value(steps.projectedValue)
+            Slider(level.projectedValue)
+            Stepper(steps.projectedValue)
         }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
@@ -293,12 +294,12 @@ final class DrivenPatchTests: XCTestCase {
         let level = State(wrappedValue: 0.5)
 
         let page = try page(VStack {
-            Slider().value(level.projectedValue)
+            Slider(level.projectedValue)
             Rectangle().width(level.projectedValue)
         }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property, .number))
-        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property, .number))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["VisualElement.width"], to: 1, .inOut, .property, .number))
     }
 
     /// A LAYOUT PLACED BY DRIVEN STATE, which says where its views go and nothing
@@ -311,9 +312,10 @@ final class DrivenPatchTests: XCTestCase {
     func testAMotionLayoutRegistersOnTheLayoutAlone() throws {
         let page = try page(
             MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
-                .shade(
+                .shade {
                     Rectangle()
-                        .fill(.black))
+                        .fill(.black)
+                }
                 .node)
         let layout = try XCTUnwrap(page.subtree.first { $0.type == .motionLayout })
         let ties = layout.driven?.bindings ?? [:]
@@ -379,8 +381,11 @@ final class DrivenPatchTests: XCTestCase {
 
                 values.formUnion(written.occurrences(between: "public func ", and: "(_ value:"))
 
-                // Each declaration starts afresh, so a body is never read as an earlier signature's.
-                if let name = written.occurrences(between: "public func ", and: "(").first {
+                // Each declaration starts afresh, so a body is never read as an earlier signature's - an internal
+                // one's included, which no application meets.
+                if written.contains("func "), !written.contains("public func ") {
+                    signature = nil
+                } else if let name = written.occurrences(between: "public func ", and: "(").first {
                     let type = written.occurrences(between: "Binding<", and: ">").first
                     signature = type.map { (name, $0) }
                 } else if let property = written.occurrences(between: "journey(", and: ",").first,
@@ -430,7 +435,7 @@ final class DrivenPatchTests: XCTestCase {
     /// the values the host walks by a key of their own stand apart.
     func testEveryTwinIsDecidedByItsContract() throws {
         let ownValues = [
-            "journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,",
+            "journey(.scrollOffset,", "journey(RangeElementContract.value.token,", "journey(RangeElementContract.value.token,",
             "journey(ColorPickerContract.color.token,",
         ]
         var bypassing: [String] = []
@@ -482,102 +487,89 @@ final class DrivenPatchTests: XCTestCase {
             "and take the value's own type: they are the journey's, not any binding's")
     }
 
-    /// A CONTROL'S PURPOSE-VALUE IS WRITABLE BOTH WAYS, AND THE TWO AGREE.
-    ///
-    /// `Slider($v)` and `Slider().value($v)` are one thing said twice - the
-    /// initializer is the short way to say what gives a control its purpose,
-    /// the modifier is how every other property is written, and neither is the
-    /// real one. What this holds is that they describe the SAME NODE: the
-    /// initializers delegate to the modifiers, so a change to one cannot leave
-    /// the other behind.
-    ///
-    /// It is the pairing that matters rather than the exact bytes, so the
-    /// comparison is the node's props and the events it handles - a handler's
-    /// ID is issued per registration and differs by construction.
-    func testEveryPurposeValueIsWritableBothWays() {
-        func same(_ one: Node, _ other: Node, _ what: String) {
-            XCTAssertEqual(
-                one.props, other.props,
-                "\(what): the two spellings describe different values")
-            XCTAssertEqual(
-                Set(one.events.keys), Set(other.events.keys),
-                "\(what): the two spellings report different events")
-        }
-
+    /// A CONTROL'S PURPOSE VALUE FROM A STATE IS CARRIED: `Slider($v)` hands the state to the host, which shows
+    /// each new value and reports back what the user changes; the node describes no copy of it.
+    func testAPurposeValueFromAStateIsCarried() {
+        Renderer.shared.clearStates()
         let number = State(wrappedValue: 0.5)
         let flag = State(wrappedValue: true)
-
-        same(Slider(number.projectedValue).node,
-             Slider().value(number.projectedValue).node, "Slider.value")
-        same(Stepper(number.projectedValue).node,
-             Stepper().value(number.projectedValue).node, "Stepper.value")
-        same(Switch(flag.projectedValue).node,
-             Switch().isOn(flag.projectedValue).node, "Switch.isOn")
-        same(CheckBox(flag.projectedValue).node,
-             CheckBox().isOn(flag.projectedValue).node, "CheckBox.isOn")
-        same(ProgressBar(number.projectedValue).node,
-             ProgressBar().progress(number.projectedValue).node, "ProgressBar.progress")
-        same(Spinner(flag.projectedValue).node,
-             Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
-    }
-
-    /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what
-    /// `Slider().value($level)` says - over a `Journey`, and over a
-    /// plain `Double`, which the host carries as a journey too. An author
-    /// writes `Slider($x)` and the host walks it either way; what the
-    /// declaration says is what can be read back.
-    func testADrivenPurposeValueIsWritableBothWays() {
-        Renderer.shared.clearStates()
-
-        let level = State(wrappedValue: 0.5)
-        let steps = State(wrappedValue: 3.0)
-
-        func registers<Control: View>(
-            _ one: Control, _ other: Control, _ what: String
-        ) {
-            let mine = one.node.driven
-            let theirs = other.node.driven
-
-            XCTAssertEqual(
-                Set(mine.keys), Set(theirs.keys),
-                "\(what): the two spellings drive different properties")
-
-            for (property, registration) in mine {
-                let twin = theirs[property]
-
-                XCTAssertEqual(
-                    registration.mode, twin?.mode,
-                    "\(what).\(property.name): the two spellings cross differently")
-                XCTAssertEqual(
-                    registration.kind, twin?.kind,
-                    "\(what).\(property.name): the two spellings use different doors")
-            }
-
-            XCTAssertFalse(mine.isEmpty, "\(what): nothing was driven at all")
-        }
-
-        registers(Slider(level.projectedValue),
-                  Slider().value(level.projectedValue), "Slider")
-        registers(Stepper(steps.projectedValue),
-                  Stepper().value(steps.projectedValue), "Stepper")
-
-        // And over a plain `Double`, which the host walks as a journey too.
-        let plain = State(wrappedValue: 0.5)
-
-        registers(Slider(plain.projectedValue),
-                  Slider().value(plain.projectedValue), "Slider over a Double")
-        registers(Stepper(plain.projectedValue),
-                  Stepper().value(plain.projectedValue), "Stepper over a Double")
-
-        // The fields and the pickers, which the host carries both ways too.
         let text = State(wrappedValue: "a")
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
+        let changed: [(Node, Prop, String)] = [
+            (Slider(number.projectedValue).node, RangeElementContract.value.token, "Slider"),
+            (Stepper(number.projectedValue).node, RangeElementContract.value.token, "Stepper"),
+            (Switch(flag.projectedValue).node, ToggleElementContract.isOn.token, "Switch"),
+            (CheckBox(flag.projectedValue).node, ToggleElementContract.isOn.token, "CheckBox"),
+            (TextField(text.projectedValue).node, TextElementContract.text.token, "TextField"),
+            (TextEditor(text.projectedValue).node, TextElementContract.text.token, "TextEditor"),
+            (SearchField(text.projectedValue).node, TextElementContract.text.token, "SearchField"),
+            (DatePicker(due.projectedValue).node, DatePickerContract.date.token, "DatePicker"),
+            (TimePicker(alarm.projectedValue).node, TimePickerContract.time.token, "TimePicker"),
+        ]
+        let shown: [(Node, Prop, String)] = [
+            (ProgressBar(number.projectedValue).node, ProgressBarContract.progress.token, "ProgressBar"),
+            (Spinner(flag.projectedValue).node, SpinnerContract.isAnimating.token, "Spinner"),
+        ]
 
-        registers(TextField(text.projectedValue), TextField().text(text.projectedValue), "TextField")
-        registers(TextEditor(text.projectedValue), TextEditor().text(text.projectedValue), "TextEditor")
-        registers(SearchField(text.projectedValue), SearchField().text(text.projectedValue), "SearchField")
-        registers(DatePicker(due.projectedValue), DatePicker().date(due.projectedValue), "DatePicker")
-        registers(TimePicker(alarm.projectedValue), TimePicker().time(alarm.projectedValue), "TimePicker")
+        for (node, member, what) in changed + shown {
+            XCTAssertNotNil(node.driven[member], "\(what) hands its state to the host")
+            XCTAssertNil(node.props[member], "\(what) describes no copy of it")
+        }
+        for (node, member, what) in changed {
+            XCTAssertEqual(node.driven[member]?.mode, .inOut, "\(what): the user's change comes back")
+        }
+    }
+
+    /// A TOGGLE'S WORDS FROM A STATE CROSS AS A LABEL'S DO, through the text door one way, whichever way its value
+    /// goes.
+    func testAToggleCarriesItsWordsFromAState() throws {
+        let caption = State(wrappedValue: "Sound")
+
+        let page = try page(VStack {
+            Switch(caption.projectedValue, isOn: true)
+            CheckBox(caption.projectedValue, isOn: false)
+        }.node)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
+        XCTAssertNil(page.at(.auto(3), .auto(4))?.props["text"], "and no value beside it")
+    }
+
+    /// A PROPERTY CROSSING AS IT IS TAKES A STATE: a map's settings, a picker's range and form, a bar's look and an
+    /// outline's color each drive the member they set from `$x`, with nothing built again for it.
+    func testEveryPropertyCrossingAsItIsTakesAState() {
+        let flag = State(wrappedValue: true)
+        let number = State(wrappedValue: 8.0)
+        let color = State(wrappedValue: Color.red)
+        let day = State(wrappedValue: CalendarDate(year: 2026, month: 1, day: 1))
+        let look = State(wrappedValue: ToolbarStyle.plain)
+        let edge = State(wrappedValue: ScrollEdge.hard)
+        let split = SplitView { Text("x") } detail: { Text("y") }
+        let driven: [(Node, Prop, String)] = [
+            (Map().kind(State(wrappedValue: MapKind.satellite).projectedValue).node, MapContract.kind.token, "type"),
+            (Map().isScrollEnabled(flag.projectedValue).node, MapContract.isScrollEnabled.token, "isScrollEnabled"),
+            (Map().isZoomEnabled(flag.projectedValue).node, MapContract.isZoomEnabled.token, "isZoomEnabled"),
+            (Map().showsTraffic(flag.projectedValue).node, MapContract.showsTraffic.token, "showsTraffic"),
+            (Map().showsUserLocation(flag.projectedValue).node, MapContract.showsUserLocation.token, "userLocation"),
+            (DatePicker().minimum(day.projectedValue).node, DatePickerContract.minimum.token, "minimum"),
+            (DatePicker().maximum(day.projectedValue).node, DatePickerContract.maximum.token, "maximum"),
+            (DatePicker().format(State(wrappedValue: DateFormat.long).projectedValue).node,
+             DatePickerContract.format.token, "DatePicker.format"),
+            (TimePicker().format(State(wrappedValue: TimeFormat.medium).projectedValue).node,
+             TimePickerContract.format.token, "TimePicker.format"),
+            (Button("Go").stroke(color.projectedValue).node, BorderElementContract.stroke.token, "stroke"),
+            (split.barForegroundColor(color.projectedValue).node, BarElementContract.barForegroundColor.token,
+             "barForegroundColor"),
+            (split.toolbarSpacing(number.projectedValue).node, BarElementContract.toolbarSpacing.token,
+             "toolbarSpacing"),
+            (split.toolbarStyle(look.projectedValue).node, BarElementContract.toolbarStyle.token, "toolbarStyle"),
+            (split.barScrollEdge(edge.projectedValue).node, BarElementContract.barScrollEdge.token, "barScrollEdge"),
+        ]
+
+        for (node, property, what) in driven {
+            XCTAssertNotNil(node.driven[property], "\(what) drives its member")
+            XCTAssertNil(node.props[property], "\(what) is carried, not described")
+        }
     }
 }

@@ -10,21 +10,13 @@ public enum TimePickerContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A time picker is a view whose text has a color, a spacing and a font.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextColorElementContract.self, FontElementContract.self, FocusElementContract.self,
+        PopupElementContract.self,
     ]
 
-    /// The clock face has closed.
-    public static let closed = ElementEvent<Self, Void>("closed", layer: .native)
-
-    /// How the time is written, as a format string.
-    public static let format = ElementProperty<Self, String>("format", layer: .native)
-
-    /// Whether the clock face is showing.
-    public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)
-
-    /// The clock face has opened.
-    public static let opened = ElementEvent<Self, Void>("opened", layer: .native)
+    /// How much of the time is written out.
+    public static let format = ElementProperty<Self, TimeFormat>("format", layer: .native)
 
     /// The time the field shows, on a 24-hour clock.
     public static let time = ElementProperty<Self, ClockTime>("time", layer: .native)
@@ -33,5 +25,5 @@ public enum TimePickerContract: ElementContract {
     public static let timeChanged = ElementEvent<Self, ClockTime>("timeChanged", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [closed, format, isOpen, opened, time, timeChanged]
+    public static let members: [any ContractMember] = [format, time, timeChanged]
 }

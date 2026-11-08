@@ -349,6 +349,6 @@ private struct MotionValuePlan {
     }
 
     private static let brushProperties: Set<Prop> = [
-        .background, .fill, .stroke,
+        .background, .fill, ShapeContract.stroke.token, BorderElementContract.stroke.token,
     ]
 }

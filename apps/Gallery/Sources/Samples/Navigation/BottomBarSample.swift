@@ -67,9 +67,9 @@ struct BottomBarSample: SampleContent, ExampleContent {
                 }
                 .itemsLayout(.list())
                 .aim(list)
-                .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                .onCreated { try await list.scroll(to: messages.count - 1, anchor: .end) }
                 .onChanged(messages.count, policy: .cancelPrevious) {
-                    try await list.scrollTo(messages.count - 1, anchor: .end)
+                    try await list.scroll(to: messages.count - 1, anchor: .end)
                 }
             }
             .ignoresSafeArea(.all)
@@ -102,7 +102,7 @@ struct BottomBarSample: SampleContent, ExampleContent {
                         .verticalAlignment(.end)
                         .gridColumn(1)
                 }
-                .columns(.fill, .auto)
+                .columns(.fill, .automatic)
                 .columnSpacing(10)
                 .padding(12)
             }

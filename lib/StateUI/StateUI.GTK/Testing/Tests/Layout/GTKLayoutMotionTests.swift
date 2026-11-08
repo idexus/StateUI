@@ -145,7 +145,10 @@ final class GTKLayoutMotionTests: XCTestCase {
         stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         stack.children = .arranged(order.map { name in
             var row = HostPatch(id: .manual(name), type: .text)
-            row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
+            row.properties = [
+                .text: .string(name), VisualElementContract.width.token: .number(100),
+                VisualElementContract.height.token: .number(40),
+            ]
             row.properties[.isVisible] = .bool(!hidden.contains(name))
             row.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), curve: .linear), lanes: .all)
             return row

@@ -3,17 +3,11 @@
 
 /// Locale facts supplied by a native host, whenever the user's settings change.
 @_spi(Host) public struct HostLocaleInfo: Equatable, Sendable {
-    /// The two-letter language, such as "en" or "pl".
-    public let language: String
+    /// The full language tag, including its script and region where known; nil where the host has none.
+    public let language: LocaleTag?
 
-    /// The two-letter region, such as "US" or "PL", and empty where the locale has none.
-    public let region: String
-
-    /// The locale's full name, such as "en-PL".
-    public let name: String
-
-    /// The current zone's IANA identifier, such as "Europe/Warsaw".
-    public let timeZone: String
+    /// The current zone by its IANA name, such as "Europe/Warsaw"; nil where the host has none.
+    public let timeZone: TimeZoneName?
 
     /// Whether the locale writes times as 14:30 rather than 2:30 PM.
     public let uses24HourClock: Bool
@@ -24,41 +18,28 @@
     /// Whether the locale uses metric units.
     public let isMetric: Bool
 
-    /// The way the language is written, `.leftToRight` or `.rightToLeft`.
-    public let layoutDirection: LayoutDirection
+    /// The way the language is written.
+    public let writingDirection: WritingDirection
 
     /// The user's languages as tags, most wanted first; empty where the host says only `language`.
-    public let languages: [String]
+    public let languages: [LocaleTag]
 
     /// A complete locale report.
     public init(
-        language: String,
-        region: String,
-        name: String,
-        timeZone: String,
+        language: LocaleTag?,
+        timeZone: TimeZoneName?,
         uses24HourClock: Bool,
         firstDayOfWeek: Weekday,
         isMetric: Bool,
-        layoutDirection: LayoutDirection,
-        languages: [String] = []
+        writingDirection: WritingDirection,
+        languages: [LocaleTag] = []
     ) {
         self.language = language
-        self.region = region
-        self.name = name
         self.timeZone = timeZone
         self.uses24HourClock = uses24HourClock
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
-        self.layoutDirection = layoutDirection
+        self.writingDirection = writingDirection
         self.languages = languages
-    }
-}
-
-extension HostLocaleInfo {
-    /// The locale as one tag: its full name, else its language and region; nil where the host said no language.
-    var tag: LocaleTag? {
-        if !name.isEmpty { return LocaleTag(name) }
-        guard !language.isEmpty else { return nil }
-        return LocaleTag(region.isEmpty ? language : language + "-" + region)
     }
 }

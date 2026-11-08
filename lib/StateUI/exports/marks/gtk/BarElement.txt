@@ -1,5 +1,5 @@
 # revision 15.1
-NavigationStack.barBackground: ✓ read barBackground of NavigationStack: the class of the host's style sheet the header wears: GTK reads back no background
+NavigationStack.barBackground: ☑️ GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner or out from a point keeps the header bar's proportions as it was painted, not as the window resizes.
 NavigationStack.barForegroundColor: ✅
 NavigationStack.barScrollEdge: ☑️ No edge: GNOME's flat header bar shows its shadow while the content scrolls.
 NavigationStack.toolbarSpacing: – A header bar's buttons stand in libadwaita's own look.

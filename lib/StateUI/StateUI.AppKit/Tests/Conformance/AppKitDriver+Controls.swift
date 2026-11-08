@@ -32,7 +32,7 @@ extension AppKitDriver {
         case (.horizontalScrollIndicator, let scroll as NSScrollView):
             return bar(shown: scroll.hasHorizontalScroller, hides: scroll.autohidesScrollers).propValue
         case (.text, let link as AppKitLinkView): return link.attributedTitle.string.propValue
-        case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
+        case (ImageContract.isAnimating.token, let image as AppKitImageView): return image.animationPlaying.propValue
         case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
         case (.horizontalTextAlignment, let picker as AppKitPickerView):
             return alignment(picker.presentedControl as? NSControl, in: picker).propValue
@@ -97,7 +97,7 @@ extension AppKitDriver {
             switch traits.capitals {
             case .none: return .plain
             case .sentences: return .text
-            case .platform: return .default
+            case .platform: return .automatic
             }
         }
     }
@@ -107,12 +107,13 @@ extension AppKitDriver {
     private static func fieldHolds(_ property: Prop, _ view: NSView) -> HostValue? {
         // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
         let outlined = (view as? AppKitTextEditorView)?.scrollView.layer ?? (view as? AppKitTextFieldView)?.layer
-        if [.stroke, .lineWidth, .shape].contains(property), let layer = outlined {
+        if [BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape].contains(property),
+           let layer = outlined {
             switch property {
-            case .stroke:
+            case BorderElementContract.stroke.token:
                 guard layer.borderWidth > 0 else { return nil }
                 return layer.borderColor.flatMap(NSColor.init(cgColor:)).map { Brush.solidColor(color($0)).propValue }
-            case .lineWidth: return Double(layer.borderWidth).propValue
+            case BorderElementContract.lineWidth.token: return Double(layer.borderWidth).propValue
             default:
                 let radius = Double(layer.cornerRadius)
                 return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
@@ -179,11 +180,11 @@ extension AppKitDriver {
         guard view is AppKitButtonView || view is NSScrollView else { return nil }
         let layer = view.layer
         switch property {
-        case .stroke:
+        case BorderElementContract.stroke.token:
             guard let outline = layer?.borderColor, (layer?.borderWidth ?? 0) > 0, let color = NSColor(cgColor: outline)
             else { return nil }
             return Brush.solidColor(Self.color(color)).propValue
-        case .lineWidth: return Double(layer?.borderWidth ?? 0).propValue
+        case BorderElementContract.lineWidth.token: return Double(layer?.borderWidth ?? 0).propValue
         case .shape:
             if layer?.mask != nil { return ContainerShape.ellipse.propValue }
             let radius = Double(layer?.cornerRadius ?? 0)

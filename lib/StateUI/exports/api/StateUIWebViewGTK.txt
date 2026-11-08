@@ -1,0 +1,3 @@
+swift.conformance WebViewGTK: Swift.Sendable
+swift.enum WebViewGTK: @MainActor enum WebViewGTK
+swift.type.method WebViewGTK.register(): @MainActor static func register()

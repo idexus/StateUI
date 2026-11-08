@@ -18,14 +18,14 @@
             ]) { s in
                 s.start { VStack { numbers().width(300).height(400).id("list") } }
 
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
-                s.expect(try s.held(TextualElementContract.text, on: s.item("0", of: s.element("list"))), "Item 0")
-                s.expect((try? s.item("999", of: s.element("list"))) == nil, true, "an item far out of view is not built")
+                s.settle { (try? item(0, in: s)) != nil }
+                s.expect(try s.held(TextElementContract.text, on: item(0, in: s)), "Item 0")
+                s.expect((try? item(999, in: s)) == nil, true, "an item far out of view is not built")
             },
             ConformanceCase("aListLaysItsItemsDown", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in
                 s.start { VStack { numbers().itemsLayout(.list(spacing: 6)).width(300).height(400).id("list") } }
-                s.settle { (try? s.item("1", of: s.element("list"))) != nil }
-                let (first, second) = (try s.place(of: s.item("0", of: s.element("list"))), try s.place(of: s.item("1", of: s.element("list"))))
+                s.settle { (try? item(1, in: s)) != nil }
+                let (first, second) = (try s.place(of: item(0, in: s)), try s.place(of: item(1, in: s)))
 
                 s.expect(second.x, first.x, within: 0.5, "one under another")
                 s.expect(second.y, first.y + first.height + 6, within: 0.5, "six apart")
@@ -33,8 +33,8 @@
             },
             ConformanceCase("aRowLaysItsItemsAcross", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in
                 s.start { VStack { numbers().itemsLayout(.row(spacing: 8)).width(300).height(60).id("list") } }
-                s.settle { (try? s.item("1", of: s.element("list"))) != nil }
-                let (first, second) = (try s.place(of: s.item("0", of: s.element("list"))), try s.place(of: s.item("1", of: s.element("list"))))
+                s.settle { (try? item(1, in: s)) != nil }
+                let (first, second) = (try s.place(of: item(0, in: s)), try s.place(of: item(1, in: s)))
 
                 s.expect(second.y, first.y, within: 0.5, "one beside another")
                 s.expect(second.x, first.x + first.width + 8, within: 0.5, "eight apart")
@@ -48,8 +48,8 @@
                         numbers().itemsLayout(.grid(minimumItemWidth: 90, spacing: 10)).width(300).height(400).id("list")
                     }
                 }
-                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
-                let places = try (0...3).map { try s.place(of: s.item("\($0)", of: s.element("list"))) }
+                s.settle { (try? item(3, in: s)) != nil }
+                let places = try (0...3).map { try s.place(of: item($0, in: s)) }
                 let width = (300.0 - 2 * 10) / 3
 
                 s.expect(places[1].y, places[0].y, within: 0.5, "three columns")
@@ -61,7 +61,7 @@
             ConformanceCase("aChoiceTheUserMakesLandsOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
                 Covered(ItemsViewContract.selectedItemsChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let chosen = State<Int?>(wrappedValue: nil)
                 let heard = Received<[String]>()
                 s.start(reducesMotion: true) {
@@ -73,18 +73,18 @@
                     }
                 }
                 let list = try s.element("list")
-                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
+                s.settle { (try? item(3, in: s)) != nil }
                 s.expect(try s.held(ItemsViewContract.selectionMode, on: list), .single)
 
                 try s.perform(.choose(3), on: list)
                 s.settle { chosen.wrappedValue == 3 }
                 s.expect(chosen.wrappedValue, 3, "the user's choice")
-                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), ["3"])
+                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), [try identity(3, in: s)])
 
                 try s.perform(.activate, on: s.element("five"))
-                try s.settle { try s.held(ItemsViewContract.selectedItems, on: list) == ["5"] }
-                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), ["5"], "the program's choice shown")
-                s.expect(heard.values, [["3"]], "and heard by nobody")
+                try s.settle { try s.held(ItemsViewContract.selectedItems, on: list) == [try identity(5, in: s)] }
+                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), [try identity(5, in: s)], "the program's choice shown")
+                s.expect(heard.values, [[try identity(3, in: s)]], "and heard by nobody")
             },
             ConformanceCase("manyChoicesLandOnTheState", proves: [
                 Covered(ItemsViewContract.selectionMode), Covered(ItemsViewContract.selectedItems),
@@ -93,7 +93,7 @@
                 let chosen = State<Set<Int>>(wrappedValue: [])
                 s.start { VStack { numbers().selection(chosen.projectedValue).width(300).height(400).id("list") } }
                 let list = try s.element("list")
-                s.settle { (try? s.item("3", of: s.element("list"))) != nil }
+                s.settle { (try? item(3, in: s)) != nil }
                 s.expect(try s.held(ItemsViewContract.selectionMode, on: list), .multiple)
 
                 try s.perform(.choose(1), on: list)
@@ -101,7 +101,7 @@
                 try s.perform(.choose(3), on: list)
                 s.settle { chosen.wrappedValue == [1, 3] }
                 s.expect(chosen.wrappedValue, [1, 3])
-                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), ["1", "3"], "in the order they show")
+                s.expect(try s.held(ItemsViewContract.selectedItems, on: list), [try identity(1, in: s), try identity(3, in: s)], "in the order they show")
             },
             ConformanceCase("anItemOpenedIsHeard", proves: [Covered(ItemsViewContract.itemActivated)]) { s in
                 let opened = Received<Int>()
@@ -110,9 +110,9 @@
                         numbers().onItemActivated { opened.values.append($0) }.width(300).height(400).id("list")
                     }
                 }
-                s.settle { (try? s.item("2", of: s.element("list"))) != nil }
+                s.settle { (try? item(2, in: s)) != nil }
 
-                try s.perform(.activate, on: s.item("2", of: s.element("list")))
+                try s.perform(.activate, on: item(2, in: s))
                 s.settle { !opened.values.isEmpty }
                 s.expect(opened.values, [2])
             },
@@ -128,7 +128,7 @@
                     }
                 }
                 let list = try s.element("list")
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                s.settle { (try? item(0, in: s)) != nil }
                 s.expect(count.wrappedValue, 30, "nothing asked for at the start")
 
                 try s.perform(.scroll(to: Point(0, 100_000)), on: list)
@@ -138,7 +138,7 @@
             },
             ConformanceCase("theEndIsHeardAgainWhenTheListLosesItemsWithItsEndInView", proves: [
                 Covered(ItemsViewContract.endReached),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 30)
                 let heard = Received<Int>()
                 s.start {
@@ -152,7 +152,7 @@
                             .width(300).height(300).id("list")
                     }
                 }
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                s.settle { (try? item(0, in: s)) != nil }
                 for more in [60, 90, 120, 150] {
                     try s.perform(.scroll(to: Point(0, 100_000)), on: try s.element("list"))
                     s.settle { count.wrappedValue == more }
@@ -166,21 +166,21 @@
             },
             ConformanceCase("theListScrollsToAnItem", proves: [
                 Covered(ItemsViewContract.scrollTo),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let aim = Aim(ItemsView<Int>.self)
                 s.start(reducesMotion: true) {
                     VStack {
-                        Button("To 80").onClicked(.ignoreWhileRunning) { try await aim.scrollTo(80, anchor: .start) }.id("go")
+                        Button("To 80").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 80, anchor: .start) }.id("go")
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
                 }
-                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                s.settle { (try? item(0, in: s)) != nil }
 
                 let list = try s.place(of: s.element("list"))
                 try s.perform(.activate, on: s.element("go"))
                 // A toolkit may build the item a moment before it has brought it there.
-                s.settle { (try? s.place(of: s.item("80", of: s.element("list")))).map { abs($0.y - list.y) < 1 } ?? false }
-                let item = try s.place(of: s.item("80", of: s.element("list")))
+                s.settle { (try? s.place(of: item(80, in: s))).map { abs($0.y - list.y) < 1 } ?? false }
+                let item = try s.place(of: item(80, in: s))
                 s.expect(item.y, list.y, within: 1, "at the list's start")
             },
             ConformanceCase("aScrollAskedAsTheListIsMadeStandsItsItemOnceLaidOut", proves: [
@@ -192,15 +192,31 @@
                     VStack {
                         numbers().aim(aim).width(300).height(300).id("list")
                     }
-                    .onCreated { try await aim.scrollTo(999, anchor: .end) }
+                    .onCreated { try await aim.scroll(to: 999, anchor: .end) }
                 }
                 let list = try s.place(of: s.element("list"))
-                let foot = { (try? s.place(of: s.item("999", of: s.element("list")))).map { $0.y + $0.height } }
+                let foot = { (try? s.place(of: item(999, in: s))).map { $0.y + $0.height } }
                 s.settle { foot().map { abs($0 - (list.y + list.height)) < 1 } ?? false }
                 s.expect(foot().map { abs($0 - (list.y + list.height)) < 1 }, true,
                          "the last item at the list's end: \(String(describing: foot())), \(list)")
             },
         ]
+    }
+
+    @MainActor
+    private static func identity(_ position: Int, in session: Session) throws -> String {
+        let list = try session.element("list")
+        guard let entries = list.value(ItemsViewContract.items.token).flatMap(ItemsEntries.init(propValue:)) else {
+            throw StateUIError.noItem("\(position)")
+        }
+        let items = entries.sections.flatMap(\.items)
+        guard items.indices.contains(position) else { throw StateUIError.noItem("\(position)") }
+        return items[position]
+    }
+
+    @MainActor
+    private static func item(_ position: Int, in session: Session) throws -> MountedElement {
+        try session.item(identity(position, in: session), of: session.element("list"))
     }
 
     /// A thousand numbered items, each words with room around them.

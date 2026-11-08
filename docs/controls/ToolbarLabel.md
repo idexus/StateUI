@@ -16,7 +16,7 @@ Text("Inbox")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits nothing: every member below is its own.
+Inherits: [TextElement](tiers/TextElement.md) · [IconElement](tiers/IconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -48,8 +48,22 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarLabelContr
 
 ## ToolbarLabel's own members
 
+ToolbarLabel declares no members of its own.
+
+## From [TextElement](tiers/TextElement.md)
+
+The words an element shows: a control's caption, a text's or a field's words, a menu's caption and its items', a bar's label.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [IconElement](tiers/IconElement.md)
+
+The picture an element shows beside or for its words: a button's, a toolbar label's, a menu entry's, a page's.
+
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>

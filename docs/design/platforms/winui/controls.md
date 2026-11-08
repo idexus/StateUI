@@ -471,9 +471,13 @@ stands, in the order asked. What the page does comes back as the element's
 events: a navigation as it starts and as it ends, why it began by the host
 layer's rule - the program's step, else what WebView2 tells, which does not
 tell a step back from one forward - and whether there is a page behind and
-ahead as it changes ([a web view](../../host/web.md)). A page the program
-loads again while it is still coming, which WebView2 leaves as it is, is
-asked for again instead. A script's answer is the JSON WebView2 writes its
+ahead as it changes ([a web view](../../host/web.md)). `WebReloadSource`
+keeps the complete source the program asked for until its navigation ends
+well, and authored HTML with a base after it, as
+[the shared reload rule](../../host/web.md#the-source-to-reload) says: the
+page again asks for that source anew - WebView2 leaves a reload of a page
+still coming as it is. A navigation the view did not ask for, and a step
+back or forward, give the page again to WebView2's own history. A script's answer is the JSON WebView2 writes its
 value in, read by the host layer's rule, and the end of the page's web
 process is heard as WebView2 tells it. A WebView2 that does not start - no
 runtime where its loader looks, as on a Windows 10 without the Evergreen

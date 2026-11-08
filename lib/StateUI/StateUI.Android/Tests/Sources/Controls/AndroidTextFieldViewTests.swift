@@ -187,7 +187,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
                 }
             }
             defer {
-                driver.finish()
+                driver.close()
                 TestWindow.touchMode(true)
             }
             let renderer = try XCTUnwrap(driver.renderer)
@@ -342,6 +342,6 @@ private struct AimedFieldPage: View {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onAppearing(.ignoreWhileRunning) { try await field.focus() }
+        .onAppearing(policy: .ignoreWhileRunning) { try await field.focus() }
     }
 }

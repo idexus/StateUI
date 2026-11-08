@@ -142,15 +142,14 @@ export async function run(): Promise<void> {
         }
 
         // 4. The hosts a machine is offered: AppKit, UIKit and Android on macOS,
-        //    WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and no
-        //    .NET MAUI. A launch on a machine that runs no host resolves to nothing.
+        //    WinUI on Windows, GTK on Linux, and the Web on macOS and Linux.
+        //    A launch on a machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, the Web on macOS and Linux, and never .NET MAUI",
+        check("the host picker offers AppKit, UIKit and Android on macOS, WinUI on Windows, GTK on Linux, and the Web on macOS and Linux",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "uikit", "android", "web"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
             && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["gtk", "web"])
-            && availableHosts("freebsd").length === 0
-            && !hosts.some((each) => each.label.includes("MAUI")));
+            && availableHosts("freebsd").length === 0);
         {
             const ran: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
@@ -332,8 +331,8 @@ export async function run(): Promise<void> {
             const simulatorSDK = "/Xcode/SDKs/iPhoneSimulator.sdk";
             const uiKit = serverConfig({ swiftPM: { scratchPath: ".build/appkit/index-build" } }, serverSettings("uikit", undefined, simulatorSDK));
             const back = serverConfig(uiKit, serverSettings("appkit", undefined));
-            check("as UIKit the language server indexes in .build/uikit/index-build for arm64-apple-ios26.0-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
-                uiKit.swiftPM?.scratchPath === ".build/uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.0-simulator"
+            check("as UIKit the language server indexes in .build/uikit/index-build for arm64-apple-ios26.4-simulator against Xcode's simulator SDK - and back on AppKit both are gone",
+                uiKit.swiftPM?.scratchPath === ".build/uikit/index-build" && uiKit.swiftPM?.triple === "arm64-apple-ios26.4-simulator"
                 && uiKit.swiftPM?.sdk === simulatorSDK && !("swiftSDK" in uiKit.swiftPM!)
                 && back.swiftPM?.scratchPath === ".build/appkit/index-build" && !("triple" in back.swiftPM!) && !("sdk" in back.swiftPM!));
             check("with no simulator SDK found UIKit indexes for this Mac",
@@ -385,7 +384,8 @@ export async function run(): Promise<void> {
         check("simctl's list reads as the iOS simulators a head installs on, the newest runtime first",
             JSON.stringify(parseSimulators(JSON.stringify({ devices: {
                 "com.apple.CoreSimulator.SimRuntime.iOS-18-2": [{ udid: "OLD", name: "iPhone 16", state: "Shutdown" }],
-                "com.apple.CoreSimulator.SimRuntime.iOS-26-0": [{ udid: "A", name: "iPhone 17", state: "Shutdown" }],
+                "com.apple.CoreSimulator.SimRuntime.iOS-26-2": [{ udid: "EARLY", name: "iPhone 17", state: "Shutdown" }],
+                "com.apple.CoreSimulator.SimRuntime.iOS-26-4": [{ udid: "A", name: "iPhone 17", state: "Shutdown" }],
                 "com.apple.CoreSimulator.SimRuntime.iOS-27-0": [
                     { udid: "B", name: "iPhone 18 Pro", state: "Booted" }, { udid: "C", name: "iPad Air 13-inch (M4)", state: "Shutdown" }],
                 "com.apple.CoreSimulator.SimRuntime.watchOS-12-0": [{ udid: "W", name: "Apple Watch", state: "Shutdown" }],
@@ -393,7 +393,7 @@ export async function run(): Promise<void> {
             === JSON.stringify([
                 { id: "B", name: "iPhone 18 Pro", kind: "simulator", os: "27.0", state: "booted" },
                 { id: "C", name: "iPad Air 13-inch (M4)", kind: "simulator", os: "27.0", state: "" },
-                { id: "A", name: "iPhone 17", kind: "simulator", os: "26.0", state: "" },
+                { id: "A", name: "iPhone 17", kind: "simulator", os: "26.4", state: "" },
             ]) && parseSimulators("not json").length === 0);
         {
             const device = (name: string, os: string, transport: string, reality = "physical", pairing = "paired") => ({
@@ -403,7 +403,8 @@ export async function run(): Promise<void> {
             check("devicectl's list reads as the iPhones and iPads paired with this Mac, of an iOS a head installs on",
                 JSON.stringify(parseUIKitDevices(JSON.stringify({ result: { devices: [
                     device("Phone", "26.6.2", "wired"), device("Tablet", "26.6.1", "localNetwork"),
-                    device("Old Phone", "18.4", "wired"), device("iPhone 17", "26.0", "sameMachine", "virtual"),
+                    device("Old Phone", "18.4", "wired"), device("Early Phone", "26.2", "wired"),
+                    device("iPhone 17", "26.4", "sameMachine", "virtual"),
                     device("Stranger", "26.1", "wired", "physical", "unpaired"),
                 ] } })))
                 === JSON.stringify([

@@ -12,7 +12,7 @@ import XCTest
 /// wrote - the half this host was missing.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -21,7 +21,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
@@ -82,7 +82,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"
@@ -113,7 +113,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
             lamp.property(LampContract.lit) { view, lit in
                 view.lit = lit ?? false
             }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
 
         StateUIActs.add(LampContract.flash, on: LampView.self) { lamp in
@@ -144,7 +144,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
         XCTAssertTrue(lamp.lit, "the registration put the described value on the view")
@@ -157,7 +157,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
 
         lamp.pull()
@@ -173,7 +173,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
         registerLamp()
 
         let renderer = AppKitRenderer.running { Pulling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let lamp = try XCTUnwrap(renderer.nativeViews(LampView.self).first)
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         XCTAssertEqual(lamp.flashes, 0)

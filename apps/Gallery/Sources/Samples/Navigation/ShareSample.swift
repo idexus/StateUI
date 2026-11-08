@@ -24,7 +24,7 @@ struct ShareSample: SampleContent, ExampleContent {
             // False is a cancel; a platform with no share sheet throws why.
             Button("Share")
                 .accessibilityIdentifier("share.share")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         let shared = try await window.share(text: words, address: address)
                         answer = shared ? "shared" : "cancelled"

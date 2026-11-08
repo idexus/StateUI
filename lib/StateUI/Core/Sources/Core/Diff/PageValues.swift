@@ -74,8 +74,15 @@ extension Node {
 
     /// The keys the page tier's properties - a title, an icon, a ground - and its event - a link given - are written
     /// under, made once.
-    private static let pageProps = Set(PageElementContract.members.map { Prop($0.name) })
-    private static let pageEvents = Set(PageElementContract.members.map { Event($0.name) })
+    private static let pageProps = Set(declared(.property).map { Prop(key: $0) })
+    private static let pageEvents = Set(declared(.event).map { Event(key: $0) })
+
+    /// The keys of the page tier's members of `kind`, its tiers' included.
+    private static func declared(_ kind: MemberFacts.Kind) -> [KeyName] {
+        PageElementContract.worn.flatMap { $0.members }.compactMap { member in
+            (member as? any DeclaredMember).flatMap { $0.facts.kind == kind ? $0.memberKey : nil }
+        }
+    }
 }
 
 /// A page's values as modifiers write them - every way a view's own property is written, kept to the page.

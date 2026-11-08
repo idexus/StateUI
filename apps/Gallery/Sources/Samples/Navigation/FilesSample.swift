@@ -23,7 +23,7 @@ struct FilesSample: SampleContent, ExampleContent {
 
             // The contents go first; nil is a cancel.
             Button("Save…")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt"])
                     saved = try await window.saveFile(Array(words.utf8), name: "Note", types: [text])
                     answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
@@ -31,7 +31,7 @@ struct FilesSample: SampleContent, ExampleContent {
 
             // No file longer than 1 KB is read whole: one byte past it says it is longer.
             Button("Open…")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     let text = FileType("Text", extensions: ["txt", "md"])
                     guard let file = try await window.openFile(types: [text]) else {
                         return answer = "cancelled"
@@ -45,12 +45,12 @@ struct FilesSample: SampleContent, ExampleContent {
             // The system opens it in the application it gives its kind.
             Button("Launch the saved file")
                 .isEnabled(saved != nil)
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     if let saved { try await saved.launch() }
                 }
 
             Button("Launch swift.org")
-                .onClicked(.ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
+                .onClicked(policy: .ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
 
             // A text file dragged from the system onto it is read into the editor.
             ZStack {
@@ -62,9 +62,9 @@ struct FilesSample: SampleContent, ExampleContent {
             .stroke(dropping ? Palette.accent : Palette.outline)
             .lineWidth(dropping ? 2 : 1)
             .shape(.roundedRectangle(10))
-            .onDragOver { dropping = true }
-            .onDragLeave { dropping = false }
-            .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+            .onDragEntered { dropping = true }
+            .onDragExited { dropping = false }
+            .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                 dropping = false
                 let start = try await files[0].read(atMost: 1025)
                 guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }

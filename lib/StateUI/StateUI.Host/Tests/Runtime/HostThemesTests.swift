@@ -11,7 +11,7 @@ final class HostThemesTests: XCTestCase {
     func testTheApplicationsThemeWinsUntilItFollowsTheSystem() {
         XCTAssertEqual(HostThemes.inForce(held: .dark, system: .light), .dark)
         XCTAssertEqual(HostThemes.inForce(held: .light, system: .dark), .light)
-        XCTAssertEqual(HostThemes.inForce(held: .system, system: .dark), .dark)
-        XCTAssertEqual(HostThemes.inForce(held: .system, system: .light), .light)
+        XCTAssertEqual(HostThemes.inForce(held: nil, system: .dark), .dark)
+        XCTAssertEqual(HostThemes.inForce(held: nil, system: .light), .light)
     }
 }

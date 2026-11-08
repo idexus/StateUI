@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIAndroid
 
 // What Android calls as it loads this library: the application is named to
@@ -9,5 +10,5 @@ import StateUIAndroid
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
     MainActor.assumeIsolated { HelloWorldApp.register() }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }

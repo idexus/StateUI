@@ -9,15 +9,19 @@ import XCTest
 /// follows a change of it.
 @MainActor
 final class EnvironmentFactsTests: XCTestCase {
-    /// A locale is eight words; the week's first day counts from Sunday's 0; any other count is no locale.
-    func testALocaleIsEightWords() throws {
-        let locale = try XCTUnwrap(HostLocaleInfo(words: ["ar", "EG", "ar-EG", "Africa/Cairo", "1", "6", "1", "1"]))
-        XCTAssertEqual(locale.language, "ar")
+    /// A locale is six words and then the user's languages, most wanted first - none where the host gives only the
+    /// one; the week's first day counts from Sunday's 0; fewer words are no locale.
+    func testALocaleIsSixWordsAndTheUsersLanguages() throws {
+        let words = ["ar-EG", "Africa/Cairo", "1", "6", "1", "1"]
+        let locale = try XCTUnwrap(HostLocaleInfo(words: words))
+        XCTAssertEqual(locale.language, "ar-EG")
         XCTAssertEqual(locale.timeZone, "Africa/Cairo")
         XCTAssertTrue(locale.uses24HourClock)
         XCTAssertEqual(locale.firstDayOfWeek, .saturday)
         XCTAssertTrue(locale.isMetric)
-        XCTAssertEqual(locale.layoutDirection, .rightToLeft)
+        XCTAssertEqual(locale.writingDirection, .rightToLeft)
+        XCTAssertEqual(locale.languages, [])
+        XCTAssertEqual(HostLocaleInfo(words: words + ["ar-EG", "en-GB"])?.languages, ["ar-EG", "en-GB"])
         XCTAssertNil(HostLocaleInfo(words: ["en", "US"]))
     }
 
@@ -97,8 +101,8 @@ final class EnvironmentFactsTests: XCTestCase {
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([HostPatch(id: .manual("label"), type: .text)])
         runtime.tree.apply(root, complete: true)
-        let rightToLeft = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
-        let leftToRight = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+        let rightToLeft = try XCTUnwrap(HostLocaleInfo(words: ["he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
+        let leftToRight = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
         defer { runtime.core.setLocaleInfo(leftToRight) }
 
         var told = false

@@ -40,7 +40,7 @@ final class AppKitTimePickerViewTests: XCTestCase {
             TimePicker(ClockTime(hour: 7, minute: 30))
                 .onTimeChanged { times.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitTimePickerView.self).first)
 
         picker.chooseForTesting(ClockTime(hour: 21, minute: 5))

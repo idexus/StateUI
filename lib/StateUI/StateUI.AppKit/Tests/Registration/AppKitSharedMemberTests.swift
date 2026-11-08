@@ -32,7 +32,7 @@ final class AppKitSharedMemberTests: XCTestCase {
 
         for (type, properties, isEnabled) in controls {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var disabled = HostPatch(id: .manual("control"), type: type)
             disabled.properties = properties
             disabled.properties[.isEnabled] = .bool(false)
@@ -67,7 +67,7 @@ final class AppKitSharedMemberTests: XCTestCase {
 
         for (type, properties, nativeFont) in controls {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var control = HostPatch(id: .manual("control"), type: type)
             control.properties = properties.merging([
                 .fontSize: .number(21),
@@ -113,7 +113,7 @@ final class AppKitSharedMemberTests: XCTestCase {
 
         for (type, properties, nativeColor) in controls {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var control = HostPatch(id: .manual("control"), type: type)
             control.properties = properties
             control.properties[.textColor] = .color(red: 51, green: 102, blue: 153, alpha: 255)
@@ -144,7 +144,7 @@ final class AppKitSharedMemberTests: XCTestCase {
 
         for (type, fill) in fills {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var view = HostPatch(id: .manual("view"), type: type)
             view.properties[.background] = .color(red: 51, green: 102, blue: 153, alpha: 255)
             renderer.applyForTesting(tree(view))
@@ -165,12 +165,12 @@ final class AppKitSharedMemberTests: XCTestCase {
 
         for type in views {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             func placed(_ id: String, ignoresInput: Bool) -> HostPatch {
                 var view = HostPatch(id: .manual(id), type: type)
                 view.properties = [
-                    .width: .number(40),
-                    .height: .number(20),
+                    VisualElementContract.width.token: .number(40),
+                    VisualElementContract.height.token: .number(20),
                     .horizontalAlignment: .enumeration(Alignment.start.rawValue),
                     .ignoresInput: .bool(ignoresInput),
                 ]
@@ -203,11 +203,11 @@ final class AppKitSharedMemberTests: XCTestCase {
     func testALayoutThatLetsInputThroughStillHasItsChildrenHit() throws {
         for type in [NodeType.vStack, .hStack, .grid, .zStack] {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var child = HostPatch(id: .manual("child"), type: .rectangle)
             child.properties = [
-                .width: .number(20),
-                .height: .number(20),
+                VisualElementContract.width.token: .number(20),
+                VisualElementContract.height.token: .number(20),
                 .horizontalAlignment: .enumeration(Alignment.start.rawValue),
                 .verticalAlignment: .enumeration(Alignment.start.rawValue),
             ]

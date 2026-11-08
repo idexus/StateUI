@@ -273,6 +273,16 @@ final class DocumentationExamplesTests: XCTestCase {
         let hostModuleMap = repository.appendingPathComponent("lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap")
         arguments += ["-Xcc", "-fmodule-map-file=\(hostModuleMap.path)"]
         if let sdk { arguments += ["-sdk", sdk] }
+        #if os(macOS)
+        // This Mac at its own version: the compiler's default stands below the library's floor.
+        let system = ProcessInfo.processInfo.operatingSystemVersion
+        #if arch(arm64)
+        let architecture = "arm64"
+        #else
+        let architecture = "x86_64"
+        #endif
+        arguments += ["-target", "\(architecture)-apple-macosx\(system.majorVersion).\(system.minorVersion)"]
+        #endif
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
         // `/usr/bin/env` on Windows and Foundation's `Process` resolves
         // nothing itself - it opens exactly the path it is given - so a

@@ -23,9 +23,9 @@ extension GTKView {
         var least: Int32 = 0
         var natural: Int32 = 0
         gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, -1, &least, &natural, nil, nil)
-        let width = max(least, Int32(place.width.rounded()))
+        let width = max(least, GTKPixels.size(place.width))
         gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, width, &least, &natural, nil, nil)
-        let height = max(least, Int32(place.height.rounded()))
+        let height = max(least, GTKPixels.size(place.height))
         gtk_widget_allocate(widget, width, height, -1, allocation(at: place, width: Double(width), height: Double(height)))
     }
 

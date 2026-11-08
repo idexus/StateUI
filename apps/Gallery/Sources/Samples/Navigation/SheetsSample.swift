@@ -186,7 +186,7 @@ private struct MailSheet: View {
                     Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                 }
                 .title("Inbox")
-                .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+                .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
             case .drafts:
                 NavigationStack($drafts) {
@@ -206,7 +206,7 @@ private struct MailSheet: View {
                     Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                 }
                 .title("Drafts")
-                .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
+                .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
             }
         }
         .selection($tab)

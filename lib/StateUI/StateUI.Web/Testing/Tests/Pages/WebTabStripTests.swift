@@ -42,7 +42,7 @@ final class WebTabStripTests: XCTestCase {
         for onTheStack in [false, true] {
             shade.dark = false
             let host = WebRenderer.running { ShadedTabs(onTheStack: onTheStack) }
-            defer { host.leave() }
+            defer { host.finish() }
             host.step()
             let tabs = try XCTUnwrap(host.views(WebTabView.self).first)
             let words = {

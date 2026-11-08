@@ -22,7 +22,7 @@ final class WinUITextFieldViewTests: XCTestCase {
                     TextField(words.projectedValue)
                         .isPassword(hidden.wrappedValue)
                         .placeholder("Password")
-                        .isFocused(focused.projectedValue)
+                        .isFocused(into: focused.projectedValue)
                         .accessibilityIdentifier("secret")
                         .onTapped {}
                         .width(200)
@@ -92,7 +92,7 @@ final class WinUITextFieldViewTests: XCTestCase {
                 VStack {
                     if shown.wrappedValue {
                         TextField(words.projectedValue).isPassword(hidden.wrappedValue)
-                            .dragText("Alpha").onDrop { _ in }
+                            .dragText("Alpha").onDropped { _ in }
                     }
                 }
             }
@@ -137,7 +137,7 @@ final class WinUITextFieldViewTests: XCTestCase {
             XCTAssertEqual(Self.checkedAndPredicted(field), [0, 0], "plain words")
 
             let scopes: [(InputPurpose, WinUIInputScope)] = [
-                (.text, .text), (.chat, .chat), (.email, .email), (.numeric, .number), (.default, .default),
+                (.text, .text), (.chat, .chat), (.email, .email), (.numeric, .number), (.automatic, .default),
             ]
             for (written, scope) in scopes {
                 purpose.wrappedValue = written

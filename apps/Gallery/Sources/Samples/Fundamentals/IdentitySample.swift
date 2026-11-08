@@ -58,7 +58,7 @@ struct IdentitySample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Type in a field, then insert a row above it: the text stays with its "
-                + "row, because its control does.")
+                + "row, because the row - its field and its state - does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -79,6 +79,7 @@ struct IdentitySample: SampleContent, ExampleContent {
 private struct IdentityRow: View {
     let item: String
     @Binding var items: [String]
+    @State private var typed = ""
 
     var body: some View {
         // The field takes what the name and the button leave.
@@ -87,7 +88,7 @@ private struct IdentityRow: View {
                 .fontSize(15)
                 .verticalAlignment(.center)
 
-            TextField()
+            TextField($typed)
                 .accessibilityIdentifier("identity.typed")
                 .accessibilityLabel("Anything typed here")
                 .placeholder("type here")
@@ -99,7 +100,7 @@ private struct IdentityRow: View {
                 }
                 .gridColumn(2)
         }
-        .columns(.fixed(90), .fill, .auto)
+        .columns(.fixed(90), .fill, .automatic)
         .columnSpacing(10)
     }
 }

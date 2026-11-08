@@ -6,10 +6,6 @@
 public protocol TextualElement: TextColorElement {}
 
 extension TextualElement {
-    /// What the control says. Usually given in the initializer instead -
-    /// `Text("Total")` - and this is the way to change it in a style.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
-
     /// Whether the letters are drawn as written or in one case throughout.
     ///
     ///     Text("total").textCase(.uppercase)
@@ -19,6 +15,10 @@ extension TextualElement {
 }
 
 extension TextualElement where Self: VisualElement {
+    /// What the control says - its caption on a button, a switch, a check box or a link; the words of a text or a
+    /// field are what it is made with.
+    func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
+
     /// `textCase` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
     public func textCase(_ state: Binding<TextCase>) -> Modified {

@@ -40,7 +40,7 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onOpened { opened += 1 }
 
             // Only where the platform opens a list at the program's asking.
-            if device.honors(PickerContract.isOpen) {
+            if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
                 Button("Open the list")
                     .onClicked { showing = true }
                     .horizontalAlignment(.center)

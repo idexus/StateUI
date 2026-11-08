@@ -60,7 +60,7 @@
             },
             ConformanceCase("aDrawingTheTreeChangesIsDrawnAgain", proves: [
                 Covered(CanvasContract.drawing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let blue = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -83,7 +83,7 @@
             },
             ConformanceCase("aDrawingTheTreeEmptiesLeavesTheCanvasBare", proves: [
                 Covered(CanvasContract.drawing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let drawn = State(wrappedValue: true)
                 s.start {
                     VStack {

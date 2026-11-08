@@ -67,6 +67,28 @@ private struct Holder: View {
     }
 }
 
+/// A view counting with a state of its own, so a test can place ONE value of it twice.
+private struct Tally: View {
+    @State private var count = 0
+
+    var body: some View { Button("\(count)").onClicked { count += 1 } }
+}
+
+/// A view counting with a state of its own, held in a property by the view below.
+private struct Counted: View {
+    @State private var count = 0
+
+    var body: some View { Button("counted \(count)").onClicked { count += 1 } }
+}
+
+/// A view holding another in a property and placing it once: the holder's walk meets the held view's box before
+/// the held view's own place does - one lineage, not two places.
+private struct Holding: View {
+    let counted = Counted()
+
+    var body: some View { VStack { counted } }
+}
+
 /// A composed view with nothing of its own written on it, so a test can write
 /// a driven state ON it and look for the registration on the element its body ends at.
 private struct Plain: View {
@@ -83,6 +105,138 @@ private final class Seen {
 /// alone.
 private final class Builds {
     var count = 0
+}
+
+/// A view that makes its own state in its initializer and keeps the state's binding there too.
+private struct EarlyBinding: View {
+    @State var owner: Double
+    let borrowed: Binding<Double>
+    let revision: Int
+
+    init(seed: Double, revision: Int) {
+        let state = State(seed)
+        _owner = state
+        borrowed = state.projectedValue
+        self.revision = revision
+    }
+
+    var body: some View {
+        VStack {
+            Slider(borrowed).id("slider")
+            Text(String(owner)).id("readout")
+        }
+    }
+}
+
+/// A view that makes its own list in its initializer and keeps a part of it there too.
+private struct EarlyPart: View {
+    @State var owner: [Int]
+    let part: StatePart<Int>
+    let revision: Int
+
+    init(seed: [Int], revision: Int) {
+        let state = State(seed)
+        _owner = state
+        part = state.projectedValue[0]
+        self.revision = revision
+    }
+
+    var body: some View { Text(String(owner[0])) }
+}
+
+/// A view that makes its own state in its initializer and keeps a conversion of it - of it alone, or with a second
+/// state of its own - there too.
+private struct EarlyConversion: View {
+    @State var owner: Double
+    @State var other: Double
+    let derived: Binding<Double>
+    let revision: Int
+
+    init(seed: Double, revision: Int, multi: Bool = false) {
+        let (state, second) = (State(seed), State(0.0))
+        (_owner, _other) = (state, second)
+        derived = multi
+            ? Binding<Double>.multi(state.projectedValue, second.projectedValue).convert({ ($0 + $1) * 100 }) { ($0 / 100, 0) }
+            : state.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })
+        self.revision = revision
+    }
+
+    var body: some View { Slider(derived).maximum(100) }
+}
+
+/// What a view keeps across its builds: the binding of its state as built last, a conversion made once, and the
+/// box the conversion was made from - weakly, to see it leave.
+@MainActor
+private final class Kept {
+    var current: Binding<Double>?
+    var derived: Binding<Double>?
+    weak var box: AnyObject?
+}
+
+/// A view whose body keeps the conversion its first build made, over every rebuild.
+private struct KeepsItsConversion: View {
+    @State var value = 0.2
+    let kept: Kept
+    let revision: Int
+
+    var body: some View {
+        kept.current = $value
+        if kept.derived == nil {
+            kept.box = _value
+            kept.derived = $value.convert({ $0 * 100 }, back: { $0 / 100 })
+        }
+        return Slider(kept.derived!).maximum(100)
+    }
+}
+
+/// A view whose initializer, at `revision` 1, makes a conversion of the fresh state - before that state's box adopts
+/// the one kept - and keeps it for every build after.
+private struct KeepsAnEarlyConversion: View {
+    @State var value: Double
+    let kept: Kept
+    let revision: Int
+
+    init(seed: Double, revision: Int, kept: Kept) {
+        let state = State(seed)
+        _value = state
+        self.kept = kept
+        self.revision = revision
+        if revision == 1 {
+            kept.box = state
+            kept.derived = state.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })
+        }
+    }
+
+    var body: some View {
+        kept.current = $value
+        return Slider(kept.derived ?? $value).maximum(100)
+    }
+}
+
+/// A view with a state of its own and a slider over a conversion of it.
+private struct OwnedSlider: View {
+    @State var value = 0.2
+    let revision: Int
+
+    var body: some View {
+        Slider($value.convert({ $0 * 100 }, back: { $0 / 100 })).maximum(100)
+    }
+}
+
+/// A view that makes its own list in its initializer and keeps its binding there too.
+private struct EarlyList: View {
+    @State var value: [Int]
+    let early: Binding<[Int]>
+    let revision: Int
+
+    init(seed: [Int], revision: Int) {
+        let state = State(seed)
+        _value = state
+        early = state.projectedValue
+        self.revision = revision
+    }
+
+    var body: some View { Text(String(value[0])) }
 }
 
 @MainActor
@@ -243,7 +397,7 @@ final class CarriedStateTests: XCTestCase {
         let grid = Renders().render(Grid {}.rowSpacing(rows.projectedValue).columnSpacing(columns.projectedValue).node)
         let text = Renders().render(Text("Words").lineHeight(line.projectedValue).node)
 
-        XCTAssertEqual(grid.driven?[.rowSpacing]?.kind, .property)
+        XCTAssertEqual(grid.driven?["Grid.rowSpacing"]?.kind, .property)
         XCTAssertEqual(grid.driven?[.columnSpacing]?.kind, .property)
         XCTAssertEqual(text.driven?[.lineHeight]?.kind, .property)
     }
@@ -432,6 +586,192 @@ final class CarriedStateTests: XCTestCase {
         renders.render(Holder(seen: seen, tag: 2).node)
 
         XCTAssertEqual(seen.values, [false, true])
+    }
+
+    /// A BINDING MADE BEFORE ITS STATE WAS ADOPTED LENDS THE ADOPTED STATE: the view built again takes the state
+    /// it had, and the binding its initializer made with the fresh one carries that state on the same number - its
+    /// value, a report from the control and a post landing on the one owner, a post through it waiting in the same
+    /// queue as one through the owner's binding now.
+    func testABindingMadeBeforeAdoptionLendsTheAdoptedState() async throws {
+        let renders = Renders()
+        let first = renders.render(EarlyBinding(seed: 0.2, revision: 0).node)
+        let original = try XCTUnwrap(first.child("slider")?.driven?.bindings[.value]?.state)
+
+        let fresh = EarlyBinding(seed: 0.9, revision: 1)
+        let next = renders.render(fresh.node)
+        // A tie that stands crosses as nothing; one sent again names its state.
+        let carried = next.child("slider")?.driven?.bindings[.value]?.state ?? original
+
+        XCTAssertEqual(fresh.owner, 0.2, "the state adopted")
+        XCTAssertEqual(carried, original, "the binding carries the adopted state, on its number")
+        XCTAssertEqual(fresh.borrowed.journey.destination, 0.2)
+
+        dragged(carried, to: 0.4)
+        XCTAssertEqual(fresh.owner, 0.4, "the control's report reached the owner")
+
+        fresh.borrowed.post(0.6)
+        fresh.$owner.post(0.7)
+        fresh.borrowed.post(0.8)
+        await settle()
+        XCTAssertEqual(fresh.owner, 0.8, "the last post stands, whichever binding posted it")
+    }
+
+    /// Where the journey of the state carried under `number` is headed.
+    private func destination(_ number: Int32) -> Double? {
+        guard let image = Renderer.shared.storage(of: number) else { return nil }
+
+        return JourneyLanes<Double>(carried: Renderer.shared.board.read(image, lanes: JourneyLanes<Double>.lanes))?.destination
+    }
+
+    /// A PART MADE BEFORE ADOPTION WRITES INTO THE ADOPTED WHOLE: its write keeps the other elements the owner
+    /// holds now, not the ones the fresh state began with.
+    func testAPartMadeBeforeAdoptionWritesIntoTheAdoptedWhole() {
+        let renders = Renders()
+        renders.render(EarlyPart(seed: [1, 2], revision: 0).node)
+        let fresh = EarlyPart(seed: [8, 9], revision: 1)
+        renders.render(fresh.node)
+
+        XCTAssertEqual(fresh.part.wrappedValue, 1)
+        fresh.part.wrappedValue = 3
+        XCTAssertEqual(fresh.owner, [3, 2], "the second element the owner holds stands")
+    }
+
+    /// A CONVERSION MADE BEFORE ADOPTION FOLLOWS THE ADOPTED STATE - of one source or of several: worked out from
+    /// it, and a report worked back into it.
+    func testAConversionMadeBeforeAdoptionFollowsTheAdoptedState() throws {
+        for multi in [false, true] {
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            renders.render(EarlyConversion(seed: 0.2, revision: 0, multi: multi).node)
+            let fresh = EarlyConversion(seed: 0.9, revision: 1, multi: multi)
+            let patch = renders.render(fresh.node)
+            let number = try XCTUnwrap(patch.driven?.bindings[.value]?.state, "the fresh view's derived state is tied")
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+
+            XCTAssertEqual(fresh.owner, 0.2)
+            XCTAssertEqual(destination(number), 20, multi ? "several sources" : "one source")
+
+            _ = board.dirty()
+            dragged(number, to: 40)
+            board.cycle(now: 16, reducesMotion: false)
+            board.cycle(now: 32, reducesMotion: false)
+            XCTAssertEqual(fresh.owner, 0.4, accuracy: 1e-9, multi ? "several sources" : "one source")
+        }
+    }
+
+    /// POSTS WAITING SINCE BEFORE ADOPTION LAND IN THE ORDER POSTED, with those through the owner: the last stands,
+    /// whichever queue it waited in.
+    func testPostsWaitingSinceBeforeAdoptionLandInTheOrderPosted() async {
+        for earlyFirst in [false, true] {
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            let first = EarlyBinding(seed: 1, revision: 0)
+            renders.render(first.node)
+            let fresh = EarlyBinding(seed: 9, revision: 1)
+            if earlyFirst {
+                fresh.borrowed.post(0.3)
+                first.borrowed.post(0.2)
+            } else {
+                first.borrowed.post(0.2)
+                fresh.borrowed.post(0.3)
+            }
+            renders.render(fresh.node)
+            if !earlyFirst { fresh.borrowed.post(0.4) }
+            await settle()
+
+            XCTAssertEqual(fresh.owner, earlyFirst ? 0.2 : 0.4, earlyFirst ? "the owner's post came last" : "the last post")
+        }
+    }
+
+    /// A CONVERSION KEPT ACROSS BUILDS FOLLOWS ITS STATE AFTER THE BOX IT WAS MADE FROM LEAVES: the state lives on
+    /// in the box built last, and the conversion is worked out from it and reports into it - made from the first
+    /// box, or made before the state's box adopted the one kept and kept beyond that box.
+    func testAKeptConversionFollowsItsStateAfterItsBoxLeaves() throws {
+        for early in [false, true] {
+            Renderer.shared.clearStates()
+            let (kept, renders, board) = (Kept(), Renders(), Renderer.shared.board)
+            func tree(_ revision: Int) -> Node {
+                early
+                    ? KeepsAnEarlyConversion(seed: revision == 0 ? 0.2 : 0.9, revision: revision, kept: kept).node
+                    : KeepsItsConversion(kept: kept, revision: revision).node
+            }
+            // A tie that stands crosses as nothing: the number is the first patch's where the second sends none.
+            let first = renders.render(tree(0))
+            let second = renders.render(tree(1))
+            let number = try XCTUnwrap(
+                second.driven?.bindings[.value]?.state ?? first.driven?.bindings[.value]?.state, early ? "early" : "kept")
+            board.cycle(now: 0, reducesMotion: false)
+            XCTAssertEqual(destination(number), 20, early ? "early" : "kept")
+
+            renders.render(tree(2))
+            XCTAssertNil(kept.box, "the box the conversion was made from left")
+            XCTAssertEqual(kept.current?.wrappedValue, 0.2)
+
+            kept.current?.wrappedValue = 0.4
+            board.cycle(now: 16, reducesMotion: false)
+            XCTAssertEqual(destination(number), 40, early ? "early" : "kept")
+
+            _ = board.dirty()
+            dragged(number, to: 60)
+            board.cycle(now: 32, reducesMotion: false)
+            board.cycle(now: 48, reducesMotion: false)
+            XCTAssertEqual(try XCTUnwrap(kept.current?.wrappedValue), 0.6, accuracy: 1e-9, early ? "early" : "kept")
+        }
+    }
+
+    /// A VIEW RENDERED AGAIN AFTER ANOTHER INSTANCE ADOPTED ITS STATE KEEPS THAT STATE: the two boxes hold one
+    /// storage, which stands for itself - a storage the element keeps is given up for nothing, itself least of all -
+    /// and the conversion follows a write through either instance.
+    func testAViewRenderedAgainAfterAnotherAdoptedItsStateKeepsIt() throws {
+        let renders = Renders()
+        let (first, second) = (OwnedSlider(revision: 0), OwnedSlider(revision: 1))
+        let number = try XCTUnwrap(renders.render(first.node).driven?.bindings[.value]?.state)
+        renders.render(second.node)
+        XCTAssertTrue(first.$value.storage === second.$value.storage, "the second adopted the first's state")
+
+        // Tied as it stands, the state crosses as nothing; one sent again names its number.
+        let again = renders.render(first.node)
+        let tied = again.driven?.bindings[.value]?.state ?? number
+        XCTAssertTrue(first.$value.storage.standsFor === first.$value.storage, "the state stands for itself")
+        XCTAssertTrue(first.$value.storage === second.$value.storage, "both hold it still")
+
+        first.value = 0.4
+        Renderer.shared.board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(destination(tied), 40)
+
+        second.value = 0.5
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(destination(tied), 50, "a write through the other instance")
+    }
+
+    /// POSTS TO THE WHOLE AND TO ITS PARTS, WAITING ACROSS ADOPTION, LAND IN THE ORDER POSTED: a change over what
+    /// the one before left, and a whole posted later replacing the parts posted before it, not a change after it.
+    func testPostsToTheWholeAndItsPartsLandInTheOrderPosted() async {
+        let renders = Renders()
+        let first = EarlyList(seed: [1, 2], revision: 0)
+        renders.render(first.node)
+        var fresh = EarlyList(seed: [8, 9], revision: 1)
+        first.early.post([10, 20])
+        fresh.early[0].post { $0 + 1 }
+        first.early[1].post { $0 * 2 }
+        fresh.early.post { $0.map { $0 + 100 } }
+        renders.render(fresh.node)
+        await settle()
+        XCTAssertEqual(fresh.value, [111, 140])
+
+        Renderer.shared.clearStates()
+        let again = Renders()
+        let before = EarlyList(seed: [1, 2], revision: 0)
+        again.render(before.node)
+        fresh = EarlyList(seed: [8, 9], revision: 1)
+        fresh.early[0].post(90)
+        before.early[1].post { $0 * 10 }
+        again.render(fresh.node)
+        before.early.post([3, 4])
+        fresh.early[1].post { $0 + 1 }
+        await settle()
+        XCTAssertEqual(fresh.value, [3, 5])
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind
@@ -649,6 +989,42 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertEqual(room.wrappedValue.width, 90, "the part writes through the whole")
         XCTAssertEqual(part.wrappedValue, 90, "and reads it back")
+    }
+
+    /// One view value placed twice has one box for both places, so the places share its state: a write in one
+    /// shows in the other, and the box keeps one storage across renders.
+    func testAValueStandingInTwoPlacesSharesItsState() throws {
+        let renders = Renders()
+        let tally = Tally()
+
+        let patch = renders.render(stack([tally.node, tally.node], id: "root"))
+
+        XCTAssertEqual(patch.child(.auto(1))?.props[.text], .string("0"))
+        XCTAssertEqual(patch.child(.auto(2))?.props[.text], .string("0"))
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(patch.child(.auto(1))?.events?["clicked"])))
+        let again = renders.render(
+            stack([tally.node, tally.node], id: "root"), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(again.child(.auto(1))?.props[.text], .string("1"), "the first place shows the write")
+        XCTAssertEqual(again.child(.auto(2))?.props[.text], .string("1"), "and so does the second: one state")
+    }
+
+    /// A view held in a property and placed once: its holder's walk meets its box first, and the view's own place
+    /// is under the holder - one state, one place.
+    func testAViewHeldInAPropertyStandsOnceUnderItsHolder() throws {
+        let renders = Renders()
+
+        let patch = renders.render(stack([Holding().node], id: "root"))
+        let button = try XCTUnwrap(patch.child(.auto(1))?.child(.auto(2)))
+
+        XCTAssertEqual(button.type, .button)
+        XCTAssertEqual(button.props[.text], .string("counted 0"))
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(button.events?["clicked"])))
+        let again = renders.render(stack([Holding().node], id: "root"), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(again.child(.auto(1))?.child(.auto(2))?.props[.text], .string("counted 1"))
     }
 
     /// `update(_:)` on a carried state MOVES the value, which is the whole of

@@ -188,8 +188,8 @@
     /// Takes the application's accent its platform took, nil for none.
     public func holdAccentColor(_ accent: Color?) { HostBoundary.setAccentColor(HostAccents.hold(accent)) }
 
-    /// Takes the theme the application holds; themed values resolve against the theme in force.
-    public func holdColorScheme(_ theme: ColorScheme) {
+    /// Takes the theme the application holds, nil for the system's; themed values resolve against the theme in force.
+    public func holdColorScheme(_ theme: ColorScheme?) {
         HostBoundary.setColorScheme(HostThemes.hold(theme))
     }
 

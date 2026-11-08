@@ -17,7 +17,7 @@ Application.prompt: ✅
 Application.readClipboard: ✅
 Application.readFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
 Application.saveFile: ✓ read a file dialog: the dialog the relay holds on a page a test drives, which the browser never shows
-Application.sendRequest: ✅
+Application.sendRequest: ☑️ A page's fetch refuses the methods CONNECT, TRACE and TRACK: a request with one fails with that reason.
 Application.share: ✓ read a share sheet: the share sheet the relay holds on a page a test drives, which the browser never shows
 Application.useAccentColor: ✅
 Application.useColorScheme: ✅

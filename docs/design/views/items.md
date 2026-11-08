@@ -8,32 +8,47 @@ virtualization stands inside the platform's.
 
 ## Identities in order
 
-Every entry the list shows has an identity, and the element carries all of
-them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
-the list's header and footer, and each section by its name with its header,
-items and footer - the name `.id` gave it, else its place, two sections of one
-name told apart as two items are, since a host knows a section by its name. A
-list with no sections is one section with neither. An item's identity is
-`String(describing:)` of its id, and in a list of sections the section's name,
-a unit separator, and that - so two sections may hold equal items. A header or
-a footer is named after its section with a record separator (`\u{1E}header`),
-which no author writes.
+Every entry has a host token. `ItemsViewContract.items` carries them in the
+order the list shows: its header, each section's header, items and footer,
+then its footer. The token is an address within this list, not a description
+of the authored value. Selection, activation and scrolling map between the
+token and the value on the Swift side.
 
-An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
-and its words only name it. The list keeps, from one build to the next, the
-identity each value stood under (`ItemsBook`), and a value still on the list
-stands under it again, wherever it now is, before any new value is named. Two
-values that describe alike are two items, the second named with a variant of
-the words, and each keeps its own across a reorder: were the identities
-handed out by words in order, two such items swapping places would leave every
-identity where it was, and the host would move nothing. The same value twice
-is a repeated identity, told apart as two repeated `.id()`s are, and a
-complaint says so: a platform's collection refuses two cells of one identity.
+`ItemsBook` keeps the token each value stood under while it remains in the
+list. A retained value keeps that token across reorder and movement between
+sections. Every token of the previous build is reserved before naming a new
+value, including values leaving in this build, so new content cannot inherit
+a departing row's state. An authored string keeps its name when available;
+another Hashable value receives a monotonically allocated token, independent
+of its description, hash-table order or address. Item and section allocations
+have separate prefixes, a group separator followed by `i` or `s` and a number.
+Allocated tokens are never reused during the book's lifetime.
 
-The entries cross in the patch as any property does, so they are compared,
-sent only when they change, and printed by the inspector. What a host needs
-from one list to the next - removals and insertions, an entry that moved being
-one of each - is worked out once in the host layer.
+A section is matched by the value `.id` gives it, and by its position where
+it has none. A position has its own key type, distinct from every authored
+value. Its host name is the position's decimal number where available; an
+explicit string keeps its name and another explicit value receives a token.
+Sections reserve their previous names just as items do.
+
+The same authored value twice is invalid data and is reported. The book
+keeps the token of each occurrence in writing order so that collision handling
+is stable as other names leave. This does not distinguish equal authored
+values semantically: selection and scrolling still name the first occurrence.
+A new occurrence uses the first occurrence's token with a group separator and
+an unused suffix. Two unequal values with equal descriptions remain distinct.
+
+Decorations have their own domain: a record separator, the section's token
+and another record separator before `header` or `footer`; the list's own
+header and footer omit the section. An empty section name therefore still has
+two separators and cannot equal the list's own decoration. Authored strings
+have NUL, group separator and record separator replaced by U+FFFD before
+naming. The generated tokens contain no NUL, so GTK and WinUI can carry them
+through their native C-string interfaces without truncating identities.
+
+The entries cross as an ordinary property and are sent only when they change.
+The common host layer computes the removals, insertions and moves native
+collections need. A host and its tests use the tokens actually emitted;
+converting an authored ID to text cannot reconstruct one.
 
 ## Built when a cell asks
 
@@ -63,7 +78,10 @@ reaches the host as any child's does.
 What one build of the ItemsView holds - its sections, the identities worked
 out from them, and how each entry is made - is one object, `ItemsSource`, made
 by the view's initializer and so new each time the parent builds the list
-again. An entry's inputs are its identity and that object: while only the
+again. `.header` and `.footer` make the copy they return a source of its own,
+since the source holds them: two copies of one list each show their own, and
+a list kept as a value, given its header in the parent's body, shows the one
+the parent's last build gave it. An entry's inputs are its identity and that object: while only the
 host's cells change, the ItemsView is built again from the same value, the
 entries already built are carried whole, and only the one asked for is
 built. When the parent builds the list again, every entry held is built again

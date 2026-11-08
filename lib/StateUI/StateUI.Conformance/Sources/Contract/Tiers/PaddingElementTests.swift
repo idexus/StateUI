@@ -27,7 +27,7 @@
     static func keepsItsChildIn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).keepsItsChildItsPaddingIn", proves: [
             Covered(PaddingElementContract.padding, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let wide = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {

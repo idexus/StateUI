@@ -13,7 +13,7 @@ extension WebDOMView {
     func showBarLook(_ value: (Prop) -> HostValue?) {
         let material = HostMaterial(value(.background))
         setBox(WebBox(
-            fill: material.paint, stroke: value(.stroke), lineWidth: value(.lineWidth)?.number, shape: value(.shape),
+            fill: material.paint, stroke: value(BorderElementContract.stroke.token), lineWidth: value(BorderElementContract.lineWidth.token)?.number, shape: value(.shape),
             material: material.blur == nil ? nil : material))
         let padding = value(.padding).flatMap(Insets.init(propValue:))
         setPadding(padding)

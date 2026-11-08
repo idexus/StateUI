@@ -8,7 +8,7 @@ struct InspectorView: View {
     let scene: String
 
     /// Where it shows.
-    let place: Inspector.Place
+    let place: DebugInspector.Place
 
     /// Whether there is room for the renders and the chosen one side by side.
     let wide: Bool
@@ -23,7 +23,7 @@ struct InspectorView: View {
         // scene opening its inspector's window by itself.
         model.record()
 
-        let element = ElementID.manual(scene)
+        let element = ElementID.scene(scene)
         let index = OpenScenes.shared.index(of: scene)
         let all = Array(Inspection.passes.reversed())
         let passes = InspectorView.history(of: element, in: all)
@@ -63,7 +63,7 @@ struct InspectorView: View {
                     .gridRow(2)
             }
         }
-        .rows(.auto, .auto, .fill)
+        .rows(.automatic, .automatic, .fill)
         .rowSpacing(6)
         .padding(horizontal: 10, vertical: 8)
     }
@@ -166,7 +166,7 @@ struct InspectorView: View {
                 .verticalAlignment(.start)
                 .gridColumn(1)
             }
-            .columns(.fill, .auto)
+            .columns(.fill, .automatic)
         } else {
             actions
         }
@@ -274,7 +274,7 @@ struct InspectorView: View {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             .rowSpacing(8)
         } else {
             Text("Choose a render to see what it built.")

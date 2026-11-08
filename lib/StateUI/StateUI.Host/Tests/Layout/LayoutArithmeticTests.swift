@@ -231,7 +231,7 @@ final class LayoutArithmeticTests: XCTestCase {
         automatic.values.column = 1
         var shared = Child(width: 5, height: 10)
         shared.values.column = 2
-        let columns: [GridLength] = [.fixed(20), .auto, .proportional(1)]
+        let columns: [GridLength] = [.fixed(20), .automatic, .proportional(1)]
 
         let places = GridArithmetic.places(
             of: [fixed, automatic, shared], rows: [], columns: columns,
@@ -403,13 +403,13 @@ final class LayoutArithmeticTests: XCTestCase {
         var words = Child(width: 300, height: 10)
         words.wraps = true
         words.values.column = 1
-        let columns: [GridLength] = [.auto, .fill]
+        let columns: [GridLength] = [.automatic, .fill]
 
         let places = GridArithmetic.places(
-            of: [icon, words], rows: [.auto], columns: columns,
+            of: [icon, words], rows: [.automatic], columns: columns,
             rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 120, 200), direction: .leftToRight)
         let size = GridArithmetic.size(
-            of: [icon, words], rows: [.auto], columns: columns,
+            of: [icon, words], rows: [.automatic], columns: columns,
             rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: 120)
 
         XCTAssertEqual(places[1], Rect(20, 0, 100, 30), "three lines of words at the column's 100")
@@ -433,11 +433,11 @@ final class LayoutArithmeticTests: XCTestCase {
 
         for room in stride(from: 400.0, through: 900, by: 25) {
             let size = GridArithmetic.size(
-                of: items, rows: [.auto], columns: columns,
+                of: items, rows: [.automatic], columns: columns,
                 rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: room)
             for width in [room, min(room, size.width)] {
                 let places = GridArithmetic.places(
-                    of: items, rows: [.auto], columns: columns, rowSpacing: 0, columnSpacing: 0,
+                    of: items, rows: [.automatic], columns: columns, rowSpacing: 0, columnSpacing: 0,
                     padding: Insets(0), in: Rect(0, 0, width, size.height), direction: .leftToRight)
                 XCTAssertEqual(
                     places.compactMap { $0?.height }.max(), size.height,
@@ -462,9 +462,9 @@ final class LayoutArithmeticTests: XCTestCase {
         one.values.row = 1
         let grids: [(name: String, items: [Child], rows: [GridLength], columns: [GridLength])] = [
             ("across proportional columns", [spanning(columns: 2, width: 100, height: 20)], [], [.fill, .proportional(3)]),
-            ("across automatic columns", [spanning(columns: 2, width: 100, height: 20), one], [.auto, .auto], [.auto, .auto]),
+            ("across automatic columns", [spanning(columns: 2, width: 100, height: 20), one], [.automatic, .automatic], [.automatic, .automatic]),
             ("across a fixed and a proportional column", [spanning(columns: 2, width: 100, height: 20)], [], [.fixed(40), .fill]),
-            ("down proportional rows", [spanning(rows: 2, width: 30, height: 80), one], [.fill, .fill], [.auto, .auto]),
+            ("down proportional rows", [spanning(rows: 2, width: 30, height: 80), one], [.fill, .fill], [.automatic, .automatic]),
         ]
 
         for grid in grids {
@@ -587,7 +587,7 @@ final class LayoutArithmeticTests: XCTestCase {
         }, [84], "one child placed")
         XCTAssertEqual(offered {
             _ = GridArithmetic.places(
-                of: [child], rows: [.auto], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                of: [child], rows: [.automatic], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
                 in: room, direction: .leftToRight)
         }, [84, 84], "a grid's row and its place")
         XCTAssertEqual(offered {

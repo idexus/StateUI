@@ -1,0 +1,20 @@
+swift.class WinUIRegistration: @MainActor final class WinUIRegistration<Realized, Made> where Realized : ElementContract, Made : WinUIControl
+swift.conformance StateUIActs: Swift.Sendable
+swift.conformance StateUIControls: Swift.Sendable
+swift.conformance WinUIRegistration: Swift.Sendable
+swift.enum StateUIActs: @MainActor enum StateUIActs
+swift.enum StateUIControls: @MainActor enum StateUIControls
+swift.enum StateUIEvents: enum StateUIEvents
+swift.enum WinUIHost: enum WinUIHost
+swift.method WinUIRegistration.applies(_:apply:): @MainActor func applies<each Owner, each Value>(_ properties: repeat ElementProperty<each Owner, each Value>, apply: @escaping @MainActor @Sendable (Made, ControlValues<Realized>) -> Void) where repeat each Owner : WornContract, (repeat (each Owner, each Value)) : Any, repeat each Value : HostRepresentable
+swift.method WinUIRegistration.children(_:properties:events:apply:): @MainActor func children<Child, each PropertyOwner, each Value, each EventOwner, each Payload>(_ contract: Child.Type, properties: repeat ElementProperty<each PropertyOwner, each Value>, events: repeat ElementEvent<each EventOwner, each Payload>, apply: @escaping @MainActor @Sendable (Made, [ControlChild<Child>]) -> Void) where Child : ElementContract, repeat each PropertyOwner : WornContract, (repeat (each PropertyOwner, each Value)) : Any, repeat each Value : HostRepresentable, repeat each EventOwner : WornContract, (repeat (each EventOwner, each Payload)) : Any
+swift.method WinUIRegistration.declares(_:): @MainActor func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : WornContract
+swift.method WinUIRegistration.property(_:_:): @MainActor func property<Owner, Value>(_ member: ElementProperty<Owner, Value>, _ apply: @escaping @MainActor @Sendable (Made, Value?) -> Void) where Owner : WornContract, Value : HostRepresentable
+swift.property WinUIControl.element: @MainActor var element: OpaquePointer { get }
+swift.protocol WinUIControl: @MainActor protocol WinUIControl : AnyObject
+swift.type.method StateUIActs.add(_:_:): @MainActor static func add<Owner, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, _ perform: @escaping @MainActor @Sendable (repeat each Argument) async throws -> (repeat each Answer)) where Owner : ApplicationTier, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIActs.add(_:on:_:): @MainActor static func add<Owner, Made, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, on control: Made.Type, _ perform: @escaping @MainActor @Sendable (Made, repeat each Argument) async throws -> (repeat each Answer)) where Owner : WornContract, Made : WinUIControl, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIControls.add(_:create:members:): @MainActor static func add<Realized, Made>(_ contract: Realized.Type, create: @escaping @MainActor @Sendable (ControlReports<Realized>) -> Made, members: @MainActor @Sendable (WinUIRegistration<Realized, Made>) -> Void = { _ in }) where Realized : ElementContract, Made : WinUIControl
+swift.type.method StateUIEvents.declares(_:): @MainActor static func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : ApplicationTier
+swift.type.method StateUIEvents.raise(_:_:): nonisolated static func raise<Owner, each Value>(_ event: ElementEvent<Owner, (repeat each Value)>, _ value: repeat each Value) where Owner : ApplicationTier, repeat each Value : HostRepresentable
+swift.type.method WinUIHost.run(linkSchemes:): static func run(linkSchemes: [String] = []) -> Never

@@ -1,32 +1,30 @@
-# revision 21.1
+# revision 23.1
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.area: ✅
 Canvas.frameChanged: ✅
 Canvas.rotationUpdated: ✓ rotate on Canvas: the view's listening handed the recognizer's states, no touch sent
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Capsule.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-Capsule.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Capsule.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+Capsule.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Capsule.tapCount: ✓ tap on Capsule: the view's listening handed the recognizer's states, no touch sent
 Capsule.tapped: ✓ tap on Capsule: the view's listening handed the recognizer's states, no touch sent
 CheckBox.holdDuration: ✅
 ColorPicker.frameChanged: ✅
 ColorPicker.margin: ✅
-ColorPicker.swipeDirection: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
+ColorPicker.swipeDirections: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.swipeThreshold: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.swiped: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-DatePicker.pointerEntered: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
-DatePicker.pointerExited: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerMoved: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop interaction's handler told the driver's files, no drag session
 Ellipse.tapped: ✓ pressDown on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Fill.panTouchCount: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Fill.panUpdated: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.panXChannel: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.frameChanged: ✅
@@ -46,24 +44,22 @@ ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the rec
 Line.holdDuration: ✅
 Link.frameChanged: ✅
 Link.margin: ✅
-Link.swipeDirection: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
+Link.swipeDirections: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Link.swipeThreshold: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Link.swiped: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Map.pointerEntered: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
-Map.pointerExited: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.tapCount: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-Path.panTouchCount: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
+Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panXChannel: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Picker.frameChanged: ✅
@@ -84,9 +80,9 @@ Rectangle.area: ✅
 Rectangle.frameChanged: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.tapCount: ✓ tap on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.tapped: ✓ tap on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.holdDuration: ✅
@@ -95,14 +91,12 @@ Separator.filesDropped: ✓ dropFiles on Separator: the drop interaction's handl
 Separator.tapped: ✓ pressDown on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.frameChanged: ✅
 Slider.margin: ✅
-Slider.swipeDirection: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.swipeDirections: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swipeThreshold: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.swiped: ✓ pan on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
-Space.pointerEntered: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
-Space.pointerExited: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerMoved: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerPressed: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerReleased: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
@@ -111,7 +105,7 @@ Spinner.layoutBody: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.tapped: ✓ pressDown on Stepper: the view's listening handed the recognizer's states, no touch sent
-Switch.panTouchCount: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
+Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.panXChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.area: ✅
@@ -135,8 +129,8 @@ WebView.area: ✅
 WebView.frameChanged: ✅
 WebView.rotationUpdated: ✓ rotate on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ZStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ZStack.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-ZStack.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ZStack.tapCount: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.tapped: ✓ tap on ZStack: the view's listening handed the recognizer's states, no touch sent

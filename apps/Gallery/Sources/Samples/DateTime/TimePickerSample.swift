@@ -21,7 +21,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
             TimePicker($alarm)
                 .accessibilityIdentifier("timePicker.alarm")
                 .accessibilityLabel("Alarm")
-                .format("t")
+                .format(.short)
 
             Text("Alarm at \(alarm.text)")
                 .fontSize(17)
@@ -42,13 +42,12 @@ struct TimePickerSample: SampleContent, ExampleContent {
 
             SectionTitle("One-way, written back by hand")
 
-            // The same time, one-way: `.time` is what puts it in the field,
-            // and the write back is by hand.
-            TimePicker()
+            // The same time, one-way: the plain value is what puts it in the
+            // field, and the write back is by hand.
+            TimePicker(alarm)
                 .accessibilityIdentifier("timePicker.alarm.oneWay")
                 .accessibilityLabel("Alarm, written back by hand")
-                .time(alarm)
-                .format("t")
+                .format(.short)
                 .onTimeChanged { time in
                     alarm = time
                     picks += 1

@@ -13,39 +13,39 @@ extension AppKitRegistrations {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AppKitSwitchView()
             toggle.onToggled = { on in
-                reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled)
+                reports.report(ToggleElementContract.isOn, on, as: ToggleElementContract.toggled)
             }
             return toggle
         }, members: { toggle in
-            toggle.applies(SwitchContract.isOn, VisualElementContract.isEnabled, TextMembers.captionMembers) {
+            toggle.applies(ToggleElementContract.isOn, EnabledElementContract.isEnabled, TextMembers.captionMembers) {
                 view, values in
                 view.apply(
-                    toggled: values[SwitchContract.isOn] ?? false,
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    toggled: values[ToggleElementContract.isOn] ?? false,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(ToggleElementContract.toggled)
         })
 
         registry.add(CheckBoxContract.self, create: { reports in
             let box = AppKitCheckBoxView()
             box.onToggled = { on in
-                reports.report(CheckBoxContract.isOn, on, as: CheckBoxContract.toggled)
+                reports.report(ToggleElementContract.isOn, on, as: ToggleElementContract.toggled)
             }
             return box
         }, members: { box in
             box.applies(
-                CheckBoxContract.isOn, VisualElementContract.isEnabled, TintElementContract.tint,
+                ToggleElementContract.isOn, EnabledElementContract.isEnabled, TintElementContract.tint,
                 TextMembers.captionMembers) { view, values in
                 view.apply(
-                    checked: values[CheckBoxContract.isOn] ?? false,
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    checked: values[ToggleElementContract.isOn] ?? false,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
                     text: TextMembers.caption(values),
                     textColor: values[TextColorElementContract.textColor].flatMap { nsColor($0.propValue) })
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(ToggleElementContract.toggled)
         })
     }
 }

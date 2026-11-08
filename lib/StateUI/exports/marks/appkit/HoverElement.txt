@@ -1,0 +1,81 @@
+# revision 2.1
+Button.pointerEntered: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.pointerExited: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
+Canvas.pointerEntered: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+Canvas.pointerExited: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerEntered: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+Capsule.pointerExited: ✓ hover on Capsule: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.pointerEntered: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.pointerExited: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
+ColorPicker.pointerEntered: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
+ColorPicker.pointerExited: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.pointerEntered: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+DatePicker.pointerExited: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.pointerEntered: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Ellipse.pointerExited: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
+Fill.pointerEntered: ✓ hover on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Fill.pointerExited: ✓ hover on Fill: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerEntered: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerExited: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+HStack.pointerEntered: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.pointerExited: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
+Image.pointerEntered: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
+Image.pointerExited: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerEntered: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerExited: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+Line.pointerEntered: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
+Line.pointerExited: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
+Link.pointerEntered: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
+Link.pointerExited: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
+Map.pointerEntered: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
+Map.pointerExited: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerEntered: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerExited: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+Path.pointerEntered: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
+Path.pointerExited: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerEntered: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerExited: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.pointerEntered: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.pointerExited: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.pointerEntered: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.pointerExited: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerEntered: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerExited: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.pointerEntered: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.pointerExited: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.pointerEntered: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+ScrollView.pointerExited: ✓ hover on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.pointerEntered: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.pointerExited: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerEntered: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Separator.pointerExited: ✓ hover on Separator: handed to the host's recognizer or handler, no NSEvent sent
+Slider.pointerEntered: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
+Slider.pointerExited: ✓ hover on Slider: handed to the host's recognizer or handler, no NSEvent sent
+Space.pointerEntered: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
+Space.pointerExited: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerEntered: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerExited: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.pointerEntered: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Stepper.pointerExited: ✓ hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerEntered: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Switch.pointerExited: ✓ hover on Switch: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerEntered: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerExited: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.pointerEntered: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.pointerExited: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextField.pointerEntered: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.pointerExited: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.pointerEntered: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.pointerExited: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+ToolbarButton.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+VStack.pointerEntered: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerExited: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerEntered: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerExited: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.pointerEntered: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.pointerExited: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent

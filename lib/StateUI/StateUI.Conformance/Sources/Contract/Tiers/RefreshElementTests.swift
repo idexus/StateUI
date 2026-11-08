@@ -24,7 +24,7 @@
             Covered(RefreshElementContract.isRefreshing, on: element),
             Covered(RefreshElementContract.refreshRequested, on: element),
             Covered(RefreshElementContract.isRefreshEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let refreshing = State(wrappedValue: false)
             let heard = Received<Bool>()
             s.start {
@@ -57,7 +57,7 @@
     static func shown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theApplicationsRefreshShowsUnheard", proves: [
             Covered(RefreshElementContract.isRefreshing, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(RefreshElementContract.refreshRequested, on: element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(RefreshElementContract.refreshRequested, on: element)]) { s in
             let refreshing = State(wrappedValue: false)
             let heard = Received<Bool>()
             s.start {
@@ -106,7 +106,7 @@
     static func withheld(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aWithheldPullIsNotOffered", proves: [
             Covered(RefreshElementContract.isRefreshEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(RefreshElementContract.refreshRequested, on: element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(RefreshElementContract.refreshRequested, on: element)]) { s in
             let enabled = State(wrappedValue: false)
             s.start {
                 VStack {

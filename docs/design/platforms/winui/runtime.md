@@ -30,7 +30,7 @@ executor's queue, which posts a turn. The WinUI element goes with it.
 ## Starting
 
 The head's `main` names the application and hands the thread to
-`StateUIWinUI.run()`, which loads the Windows App SDK the application carries
+`WinUIHost.run()`, which loads the Windows App SDK the application carries
 and starts WinUI's `Application` there; WinUI's loop runs that thread until
 the last window closes, and `run` answers the code WinUI ended with, which
 the head ends the process with - it holds no `@discardableResult`, so a head
@@ -220,7 +220,7 @@ focus moves.
 
 ## A link opened
 
-An application that names its link schemes (`StateUIWinUI.run(linkSchemes:)`)
+An application that names its link schemes (`WinUIHost.run(linkSchemes:)`)
 registers them for the user as it starts
 (`ActivationRegistrationManager.RegisterForProtocolActivation`), as an
 application with no package must, and is its one instance: a second start finds

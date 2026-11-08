@@ -6,7 +6,7 @@ struct MapSample: SampleContent, ExampleContent {
     @State private var said = "tap the map, a pin, or its details"
 
     @Aim(Map.self) private var map
-    @State private var kind = MapType.standard
+    @State private var kind = MapKind.standard
     @State private var traffic = false
     @State private var showsMe = false
     @State private var locked = false
@@ -22,7 +22,7 @@ struct MapSample: SampleContent, ExampleContent {
     private struct Place {
         let name: String
         let address: String
-        let type: MarkerType
+        let type: MarkerKind
         let latitude: Double
         let longitude: Double
     }
@@ -45,14 +45,14 @@ struct MapSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Old Town")
-                    .onClicked(.cancelPrevious) {
-                        try await map.moveToRegion(
+                    .onClicked(policy: .cancelPrevious) {
+                        try await map.show(
                             MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     }
 
                 Button("Poland")
-                    .onClicked(.cancelPrevious) {
-                        try await map.moveToRegion(
+                    .onClicked(policy: .cancelPrevious) {
+                        try await map.show(
                             MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                     }
 
@@ -88,7 +88,7 @@ struct MapSample: SampleContent, ExampleContent {
             Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                 .aim(map)
                 // What the map draws, and whether the user may move it.
-                .type(kind)
+                .kind(kind)
                 .showsTraffic(traffic)
                 .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
@@ -103,7 +103,7 @@ struct MapSample: SampleContent, ExampleContent {
                             .subtitle(place.address)
                             // What the marker stands for, which is what decides
                             // the icon the platform draws for it.
-                            .type(place.type)
+                            .kind(place.type)
                             .onSelected { said = "pin: \(place.name)" }
                             .onDetailsClicked { said = "details: \(place.name)" }
                     }
@@ -145,7 +145,7 @@ struct MapSample: SampleContent, ExampleContent {
             Text("Where the map opens is the initializer's: that region is kept until the "
                 + "platform's map has connected, while the same move from `.onCreated` can "
                 + "land an instant too early and be overwritten. Moving later is the act "
-                + "the buttons perform - `moveToRegion` through the map's `@Aim`, with the "
+                + "the buttons perform - `show(_:)` through the map's `@Aim`, with the "
                 + "radius in meters.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

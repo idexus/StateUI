@@ -97,8 +97,12 @@ each told in one call, in the same order.
 
 `EndReachedWatch`: the end is told as the last item in view comes within
 `endReachedWithin` items of the last one, once. It is told again only after
-the user scrolls away from the end, or once the list gains or loses items,
-so a list waiting for more is not asked for more on every frame.
+the user scrolls away from the end, or once items came or went, so a list
+waiting for more is not asked for more on every frame. The cells tell the
+watch that items came or went as they take the entries, where the items are
+others than before: as many others count - a page of results swapped for
+another of the same length asks again - while the same items in another order
+or a header come do not.
 
 ## The view moving
 
@@ -114,7 +118,10 @@ road of its own for it.
 
 `ItemsGrid`: a grid holds as many columns as fit items at least the
 narrowest width, `spacing` apart, and one at least; the columns share what
-is left of the width.
+is left of the width. A spacing or a width below nought, or not finite, is
+nought (`ItemsLayout.length`) - the layout crosses so, and every host reads
+it so - and any numbers count the columns, none narrower than a point, so no
+count traps.
 
 ## A collection without sections
 

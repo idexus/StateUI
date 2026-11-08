@@ -59,11 +59,37 @@ final class DisabledBranchTests: XCTestCase {
         XCTAssertTrue(MenuEntry.entry(of: try element("copy", in: runtime)).isEnabled)
     }
 
-    private func running() -> HostRuntime {
+    /// What began on a view ends as the view is disabled: a drag and a pinch under way hear their end as cancelled -
+    /// the drag no swipe - and a pointer over it leaves; nothing begins on it, and nothing not begun ends.
+    func testWhatBeganOnAViewEndsAsItIsDisabled() throws {
+        let runtime = running(LockingApplication.self)
+        let pad = try element("pad", in: runtime)
+        pad.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        pad.hear(.drag(.began, x: 0, y: 0, from: .zero), in: runtime)
+        pad.hear(.pinch(.began, scale: 1, at: Point(0.5, 0.5)), in: runtime)
+        try element("lock", in: runtime).hear(.tap(run: 1), in: runtime)
+        for _ in 0..<5 { runtime.pump.turn() }
+        XCTAssertFalse(pad.isEffectivelyEnabled)
+
+        pad.hear(.drag(.ended, x: 90, y: 0, from: .zero), in: runtime)
+        pad.hear(.pinch(.ended, scale: 2, at: Point(0.5, 0.5)), in: runtime)
+        pad.hear(.pointer(.pointerExited, Point(50, 50)), in: runtime)
+        pad.hear(.pointer(.pointerExited, Point(50, 50)), in: runtime)
+        pad.hear(.drag(.began, x: 0, y: 0, from: .zero), in: runtime)
+        pad.hear(.drag(.cancelled, x: 0, y: 0, from: .zero), in: runtime)
+        pad.hear(.pinch(.ended, scale: 1, at: Point(0.5, 0.5)), in: runtime)
+        pad.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        for _ in 0..<5 { runtime.pump.turn() }
+
+        XCTAssertEqual(heard, ["entered", "pan began", "pinch began", "pan cancelled", "pinch cancelled", "exited"])
+        XCTAssertFalse(pad.pointerIsOver)
+    }
+
+    private func running(_ application: (some Application).Type = BranchApplication.self) -> HostRuntime {
         heard = []
         told = []
         born = []
-        BranchApplication.register()
+        application.register()
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false }, makeNative: { TellingView(id: $0.id) }, log: { _ in })
         runtime.connectWindow()
@@ -128,4 +154,26 @@ private struct BranchPage: View {
 
 private struct BranchApplication: Application {
     var body: some Scene { WindowGroup { BranchPage() } }
+}
+
+/// A pad hearing the hand, the pointer, a pinch and swipes, locked by a tap beside it.
+private struct LockingPage: View {
+    @State private var locked = false
+
+    var body: some View {
+        VStack {
+            Text("Pad").id("pad")
+                .onPanUpdated { @MainActor in heard.append("pan \($0.phase)") }
+                .onSwiped { @MainActor _ in heard.append("swiped") }
+                .onPinchUpdated { @MainActor in heard.append("pinch \($0.phase)") }
+                .onPointerEntered { @MainActor in heard.append("entered") }
+                .onPointerExited { @MainActor in heard.append("exited") }
+                .isEnabled(!locked)
+            Text("Lock").onTapped { @MainActor in locked = true }.id("lock")
+        }
+    }
+}
+
+private struct LockingApplication: Application {
+    var body: some Scene { WindowGroup { LockingPage() } }
 }

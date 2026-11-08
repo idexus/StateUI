@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+@_spi(Host) import StateUIHost
 @testable import StateUIWinUI
 @testable import StateUIWinUIDriver
 @testable import StateUIWebViewWinUI
@@ -12,7 +13,7 @@
 enum WinUIBackends {
     /// Every backend registered, once.
     @MainActor static let registered: Void = {
-        StateUIWebViewWinUI.register()
+        WebViewWinUI.register()
         WinUIDriver.backends[WebViewContract.nodeType] = WinUIBackendDriving(
             contract: WebViewContract.self,
             held: { property, view in

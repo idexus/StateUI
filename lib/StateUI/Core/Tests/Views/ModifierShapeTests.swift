@@ -29,6 +29,61 @@ final class ModifierShapeTests: XCTestCase {
         XCTAssertEqual(offenders, [], "a binding a view borrows is named `state`")
     }
 
+    /// A state only the platform writes - registered `.in`, or set from an event - is handed `into:`, and a state
+    /// handed `into:` is one only the platform writes: the label gives the direction.
+    func testAStateOnlyThePlatformWritesIsHandedInto() throws {
+        var offenders: [String] = []
+        var feeds = 0
+
+        for source in try Self.views() {
+            let lines = source.text.split(separator: "\n", omittingEmptySubsequences: false)
+            for (index, line) in lines.enumerated() {
+                guard let declared = line.firstMatch(of: /public func (\w+)\((_|into) state: Binding</) else { continue }
+                let body = lines[(index + 1)...].prefix { !$0.hasPrefix("    }") }.joined(separator: "\n")
+                let platformWrites = body.contains("mode: .in)") || body.contains("mode: .in,") || body.contains("as: .feed)")
+                    || (body.contains("onEvent(") && body.contains("state.wrappedValue = "))
+                if platformWrites { feeds += 1 }
+                if platformWrites != (declared.2 == "into") {
+                    offenders.append("\(source.path):\(index + 1) \(declared.1)")
+                }
+            }
+        }
+
+        XCTAssertGreaterThanOrEqual(feeds, 5, "the walk found almost no feed")
+        XCTAssertEqual(offenders, [], "a state only the platform writes is handed `into:`, and no other")
+    }
+
+    /// A handler's policy is written `policy:`, as a gate is `gate:`, after every argument of the event's own, which
+    /// may be left out before it: each event is heard three ways - plainly, with a policy, through a gate - so a
+    /// policy is never spelled two ways for one event.
+    func testAPolicyIsWrittenWithItsWord() throws {
+        var unlabeled: [String] = []
+        var forms: [String: (plain: Int, policy: Int, gate: Int)] = [:]
+
+        for source in try Self.views() {
+            for found in source.text.matches(of: /public func (on\w+)(?:<[^>]*>)?\(([^{]*?)\)\s*->/) {
+                let parameters = found.2.split(separator: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+                    .joined(separator: " ")
+                let name = String(found.1)
+                if parameters.contains("_ policy: GatePolicy") { unlabeled.append("\(source.path) \(name)") }
+                var counted = forms[name] ?? (0, 0, 0)
+                if parameters.contains("policy: GatePolicy") {
+                    counted.policy += 1
+                } else if parameters.contains("gate: Gate") {
+                    counted.gate += 1
+                } else {
+                    counted.plain += 1
+                }
+                forms[name] = counted
+            }
+        }
+        let uneven = forms.filter { $0.value.policy > 0 && ($0.value.policy != $0.value.plain || $0.value.policy != $0.value.gate) }
+
+        XCTAssertGreaterThan(forms.values.filter { $0.policy > 0 }.count, 30, "the walk found almost no policy")
+        XCTAssertEqual(unlabeled, [], "a policy is written `policy:`")
+        XCTAssertEqual(uneven.keys.sorted(), [], "an event heard with a policy in more forms than plainly or through a gate")
+    }
+
     /// A public modifier gives back `Modified` - its own type, for a control - where what it modifies carries
     /// properties; what configures itself gives back `Self` and is listed with why, and a type listed that gives back
     /// nothing so is said.

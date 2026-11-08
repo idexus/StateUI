@@ -60,6 +60,11 @@ final class OpenScenes {
     }
 
     /// The scene with a number, if it stands - read off the storage, so no build that asks becomes the list's reader.
+    /// The scene whose key in the tree is `key`; nil for a key no scene has.
+    func record(key: String) -> SceneRecord? {
+        OwnKey.sceneNumber(of: key).flatMap(record(id:))
+    }
+
     func record(id: String) -> SceneRecord? {
         _list.storage.value.first { $0.id == id }
     }
@@ -120,7 +125,7 @@ final class OpenScenes {
         guard let scenes else { throw WindowError.unsupported }
 
         let (index, declaration) = try Self.declaration(of: type, in: scenes)
-        guard declaration.takes(valueType) else { throw WindowError.wrongValue(Name((type ?? declaration.type!).name)) }
+        guard declaration.takes(valueType) else { throw WindowError.wrongValue((type ?? declaration.type!).name) }
 
         if let standing = standing(index), standing.holds(declaration, value: value) {
             throw WindowError.alreadyOpen
@@ -134,7 +139,7 @@ final class OpenScenes {
         guard let scenes else { throw WindowError.notOpen }
 
         let (index, declaration) = try Self.declaration(of: type, in: scenes)
-        guard declaration.takes(valueType) else { throw WindowError.wrongValue(Name(type.name)) }
+        guard declaration.takes(valueType) else { throw WindowError.wrongValue(type.name) }
         guard let record = standing(index) else { throw WindowError.notOpen }
 
         try record.close(type, value: value)
@@ -149,7 +154,7 @@ final class OpenScenes {
         }
 
         guard let index = scenes.index(declaring: type), let declared = scenes.windows[index].declaration(of: type)
-        else { throw WindowError.undeclared(Name(type.name)) }
+        else { throw WindowError.undeclared(type.name) }
 
         return (index, declared)
     }

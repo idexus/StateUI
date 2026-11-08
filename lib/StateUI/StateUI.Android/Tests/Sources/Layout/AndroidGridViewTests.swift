@@ -25,7 +25,7 @@ final class AndroidGridViewTests: XCTestCase {
                     Text("C").width(30).height(40).gridRow(1).gridColumnSpan(2).horizontalAlignment(.end)
                 }
                 .columns(.fixed(100), .fill)
-                .rows(.auto, .auto)
+                .rows(.automatic, .automatic)
                 .rowSpacing(10)
                 .columnSpacing(5)
                 .padding(10)
@@ -52,7 +52,7 @@ final class AndroidGridViewTests: XCTestCase {
                             Text("one two three four five six seven eight nine ten eleven twelve").maximumLines(2)
                             Text("›").gridColumn(1)
                         }
-                        .columns(.fill, .auto)
+                        .columns(.fill, .automatic)
                     }
                     .width(150)
                     .horizontalAlignment(.start)
@@ -81,7 +81,7 @@ final class AndroidGridViewTests: XCTestCase {
                         .gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
-                .rows(.auto, .fill, .auto)
+                .rows(.automatic, .fill, .automatic)
             }
 
             host.layOut(width: 1080, height: 1920)

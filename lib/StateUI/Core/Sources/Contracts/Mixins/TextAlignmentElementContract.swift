@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Where text sits across the space its own element was given.
-public enum TextAlignmentElementContract: Contract {
+public enum TextAlignmentElementContract: Tier {
     /// The tier's name.
     public static let name = "TextAlignmentElement"
 
     /// Aligned text is drawn.
-    public static let tiers: [any Contract.Type] = [VisualElementContract.self]
+    public static let tiers: [any Tier.Type] = [VisualElementContract.self]
 
     /// Where the text sits across its element.
     public static let horizontalTextAlignment = ElementProperty<Self, TextAlignment>(

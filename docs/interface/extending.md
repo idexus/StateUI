@@ -24,6 +24,15 @@ events registered in Swift*: [AppKit](../hosts/appkit.md),
 [UIKit](../hosts/uikit.md), [Android Views](../hosts/android.md),
 [WinUI](../hosts/winui.md), [GTK](../hosts/gtk.md) and [Web](../hosts/web.md).
 
+The native half receives the same `ControlReports<Contract>` on every
+host. A child drawn by its parent is a `ControlChild<Contract>`. Reading
+live control values or a child, and reporting a native event, runs on
+`MainActor`; a toolkit callback
+enters that actor at its adapter boundary. Reporting is synchronous and
+keeps the order of the native callback. Child identity can be compared and
+hashed without reading its native values. Application events raised through
+`StateUIEvents.raise` use the host's queue and can originate on any thread.
+
 ### The contract and the view
 
 The Gallery's traffic light is a whole element:
@@ -49,7 +58,7 @@ public enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
 /// wears, and its members, each with its value's type.
 public enum TrafficLightContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.TrafficLight"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Which lamp is lit.
     public static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -97,6 +106,11 @@ public struct TrafficLight: ElementView {
   native, adaptive, composed by StateUI or the provider's own. The library
   declares every control the same way; the [control dictionary](../controls/README.md)
   renders those declarations.
+- **`Tier`** declares members many elements wear, such as a glow several of
+  an application's controls share; an element lists it among its `tiers`.
+  An element's own contract and its tiers are `WornContract`s: what a view
+  writes, hears and is aimed with is a member of one, and the compiler
+  refuses a member of an `ApplicationTier` there.
 - **`HostRepresentable`** is a value that crosses to a host:
   `propValue` and `init?(propValue:)` turn it into a `PropValue` and back. A
   closed vocabulary crosses as its case's number, an author-named one as a
@@ -146,29 +160,39 @@ extension Styling: RatingBarProperties where Target == RatingBar {}
 `PropertyContainer` is what holds properties: a control, or a style.
 `StyleTarget` is a control a style can be written for, named by the node
 type a style resolves by (`nodeType`, its contract's). `Styling` is the type
-behind `Style<Target>`. Every library control has a protocol of this kind:
-`ButtonProperties`, `CanvasProperties`, `CheckBoxProperties`,
-`ColorPickerProperties`, `DatePickerProperties`, `GridProperties`,
-`HStackProperties`, `ImageProperties`, `LineProperties`, `MapProperties`,
-`PathProperties`, `PickerProperties`, `PolygonProperties`,
-`PolylineProperties`, `ProgressBarProperties`, `RectangleProperties`,
-`ScrollViewProperties`, `SearchFieldProperties`, `SliderProperties`,
-`SpinnerProperties`, `StepperProperties`, `SwitchProperties`,
+behind `Style<Target>`. A library control with settings a style may give has
+a protocol of this kind:
+`ButtonProperties`, `ColorPickerProperties`, `DatePickerProperties`,
+`GridProperties`, `HStackProperties`, `ImageProperties`, `MapProperties`,
+`RectangleProperties`, `ScrollViewProperties`, `StepperProperties`,
 `TextEditorProperties`, `TextFieldProperties`, `TextProperties`,
-`TimePickerProperties`, `ToolbarGroupProperties` and `WebViewProperties`.
+`TimePickerProperties`, `ToolbarGroupProperties` and `WebViewProperties`. What a control is for -
+a switch's position, a slider's value, a field's words, the place of its
+cursor - whether a picker stands open, and what chooses a style's variant, a
+button's role and a picker's presentation, are the control's own, never a
+style's: a `Switch` has no such protocol, its style taking only what its
+tiers offer.
 What several controls share has one too: `ViewProperties`,
 `VisualElementProperties`, `LayoutProperties`, `StackProperties`,
 `ShapeProperties`, `FilledShapeProperties`, `CorneredShapeProperties` and
-`TextInputProperties`. A tier's own protocol ends in `Element`, such as
-`VisualElement` or `ActionElement`; the control dictionary's tier pages name
-each one.
+`TextInputProperties`. A tier stands on two sides. On the element side a
+bare name says what an element is - `View`, `Layout`, `Stack`, `Shape`,
+`TextInput` - and its `…Properties` protocol is the half a style wears too.
+A mixin's name ends in `Element` and says what an element has: one a style
+wears too stands on the property side, `FontElement` or `PaddingElement`, and
+one only an element wears on the element side, `FocusElement` or
+`KeyboardElement`. The control dictionary's tier pages name each one.
 
 ### A state the host walks
 
-A property bound to a state is handed to the host with the state, which walks
-it there and reports where it got to. `setValue(_:on:mode:kind:)` says which
-way it crosses - a `StateMode`: `.in`, `.out` or `.inOut` - and which of the
-host's doors it goes through, a `StateKind`:
+A property bound to a state is handed to the host with the state.
+`setValue(_:on:as:)` says how it crosses, a `StatePassage`: `.journey`, walked
+by the host and where the walk has got to reported back; `.oneWay`, written
+to the host as it stands; `.twoWay`, written so, and what the control reports
+landing back on the state; `.feed`, written by the host alone and read by the
+application. A state takes only the ways its value can - a journey where the
+host can walk it, a feed where it is numbers - so a flag or words walked as
+a journey does not compile:
 
 ```swift listing extending.md.state
 // Sources/Samples/Interop/RatingBar.swift
@@ -176,14 +200,14 @@ host's doors it goes through, a `StateKind`:
 ///
 ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
 ///
-/// `.inOut`, because the host reports where the walk has got to, which is
-/// what `$stars.journey.value` reads. A tap does not arrive this way;
-/// `.onRatingChanged(_:)` hears it.
+/// A `.journey`: the host walks it and reports where the walk has got to,
+/// which is what `$stars.journey.value` reads. A tap does not arrive this
+/// way; `.onRatingChanged(_:)` hears it.
 ///
 /// On the control and not on `RatingBarProperties`: a style wears that
 /// protocol, and a style has no state to follow.
 public func rating(_ state: Binding<Double>) -> Modified {
-    setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+    setValue(RatingBarContract.rating, on: state, as: .journey)
 }
 ```
 
@@ -214,11 +238,10 @@ extension Aim where Target == RatingBar {
 
 ### What a host is handed
 
-A registration's `applies` takes properties a host's view takes together,
-such as the bar's stars with its rating - each an `AppliedProperties` - and
-hands them over as `ControlValues`, read by contract member. The identities
-an ItemsView keeps, in order, cross as `ItemsEntries`. Underneath the typed
-members are the tokens a host reads by name: `Prop`, `Event` and `Act`.
+A registration's `applies` takes the properties a host's view takes
+together, such as the bar's stars with its rating, and hands them over as
+`ControlValues`, read by contract member. The identities an ItemsView keeps,
+in order, cross as `ItemsEntries`.
 
 ## Acts and events of the application
 
@@ -237,22 +260,22 @@ public enum GalleryContract: ApplicationTier {
     public static let name = "Gallery"
 
     /// Writes a line to the platform's own log, where its tools read it.
-    public static let log = ElementAct<Self, String, Void>("Gallery.Log")
+    public static let log = ElementAct<Self, String, Void>("log")
 
     /// The battery's level, 0 through 1, and whether it is charging.
-    public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+    public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("batteryLevel")
 
     /// Declared here and registered nowhere: calling it shows what an act no
     /// performer answers does.
-    public static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+    public static let nobody = ElementAct<Self, Void, Void>("nobody")
 
     /// The battery reported: its level and whether it is charging.
     public static let batteryChanged =
-        ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+        ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
     /// The network came or went: whether the internet is reachable.
     public static let connectivityChanged =
-        ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+        ElementEvent<Self, Bool>("connectivityChanged")
 
     public static let members: [any ContractMember] = [
         log, batteryLevel, nobody, batteryChanged, connectivityChanged,
@@ -270,8 +293,8 @@ hears one from anywhere and answers a `HostEventSubscription`, which
 public enum NotesContract: ApplicationTier {
     public static let name = "Notes"
 
-    public static let exportDocument = ElementAct<Self, String, String>("Notes.ExportDocument")
-    public static let synced = ElementEvent<Self, Int>("Notes.Synced")
+    public static let exportDocument = ElementAct<Self, String, String>("exportDocument")
+    public static let synced = ElementEvent<Self, Int>("synced")
 
     public static let members: [any ContractMember] = [exportDocument, synced]
 }
@@ -282,7 +305,7 @@ struct ExportPage: View {
 
     var body: some View {
         VStack {
-            Button("Export").onClicked(.ignoreWhileRunning) {
+            Button("Export").onClicked(policy: .ignoreWhileRunning) {
                 said = try await application.call(NotesContract.exportDocument, "draft-7")
             }
             Text(said)

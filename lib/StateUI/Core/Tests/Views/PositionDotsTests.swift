@@ -33,8 +33,8 @@ final class PositionDotsTests: XCTestCase {
 
         XCTAssertEqual(row.count, 5)
         XCTAssertEqual(row.map { $0.properties[.fill] }, [Color.gray, .gray, .red, .gray, .gray].map { Material.color($0).propValue })
-        XCTAssertEqual(row.map { $0.properties[.width] }, Array(repeating: .number(10), count: 5))
-        XCTAssertEqual(row.map { $0.properties[.height] }, Array(repeating: .number(10), count: 5))
+        XCTAssertEqual(row.map { $0.properties["VisualElement.width"] }, Array(repeating: .number(10), count: 5))
+        XCTAssertEqual(row.map { $0.properties["VisualElement.height"] }, Array(repeating: .number(10), count: 5))
     }
 
     /// No more dots show than the cap lets, a run holding the position as near its middle as the ends allow.

@@ -1,69 +1,68 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension PropertyContainer {
+extension ModifiableElement {
     /// Carries one of this element's properties from a state the host keeps,
     /// the state's value being the type the contract declares - how an
-    /// application's own control takes a binding for a property.
-    ///
-    /// Write it on the control, never on its `…Properties` protocol, which a
-    /// `Style` wears too.
+    /// application's own control takes a binding for a property. A style
+    /// carries no state, so it has no such road.
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`, of a `@State` or a `@Binding`.
-    ///   - mode: which way the value crosses.
-    ///   - kind: how the host applies the value; see `StateKind`.
+    ///   - passage: how the value crosses - `.oneWay`, `.twoWay` or `.feed`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable & LaneValue>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable & LaneValue>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
-        mode: StateMode,
-        kind: StateKind
+        as passage: StatePassage<Value>
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode, kind: kind)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: passage.mode, kind: passage.kind)
     }
 
     /// The same, for text: the host writes the words as the state changes,
-    /// and with `.inOut` lands what the user types on the state whole.
+    /// and `.twoWay` lands what the user types on the state whole.
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`.
-    ///   - mode: which way the words cross.
+    ///   - passage: how the words cross - `.oneWay` or `.twoWay`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract>(
+    public func setValue<Owner: WornContract>(
         _ property: ElementProperty<Owner, String>,
         on state: Binding<String>,
-        mode: StateMode
+        as passage: StatePassage<String>
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: passage.mode)
     }
 
     /// The same, for a value the host can animate - a number, a color, a
-    /// thickness, a point. With `kind: .property` the host animates the
-    /// property along the state's journey, so `$stars.journey.move(to: 5)`
-    /// moves it; any other kind carries the value as it stands.
+    /// thickness, a point. As a `.journey` the host animates the property
+    /// along the state's journey, so `$stars.journey.move(to: 5)` moves it;
+    /// any other passage carries the value as it stands.
     ///
     ///     func rating(_ state: Binding<Double>) -> Modified {
-    ///         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+    ///         setValue(RatingBarContract.rating, on: state, as: .journey)
     ///     }
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`.
-    ///   - mode: which way the value crosses.
-    ///   - kind: how the host applies the value; see `StateKind`.
+    ///   - passage: how the value crosses - `.journey`, `.oneWay`, `.twoWay` or `.feed`.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable & Walked>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable & Walked>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
-        mode: StateMode,
-        kind: StateKind
+        as passage: StatePassage<Value>
     ) -> Modified {
-        setValue(property.token, on: state, mode: mode, kind: kind)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, on: state, mode: passage.mode, kind: passage.kind)
     }
+}
 
+extension PropertyContainer {
     /// Writes the number of a carried state onto a property - how a drag is
     /// told where to report (`panX`, `panY`). It reads nothing at build, so
     /// the reports rebuild nothing.
@@ -78,7 +77,7 @@ extension PropertyContainer {
     }
 
     /// Carries a property from a state by its token - what the typed
-    /// `setValue(_:on:mode:kind:)` and every driven modifier are written over.
+    /// `setValue(_:on:as:)` and every driven modifier are written over.
     func setValue<Value: LaneValue>(
         _ property: Prop,
         on state: Binding<Value>,
@@ -211,7 +210,7 @@ extension PropertyContainer {
     /// where the member travels, and sets it as it stands where it does not - the contract decides, so a twin never
     /// disagrees with the value it twins.
     /// Design: docs/design/views/bindings.md#binding-twins
-    func twin<Owner: Contract, Value: Walked & HostRepresentable>(
+    func twin<Owner: WornContract, Value: Walked & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>
     ) -> Modified {
@@ -219,7 +218,7 @@ extension PropertyContainer {
     }
 
     /// A twin over a value no host walks: set as it stands.
-    func twin<Owner: Contract, Value: LaneValue & HostRepresentable>(
+    func twin<Owner: WornContract, Value: LaneValue & HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         by state: Binding<Value>
     ) -> Modified {
@@ -228,7 +227,7 @@ extension PropertyContainer {
 
     /// A twin whose state carries another type than its member's - a color into a material, a radius into its
     /// corners: walked where the member travels and the value can be.
-    func twin<Owner: Contract, Member, Value: Walked>(
+    func twin<Owner: WornContract, Member, Value: Walked>(
         _ property: ElementProperty<Owner, Member>,
         carrying state: Binding<Value>
     ) -> Modified {
@@ -236,7 +235,7 @@ extension PropertyContainer {
     }
 
     /// A twin carrying another type than its member's that no host walks: set as it stands.
-    func twin<Owner: Contract, Member, Value: LaneValue>(
+    func twin<Owner: WornContract, Member, Value: LaneValue>(
         _ property: ElementProperty<Owner, Member>,
         carrying state: Binding<Value>
     ) -> Modified {
@@ -244,7 +243,7 @@ extension PropertyContainer {
     }
 
     /// `words(_:by:mode:)` over a text member.
-    func words<Owner: Contract>(
+    func words<Owner: WornContract>(
         _ property: ElementProperty<Owner, String>,
         by state: Binding<String>,
         mode: StateMode = .out
@@ -257,7 +256,7 @@ extension ElementView {
     /// `isOpen` from a state, both ways: the host opens and closes as the state stands, and the user's opening and
     /// closing come back into it as the platform raises them.
     /// Design: docs/design/views/bindings.md#binding-twins
-    func opening<Owner: Contract>(
+    func opening<Owner: WornContract>(
         _ property: ElementProperty<Owner, Bool>, by state: Binding<Bool>,
         opened: ElementEvent<Owner, Void>, closed: ElementEvent<Owner, Void>
     ) -> Self {

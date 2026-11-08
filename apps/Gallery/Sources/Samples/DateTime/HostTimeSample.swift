@@ -54,7 +54,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
             Button("Read again")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) { try await read() }
+                .onClicked(policy: .ignoreWhileRunning) { try await read() }
         }
         .spacing(10)
         .onCreated { try await read() }

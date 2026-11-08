@@ -6,8 +6,8 @@ public protocol MapProperties: PropertyContainer {}
 
 extension MapProperties {
     /// How the world is drawn - streets, satellite photography, or both.
-    public func type(_ value: MapType) -> Modified {
-        setValue(MapContract.type, value)
+    public func kind(_ value: MapKind) -> Modified {
+        setValue(MapContract.kind, value)
     }
 
     /// Whether a drag pans it.
@@ -49,7 +49,7 @@ extension MapProperties {
 /// still - rather than a place inside a ScrollView.
 ///
 /// Where it looks is an act: put an `@Aim(Map.self)` on it with `.aim(_:)` and
-/// call `map.moveToRegion(_:)`. Where it opens
+/// call `map.show(_:)`. Where it opens
 /// is the initializer below.
 ///
 /// The platform's own map draws it where the platform ships one; elsewhere
@@ -59,7 +59,7 @@ public struct Map: ElementView, MapProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Map>` is written against.
+    /// A map with no opening region or markers supplied.
     public init() {
         node = Node(contract: MapContract.self)
     }
@@ -70,7 +70,7 @@ public struct Map: ElementView, MapProperties {
     ///
     /// Where a map opens belongs here, not in an act from `.onCreated`, which
     /// the platform's own opening region overwrites. Moving later is the act,
-    /// `map.moveToRegion(_:)`.
+    /// `map.show(_:)`.
     ///
     /// - Parameter region: what the map opens on.
     public init(region: MapRegion) {
@@ -106,7 +106,7 @@ public struct Map: ElementView, MapProperties {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onLocationTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+    public func onLocationTapped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
         onEvent(MapContract.locationTapped, policy: policy, handler)
     }
 
@@ -165,9 +165,9 @@ public struct Marker: Element {
 
     /// What the marker stands for, which is what decides the icon the platform
     /// draws for it.
-    public func type(_ value: MarkerType) -> Self {
+    public func kind(_ value: MarkerKind) -> Self {
         var copy = self
-        copy.node.write(MarkerContract.type, value)
+        copy.node.write(MarkerContract.kind, value)
         return copy
     }
 
@@ -181,7 +181,7 @@ public struct Marker: Element {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelected(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onSelected(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.selected, policy: policy, handler)
         return copy
@@ -204,7 +204,7 @@ public struct Marker: Element {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.detailsClicked, policy: policy, handler)
         return copy
@@ -219,7 +219,7 @@ public struct Marker: Element {
 }
 
 /// How the world is drawn.
-public enum MapType: Int32, Sendable, HostRepresentable {
+public enum MapKind: Int32, Sendable, HostRepresentable {
     /// Roads and their names - the default.
     case standard = 0
 
@@ -302,6 +302,33 @@ public struct MapRegion: Equatable, Sendable, HostRepresentable {
 
 // MARK: - The acts
 
+extension Map {
+    /// `kind` from a state, `$x`: the host shows each new kind of map as it stands, and no view is rebuilt for it.
+    public func kind(_ state: Binding<MapKind>) -> Modified {
+        twin(MapContract.kind, by: state)
+    }
+
+    /// `isScrollEnabled` from a state, `$x`: the host sets each new value as it stands.
+    public func isScrollEnabled(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.isScrollEnabled, by: state)
+    }
+
+    /// `isZoomEnabled` from a state, `$x`: the host sets each new value as it stands.
+    public func isZoomEnabled(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.isZoomEnabled, by: state)
+    }
+
+    /// `showsTraffic` from a state, `$x`: the host sets each new value as it stands.
+    public func showsTraffic(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.showsTraffic, by: state)
+    }
+
+    /// `showsUserLocation` from a state, `$x`: the host sets each new value as it stands.
+    public func showsUserLocation(_ state: Binding<Bool>) -> Modified {
+        twin(MapContract.showsUserLocation, by: state)
+    }
+}
+
 extension Aim where Target == Map {
     /// Slides the map until it shows `region`.
     ///
@@ -310,8 +337,8 @@ extension Aim where Target == Map {
     ///     Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked(.cancelPrevious) {
-    ///         try await map.moveToRegion(
+    ///     Button("Old Town").onClicked(policy: .cancelPrevious) {
+    ///         try await map.show(
     ///             MapRegion(center: Location(latitude: 52.2497, longitude: 21.0135), radiusMeters: 800))
     ///     }
     ///
@@ -321,10 +348,10 @@ extension Aim where Target == Map {
     /// - Parameter region: what the map is to show.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public func moveToRegion(_ region: MapRegion) async throws {
+    public func show(_ region: MapRegion) async throws {
         try await call(MapContract.moveToRegion, region)
     }
 }
 
 // A map's kind is a choice a property can be handed as `$x` - see StateChoice.
-extension MapType: StateChoice {}
+extension MapKind: StateChoice {}

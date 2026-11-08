@@ -154,11 +154,14 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         gtk_text_buffer_apply_tag(buffer, tag, &start, &end)
     }
 
+    /// Puts the caret `start` characters in and selects `length` from it, in the scalars GTK counts
+    /// (`InputWords.scalarSelection`).
     func select(start: Int, length: Int) {
         var from = GtkTextIter()
         var to = GtkTextIter()
-        gtk_text_buffer_get_iter_at_offset(buffer, &from, Int32(clamping: max(0, start)))
-        gtk_text_buffer_get_iter_at_offset(buffer, &to, Int32(clamping: max(0, start) + max(0, length)))
+        let scalars = InputWords.scalarSelection(start: start, length: length, in: text)
+        gtk_text_buffer_get_iter_at_offset(buffer, &from, Int32(clamping: scalars.start))
+        gtk_text_buffer_get_iter_at_offset(buffer, &to, Int32(clamping: scalars.start + scalars.length))
         gtk_text_buffer_select_range(buffer, &to, &from)
     }
 
@@ -203,13 +206,14 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     }
 
     /// Words going in at `place`: in the editor's case, and where they would take the editor past its bound only the
-    /// first characters that fit (`InputWords.fitting`) - from a key, a paste and a program's write alike.
+    /// first characters that fit there (`InputWords.fitting`) - from a key, a paste and a program's write alike.
     private func inserting(_ words: UnsafePointer<CChar>?, _ bytes: Int32, at place: UnsafeMutablePointer<GtkTextIter>?) {
         guard let words, bytes > 0 else { return }
         let inserted = String(decoding: UnsafeRawBufferPointer(start: words, count: Int(bytes)), as: UTF8.self)
-        guard let fitting = InputWords.fitting(inserted, beside: text, in: textCase, toBound: maximumLength) else {
-            return
-        }
+        guard let fitting = InputWords.fitting(
+            inserted, beside: text, atScalar: place.map { Int(gtk_text_iter_get_offset($0)) }, in: textCase,
+            toBound: maximumLength)
+        else { return }
         g_signal_stop_emission_by_name(UnsafeMutableRawPointer(buffer), "insert-text")
         guard !fitting.isEmpty else { return }
         gtk_text_buffer_insert(buffer, place, fitting, -1)

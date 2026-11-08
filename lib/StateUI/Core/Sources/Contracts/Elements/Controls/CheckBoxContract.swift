@@ -11,16 +11,11 @@ public enum CheckBoxContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A check box is a view, tinted, with the words it says beside its box.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
+        ToggleElementContract.self,
     ]
 
-    /// Whether the box is ticked.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
-
-    /// The box was ticked or unticked, to the value it carries.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, toggled]
+    public static let members: [any ContractMember] = []
 }

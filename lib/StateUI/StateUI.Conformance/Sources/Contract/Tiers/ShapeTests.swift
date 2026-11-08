@@ -10,7 +10,10 @@
 @_spi(Host) public enum ShapeTests: ConformanceFamily {
     public static let name = "Shape"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(ShapeContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(ShapeContract.self).flatMap { element in
             [
                 outlined(element), placedByItsAspect(element), movedByItsTransform(element),
@@ -21,7 +24,7 @@
                 Aspects.holds(ShapeContract.dash, on: element, [3, 2], then: [1, 1], with: stroked(element)),
                 Aspects.holds(ShapeContract.dashPhase, on: element, 0, then: 2.5, with: stroked(element)),
                 Aspects.holds(ShapeContract.lineCap, on: element, .flat, then: .round, with: stroked(element)),
-                Aspects.holds(ShapeContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
+                Aspects.holds(ContentModeElementContract.contentMode, on: element, .fit, then: .stretch, with: figure(element)),
                 Aspects.holds(ShapeContract.geometryTransform, on: element, .identity, then: .rotate(45), with: figure(element)),
             ] + outlineCases(element)
         }
@@ -51,15 +54,15 @@
     @MainActor
     static func placedByItsAspect(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isPlacedInItsRoomAsItsAspectSays", proves: [
-            Covered(ShapeContract.contentMode, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(ContentModeElementContract.contentMode, on: element),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let stretched = State(wrappedValue: false)
             let paint: [any Worn] = element == "Line" || element == "Polyline"
                 ? [Write(ShapeContract.stroke, Brush.solidColor(.red)), Write(ShapeContract.lineWidth, 4)]
                 : [Write(FilledShapeContract.fill, Material.color(.red))]
             s.start {
                 Specimens.page(element, small(element) + paint + [
-                    Write(ShapeContract.contentMode, stretched.wrappedValue ? ContentMode.stretch : .fit),
+                    Write(ContentModeElementContract.contentMode, stretched.wrappedValue ? ContentMode.stretch : .fit),
                     Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                     Write(ViewContract.horizontalAlignment, Alignment.start),
                 ], beside: [Button("Stretch").onClicked { stretched.wrappedValue = true }.id("change")])
@@ -88,7 +91,7 @@
     static func movedByItsTransform(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isMovedByItsTransform", proves: [
             Covered(ShapeContract.geometryTransform, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let moved = State(wrappedValue: false)
             let line = element == "Line"
             let paint: [any Worn] = line
@@ -117,8 +120,8 @@
         switch element {
         case "Line":
             [Write(LineContract.from, Point(0, 0)), Write(LineContract.to, Point(10, 10))]
-        case "Polygon": [Write(PolygonContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
-        case "Polyline": [Write(PolylineContract.points, [Point(0, 0), Point(10, 10)])]
+        case "Polygon": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
+        case "Polyline": [Write(PointsShapeContract.points, [Point(0, 0), Point(10, 10)])]
         case "Path": [Write(PathContract.data, "M 0 0 L 10 0 L 10 10 Z")]
         default: []
         }
@@ -131,11 +134,11 @@
         case "Line":
             [Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(40, 20))]
         case "Polygon":
-            [Write(PolygonContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
+            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
         case "Polyline":
-            [Write(PolylineContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
+            [Write(PointsShapeContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40), Point(0, 0)])]
         case "Path":
-            [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ShapeContract.contentMode, ContentMode.stretch)]
+            [Write(PathContract.data, "M 0 0 L 40 0 L 40 40 L 0 40 Z"), Write(ContentModeElementContract.contentMode, ContentMode.stretch)]
         default:
             []
         }

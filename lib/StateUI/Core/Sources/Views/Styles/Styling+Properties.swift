@@ -7,6 +7,8 @@
 
 extension Styling: VisualElementProperties where Target: VisualElement {}
 extension Styling: BarItemElement where Target: BarItemElement {}
+extension Styling: PlaceholderElement where Target: PlaceholderElement {}
+extension Styling: LineBreakElement where Target: LineBreakElement {}
 extension Styling: ViewProperties where Target: View {}
 extension Styling: LayoutProperties where Target: Layout {}
 extension Styling: StackProperties where Target: Stack {}
@@ -24,37 +26,28 @@ extension Styling: LineHeightElement where Target: LineHeightElement {}
 extension Styling: TrackingElement where Target: TrackingElement {}
 extension Styling: DecorableTextElement where Target: DecorableTextElement {}
 extension Styling: BorderElement where Target: BorderElement {}
-extension Styling: ImageElement where Target: ImageElement {}
+extension Styling: ContentModeElement where Target: ContentModeElement {}
 extension Styling: ButtonMenuElement where Target: ButtonMenuElement {}
 extension Styling: TextAndIconElement where Target: TextAndIconElement {}
 extension Styling: TextInputProperties where Target: TextInput {}
+extension Styling: SubmitElement where Target: SubmitElement {}
+extension Styling: RangeElement where Target: RangeElement {}
 
 // And each control's own properties.
 
-extension Styling: SpinnerProperties where Target == Spinner {}
 extension Styling: ButtonProperties where Target == Button {}
-extension Styling: CheckBoxProperties where Target == CheckBox {}
 extension Styling: ColorPickerProperties where Target == ColorPicker {}
 extension Styling: DatePickerProperties where Target == DatePicker {}
 extension Styling: TextEditorProperties where Target == TextEditor {}
 extension Styling: TextFieldProperties where Target == TextField {}
-extension Styling: CanvasProperties where Target == Canvas {}
 extension Styling: GridProperties where Target == Grid {}
 extension Styling: ImageProperties where Target == Image {}
 extension Styling: TextProperties where Target == Text {}
-extension Styling: LineProperties where Target == Line {}
 extension Styling: MapProperties where Target == Map {}
-extension Styling: PathProperties where Target == Path {}
-extension Styling: PickerProperties where Target == Picker {}
-extension Styling: PolygonProperties where Target == Polygon {}
-extension Styling: PolylineProperties where Target == Polyline {}
-extension Styling: ProgressBarProperties where Target == ProgressBar {}
+extension Styling: PointsShape where Target: PointsShape {}
 extension Styling: RectangleProperties where Target == Rectangle {}
 extension Styling: ScrollViewProperties where Target == ScrollView {}
-extension Styling: SearchFieldProperties where Target == SearchField {}
-extension Styling: SliderProperties where Target == Slider {}
 extension Styling: StepperProperties where Target == Stepper {}
-extension Styling: SwitchProperties where Target == Switch {}
 extension Styling: TimePickerProperties where Target == TimePicker {}
 extension Styling: WebViewProperties where Target == WebView {}
 extension Styling: ToolbarGroupProperties where Target == ToolbarGroup {}

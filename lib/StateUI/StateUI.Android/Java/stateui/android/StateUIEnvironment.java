@@ -27,6 +27,7 @@ import android.net.NetworkCapabilities;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -38,7 +39,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -98,19 +102,24 @@ final class StateUIEnvironment {
     }
 
     /**
-     * The language, the region, the locale's tag, the zone, "1" for a 24-hour clock, the week's first day from
-     * Sunday's 0, "1" for metric units, and "1" where the language is written right to left.
+     * The locale's full tag, the zone, "1" for a 24-hour clock, the week's first day from
+     * Sunday's 0, "1" for metric units, "1" where the language is written right to left, and then the user's
+     * languages as tags, most wanted first.
      */
     static String[] locale(Context context) {
-        Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+        LocaleList locales = context.getResources().getConfiguration().getLocales();
+        Locale locale = locales.get(0);
         boolean metric = LocaleData.getMeasurementSystem(ULocale.forLocale(locale)) != LocaleData.MeasurementSystem.US;
         boolean rightToLeft = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
-        return new String[] {
-            locale.getLanguage(), locale.getCountry(), locale.toLanguageTag(), TimeZone.getDefault().getID(),
+        List<String> facts = new ArrayList<>(Arrays.asList(
+            locale.toLanguageTag(), TimeZone.getDefault().getID(),
             DateFormat.is24HourFormat(context) ? "1" : "0",
             Integer.toString(Calendar.getInstance(locale).getFirstDayOfWeek() - Calendar.SUNDAY),
-            metric ? "1" : "0", rightToLeft ? "1" : "0",
-        };
+            metric ? "1" : "0", rightToLeft ? "1" : "0"));
+        for (int i = 0; i < locales.size(); i++) {
+            facts.add(locales.get(i).toLanguageTag());
+        }
+        return facts.toArray(new String[0]);
     }
 
     /**

@@ -11,8 +11,8 @@ extension WebRegistrations {
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }
-            text.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
-                view.setLines(breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
+            text.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
+                view.setLines(breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             text.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(horizontal: alignment ?? .start)
@@ -27,56 +27,56 @@ extension WebRegistrations {
                 var look = TextLook()
                 look.letterSpacing = values[TrackingElementContract.tracking] ?? 0
                 look.lineHeight = values[LineHeightElementContract.lineHeight]
-                look.decorations = values[DecorableTextElementContract.textDecorations] ?? .none
+                look.decorations = values[DecorableTextElementContract.textDecorations] ?? []
                 view.setSpacing(look)
             }
         }
 
         registry.add(ButtonContract.self, create: { reports in
             let button = WebButtonView()
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
             button.listenForHolding(
-                pressed: { reports.raise(ButtonContract.pressed) }, released: { reports.raise(ButtonContract.released) })
+                pressed: { reports.raise(PressElementContract.pressed) }, released: { reports.raise(PressElementContract.released) })
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                ContentModeElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    values[IconElementContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ContentModeElementContract.contentMode] ?? .fit,
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText],
-                        hasPicture: HostPicture(values[ButtonContract.icon], dark: false) != nil, byDefault: true))
+                        hasPicture: HostPicture(values[IconElementContract.icon], dark: false) != nil, byDefault: true))
             }
-            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
+            button.property(LineBreakElementContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
             }
             button.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 view.setBox(
-                    fill: values[VisualElementContract.background]?.propValue,
+                    fill: values[BackgroundElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            button.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             // The page holds a shortcut on no control - the one stated, else the role's: the window's keys reach it,
             // and assistive technology is told. The role is the document's own for the main action, a submit, and
             // the page's look for each.
-            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
+            button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
-                let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
+                let shortcut = KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role)
                 view.attribute("aria-keyshortcuts", shortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
                 view.attribute("type", role == .primary ? "submit" : "button")
                 view.attribute("data-role", role.map { ["primary", "cancel", "destructive"][Int($0.rawValue)] })
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ClickElementContract.clicked)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 

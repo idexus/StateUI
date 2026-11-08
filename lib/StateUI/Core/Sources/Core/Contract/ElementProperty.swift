@@ -51,8 +51,6 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     ///   - unsaid: the value the library writes itself where an author says
     ///     nothing - for a member no default answers for, which is written
     ///     always; nil where it writes none.
-    ///   - writtenByStateUI: whether StateUI alone writes it, a mark no
-    ///     application says.
     public init(
         _ name: String,
         layer: ElementLayer = .provider,
@@ -60,8 +58,23 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         cleared: Bool = true,
         moves: MotionValues = [],
         remakes: Bool = false,
+        unsaid: Value? = nil
+    ) {
+        self.init(
+            name, layer: layer, travels: travels, cleared: cleared, moves: moves, remakes: remakes, unsaid: unsaid,
+            writtenByStateUI: false)
+    }
+
+    /// A property StateUI alone writes, or one it does not: the mark it sets on what it builds.
+    init(
+        _ name: String,
+        layer: ElementLayer = .provider,
+        travels: Bool = true,
+        cleared: Bool = true,
+        moves: MotionValues = [],
+        remakes: Bool = false,
         unsaid: Value? = nil,
-        writtenByStateUI: Bool = false
+        writtenByStateUI: Bool
     ) {
         self.name = name
         self.layer = layer
@@ -71,11 +84,12 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.remakes = remakes
         self.unsaid = unsaid?.propValue
         self.writtenByStateUI = writtenByStateUI
-        token = Prop(name)
+        token = Prop("\(Owner.name).\(name)")
         owner = KeyName(Owner.name)
+        ContractNames.claim(Owner.self, named: owner)
     }
 
-    /// The key the property crosses the boundary under, made once.
+    /// The key the property crosses the boundary under, made once: its owner's name, a dot, and its own.
     @_spi(Host) public let token: Prop
 
     /// The key of the contract declaring it, made once.

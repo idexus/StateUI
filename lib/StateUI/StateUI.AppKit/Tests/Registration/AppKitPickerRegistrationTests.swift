@@ -28,14 +28,14 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Picker", owner: "Picker", member: "selectedIndex")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Picker", owner: "Picker", member: "opened")))
+            HostRealizedMember(element: "Picker", owner: "PopupElement", member: "opened")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "DatePicker", owner: "DatePicker", member: "date")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TimePicker", owner: "TimePicker", member: "timeChanged")))
 
         XCTAssertFalse(realization.members.contains(
-            HostRealizedMember(element: "DatePicker", owner: "DatePicker", member: "opened")),
+            HostRealizedMember(element: "DatePicker", owner: "PopupElement", member: "opened")),
             "a native date picker has no moment of opening, so the host claims none")
     }
 
@@ -46,7 +46,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
         due.properties[.date] = .numbers([2026, 9, 16])
@@ -67,7 +67,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var alarm = HostPatch(id: .manual("alarm"), type: .timePicker)
         alarm.properties[.time] = .numbers([9, 30, 0])
@@ -87,12 +87,12 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     @MainActor
     func testADatePickersRangeComesFromItsOwnMembers() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)
         due.properties[.date] = .numbers([2026, 9, 16])
-        due.properties[.minimumDate] = .numbers([2026, 1, 1])
-        due.properties[.maximumDate] = .numbers([2026, 12, 31])
+        due.properties[DatePickerContract.minimum.token] = .numbers([2026, 1, 1])
+        due.properties[DatePickerContract.maximum.token] = .numbers([2026, 12, 31])
         renderer.applyForTesting(tree(due))
 
         let native = try XCTUnwrap(

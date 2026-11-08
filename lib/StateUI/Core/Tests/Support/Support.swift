@@ -41,16 +41,18 @@ extension HostPatch {
         [self] + children.flatMap(\.subtree)
     }
 
-    /// The events this element's handlers answer to, by name.
-    var eventNames: [String] {
-        events.map { $0.keys.map(\.name).sorted() } ?? []
+    /// The events this element's handlers answer to.
+    var eventNames: Set<Event> {
+        events.map { Set($0.keys) } ?? []
     }
 
-    /// The six reports every page hears, by name.
-    static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
+    /// The six reports every page hears.
+    static let pageEvents: Set<Event> = [
+        "appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom",
+    ]
 
-    /// The six reports every window hears, by name.
-    static let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
+    /// The five reports every window hears.
+    static let windowEvents: Set<Event> = ["activated", "created", "deactivated", "destroying", "stopped"]
 }
 
 extension HostDrivenUpdate {
@@ -326,13 +328,13 @@ extension Differ {
 }
 
 /// An aim filled BY HAND from a named element, for acts that must be sent
-/// without a render: what an act sends is the element's identity, and this
+/// without a render: what an act sends is where the element stands, and this
 /// is the named kind - what ActCallShapeTests checks. The differ's own
 /// filling of one is AimTests' business.
 @MainActor
 func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
     let aim = Aim(type)
-    aim.box.attach(.manual(name), walk: 1)
+    aim.box.attach([.manual(name)], walk: 1)
     return aim
 }
 
@@ -1066,7 +1068,7 @@ func typed(_ number: Int32, _ text: String) {
     }
 
     XCTAssertTrue(
-        HostBoundary.report(.text(text), through: binding),
+        HostBoundary.report(.string(text), through: binding),
         "the host's report of state \(number) was refused")
 }
 

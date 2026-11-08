@@ -85,25 +85,25 @@ extension WebRegistrations {
             scroll.applies(scrollerBoxMembers) { view, values in
                 // A scroller cuts what it shows by its own overflow, always: its box writes no cut.
                 view.setBox(
-                    background: values[VisualElementContract.background]?.propValue,
+                    background: values[BackgroundElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: false)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
         }
     }
 
     /// What a scroller takes of its own box: what fills it, its outline and its shape.
     private static let scrollerBoxMembers = PropertyList(
-        VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
+        BackgroundElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
         BorderElementContract.shape)
 
 
     private static func applyBox<Realized: ElementContract>(_ view: WebLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
-            background: values[VisualElementContract.background]?.propValue,
+            background: values[BackgroundElementContract.background]?.propValue,
             stroke: values[BorderElementContract.stroke]?.propValue,
             lineWidth: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,

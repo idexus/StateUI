@@ -29,7 +29,7 @@
     static func filled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).isFilledInItsColor", proves: [
             Covered(FilledShapeContract.fill, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let blue = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, ShapeTests.figure(element) + [
@@ -54,7 +54,7 @@
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).fill.showsABlurOrGlassOrWhatStandsInForIt", proves: [
             Covered(FilledShapeContract.fill, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thin))
             let changed = Material.glass(.clear)
             s.start {

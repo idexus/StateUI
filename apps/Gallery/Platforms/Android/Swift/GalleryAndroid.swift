@@ -3,6 +3,7 @@
 
 // listing: android.md.head
 import GalleryUI
+import StateUI
 import StateUIAndroid
 // listing: end
 
@@ -18,6 +19,6 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
         GalleryActs.register()
         GalleryEventSources.register()
     }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }
 // listing: end

@@ -51,8 +51,8 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, the StateUI release it runs on, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
-| `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
+| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `version`, `build`, `libraryVersion`, the StateUI release it runs on, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `colorScheme` | the theme the application holds: nil follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
@@ -63,18 +63,18 @@ scene ([Scenes](#scenes)).
 ### The application's theme
 
 An application follows the theme the user chose until it holds one of its
-own. `application.colorScheme` is `.system` until it is written; `.light` or
+own. `application.colorScheme` is nil until it is written; `.light` or
 `.dark` shows every window in that theme with each platform's own call, and
-`.system` gives it back to the user's setting. It is a state, so a control
-takes it whole: `Picker(themes, selection: application.$colorScheme)`.
-`info.colorScheme` reports the theme in force, which every
-`Color(light:dark:)` resolves against.
+nil gives it back to the user's setting. It is a state, so a control takes it
+whole: `Picker([nil, .light, .dark], selection: application.$colorScheme)`.
+`info.colorScheme` reports the theme in force - always light or dark - which
+every `Color(light:dark:)` resolves against.
 
 ```swift
 @Environment(\.application) private var application
 
 Button("Dark").onClicked { application.colorScheme = .dark }
-Button("As the system").onClicked { application.colorScheme = .system }
+Button("As the system").onClicked { application.colorScheme = nil }
 ```
 
 `info.accentColor` is the accent the user chose for the system - on a
@@ -130,12 +130,12 @@ one window of the `WindowGroup` with no name, like any other, and closing it
 closes that window alone.
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
-extension WindowType where Value == Int {
-    static let document = WindowType("notes.document")
+extension WindowKind where Value == Int {
+    static let document = WindowKind("notes.document")
 }
 
 final class Library {
@@ -172,12 +172,16 @@ A scene declares its windows three ways:
 - `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
   opened, and `Window(.kind) { ... }` makes one;
 - `WindowGroup(.kind) { $id in ... }` of a kind with a value - a
-  `WindowType<ID>` - makes one window per value. The value is `Codable` and
+  `WindowKind<ID>` - makes one window per value. The value is `Codable` and
   `Hashable` so it can identify and restore the window, and the closure
   receives a `Binding`, so the same window can be retargeted without replacing
-  its session. A kind with a value opens only with a value of its type,
+  its session; a value another window of the kind is open for is refused and
+  said once, as `openWindow` refuses it - one window per value, whoever
+  writes: a handler, a post, a movement or a snap of the binding's journey,
+  or the control the host reports into, which is put back to the window's
+  value. A kind with a value opens only with a value of its type,
   `application.openWindow(.kind, value: id)`, and a kind of no value -
-  `WindowType<Void>` - only without one: the compiler refuses the other.
+  `WindowKind<Void>` - only without one: the compiler refuses the other.
 
 Every window of a scene shares the scene's `@State`. What belongs to one
 window is the `@State` of the view it shows: two windows of `NotesPage` each
@@ -194,9 +198,9 @@ none of the others - About, the preferences - is a scene of its own:
 ```swift
 import StateUI
 
-extension WindowType where Value == Void {
-    static let editor = WindowType("notes.editor")
-    static let about = WindowType("notes.about")
+extension WindowKind where Value == Void {
+    static let editor = WindowKind("notes.editor")
+    static let about = WindowKind("notes.about")
 }
 
 struct NotesApp: Application {
@@ -224,8 +228,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
-            Button("About").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
+            Button("New editor").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -236,8 +240,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
-            Button("Close every editor").onClicked(.ignoreWhileRunning) { try await scene.close() }
+            Button("Close").onClicked(policy: .ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(policy: .ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -252,10 +256,10 @@ struct EditorPage: View {
 - `window.close()` closes one window, and the scene ends with its last;
   `scene.close()` closes every window of the scene at once.
 
-`WindowType` names are durable application vocabulary. Use stable,
+`WindowKind` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
 
-Every window carries the same four host metadata values. `windowType` is its
+Every window carries the same four host metadata values. `windowKind` is its
 kind - none for a window of the `WindowGroup` with no name - and `windowValue`
 the encoded per-value identity where the group has one. `hidesWhenInactive`
 and `floatsOnTop` are always explicit booleans, so changing either policy
@@ -267,8 +271,8 @@ updates an existing native window without replacing it.
 beside the application's other scenes:
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
 struct InspectorPage: View { var body: some View { Text("Inspector") } }
@@ -362,12 +366,12 @@ The application opens a window by its kind; a session closes the exact
 window or scene it is:
 
 ```swift
-extension WindowType where Value == Void {
-    static let inspector = WindowType("notes.inspector")
+extension WindowKind where Value == Void {
+    static let inspector = WindowKind("notes.inspector")
 }
 
-extension WindowType where Value == Int {
-    static let document = WindowType("notes.document")
+extension WindowKind where Value == Int {
+    static let document = WindowKind("notes.document")
 }
 
 struct WindowsPage: View {
@@ -442,7 +446,7 @@ page and arrangement of it that hears links hears it, the outermost first. A
 link that comes before any such window waits for the first. A view reaches its
 scene's state by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
 finished in the browser exchanging its code - takes a policy,
-`.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
+`.onLinkOpened(policy: .waitForPrevious) { address in … }`. A window of a kind for a
 value is how a link opens a window of its own:
 `try await application.openWindow(.document, value: id)`.
 
@@ -450,13 +454,13 @@ The scheme is the head's to register, in its platform's own file: the Mac's and
 iOS's `CFBundleURLTypes`, an Android activity's `ACTION_VIEW` intent filter -
 the activity `singleTask`, so a link reaches the running one - a GTK head's
 `Platforms/GTK/link-schemes`, which its desktop entry takes, and on Windows
-`StateUIWinUI.run(linkSchemes:)`, which registers them as the application
+`WinUIHost.run(linkSchemes:)`, which registers them as the application
 starts and keeps it one instance. On the Web a link is the page's address
 with a fragment, `#note/7`, as the page opens and as its fragment changes.
 
 An application whose SDK asks for its own iOS delegate subclasses
 `StateUIApplicationDelegate` and starts with
-`StateUIUIKit.run(delegate: AppDelegate.self)`; on Android its activity
+`UIKitHost.run(delegate: AppDelegate.self)`; on Android its activity
 subclasses `StateUIActivity`, calling `super` where it overrides.
 
 ## Restoration
@@ -618,7 +622,7 @@ What the page is, the view it shows says by modifier:
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
 | `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
-| `.icon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
+| `.pageIcon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
 | `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
@@ -626,7 +630,7 @@ What the page is, the view it shows says by modifier:
 | `.backButtonTitle` | short title supplied by this page for the page pushed above it |
 
 What is not said is left with the host. Each takes a value, and each but
-`.icon` a state, `$x`, which the host follows with no view built again. The space between the page's
+`.pageIcon` a state, `$x`, which the host follows with no view built again. The space between the page's
 edge and what it shows is that view's own `.padding`. These are said of the
 page only by the view it shows - or by that view's `body` - and a view further
 in that says them says nothing, and is told so once.
@@ -639,7 +643,7 @@ the `body` of the view written there - through a modifier, a `Group`, or an
 on a page. Anywhere else - inside a `VStack`, inside a page's content - an
 arrangement is left out and said once. It fills where it stands, so
 it keeps only what its contract declares, and takes its own `.title` and
-`.icon`, for where it is an item of something else, such as a tab, and
+`.pageIcon`, for where it is an item of something else, such as a tab, and
 `.pageBackground`, the ground of each of its pages that says none.
 
 What has a body of its own - the page's actions, the view in its title's place
@@ -669,10 +673,11 @@ A value the body computes is said again whenever the body is built again:
 
 ```swift
 struct EditorPage: View {
+    @State private var text = ""
     @State private var dirty = false
 
     var body: some View {
-        TextEditor()
+        TextEditor($text)
             .toolbar {
                 ToolbarButton("Save")
                     .isEnabled(dirty)
@@ -724,7 +729,7 @@ struct NotesPage: View {
         SplitView {
             Text("Folders")
                 .title("Notes")
-                .icon("notes.png")
+                .pageIcon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
                 .title(folder)

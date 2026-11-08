@@ -82,7 +82,7 @@ extension Renderer {
         let mask: UInt64
 
         switch (binding.kind, value) {
-        case (.text, .text):
+        case (.text, .string):
             mask = ~0
 
         case (.plain, .lanes(let lanes)), (.feed, .lanes(let lanes)):
@@ -107,7 +107,8 @@ extension Renderer {
     }
 
     /// Takes the parts of a journey a native animation changed; the law, the waiter
-    /// and the stop count stay the state's. Reported lanes are never echoed back.
+    /// and the stop count stay the state's. Reported lanes are never echoed back; a
+    /// journey an engine animates takes no report.
     /// Design: docs/design/core/cycle.md#what-the-host-reports
     func hostReported(
         _ journey: HostJourney,
@@ -119,6 +120,7 @@ extension Renderer {
               !update.isEmpty,
               let storage = storage(of: binding.state),
               storage.door == binding.kind,
+              !storage.engineAnimates,
               let bytes = board.whole(binding.state)
         else { return false }
 

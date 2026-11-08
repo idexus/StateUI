@@ -5,10 +5,12 @@ color, a gradient along a line, or a gradient out from a point.
 
 ## Three kinds
 
-A `Brush` is made by one of three factories: `.solidColor`,
-`.linearGradient` and `.radialGradient`. It holds its kind, the geometry
-that kind is drawn over, and its stops. A solid brush is one stop whose offset is never asked for and does
-not travel; it exists for a property that takes only a brush.
+A `Brush` is made by `.linearGradient` or `.radialGradient`. It holds its
+kind, the geometry that kind is drawn over, and its stops. Its third kind,
+one color, is how a color crosses where a property takes a brush: one stop
+whose offset is never asked for and does not travel. An application writes
+the `Color` itself - every place taking a brush takes a color too - so only
+the host's side names that kind (`solidColor`).
 
 ## As a host is handed it
 

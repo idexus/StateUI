@@ -77,7 +77,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
                     Text(described ? "\(Self.says)\n\(Self.hint)" : "nothing")
                         .fontSize(13)
-                        .fontAttributes(described ? .none : .italic)
+                        .fontAttributes(described ? [] : .italic)
                         .textColor(described ? Palette.accent : Palette.subtle)
                         .horizontalTextAlignment(.center)
                 }
@@ -149,7 +149,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                     try await application.announce(words)
                     said = words
@@ -198,7 +198,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .padding(12)
                 }
                 .style(.card)
-                .hidesChildrenFromAccessibility(true)
+                .accessibilityPresence(.hiddenWithContents)
             }
             .spacing(12)
             .horizontalAlignment(.center)
@@ -206,7 +206,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // A rule is decoration: a stop that would waste the user's time.
             Fill(Palette.outline)
                 .height(1)
-                .isAccessibilityHidden(true)
+                .accessibilityPresence(.hidden)
         }
         .spacing(12)
     }

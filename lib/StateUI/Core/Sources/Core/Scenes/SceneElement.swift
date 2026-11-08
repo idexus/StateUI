@@ -23,7 +23,7 @@ struct SceneElement: Element {
             SceneElement.build(record, scene)
         }
 
-        node.id = record.id
+        node.id = record.key
 
         // What the application offered its scenes, and the scene's own session.
         node.environments = SceneElement.offered(by: scene)
@@ -46,7 +46,7 @@ struct SceneElement: Element {
 
             // Written either way, so none of them is ever cleared off a window.
             // Design: docs/design/core/scenes.md#opening-windows
-            if let type = opened.type { window.write(WindowContract.windowType, Name(type.name)) }
+            if let type = opened.type { window.write(WindowContract.windowKind, Name(type.name)) }
             window.describe(WindowContract.windowValue, opened.text)
             window.write(WindowContract.hidesWhenInactive, declaration.hides)
             window.write(WindowContract.floatsOnTop, declaration.floats)
@@ -67,9 +67,9 @@ struct SceneElement: Element {
         }
 
         // Where the scene stands, as the host sees it.
-        node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
-        node.addHandler(SceneContract.deactivated.token) { record.session.phase = .inactive }
-        node.addHandler(SceneContract.stopped.token) { record.session.phase = .background }
+        node.addHandler(SessionElementContract.activated.token) { record.session.phase = .active }
+        node.addHandler(SessionElementContract.deactivated.token) { record.session.phase = .inactive }
+        node.addHandler(SessionElementContract.stopped.token) { record.session.phase = .background }
 
         return node
     }

@@ -23,13 +23,13 @@ final class AppKitToggleRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["Switch", "CheckBox"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Switch", owner: "Switch", member: "isOn")))
+            HostRealizedMember(element: "Switch", owner: "ToggleElement", member: "isOn")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Switch", owner: "Switch", member: "toggled")))
+            HostRealizedMember(element: "Switch", owner: "ToggleElement", member: "toggled")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Switch", owner: "VisualElement", member: "isEnabled")))
+            HostRealizedMember(element: "Switch", owner: "EnabledElement", member: "isEnabled")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "CheckBox", owner: "CheckBox", member: "isOn")))
+            HostRealizedMember(element: "CheckBox", owner: "ToggleElement", member: "isOn")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "CheckBox", owner: "TintElement", member: "tint")))
     }
@@ -39,7 +39,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testASwitchShowsWhatTheTreeSays() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var on = HostPatch(id: .manual("toggle"), type: .switch)
         on.properties[.isOn] = .bool(true)
@@ -67,11 +67,11 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let on = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             VStack {
-                Switch(on.projectedValue).text("Wi-Fi")
-                CheckBox(true).text("agree").textCase(.uppercase)
+                Switch("Wi-Fi", isOn: on.projectedValue)
+                CheckBox("agree", isOn: true).textCase(.uppercase)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
 
@@ -93,11 +93,11 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let words = State(wrappedValue: "Wi-Fi")
         let renderer = AppKitRenderer.running {
             VStack {
-                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+                Switch(words.wrappedValue, isOn: true).horizontalAlignment(.start)
             }
             .motion(.none)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
         layOut()
@@ -119,13 +119,13 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let words = State(wrappedValue: "Wi-Fi")
         Renderer.shared.setApplication(OneWindowApplication {
             VStack {
-                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+                Switch(words.wrappedValue, isOn: true).horizontalAlignment(.start)
             }
             .motion(.eased(.milliseconds(1000), curve: .linear))
         })
         let renderer = testRenderer(clock: { now })
         renderer.startForTesting()
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toggle = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         let layOut = { toggle.window?.contentView?.layoutSubtreeIfNeeded() }
         layOut()
@@ -148,9 +148,9 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testATintedCheckBoxsWordsKeepThePlatformsColor() throws {
         let renderer = AppKitRenderer.running {
-            VStack { CheckBox(false).text("WWWWWW").tint(Color(hex: 0xFF0000)) }
+            VStack { CheckBox("WWWWWW", isOn: false).tint(Color(hex: 0xFF0000)) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)
         box.frame = NSRect(origin: .zero, size: box.fittingSize)
 
@@ -169,7 +169,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testACheckBoxTakesItsValueAndItsTint() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var checked = HostPatch(id: .manual("box"), type: .checkBox)
         checked.properties[.isOn] = .bool(true)
@@ -197,7 +197,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
                     .onToggled { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         native.toggleForTesting()
@@ -213,7 +213,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testAToggleNobodyTakesKeepsTheUsersValueUntilTheTreeSaysOtherwise() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var off = HostPatch(id: .manual("toggle"), type: .switch)
         off.properties[.isOn] = .bool(false)

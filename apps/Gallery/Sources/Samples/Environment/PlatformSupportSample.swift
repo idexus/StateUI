@@ -14,10 +14,10 @@ struct PlatformSupportSample: SampleContent, ExampleContent {
     // listing: PlatformSupportSample
     var body: some View {
         VStack {
-            supported("Opening a picker's list", device.honors(PickerContract.isOpen))
-            supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+            supported("Opening a picker's list", device.honors(PopupElementContract.isOpen, on: PickerContract.self))
+            supported("Hearing a picker's list open", device.honors(PopupElementContract.opened, on: PickerContract.self))
             supported("A tooltip", device.honors(VisualElementContract.tooltip))
-            supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
+            supported("A picture beside a menu's entry", device.honors(IconElementContract.icon, on: MenuItemContract.self))
         }
         .spacing(10)
     }

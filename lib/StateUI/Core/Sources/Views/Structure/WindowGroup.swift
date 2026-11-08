@@ -4,7 +4,7 @@
 /// A factory of windows, each showing one view, made as they are asked for - in the scene that declares it, which
 /// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New Window* make
 /// one more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)`
-/// asks; with a name and `for:`, one window per value - the kind's.
+/// asks; with a name and a closure taking the value's state, one window per value - the kind's.
 ///
 ///     WindowGroup { MainPage() }
 ///     WindowGroup(.editor) { EditorPage() }
@@ -32,20 +32,20 @@ public struct WindowGroup: Scene {
     ///
     ///     WindowGroup(.editor) { EditorPage() }
     ///
-    ///     Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
+    ///     Button("New editor").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.editor) }
     ///
     /// - Parameters:
-    ///   - type: what `ApplicationSession.openWindow` opens one by, and what the platform restores one as.
+    ///   - kind: what `ApplicationSession.openWindow` opens one by, and what the platform restores one as.
     ///   - content: the view a window shows.
-    public init<Content: View>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) {
+    public init<Content: View>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: type.key, valueType: nil,
+            type: kind.key, valueType: nil,
             page: { _, _ in Node.page(content()) })
     }
 
     /// One window per value of the kind - a document per document, an inspector per item.
     ///
-    ///     extension WindowType where Value == UUID { static let document = WindowType("document") }
+    ///     extension WindowKind where Value == UUID { static let document = WindowKind("document") }
     ///
     ///     WindowGroup(.document) { $id in DocumentPage(id: id) }
     ///
@@ -54,15 +54,15 @@ public struct WindowGroup: Scene {
     /// system restores it for.
     ///
     /// - Parameters:
-    ///   - type: what `ApplicationSession.openWindow` opens one by, with a value of its type - anything `Codable`
+    ///   - kind: what `ApplicationSession.openWindow` opens one by, with a value of its type - anything `Codable`
     ///     and `Hashable`, so the platform can write it down.
     ///   - content: the view for one value.
     public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
-        _ type: WindowType<Value>,
+        _ kind: WindowKind<Value>,
         @ViewBuilder content: @escaping (Binding<Value>) -> Content
     ) {
         declared = DeclaredWindows(
-            type: type.key, valueType: Value.self,
+            type: kind.key, valueType: Value.self,
             page: { opened, record in
                 guard let opened, let record else { preconditionFailure("A window for a value is built in its scene.") }
 

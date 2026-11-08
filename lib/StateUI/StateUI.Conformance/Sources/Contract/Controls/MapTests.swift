@@ -23,14 +23,14 @@
             },
             ConformanceCase("anActMovesTheMapToARegion", proves: [
                 Covered(MapContract.moveToRegion), Covered(MapContract.region),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let map = Aim(Map.self)
                 let moved = Received<String>()
                 s.start {
                     VStack {
                         Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).aim(map).height(300).id("map")
-                        Button("Kraków").onClicked(.ignoreWhileRunning) {
-                            try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000))
+                        Button("Kraków").onClicked(policy: .ignoreWhileRunning) {
+                            try await map.show(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000))
                             moved.values.append("moved")
                         }.id("move")
                     }
@@ -57,7 +57,7 @@
                 s.settle { !heard.values.isEmpty }
                 s.expect(heard.values.count, 1, "heard once")
             },
-            Aspects.holds(MapContract.type, on: "Map", .standard, then: .satellite),
+            Aspects.holds(MapContract.kind, on: "Map", .standard, then: .satellite),
             Aspects.holds(MapContract.isScrollEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.isZoomEnabled, on: "Map", true, then: false),
             Aspects.holds(MapContract.showsTraffic, on: "Map", false, then: true),

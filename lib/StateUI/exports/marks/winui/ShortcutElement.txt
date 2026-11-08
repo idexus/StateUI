@@ -1,0 +1,6 @@
+# revision 1.1
+Button.keyboardShortcut: ✅
+MenuItem.keyboardShortcut: ✅
+MenuToggle.keyboardShortcut: ✅
+ToolbarButton.keyboardShortcut: ✅
+ToolbarToggle.keyboardShortcut: ✅

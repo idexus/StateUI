@@ -1,0 +1,3 @@
+swift.conformance WebViewWinUI: Swift.Sendable
+swift.enum WebViewWinUI: @MainActor enum WebViewWinUI
+swift.type.method WebViewWinUI.register(): @MainActor static func register()

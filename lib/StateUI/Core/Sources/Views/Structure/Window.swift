@@ -10,7 +10,7 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
+///     Button("Inspector").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// It opens once - `openWindow` answers `WindowError.alreadyOpen` while it is open - and the platform restores it
 /// with its scene. A host without independent windows refuses `openWindow` with `WindowError.unsupported`. Windows
@@ -22,14 +22,14 @@ public struct Window: Scene {
     /// None: the library's own scene.
     public var body: Never { return fatalError("a Window is the library's own scene: it has no body") }
 
-    /// One window of `type`, showing `content`.
+    /// One window of `kind`, showing `content`.
     ///
     /// - Parameters:
-    ///   - type: what `ApplicationSession.openWindow` opens it by.
+    ///   - kind: what `ApplicationSession.openWindow` opens it by.
     ///   - content: the view the window shows.
-    public init<Content: View>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) {
+    public init<Content: View>(_ kind: WindowKind<Void>, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: type.key, valueType: nil,
+            type: kind.key, valueType: nil,
             page: { _, _ in Node.page(content()) }, single: true)
     }
 

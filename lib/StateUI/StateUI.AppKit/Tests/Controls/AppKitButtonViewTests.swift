@@ -151,7 +151,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 Button("Bottom").icon("save.png").iconPosition(.bottom)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
 
         XCTAssertEqual(
@@ -173,7 +173,7 @@ final class AppKitButtonViewTests: XCTestCase {
         }))
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
         renderer.startForTesting()
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
 
@@ -206,7 +206,7 @@ final class AppKitButtonViewTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
         let buttons = renderer.nativeViews(AppKitButtonView.self)
 
@@ -225,7 +225,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 Button("Plain")
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         let words = buttons.map { $0.attributedTitle.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor }
 
@@ -249,7 +249,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 Button("Middle").lineBreak(.middleTruncation)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
 
         XCTAssertEqual(buttons.map { $0.cell?.lineBreakMode }, [
@@ -264,7 +264,7 @@ final class AppKitButtonViewTests: XCTestCase {
     @MainActor
     func testAButtonsPaddingOutlineAndIconAspectComeThroughTheHost() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         func button(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
             var button = HostPatch(id: .manual(id), type: .button)
             button.properties = properties
@@ -278,8 +278,8 @@ final class AppKitButtonViewTests: XCTestCase {
             button("padded", [
                 .text: .string("Save"),
                 .padding: .numbers([20, 10, 20, 10]),
-                .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
-                .lineWidth: .number(2),
+                BorderElementContract.stroke.token: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
+                BorderElementContract.lineWidth.token: .number(2),
                 .shape: ContainerShape.roundedRectangle(6).propValue,
             ]),
             button("stretched", icon(.stretch)),
@@ -322,7 +322,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 .padding(horizontal: 16, vertical: 8)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         button.frame = NSRect(origin: .zero, size: button.fittingSize)
         button.layoutSubtreeIfNeeded()
@@ -353,7 +353,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         button.frame = NSRect(origin: .zero, size: button.fittingSize)
         button.layoutSubtreeIfNeeded()
@@ -382,7 +382,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 Button("Save").onClicked {}.menu { MenuItem("Save as") }.textColor(Color(hex: 0xFF0000))
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         for button in renderer.nativeViews(AppKitButtonView.self) {
             button.frame = NSRect(origin: .zero, size: button.fittingSize)
             button.layoutSubtreeIfNeeded()
@@ -416,7 +416,7 @@ final class AppKitButtonViewTests: XCTestCase {
                 Button("Open").onClicked { heard.values.append("open") }.menu(.held) { MenuItem("Report.txt") }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
 
         XCTAssertTrue(button.subviews.isEmpty, "no arrow")
@@ -436,7 +436,7 @@ final class AppKitButtonViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             HStack { Button().icon(.icon(.settings)).accessibilityLabel("Settings") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         button.frame = NSRect(x: 0, y: 0, width: 60, height: 60)
 
@@ -457,7 +457,7 @@ final class AppKitButtonViewTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
 
         for button in renderer.nativeViews(AppKitButtonView.self) {
@@ -477,7 +477,7 @@ final class AppKitButtonViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             HStack { Button("Share").icon(.icon(.share)) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         button.frame = NSRect(x: 0, y: 0, width: 160, height: 60)
 

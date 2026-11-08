@@ -1,9 +1,6 @@
-# revision 10.1
+# revision 13.1
 Window: ✅
-Window.activated: ✅
-Window.background: ☑️ A page draws its window opaque: a blur or glass shows its color.
 Window.created: ✅
-Window.deactivated: ✓ switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window
 Window.destroying: ✓ close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab
 Window.floatsOnTop: – A page keeps no browser window above the others: the system stacks them.
 Window.height: – A page sizes no browser window: the user does, and the page fills it.
@@ -14,10 +11,9 @@ Window.maximumHeight: – A page bounds no browser window: the user sizes it.
 Window.maximumWidth: – A page bounds no browser window: the user sizes it.
 Window.minimumHeight: – A page bounds no browser window: the user sizes it.
 Window.minimumWidth: – A page bounds no browser window: the user sizes it.
-Window.stopped: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
 Window.title: ✅
 Window.width: – A page sizes no browser window: the user does, and the page fills it.
-Window.windowType: – A page is one window: it opens none of a kind.
+Window.windowKind: – A page is one window: it opens none of a kind.
 Window.windowValue: – A page is one window: it opens none for a value.
 Window.x: – A page places no browser window: the system does.
 Window.y: – A page places no browser window: the system does.

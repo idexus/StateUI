@@ -28,7 +28,7 @@ private struct MailList: ExampleContent {
             }
             .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(10)
     }
     // listing: end

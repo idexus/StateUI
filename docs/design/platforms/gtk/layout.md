@@ -57,7 +57,11 @@ allocates and every scroller's movement, and asks only the views that are
 read, in the order they were made; a view that did not move says nothing. It
 speaks after GTK's allocation rather than inside it, and what a handler
 renders is laid out again before the frame is drawn: the frame clock repeats
-its layout for it. A view in no window, or one not laid
+its layout for it. The views say once a frame, by the clock's frame counter
+(`GTKWindow.reportLaidOut`): the layout repeated for what they said hears
+nothing more - a layout that is no fixed point would otherwise ask again
+until GTK gives the frame up - and a frame whose layout moved nothing is one
+they said in too. A view in no window, or one not laid
 out yet by the host layer's rule (`MountedElement.isLaidOut`, [where a view
 stands](../../host/runtime.md#where-a-view-stands)), stands nowhere and says
 nothing: a frame's tick comes before its layout, so a view made just before it
@@ -95,6 +99,18 @@ offset written before the first layout waits for it.
 A viewport owns its child: a view whose parent is not a StateUI panel is not
 taken out by the view as it goes, and the scroller takes its document out of
 the viewport before it goes itself.
+
+## Whole pixels
+
+GTK measures, allocates and places in 32-bit whole pixels, and keeps a
+widget's margin in 16: `gtk_widget_set_margin_*` refuses a margin past
+32767 with a critical and keeps the one before. `GTKPixels` converts every
+distance through the host layer's `GeometryArithmetic.pixels`
+([finite distances](../../host/layout.md#finite-distances)). A size outside
+32 bits, or negative, is empty; a coordinate outside them stands at zero; a
+margin past 16 bits is none. These are GTK's representation bounds, not
+limits on StateUI's shared distances: a view asked 3e9 points wide stands
+empty, and the rest of the page stands around it.
 
 ## Right to left
 

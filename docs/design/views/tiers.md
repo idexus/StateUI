@@ -32,14 +32,18 @@ allowed can be written" a compiler rule rather than a convention.
   │       └── TextInputProperties                          ├── Layout
   └── the mixins, one file each:                           │   └── Stack
       TextColorElement  TextualElement  FontElement        ├── Shape
-      TextAlignmentElement  PaddingElement                 │   ├── FilledShape
-      LineHeightElement  DecorableTextElement              │   └── CorneredShape
-      BorderElement  ImageElement  TintElement             └── TextInput
-      BarElement
+      TextAlignmentElement  TrackingElement                │   ├── FilledShape
+      LineHeightElement  LineBreakElement                  │   └── CorneredShape
+      DecorableTextElement  PlaceholderElement             └── TextInput
+      PaddingElement  BorderElement  TintElement
+      ContentModeElement  PointsShape  BarElement
+      BarItemElement  TextAndIconElement  ButtonMenuElement
+      RangeElement  SubmitElement
 
-  the element side's mixins: AutomationElement (refined by VisualElement and
-  MenuItemElement), KeyboardElement, FocusElement - a style names no element
-  and takes no key
+  the element side's mixins: AutomationElement (refined by VisualElement,
+  ActionElement and MenuItemElement), KeyboardElement, FocusElement,
+  RefreshElement, PopupElement, PressElement, ClickElement, ToggleElement,
+  ShortcutElement - a style names no element and takes no key
 ```
 
 A control conforms on the element side - `ElementView` (a view that is its own
@@ -61,7 +65,7 @@ an `Element`: what can hold a handler is something that exists on screen,
 never a bag of values. The typed event modifiers live on this tier, so a style
 is offered none after the dot; a style keeps only its values and states
 (`AnyStyle`), so nothing else written into its node reaches a control. Menu
-items, which are not views, take `onClicked` through `MenuItemElement`. The
+items, which are not views, take `onClicked` through `ClickElement`. The
 key, the aim and the read-only bindings live on `VisualElement`, where only a
 control can reach them, and lifetime on `ModifiableElement`, where a control
 and a text run can.
@@ -151,9 +155,13 @@ dashed outline is a shape's, laid over the element in a ZStack.
 
 ## Menu items
 
-A toolbar item and a menu entry share `MenuItemElement`: text, icon,
-destructive look, enabled, and `onClicked`. They are not views - none of
-the view tiers applies to them, and none of this tier applies to a view.
-`Menu` stays outside the tier: a menu has a caption and entries and is never
-clicked, so its `isEnabled` is its own property, and an icon or a destructive
-look on it would describe a capability the host contract does not apply.
+A toolbar item and a menu entry share `MenuItemElement`: words, icon,
+whether it can be chosen, and its shortcut - each the member of a tier of its
+own the items wear, `TextElement`, `IconElement`, `EnabledElement` and
+`ShortcutElement` - and an action adds `ActionElement`: a destructive look and
+`onClicked`. They are not views - none of the view tiers applies to them, and
+none of these applies to a view but where a control has the same capability.
+`Menu` stays outside the protocol: a menu has a caption and entries and is
+never clicked, so it wears `TextElement` and `EnabledElement` alone, and an
+icon or a destructive look on it would describe a capability the host
+contract does not apply.

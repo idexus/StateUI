@@ -1,18 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Spinner`'s own properties, shared by the control and its
-/// `Style<Spinner>`.
-public protocol SpinnerProperties: PropertyContainer {}
-
-extension SpinnerProperties {
-    /// Whether it is turning. A still spinner is invisible on most
-    /// platforms, so this alone shows and hides it.
-    public func isAnimating(_ value: Bool) -> Modified {
-        setValue(SpinnerContract.isAnimating, value)
-    }
-}
-
 /// A spinner, turning while something happens that has no measurable length.
 ///
 ///     @State private var loading = false
@@ -22,12 +10,12 @@ extension SpinnerProperties {
 ///
 /// For work whose progress can be measured, use a `ProgressBar`: a spinner
 /// says "wait", a bar says "how much longer".
-public struct Spinner: ElementView, TintElement, SpinnerProperties {
+public struct Spinner: ElementView, TintElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Spinner>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: SpinnerContract.self)
     }
 
@@ -48,9 +36,13 @@ public struct Spinner: ElementView, TintElement, SpinnerProperties {
 }
 
 extension Spinner {
-    /// `isAnimating` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func isAnimating(_ state: Binding<Bool>) -> Modified {
+    /// Whether it is turning.
+    func isAnimating(_ value: Bool) -> Modified {
+        setValue(SpinnerContract.isAnimating, value)
+    }
+
+    /// Whether it is turning, from a state the host sets as it stands.
+    func isAnimating(_ state: Binding<Bool>) -> Modified {
         twin(SpinnerContract.isAnimating, by: state)
     }
 }

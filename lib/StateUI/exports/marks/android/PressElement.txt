@@ -1,0 +1,9 @@
+# revision 1.1
+Button.pressed: ✅
+Button.released: ✅
+Slider.pressed: ✅
+Slider.released: ✅
+ToolbarButton.pressed: – A toolbar's actions stand in Android's own look.
+ToolbarButton.released: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.pressed: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.released: – A toolbar's actions stand in Android's own look.

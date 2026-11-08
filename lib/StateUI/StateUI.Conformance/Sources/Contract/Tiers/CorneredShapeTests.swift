@@ -28,7 +28,7 @@
     static func joined(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).joinsItsCornersAsTheTreeSays", proves: [
             Covered(CorneredShapeContract.lineJoin, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let bevelled = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, ShapeTests.outlined(element, width: 8) + [
@@ -52,7 +52,7 @@
     static func limited(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).limitsItsMitresAsTheTreeSays", proves: [
             Covered(CorneredShapeContract.miterLimit, on: element),
-        ], needs: [Covered(CorneredShapeContract.lineJoin, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(CorneredShapeContract.lineJoin, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let limited = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, ShapeTests.outlined(element, width: 8) + [

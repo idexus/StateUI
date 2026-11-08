@@ -293,7 +293,7 @@ final class AnchorTests: XCTestCase {
         wide.wrappedValue = true
         let widened = renders.revisit(changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(narrow.subtree.first { $0.type == .page }?.props[.title], .string("Narrow"))
-        XCTAssertEqual(widened.subtree.first { $0.type == .page }?.props[.title], .string("Wide"))
+        XCTAssertEqual(narrow.subtree.first { $0.type == .page }?.props["PageElement.title"], .string("Narrow"))
+        XCTAssertEqual(widened.subtree.first { $0.type == .page }?.props["PageElement.title"], .string("Wide"))
     }
 }

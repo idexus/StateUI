@@ -91,7 +91,7 @@ extension UIKitTextInputView where Self: UITextField {
     /// What the keyboard's return key says; a keyboard already up takes it at once.
     func setReturnKey(_ key: SubmitLabel) {
         returnKeyType = switch key {
-        case .default: .default
+        case .automatic: .default
         case .go: .go
         case .search: .search
         case .send: .send

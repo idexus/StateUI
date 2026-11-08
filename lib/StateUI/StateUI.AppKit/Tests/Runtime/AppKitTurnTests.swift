@@ -15,7 +15,7 @@ final class AppKitTurnTests: XCTestCase {
     func testAWriteFromAJobRendersInThePassThatRanIt() throws {
         let said = Said()
         let renderer = AppKitRenderer.running { SaidPage(said: said) }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startTurns()
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
         XCTAssertEqual(shown(), "before")
@@ -35,7 +35,7 @@ final class AppKitTurnTests: XCTestCase {
     func testAPostFromAnotherThreadIsRendered() throws {
         let said = Said()
         let renderer = AppKitRenderer.running { SaidPage(said: said) }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startTurns()
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
         let binding = said.$text
@@ -54,7 +54,7 @@ final class AppKitTurnTests: XCTestCase {
     /// what the caller wrote - the host takes no turn of its own after an answer.
     func testAnAnsweredQuestionIsRenderedInThePassThatResumedItsCaller() throws {
         let renderer = AppKitRenderer.running { AskingPage() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startTurns()
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
 
@@ -76,7 +76,7 @@ final class AppKitTurnTests: XCTestCase {
     /// and no window, title or bar is composed again.
     func testARenderOfThePageAloneShowsNoWindowAgain() throws {
         let renderer = AppKitRenderer.running { BarAndPage() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let shown = { renderer.nativeViews(AppKitTextView.self).first?.textForTesting.string }
         let shownBefore = renderer.windowSynchronizationCountForTesting
 
@@ -89,7 +89,7 @@ final class AppKitTurnTests: XCTestCase {
     /// A render that changes what a bar's action says shows the window's chrome again, with the new words.
     func testARenderOfABarsActionShowsTheChromeAgain() throws {
         let renderer = AppKitRenderer.running { BarAndPage() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
         let shownBefore = renderer.windowSynchronizationCountForTesting
 
@@ -130,7 +130,7 @@ private struct AskingPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Confirm").onClicked(.ignoreWhileRunning) {
+            Button("Confirm").onClicked(policy: .ignoreWhileRunning) {
                 let deleting = try await window.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
                 said = deleting ? "deleted" : "kept"
             }

@@ -1,10 +1,7 @@
-# revision 5.1
+# revision 6.1
 DatePicker: ✅
-DatePicker.closed: not realized
 DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: not realized
-DatePicker.isOpen: not realized
-DatePicker.maximumDate: ✅
-DatePicker.minimumDate: ✅
-DatePicker.opened: not realized
+DatePicker.maximum: ✅
+DatePicker.minimum: ✅

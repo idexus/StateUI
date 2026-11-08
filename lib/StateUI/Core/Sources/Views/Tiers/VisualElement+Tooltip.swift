@@ -17,7 +17,9 @@ extension VisualElementProperties {
     /// after a long press where the platform offers that; an iPhone and an
     /// iPad show none.
     public func tooltip(_ text: String) -> Modified { setValue(VisualElementContract.tooltip, text) }
+}
 
+extension VisualElement {
     /// `tooltip` from a state, `$x`: the host writes each new text, and no
     /// view is rebuilt for it.
     public func tooltip(_ state: Binding<String>) -> Modified {

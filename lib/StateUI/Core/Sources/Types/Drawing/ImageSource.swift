@@ -77,7 +77,7 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
     }
 
     /// What lets every one-picture call site stay a plain string:
-    /// `Image("tab_list.png")`, `.icon("tab_list.png")`.
+    /// `Image("tab_list.png")`, `.pageIcon("tab_list.png")`.
     public init(stringLiteral value: String) {
         self.init(value)
     }

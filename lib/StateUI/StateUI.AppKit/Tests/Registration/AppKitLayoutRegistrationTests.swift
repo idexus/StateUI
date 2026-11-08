@@ -63,7 +63,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAScrollViewTakesItsMembersAndRestsAtItsContractsDefault() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let bare = HostPatch(id: .manual("bare"), type: .scrollView)
         renderer.applyForTesting(tree(bare))
@@ -92,10 +92,10 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAStackTakesItsSpacingAndPadding() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.properties[.spacing] = .number(12)
+        stack.properties[StackContract.spacing.token] = .number(12)
         stack.properties[.padding] = .numbers([4, 8, 12, 16])
         renderer.applyForTesting(tree(stack))
 
@@ -107,7 +107,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         XCTAssertEqual(native.padding.bottom, 16)
 
         var closer = HostPatch(id: .manual("stack"), type: .vStack)
-        closer.properties[.spacing] = .number(2)
+        closer.properties[StackContract.spacing.token] = .number(2)
         renderer.applyForTesting(changedTree(closer))
 
         XCTAssertEqual(native.spacing, 2)
@@ -118,7 +118,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     @MainActor
     func testAGridTakesItsRowsColumnsAndSpacings() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var grid = HostPatch(id: .manual("grid"), type: .grid)
         // An auto length carries a 1 rather than nothing, so every length
@@ -130,13 +130,13 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
         grid.properties[.columns] = .values([
             .values([.enumeration(1), .number(1)]),
         ])
-        grid.properties[.rowSpacing] = .number(6)
+        grid.properties[GridContract.rowSpacing.token] = .number(6)
         grid.properties[.columnSpacing] = .number(9)
         renderer.applyForTesting(tree(grid))
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("grid")) as? AppKitGridView)
 
-        XCTAssertEqual(native.rows, [.fixed(40), .auto])
+        XCTAssertEqual(native.rows, [.fixed(40), .automatic])
         XCTAssertEqual(native.columns, [.proportional(1)])
         XCTAssertEqual(native.rowSpacing, 6)
         XCTAssertEqual(native.columnSpacing, 9)

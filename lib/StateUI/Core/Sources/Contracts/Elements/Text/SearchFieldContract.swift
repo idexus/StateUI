@@ -10,17 +10,12 @@ public enum SearchFieldContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A search field is an input of text in a font, aligned.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, BorderElementContract.self,
+        SubmitElementContract.self,
     ]
 
-    /// What the keyboard's return key is captioned; Next hands the keyboard on to the next field as it submits.
-    public static let submitLabel = ElementProperty<Self, SubmitLabel>("submitLabel", layer: .adaptive)
-
-    /// The search was submitted.
-    public static let submitted = ElementEvent<Self, Void>("submitted", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [submitLabel, submitted]
+    public static let members: [any ContractMember] = []
 }

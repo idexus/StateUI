@@ -5,6 +5,7 @@ import Foundation
 import MetalKit
 import QuartzCore
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 // listing: Cube3DSample.AppKit.swift

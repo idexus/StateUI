@@ -42,6 +42,6 @@ struct TabsExtraPage: View {
             .padding(24)
         }
         .galleryPage("Extra \(number)")
-        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+        .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
     }
 }

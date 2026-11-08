@@ -81,7 +81,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
             .axis(\.round, input: hand, range: 0...4, periodic: true)
             // ...and round and round, a card at a time.
             .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-            .motion(.spring(response: .milliseconds(360), damping: 0.8))
+            .parameterMotion(.spring(response: .milliseconds(360), damping: 0.8))
         }
         .clipsContent(true)
     }

@@ -27,7 +27,7 @@ import StateUIFoundation
         case .none: return nil
         case .solid(let color): return Color(propValue: color).map { material(painted: $0) }
         case .linear(let from, let to, let run):
-            return stops(run).map { .gradient(.linearGradient($0, startPoint: from, endPoint: to)) }
+            return stops(run).map { .gradient(.linearGradient($0, from: from, to: to)) }
         case .radial(let center, let radius, let run):
             return stops(run).map { .gradient(.radialGradient($0, center: center, radius: radius)) }
         }
@@ -54,6 +54,6 @@ import StateUIFoundation
         }
         return .gradient(.linearGradient(
             stops.map { GradientStop($0.color, nearest(($0.place - first) / (last - first))) },
-            startPoint: point(first), endPoint: point(last)))
+            from: point(first), to: point(last)))
     }
 }

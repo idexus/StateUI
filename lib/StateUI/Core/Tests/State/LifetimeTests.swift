@@ -276,7 +276,7 @@ final class LifetimeTests: XCTestCase {
 
         XCTAssertEqual(window.type, .window)
         XCTAssertEqual(
-            window.props["title"], .string("Titled"),
+            window.props["Window.title"], .string("Titled"),
             "the title the page wrote as it came in waited for a render of its own")
         XCTAssertFalse(
             Renderer.shared.needsRender,

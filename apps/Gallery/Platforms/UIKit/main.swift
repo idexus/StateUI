@@ -3,6 +3,7 @@
 
 // listing: uikit.md.head
 import GalleryUI
+import StateUI
 import StateUIUIKit
 
 GalleryApp.register()
@@ -16,5 +17,5 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIUIKit.run()
+UIKitHost.run()
 // listing: end

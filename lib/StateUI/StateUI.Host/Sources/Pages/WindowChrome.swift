@@ -47,8 +47,8 @@
     /// The color of what stands on the bars: the nearest declared on the visible page's path.
     public var foreground: HostValue?
 
-    /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
-    public var toolbarStyle = ToolbarStyle.system
+    /// How the bars' buttons stand: the nearest declared on the visible page's path, `.automatic` where none is.
+    public var toolbarStyle = ToolbarStyle.automatic
 
     /// How what scrolls under the bars shows at their edge: the nearest declared on the visible page's path.
     public var barScrollEdge = ScrollEdge.automatic
@@ -69,7 +69,8 @@
     /// The chrome of `window` showing `arrangement`.
     public init(window: MountedElement, arrangement: MountedElement?) {
         let page = arrangement?.visiblePage
-        title = arrangement?.titledPage?.value(.title)?.string ?? window.value(.title)?.string
+        title = arrangement?.titledPage?.value(PageElementContract.title.token)?.string
+            ?? window.value(WindowContract.title.token)?.string
         showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
         subtitle = arrangement?.titledPage?.barSubtitle
         back = arrangement?.visibleBackStack.map { stack in
@@ -82,7 +83,7 @@
         titleArea = area?.isEmpty == false ? area : nil
         (background, foreground) = page?.barColors ?? (nil, nil)
         material = page?.barMaterial ?? HostMaterial(nil)
-        toolbarStyle = page?.toolbarStyle ?? .system
+        toolbarStyle = page?.toolbarStyle ?? .automatic
         toolbarSpacing = page?.toolbarSpacing
         barScrollEdge = page?.barScrollEdge ?? .automatic
         if let page { menus = page.chromeMenus }
@@ -123,7 +124,7 @@
     /// What of a page the chrome shows - its title, the line under it and its picture, its way back, its bar and the
     /// back button's words: a change to one shows the chrome again, from a state too.
     public static let pageValues: Set<Prop> = [
-        .title, .subtitle, .icon, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar,
+        PageElementContract.title.token, PageContract.subtitle.token, .icon, .showsBackButton, .showsCloseButton, .backButtonTitle, .showsNavigationBar,
         .showsTitle,
     ]
 }

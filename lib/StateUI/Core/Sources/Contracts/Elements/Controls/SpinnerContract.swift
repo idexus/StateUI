@@ -11,7 +11,7 @@ public enum SpinnerContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A spinner is a view, tinted.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, TintElementContract.self]
 
     /// Whether it is spinning.
     public static let isAnimating = ElementProperty<Self, Bool>("isAnimating", layer: .native)

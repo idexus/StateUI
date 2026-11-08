@@ -6,17 +6,6 @@
 /// What assistive technology meets of an element: its words, its heading level, and whether it is met at all.
 /// Design: docs/design/host/tree.md#what-assistive-technology-meets
 @_spi(Host) public struct AccessibilityWords: Equatable, Sendable {
-    /// Whether assistive technology meets an element.
-    public enum Presence: Equatable, Sendable {
-        /// Met, where its view would of itself be left out: as the author says, or as it says words of its own or
-        /// answers a tap.
-        case met
-        /// Left out, its children still met.
-        case hidden
-        /// Left out with everything in it.
-        case hiddenWithChildren
-    }
-
     /// The identifier whatever drives the application finds the element by; nil where it gives none.
     public var identifier: String?
 
@@ -39,20 +28,21 @@
     /// Its level as a heading, 1 to 9; 0 where it is none.
     public var headingLevel: Int32
 
-    /// Whether it is met; nil for as its view is of itself.
-    public var presence: Presence?
+    /// Whether it is met, and what is inside it - `.element` also where its view would of itself be left out but it
+    /// says words of its own or answers a tap; nil for as its view is of itself.
+    public var presence: AccessibilityPresence?
 
     /// Whether its view is an element to assistive technology: as its presence says, else as the view `standing`
     /// was of itself, before any word reached it.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
     public func isElement(standing: Bool) -> Bool {
-        presence.map { $0 == .met } ?? standing
+        presence.map { $0 == .element } ?? standing
     }
 
     /// Words of these parts.
     public init(
         identifier: String?, label: String?, hint: String?, role: AccessibilityRole? = nil, value: String? = nil,
-        actions: [String] = [], headingLevel: Int32, presence: Presence?
+        actions: [String] = [], headingLevel: Int32, presence: AccessibilityPresence?
     ) {
         self.identifier = identifier
         self.label = label
@@ -69,10 +59,10 @@ extension MountedElement {
     /// What assistive technology meets; a change to any of them puts the element's words on its view again.
     public static let accessibilityProperties: Set<Prop> = [
         .accessibilityIdentifier, .accessibilityLabel, .accessibilityHint, .accessibilityRole, .accessibilityValue,
-        .accessibilityActions, .accessibilityHeading, .isAccessibilityHidden, .hidesChildrenFromAccessibility,
+        .accessibilityActions, .accessibilityHeading, .accessibilityPresence,
     ]
 
-    /// The element's words for assistive technology: left out with its children, or hidden, or met, as it says -
+    /// The element's words for assistive technology: left out with its contents, or hidden, or met, as it says -
     /// and saying nothing of it, met where it says words of its own - a label standing for all it holds, a hint, a
     /// kind, a value, an action, a heading - or answers a tap; else as its view stands of itself.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
@@ -81,16 +71,10 @@ extension MountedElement {
         let (role, said) = (value(.accessibilityRole).flatMap(AccessibilityRole.init(propValue:)), string(.accessibilityValue))
         let actions = value(.accessibilityActions).flatMap([String].init(propValue:)) ?? []
         let headingLevel = max(0, value(.accessibilityHeading)?.enumeration ?? 0)
-        let presence: AccessibilityWords.Presence? = switch (
-            bool(.hidesChildrenFromAccessibility), bool(.isAccessibilityHidden)
-        ) {
-        case (true?, _): .hiddenWithChildren
-        case (_, true?): .hidden
-        case (_, false?): .met
-        default:
-            label != nil || hint != nil || role != nil || said != nil || !actions.isEmpty || headingLevel > 0
-                || events[.tapped] != nil ? .met : nil
-        }
+        let saysWords = label != nil || hint != nil || role != nil || said != nil || !actions.isEmpty || headingLevel > 0
+            || events[.tapped] != nil
+        let presence = value(.accessibilityPresence).flatMap(AccessibilityPresence.init(propValue:))
+            ?? (saysWords ? .element : nil)
         return AccessibilityWords(
             identifier: string(.accessibilityIdentifier), label: label, hint: hint, role: role, value: said,
             actions: actions, headingLevel: headingLevel, presence: presence)
@@ -116,14 +100,15 @@ extension MountedElement {
     /// What assistive technology says for this element and all it holds, in reading order - the name of a row a
     /// toolkit's screen reader reads no further into: an element's label where it gives one, standing for all it
     /// holds; else its own words - its runs of words whole - then its children's, apart by commas; nothing of what
-    /// is left out or hidden.
+    /// is left out, and nothing of a hidden element's own while what it holds still speaks.
     /// Design: docs/design/host/tree.md#what-assistive-technology-meets
     public var spokenWords: String {
         let words = accessibilityWords
-        guard words.presence != .hiddenWithChildren, bool(.isVisible) != false else { return "" }
-        if let label = words.label, !label.isEmpty { return label }
-        if let runs = textRuns { return words.presence == .hidden ? "" : runs.map(\.text).joined() }
-        let own = words.presence == .hidden ? nil : string(.text)
+        guard words.presence != .hiddenWithContents, bool(.isVisible) != false else { return "" }
+        let hidden = words.presence == .hidden
+        if !hidden, let label = words.label, !label.isEmpty { return label }
+        if let runs = textRuns { return hidden ? "" : runs.map(\.text).joined() }
+        let own = hidden ? nil : string(.text)
         return ([own ?? ""] + children.map(\.spokenWords)).filter { !$0.isEmpty }.joined(separator: ", ")
     }
 }

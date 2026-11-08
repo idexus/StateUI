@@ -242,6 +242,12 @@ extension WebDriver {
         mouse(type, at: point, in: try box(of: e), held: held)
     }
 
+    /// The pointer moved off the page, so a case begins with nothing under it - not where the case before left it,
+    /// beside the element it last left.
+    func park() {
+        mouse("mouseMoved", at: Point(x: -10, y: -10), in: Rect(x: 0, y: 0, width: 0, height: 0))
+    }
+
     /// The mouse's `type` of event at `point` of what stands in `box`.
     func mouse(
         _ type: String, at point: Point, in box: Rect, count: Int = 1, held: Bool = false, wheel: Double = 0,

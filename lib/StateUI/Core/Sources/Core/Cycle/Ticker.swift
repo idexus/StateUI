@@ -25,34 +25,23 @@ public final class Ticker {
     /// beat - an interval after its end where it overran a whole one.
     public typealias Tick = @MainActor () async -> Void
 
-    @State private var storedInterval: Duration
     private var storedTick: Tick?
 
     /// Which run the loop belongs to: a loop waking with an old number returns.
     private var run = 0
 
     /// How long between ticks; written while running, it applies from the next tick.
-    /// A millisecond is the floor.
-    public var interval: Duration {
-        get { storedInterval }
-        set { storedInterval = Ticker.usable(newValue) }
-    }
+    /// The loop sleeps a millisecond at least, whatever it says.
+    @State public var interval: Duration
 
     /// How many ticks to run for, or nil to go on until stopped. A countdown is
     /// this and `ticks`: `limit - ticks` is what is left.
     ///
-    /// Only meaningful while `isRepeating`, a ticker that does not repeat
-    /// having stopped after one tick anyway.
+    /// One is a DELAY that runs `onTick` once - and, with a tick that starts it
+    /// again when its work is done, a poll that can never overlap itself
+    /// however long the work takes. Written while running, it is read at the
+    /// next tick, as `interval` is.
     @State public var limit: Int?
-
-    /// Whether it ticks again after each tick, or stops after one.
-    ///
-    /// True is the ordinary timer. False is a DELAY that runs `onTick` once -
-    /// and, with a tick that starts it again when its work is done, a poll that
-    /// can never overlap itself however long the work takes.
-    ///
-    /// Written while running, it is read at the next tick, as `interval` is.
-    @State public var isRepeating: Bool
 
     /// What each tick runs, or nil for a ticker that is only read.
     ///
@@ -60,7 +49,7 @@ public final class Ticker {
     /// initializer cannot see - a view's `@State`, or the ticker itself, both
     /// of which are still being initialized while the initializer runs:
     ///
-    ///     @State private var poll = Ticker(every: .seconds(5), isRepeating: false)
+    ///     @State private var poll = Ticker(every: .seconds(5), limit: 1)
     ///
     ///     VStack { … }
     ///         .onCreated {
@@ -80,17 +69,27 @@ public final class Ticker {
     /// Read it and the interface follows: each property is a state of its own,
     /// so a tick rebuilds the views that read the count and leaves the rest of
     /// the tree alone.
-    @State public private(set) var ticks = 0
+    public private(set) var ticks: Int {
+        get { _ticks }
+        set { _ticks = newValue }
+    }
+
+    @State private var _ticks = 0
 
     /// Whether another tick is coming. `start()` and `stop()` are what change
     /// it.
     ///
     /// It says nothing about a tick already RUNNING: the last tick of a
-    /// countdown - and the one tick of a ticker that does not repeat - clears
-    /// this before running its closure, which is what lets that closure start
-    /// the next round. So a false here means "nothing further is scheduled",
+    /// countdown - the one tick of a delay included - clears this before
+    /// running its closure, which is what lets that closure start the next
+    /// round. So a false here means "nothing further is scheduled",
     /// not "the work is over".
-    @State public private(set) var isRunning = false
+    public private(set) var isRunning: Bool {
+        get { _isRunning }
+        set { _isRunning = newValue }
+    }
+
+    @State private var _isRunning = false
 
     /// Whether it has counted all the way to its `limit`. Always false for a
     /// ticker with no limit.
@@ -110,27 +109,25 @@ public final class Ticker {
     /// since the ticker does not exist yet while its own initializer runs.
     ///
     /// - Parameters:
-    ///   - interval: how long between ticks - or, for a ticker that does not
-    ///     repeat, how long before its one tick. A millisecond is the floor.
-    ///   - isRepeating: whether it ticks again after each tick. Default true.
+    ///   - interval: how long between ticks - or, for a delay of `limit: 1`, how
+    ///     long before its one tick. A millisecond is the floor.
     ///   - limit: how many ticks to run for, or nil for no end.
     ///   - onTick: what each tick runs. It may await; the next tick waits for it
     ///     to end and keeps the interval's beat - an interval after its end where
     ///     it overran a whole one.
     public init(
         every interval: Duration,
-        isRepeating: Bool = true,
         limit: Int? = nil,
         onTick: Tick? = nil
     ) {
-        _storedInterval = State(wrappedValue: Ticker.usable(interval))
-        _isRepeating = State(wrappedValue: isRepeating)
+        _interval = State(wrappedValue: interval)
         _limit = State(wrappedValue: limit)
         storedTick = onTick
     }
 
     /// Starts counting, or does nothing if it is already counting. Returns at once;
-    /// the first tick is an interval away, and a ticker at its limit starts over.
+    /// the first tick is an interval away, and a ticker at its limit starts over from
+    /// no ticks.
     public func start() {
         // Already running: not an error, and nothing to report.
         guard !isRunning else { return }
@@ -146,8 +143,8 @@ public final class Ticker {
         libraryTask { [weak self] in
             var deadline = ContinuousClock.now
 
-            while let interval = self?.storedInterval {
-                deadline += interval
+            while let interval = self?.interval {
+                deadline += Ticker.usable(interval)
                 try? await Task.sleep(until: deadline)
                 guard await self?.lap(mine, after: &deadline) == true else { return }
             }
@@ -179,7 +176,7 @@ public final class Ticker {
 
         ticks += 1
 
-        let last = !isRepeating || finished
+        let last = finished
         if last { isRunning = false }
 
         let tick = storedTick ?? Ticker.nothing
@@ -192,7 +189,7 @@ public final class Ticker {
         // A lap longer than a whole interval restarts the deadline from now, so missed
         // laps do not all come due at once.
         // Design: docs/design/core/cycle.md#the-ticker
-        if deadline + storedInterval < .now { deadline = .now }
+        if deadline + Ticker.usable(interval) < .now { deadline = .now }
         return true
     }
 

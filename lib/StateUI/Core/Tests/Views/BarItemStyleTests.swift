@@ -44,7 +44,7 @@ final class BarItemStyleTests: XCTestCase {
                                             styles: sheet))
 
         XCTAssertEqual(plain.props["background"], Material.color(Color(hex: 0x008000)).propValue)
-        XCTAssertEqual(outlined.props["stroke"], Brush.solidColor(Color(hex: 0x0000FF)).propValue)
+        XCTAssertEqual(outlined.props["BorderElement.stroke"], Brush.solidColor(Color(hex: 0x0000FF)).propValue)
         XCTAssertNil(outlined.props["background"], "a keyed style stands in place of the one every item wears")
     }
 
@@ -80,8 +80,8 @@ final class BarItemStyleTests: XCTestCase {
         group.identify("c")
         let shown = try XCTUnwrap(render(renders, group))
 
-        XCTAssertEqual(shown.props["stroke"], Brush.solidColor(Color(hex: 0x008000)).propValue)
-        XCTAssertEqual(fire(renders, shown, "pointerEntered")?.props["stroke"], Brush.solidColor(Color(hex: 0x0000FF)).propValue)
+        XCTAssertEqual(shown.props["BorderElement.stroke"], Brush.solidColor(Color(hex: 0x008000)).propValue)
+        XCTAssertEqual(fire(renders, shown, "pointerEntered")?.props["BorderElement.stroke"], Brush.solidColor(Color(hex: 0x0000FF)).propValue)
     }
 
     /// A setting wears its on look while it stands on.
@@ -116,7 +116,7 @@ final class BarItemStyleTests: XCTestCase {
 
         let shown = try XCTUnwrap(render(Renders(), group, styles: sheet))
         let button = try XCTUnwrap(render(Renders(), ToolbarButton("Save").id("c").node, styles: sheet))
-        XCTAssertEqual(shown.props["spacing"], .number(2))
+        XCTAssertEqual(shown.props["ToolbarGroup.spacing"], .number(2))
         XCTAssertEqual(shown.props["padding"], Insets(3).propValue)
         XCTAssertEqual(button.props["padding"], Insets(horizontal: 12, vertical: 0).propValue)
     }

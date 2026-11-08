@@ -130,10 +130,10 @@ extension AnyView: Flipping {
     static var flips: Bool { true }
 }
 
-/// The identity an anchor stands under, made from the identity of the view it holds. The NUL keeps it apart from any
-/// identity an author writes as text.
+/// The identity an anchor stands under, made from the identity of the view it holds. The group separator keeps it
+/// apart from any identity an author writes as text.
 struct AnchorIdentity: Hashable, CustomStringConvertible {
     let held: ElementIdentity
 
-    var description: String { "\(String(describing: held.value.base))\u{0}anchor" }
+    var description: String { "\(String(describing: held.value.base))\u{1D}anchor" }
 }

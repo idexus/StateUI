@@ -37,14 +37,15 @@ public struct HTTPRequest: Hashable, Sendable {
 
 /// What a request asks of the resource it names, by the name HTTP gives it.
 public struct HTTPMethod: Hashable, Sendable {
-    /// The method's name as HTTP spells it: `GET`, `POST`.
+    /// The case-sensitive method name: `GET`, `POST`, or a custom token.
     public let name: String
 
-    /// The method of `name`, in capitals.
+    /// The method with exactly the given name. HTTP method names are case-sensitive; a platform's networking may
+    /// refuse a method, and the request then fails with its reason.
     ///
     /// - Parameter name: the method's name.
     public init(_ name: String) {
-        self.name = name.uppercased()
+        self.name = name
     }
 
     /// Reads what the address names.

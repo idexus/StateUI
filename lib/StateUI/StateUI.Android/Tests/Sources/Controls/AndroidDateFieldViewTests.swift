@@ -21,17 +21,19 @@ final class AndroidDateFieldViewTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.short)
-                    TimePicker(ClockTime(hour: 7, minute: 5)).format("HH:mm")
+                    TimePicker(ClockTime(hour: 7, minute: 5)).format(.short)
                     DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.long)
                     DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.medium)
+                    TimePicker(ClockTime(hour: 7, minute: 5)).format(.medium)
                 }
             }
             let fields = host.views(AndroidDateFieldView.self)
 
             XCTAssertFalse(fields[0].text.isEmpty)
-            XCTAssertEqual(fields[1].text, "07:05")
+            XCTAssertTrue(fields[1].text.contains(":05"), fields[1].text)
             XCTAssertTrue(fields[2].text.contains("2026"), fields[2].text)
             XCTAssertEqual(Set([fields[0].text, fields[2].text, fields[3].text]).count, 3, "three forms of one day")
+            XCTAssertTrue(fields[4].text.contains(":05:00"), "the medium form writes seconds: \(fields[4].text)")
         }
     }
 

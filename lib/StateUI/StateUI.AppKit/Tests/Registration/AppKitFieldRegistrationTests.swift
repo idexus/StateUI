@@ -25,15 +25,15 @@ final class AppKitFieldRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["TextField", "TextEditor", "SearchField"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "TextualElement", member: "text")))
+            HostRealizedMember(element: "TextField", owner: "TextElement", member: "text")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted")))
+            HostRealizedMember(element: "TextField", owner: "SubmitElement", member: "submitted")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextEditor", owner: "TextEditor", member: "growsWithText")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "SearchField", owner: "TextInput", member: "placeholder")))
+            HostRealizedMember(element: "SearchField", owner: "PlaceholderElement", member: "placeholder")))
     }
 
     /// `StateMode.in` says the host writes the value and this side only reads
@@ -42,7 +42,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     @MainActor
     func testAFieldWhoseTextIsCarriedInIsNotWrittenFromTheTree() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("from the tree")
@@ -65,7 +65,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     @MainActor
     func testAFieldNothingCarriesTakesTheTreesWords() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("Ada")
@@ -87,7 +87,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     @MainActor
     func testAFieldTakesTheMembersOfTheTiersItWears() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.placeholder] = .string("Name")
@@ -107,7 +107,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     @MainActor
     func testASearchFieldTakesItsWordsAndPlaceholder() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var search = HostPatch(id: .manual("search"), type: .searchField)
         search.properties[.text] = .string("alpha")

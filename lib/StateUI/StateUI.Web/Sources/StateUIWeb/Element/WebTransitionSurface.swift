@@ -12,5 +12,7 @@ enum WebTransitionSurface {
         TransitionSurface.presents(property, on: type, atRest: atRest)
     }
 
-    static let atRest: [NodeType: Set<Prop>] = [.window: [.x, .y, .width, .height]]
+    static let atRest: [NodeType: Set<Prop>] = [
+        .window: [.x, .y, WindowContract.width.token, WindowContract.height.token],
+    ]
 }

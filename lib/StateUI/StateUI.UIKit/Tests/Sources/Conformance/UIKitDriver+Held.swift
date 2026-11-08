@@ -34,9 +34,13 @@ extension UIKitDriver {
             return kinds.count == 1 ? kinds[0].propValue : nil
         case .accessibilityValue: return met(view).accessibilityValue.propValue
         case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
-        case .isAccessibilityHidden: return (!met(view).isAccessibilityElement).propValue
-        case .hidesChildrenFromAccessibility:
-            return (!met(view).isAccessibilityElement && met(view).accessibilityElementsHidden).propValue
+        case .accessibilityPresence:
+            guard !met(view).isAccessibilityElement else { return AccessibilityPresence.element.propValue }
+            guard met(view).accessibilityElementsHidden else { return AccessibilityPresence.hidden.propValue }
+            // Holding nothing of the tree's, a view hidden alone hides its own parts too: the two read alike, as said.
+            let alike = native?.element.children.isEmpty ?? true
+            let alone = alike && native?.element.accessibilityWords.presence == .hidden
+            return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .keyboardShortcut:
@@ -75,7 +79,7 @@ extension UIKitDriver {
 
     /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
     static func attributes(of font: UIFont) -> FontAttributes {
-        var attributes = FontAttributes.none
+        var attributes: FontAttributes = []
         if font.fontDescriptor.symbolicTraits.contains(.traitItalic) { attributes.insert(.italic) }
         let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[UIFontDescriptor.FeatureKey: Int]]
         if features?.contains(where: { $0[.type] == kNumberSpacingType && $0[.selector] == kMonospacedNumbersSelector })

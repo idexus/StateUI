@@ -34,14 +34,16 @@ extension View {
 
     /// The picture that stands for the page: a tab's icon, and the mark beside the title of a sidebar's page, which
     /// names the application.
-    public func icon(_ value: ImageSource) -> Modified {
-        pageSays { $0.setValue(PageElementContract.icon, value) }
+    ///
+    ///     NotesPage().title("Notes").pageIcon("notes.png")
+    public func pageIcon(_ value: ImageSource) -> Modified {
+        pageSays { $0.setValue(IconElementContract.icon, value) }
     }
 
     /// What the whole page is made of behind what it shows, also where the view it shows does not reach. Written on
     /// an arrangement, it is what each of its pages that says none stands on.
     public func pageBackground(_ value: Material) -> Modified {
-        pageSays { $0.setValue(PageElementContract.background, value) }
+        pageSays { $0.setValue(BackgroundElementContract.background, value) }
     }
 
     /// The page's background in one color.
@@ -49,15 +51,20 @@ extension View {
         pageBackground(.color(value))
     }
 
+    /// The page's background in a gradient.
+    public func pageBackground(_ value: Brush) -> Modified {
+        pageBackground(.gradient(value))
+    }
+
     /// The page's background from a state, `$x`: the host animates its color to each new value.
     public func pageBackground(_ state: Binding<Color>) -> Modified {
-        pageSays { $0.twin(PageElementContract.background, carrying: state) }
+        pageSays { $0.twin(BackgroundElementContract.background, carrying: state) }
     }
 
     /// The page's background from a material state, `$x`: the host shows each
     /// new material as it stands.
     public func pageBackground(_ state: Binding<Material>) -> Modified {
-        pageSays { $0.twin(PageElementContract.background, by: state) }
+        pageSays { $0.twin(BackgroundElementContract.background, by: state) }
     }
 
     /// Whether the navigation bar shows while the page is on top of its stack.
@@ -126,7 +133,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onAppearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onAppearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.appearing, policy: policy, handler) } }
     }
 
@@ -142,7 +149,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDisappearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, policy: policy, handler) } }
     }
 
@@ -151,7 +158,7 @@ extension View {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, gate: gate, handler) } }
     }
 
-    /// Runs when the application is asked to open a link - one the user chose elsewhere, of a scheme the
+    /// Runs when a link is opened into the application - one the user chose elsewhere, of a scheme the
     /// application's head registers - and gives it to the window the page this view stands on stands in: its
     /// address. Said of the page, as its title is: on a view the page shows, or on an arrangement where a page
     /// stands.
@@ -167,7 +174,7 @@ extension View {
 
     /// The same, with a handler that awaits - a sign-in finished in a browser exchanging its code: its `policy`
     /// says what a link does when it comes again while a run is under way.
-    public func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageElementContract.linkOpened, policy: policy, handler) } }
     }
 
@@ -183,7 +190,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedTo(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedTo(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, policy: policy, handler) } }
     }
 
@@ -199,7 +206,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatingFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, policy: policy, handler) } }
     }
 
@@ -215,7 +222,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, policy: policy, handler) } }
     }
 

@@ -37,7 +37,7 @@ extension ShapeTests {
     static func dashShifted(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).startsItsDashesWhereThePhaseSays", proves: [
             Covered(ShapeContract.dashPhase, on: element),
-        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let shifted = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, outlined(element, width: 4) + [
@@ -60,7 +60,7 @@ extension ShapeTests {
     static func capped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).endsItsLinesAsTheTreeSays", proves: [
             Covered(ShapeContract.lineCap, on: element),
-        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ShapeContract.dash, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let squared = State(wrappedValue: false)
             s.start {
                 Specimens.page(element, outlined(element, width: 4) + [
@@ -92,14 +92,14 @@ extension ShapeTests {
     @MainActor
     static func inset(_ element: String) -> [any Worn] {
         let square = [Point(8, 8), Point(32, 8), Point(32, 32), Point(8, 32)]
-        let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
+        let atItsSize = Write(ContentModeElementContract.contentMode, ContentMode.center)
         return switch element {
         case "Line": [
             Write(LineContract.from, Point(0, 20)),
             Write(LineContract.to, Point(40, 20)),
         ]
-        case "Polygon": [Write(PolygonContract.points, square), atItsSize]
-        case "Polyline": [Write(PolylineContract.points, square + [Point(8, 8)]), atItsSize]
+        case "Polygon": [Write(PointsShapeContract.points, square), atItsSize]
+        case "Polyline": [Write(PointsShapeContract.points, square + [Point(8, 8)]), atItsSize]
         case "Path": [Write(PathContract.data, "M 8 8 L 32 8 L 32 32 L 8 32 Z"), atItsSize]
         default: []
         }

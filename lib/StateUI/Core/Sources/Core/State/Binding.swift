@@ -33,10 +33,38 @@ public struct Binding<Value> {
     private let read: () -> Value
     private let write: (Value) -> Void
 
+    /// What the binding lends: a box's state as the box holds it now - so a binding made before the box adopted
+    /// the state it had lends that one - or a storage no box holds.
+    private enum Lending {
+        case box(State<Value>)
+        case storage(State<Value>.Storage)
+    }
+
+    private let lending: Lending
+
     /// The borrowed state's storage - how two spellings of one state recognize
     /// each other, and what the host's image, the journey and an engine hang off.
     /// Design: docs/design/core/state.md#bindings
-    let storage: State<Value>.Storage
+    var storage: State<Value>.Storage {
+        switch lending {
+        case .box(let box): box.storage
+        case .storage(let storage): storage
+        }
+    }
+
+    /// The storage this lends as it stands when asked - what a conversion keeps of its source: the storage the
+    /// binding was made from, held, which answers the one it was given up for at an adoption while that stands,
+    /// whether or not the box the binding was made from still does.
+    /// Design: docs/design/core/state.md#storage-and-box
+    var reach: () -> State<Value>.Storage? {
+        { [storage] in storage.standsFor }
+    }
+
+    /// The same, of no type.
+    var anyReach: () -> (any AnyStateStorage)? {
+        let reach = reach
+        return { reach() }
+    }
 
     /// Where a post to this waits for its job - the borrowed state's, shared by every
     /// binding to it.
@@ -48,7 +76,7 @@ public struct Binding<Value> {
     public init(_ state: State<Value>) {
         read = { state.wrappedValue }
         write = { state.wrappedValue = $0 }
-        storage = state.storage
+        lending = .box(state)
         mailroom = state.storage.mailroom
     }
 
@@ -73,12 +101,12 @@ public struct Binding<Value> {
             return storage.value
         }
         write = {
-            guard storage.admitsWrite() else { return }
+            guard storage.admitsWrite($0) else { return }
 
             storage.write($0)
             storage.askForRender()
         }
-        self.storage = storage
+        lending = .storage(storage)
         mailroom = storage.mailroom
     }
 
@@ -104,8 +132,9 @@ public struct Binding<Value> {
 
     /// The whole state as the root its parts are reached from.
     private var whole: StatePart<Value> {
-        StatePart(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
-                  lender: storage, lent: nil, mailroom: mailroom)
+        // Read through the binding as it stands, so a part made before adoption reaches the adopted whole.
+        StatePart(read: read, write: write, standing: { [self] in storage.value }, reaches: { true },
+                  lender: { [self] in storage }, lent: nil, mailroom: mailroom)
     }
 
     /// One property of the state - `$profile.name` - read and written through
@@ -189,10 +218,12 @@ extension Binding where Value: Walked {
 
 extension Binding {
     /// Writes a report - a value the platform measured or the user moved - so it
-    /// lands where it is: value, destination and a still speed together. A landed
-    /// value is not saved.
+    /// lands where it is: value, destination and a still speed together. Admitted
+    /// and kept as any write is.
     /// Design: docs/design/core/state.md#a-write-that-lands
     func land(_ value: Value) {
+        guard storage.admits(value) else { return }
+
         storage.snap(value)
         storage.askForRender()
     }

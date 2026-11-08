@@ -54,14 +54,16 @@ final class CompleteContractTests: XCTestCase {
     /// `Node(contract:)` - so the node type is the contract's and every value
     /// on it a member's. Two are built by type, each for its reason: the
     /// differ's placeholder for a composed view not built yet, which never
-    /// crosses and so has no contract, and a style's node, which takes the type
-    /// its target names.
+    /// crosses and so has no contract - made where it is made and where a
+    /// library view carries what is written on it - and a style's node, which
+    /// takes the type its target names.
     ///
     /// Read across lines: a construction wrapped after `Node(` is the same
     /// construction, and a scan reading line by line walks past it.
     func testEveryNodeIsBuiltThroughItsContract() throws {
         let allowed: [(path: String, construction: String)] = [
             ("Stateful.swift", "Node(type: .composed)"),
+            ("WrittenOnView.swift", "Node(type: .composed)"),
             ("Style.swift", "Node(type: Target.nodeType)"),
         ]
         var byType: [String] = []
@@ -115,9 +117,10 @@ final class CompleteContractTests: XCTestCase {
     // MARK: - The platform contract
 
     /// Every name a row of the platform contract's tables uses is in the
-    /// contract - a node type, a member, a handler's `on…` spelling of an
-    /// event member - or one of the core view members the hand-written table
-    /// names, each listed here with what it is.
+    /// contract - a node type, a member, the `on…` modifier an event member is
+    /// heard through (`onSelectionChanged` hears `selectedIndexChanged`) - or one
+    /// of the core view members the hand-written table names, each listed here
+    /// with what it is.
     func testEveryNameThePlatformContractsTablesUseIsInTheContract() throws {
         let document = try Self.platformContract()
         let sections = ["## Control creation", "## Host acts", "## Shared view members", "## Contract members"]
@@ -132,11 +135,12 @@ final class CompleteContractTests: XCTestCase {
         let types = Set(LibraryContracts.elements.map { $0.nodeType.name })
         let members = Set(declared.map(\.member.name))
         let events = names(of: .event)
+        let heardThrough = Set(try ControlDictionary.handlerSpellings().values.flatMap { $0 })
         var stranger: [String] = []
 
         for section in sections {
             for name in Self.backticked(inTableOf: section, in: document).sorted() {
-                let handler = name.hasPrefix("on") && name.count > 2
+                let handler = heardThrough.contains(name) || name.hasPrefix("on") && name.count > 2
                     && events.contains(name.dropFirst(2).prefix(1).lowercased() + name.dropFirst(3))
                 if !types.contains(name) && !members.contains(name) && !handler && !coreAPI.contains(name) {
                     stranger.append("\(section): `\(name)`")
@@ -222,6 +226,8 @@ final class CompleteContractTests: XCTestCase {
         "View+PageValues.swift": ["Page"],
         "View+Toolbar.swift": ["ToolbarGroup"],
         "StyleSheet.swift": ["VisualElement", "Button"],
+        "MenuItemElement.swift": ["MenuItem", "MenuToggle", "ToolbarButton", "ToolbarToggle"],
+        "BarItemElement.swift": ["ToolbarButton", "ToolbarToggle", "ToolbarGroup"],
     ]
 
     /// The contracts a source names by its protocols and extensions -

@@ -156,7 +156,7 @@ contract.
 
 ## Build
 
-The AppKit host requires macOS 26 or newer and Xcode 27, with its Swift 6.4.
+The AppKit host requires macOS 26.4 or newer and Xcode 27, with its Swift 6.4.
 
 Build the runnable Gallery bundle:
 
@@ -164,11 +164,10 @@ Build the runnable Gallery bundle:
 .scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
-Build the smaller example:
+Build and start the smaller example:
 
 ```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
 ```
 
 In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
@@ -176,8 +175,8 @@ application chosen in the StateUI extension's status bar, on the host chosen
 there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
 build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
-The UIKit host builds on macOS with the same Xcode and its iOS 26 or newer
-simulator runtime, for iOS and iPadOS 26 or newer. An application's UIKit
+The UIKit host builds on macOS with the same Xcode and its iOS 26.4 or
+newer simulator runtime, for iOS and iPadOS 26.4 or newer. An application's UIKit
 head is built as an application bundle, installed on an iOS simulator -
 booted first where it is not - or on an iPhone or iPad of this Mac's, and
 started by one script:
@@ -276,6 +275,7 @@ Each suite lives beside the package whose behavior it verifies:
 swift test
 swift test --package-path lib/StateUI/StateUI.Host
 swift test --package-path lib/StateUI/StateUI.Conformance
+swift test --package-path lib/StateUI/StateUI.Testing
 swift test --package-path lib/StateUI/StateUI.AppKit
 swift test --package-path apps/Gallery
 swift test --package-path apps/HelloWorld
@@ -291,8 +291,10 @@ AppKit build (`STATEUI_HOST=appkit`), on a build directory of its own:
 The first suite covers core semantics and the typed boundary. The host
 layer's suite proves the rules every host shares, pure, with no toolkit. The
 conformance package's own tests prove its runner and that every member has
-its case; each host's suite runs the cases themselves. The AppKit suite drives
-native AppKit objects. The Gallery's treats Gallery as application behavior
+its case; each host's suite runs the cases themselves. The application-testing
+package's suite proves its window, interaction, and teardown behavior; building
+it as an application's dependency does not run those tests. The AppKit suite
+drives native AppKit objects. The Gallery's treats Gallery as application behavior
 and compiles the documentation examples. HelloWorld's holds one example test,
 which a new application starts with: its page shown in a test window, its
 button clicked. In VS Code, **StateUI: Run Tests**
@@ -363,12 +365,14 @@ the package graph.
 On GitHub each suite has a workflow of its own, so each shows its own state,
 the core apart from the hosts: **Core macOS**, **Core Linux** and **Core
 Windows** (`build-mac.yml`, `build-linux.yml`, `build-windows.yml` - the core,
-the host layer and the conformance runner, and the Gallery and HelloWorld), and one
-for each host - **AppKit**, **UIKit** (an iPhone and an iPad simulator),
+the host layer, the conformance runner and the application-testing package,
+and the Gallery and HelloWorld), and one for each host - **AppKit**, **UIKit**
+(an iPhone and an iPad simulator),
 **Android** (the test APK built on macOS, run on a Linux emulator), **WinUI**,
-**GTK** and **Web**. **Core macOS** runs the core, the host layer and the
-conformance runner once more under Thread Sanitizer, where a race it sees
-fails the run - `swift test --sanitize=thread` on a Mac; on Linux the
+**GTK** and **Web**. **Core macOS** runs the core, the host layer, the
+conformance runner and the application-testing package once more under
+Thread Sanitizer, where a race it sees fails the run -
+`swift test --sanitize=thread` on a Mac; on Linux the
 sanitizer cannot see through a `Mutex` and reports every guarded access.
 A host's workflow holds every conformance verdict to its marks and never
 writes them: a family whose verdicts changed fails there, and its marks are
@@ -494,12 +498,12 @@ records anything while it is off.
 The inspector shows the renders inside the running application: each one's
 cause, its road, the time Swift took to describe it and the host to apply it,
 and the composed views it built and carried; a render chosen shows its tree of
-composed views, each with its time. `ToolbarButton.inspector(window)` - `window`
+composed views, each with its time. `ToolbarButton.debugInspector(window)` - `window`
 the session a view reads with `@Environment(\.window)` - puts its ⓘ in a
-page's bar, and `InspectorButton()` stands anywhere a view goes. The ⓘ
+page's bar, and `DebugInspectorButton()` stands anywhere a view goes. The ⓘ
 opens its scene's inspector along the bottom of its window, folded to one line;
 opened out, it can dock at the side on a desktop or a tablet.
-`window.openInspector(.side)` opens it from code. A scene that declares
+`window.debugInspector = .side` opens it from code, and `nil` closes it. A scene that declares
 `Window(.debugInspector) { DebugInspector() }` can show it in a window of its
 own, where the platform opens windows.
 
@@ -532,10 +536,17 @@ in is being built.
 
 The repository-root `Package.swift` is the package boundary for the
 platform-neutral `StateUI` product. Native hosts remain sibling packages so a
-consumer selects a toolkit without pulling it into the core. Every host
-package uses the root checkout as a local dependency; the complete remote
-library-plus-host installation path is not published yet. Keep Getting Started
-honest about that state until both products have a supported versioned route.
+consumer selects a toolkit without pulling it into the core. The supported
+installation is a complete checkout of a release tag or a local development
+tree. Each host and backend uses the root checkout as a local dependency, and
+`StateUI.Head` selects the application's host. A
+[project group](editors/VSCode/README.md#a-project-group)
+keeps applications outside the checkout while naming it by path; it uses the
+checkout's build scripts too.
+
+Every native head and its host link the same dynamic `StateUI` product, so one
+process holds one runtime. The Web build compiles the application, StateUI and
+its host into one WebAssembly module.
 
 A release has one version, stated in the editor extension's
 `editors/VSCode/package.json`. Every other place that names it - the

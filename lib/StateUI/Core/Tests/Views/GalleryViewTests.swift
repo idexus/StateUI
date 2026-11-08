@@ -387,8 +387,8 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertEqual(cards.count, 3)
         for card in cards {
-            XCTAssertEqual(card.properties[.width], .number(176))
-            XCTAssertEqual(card.properties[.height], .number(248))
+            XCTAssertEqual(card.properties["VisualElement.width"], .number(176))
+            XCTAssertEqual(card.properties["VisualElement.height"], .number(248))
         }
     }
 
@@ -446,10 +446,11 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(
+                .shade {
                     Rectangle()
                         .fill(Color(hex: 0x000000))
-                        .cornerRadius(16))
+                        .cornerRadius(16)
+                }
                 .node
         }
 
@@ -502,9 +503,9 @@ final class GalleryViewTests: XCTestCase {
             .fill(Color(hex: 0x000000))
             .cornerRadius(16)
 
-        let whole = farCard { $0.shade(mask) }
-        let half = farCard { $0.shade(mask, amount: 0.5) }
-        let none = farCard { $0.shade(mask).fade(0) }
+        let whole = farCard { $0.shade { mask } }
+        let half = farCard { $0.shade(amount: 0.5) { mask } }
+        let none = farCard { $0.shade { mask }.fade(0) }
 
         XCTAssertEqual(half.shade, whole.shade / 2, accuracy: 0.001, """
             the amount says how far the shade goes, and half of it is half as \
@@ -525,10 +526,10 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(
+                    .shade(amount: amount) {
                         Rectangle()
-                            .fill(Color(hex: 0x000000)),
-                        amount: amount)
+                            .fill(Color(hex: 0x000000))
+                    }
                     .node
             }).card(4)?.shade ?? -1
         }
@@ -720,6 +721,89 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(heard, [0], "the card in front alone")
     }
 
+    /// EVERY HANDLER OF A GALLERY'S EVENT RUNS, in the order written: the card in front opened, and the position.
+    func testEveryHandlerOfAGallerysEventRunsInWritingOrder() async throws {
+        var heard: [String] = []
+        let renders = Renders()
+        let position = State(0)
+        func tree() -> Node {
+            gallery(5).position(position.projectedValue)
+                .onItemActivated { heard.append("opened \($0) first") }
+                .onItemActivated(policy: .runConcurrently) { heard.append("opened \($0) second") }
+                .onPositionChanged { heard.append("at \($0) first") }
+                .onPositionChanged(policy: .runConcurrently) { heard.append("at \($0) second") }
+                .node
+        }
+        let shown = laid(renders, tree)
+        let cards = try XCTUnwrap(find(.motionLayout, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
+
+        XCTAssertTrue(renders.fire(cards[0]))
+        for _ in 0..<100 {
+            guard heard.count < 2 else { break }
+            stateUIRunJobs()
+            try? await Task.sleep(nanoseconds: 5_000_000)
+        }
+        XCTAssertEqual(heard, ["opened 0 first", "opened 0 second"])
+
+        position.wrappedValue = 2
+        _ = renders.render(tree())
+        _ = await settle()
+        XCTAssertEqual(heard.suffix(2), ["at 2 first", "at 2 second"])
+    }
+
+    /// EACH HANDLER OF THE POSITION GOES THROUGH A GATE OF ITS OWN: one held under `.ignoreWhileRunning` keeps no
+    /// other from running.
+    func testEachHandlerOfThePositionHasAGateOfItsOwn() async {
+        let renders = Renders()
+        let position = State(0)
+        var heard: [Int] = []
+        func tree() -> Node {
+            GalleryView(0..<3) { Text("\($0)") }
+                .position(position.projectedValue)
+                .onPositionChanged(policy: .ignoreWhileRunning) { _ in
+                    heard.append(1)
+                    try await Task.sleep(for: .seconds(60))
+                }
+                .onPositionChanged(policy: .ignoreWhileRunning) { _ in heard.append(2) }
+                .node
+        }
+        _ = renders.render(tree())
+        position.wrappedValue = 1
+        _ = renders.render(tree())
+        _ = await settle()
+
+        XCTAssertEqual(heard, [1, 2])
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
+    }
+
+    /// A HANDLER OF THE POSITION NO LONGER WRITTEN ENDS ITS RUN as the gallery is built without it, with no other
+    /// position coming, as an element's handler does.
+    func testAHandlerOfThePositionNoLongerWrittenEndsItsRun() async {
+        let renders = Renders()
+        let (position, hears) = (State(0), State(true))
+        let gate = Gate(.ignoreWhileRunning)
+        func tree() -> Node {
+            let gallery = GalleryView(0..<3) { Text("\($0)") }.position(position.projectedValue)
+            return (hears.wrappedValue
+                ? gallery.onPositionChanged(gate: gate) { _ in try await Task.sleep(for: .seconds(60)) }
+                : gallery).node
+        }
+        _ = renders.render(tree())
+        position.wrappedValue = 1
+        _ = renders.render(tree())
+        _ = await settle()
+        XCTAssertTrue(gate.isBusy, "the handler runs")
+
+        hears.wrappedValue = false
+        _ = renders.render(tree())
+        await gate.waitWhileBusy()
+        XCTAssertFalse(gate.isBusy, "its run ended with it")
+
+        _ = renders.render(VStack {}.node)
+        await gate.endEveryRun()
+    }
+
     /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.
@@ -828,7 +912,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             GalleryView([Int]()) { number in Text("\(number)") }
-                .emptyView(Text("nothing here"))
+                .emptyView { Text("nothing here") }
                 .node)
 
         XCTAssertNil(find(.zStack, in: patch))
@@ -875,9 +959,10 @@ final class GalleryViewTests: XCTestCase {
         let shaded = placements(
             laid(Renders(), {
                 self.gallery(3)
-                    .shade(
+                    .shade {
                         Rectangle()
-                            .fill(.black))
+                            .fill(.black)
+                    }
                     .node
             }).whole)
 

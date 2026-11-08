@@ -12,9 +12,17 @@
         (Swift.min(minimum, maximum), Swift.max(minimum, maximum))
     }
 
-    /// A step that moves: `step` where it is a positive number, else 1.
-    public static func step(_ step: Double) -> Double {
-        step.isFinite && step > 0 ? step : 1
+    /// A step that moves: `step` where it is a positive number, else - none given too - 1.
+    public static func step(_ step: Double?) -> Double {
+        guard let step, step.isFinite, step > 0 else { return 1 }
+        return step
+    }
+
+    /// The ends of the range a control of `type` stands in where the tree gives none: from 0 to a slider's 1, a
+    /// share, or a stepper's 100, a count.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    public static func ends(of type: NodeType, minimum: Double?, maximum: Double?) -> (minimum: Double, maximum: Double) {
+        (minimum ?? 0, maximum ?? (type == .stepper ? 100 : 1))
     }
 
     /// `value` held inside `lower` and `upper`: past an end it stands at that end, and a value that is no number

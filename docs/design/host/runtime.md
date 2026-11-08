@@ -368,9 +368,12 @@ An element whose frame the tree reads - a state its frame drives, or a
 handler of its changes - says where it stands on the display's next frame
 after anything was laid out or moved: its place in its parent onto the
 state, the whole report to its handler, and nothing where the report is the
-one it last said (`MountedElement.reportFrame`). The runtime's
+one it last said - but to a state or a handler come since, the view standing
+still, which hears where it stands once (`MountedElement.reportFrame`, the
+report due as the patch brings the reader). The runtime's
 `FrameFollowers` keeps the frames coming while a scroller moves or has
-something to say, or a frame read may have moved, and on each frame lets the
+something to say, a frame read may have moved, or a reader of an element's
+frame waits for it as its host follows the element again (`follow`), and on each frame lets the
 scrollers say what they did, then the elements where they stand, each in the
 order it was made, as one user's transaction. A host follows an element by
 the element (`FrameFollowers.follow(_:of:reads:)`); one that leaves the tree
@@ -491,8 +494,12 @@ host whose toolkit tells a finger's pointer apart says so.
 A view the tree disables keeps its place and still stands in the way of a
 press, but answers none; on a layout the whole branch in it answers none
 (`MountedElement.isEffectivelyEnabled`). The rule is the host layer's, once:
-`hear` drops what the user does to a view in a disabled branch - only a drag
-it began still ends there - and a view's `isEnabled` reaches its control as
+`hear` lets nothing begin on a view in a disabled branch, and what began
+there ends there - a press goes out; a drag, a pinch, a turn and the hand
+under way hear their end as cancelled, whatever the platform said, so none
+becomes a swipe or a throw; a pointer over the view leaves it; a drag between
+views ends or leaves - each the same road the platform's own cancel takes
+(`ending(of:)`), and none taken. A view's `isEnabled` reaches its control as
 `presented(_:)` gives it, false wherever a view holding it is disabled. When
 a layout's `isEnabled` changes, every element in it presents its own again
 (`enablementTurned`), so a native control in the branch is disabled and
@@ -519,6 +526,20 @@ beside them (`pressed(at:inView:)`). A press that never became a drag ends
 with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
+
+## A gesture taken away
+
+A host that takes a platform's gesture away by itself, while the platform's
+recognizer goes on with it - AppKit's, its view flattened under it ([a view
+drawn away from its frame](../platforms/appkit/input.md#a-view-drawn-away-from-its-frame))
+- tells the element its end, as cancelled, where one was told under way, and
+then nothing more of it (`ToldGesture`): the platform's further steps and its
+end go no further, though the view is drawn whole again before the end, so an
+element never hears a gesture go on after its end. One taken away as it
+begins tells nothing at all. The platform's own end closes the taking, and so
+does its next beginning: the next gesture is told whole, or with no beginning
+where the platform tells none, as a trackpad's pinch may come ([a pinch from
+its start](../types/gestures.md#a-pinch-from-its-start)).
 
 ## A gesture's speed
 
@@ -678,7 +699,8 @@ Where the toolkit tells each view as it takes the focus or loses it - Android,
 GTK, WinUI, the browser - the view tells its element at once. Where it tells
 only that the focus moved - AppKit's first responder, UIKit's - the host lets
 every element following its focus hear where the focus is now in one pass
-(`MountedElement.reportFocus(in:holds:)`), once the move has settled: the
+(`MountedElement.reportFocus(in:holds:)`), the sheet an arrangement keeps
+apart from its pages with them, once the move has settled: the
 host says only whether the focus stands in an element's view, and an element
 told already hears nothing again.
 
@@ -718,11 +740,26 @@ the platform's own. A host that realizes it declares
 
 ## The environment
 
-What a host reads of the machine it stands on is told to the core the same
-way on every host: the locale as eight words - language, region, name, time
-zone, a 24-hour clock, the week's first day from Sunday's 0, metric measures,
-a language written right to left - the network as its access and a set of
-bits for its connections, a battery as present or not, charging, on mains
+What a host reads of the machine it stands on reaches the core in typed
+reports. `HostLocaleInfo` carries one optional `LocaleTag`, one optional
+`TimeZoneName`, the clock, week, measures and writing direction, and the
+user's languages as `[LocaleTag]`, most wanted first. Native adapters read
+and normalize their platform's strings once; the core assigns these values
+directly. An unavailable tag or zone is nil. An invalid tag remains a
+`LocaleTag` whose `isValid` is false.
+
+The Android and WinUI relays supply six words: the full tag, zone, a 24-hour
+clock, the week's first day from Sunday's 0, metric measures and a language
+written right to left, then the preferred languages. `HostLocaleInfo(words:)`
+decodes that report. Decimal weekday text is truncated toward zero; an
+unavailable, unrepresentable or unknown weekday is Sunday. Every adapter
+preserves its platform's preference order (Apple's preferred languages,
+GLib's locale names, Android's locale list, Windows's profile languages), so
+a localization following the system reaches the first language its catalog
+speaks.
+
+The network is its access and a set of bits for its connections, a battery
+is present or not, charging, on mains
 or full, and a screen as landscape where it stands at least as wide as it is
 tall, turned by quarters from its natural orientation - none on one that
 turns with nothing - and the user's accessibility settings as four facts:
@@ -830,8 +867,13 @@ and performed the same way on every host (`InteropActs`): handed the values
 its contract declares, an aimed one also the control of the element its first
 argument names, and answered once it returns, or failed with why - a call
 carrying other values than its act declares, an element the host shows
-otherwise, or what the performer threw. What a host adds is its toolkit's:
-the control it hands an aimed act.
+otherwise, or what the performer threw. An aimed act finds its element as
+the call arrives, so one naming nothing fails at once, and is handed its
+control as it begins - the element found again by its number, the control
+read then - so the queue holds no control meanwhile, and an element that left
+in between, or stands replaced, fails the act rather than reach a control the
+tree dropped. What a host adds is its toolkit's: the control it hands an
+aimed act.
 
 ## Questions for the user
 
@@ -939,10 +981,12 @@ Every host keeps a value as its words, by one rule (`KeptWord`): a save
 carries no kind, so a value is written as the words of its own kind - true or
 false, a number (a whole one whole), words - and read back as the kind of the
 key that reads it, which the core asks for by name and kind through the
-reader the host gives it as it starts (`CoreLink.readsKept`). The words stand
-in the platform's own store where it has one - the preferences on a Mac, on
-iOS and on Android, read through the application's context, which outlives
-every activity.
+reader the host gives it as it starts (`CoreLink.readsKept`). Words of no
+such kind - a number an older version kept under a key now a boolean, text,
+a case the kind is never written in - read as none, so the key's declared
+value stands. The words stand in the platform's own store where it has one -
+the preferences on a Mac, on iOS and on Android, read through the
+application's context, which outlives every activity.
 
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
@@ -1009,9 +1053,13 @@ so they stand as typed until it commits them (`composing`), which each host
 reads from its toolkit's marked text or composing span; a toolkit that asks
 before it inserts takes what goes in, in the case and within the bound, in
 the same terms (`InputWords.fitting`). A caret and a selection the tree
-puts, in characters, reach a toolkit counting UTF-16 units as the units those characters take
-(`InputWords.utf16Selection`), so a character outside the basic plane - an
-emoji - is never split. A picker is given its choices where they changed, and
+puts, in characters, reach a toolkit in the units it counts in - UTF-16
+units (`InputWords.utf16Selection`) or Unicode scalars
+(`InputWords.scalarSelection`, GTK's) - as the units those characters take,
+so a character of several units - an emoji, a letter and its mark - is never
+split; each end is kept within the words before any arithmetic, as a number
+a program hands may be any, and a start past the words selects nothing at
+their end. A picker is given its choices where they changed, and
 its choice only where the tree changed it or the choices (`PickerChoices`):
 the user's own choice is never argued with.
 
@@ -1037,11 +1085,14 @@ take the keys and the checking alone.
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
 bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
-ends stand in order whichever the tree gave first; a value past an end stands
+ends stand in order whichever the tree gave first, and where it gives none
+they are the control's kind's - from 0 to a slider's 1, a share, or a
+stepper's 100, a count (`ValueArithmetic.ends`, which every host's
+registration reads through `ElementValues.ends`); a value past an end stands
 at that end, one that is no number at the lower (`ValueArithmetic.clamped`,
 which a host's stepper, slider, grid shade and list offset take rather than
 their own `min(max(...))` - `RuntimeArchitectureTests` reads their sources);
-a step that does not move is 1; a share of work past an end stands at that
+a step that does not move, or none given, is 1; a share of work past an end stands at that
 end, one that is no number at the start; a slider's key moves a hundredth of its range and a page a
 tenth; a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six;

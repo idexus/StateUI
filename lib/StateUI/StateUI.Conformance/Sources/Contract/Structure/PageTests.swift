@@ -115,7 +115,7 @@
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysInASheetsStack", proves: [
             Covered(member),
-        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
@@ -136,7 +136,7 @@
     static var closesItsSheet: ConformanceCase {
         ConformanceCase("Page.showsCloseButton.closesTheSheetOntoItsState", proves: [
             Covered(PageContract.showsCloseButton),
-        ], needs: [Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let shows = State(wrappedValue: true)
             s.start {
                 Text("Beneath").sheet(isPresented: shows.projectedValue) {
@@ -163,7 +163,7 @@
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).holdsWhatItsViewSaysAndChanges", proves: [
             Covered(member),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -185,7 +185,7 @@
     ) -> ConformanceCase {
         ConformanceCase("Page.\(member.name).followsItsState", proves: [
             Covered(member),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {

@@ -23,7 +23,7 @@ final class WebWindowClosingTests: XCTestCase {
         host.settle { (try? WebBrowser.number("document.querySelectorAll('dialog[open]').length", on: 0)) == 2 }
         XCTAssertEqual(try WebBrowser.number("document.querySelectorAll('dialog[open]').length", on: 0), 2, "two sheets shown")
 
-        host.leave()
+        host.finish()
 
         XCTAssertEqual(try WebBrowser.number("document.querySelectorAll('dialog[open]').length", on: 0), 0,
                        "no sheet of the closed window holds the page")

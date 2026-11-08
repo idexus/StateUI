@@ -25,29 +25,38 @@ final class AppKitPressRecognizer: NSGestureRecognizer {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard !pressing, isOwn(event) else { return }
+        guard !pressing, isOwn(event), let at = point(of: event) else { return }
         pressing = true
-        press(.began, at: point(of: event))
+        press(.began, at: at)
     }
 
     override func mouseDragged(with event: NSEvent) {
-        if pressing { press(.changed, at: point(of: event)) }
+        guard pressing else { return }
+        if let at = point(of: event) { press(.changed, at: at) } else { takenAway() }
     }
 
     override func mouseUp(with event: NSEvent) {
         guard pressing else { return }
-        pressing = false
-        press(.ended, at: point(of: event))
+        if let at = point(of: event) {
+            pressing = false
+            press(.ended, at: at)
+        } else {
+            takenAway()
+        }
         state = .failed
     }
 
     /// Another gesture took the press: it is taken away.
     override func reset() {
-        if pressing {
-            pressing = false
-            press(.cancelled, at: Point(x: 0, y: 0))
-        }
+        takenAway()
         super.reset()
+    }
+
+    /// The press under way, if one, is taken away: by another gesture, or by the view flattened under it.
+    private func takenAway() {
+        guard pressing else { return }
+        pressing = false
+        press(.cancelled, at: Point(x: 0, y: 0))
     }
 
     /// The press at `phase`, at `point` in the view from its top left corner.
@@ -57,18 +66,20 @@ final class AppKitPressRecognizer: NSGestureRecognizer {
         hearing?(.press(phase, at: point, size: size, byFinger: false))
     }
 
-    /// Where `event` stands in the view, from its top left corner.
-    private func point(of event: NSEvent) -> Point {
-        guard let view else { return Point(x: 0, y: 0) }
-        let at = view.convert(event.locationInWindow, from: nil)
-        return Point(x: Double(at.x), y: Double(view.isFlipped ? at.y : view.bounds.height - at.y))
+    /// Where `event` stands in the view, where the view is drawn, from its top left corner; nil where no point lands
+    /// in the view, flattened by its drawing.
+    private func point(of event: NSEvent) -> Point? {
+        guard let view else { return nil }
+        return view.drawnPoint(fromWindow: event.locationInWindow).map(view.topLeft)
     }
 
     /// Whether the press `event` begins is the view's own: not one on a control inside it a click works, nor on a
     /// view inside it that hears its own taps; one on the parts of a view that is a control is its own.
     private func isOwn(_ event: NSEvent) -> Bool {
         guard let view, !(view is NSControl), let superview = view.superview else { return true }
-        var each = view.hitTest(superview.convert(event.locationInWindow, from: nil))
+        guard let above = superview.drawnPoint(fromWindow: event.locationInWindow), let place = view.undrawn(above)
+        else { return false }
+        var each = view.hitTest(place)
         while let inner = each, inner !== view {
             if Self.takesItsOwnPress(inner) { return false }
             each = inner.superview

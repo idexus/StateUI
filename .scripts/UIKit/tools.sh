@@ -14,7 +14,7 @@ uikit_target () {
   UIKIT_SDK_NAME="$1"
   UIKIT_SDK="$(xcrun --sdk "$1" --show-sdk-path)"
   UIKIT_PLATFORM="$(xcrun --sdk "$1" --show-sdk-platform-path)"
-  UIKIT_TRIPLE="arm64-apple-ios26.0"
+  UIKIT_TRIPLE="arm64-apple-ios26.4"
   [[ "$1" == iphoneos ]] || UIKIT_TRIPLE+="-simulator"
 }
 uikit_target iphonesimulator
@@ -67,11 +67,11 @@ uikit_bundle () {
   plutil -insert CFBundleInfoDictionaryVersion -string 6.0 "$plist"
   plutil -insert CFBundleName -string "$name" "$plist"
   plutil -insert CFBundlePackageType -string APPL "$plist"
-  plutil -insert CFBundleShortVersionString -string 0.8.1 "$plist"
+  plutil -insert CFBundleShortVersionString -string 0.8.2 "$plist"
   plutil -insert CFBundleVersion -string 1 "$plist"
   plutil -insert CFBundleSupportedPlatforms -array "$plist"
   plutil -insert CFBundleSupportedPlatforms.0 -string "$platform" "$plist"
-  plutil -insert MinimumOSVersion -string 26.0 "$plist"
+  plutil -insert MinimumOSVersion -string 26.4 "$plist"
   plutil -insert LSRequiresIPhoneOS -bool true "$plist"
   plutil -insert UIDeviceFamily -array "$plist"
   plutil -insert UIDeviceFamily.0 -integer 1 "$plist"
@@ -121,7 +121,7 @@ uikit_icon () {
   fi
   "$drawer" "$artwork" "$tools/Assets.xcassets" >&2 || return 1
   xcrun actool "$tools/Assets.xcassets" --compile "$bundle" --platform "$UIKIT_SDK_NAME" \
-    --minimum-deployment-target 26.0 --target-device iphone --target-device ipad --app-icon AppIcon \
+    --minimum-deployment-target 26.4 --target-device iphone --target-device ipad --app-icon AppIcon \
     --output-partial-info-plist "$tools/icon.plist" --output-format human-readable-text >/dev/null \
     || { echo "ERROR: actool did not compile the icon" >&2; return 1; }
   /usr/libexec/PlistBuddy -c "Merge $tools/icon.plist" "$bundle/Info.plist" >/dev/null

@@ -23,6 +23,44 @@ press action runs the same handler a click runs, so VoiceOver and automation
 reach it through the native accessibility press rather than a synthetic
 click.
 
+## A view drawn away from its frame
+
+AppKit finds a view, and converts an event's place, by frames alone: a
+layer's transform - what StateUI draws a view's translation, rotation and
+scale with ([a view under a transform](views.md#a-view-under-a-transform)) -
+moves what the user sees and nothing of where AppKit looks. StateUI's own
+surfaces and recognizers look where the view is drawn, by the drawing's own
+matrix undone (`AppKitDrawnGeometry`, `HostMatrix.unapplied`): a layout finds
+each subview drawn away from its frame by taking the point where it lands in
+the subview, undoing the drawing there and handing `hitTest` the point the
+frame alone maps there (`undrawn`); every recognizer of StateUI's reads an
+event's place down from the window's content, each drawing on the way undone
+in turn (`drawnPoint(fromWindow:)`), so a press, a drag, the hand, two
+fingers and the pointer meet the view where it stands drawn, and a drag's
+distance is measured there too. The layers' own geometry is not asked: AppKit
+flips no layer's geometry for a flipped view, so a layer's conversions count
+in a space the view does not. A view drawn as it lies costs nothing of this.
+What AppKit tracks by itself keeps its frame: a native control drawn away
+from it - a button translated or turned - is found where it is drawn, then
+follows its click by its frame, which is the toolkit's; a drag's speed is the
+toolkit's reading too. A drawing that flattens the view - a scale of zero on
+an axis, a plane turned edge-on - has no inverse: no point of the window
+lands in the view, `undrawn` and `drawnPoint(fromWindow:)` answer nil, and
+the view is not under the pointer. A layout passes over it as it finds what
+is hit, a press begun on it ends as cancelled, a drag, a pinch, a rotation,
+two fingers and the hand - dragged or held still - are taken away, a click of
+a run of taps and a press held tell nothing, the pointer is told to have left
+and nothing more, and a native button's own tracking counts its press
+outside. AppKit's own recognizer goes on with a gesture taken away, and
+nothing more of it is told, though the view is drawn whole again before it
+ends ([a gesture taken away](../../host/runtime.md#a-gesture-taken-away)).
+The frame alone never stands in for a drawing that has no inverse.
+A recognizer of AppKit's own - a drag, the hand, a pinch, a rotation, a hold -
+reads what AppKit tells, its state and its place in the window, and hands it
+to the part that decides (`recognized(_:at:)`), which a test drives: AppKit
+follows such a recognizer's state only through the events a shown window
+hands it.
+
 ## A disabled view
 
 A control the tree disables, or one in a disabled branch, is an `NSControl`

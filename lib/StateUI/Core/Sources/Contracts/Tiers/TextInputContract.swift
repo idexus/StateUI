@@ -3,12 +3,12 @@
 
 /// What every field a user types into has: the text's limits and caret, the
 /// keyboard it asks for, and the placeholder shown while it is empty.
-public enum TextInputContract: Contract {
+public enum TextInputContract: Tier {
     /// The tier's name.
     public static let name = "TextInput"
 
     /// A field is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, FocusElementContract.self, PlaceholderElementContract.self]
 
     /// Where the caret is, in characters from the start.
     public static let cursorPosition = ElementProperty<Self, Int>(
@@ -31,9 +31,6 @@ public enum TextInputContract: Contract {
     public static let maximumLength = ElementProperty<Self, Int>(
         "maximumLength", layer: .native, travels: false)
 
-    /// What the field shows while it is empty.
-    public static let placeholder = ElementProperty<Self, String>("placeholder", layer: .native)
-
     /// The placeholder's color.
     public static let placeholderColor = ElementProperty<Self, Color>("placeholderColor", layer: .native)
 
@@ -45,8 +42,5 @@ public enum TextInputContract: Contract {
     public static let textChanged = ElementEvent<Self, String>("textChanged", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        cursorPosition, inputPurpose, isReadOnly, isSpellCheckEnabled, isTextPredictionEnabled,
-        maximumLength, placeholder, placeholderColor, selectionLength, textChanged,
-    ]
+    public static let members: [any ContractMember] = [cursorPosition, inputPurpose, isReadOnly, isSpellCheckEnabled, isTextPredictionEnabled, maximumLength, placeholderColor, selectionLength, textChanged]
 }

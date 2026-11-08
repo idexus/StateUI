@@ -1,6 +1,5 @@
-# revision 4.1
+# revision 5.1
 Text: ✅
 Text.isSelectable: ✅
-Text.lineBreak: ✅
 Text.maximumLines: ✅
 Text.verticalTextAlignment: ✅

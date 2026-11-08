@@ -192,7 +192,10 @@ user's own choice is never argued with; no choice stands as the title
 selected. The choice the user makes is heard on `change`. The browser opens
 a picker's list - and a day's calendar, a time's clock - at the user's press,
 closes it at the user's hand and says nothing of either, so a picker's
-opening is not the program's.
+opening is not the program's. The open list keeps the pointer from the
+press until it closes: the page hears no hold, drag or swipe over a
+picker, and its release only where it was pressed - so a press dragged away
+would tap. Those view members stand `–` on a Picker.
 
 ## A day and a time
 
@@ -239,7 +242,14 @@ back; a frame's own navigation is a step in its history. The page hears
 the frame's document load, and tells it navigated, for the reason the
 program asked where it asked one (`WebNavigationCause`); a step the frame
 takes - back, forward, the page again - tells its navigation began as it is
-taken, as showing an address does.
+taken, as showing an address does. The page again, asked while a new source
+is still loading, shows that source anew: the frame's own reload would load
+the document it still shows. `WebReloadSource` keeps the complete source
+until the frame's next load is the one the page asked for, and keeps
+authored HTML with a base after it, as
+[the shared reload rule](../../host/web.md#the-source-to-reload) says. A
+load the page did not ask for - a link followed inside the frame - and a
+step back or forward give the page again to the frame's own history.
 
 The browser keeps a document of another site to itself: the page cannot
 read where its user went inside it, nor its history, nor run a script in

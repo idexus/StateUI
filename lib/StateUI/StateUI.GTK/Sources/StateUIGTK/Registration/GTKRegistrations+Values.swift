@@ -11,40 +11,40 @@ extension GTKRegistrations {
         registry.add(SliderContract.self, create: { reports in
             let slider = GTKSliderView()
             slider.onValueChanged = { moved in
-                reports.report(SliderContract.value, moved, as: SliderContract.valueChanged)
+                reports.report(RangeElementContract.value, moved, as: RangeElementContract.valueChanged)
             }
             return slider
         }, members: { slider in
-            slider.applies(SliderContract.value, SliderContract.minimum, SliderContract.maximum) { view, values in
+            slider.applies(RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum) { view, values in
                 view.apply(
                     value: values.written(
-                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
                         standing: view.value),
-                    minimum: values[SliderContract.minimum] ?? 0,
-                    maximum: values[SliderContract.maximum] ?? 1)
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum)
             }
-            slider.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            slider.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             slider.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            slider.raises(SliderContract.valueChanged)
+            slider.declares(RangeElementContract.valueChanged)
         })
         registry.add(StepperContract.self, create: { reports in
             let stepper = GTKStepperView()
             stepper.onValueChanged = { stepped in
-                reports.report(StepperContract.value, stepped, as: StepperContract.valueChanged)
+                reports.report(RangeElementContract.value, stepped, as: RangeElementContract.valueChanged)
             }
             return stepper
         }, members: { stepper in
             stepper.applies(
-                StepperContract.value, StepperContract.minimum, StepperContract.maximum,
+                RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum,
                 StepperContract.step) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.value),
-                    minimum: values[StepperContract.minimum] ?? 0,
-                    maximum: values[StepperContract.maximum] ?? 100,
-                    step: values[StepperContract.step] ?? 1)
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
+                    step: values.step)
             }
-            stepper.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            stepper.declares(RangeElementContract.valueChanged)
         })
     }
 }

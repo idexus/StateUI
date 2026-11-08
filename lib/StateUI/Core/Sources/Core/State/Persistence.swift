@@ -9,7 +9,7 @@
 /// with, a store being typed. Taken from the Swift type named at the key.
 public enum PersistentKind: Int32, Sendable {
     /// True or false.
-    case boolean = 0
+    case bool = 0
 
     /// A whole number - exact to 2^53, every number a host is handed being a
     /// Double.
@@ -19,7 +19,7 @@ public enum PersistentKind: Int32, Sendable {
     case number = 2
 
     /// Text.
-    case text = 3
+    case string = 3
 }
 
 /// A value a `@State` can be KEPT as.
@@ -51,7 +51,7 @@ public protocol PersistentValue {
 
 extension Bool: PersistentValue {
     /// True or false.
-    public static var persistentKind: PersistentKind { .boolean }
+    public static var persistentKind: PersistentKind { .bool }
 
     /// The value, as a host is handed it.
     public var persistentValue: PropValue { .bool(self) }
@@ -101,7 +101,7 @@ extension Double: PersistentValue {
 
 extension String: PersistentValue {
     /// Text.
-    public static var persistentKind: PersistentKind { .text }
+    public static var persistentKind: PersistentKind { .string }
 
     /// The value, as a host is handed it.
     public var persistentValue: PropValue { .string(self) }
@@ -214,9 +214,11 @@ final class PersistentStore {
         return storage
     }
 
-    /// Marks a key for saving with its value; the write wakes the host.
+    /// Marks a key for saving with its value and asks the host for a turn to take it.
+    /// Design: docs/design/core/state.md#kept-state
     func record<Value>(_ key: PersistentKey<Value>, _ value: PropValue) {
         waiting[key.key] = value
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// How many keys are waiting - work the host takes whether or not a render was

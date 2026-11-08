@@ -9,6 +9,25 @@ import AppKit
 @_spi(Host) import StateUIApple
 import XCTest
 
+/// A drawing that takes as long as a test says: it says when it has begun, and ends when it is told to.
+private final class SlowDrawing: NSImageRep, @unchecked Sendable {
+    let begun = DispatchSemaphore(value: 0)
+    let done = DispatchSemaphore(value: 0)
+
+    override init() {
+        super.init()
+        size = NSSize(width: 40, height: 20)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    override func draw(in rect: NSRect) -> Bool {
+        begun.signal()
+        _ = done.wait(timeout: .now() + 5)
+        return true
+    }
+}
+
 @MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
@@ -82,6 +101,31 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "more pixels, drawn again")
     }
 
+    /// A drawing's pixels being made keep no view that left the tree meanwhile: the work holds the drawing, and the
+    /// view is let go as its owner lets it go, however long the drawing takes; the pixels come to nobody.
+    func testADrawingsPixelsBeingMadeKeepNoViewThatLeft() async throws {
+        let drawing = NSImage(size: NSSize(width: 40, height: 20))
+        let slow = SlowDrawing()
+        drawing.addRepresentation(slow)
+        XCTAssertTrue(drawing.isDrawing)
+        weak var gone: AppKitImageView?
+        autoreleasepool {
+            let view = AppKitImageView()
+            gone = view
+            view.frame = NSRect(x: 0, y: 0, width: 40, height: 20)
+            view.apply(image: drawing, aspect: .fit, animationPlaying: false)
+            view.layoutSubtreeIfNeeded()
+        }
+        defer { slow.done.signal() }
+        XCTAssertTrue(begun(slow), "the drawing is being made")
+        XCTAssertNil(gone, "the view, let go by its owner, is gone while its drawing is still being made")
+    }
+
+    /// Whether `drawing` has begun within two seconds - waited for apart from any task, as a semaphore is.
+    nonisolated private func begun(_ drawing: SlowDrawing) -> Bool {
+        drawing.begun.wait(timeout: .now() + 2) == .success
+    }
+
     /// The pixels the view shows once they come, other than `other`.
     private func pixels(of view: AppKitImageView, other: NSImage? = nil) throws -> NSImage {
         let deadline = Date(timeIntervalSinceNow: 2)
@@ -120,7 +164,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testEveryPictureIsMadeOnce() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let dot = try XCTUnwrap(NSBitmapImageRep(
             bitmapDataPlanes: nil, pixelsWide: 1, pixelsHigh: 1, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
             isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0))
@@ -138,7 +182,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testAPictureStillShownOutlastsTheCache() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let shown = try XCTUnwrap(renderer.image(.icon(.add)))
 
         renderer.pictures.letGoOfKept()
@@ -174,7 +218,7 @@ final class AppKitImageViewTests: XCTestCase {
     /// A name the application has no file for resolves to nothing, as on every host: no picture stands in.
     func testANameWithNoFileResolvesToNothing() {
         let renderer = testRenderer(resourceDirectory: FileManager.default.temporaryDirectory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertNil(renderer.image(named: "no-such-picture-\(UUID().uuidString)"))
     }
@@ -203,12 +247,12 @@ final class AppKitImageViewTests: XCTestCase {
         try representation.write(to: directory.appendingPathComponent("picture.png"))
 
         let renderer = testRenderer(resourceDirectory: directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [
-            .source: .string("picture.png"),
+            ImageContract.source.token: .string("picture.png"),
             .contentMode: .enumeration(ContentMode.fill.rawValue),
-            .isAnimating: .bool(true),
+            ImageContract.isAnimating.token: .bool(true),
         ]
 
         renderer.applyForTesting(tree(picture))
@@ -226,12 +270,12 @@ final class AppKitImageViewTests: XCTestCase {
     func testASecondWindowShowingSVGsCostsLittle() async throws {
         PicturesApplication.register()
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         Self.draw(renderer)
         let before = Self.footprint()
 
-        try await StandardEnvironment.application.openWindow(WindowType("pictures.again"))
+        try await StandardEnvironment.application.openWindow(WindowKind("pictures.again"))
         renderer.runtime.pump.turn()
         Self.draw(renderer)
         let grown = Self.footprint() - before
@@ -249,7 +293,7 @@ final class AppKitImageViewTests: XCTestCase {
     @MainActor
     func testADrawingKeepsNoPixelsOfTheSizesItWasDrawnAt() throws {
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let drawing = try XCTUnwrap(renderer.image(named: "test_wide.svg"))
         let before = Self.footprint()
 
@@ -295,7 +339,7 @@ final class AppKitImageViewTests: XCTestCase {
             .horizontalAlignment(.start)
             .verticalAlignment(.start)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
         let icon = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
         let words = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
@@ -312,7 +356,7 @@ private struct PicturesApplication: Application {
 private struct PicturesScene: Scene {
     var body: some Scene {
         WindowGroup { PicturesPage() }
-        Window(WindowType("pictures.again")) { PicturesPage() }
+        Window(WindowKind("pictures.again")) { PicturesPage() }
     }
 }
 

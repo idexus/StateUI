@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// An aim: which control an act is about - the element's key, declared on the view
-// with `@Aim` and filled by the differ as it walks.
+// An aim: which control an act is about - where the element stands, the keys
+// from the root down to it, declared on the view with `@Aim` and filled by the
+// differ as it walks.
 // Design: docs/design/core/acts.md#aims
 
 
@@ -11,7 +12,7 @@
 ///     @Aim(WebView.self) private var browser
 ///
 ///     WebView(address).aim(browser)
-///     Button("Back").onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+///     Button("Back").onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
 ///
 /// `.aim(_:)` puts it on a view, and the act reaches exactly that view: there is
 /// no name to spell, and two instances of one composed view each aim at their
@@ -25,7 +26,7 @@
 @propertyWrapper
 @MainActor
 public final class Aim<Target>: @MainActor CustomStringConvertible {
-    /// Where the key lives - untyped, because the tree holds it too. Replaced at most
+    /// Where the place lives - untyped, because the tree holds it too. Replaced at most
     /// once, by adoption, before anything holding the view can act.
     private(set) var box = AimBox()
 
@@ -45,15 +46,19 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
     /// "nowhere" or "two views" - so printing one says something useful.
     public var description: String { box.label }
 
-    /// The argument that tells the host which view an act is about: the element's
-    /// key, a number or the `.id()` name. Throws rather than guess where the aim is on
-    /// no view or on two.
+    /// The argument that tells the host which view an act is about: where the
+    /// element stands, each key from the root down to it a number or the `.id()`
+    /// name. Throws rather than guess where the aim is on no view or on two.
     var target: PropValue {
         get throws { try box.target }
     }
 
-    /// The element the aim is put on; nil where it is on none, or on two.
-    @_spi(Host) public var element: ElementID? { box.element }
+    /// Where the element the aim is put on stands: the keys from the root down to it; nil where it is on none, or
+    /// on two.
+    @_spi(Host) public var place: [ElementID]? { box.place }
+
+    /// The element the aim is put on, by its own key; nil where it is on none, or on two.
+    @_spi(Host) public var element: ElementID? { box.place?.last }
 
     /// Performs an act of the aimed element's contract on it - the element
     /// first, then the arguments the contract declares - and answers with the
@@ -81,15 +86,16 @@ public final class Aim<Target>: @MainActor CustomStringConvertible {
     /// - Returns: the answer, as the contract declares it.
     @discardableResult
     public func call<
-        Owner: Contract, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         _ arguments: repeat each Argument
     ) async throws -> (repeat each Answer) {
         let aimed = try target
+        Wearing.takes(box.declaration, act)
         let reply = try await Renderer.shared.call(
             act.token, [aimed] + MemberValues.encode(repeat each arguments))
-        return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
+        return try MemberValues.answer(reply, of: act.token.name, as: repeat (each Answer).self)
     }
 }
 
@@ -117,12 +123,15 @@ protocol Aiming: AnyObject {
 
 extension Aim: Aiming {}
 
-/// The box behind an `Aim`, where the differ leaves the element's key and an act
-/// reads it.
+/// The box behind an `Aim`, where the differ leaves where the element stands and
+/// an act reads it.
 @MainActor
 final class AimBox: Hashable {
-    /// The identity of the element this was last put on.
-    private var identity: ElementID?
+    /// The contract of the element it was last put on, which says what acts it takes.
+    var declaration: (any ElementContract.Type)?
+
+    /// Where the element this was last put on stands: the keys from the root down to it.
+    private var standing: [ElementID]?
 
     /// The identities a list wearing this wrote for an item, in the order they show - set as the list is built.
     var resolves: ((Any) -> [String])?
@@ -134,47 +143,45 @@ final class AimBox: Hashable {
     /// attachment clears it.
     private var conflicted = false
 
-    /// Attaches the element's key: the first attachment of a walk takes it, a second
-    /// in the same walk is a conflict.
-    func attach(_ id: ElementID, walk: Int) {
+    /// Attaches where the element stands, `place`: the first attachment of a walk takes it, a second in the same
+    /// walk is a conflict.
+    func attach(_ place: [ElementID], walk: Int) {
         if self.walk != walk {
             self.walk = walk
-            identity = id
+            standing = place
             conflicted = false
-        } else if identity != id {
+        } else if standing != place {
             conflicted = true
         }
     }
 
-    /// The act argument this box aims with, or why it cannot.
+    /// The act argument this box aims with - each key from the root down, a number or the author's name as text,
+    /// as an element's own manual id crosses - or why it cannot.
     var target: PropValue {
         get throws {
             if conflicted {
                 throw StateUIError.aimOnTwoViews
             }
-
-            switch identity {
-            case .auto(let number):
-                return .number(Double(number))
-            case .manual(let name):
-                // The author's name, as text - as an element's own manual id crosses.
-                return .string(name)
-            case nil:
-                throw StateUIError.aimOnNoView
-            }
+            guard let standing else { throw StateUIError.aimOnNoView }
+            return .values(standing.map { key in
+                switch key {
+                case .auto(let number): .number(Double(number))
+                case .manual(let name): .string(name)
+                }
+            })
         }
     }
 
-    /// What `Aim.description` says.
-    /// The element this is on; nil where on none, or on two.
-    var element: ElementID? { conflicted ? nil : identity }
+    /// Where the element this is on stands; nil where on none, or on two.
+    var place: [ElementID]? { conflicted ? nil : standing }
 
+    /// What `Aim.description` says.
     var label: String {
         if conflicted { return "two views" }
 
-        switch identity {
-        case .auto(let number): return "#\(number)"
-        case .manual(let name): return name
+        switch standing?.last {
+        case .auto(let number)?: return "#\(number)"
+        case .manual(let name)?: return name
         case nil: return "nowhere"
         }
     }

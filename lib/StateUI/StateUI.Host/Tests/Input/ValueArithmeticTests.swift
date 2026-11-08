@@ -14,6 +14,16 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertTrue(ValueArithmetic.range(2, 10) == (2, 10))
         XCTAssertEqual(ValueArithmetic.step(0.25), 0.25)
         XCTAssertEqual([0, -1, .nan, .infinity].map(ValueArithmetic.step), [1, 1, 1, 1])
+        XCTAssertEqual(ValueArithmetic.step(nil), 1, "a step the tree gives none is 1")
+    }
+
+    /// The ends of a range the tree gives none are its control's: a slider's a share, 0 to 1; a stepper's a count,
+    /// 0 to 100 - and the tree's where it gives one.
+    func testARangesEndsTheTreeLeavesOutAreItsControls() {
+        XCTAssertTrue(ValueArithmetic.ends(of: .slider, minimum: nil, maximum: nil) == (0, 1))
+        XCTAssertTrue(ValueArithmetic.ends(of: .stepper, minimum: nil, maximum: nil) == (0, 100))
+        XCTAssertTrue(ValueArithmetic.ends(of: .stepper, minimum: -5, maximum: nil) == (-5, 100))
+        XCTAssertTrue(ValueArithmetic.ends(of: .slider, minimum: nil, maximum: 11) == (0, 11))
     }
 
     /// A control of a range is written the tree's value where the tree changed it or an end - a range widened over a
@@ -21,16 +31,16 @@ final class ValueArithmeticTests: XCTestCase {
     func testARangeThatMovesTakesTheTreesValue() {
         func written(changed: Set<Prop>, tree: Double?) -> Double {
             let values = ElementValues<SliderContract>(changed: changed) { key in
-                key == SliderContract.value.token ? tree.map { .number($0) } : nil
+                key == RangeElementContract.value.token ? tree.map { .number($0) } : nil
             }
             return values.written(
-                SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum], standing: 10)
+                RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum], standing: 10)
         }
 
-        XCTAssertEqual(written(changed: [SliderContract.minimum.token], tree: 25), 25, "the range moved")
-        XCTAssertEqual(written(changed: [SliderContract.value.token], tree: 25), 25, "the value changed")
+        XCTAssertEqual(written(changed: [RangeElementContract.minimum.token], tree: 25), 25, "the range moved")
+        XCTAssertEqual(written(changed: [RangeElementContract.value.token], tree: 25), 25, "the value changed")
         XCTAssertEqual(written(changed: [], tree: 25), 10, "nothing the tree changed: the hand on the control stays")
-        XCTAssertEqual(written(changed: [SliderContract.maximum.token], tree: nil), 10, "no value in the tree")
+        XCTAssertEqual(written(changed: [RangeElementContract.maximum.token], tree: nil), 10, "no value in the tree")
     }
 
     /// A share of work past an end stands at that end; one that is no number stands at the start.
@@ -82,7 +92,6 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(TextCase.uppercase.applied(to: "Mixed Words"), "MIXED WORDS")
         XCTAssertEqual(TextCase.lowercase.applied(to: "Mixed Words"), "mixed words")
         XCTAssertEqual(TextCase.none.applied(to: "Mixed Words"), "Mixed Words")
-        XCTAssertEqual(TextCase.default.applied(to: "Mixed Words"), "Mixed Words")
     }
 
     /// A stepper's step moves down only above the range's lower end and up only below its upper: at an end, the

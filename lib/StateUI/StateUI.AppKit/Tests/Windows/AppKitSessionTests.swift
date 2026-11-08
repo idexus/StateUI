@@ -13,7 +13,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testApplicationScenesOwnAllOfTheirNativeWindows() {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(
             scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
@@ -39,7 +39,7 @@ final class AppKitSessionTests: XCTestCase {
         for controller in renderer.windowsForTesting {
             controller.window?.setFrame(NSRect(x: 40, y: 40, width: 320, height: 240), display: false)
         }
-        renderer.closeForTesting()
+        renderer.finish()
 
         XCTAssertEqual(Set(kept()).subtracting(before), [])
     }
@@ -47,7 +47,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testRemovingOneWindowClosesOnlyThatNativeWindow() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(
             scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
             scene("2", windows: [window("window 1")])
@@ -79,12 +79,12 @@ final class AppKitSessionTests: XCTestCase {
         firstHost.keepSceneValue(HostActCall(
             act: .persistSceneValue, arguments: [.name("1"), .name("shade"), .string("dusk")], completion: nil))
         let records = firstHost.windowsForTesting.map(\.restorationRecordForTesting)
-        firstHost.closeForTesting()
+        firstHost.finish()
         XCTAssertEqual(records.map(\.kind), [nil, "appkit.test.tool"])
 
         AppKitSessionApp.register()
         let restoredHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { restoredHost.closeForTesting() }
+        defer { restoredHost.finish() }
         let tool = try XCTUnwrap(restoredHost.acceptRestoredWindow(records[1]))
         let window = try XCTUnwrap(restoredHost.acceptRestoredWindow(records[0]))
         XCTAssertNil(restoredHost.acceptRestoredWindow(WindowRecord(identifier: "gone", kind: "appkit.test.gone")))
@@ -103,7 +103,7 @@ final class AppKitSessionTests: XCTestCase {
     func testARestoredWindowKeepsItsFrameWhenNoGeometryIsRequested() throws {
         AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let record = WindowRecord(identifier: UUID().uuidString)
         let restored = try XCTUnwrap(renderer.acceptRestoredWindow(record))
         restored.setFrame(
@@ -130,11 +130,11 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testWindowGeometryRequestsDoNotReplayUnchangedAxes() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = window("window 1")
-        initial.properties[.width] = .number(640)
-        initial.properties[.height] = .number(480)
+        initial.properties[WindowContract.width.token] = .number(640)
+        initial.properties[WindowContract.height.token] = .number(480)
         renderer.applyForTesting(tree(scene("1", windows: [initial])))
 
         let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -142,7 +142,7 @@ final class AppKitSessionTests: XCTestCase {
         native.setFrameOrigin(NSPoint(x: 137, y: 211))
 
         var width = HostPatch(id: .manual("window 1"), type: .window)
-        width.properties[.width] = .number(820)
+        width.properties[WindowContract.width.token] = .number(820)
         renderer.applyForTesting(tree(scene("1", windows: [width])))
 
         var contentSize = native.contentRect(forFrameRect: native.frame).size
@@ -151,7 +151,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
 
         var relinquishedWidth = HostPatch(id: .manual("window 1"), type: .window)
-        relinquishedWidth.clearedProperties = [.width]
+        relinquishedWidth.clearedProperties = [WindowContract.width.token]
         native.setContentSize(NSSize(width: 910, height: 610))
         renderer.applyForTesting(tree(scene("1", windows: [relinquishedWidth])))
 
@@ -172,19 +172,19 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testWindowMapsAndClearsItsCompleteNativePropertyGroup() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var authored = window("window 1")
         authored.properties.merge([
-            .title: .string("Workspace"),
+            WindowContract.title.token: .string("Workspace"),
             .x: .number(137),
             .y: .number(73),
-            .width: .number(640),
-            .height: .number(480),
-            .minimumWidth: .number(320),
-            .minimumHeight: .number(240),
-            .maximumWidth: .number(1_200),
-            .maximumHeight: .number(900),
+            WindowContract.width.token: .number(640),
+            WindowContract.height.token: .number(480),
+            WindowContract.minimumWidth.token: .number(320),
+            WindowContract.minimumHeight.token: .number(240),
+            WindowContract.maximumWidth.token: .number(1_200),
+            WindowContract.maximumHeight.token: .number(900),
             .isMaximizable: .bool(false),
             .isMinimizable: .bool(false),
         ]) { _, authored in authored }
@@ -215,9 +215,9 @@ final class AppKitSessionTests: XCTestCase {
         let standingFrame = native.frame
         var cleared = HostPatch(id: .manual("window 1"), type: .window)
         cleared.clearedProperties = [
-            .title, .x, .y, .width, .height,
-            .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
-            .isMaximizable, .isMinimizable,
+            WindowContract.title.token, .x, .y, WindowContract.width.token, WindowContract.height.token,
+            WindowContract.minimumWidth.token, WindowContract.minimumHeight.token, WindowContract.maximumWidth.token,
+            WindowContract.maximumHeight.token, .isMaximizable, .isMinimizable,
         ]
         renderer.applyForTesting(tree(scene("1", windows: [cleared])))
 
@@ -235,11 +235,11 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testWindowMinimumWinsAContradictoryMaximum() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var authored = window("window 1")
-        authored.properties[.minimumWidth] = .number(640)
-        authored.properties[.maximumWidth] = .number(320)
+        authored.properties[WindowContract.minimumWidth.token] = .number(640)
+        authored.properties[WindowContract.maximumWidth.token] = .number(320)
         renderer.applyForTesting(tree(scene("1", windows: [authored])))
 
         let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -252,7 +252,7 @@ final class AppKitSessionTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var tool = window("tool", kind: "notes.inspector", eventBase: 300)
         tool.properties[.windowValue] = .string("selection-7")
@@ -287,7 +287,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testASceneValueIsKeptInEveryWindowOfItsScene() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(
             scene("1", windows: [window("window 1"), window("fonts 2", kind: "fonts")]),
             scene("2", windows: [window("window 1")])
@@ -313,7 +313,7 @@ final class AppKitSessionTests: XCTestCase {
     func testARestoredWindowOfAnotherSceneTakesTheLaunchWindowsPlace() throws {
         AppKitKindsApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let restored = renderer.acceptRestoredWindow(
             WindowRecord(identifier: "restored-editor", kind: "appkit.test.editor"))
         renderer.startForTesting()
@@ -321,7 +321,7 @@ final class AppKitSessionTests: XCTestCase {
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         XCTAssertEqual(renderer.windowsForTesting.count, 1)
         XCTAssertTrue(controller.window === restored)
-        XCTAssertEqual(controller.element?.value(.windowType)?.name, "appkit.test.editor")
+        XCTAssertEqual(controller.element?.value(.windowKind)?.name, "appkit.test.editor")
         XCTAssertEqual(controller.restorationRecordForTesting.kind, "appkit.test.editor")
     }
 
@@ -331,7 +331,7 @@ final class AppKitSessionTests: XCTestCase {
     func testNewWindowAndOpenWindowEachOpenOneMore() async throws {
         AppKitKindsApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         XCTAssertEqual(renderer.windowsForTesting.count, 1)
 
@@ -354,7 +354,7 @@ final class AppKitSessionTests: XCTestCase {
     func testClosingANativeWindowEndsItsSceneWithTheLast() async throws {
         AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         try await StandardEnvironment.application.openWindow(.appKitTestTool)
         renderer.runtime.pump.turn()
@@ -376,7 +376,7 @@ final class AppKitSessionTests: XCTestCase {
     func testAWindowTheUserClosesLeavesNothingAlive() throws {
         AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         renderer.runtime.pump.turn()
         let (nodes, views) = (Renderer.shared.liveNodes, AppKitElement.liveViewCount)
@@ -404,7 +404,7 @@ final class AppKitSessionTests: XCTestCase {
     func testClosingASceneClosesEveryNativeWindowOfIt() async throws {
         AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
         try await StandardEnvironment.application.openWindow(.appKitTestTool)
         renderer.runtime.pump.turn()
@@ -450,7 +450,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testDisplayClockMovesToAnotherWindowWhenItsSourceCloses() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(
             scene("1", windows: [window("window 1")]),
             scene("2", windows: [window("window 1")])
@@ -470,7 +470,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testDisplayClockFollowsAWindowTheScreenShows() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var hiding = window("window 1")
         hiding.properties[.hidesWhenInactive] = .bool(true)
         renderer.applyForTesting(tree(scene("1", windows: [hiding]), scene("2", windows: [window("window 1")])))
@@ -494,7 +494,7 @@ final class AppKitSessionTests: XCTestCase {
     @MainActor
     func testASheetTakingTheKeyboardLeavesItsWindowActive() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = controller.window
@@ -549,8 +549,8 @@ final class AppKitSessionTests: XCTestCase {
         page.children = .arranged([label])
 
         var window = HostPatch(id: .manual(id), type: .window)
-        window.properties[.title] = .string(id)
-        if let kind { window.properties[.windowType] = .name(kind) }
+        window.properties[WindowContract.title.token] = .string(id)
+        if let kind { window.properties[.windowKind] = .name(kind) }
         if let eventBase {
             window.events = .replace([
                 .created: eventBase,
@@ -585,8 +585,8 @@ private final class ClosingWatch {
     }
 }
 
-private extension WindowType where Value == Void {
-    static let appKitTestTool = WindowType("appkit.test.tool")
+private extension WindowKind where Value == Void {
+    static let appKitTestTool = WindowKind("appkit.test.tool")
 }
 
 private struct AppKitSessionPage: View {
@@ -605,8 +605,8 @@ private struct AppKitSessionApp: Application {
     var body: some Scene { AppKitSessionScene() }
 }
 
-private extension WindowType where Value == Void {
-    static let appKitTestEditor = WindowType("appkit.test.editor")
+private extension WindowKind where Value == Void {
+    static let appKitTestEditor = WindowKind("appkit.test.editor")
 }
 
 /// An application of two scenes: the one with a tool window, and the editors.

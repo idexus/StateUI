@@ -1,9 +1,6 @@
-# revision 10.1
+# revision 13.1
 Window: ✅
-Window.activated: ✅
-Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its color.
 Window.created: ✅
-Window.deactivated: ✓ switchAway on Window: the host told the activity's phase, no activity moved
 Window.destroying: ✓ close on Window: the host told the activity's phase, no activity moved
 Window.floatsOnTop: – Android stacks windows itself: an activity keeps none above the others.
 Window.height: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.
@@ -14,10 +11,9 @@ Window.maximumHeight: – Android bounds an activity's window itself: an activit
 Window.maximumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumHeight: – Android bounds an activity's window itself: an activity sets it no bound at run time.
 Window.minimumWidth: – Android bounds an activity's window itself: an activity sets it no bound at run time.
-Window.stopped: ✓ minimize on Window: the host told the activity's phase, no activity moved
 Window.title: ✅
 Window.width: – Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.
-Window.windowType: not realized
+Window.windowKind: not realized
 Window.windowValue: not realized
 Window.x: – Android places an activity's window itself: an activity asks for no place.
 Window.y: – Android places an activity's window itself: an activity asks for no place.

@@ -107,6 +107,17 @@ enum GTKTestHost {
             g_usleep(2_000)
         } while g_get_monotonic_time() < end
     }
+
+    /// Turns GLib's loop one source at a time until `done` holds, at most `seconds` - a frame's phases run between
+    /// two looks - and says whether it does.
+    static func pump(until done: () -> Bool, within seconds: Double = 2) -> Bool {
+        let end = g_get_monotonic_time() + gint64(seconds * 1_000_000)
+        while !done() {
+            guard g_get_monotonic_time() < end else { return false }
+            if g_main_context_iteration(nil, 0) == 0 { g_usleep(2_000) }
+        }
+        return true
+    }
 }
 
 extension XCTestCase {
@@ -157,14 +168,7 @@ extension GTKRenderer {
     private static func replacing(clock: TestClock?, reducesMotion: Bool) -> GTKRenderer {
         GTKPictures.folder = GTKTestHost.pictures
         GTKKeptValues.folder = GTKTestHost.keptFolder
-        // The host before this one presents nothing more: what it was told late - a window's state - settles into
-        // no window of the next test's.
-        if let previous = shared {
-            previous.runtime.tree.root?.leave()
-            previous.runtime.presenter = nil
-            previous.frameClock.widget = nil
-            for controller in previous.windows { controller.window.close() }
-        }
+        shared?.finish()
         GTKTestHost.window.show(nil)
 
         let renderer = GTKRenderer(
@@ -172,6 +176,16 @@ extension GTKRenderer {
             reducesMotion: { reducesMotion })
         shared = renderer
         return renderer
+    }
+
+    /// Ends this test host without changing its kept values or another host's windows.
+    func finish() {
+        runtime.tree.root?.leave()
+        runtime.presenter = nil
+        frameClock.held = false
+        frameClock.widget = nil
+        if Self.shared === self { Self.shared = nil }
+        for controller in windows { controller.window.close() }
     }
 
     /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.

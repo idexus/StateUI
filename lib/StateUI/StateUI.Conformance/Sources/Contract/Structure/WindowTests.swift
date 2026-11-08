@@ -11,10 +11,13 @@
 @_spi(Host) public enum WindowTests: ConformanceFamily {
     public static let name = "Window"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(WindowContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aWindowIsMadeAndComesToTheFront", proves: [
-                Covered(WindowContract.self), Covered(WindowContract.created), Covered(WindowContract.activated),
+                Covered(WindowContract.self), Covered(WindowContract.created),
             ]) { s in
                 let log = Received<SessionPhase>()
                 s.start { WindowPhasePage(log: log) }
@@ -23,36 +26,6 @@
                 // Made, it stands showing and not yet in use; before the platform made it, out of sight.
                 s.expect(log.values.firstIndex(of: .inactive).map { $0 < log.values.count - 1 }, true, "made first")
                 s.expect(log.values.last, .active, "then in front")
-            },
-            ConformanceCase("anotherApplicationInFrontPutsItBehindAndBack", proves: [
-                Covered(WindowContract.deactivated), Covered(WindowContract.activated),
-            ]) { s in
-                let log = Received<SessionPhase>()
-                s.start { WindowPhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.switchAway, on: window)
-                s.settle { log.values.last == .inactive }
-                s.expect(log.values.last, .inactive, "behind another application")
-                try s.perform(.switchBack, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "in front again")
-            },
-            ConformanceCase("aWindowPutAwayIsOutOfSightUntilBroughtBack", proves: [
-                Covered(WindowContract.stopped),
-            ], needs: [Covered(WindowContract.activated)]) { s in
-                let log = Received<SessionPhase>()
-                s.start { WindowPhasePage(log: log) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                s.settle { log.values.last == .active }
-
-                try s.perform(.minimize, on: window)
-                s.settle { log.values.last == .background }
-                s.expect(log.values.last, .background, "put away")
-                try s.perform(.restore, on: window)
-                s.settle { log.values.last == .active }
-                s.expect(log.values.last, .active, "brought back to the front")
             },
             ConformanceCase("aClosedWindowHearsItIsGoing", proves: [Covered(WindowContract.destroying)]) { s in
                 let log = Received<SessionPhase>()
@@ -76,7 +49,7 @@
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
             holds(
-                WindowContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
+                BackgroundElementContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
                 then: .color(Color(hex: 0x0F766E))
             ) {
                 $0.background = $1
@@ -84,7 +57,7 @@
             blurred,
             groundsItsSheets,
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
-                Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
+                Covered(WindowContract.windowKind), Covered(WindowContract.windowValue),
             ]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
@@ -92,7 +65,7 @@
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
                 try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
-                s.expect(try s.held(WindowContract.windowType, on: note), Name(NotesApplication.note.name))
+                s.expect(try s.held(WindowContract.windowKind, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
@@ -109,7 +82,7 @@
             },
             ConformanceCase("aWindowOfTheGroupFloatsWhileTheApplicationIsInFront", proves: [
                 Covered(WindowContract.floatsOnTop),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -128,7 +101,7 @@
             },
             ConformanceCase("aWindowOfTheGroupHidesWhileAnotherSceneIsInFront", proves: [
                 Covered(WindowContract.hidesWhenInactive),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 try s.start(application: { NotesApplication() })
                 try s.perform(.activate, on: s.element("open"))
                 s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
@@ -158,8 +131,8 @@
     @MainActor
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
-            Covered(WindowContract.background),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(BackgroundElementContract.background, on: WindowContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.blur(.thick))
             let changed = Material.blur(.ultraThin)
             s.start {
@@ -167,12 +140,12 @@
                                   key: "\(value.wrappedValue)") { window in window.background = value.wrappedValue }
             }
             let window = try s.element(ofType: WindowContract.nodeType)
-            try s.settle { try s.held(WindowContract.background, on: window) == .blur(.thick) }
-            s.expect(try s.held(WindowContract.background, on: window), .blur(.thick), "the blur its session wrote")
+            try s.settle { try s.held(BackgroundElementContract.background, on: window) == .blur(.thick) }
+            s.expect(try s.held(BackgroundElementContract.background, on: window), .blur(.thick), "the blur its session wrote")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(WindowContract.background, on: window) == changed }
-            s.expect(try s.held(WindowContract.background, on: window), changed, "the blur the tree changed it to")
+            try s.settle { try s.held(BackgroundElementContract.background, on: window) == changed }
+            s.expect(try s.held(BackgroundElementContract.background, on: window), changed, "the blur the tree changed it to")
         }
     }
 
@@ -181,8 +154,8 @@
     @MainActor
     static var groundsItsSheets: ConformanceCase {
         ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
-            Covered(WindowContract.background),
-        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+            Covered(BackgroundElementContract.background, on: WindowContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             let value = State(wrappedValue: first)
             s.start {
@@ -205,13 +178,13 @@
 
     /// `member` of the window holds what its session writes, and what the tree changes it to.
     @MainActor
-    static func holds<Value: HostRepresentable & Sendable & Equatable>(
-        _ member: ElementProperty<WindowContract, Value>, _ first: Value, then second: Value,
+    static func holds<Owner: WornContract, Value: HostRepresentable & Sendable & Equatable>(
+        _ member: ElementProperty<Owner, Value>, _ first: Value, then second: Value,
         _ write: @escaping @MainActor (WindowSession, Value) -> Void
     ) -> ConformanceCase {
         ConformanceCase("Window.\(member.name).holdsWhatItsSessionWritesAndChanges", proves: [
-            Covered(member),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(member, on: "Window"),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 WindowSessionPage(beside: [Button("Change").onClicked { value.wrappedValue = second }.id("change")],
@@ -247,10 +220,10 @@ struct WindowPhasePage: View {
 /// alone.
 struct NotesApplication: Application {
     /// The kind of a note's window.
-    static let note = WindowType<Int>("conformance.note")
+    static let note = WindowKind<Int>("conformance.note")
 
     /// The kind of the other scene's window.
-    static let other = WindowType<Void>("conformance.other")
+    static let other = WindowKind<Void>("conformance.other")
 
     var body: some Scene {
         NotesScene()
@@ -275,8 +248,8 @@ struct NotesPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
-            Button("Another").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
+            Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
         }
     }
 }

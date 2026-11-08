@@ -57,7 +57,7 @@ private struct HomePage: View {
         }
         .spacing(12)
         .title("Home")
-        .icon(ImageSource("home.png"))
+        .pageIcon(ImageSource("home.png"))
     }
 }
 
@@ -74,7 +74,7 @@ private struct SettingsPage: View {
             Switch(true).onToggled { _ in }
         }
         .title("Settings")
-        .icon(ImageSource("settings.png"))
+        .pageIcon(ImageSource("settings.png"))
     }
 }
 
@@ -151,10 +151,10 @@ final class DeterminismTests: XCTestCase {
         // most applications have one.
         func tree() -> Node {
             var launched = window()
-            launched.id = "window 1"
+            launched.id = OwnKey.window(kind: nil, serial: 1)
 
             var scene = Node(type: .scene, children: [launched])
-            scene.id = "1"
+            scene.id = OwnKey.scene("1")
 
             return Node(type: .application, children: [scene])
         }
@@ -257,8 +257,8 @@ final class DeterminismTests: XCTestCase {
             (.opacity, .number(0.5)),
             (.margin, .numbers([1, 2, 3, 4])),
             (.padding, .numbers([4, 3, 2, 1])),
-            (.width, .number(120)),
-            (.height, .number(44)),
+            ("VisualElement.width", .number(120)),
+            ("VisualElement.height", .number(44)),
             (.isVisible, .bool(true)),
             (.rotation, .number(15)),
             (.zIndex, .number(2)),

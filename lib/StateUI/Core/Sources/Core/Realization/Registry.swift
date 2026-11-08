@@ -7,18 +7,21 @@
 
 /// Every registration a host made: how it makes and updates the view of each
 /// element it realizes, and what it realizes, contract by contract.
+@MainActor
 @_spi(Host) public final class Registry<View: AnyObject> {
     /// One registered contract.
     private struct Entry {
         /// Makes the element's view, its reports handed to the functions given
         /// - nil where the registration made something that is no `View`.
-        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?)
-            -> View?
+        let make: @MainActor (
+            @escaping @MainActor (Event, [HostValue]) -> Void,
+            @escaping @MainActor (Prop, Event, HostValue) -> Void, HostPatch?
+        ) -> View?
 
         /// Puts the changed properties it takes on the view, each read through
         /// the functions given, and answers them.
-        let apply: (
-            View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool, @escaping (Prop) -> HostValue?
+        let apply: @MainActor (
+            View, Set<Prop>, @escaping @MainActor (Prop) -> HostValue?, @escaping @MainActor (Prop) -> Bool, @escaping @MainActor (Prop) -> HostValue?
         ) -> Set<Prop>
 
         /// Every member registered.
@@ -28,7 +31,7 @@
         let worn: [ObjectIdentifier]
 
         /// The children the view draws itself, by their node type, in registration order.
-        let children: [(type: NodeType, apply: (View, [HostChild]) -> Void)]
+        let children: [(type: NodeType, apply: @MainActor (View, [HostChild]) -> Void)]
     }
 
     /// The registrations, by node type.
@@ -62,11 +65,11 @@
     ///   - members: registers the members the view realizes.
     public func add<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
-        create: @escaping (Reports<Realized>) -> Made,
-        members: (Registration<Realized, Made>) -> Void = { _ in }
+        create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+        members: @MainActor (Registration<Realized, Made>) -> Void = { _ in }
     ) {
         register(contract, members: members) { send, carry, patch in
-            let made = create(Reports(sending: send, reporting: carry, made: patch))
+            let made = create(ControlReports(sending: send, reporting: carry, made: patch))
 
             guard let view = made as? View else {
                 complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
@@ -101,7 +104,7 @@
     public func add<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
         madeByHost view: Made.Type,
-        members: (Registration<Realized, Made>) -> Void
+        members: @MainActor (Registration<Realized, Made>) -> Void
     ) {
         register(contract, members: members) { _, _, _ in nil }
     }
@@ -117,9 +120,9 @@
     /// where the host makes that view instead.
     private func register<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
-        members: (Registration<Realized, Made>) -> Void,
-        making make: @escaping (
-            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void, HostPatch?
+        members: @MainActor (Registration<Realized, Made>) -> Void,
+        making make: @escaping @MainActor (
+            @escaping @MainActor (Event, [HostValue]) -> Void, @escaping @MainActor (Prop, Event, HostValue) -> Void, HostPatch?
         ) -> View?
     ) {
         let registration = Registration<Realized, Made>()
@@ -131,11 +134,12 @@
         let ordered = appliers.sorted { $0.key.name < $1.key.name }
         let wholes = registration.wholes
         let children = registration.childAppliers.map { child in
-            (type: child.type, apply: { (view: View, kept: [HostChild]) in
+            let apply: @MainActor (View, [HostChild]) -> Void = { view, kept in
                 guard let made = view as? Made else { return Self.unmade(Realized.self, Made.self, view) }
 
                 child.apply(made, kept)
-            })
+            }
+            return (type: child.type, apply: apply)
         }
 
         entries[Realized.nodeType] = Entry(
@@ -182,7 +186,7 @@
     /// visibility - rather than one registration.
     ///
     /// - Parameter member: the property, written with its contract.
-    public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
+    public func everyElementRealizes<Owner: WornContract, Value>(_ member: ElementProperty<Owner, Value>) {
         everyElement.append((owner: Owner.self, member: member.name))
         realized = nil
     }
@@ -192,7 +196,7 @@
     /// registration.
     ///
     /// - Parameter event: the event, written with its contract.
-    public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func everyElementRaises<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         everyElement.append((owner: Owner.self, member: event.name))
         realized = nil
     }
@@ -206,10 +210,10 @@
     /// raises through `HostBoundary.raise`: recorded on the
     /// application element, so the core knows the host reports it.
     ///
-    ///     registry.raises(GalleryContract.batteryChanged)
+    ///     registry.declares(GalleryContract.batteryChanged)
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func declares<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
         applicationEvents.insert(
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
         realized = nil
@@ -227,8 +231,8 @@
     /// - Returns: the view, or nil.
     public func makeView(
         for type: NodeType,
-        sending send: @escaping (Event, [HostValue]) -> Void,
-        reporting carry: @escaping (Prop, Event, HostValue) -> Void,
+        sending send: @escaping @MainActor (Event, [HostValue]) -> Void,
+        reporting carry: @escaping @MainActor (Prop, Event, HostValue) -> Void,
         made: HostPatch? = nil
     ) -> View? {
         entries[type].flatMap { $0.make(send, carry, made) }
@@ -257,9 +261,9 @@
         _ changed: Set<Prop>,
         to view: View,
         of type: NodeType,
-        reading read: @escaping (Prop) -> HostValue?,
-        carriedIn carried: @escaping (Prop) -> Bool = { _ in false },
-        heading: @escaping (Prop) -> HostValue? = { _ in nil }
+        reading read: @escaping @MainActor (Prop) -> HostValue?,
+        carriedIn carried: @escaping @MainActor (Prop) -> Bool = { _ in false },
+        heading: @escaping @MainActor (Prop) -> HostValue? = { _ in nil }
     ) -> Set<Prop> {
         entries[type]?.apply(view, changed, read, carried, heading) ?? []
     }

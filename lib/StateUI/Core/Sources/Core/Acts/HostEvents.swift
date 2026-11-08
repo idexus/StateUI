@@ -4,18 +4,6 @@
 // Events the host raises by name, with no element behind them.
 // Design: docs/design/core/acts.md#host-events
 
-/// An application's event by its contract and its member: two tiers may name an event alike.
-/// Design: docs/design/core/acts.md#host-events
-struct EventMember: Hashable, Sendable {
-    let owner: KeyName
-    let member: KeyName
-
-    init<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
-        owner = event.owner
-        member = event.token.key
-    }
-}
-
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
 /// Keep it - one not kept is a warning - and `cancel()` when the listener
@@ -25,11 +13,11 @@ struct EventMember: Hashable, Sendable {
 @MainActor
 public final class HostEventSubscription {
     /// Which event, and which entry in its list.
-    private let event: EventMember
+    private let event: Event
     private let id: Int
 
     /// Made by `HostEvents.on` and nothing else.
-    init(event: EventMember, id: Int) {
+    init(event: Event, id: Int) {
         self.event = event
         self.id = id
     }
@@ -47,7 +35,7 @@ public final class HostEventSubscription {
 ///
 ///     enum NotesContract: ApplicationTier {
 ///         static let name = "Notes"
-///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Notes.BatteryChanged")
+///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
 ///         static let members: [any ContractMember] = [batteryChanged]
 ///     }
 ///
@@ -67,7 +55,7 @@ public final class HostEventSubscription {
 public enum HostEvents {
     /// The subscriptions in the order made, which is the order handlers run in.
     private static var subscriptions:
-        [EventMember: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
+        [Event: [(id: Int, owner: RunOwner, handler: ValueHandler<[PropValue]>)]] = [:]
 
     /// The next subscription's number - never reused.
     private static var nextId = 1
@@ -75,10 +63,10 @@ public enum HostEvents {
     /// Subscribes a handler to what the host raises under an event's name, the values
     /// as they crossed; an event the host says it does not raise is said once.
     static func subscribe(
-        _ event: EventMember,
+        _ event: Event,
         _ handler: ValueHandler<[PropValue]>
     ) -> HostEventSubscription {
-        if let unraised = HostRealizations.unraised(owner: event.owner, event: event.member) {
+        if let unraised = HostRealizations.unraised(event.key) {
             complain(unraised)
         }
 
@@ -89,153 +77,44 @@ public enum HostEvents {
         return HostEventSubscription(event: event, id: id)
     }
 
-    /// Subscribes a handler to an event of the application's - one no control
-    /// raises - that carries nothing.
+    /// Subscribes a handler to an event of the application's - one no control raises - its values handed over as
+    /// the types its contract declares, in its order.
     ///
-    ///     let heard = HostEvents.on(NotesContract.memoryLow) { cache.removeAll() }
-    ///
-    /// A raise carrying anything is reported once and does not reach the
-    /// handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: what runs.
-    /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    public static func on<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping @MainActor () throws -> Void
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, handler))
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
-    public static func on<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        policy: GatePolicy,
-        _ handler: @escaping EventHandler
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public static func on<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        gate: Gate,
-        _ handler: @escaping EventHandler
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
-    }
-
-    /// Subscribes a handler to an event of the application's that carries one
-    /// value, handed over as the type its contract declares.
-    ///
-    ///     let heard = HostEvents.on(NotesContract.connectivityChanged) { online in … }
-    ///
-    /// A raise of another shape - the value missing, one too many, or one of
-    /// another kind - is reported once and does not reach the handler.
-    ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: given the value.
-    /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping @MainActor (Value) throws -> Void
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, handler))
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
-    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
-    }
-
-    /// Subscribes a handler to an event of the application's that carries two
-    /// values, handed over as the types its contract declares, in its order.
-    ///
-    ///     let heard = HostEvents.on(NotesContract.batteryChanged) { level, charging in
+    ///     let low = HostEvents.on(NotesContract.memoryLow) { cache.removeAll() }
+    ///     let battery = HostEvents.on(NotesContract.batteryChanged) { level, charging in
     ///         battery = "\(Int(level * 100))%" + (charging ? ", charging" : "")
     ///     }
     ///
-    /// - Parameters:
-    ///   - event: the member, written with its contract.
-    ///   - handler: given the values.
-    /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping @MainActor (First, Second) throws -> Void
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, handler))
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
-    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        gate: Gate,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
-    }
-
-    /// Subscribes a handler to an event of the application's that carries
-    /// three values, handed over as the types its contract declares, in its
-    /// order.
+    /// A raise of another shape - a value missing, one too many, or one of another kind - is reported once and
+    /// does not reach the handler.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - handler: given the values.
+    ///   - handler: what runs, given the values.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    public static func on<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
+    public static func on<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, handler))
+        subscribe(event.token, heard(event, handler))
     }
 
     /// The same, with a handler that awaits: its `policy` says what a raise does while a run is under way.
-    public static func on<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
+    public static func on<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         policy: GatePolicy,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
+        _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .own(policy), handler))
+        subscribe(event.token, heard(event, gate: .own(policy), handler))
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public static func on<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
+    public static func on<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         gate: Gate,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
+        _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> HostEventSubscription {
-        subscribe(EventMember(event), heard(event, gate: .shared(gate), handler))
+        subscribe(event.token, heard(event, gate: .shared(gate), handler))
     }
 
     // MARK: - What a handler hears
@@ -243,112 +122,34 @@ public enum HostEvents {
     /// A handler of an event as every listener hears it: the raise's values read as the types its contract
     /// declares, a raise of another shape reported once and kept from the handler - what `on` subscribes and
     /// `.onHostEvent` relays.
-    static func heard<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
-        _ handler: @escaping @MainActor () throws -> Void
+    static func heard<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ handler: @escaping @MainActor (repeat each Value) throws -> Void
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(step: { payload in
-            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+            guard let values = MemberValues.carried(payload, by: event.name, as: repeat (each Value).self)
+            else { return }
 
-            try handler()
+            try handler(repeat each values)
         })
     }
 
-    static func heard<Owner: ApplicationTier>(
-        _ event: ElementEvent<Owner, Void>,
+    /// The same, for a handler that awaits, through `gate`.
+    static func heard<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         gate: Gating,
-        _ handler: @escaping EventHandler
+        _ handler: @escaping ValueEventHandler<repeat each Value>
     ) -> ValueHandler<[PropValue]> {
         ValueHandler(run: { payload in
-            guard MemberValues.carried(payload, by: event.name) != nil else { return }
-
-            try await handler()
-        }, gate: gate)
-    }
-
-    static func heard<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        _ handler: @escaping @MainActor (Value) throws -> Void
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(step: { payload in
-            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
-
-            try handler(value)
-        })
-    }
-
-    static func heard<Owner: ApplicationTier, Value: HostRepresentable>(
-        _ event: ElementEvent<Owner, Value>,
-        gate: Gating,
-        _ handler: @escaping ValueEventHandler<Value>
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(run: { payload in
-            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
-
-            try await handler(value)
-        }, gate: gate)
-    }
-
-    static func heard<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        _ handler: @escaping @MainActor (First, Second) throws -> Void
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(step: { payload in
-            guard let (first, second) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self)
+            guard let values = MemberValues.carried(payload, by: event.name, as: repeat (each Value).self)
             else { return }
 
-            try handler(first, second)
-        })
-    }
-
-    static func heard<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
-        _ event: ElementEvent<Owner, (First, Second)>,
-        gate: Gating,
-        _ handler: @escaping ValueEventHandler<First, Second>
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(run: { payload in
-            guard let (first, second) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self)
-            else { return }
-
-            try await handler(first, second)
-        }, gate: gate)
-    }
-
-    static func heard<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        _ handler: @escaping @MainActor (First, Second, Third) throws -> Void
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(step: { payload in
-            guard let (first, second, third) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try handler(first, second, third)
-        })
-    }
-
-    static func heard<
-        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
-    >(
-        _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: Gating,
-        _ handler: @escaping ValueEventHandler<First, Second, Third>
-    ) -> ValueHandler<[PropValue]> {
-        ValueHandler(run: { payload in
-            guard let (first, second, third) = MemberValues.carried(
-                payload, by: event.name, as: First.self, Second.self, Third.self)
-            else { return }
-
-            try await handler(first, second, third)
+            try await handler(repeat each values)
         }, gate: gate)
     }
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
-    static func remove(_ event: EventMember, _ id: Int) {
+    static func remove(_ event: Event, _ id: Int) {
         subscriptions[event]?.first { $0.id == id }?.owner.orphan()
         subscriptions[event]?.removeAll { $0.id == id }
     }
@@ -356,7 +157,7 @@ public enum HostEvents {
     /// Runs every handler subscribed to an event, each through its gate, and answers how many - the list as
     /// it stands when the raise is delivered on the UI thread, which may be after it was raised.
     @discardableResult
-    static func dispatch(_ event: EventMember, _ payload: [PropValue]) -> Int {
+    static func dispatch(_ event: Event, _ payload: [PropValue]) -> Int {
         let handlers = subscriptions[event] ?? []
 
         for entry in handlers {

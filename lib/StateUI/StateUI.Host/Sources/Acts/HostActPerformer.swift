@@ -95,7 +95,7 @@
                 }
             }
         case .useColorScheme:
-            let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:)) ?? .system
+            let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:))
             toolkit.useColorScheme(theme)
             CoreLink().holdColorScheme(theme)
             reply(call, [])
@@ -253,7 +253,9 @@
         switch call.act {
         case .readFile:
             guard let file else { return fail(call, "the act names no file") }
-            let maximum = call.arguments.value(1)?.number.map { Int(min(max($0, 0), 0x1p52)) }
+            let maximum = call.arguments.value(1)?.number.map {
+                Int(propValue: .number(min(max($0, 0), 0x1p52))) ?? 0
+            }
             files.read(file, atMost: maximum) { [weak self] read in self?.deliver(call, read.map { [$0.propValue] }) }
         case .launchFile:
             guard let file else { return fail(call, "the act names no file") }
@@ -296,7 +298,7 @@
     /// its turn leaves the queue unasked. A question showing stays for the user, its answer reaching no one.
     /// Design: docs/design/core/acts.md#a-call-ends-with-its-run
     private func stop(_ call: HostActCall) {
-        guard let id = call.arguments.value(0)?.number.map({ Int($0) }) else { return }
+        guard let id = call.arguments.value(0).flatMap(Int.init(propValue:)) else { return }
         stops.removeValue(forKey: id)?()
         if let ticket = questions.ticket(where: { $0.call.completion == id }), ticket != showing?.ticket {
             _ = questions.answered(ticket)

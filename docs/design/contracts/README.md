@@ -50,14 +50,15 @@ A member is one of three kinds, each carrying the types it holds:
   ElementAct<Owner, Arguments, Answer>   a call a host performs          on an aimed element, or none
 ```
 
-In the library's contracts a member's name is the name of the static member
-holding it, and it is what crosses the boundary: `TextContract.maximumLines`
-crosses as the property `maximumLines`. A node type's name is its contract's
-name without `Contract`. An application prefixes its node types and its acts
-with its own name (`"Gallery.RatingBar"`, `"Gallery.FlashRating"`), so they
-never meet the library's. Every member a contract declares is on its
-`members` list, and the list names nothing else: the list is what the
-dictionary shows and what a host is held to.
+A member's name is the name of the static member holding it, and it crosses
+the boundary under its contract's name and its own: `TextContract.maximumLines`
+crosses as `Text.maximumLines`, the Gallery's `flash` on its rating bar as
+`Gallery.RatingBar.flash`. A node type's name is its contract's name without
+`Contract`; an application prefixes its node types with its own name
+(`"Gallery.RatingBar"`) and writes its members bare, and a contract's name is
+its own in a process ([tokens](../core/contracts.md#tokens)). Every member a
+contract declares is on its `members` list, and the list names nothing else:
+the list is what the dictionary shows and what a host is held to.
 
 ## Who reads a contract
 

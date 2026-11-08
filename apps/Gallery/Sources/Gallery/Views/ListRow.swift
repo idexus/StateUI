@@ -105,7 +105,7 @@ struct ListRow: View {
             .columnSpacing(12)
             // The TEXT is the star column: a star column is given what the
             // others left, and a Text given a width wraps to it.
-            .columns(.auto, .fill, .auto)
+            .columns(.automatic, .fill, .automatic)
             .padding(horizontal: 16, vertical: 11)
         }
         .style(.listRow)
@@ -117,6 +117,6 @@ struct ListRow: View {
         .accessibilityHint(summary)
         // Pressed as a button: lit by its style while the press stands over
         // it, tapped where it lets go over it.
-        .onTapped(.ignoreWhileRunning) { try await action() }
+        .onTapped(policy: .ignoreWhileRunning) { try await action() }
     }
 }

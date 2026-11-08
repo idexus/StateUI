@@ -104,7 +104,7 @@ private struct DescribedOffset: View {
             spelling("a get in these braces")
                 .gridRow(4)
         }
-        .rows(.auto, .fill, .auto, .auto, .auto)
+        .rows(.automatic, .fill, .automatic, .automatic, .automatic)
         .rowSpacing(6)
     }
 }
@@ -148,7 +148,7 @@ private struct PacedOffset: View {
             spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
                 .gridRow(4)
         }
-        .rows(.auto, .fill, .auto, .auto, .auto)
+        .rows(.automatic, .fill, .automatic, .automatic, .automatic)
         .rowSpacing(6)
     }
 }
@@ -187,7 +187,7 @@ private struct DrivenOffset: View {
             spelling("$offset.journey.convert { … }")
                 .gridRow(4)
         }
-        .rows(.auto, .fill, .auto, .auto, .auto)
+        .rows(.automatic, .fill, .automatic, .automatic, .automatic)
         .rowSpacing(6)
     }
 }
@@ -235,16 +235,16 @@ private struct OffsetStrips: ExampleContent {
 
             HStack {
                 Button("Top")
-                    .onClicked(.cancelPrevious) { try await move(to: 0) }
+                    .onClicked(policy: .cancelPrevious) { try await move(to: 0) }
 
                 Button("Line 9")
-                    .onClicked(.cancelPrevious) { try await move(to: 240) }
+                    .onClicked(policy: .cancelPrevious) { try await move(to: 240) }
             }
             .spacing(16)
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
 
@@ -347,7 +347,7 @@ private struct RestStrips: ExampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(4)
         }
-        .rows(.auto, .auto, .auto, .auto, .auto)
+        .rows(.automatic, .automatic, .automatic, .automatic, .automatic)
         .rowSpacing(10)
         // The bands are as tall as they need to be, so the pair sits in the
         // middle of whatever height the window gave the cell.
@@ -415,7 +415,7 @@ private struct BarStrips: ExampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(6)
     }
     // listing: end

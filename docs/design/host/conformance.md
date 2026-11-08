@@ -100,11 +100,12 @@ driver beside it (`WinUIDriver.backends`, `GTKDriver.backends`).
 
 ## The driver
 
-Each host supplies a driver: how its toolkit starts a page,
-turns, steps and draws a frame, what a user's act is through its toolkit's
-own input path, and what a native control holds of a member, as the contract
-writes the value. A driver reads through the element a case found by its
-`.id()`, and names no widget to the case. What a driver cannot read or do
+Each host supplies a driver (`HostDriver`, with the acts it does, in the host
+layer, where an application's test window drives one too): how its toolkit
+starts a page, turns, steps and draws a frame, what a user's act is through
+its toolkit's own input path, and what a native control holds of a member,
+as the contract writes the value. A driver reads through the element a case
+found by its `.id()`, and names no widget to the case. What a driver cannot read or do
 throws; where the driver says why it cannot, the case says so and does not
 fail, and otherwise it fails - a nil never stands for "unknown". What its
 platform holds nothing of - a value no control of it keeps, its effect proven
@@ -130,6 +131,14 @@ phone's status bar and gesture bar as its toolkit tells them, through the
 host's own report of the window's insets; a host whose window has its own
 (UIKit's) or whose platform stands nothing over a window's content leaves
 it, so a case of the safe area proves on each host what a user meets there.
+
+A case's requests go to the HTTP server its driver names (`served()`, and
+`held()` counting the requests it holds). A native host's driver names the
+suite's own, on the machine's loopback, which the conformance package gives
+every driver; the Web's names its page's own, which the browser's runner
+answers. Both are requirements of the protocol, so a driver's own is the one
+a case reaches: a method a driver adds outside the protocol is never called
+through it.
 
 A host with backends keeps its driver and its suite in a package of their own
 inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
@@ -230,7 +239,9 @@ A run gives a verdict on every member its cases cover, one line each under
 `lib/StateUI/exports/marks/<host>/<Family>.txt`, written with `STATEUI_UPDATE_EXPORTS=1`
 and held to the file otherwise: ✅ where a passing case proved it, ✓ where it
 proved it only through the host's own entry or read, ☑️ with what the host's
-register says is missing, – with why where the host's family never has it or
+register says is missing - whichever way the case reached the member, since
+the host's own road proves no more than the register admits -, – with why
+where the host's family never has it or
 a case proved it absent, 🧩 where the host leaves it to the application's own
 registration, · with what the driver cannot do, or what the platform holds
 nothing of, and why, ⏸ where its case waits on a member the host does not

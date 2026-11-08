@@ -1,0 +1,5 @@
+# revision 1.1
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the popover taken away and its delegate told, no tap beside it
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

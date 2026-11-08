@@ -1,0 +1,47 @@
+# revision 1.1
+Button.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Canvas.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Capsule.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+CheckBox.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ColorPicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+DatePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Ellipse.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Fill.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Image.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ItemsView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Line.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Link.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Map.background: 🧩
+MotionLayout.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+NavigationStack.background: ✅
+Page.background: ✅
+Path.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Picker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Polygon.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Polyline.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ProgressBar.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Rectangle.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ScrollView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+SearchField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Separator.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Slider.background: – The browser draws its slider over the whole box and paints no background under it.
+Space.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Spinner.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+SplitView.background: ✅
+Stepper.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Switch.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+TabView.background: ✅
+Text.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+TextEditor.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+TextField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+TextSpan.background: ✅
+TimePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ToolbarButton.background: ✅
+ToolbarGroup.background: ✅
+ToolbarToggle.background: ✅
+VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+WebView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Window.background: ☑️ A page draws its window opaque: a blur or glass shows its color.
+ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.

@@ -14,7 +14,7 @@ final class ReaderActionsTests: XCTestCase {
         let rating = try element("rating", in: runtime)
 
         XCTAssertEqual(rating.accessibilityWords.actions, ["Clear", "Fill"], "in the order written")
-        XCTAssertEqual(rating.accessibilityWords.presence, .met, "a view offering actions is met")
+        XCTAssertEqual(rating.accessibilityWords.presence, .element, "a view offering actions is met")
         XCTAssertTrue(rating.hear(.accessibilityAction("Fill"), in: runtime))
         XCTAssertFalse(rating.hear(.accessibilityAction("Share"), in: runtime), "an action it does not offer")
         XCTAssertTrue(rating.hear(.accessibilityAdjustment(.decrement), in: runtime))

@@ -10,9 +10,9 @@ extension GTKRegistrations {
     static func text(_ registry: Registry<GTKView>) {
         registry.add(TextContract.self, create: { _ in GTKTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
+            label.applies(LineBreakElementContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(
-                    breaking: values[TextContract.lineBreak] ?? .wordWrap,
+                    breaking: values[LineBreakElementContract.lineBreak] ?? .wordWrap,
                     maximum: values[TextContract.maximumLines])
             }
             label.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
@@ -29,7 +29,7 @@ extension GTKRegistrations {
                 view.setLook { $0.lineHeight = height }
             }
             label.property(DecorableTextElementContract.textDecorations) { view, decorations in
-                view.setLook { $0.decorations = decorations ?? .none }
+                view.setLook { $0.decorations = decorations ?? [] }
             }
         }
     }

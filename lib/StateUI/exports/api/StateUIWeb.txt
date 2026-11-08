@@ -1,0 +1,32 @@
+swift.class WebPageElement: @MainActor final class WebPageElement
+swift.class WebRegistration: @MainActor final class WebRegistration<Realized, Made> where Realized : ElementContract, Made : WebControl
+swift.conformance StateUIActs: Swift.Sendable
+swift.conformance StateUIControls: Swift.Sendable
+swift.conformance StateUIScripts: Swift.Sendable
+swift.conformance WebPageElement: Swift.Sendable
+swift.conformance WebRegistration: Swift.Sendable
+swift.enum StateUIActs: @MainActor enum StateUIActs
+swift.enum StateUIControls: @MainActor enum StateUIControls
+swift.enum StateUIEvents: enum StateUIEvents
+swift.enum StateUIScripts: @MainActor enum StateUIScripts
+swift.enum WebHost: enum WebHost
+swift.init WebPageElement.init(tag:): @MainActor init(tag: String)
+swift.method WebPageElement.call(_:): @MainActor func call(_ name: String)
+swift.method WebPageElement.listen(_:_:): @MainActor func listen(_ event: String, _ action: @escaping @MainActor @Sendable () -> Void)
+swift.method WebPageElement.listen(_:number:): @MainActor func listen(_ event: String, number action: @escaping @MainActor @Sendable (Double) -> Void)
+swift.method WebPageElement.listen(_:words:): @MainActor func listen(_ event: String, words action: @escaping @MainActor @Sendable (String) -> Void)
+swift.method WebPageElement.setAttribute(_:_:): @MainActor func setAttribute(_ name: String, _ value: String?)
+swift.method WebRegistration.applies(_:apply:): @MainActor func applies<each Owner, each Value>(_ properties: repeat ElementProperty<each Owner, each Value>, apply: @escaping @MainActor @Sendable (Made, ControlValues<Realized>) -> Void) where repeat each Owner : WornContract, (repeat (each Owner, each Value)) : Any, repeat each Value : HostRepresentable
+swift.method WebRegistration.children(_:properties:events:apply:): @MainActor func children<Child, each PropertyOwner, each Value, each EventOwner, each Payload>(_ contract: Child.Type, properties: repeat ElementProperty<each PropertyOwner, each Value>, events: repeat ElementEvent<each EventOwner, each Payload>, apply: @escaping @MainActor @Sendable (Made, [ControlChild<Child>]) -> Void) where Child : ElementContract, repeat each PropertyOwner : WornContract, (repeat (each PropertyOwner, each Value)) : Any, repeat each Value : HostRepresentable, repeat each EventOwner : WornContract, (repeat (each EventOwner, each Payload)) : Any
+swift.method WebRegistration.declares(_:): @MainActor func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : WornContract
+swift.method WebRegistration.property(_:_:): @MainActor func property<Owner, Value>(_ member: ElementProperty<Owner, Value>, _ apply: @escaping @MainActor @Sendable (Made, Value?) -> Void) where Owner : WornContract, Value : HostRepresentable
+swift.property WebControl.element: @MainActor var element: WebPageElement { get }
+swift.protocol WebControl: @MainActor protocol WebControl : AnyObject
+swift.type.method StateUIActs.add(_:_:): @MainActor static func add<Owner, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, _ perform: @escaping @MainActor @Sendable (repeat each Argument) async throws -> (repeat each Answer)) where Owner : ApplicationTier, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIActs.add(_:on:_:): @MainActor static func add<Owner, Made, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, on control: Made.Type, _ perform: @escaping @MainActor @Sendable (Made, repeat each Argument) async throws -> (repeat each Answer)) where Owner : WornContract, Made : WebControl, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIControls.add(_:create:members:): @MainActor static func add<Realized, Made>(_ contract: Realized.Type, create: @escaping @MainActor @Sendable (ControlReports<Realized>) -> Made, members: @MainActor @Sendable (WebRegistration<Realized, Made>) -> Void = { _ in }) where Realized : ElementContract, Made : WebControl
+swift.type.method StateUIEvents.declares(_:): @MainActor static func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : ApplicationTier
+swift.type.method StateUIEvents.raise(_:_:): nonisolated static func raise<Owner, each Value>(_ event: ElementEvent<Owner, (repeat each Value)>, _ value: repeat each Value) where Owner : ApplicationTier, repeat each Value : HostRepresentable
+swift.type.method StateUIScripts.call(_:_:): @MainActor static func call(_ name: String, _ words: String = "") async throws -> String
+swift.type.method StateUIScripts.hear(_:_:): @MainActor static func hear(_ name: String, _ action: @escaping @MainActor @Sendable (String) -> Void)
+swift.type.method WebHost.run(name:applicationID:): @MainActor static func run(name: String, applicationID: String? = nil)

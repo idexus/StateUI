@@ -13,57 +13,57 @@ import CStateUIWinUI
 extension WinUIDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         // What WinUI holds nothing of is not read: the case does not apply here.
-        if platformHasNone["read \(property.name) of \(element.type.name)"] != nil {
+        if platformHasNone["read \(property.memberName) of \(element.type.name)"] != nil {
             throw DriverCannot(reading: property, of: element)
         }
         if let value = backendHolds(property, on: element) { return value }
         if property == .barScrollEdge {
-            return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUISingleChildView)?.topEdge.propValue
+            return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUIPageView)?.topEdge.propValue
         }
         if property == .scrollEdge,
-           let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
+           let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUIPageView {
             return page.edge.propValue
         }
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
         switch element.type {
         case .textSpan:
-            if let held = try spanHolds(property.name, element) { return held }
+            if let held = try spanHolds(property.memberName, element) { return held }
             throw cannot
         case .menuItem, .menuToggle, .menu:
-            if let held = try menuHolds(property.name, element) { return held }
+            if let held = try menuHolds(property.memberName, element) { return held }
             throw cannot
         case .toolbarButton, .toolbarToggle, .toolbarLabel:
-            if let held = try actionHolds(property.name, element) { return held }
+            if let held = try actionHolds(property.memberName, element) { return held }
             throw cannot
-        case .toolbarGroup where property.name == "standsAlone":
+        case .toolbarGroup where property.memberName == "standsAlone":
             // A lone item's own stands bare on the bar; a group its author declared, on a capsule.
             guard let first = element.children.first, let place = try actionPlace(of: first) else { throw cannot }
             return (try read(window(of: first).titleBar, "action \(place) capsule") == "bare").propValue
         case .window:
-            if let held = try windowHolds(property.name, element) { return held }
+            if let held = try windowHolds(property.memberName, element) { return held }
             throw cannot
-        case .sheet where property.name == "background":
+        case .sheet where property.memberName == "background":
             return Self.ground(try read(sheet(of: element), "ground"))
         case .page, .navigationStack, .splitView, .tabView:
-            if let held = try pageHolds(property.name, element, view) { return held }
-        case .popover where property.name == "isPresented":
+            if let held = try pageHolds(property.memberName, element, view) { return held }
+        case .popover where property.memberName == "isPresented":
             guard let popover = view as? WinUIPopoverView else { throw cannot }
             return popover.flyoutShows.propValue
-        case .button where property.name == "icon":
+        case .button where property.memberName == "icon":
             guard let view else { throw cannot }
             return Self.picture(try read(view, "icon"), named: element)
         default: break
         }
         guard let view else { throw cannot }
-        if property.name == "layoutDirection" { return try direction(of: view, element) }
-        if property.name == "hidesChildrenFromAccessibility" { return excluded(view, element) }
-        if let held = try viewHolds(property.name, view) { return held }
-        if let held = try wordsHold(property.name, view) { return held }
-        if let held = try boxHolds(property.name, view) { return held }
-        if let held = try shapeHolds(property.name, view) { return held }
-        if let held = try fieldHolds(property.name, view) { return held }
-        if let held = try controlHolds(property.name, view) { return held }
+        if property.memberName == "layoutDirection" { return try direction(of: view, element) }
+        if property.memberName == "accessibilityPresence" { return presence(view, element) }
+        if let held = try viewHolds(property.memberName, view) { return held }
+        if let held = try wordsHold(property.memberName, view) { return held }
+        if let held = try boxHolds(property.memberName, view) { return held }
+        if let held = try shapeHolds(property.memberName, view) { return held }
+        if let held = try fieldHolds(property.memberName, view) { return held }
+        if let held = try controlHolds(property.memberName, view) { return held }
         throw cannot
     }
 
@@ -71,9 +71,9 @@ extension WinUIDriver {
     /// floats and stands shown, and the kind and value the host keeps it by for the next start.
     private func windowHolds(_ name: String, _ element: MountedElement) throws -> HostValue? {
         let window = try window(of: element)
-        if name == "windowType" || name == "windowValue" {
+        if name == "windowKind" || name == "windowValue" {
             let kept = try keptWindow(element)
-            return name == "windowType" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
+            return name == "windowKind" ? kept.kind.map { .name($0) } : kept.value.map { .string($0) }
         }
         if name == "background" {
             // The desktop acrylic WinUI shows, at the thickness its kind and opacity are, its color the tint; else
@@ -126,7 +126,7 @@ extension WinUIDriver {
             }
             guard points.count == 4, stops.count == words.count - 5 else { return nil }
             return Material.gradient(.linearGradient(
-                stops, startPoint: Point(points[0], points[1]), endPoint: Point(points[2], points[3]))).propValue
+                stops, from: Point(points[0], points[1]), to: Point(points[2], points[3]))).propValue
         }
         if words.first == "acrylic", words.count == 3, let opacity = Float(words[2]),
            let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
@@ -178,14 +178,20 @@ extension WinUIDriver {
         return (try read(holder, "flowDirection") == "1" ? LayoutDirection.rightToLeft : .leftToRight).propValue
     }
 
-    /// Whether the view is left out with its children: itself out of what assistive technology meets, and nothing it
-    /// holds met - but the parts a control's template draws, where the register records them staying.
-    private func excluded(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
+    /// Whether assistive technology meets the view, and what it holds: met as a control or content; left out with
+    /// its contents where nothing it holds is met - but the parts a control's template draws, where the register
+    /// records them staying - else alone. A view holding nothing is left out alone or with its contents alike, as
+    /// it was said.
+    private func presence(_ view: WinUIView, _ element: MountedElement) -> HostValue? {
         let facts = view.automationFacts
+        guard !facts.isControl, !facts.isContent else { return AccessibilityPresence.element.propValue }
         let judgment = WinUIRealization.register.judgment(
-            of: "hidesChildrenFromAccessibility", on: element.type.name, from: "VisualElement")
+            of: "accessibilityPresence", on: element.type.name, from: "VisualElement")
         let partsStay = if case .partial? = judgment { true } else { false }
-        return (!facts.isControl && !facts.isContent && (facts.children == 0 || partsStay)).propValue
+        // Nothing it holds met, or parts the register records staying either way: the two read alike, as said.
+        let alike = facts.children == 0 || partsStay
+        let alone = alike ? element.accessibilityWords.presence == .hidden : true
+        return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
     }
 
     /// Every element: shown, how opaque, taking input, what assistive technology meets, how it is moved.
@@ -219,9 +225,6 @@ extension WinUIDriver {
             return words.isEmpty ? nil : .string(words)
         case "accessibilityIdentifier": return .string(view.automationWords.identifier)
         case "accessibilityHeading": return (AccessibilityHeadingLevel(rawValue: view.automationFacts.heading) ?? AccessibilityHeadingLevel.none).propValue
-        case "isAccessibilityHidden":
-            let facts = view.automationFacts
-            return (!facts.isControl && !facts.isContent).propValue
         case "translationX": return view.drawnTransform.translationX.propValue
         case "translationY": return view.drawnTransform.translationY.propValue
         case "rotation": return view.drawnTransform.rotation.propValue
@@ -267,7 +270,7 @@ extension WinUIDriver {
         case "isFontAutoScalingEnabled": return (try read(view, "textScales") == "1").propValue
         case "fontWeight": return FontWeight(nearest: Double(try read(view, "fontWeight")) ?? 400).propValue
         case "fontAttributes":
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if try read(view, "italic") == "1" { attributes.insert(.italic) }
             if try read(view, "tabularDigits") == "1" { attributes.insert(.monospacedDigits) }
             return attributes.propValue
@@ -407,10 +410,10 @@ extension WinUIDriver {
         case ("date", let picker as WinUIDatePickerView): return picker.date?.propValue
         case ("color", let picker as WinUIColorPickerView): return picker.color.propValue
         case ("choosesOpacity", let picker as WinUIColorPickerView): return picker.choosesOpacity.propValue
-        case ("minimumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimumDate"))?.propValue
-        case ("maximumDate", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximumDate"))?.propValue
+        case ("minimum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "minimum"))?.propValue
+        case ("maximum", let picker as WinUIDatePickerView): return Self.day(try read(picker, "maximum"))?.propValue
         case ("format", let picker as WinUIDatePickerView):
-            return (try read(picker, "longDate") == "1" ? DateStyle.long : .short).propValue
+            return (try read(picker, "longDate") == "1" ? DateFormat.long : .short).propValue
         case ("time", let picker as WinUITimePickerView): return picker.time?.propValue
         case ("source", let image as WinUIImageView): return ImageSource(try read(image, "source")).propValue
         case ("iconPosition", let button as WinUIButtonView):
@@ -529,7 +532,7 @@ extension WinUIDriver {
         case "fontSize": return run[1] == 0 ? nil : run[1].propValue
         case "fontWeight": return FontWeight(nearest: run[2]).propValue
         case "fontAttributes":
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if Int(run[3]) & 1 != 0 { attributes.insert(.italic) }
             if Int(run[3]) & 2 != 0 { attributes.insert(.monospacedDigits) }
             return attributes.propValue
@@ -643,7 +646,7 @@ extension WinUIDriver {
 
     /// The bar at `page`'s foot under `root`, read as the title bar's is; nothing while it shows none.
     private func footBar(of page: MountedElement, in root: MountedElement) throws -> String {
-        guard let foot = ((page.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar else {
+        guard let foot = ((page.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar else {
             return BarWords.said(leading: [], trailing: [], overflow: [])
         }
         let read = Self.saidActions(try self.read(foot, "footBar"))
@@ -669,7 +672,7 @@ extension WinUIDriver {
         var root = element
         while let parent = root.parent { root = parent }
         func search(_ each: MountedElement) -> (bar: WinUIFootBarView, place: Int)? {
-            if each.type == .page, let foot = ((each.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar,
+            if each.type == .page, let foot = ((each.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar,
                let place = foot.drawn.firstIndex(where: { $0.mount == element.mount }) {
                 return (foot, place)
             }
@@ -765,7 +768,7 @@ extension WinUIDriver {
     /// The purpose a text box's input scope is given for.
     static func purpose(_ scope: WinUIInputScope) -> InputPurpose {
         switch scope {
-        case .default: .default
+        case .default: .automatic
         case .text: .text
         case .chat: .chat
         case .email: .email

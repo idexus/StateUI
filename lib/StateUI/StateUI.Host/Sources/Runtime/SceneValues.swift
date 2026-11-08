@@ -43,8 +43,8 @@
         return root.type == .scene ? [root] : root.children.filter { $0.type == .scene }
     }
 
-    /// The key a scene's values are kept under: the one the act keeping them names it by.
+    /// The key a scene's values are kept under - its number, the one the act keeping them names it by.
     @MainActor public static func key(of scene: MountedElement) -> String {
-        scene.id.hostValue.string ?? ""
+        scene.id.sceneNumber ?? scene.id.hostValue.string ?? ""
     }
 }

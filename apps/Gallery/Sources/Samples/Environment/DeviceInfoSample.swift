@@ -23,7 +23,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
             // These facts stand still, so this closure stands at one build.
             DebugInfoLabel()
 
-            Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
+            Text("\(app.info.name) \(app.info.version) (\(app.info.build))")
                 .fontSize(22)
                 .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
@@ -33,7 +33,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
 
             Text("device · \(device.info.manufacturer) \(device.info.model)")
                 .fontSize(15)
-            Text("system · \(device.info.platform) \(device.info.versionString)")
+            Text("system · \(device.info.platform) \(device.info.platformVersion)")
                 .fontSize(15)
             Text("formFactor · \(device.info.formFactor)")
                 .fontSize(15)

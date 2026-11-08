@@ -16,9 +16,9 @@ final class AppKitProgressViewTests: XCTestCase {
     @MainActor
     func testASpinnerIsShownOnlyWhileVisibleAndRunning() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var stopped = HostPatch(id: .manual("activity"), type: .spinner)
-        stopped.properties[.isAnimating] = .bool(false)
+        stopped.properties[SpinnerContract.isAnimating.token] = .bool(false)
         renderer.applyForTesting(tree(stopped))
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("activity")) as? AppKitSpinnerView)
@@ -30,7 +30,7 @@ final class AppKitProgressViewTests: XCTestCase {
         XCTAssertFalse(shows(native))
 
         var runningButInvisible = HostPatch(id: .manual("activity"), type: .spinner)
-        runningButInvisible.properties[.isAnimating] = .bool(true)
+        runningButInvisible.properties[SpinnerContract.isAnimating.token] = .bool(true)
         runningButInvisible.properties[.isVisible] = .bool(false)
         renderer.applyForTesting(changedTree(runningButInvisible))
         XCTAssertFalse(shows(native))

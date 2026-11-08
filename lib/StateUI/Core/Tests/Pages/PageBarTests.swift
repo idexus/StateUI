@@ -102,7 +102,7 @@ final class PageBarTests: XCTestCase {
         let undo = label.children[1]
         XCTAssertEqual(undo.props["part"], .enumeration(0), "ToolbarPart.sidebar")
         XCTAssertEqual(undo.props["position"], .enumeration(1), "ToolbarPosition.start")
-        XCTAssertEqual(undo.props["order"], .number(1))
+        XCTAssertEqual(undo.props["ToolbarGroup.order"], .number(1))
         XCTAssertEqual(undo.props["hidesWithSidebar"], .bool(true))
         XCTAssertEqual(undo.children.map { $0.id }, [.manual("undo")])
         XCTAssertNil(undo.children[0].props["position"], "the item says nothing of where it stands")
@@ -114,7 +114,7 @@ final class PageBarTests: XCTestCase {
         XCTAssertNotNil(ruler.events?["toggled"])
 
         let menus = try XCTUnwrap(label.children.first { $0.type == "MenuBar" })
-        XCTAssertEqual(menus.props["order"], .number(1))
+        XCTAssertEqual(menus.props["MenuBar.order"], .number(1))
         let file = menus.children[0]
 
         XCTAssertEqual(file.type, "Menu")
@@ -151,7 +151,7 @@ final class PageBarTests: XCTestCase {
 
     /// Every property name a patch carries, however deep it sits.
     private static func keys(in patch: HostPatch) -> Set<String> {
-        patch.children.reduce(into: Set(patch.props.keys.map(\.name))) { names, child in
+        patch.children.reduce(into: Set(patch.props.keys.map { $0.memberName })) { names, child in
             names.formUnion(keys(in: child))
         }
     }
@@ -196,8 +196,8 @@ final class PageBarTests: XCTestCase {
         }
         .placement(at: .end, order: 2)
 
-        XCTAssertEqual(group.node.props.keys.map(\.name).sorted(), ["order", "position"])
-        XCTAssertEqual(group.node.children.map { $0.props.keys.map(\.name).sorted() }, [["text"], ["text"]])
+        XCTAssertEqual(group.node.props.keys.map(\.name).sorted(), ["ToolbarGroup.order", "ToolbarGroup.position"])
+        XCTAssertEqual(group.node.children.map { $0.props.keys.map(\.name).sorted() }, [["TextElement.text"], ["TextElement.text"]])
         XCTAssertTrue(hasComplained("A toolbar item in a ToolbarGroup stands where its group does"))
     }
 

@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 // listing: InteropEventsSample.GTK.swift
@@ -19,7 +20,7 @@ enum GalleryEventSources {
     @MainActor
     static func start() {
         // A handler listening for an event nothing declared is told, once, that it will not hear it.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
 
         // UPower's display device signals each change of its properties, the battery's among them.
         guard let device = GalleryPower.device else { return }

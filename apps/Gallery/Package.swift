@@ -15,9 +15,12 @@ let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
     .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
 // NonisolatedNonsendingByDefault is the one setting an application must not
-// leave out; see the note in ../../Package.swift.
-let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
-    + (host.map { [.define($0.uppercased())] } ?? [])
+// leave out; see the note in ../../Package.swift. MemberImportVisibility holds
+// each file to the modules it imports itself: a member of StateUI, or one
+// Foundation adds, written where no import of it stands fails on every host.
+let settings: [SwiftSetting] = [
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"), .enableUpcomingFeature("MemberImportVisibility"),
+] + (host.map { [.define($0.uppercased())] } ?? [])
 
 var products: [Product] = [
     // Dynamic, so a head and its host share one StateUI runtime; on the Web one module holds them all.
@@ -25,12 +28,10 @@ var products: [Product] = [
 ]
 
 var targets: [Target] = [
-    // The application's Swift, which every host compiles, holds each file to the modules it imports itself: a member
-    // Foundation adds, written where no import of it stands, fails on every host, not on the Web alone.
     .target(
         name: "GalleryUI",
         dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
-        path: "Sources", swiftSettings: settings + [.enableUpcomingFeature("MemberImportVisibility")]),
+        path: "Sources", swiftSettings: settings),
     // The tests walk the gallery over the host layer too, every sample visited and left (LeakWalkTests), and use
     // its samples as their user does through a test's window (StateUITesting).
     .testTarget(
@@ -46,9 +47,12 @@ var targets: [Target] = [
 ]
 
 // The head in Platforms/<Host>: an executable its host runs, and on Android a
-// library the platform loads. StateUIHead brings the host; the gallery's cube
-// adds a native module to three of them.
-let head: [Target.Dependency] = ["GalleryUI", .product(name: "StateUIHead", package: "StateUIHead")]
+// library the platform loads, importing StateUI and its host by name.
+// StateUIHead brings the host; the gallery's cube adds a native module to
+// three of them.
+let head: [Target.Dependency] = [
+    "GalleryUI", .product(name: "StateUI", package: "StateUIRoot"), .product(name: "StateUIHead", package: "StateUIHead"),
+]
 // The web view's backend where the host's platform does not ship one - GTK's WebKitGTK, WinUI's WebView2 - which
 // the head registers: ../../lib/Backends/WebView.<Host>.
 let webBackend: [Target.Dependency] = host.flatMap { host in
@@ -106,9 +110,9 @@ let package = Package(
     name: "GalleryUI",
     // StateUI's floor, which an application cannot go below.
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: products,
     // The StateUI checkout: the library at its root, the host layer the tests walk the gallery over, the testing

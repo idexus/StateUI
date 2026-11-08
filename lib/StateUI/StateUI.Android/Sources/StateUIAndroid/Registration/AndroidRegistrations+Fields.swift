@@ -5,51 +5,51 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// A TextField, a SearchField and a TextEditor: their words are `TextualElementContract.text` and the change
+    /// A TextField, a SearchField and a TextEditor: their words are `TextElementContract.text` and the change
     /// they report is `TextInputContract.textChanged`. Each member reaches the field only where the tree
     /// changed it, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<AndroidView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = AndroidTextFieldView(.field)
             field.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers, TextFieldContract.isPassword) { view, values in applyField(view, values) }
-            field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            field.property(SubmitElementContract.submitLabel) { view, key in view.setReturnKey(key) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(SubmitElementContract.submitted)
         })
 
         registry.add(SearchFieldContract.self, create: { reports in
             let search = AndroidTextFieldView(.search)
             search.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyField(view, values) }
-            search.property(SearchFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            search.property(SubmitElementContract.submitLabel) { view, key in view.setReturnKey(key) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SubmitElementContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in
             let editor = AndroidTextFieldView(.editor)
             editor.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             return editor
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyField(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrows(grows ?? false) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
     }
 
@@ -66,14 +66,14 @@ extension AndroidRegistrations {
     }
 
     /// What every field takes whole.
-    private static let inputMembers = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+    private static let inputMembers = PropertyList(TextElementContract.text, TextualElementContract.textCase)
         + TextMembers.lookMembers
         + PropertyList(
-            TextInputContract.placeholder, TextInputContract.placeholderColor,
+            PlaceholderElementContract.placeholder, TextInputContract.placeholderColor,
             TextAlignmentElementContract.horizontalTextAlignment, TextInputContract.inputPurpose,
             TextInputContract.isTextPredictionEnabled, TextInputContract.maximumLength,
             TextInputContract.cursorPosition, TextInputContract.selectionLength, TextInputContract.isReadOnly,
-            VisualElementContract.isEnabled)
+            EnabledElementContract.isEnabled)
 
     private static func applyField<Realized: ElementContract>(
         _ view: AndroidTextFieldView, _ values: ElementValues<Realized>
@@ -82,13 +82,13 @@ extension AndroidRegistrations {
             view.setPassword(values[TextFieldContract.isPassword] ?? false)
         }
         if values.changed(TextualElementContract.textCase) { view.textCase = values[TextualElementContract.textCase] }
-        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase),
+        if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase),
            let words = words(values) {
             view.setText(words)
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
-        if values.changed(TextInputContract.placeholder) {
-            view.setPlaceholder(values[TextInputContract.placeholder])
+        if values.changed(PlaceholderElementContract.placeholder) {
+            view.setPlaceholder(values[PlaceholderElementContract.placeholder])
         }
         if values.changed(TextInputContract.placeholderColor) {
             view.setPlaceholderColor(values[TextInputContract.placeholderColor]?.propValue)
@@ -101,8 +101,8 @@ extension AndroidRegistrations {
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
         }
-        if values.changed(VisualElementContract.isEnabled) {
-            view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
+        if values.changed(EnabledElementContract.isEnabled) {
+            view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }
         if values.changed(TextInputContract.isReadOnly) { view.setReadOnly(values[TextInputContract.isReadOnly] ?? false) }
         view.maximumLength = values[TextInputContract.maximumLength].map { max(0, $0) }
@@ -117,7 +117,7 @@ extension AndroidRegistrations {
     /// The words to put on a field, in their case: none where the host carries them in, since the field is their
     /// source.
     private static func words<Realized: ElementContract>(_ values: ElementValues<Realized>) -> String? {
-        guard !values.carriedIn(TextualElementContract.text) else { return nil }
-        return (values[TextualElementContract.textCase] ?? .none).applied(to: values[TextualElementContract.text] ?? "")
+        guard !values.carriedIn(TextElementContract.text) else { return nil }
+        return (values[TextualElementContract.textCase] ?? .none).applied(to: values[TextElementContract.text] ?? "")
     }
 }

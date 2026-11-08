@@ -9,11 +9,11 @@ final class MainPageTests: XCTestCase {
     func testTheButtonCountsItsClicks() async throws {
         let window = try await TestWindow(motion: .none) { MainPage() }
         let button = try window.element("main.click")
-        XCTAssertEqual(button.value(TextualElementContract.text), "Click me")
+        XCTAssertEqual(try button.value(TextElementContract.text), "Click me")
 
         try await button.perform(.activate)
         try await button.perform(.activate)
 
-        XCTAssertEqual(button.value(TextualElementContract.text), "Clicked 2 times")
+        XCTAssertEqual(try button.value(TextElementContract.text), "Clicked 2 times")
     }
 }

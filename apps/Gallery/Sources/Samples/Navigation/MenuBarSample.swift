@@ -61,7 +61,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
                     .id("export")
                     .onClicked { exported += 1 }
             }
-            .id(StandardMenu.file)
+            .joins(.file)
 
             // Edit holds the platform's own entries, acting on the field the
             // user typed into; Clear stands after them, this page's own.
@@ -70,7 +70,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
                     .id("clear")
                     .onClicked { note = "" }
             }
-            .id(StandardMenu.edit)
+            .joins(.edit)
 
             if ownMenu {
                 Menu("Sample") {
@@ -84,8 +84,7 @@ struct MenuBarSample: SampleContent, ExampleContent {
 
     /// A switch and what it says, told apart for scripts by `id`.
     private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-        Switch(value)
-            .text(words)
+        Switch(words, isOn: value)
             .accessibilityIdentifier(id)
     }
     // listing: end
@@ -99,13 +98,13 @@ struct MenuBarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("A menu of its own stands after File, before the platform's Window and "
-                + "Help. File is joined by `.id(StandardMenu.file)`, never by its caption. Android "
+                + "Help. File is joined by `.joins(.file)`, never by its caption. Android "
                 + "puts the menus behind the bar's overflow, GNOME in the bar's main menu; an "
                 + "iPhone shows none.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Edit, joined by `.id(StandardMenu.edit)`, holds the platform's own Undo, Redo, Cut, "
+            Text("Edit, joined by `.joins(.edit)`, holds the platform's own Undo, Redo, Cut, "
                 + "Copy, Paste, Delete and Select All before this page's Clear - on the Mac and the iPad "
                 + "the system's own, on Windows, GNOME and the Web the same entries StateUI keeps. They "
                 + "act on the field you typed into, though opening the menu took the focus.")

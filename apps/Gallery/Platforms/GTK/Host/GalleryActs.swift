@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 // listing: InteropActsSample.GTK.swift
@@ -10,7 +11,7 @@ import StateUIGTK
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
 /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-/// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `Gallery.Nobody` is
+/// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `GalleryContract.nobody` is
 /// registered nowhere on purpose: the "Calling GTK" sample calls it to show what a missing registration does.
 enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.

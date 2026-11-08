@@ -3,6 +3,7 @@
 
 import AppKit
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 /// Stars, filled up to a rating - an ordinary `NSView` with two values.
@@ -164,7 +165,7 @@ extension RatingBarView {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         // listing: end
 

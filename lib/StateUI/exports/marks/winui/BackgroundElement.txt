@@ -1,0 +1,47 @@
+# revision 1.1
+Button.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Canvas.background: ☑️ A brush fills the canvas with its first color alone.
+Capsule.background: – A WinUI shape is its figure alone: it paints no ground around it.
+CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ColorPicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+DatePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Fill.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Image.background: – WinUI's picture paints the picture alone, no ground around it.
+ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Link.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Map.background: 🧩
+MotionLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+NavigationStack.background: ✅
+Page.background: ✅
+Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
+Polyline.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ProgressBar.background: – WinUI's progress bar paints its Background as its track, no ground under its frame.
+Rectangle.background: – A WinUI shape is its figure alone: it paints no ground around it.
+ScrollView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+SearchField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Separator.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.background: – WinUI's progress ring paints its Background as its track, no ground under its frame.
+SplitView.background: ✅
+Stepper.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TabView.background: ✅
+Text.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TextEditor.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TextField.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+TextSpan.background: ✅
+TimePicker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ToolbarButton.background: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.background: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.background: – The title bar's commands stand in WinUI's own look.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+WebView.background: not realized
+Window.background: ☑️ WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.

@@ -9,26 +9,15 @@
 @_spi(Host) public enum LinkTests: ConformanceFamily {
     public static let name = "Link"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(LinkContract.self) }
+
+    /// Every case written for the element: its own members, and its tiers' a tier's family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             Aspects.standsAlone("Link"),
-            ConformanceCase("aChosenLinkIsHeardOnce", proves: [Covered(LinkContract.clicked)]) { s in
-                let heard = Received<Bool>()
-                s.start {
-                    VStack {
-                        Link("Swift", address: "https://www.swift.org/about")
-                            .onClicked { heard.values.append(true) }
-                            .id("link")
-                    }
-                }
-
-                try s.perform(.activate, on: s.element("link"))
-                s.settle { !heard.values.isEmpty }
-                s.expect(heard.values, [true], "its handler ran once")
-            },
             ConformanceCase("aChosenLinkOpensItsAddress", proves: [
                 Covered(LinkContract.address),
-            ], needs: [Covered(LinkContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: LinkContract.self)]) { s in
                 s.start { VStack { Link("Swift", address: "https://www.swift.org/about").id("link") } }
 
                 try s.perform(.activate, on: s.element("link"))
@@ -36,8 +25,8 @@
                 s.expect(try s.launched(), ["https://www.swift.org/about"], "its address opened")
             },
             ConformanceCase("aDisabledLinkOpensNothing", proves: [
-                Covered(LinkContract.clicked), Covered(LinkContract.address),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ClickElementContract.clicked, on: LinkContract.self), Covered(LinkContract.address),
+            ], needs: [Covered(ClickElementContract.clicked, on: LinkContract.self)]) { s in
                 let heard = Received<Bool>()
                 s.start {
                     VStack {
@@ -58,7 +47,7 @@
             },
             ConformanceCase("aLinkOpensTheAddressItsStateHolds", proves: [
                 Covered(LinkContract.address),
-            ], needs: [Covered(LinkContract.clicked), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: LinkContract.self), Covered(ClickElementContract.clicked, on: LinkContract.self)]) { s in
                 let address = State(wrappedValue: "https://www.swift.org")
                 s.start {
                     VStack {

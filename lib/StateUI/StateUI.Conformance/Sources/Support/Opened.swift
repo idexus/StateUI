@@ -9,7 +9,7 @@
 enum Opened {
     /// `view`, its frame landing in `room`.
     static func framed<V: View>(_ view: V, into room: Binding<Rect>) -> some View {
-        view.frame(room)
+        view.frame(into: room)
     }
 
     /// `view`, a pan across it carrying `x`.

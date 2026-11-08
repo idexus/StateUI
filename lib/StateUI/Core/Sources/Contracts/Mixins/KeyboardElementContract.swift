@@ -3,7 +3,7 @@
 
 /// An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and
 /// so hear the keys it takes.
-public enum KeyboardElementContract: Contract {
+public enum KeyboardElementContract: Tier {
     /// The tier's name.
     public static let name = "KeyboardElement"
 

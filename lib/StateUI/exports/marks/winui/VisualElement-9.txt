@@ -1,76 +1,71 @@
-# revision 24.2
-Button.accessibilityHint: ✅
-Button.scaleY: ✅
-Canvas.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-Canvas.accessibilityActions: – UI Automation offers no action of an application's own words.
-Capsule.isAccessibilityHidden: ✅
-Capsule.isVisible: ✅
-CheckBox.height: ✅
+# revision 28.2
+Button.accessibilityHeading: ✅
+Canvas.ignoresInput: ✅
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
+Capsule.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
-CheckBox.width: ✅
-ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own tip, checked against the projection it laid on the element
-ColorPicker.style: ✅
-DatePicker.accessibilityHint: ✅
-DatePicker.scaleY: ✅
-Ellipse.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-Fill.isAccessibilityHidden: ✅
-Fill.isVisible: ✅
-Grid.hidesChildrenFromAccessibility: ✅
-Grid.opacity: ✅
-HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-HStack.isAccessibilityHidden: ✅
-HStack.isVisible: ✅
-Image.accessibilityHeading: ✅
-ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-ItemsView.isEnabled: ✅
-Line.accessibilityHeading: ✅
-Line.scale: ✅
-Link.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+ColorPicker.accessibilityHeading: ✅
+ColorPicker.scaleX: ✅
+DatePicker.tooltip: ✅
+Ellipse.maximumHeight: ✅
+Ellipse.maximumWidth: ✅
+Ellipse.minimumHeight: ✅
+Ellipse.minimumWidth: ✅
+Ellipse.rotation: ✅
+Fill.accessibilityRole: ✅
+Fill.translationY: ✅
+Grid.accessibilityPresence: ✅
+HStack.frame: ✅
+HStack.rotationY: ✓ read rotationY of HStack: the host's own tip, checked against the projection it laid on the element
+Image.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+ItemsView.isVisible: ✅
+ItemsView.layoutDirection: ✅
+Line.height: ✅
+Line.pivotY: ✅
+Line.width: ✅
+Link.accessibilityHint: ✅
 Link.translationX: ✅
-Map.tooltip: 🧩
-MotionLayout.accessibilityHeading: ✅
-MotionLayout.scale: ✅
-Path.frame: ✅
-Path.rotation: ✅
-Picker.accessibilityHeading: ✅
-Picker.scale: ✅
-Polygon.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-Polygon.translationY: ✅
-Polyline.tooltip: ✅
-ProgressBar.hidesChildrenFromAccessibility: ✅
-ProgressBar.opacity: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.pivotX: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.style: ✅
-SearchField.rotationY: ✓ read rotationY of SearchField: the host's own tip, checked against the projection it laid on the element
+Map.accessibilityPresence: 🧩
+MotionLayout.tooltip: ✅
+Path.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Path.accessibilityActions: – UI Automation offers no action of an application's own words.
+Picker.opacity: ✅
+Picker.pivotX: ✅
+Polygon.accessibilityLabel: ✅
+Polygon.scaleY: ✅
+Polyline.accessibilityHeading: ✅
+ProgressBar.ignoresInput: ✅
+ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own tip, checked against the projection it laid on the element
+Rectangle.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+ScrollView.isVisible: ✅
+ScrollView.layoutDirection: ✓ read layoutDirection of ScrollView: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+SearchField.scale: ✅
 SearchField.zIndex: ✅
-Separator.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Separator.isEnabled: does not apply - read isEnabled of Separator - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-Slider.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-Slider.translationX: ✅
-Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-Space.tooltip: ✅
-Spinner.rotationY: ✓ read rotationY of Spinner: the host's own tip, checked against the projection it laid on the element
-Spinner.zIndex: ✅
-Stepper.accessibilityHeading: ✅
-Switch.height: ✅
-Switch.layoutDirection: ✅
-Switch.width: ✅
-Text.frame: ✅
-Text.rotation: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own tip, checked against the projection it laid on the element
-TextEditor.style: ✅
-TextField.accessibilityHint: ✅
-TextField.scaleY: ✅
-TimePicker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-VStack.hidesChildrenFromAccessibility: ✅
-VStack.opacity: ✅
-WebView.accessibilityHeading: ✅
-ZStack.height: ✅
-ZStack.layoutDirection: ✓ read layoutDirection of ZStack: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-ZStack.width: ✅
+Separator.frame: ✅
+Separator.rotationY: ✓ read rotationY of Separator: the host's own tip, checked against the projection it laid on the element
+Slider.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Space.height: ✅
+Space.pivotY: ✅
+Space.width: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.scaleY: ✅
+Stepper.accessibilityHint: ✅
+Stepper.translationX: ✅
+Switch.accessibilityPresence: ✅
+Text.accessibilityHeading: ✅
+Text.scaleX: ✅
+TextEditor.frame: ✅
+TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own tip, checked against the projection it laid on the element
+TextField.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TextField.accessibilityActions: – UI Automation offers no action of an application's own words.
+TimePicker.opacity: ✅
+TimePicker.pivotX: ✅
+VStack.accessibilityLabel: ✅
+VStack.scaleY: ✅
+WebView.tooltip: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.rotation: ✅

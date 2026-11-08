@@ -24,7 +24,7 @@ private struct ChoresPage: View {
             .onRefreshRequested { refreshing = false }
             .gridRow(1)
         }
-        .rows(.auto, .fixed(300))
+        .rows(.automatic, .fixed(300))
         .width(300)
     }
 }
@@ -47,7 +47,7 @@ final class AppKitItemsViewTests: XCTestCase {
     @MainActor
     func testAChosenItemShowsTheAccentOverThePage() throws {
         let renderer = autoreleasepool { AppKitRenderer.running { ChoosingPage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         for _ in 0..<100 {
             guard items.collection.visibleItems().isEmpty else { break }
@@ -69,7 +69,7 @@ final class AppKitItemsViewTests: XCTestCase {
     @MainActor
     func testEveryRowsWordsStandInTheListsAccessibility() throws {
         let renderer = autoreleasepool { AppKitRenderer.running { ChoresPage() } }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         for _ in 0..<100 {
             guard items.collection.visibleItems().isEmpty else { break }
@@ -102,12 +102,12 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 ItemsView(sections: days.wrappedValue.map { day in
-                    Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
+                    Section([day + " note"]) { Text($0) }.id(day).header { Text(day) }
                 })
                 .width(300).height(400)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func texts(in view: NSView) -> [String] {
             ((view as? AppKitTextView)?.stringValue).map { [$0] } ?? view.subviews.flatMap(texts)
@@ -140,11 +140,11 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 ItemsView(numbers.wrappedValue) { Text("Row \($0)").padding(10) }
-                    .header(Text("Rows").padding(8))
+                    .header { Text("Rows").padding(8) }
                     .width(300).height(500)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func header() -> AppKitItemSupplement? {
             items.collection.visibleSupplementaryViews(ofKind: AppKitItemsLayout.listHeader).first as? AppKitItemSupplement
@@ -177,10 +177,10 @@ final class AppKitItemsViewTests: XCTestCase {
         let renderer = autoreleasepool {
             AppKitRenderer.running {
                 let list = ItemsView(0..<3) { Text("Row \($0)") }
-                (headed.wrappedValue ? list.header(Text("Rows")) : list).width(300).height(400)
+                (headed.wrappedValue ? list.header { Text("Rows") } : list).width(300).height(400)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func texts(in view: NSView) -> [String] {
             ((view as? AppKitTextView)?.stringValue).map { [$0] } ?? view.subviews.flatMap(texts)
@@ -221,7 +221,7 @@ final class AppKitItemsViewTests: XCTestCase {
                 ItemsView(numbers.wrappedValue) { Text("Row \($0)").padding(10) }.width(300).height(500)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let items = try XCTUnwrap(renderer.nativeViews(AppKitItemsView.self).first)
         func drawn() -> [String: CGFloat] {
             Dictionary(uniqueKeysWithValues: items.collection.visibleItems().compactMap { item in
@@ -239,7 +239,11 @@ final class AppKitItemsViewTests: XCTestCase {
             guard cells.count < 5 || cells.contains(where: { $0.holding.shown == nil }) else { break }
             step()
         }
-        let stood = drawn().filter { Int($0.key)! < 6 }
+        let ids = Array(items.cells.entries.sections.flatMap(\.items).prefix(6))
+        XCTAssertEqual(ids.count, 6)
+        guard ids.count == 6 else { return }
+        let firstRows = Set(ids)
+        let stood = drawn().filter { firstRows.contains($0.key) }
 
         numbers.wrappedValue = [999] + Array(0..<999)
         var astray: [String] = []
@@ -247,17 +251,17 @@ final class AppKitItemsViewTests: XCTestCase {
             step()
             let now = drawn()
             for row in 0..<5 {
-                guard let at = now["\(row)"], let from = stood["\(row)"], let to = stood["\(row + 1)"] else { continue }
+                guard let at = now[ids[row]], let from = stood[ids[row]], let to = stood[ids[row + 1]] else { continue }
                 if at < from - 0.5 || at > to + 0.5 { astray.append("step \(index): row \(row) at \(at), not within \(from)...\(to)") }
             }
         }
         for _ in 0..<100 {
-            guard drawn()["0"] != stood["1"] else { break }
+            guard drawn()[ids[0]] != stood[ids[1]] else { break }
             step()
         }
 
         XCTAssertEqual(astray, [])
-        XCTAssertEqual(drawn()["0"], stood["1"], "row 0 ends where row 1 stood")
+        XCTAssertEqual(drawn()[ids[0]], stood[ids[1]], "row 0 ends where row 1 stood")
     }
 }
 #endif

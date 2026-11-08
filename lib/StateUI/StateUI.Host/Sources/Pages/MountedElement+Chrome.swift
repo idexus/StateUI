@@ -122,9 +122,9 @@ extension MountedElement {
         HostMaterial(barValue(.barBackground))
     }
 
-    /// How this element's bar's buttons stand, found as its bar's colors; `.system` where none is declared.
+    /// How this element's bar's buttons stand, found as its bar's colors; `.automatic` where none is declared.
     public var toolbarStyle: ToolbarStyle {
-        barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system
+        barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .automatic
     }
 
     /// How what scrolls under this element's bar shows at its edge, found as its bar's colors; `.automatic` where
@@ -152,7 +152,7 @@ extension MountedElement {
     /// The line under this page's title on its bar: its own subtitle; nil where it says none, or an empty one.
     /// Design: docs/design/host/pages.md#a-pages-title-area
     public var barSubtitle: String? {
-        value(.subtitle)?.string.flatMap { $0.isEmpty ? nil : $0 }
+        value(PageContract.subtitle.token)?.string.flatMap { $0.isEmpty ? nil : $0 }
     }
 
     /// What this page's bar says where it names the application - a sidebar's page's: its title, else the

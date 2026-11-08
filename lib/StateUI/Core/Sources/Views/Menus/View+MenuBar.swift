@@ -11,7 +11,7 @@ extension View {
     ///                 MenuItem("Save").id("save").onClicked { save() }
     ///                 MenuItem("Export…").onClicked { export() }
     ///             }
-    ///             .id(StandardMenu.file)
+    ///             .joins(.file)
     ///         }
     ///
     /// The menus are built with the body declaring them, so an entry follows

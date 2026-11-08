@@ -1,0 +1,16 @@
+# revision 1.1
+Button.text: ✅
+CheckBox.text: ✅
+Link.text: ✅
+Menu.text: ✅
+MenuItem.text: ✅
+MenuToggle.text: ✅
+SearchField.text: ✅
+Switch.text: ✅
+Text.text: ✅
+TextEditor.text: ✅
+TextField.text: ✅
+TextSpan.text: ✅
+ToolbarButton.text: ✅
+ToolbarLabel.text: ✅
+ToolbarToggle.text: ✅

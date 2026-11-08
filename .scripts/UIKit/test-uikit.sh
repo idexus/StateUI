@@ -58,4 +58,6 @@ SIMCTL_CHILD_STATEUI_STALE_ONLY="${STATEUI_STALE_ONLY:-}" \
 
 summary="$(tr -d '\r' < "$output" | grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing"; exit 1; }
-[[ "$summary" == *" with 0 failures" ]]
+[[ "$summary" == *" with 0 failures" ]] || exit 1
+# The facade, as the simulator's build made it, held to its API record (lib/StateUI/exports/api/StateUIUIKit.txt).
+"$repository_dir/.scripts/API/record.sh" StateUIUIKit "$binary_dir" "$UIKIT_TRIPLE" "$UIKIT_SDK"

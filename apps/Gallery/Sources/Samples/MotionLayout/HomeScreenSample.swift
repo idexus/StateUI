@@ -138,13 +138,13 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         }
                     }
                 }
-                .motion(Self.turning)
+                .parameterMotion(Self.turning)
             }
             .gridRow(0)
             .clipsContent(true)
             // THE GRID THE ROOM FITS: a turned phone or a window grown or
             // shrunk moves icons to other boards, or makes them larger.
-            .frame($room)
+            .frame(into: $room)
             .engine(following: $room) { _ in fitted() }
 
             // THE DOTS wear the same parameters - one state, so one motion: they go
@@ -156,11 +156,11 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             } placements: { room, board in
                 (0..<boards).map { dot($0, of: boards, board, room) }
             }
-            .motion(Self.turning)
+            .parameterMotion(Self.turning)
             .height(16)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(8)
     }
 

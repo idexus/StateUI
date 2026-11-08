@@ -14,7 +14,7 @@
             Aspects.standsAlone("VStack"),
             ConformanceCase("itsChildrenStandOneUnderAnotherInTheirOrder", proves: [
                 Covered(VStackContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let swapped = State(wrappedValue: false)
                 let (first, second) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
@@ -66,10 +66,11 @@
             ConformanceCase("aFieldKeepsTheKeyboardAsItsRowsMove", proves: [
                 Covered(VStackContract.self),
             ], needs: [
-                Covered(ButtonContract.clicked), Covered(FocusElementContract.focus, on: "TextField"),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(FocusElementContract.focus, on: "TextField"),
                 Covered(FocusElementContract.isFocusedChanged, on: "TextField"),
             ]) { s in
                 let order = State(wrappedValue: ["a", "b", "c"])
+                let typed = Dictionary(uniqueKeysWithValues: order.wrappedValue.map { ($0, State(wrappedValue: "")) })
                 let aim = FocusAim()
                 let heard = Received<Bool>()
                 let took = Received<Bool>()
@@ -79,18 +80,18 @@
                         VStack {
                             ForEach(order.wrappedValue) { name in
                                 if name == "a" {
-                                    Opened.aimed(TextField().placeholder(name), by: aim)
+                                    Opened.aimed(TextField(typed[name]!.projectedValue).placeholder(name), by: aim)
                                         .onEvent(FocusElementContract.isFocusedChanged) { heard.values.append($0) }
                                         .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 } else {
-                                    TextField().placeholder(name)
+                                    TextField(typed[name]!.projectedValue).placeholder(name)
                                         .onEvent(ViewContract.frameChanged) { tops.values.append((name, $0[1])) }
                                         .id(name)
                                 }
                             }
                         }
-                        Button("Focus").onClicked(.ignoreWhileRunning) { took.values.append(try await aim.focus()) }
+                        Button("Focus").onClicked(policy: .ignoreWhileRunning) { took.values.append(try await aim.focus()) }
                             .id("focus")
                         Button("Rotate").onClicked {
                             order.wrappedValue = Array(order.wrappedValue.dropFirst()) + [order.wrappedValue[0]]

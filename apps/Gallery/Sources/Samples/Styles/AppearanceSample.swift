@@ -24,13 +24,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
     // listing: AppearanceSample
     /// The themes the application may hold, in the order they are offered.
-    private static let themes: [(name: String, scheme: ColorScheme)] = [
-        ("The system's", .system), ("Light", .light), ("Dark", .dark),
+    private static let themes: [(name: String, scheme: ColorScheme?)] = [
+        ("The system's", nil), ("Light", .light), ("Dark", .dark),
     ]
 
     /// How the bars' buttons may stand, in the order they are offered.
     private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
-        ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+        ("The Web's own", .automatic), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
     ]
 
     /// The accents the application may hold, the platform's first.
@@ -72,8 +72,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Buttons")
             // The application's own look for them: a style for every group and
             // every button on a bar, its states included (AppStyles.bars).
-            Switch(style.$barsInOwnLook)
-                .text("In the gallery's own look")
+            Switch("In the gallery's own look", isOn: style.$barsInOwnLook)
                 .accessibilityIdentifier("appearance.barsInOwnLook")
                 .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
             #endif
@@ -211,19 +210,19 @@ private struct SurfacePickers: View {
             }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
             Picker(AccentChoice.allCases, selection: color) {
                 $0.name
             }
                 .accessibilityIdentifier("\(id)Color")
                 .accessibilityLabel("\(label)'s color, \(theme)")
                 .isEnabled(made.showsColor)
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
             Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
                 .accessibilityIdentifier("\(id)Blur")
                 .accessibilityLabel("\(label)'s blur, \(theme)")
                 .isEnabled(made.showsBlur)
-                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                .onSelectionChanged { composed.wrappedValue = true }
         }
         .spacing(10)
     }

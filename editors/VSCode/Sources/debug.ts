@@ -179,7 +179,11 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return this.gtk(root, application, configuration, name);
         }
 
-        if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
+        const built = await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task));
+        if (built === undefined) {
+            return undefined;
+        }
+        if (!built) {
             void vscode.window.showErrorMessage(
                 `StateUI: the AppKit build of ${application.name} failed - its output is in the terminal.`);
             return undefined;
@@ -492,28 +496,35 @@ export function uiKitAttach(name: string, facts: UIKitDebugger): vscode.DebugCon
     };
 }
 
+/** A script of the StateUI checkout's .scripts/AppKit, the checkout at `checkout`. */
+export function appKitScript(checkout: string, name: string): string {
+    return path.join(checkout, ".scripts", "AppKit", name);
+}
+
 /**
- * Builds an application's AppKit head the way the command line does - its
- * bundling script where it has one, SwiftPM otherwise - as a task whose output
- * shows in the terminal.
+ * Builds an application's AppKit head the way the command line does - `run-app.sh --build-only`, its bundling
+ * script where it has one, SwiftPM and the artwork laid beside the program otherwise - as a task whose output shows
+ * in the terminal.
  *
- * @returns whether the build succeeded.
+ * @returns whether the build succeeded; undefined where no checkout's script builds it, which it said.
  */
 export async function buildAppKitHead(
     folder: vscode.WorkspaceFolder,
     application: Application,
     configuration: Configuration,
     run: (task: vscode.Task) => Promise<number | undefined>,
-): Promise<boolean> {
+): Promise<boolean | undefined> {
+    const script = application.checkout && appKitScript(application.checkout, "run-app.sh");
+    if (!script || !fs.existsSync(script)) {
+        void vscode.window.showErrorMessage(
+            `StateUI: an AppKit head is built by a StateUI checkout's .scripts/AppKit/run-app.sh, and ${application.name}'s Package.swift names none by path.`);
+        return undefined;
+    }
+
     const env = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
-    const execution = application.bundleScript
-        ? new vscode.ShellExecution(application.bundleScript, [configuration], { cwd: folder.uri.fsPath, env })
-        : new vscode.ShellExecution(
-            "swift",
-            ["build", "--package-path", application.directory, "--scratch-path", path.join(application.directory, ".build", "appkit"),
-                "--configuration", configuration, "--product", `${application.name}AppKit`],
-            { cwd: folder.uri.fsPath, env });
+    const execution = new vscode.ShellExecution(
+        "bash", [script, application.directory, configuration, "--build-only"], { cwd: folder.uri.fsPath, env });
 
     const definition = { type: "stateui", application: application.name, configuration };
     const task = new vscode.Task(

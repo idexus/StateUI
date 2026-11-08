@@ -33,8 +33,8 @@ final class GTKCheckViewTests: XCTestCase {
             let on = State(wrappedValue: false)
             let host = GTKRenderer.running {
                 VStack {
-                    Switch(on.projectedValue).text("Wi-Fi").width(300)
-                    CheckBox(true).text("agree").textCase(.uppercase)
+                    Switch("Wi-Fi", isOn: on.projectedValue).width(300)
+                    CheckBox("agree", isOn: true).textCase(.uppercase)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

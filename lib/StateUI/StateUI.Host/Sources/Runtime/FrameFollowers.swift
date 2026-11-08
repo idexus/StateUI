@@ -46,13 +46,15 @@
         runtime.displayCycle.hold()
     }
 
-    /// Follows where `reporter`, the view of `element`, stands while `reads`, in the order the element was made -
-    /// letting it go once the tree reads it no more, or the element leaves.
+    /// Follows where `reporter`, the view of `element`, stands while `reads`, in the order the element was made:
+    /// it says where it stands on the next frame as it comes to be read, and again while a reader come since waits
+    /// for it; let go once the tree reads it no more, or the element leaves.
     public func follow(_ reporter: any FrameReporter, of element: MountedElement, reads: Bool) {
         let mount = element.mount
-        guard reads != (reporters[mount] != nil) else { return }
-        reporters[mount] = reads ? HeldReporter(reporter: reporter) : nil
-        if reads { laidOut() }
+        guard reads else { return reporters[mount] = nil }
+        let followed = reporters[mount] != nil
+        reporters[mount] = HeldReporter(reporter: reporter)
+        if !followed || element.frameReportDue { laidOut() }
     }
 
     /// The element `mount` left the tree: where its view stands is said no more.

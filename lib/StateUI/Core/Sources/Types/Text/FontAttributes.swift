@@ -9,8 +9,9 @@
 ///     Text("Total").fontAttributes(.italic)
 ///     Text("\(seconds) s").fontAttributes(.monospacedDigits)
 ///
-/// The weight is `.fontWeight`, the family `.fontFamily` and the size
-/// `.fontSize`, each its own modifier as it is its own property.
+/// `[]` is upright, with digits as the font draws them. The weight is
+/// `.fontWeight`, the family `.fontFamily` and the size `.fontSize`, each its
+/// own modifier as it is its own property.
 public struct FontAttributes: OptionSet, Sendable {
     /// The flag bits.
     public let rawValue: Int32
@@ -19,9 +20,6 @@ public struct FontAttributes: OptionSet, Sendable {
     public init(rawValue: Int32) {
         self.rawValue = rawValue
     }
-
-    /// Upright.
-    public static let none = FontAttributes([])
 
     /// Drawn italic.
     public static let italic = FontAttributes(rawValue: 1 << 1)

@@ -11,8 +11,8 @@
     /// The theme the system asks for, as the host last reported it.
     private(set) static var system = ColorScheme.light
 
-    /// The theme the application holds - `.system` while it follows the system.
-    public private(set) static var held = ColorScheme.system
+    /// The theme the application holds - nil while it follows the system.
+    public private(set) static var held: ColorScheme?
 
     /// The theme in force now.
     public static var current: ColorScheme {
@@ -20,8 +20,8 @@
     }
 
     /// The theme in force where the application holds `held` and the system asks for `system`.
-    public static func inForce(held: ColorScheme, system: ColorScheme) -> ColorScheme {
-        held == .system ? system : held
+    public static func inForce(held: ColorScheme?, system: ColorScheme) -> ColorScheme {
+        held ?? system
     }
 
     /// Takes the theme the host reports the system asking for; the theme in force now.
@@ -31,7 +31,7 @@
     }
 
     /// Takes the theme the application holds; the theme in force now.
-    static func hold(_ theme: ColorScheme) -> ColorScheme {
+    static func hold(_ theme: ColorScheme?) -> ColorScheme {
         held = theme
         return inForce(held: held, system: system)
     }

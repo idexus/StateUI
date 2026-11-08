@@ -27,8 +27,8 @@ final class StateUICanvasView extends View {
     private static final int FILL_COLOR = 0, STROKE_COLOR = 1, TEXT_COLOR = 2, LINE_WIDTH = 3, FONT_SIZE = 4,
             OPACITY = 5, STROKE_LINE = 6, STROKE_RECTANGLE = 7, STROKE_ROUNDED_RECTANGLE = 8, STROKE_ELLIPSE = 9,
             STROKE_PATH = 11, FILL_RECTANGLE = 12, FILL_ROUNDED_RECTANGLE = 13, FILL_ELLIPSE = 14,
-            FILL_PATH = 16, TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE_STATE = 21,
-            RESTORE_STATE = 22;
+            FILL_PATH = 16, TEXT = 17, TRANSLATE = 18, ROTATE = 19, SCALE = 20, SAVE_GRAPHICS = 21,
+            RESTORE_GRAPHICS = 22;
 
     /** A path command's kinds, as the Swift host numbers them, each followed by its points. */
     // Swift: HostCurveCommand.Kind
@@ -45,7 +45,7 @@ final class StateUICanvasView extends View {
     private float[] numbers = new float[0];
     private String[] strings = new String[0];
 
-    /** What an instruction may change, kept and put back by `saveState` and `restoreState`. */
+    /** What an instruction may change, kept and put back by `saveGraphics` and `restoreGraphics`. */
     private static final class State {
         int fill = 0xFF000000, stroke = 0xFF000000, text = 0xFF000000;
         // The words' size until a drawing sets one: the drawing's first record, the host's own body text.
@@ -158,11 +158,11 @@ final class StateUICanvasView extends View {
                 case TRANSLATE: canvas.translate(numbers[number], numbers[number + 1]); number += 2; break;
                 case ROTATE: canvas.rotate(numbers[number++]); break;
                 case SCALE: canvas.scale(numbers[number], numbers[number + 1]); number += 2; break;
-                case SAVE_STATE:
+                case SAVE_GRAPHICS:
                     saved.push(state.copy());
                     canvas.save();
                     break;
-                case RESTORE_STATE:
+                case RESTORE_GRAPHICS:
                     if (!saved.isEmpty()) {
                         state = saved.pop();
                         canvas.restore();

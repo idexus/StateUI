@@ -69,7 +69,7 @@ final class AppKitDatePickerViewTests: XCTestCase {
             DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
                 .onDateChanged { days.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitDatePickerView.self).first)
 
         picker.chooseForTesting(CalendarDate(year: 2026, month: 9, day: 15))
@@ -82,10 +82,10 @@ final class AppKitDatePickerViewTests: XCTestCase {
     func testADatePickersRangeBoundsItsNativeField() throws {
         let renderer = AppKitRenderer.running {
             DatePicker(CalendarDate(year: 2027, month: 1, day: 1))
-                .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
-                .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+                .minimum(CalendarDate(year: 2020, month: 1, day: 1))
+                .maximum(CalendarDate(year: 2026, month: 12, day: 31))
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let picker = try XCTUnwrap(renderer.nativeViews(AppKitDatePickerView.self).first)
 
         XCTAssertEqual(picker.earliestForTesting, CalendarDate(year: 2020, month: 1, day: 1))

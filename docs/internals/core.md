@@ -124,7 +124,7 @@ turns the nodes into the patch.
 - **`Application`** and **`Scene`** (`Structure/`) are the application's
   structure, each a `body` built by `ApplicationBuilder` - its
   `Scenes` - or `SceneBuilder`;
-  `WindowGroup`, `Window`, `Windows`, `WindowType` and
+  `WindowGroup`, `Window`, `Windows`, `WindowKind` and
   `WindowError` are a scene's windows, and `Node.page` and `Node.window`,
   internal, the page a view stands on and the window around it.
   `Application.register()` names the application
@@ -152,7 +152,7 @@ turns the nodes into the patch.
 - **The binding twins**, the `Binding` form of each value modifier, stand
   beside their value forms; `Bindings/` holds the driven words of a label, the
   feeds the platform reports into a state, the described two-way form, and
-  `setValue(_:on:mode:kind:)`, which carries an application's own property.
+  `setValue(_:on:as:)`, which carries an application's own property.
   *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
 - **`View`**, **`ModifiedContent`**, **`AnyView`**, **`ViewBuilder`** and
@@ -181,7 +181,7 @@ turns the nodes into the patch.
   (`Styles/`) are resolved before the patch: a node reaches the host already
   styled. *Application*; the merge (`styled`, `DeclaredState`) is internal.
   ([Styles](../design/views/styles.md); [styles and drawing](../interface/styles-and-drawing.md))
-- **`Inspector`**, **`InspectorButton`** and **`DebugInspector`**
+- **`DebugInspector`** and **`DebugInspectorButton`**
   (`Inspector/`) show what each render costs and builds, inside the
   application, as a tree whose own views are muted. *Application*; its views
   and model are internal. ([Inspector](../design/views/inspector.md);
@@ -208,10 +208,10 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `WallClock`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
-| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `RotationUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
+| `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `RotationUpdate`, `SwipeDirection`, `SwipeDirections` | [gestures](../design/types/gestures.md) |
 | `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `ApplicationInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
-| `Controls/` | the vocabularies one control takes: `ScrollAxes`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Controls/` | the vocabularies one control takes: `ScrollAxes`, `ToolbarPosition`, `ToolbarPart`, `MarkerKind` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 | `Collections/` | what an `ItemsView` takes: `ItemsEntries`, `ItemsLayout`, `ScrollAnchor`, `SelectionMode` | [items](../design/views/items.md), [closed vocabularies](../design/types/vocabularies.md) |
 | `Files/` | `ChosenFile`, `FileType`: the files the dialogs open and save | [files](../design/core/acts.md#files) |
 | `Network/` | `HTTPRequest`, `HTTPMethod`, `HTTPResponse`: a request the platform's networking sends, and its answer | [requests](../design/core/acts.md#requests) |
@@ -296,7 +296,10 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`StateCarried`**, **`StateMode`**, **`StateKind`** and **`LaneKind`** are a
   value as the image holds it, the way it crosses at an attachment, the door
   it goes through and what its lanes are read as; a host reads them as
-  `HostStateValue`, `HostStateMode`, `HostStateKind` and `HostLaneKind`. `StateRegistration` and `StateImage` are internal.
+  `HostStateValue`, `HostStateMode`, `HostStateKind` and `HostLaneKind`. The
+  mode and the door are the host's (`@_spi(Host)`): an application's own
+  control names both at once by a **`StatePassage`**. `StateRegistration` and
+  `StateImage` are internal.
   ([A state the host carries](../design/types/README.md#a-state-the-host-carries))
 
 ### Journeys
@@ -464,7 +467,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Realization
 
-- **`Registry`**, **`Registration`**, **`ElementValues`** and **`Reports`**
+- **`Registry`**, **`Registration`**, **`ElementValues`** and **`ControlReports`**
   are a host's realization of each element contract, member by member: how
   its view is made, which members the view takes, which events it raises -
   generic over the platform's view type. *Host.*

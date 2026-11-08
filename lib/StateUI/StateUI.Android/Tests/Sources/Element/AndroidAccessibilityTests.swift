@@ -26,9 +26,9 @@ final class AndroidAccessibilityTests: XCTestCase {
                         .accessibilityLabel("Save the file")
                         .accessibilityHint("Writes it to disk")
                         .accessibilityHeading(.h2)
-                    Text("Hidden").isAccessibilityHidden(true)
-                    Text("Met").isAccessibilityHidden(false)
-                    VStack { Text("Inside") }.hidesChildrenFromAccessibility(true)
+                    Text("Hidden").accessibilityPresence(.hidden)
+                    Text("Met").accessibilityPresence(.element)
+                    VStack { Text("Inside") }.accessibilityPresence(.hiddenWithContents)
                     Text("Plain")
                 }
             }
@@ -50,7 +50,7 @@ final class AndroidAccessibilityTests: XCTestCase {
                     .accessibilityIdentifier("save")
                     .accessibilityLabel("Save the file")
                     .accessibilityHint("Writes it to disk")
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
 
             said.wrappedValue = false

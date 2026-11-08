@@ -10,10 +10,10 @@ private struct PickList: ExampleContent {
         Grid {
             HStack {
                 Button("Top")
-                    .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                    .onClicked(policy: .cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
 
                 Button("Row 500")
-                    .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                    .onClicked(policy: .cancelPrevious) { try await list.scroll(to: 500, anchor: .start) }
 
                 Button("Clear")
                     .isEnabled(!chosen.isEmpty)
@@ -41,7 +41,7 @@ private struct PickList: ExampleContent {
                 .textColor(Palette.accent)
                 .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
     // listing: end

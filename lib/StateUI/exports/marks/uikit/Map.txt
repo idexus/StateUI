@@ -1,10 +1,10 @@
-# revision 3.1
+# revision 4.1
 Map: ✅
 Map.isScrollEnabled: ✅
 Map.isZoomEnabled: ✅
+Map.kind: ✅
 Map.locationTapped: ✓ tap on Map: the view's listening handed the recognizer's states, no touch sent
 Map.moveToRegion: ✅
 Map.region: ✅
 Map.showsTraffic: ✅
 Map.showsUserLocation: ✅
-Map.type: ✅

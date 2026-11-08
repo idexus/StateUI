@@ -20,8 +20,7 @@ struct BuilderSample: SampleContent, ExampleContent {
             // the closure a flip or a pick builds again.
             DebugInfoLabel()
 
-            Switch($signedIn)
-                .text("Signed in")
+            Switch("Signed in", isOn: $signedIn)
                 .accessibilityIdentifier("builder.signedIn")
 
             // An `if` with no `else`. The TextField below it is child 2 in one

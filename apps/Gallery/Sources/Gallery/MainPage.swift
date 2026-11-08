@@ -76,7 +76,7 @@ struct MainPage: View {
         .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
-        .sidebarOverlays(nav.$menuOverlays)
+        .sidebarOverlays(into: nav.$menuOverlays)
         // Whether the bar offers the menu's button - the Split view
         // sample's switch takes it away.
         .showsSidebarToggle(nav.$showsMenuButton)
@@ -90,8 +90,7 @@ struct MainPage: View {
         // for accessibility and for bars that show words.
         .toolbar {
             ToolbarGroup {
-                ToolbarButton.inspector(window)
-                    .text("Inspector")
+                ToolbarButton.debugInspector(window, text: "Inspector")
                     .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
                 if !nav.showing(.home) {
@@ -262,7 +261,7 @@ struct MainPage: View {
                 // tab's page is the stack rather than the page inside it - so
                 // they are written on the stack.
                 .title("Stack")
-                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
             case .second:
                 SecondTabPage(nav: nav)

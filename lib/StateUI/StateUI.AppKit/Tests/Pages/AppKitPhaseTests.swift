@@ -18,7 +18,7 @@ final class AppKitPhaseTests: XCTestCase {
         let stack = PhaseStack()
         Renderer.shared.setApplication(PhaseApp(stack: stack))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.startForTesting()
 
         stack.path = [1]

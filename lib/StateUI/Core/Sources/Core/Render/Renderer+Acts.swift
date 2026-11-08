@@ -42,6 +42,12 @@ extension Renderer {
     @discardableResult
     private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) -> Int? {
         guard HandlerRun.admits("an act") else { return nil }
+        guard HostTeardown.current == nil else {
+            let reason = "the application's host is closing"
+            if let completion { completion(.failed(reason)) }
+            else { complain("\(make(nil).name) was not performed: \(reason)") }
+            return nil
+        }
 
         var id: Int?
 
@@ -85,6 +91,9 @@ extension Renderer {
     ) async throws -> [PropValue] {
         // A superseded run's act never leaves: it fails as the run's cancellation.
         guard HandlerRun.admits("an act") else { throw CancellationError() }
+        guard HostTeardown.current == nil else {
+            throw StateUIError.notPerformed(act: act, reason: "the application's host is closing")
+        }
 
         let call = WaitingCall()
         let reply = await withTaskCancellationHandler {
@@ -125,6 +134,7 @@ extension Renderer {
 
     /// Reports a handler that threw, as an ordinary act.
     func report(_ error: Error) {
+        guard HostTeardown.current == nil else { return complain(String(describing: error)) }
         send(ApplicationContract.handlerFailed, String(describing: error))
     }
 

@@ -16,12 +16,12 @@ final class WebEditMenuTests: XCTestCase {
     }
 
     func testTheEditMenuActsOnTheWordsTypedInto() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         let words = State(wrappedValue: "hello")
         let host = WebRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { TextField(words.projectedValue) }
-                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
                     .title("Notes")
             } destination: { _ in
                 Text("Note")
@@ -41,7 +41,7 @@ final class WebEditMenuTests: XCTestCase {
         try choose("Undo", host)
         settle(host) { words.wrappedValue.isEmpty }
         XCTAssertEqual(words.wrappedValue, "", "the paste undone")
-        host.leave()
+        host.finish()
     }
 
     /// The bar's More opened, its Edit menu, and the entry captioned `caption` clicked.

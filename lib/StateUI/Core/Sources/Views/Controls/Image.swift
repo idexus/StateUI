@@ -29,12 +29,12 @@ extension ImageProperties {
 ///     Image(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 ///
 /// and the picture follows the system theme.
-public struct Image: ElementView, ImageElement, ImageProperties {
+public struct Image: ElementView, ContentModeElement, ImageProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Image>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: ImageContract.self)
     }
 
@@ -44,10 +44,14 @@ public struct Image: ElementView, ImageElement, ImageProperties {
         node = Node(contract: ImageContract.self)
         node.write(ImageContract.source, source)
     }
-
 }
 
 extension Image {
+    /// Where its picture comes from.
+    func source(_ value: ImageSource) -> Modified {
+        setValue(ImageContract.source, value)
+    }
+
     /// `isAnimating` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func isAnimating(_ state: Binding<Bool>) -> Modified {

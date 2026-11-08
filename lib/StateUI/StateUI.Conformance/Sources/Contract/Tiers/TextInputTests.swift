@@ -9,24 +9,27 @@
 @_spi(Host) public enum TextInputTests: ConformanceFamily {
     public static let name = "TextInput"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(TextInputContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(TextInputContract.self).flatMap { element in
             [
-                typed(element), bounded(element), written(element), readOnly(element), closed(element),
+                typed(element), bounded(element), writtenByTheProgram(element), readOnly(element), closed(element),
                 filled(element),
                 Aspects.holds(TextInputContract.maximumLength, on: element, 10, then: 3),
-                Aspects.holds(TextInputContract.placeholder, on: element, "Name", then: "E-mail"),
+                Aspects.holds(PlaceholderElementContract.placeholder, on: element, "Name", then: "E-mail"),
                 Aspects.holds(
                     TextInputContract.placeholderColor, on: element, .red, then: .blue,
-                    with: [Write(TextInputContract.placeholder, "Name")]),
+                    with: [Write(PlaceholderElementContract.placeholder, "Name")]),
                 Aspects.holds(TextInputContract.inputPurpose, on: element, .email, then: .url),
                 Aspects.holds(TextInputContract.isReadOnly, on: element, false, then: true),
                 Aspects.holds(TextInputContract.isSpellCheckEnabled, on: element, true, then: false),
                 Aspects.holds(TextInputContract.isTextPredictionEnabled, on: element, true, then: false),
                 Aspects.holds(TextInputContract.cursorPosition, on: element, 2, then: 4,
-                              with: [Write(TextualElementContract.text, "abcdefg")]),
+                              with: [Write(TextElementContract.text, "abcdefg")]),
                 Aspects.holds(TextInputContract.selectionLength, on: element, 3, then: 1, with: [
-                    Write(TextualElementContract.text, "abcdefg"), Write(TextInputContract.cursorPosition, 2),
+                    Write(TextElementContract.text, "abcdefg"), Write(TextInputContract.cursorPosition, 2),
                 ]),
             ] + (element == "TextEditor" ? [] : [standsAsWideAsItsWords(element)])
         }
@@ -38,18 +41,18 @@
     @MainActor
     static func standsAsWideAsItsWords(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAsWideAsItsWords", proves: [
-            Covered(TextInputContract.placeholder, on: element),
+            Covered(PlaceholderElementContract.placeholder, on: element),
         ], needs: [
             Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.frameChanged, on: "Text"),
         ]) { s in
             for words in ["Search every note, folder and tag", nil] {
                 let field = Received<[Double]>(), measure = Received<[Double]>()
-                let said = words.map { [Write(TextInputContract.placeholder, $0)] as [any Worn] } ?? []
+                let said = words.map { [Write(PlaceholderElementContract.placeholder, $0)] as [any Worn] } ?? []
                 s.start {
                     VStack {
                         HStack { ViewTests.reporting(element, field, said) }
                         HStack { ViewTests.reporting("Text", measure, [
-                            Write(TextualElementContract.text, words ?? String(repeating: "0", count: 20)),
+                            Write(TextElementContract.text, words ?? String(repeating: "0", count: 20)),
                         ], id: "measure") }
                     }
                     .horizontalAlignment(.start)
@@ -69,7 +72,7 @@
     static func filled(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).inputPurpose.reachesWhatThePlatformFillsIn", proves: [
             Covered(TextInputContract.inputPurpose, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let purpose = State(wrappedValue: InputPurpose.username)
             s.start {
                 Specimens.page(element, [Write(TextInputContract.inputPurpose, purpose.wrappedValue)], beside: [
@@ -94,7 +97,7 @@
     static func readOnly(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aReadOnlyFieldKeepsItsWords", proves: [
             Covered(TextInputContract.isReadOnly, on: element),
-        ], needs: [Covered(TextualElementContract.text, on: element)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: element)]) { s in
             let words = State(wrappedValue: "kept")
             s.start { VStack { field(element, words, [Write(TextInputContract.isReadOnly, true)]) } }
             let view = try s.element("field")
@@ -102,7 +105,7 @@
             try? s.perform(.type("changed"), on: view)
             s.turn()
             s.expect(words.wrappedValue, "kept", "the state keeps its words")
-            s.expect(try s.held(TextualElementContract.text, on: view), "kept", "and so does the field")
+            s.expect(try s.held(TextElementContract.text, on: view), "kept", "and so does the field")
         }
     }
 
@@ -111,24 +114,24 @@
     static func closed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aClosedFieldStaysClosedAsItsBehaviorChanges", proves: [
             Covered(TextInputContract.isReadOnly, on: element),
-        ], needs: [Covered(VisualElementContract.isEnabled, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(EnabledElementContract.isEnabled, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "kept")
             let readOnly = State(wrappedValue: true)
             s.start {
                 VStack {
                     field(element, words, [
-                        Write(VisualElementContract.isEnabled, false),
+                        Write(EnabledElementContract.isEnabled, false),
                         Write(TextInputContract.isReadOnly, readOnly.wrappedValue),
                     ])
                     Button("Open").onClicked { readOnly.wrappedValue = false }.id("open")
                 }
             }
             let view = try s.element("field")
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false)
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false)
 
             try s.perform(.activate, on: s.element("open"))
             s.turn()
-            s.expect(try s.held(VisualElementContract.isEnabled, on: view), false, "no longer read only, still closed")
+            s.expect(try s.held(EnabledElementContract.isEnabled, on: view), false, "no longer read only, still closed")
         }
     }
 
@@ -137,7 +140,7 @@
     static func typed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).eachKeystrokeIsHeardAndStaysTyped", proves: [
             Covered(TextInputContract.textChanged, on: element),
-        ], needs: [Covered(TextualElementContract.text, on: element)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: element)]) { s in
             let words = State(wrappedValue: "")
             let heard = Received<String>()
             s.start { VStack { field(element, words, [Hear(TextInputContract.textChanged) { heard.values.append($0) }]) } }
@@ -150,7 +153,7 @@
 
             s.expect(words.wrappedValue, "Ada")
             s.expect(heard.values, ["A", "Ad", "Ada"], "each keystroke heard once")
-            s.expect(try s.held(TextualElementContract.text, on: view), "Ada")
+            s.expect(try s.held(TextElementContract.text, on: view), "Ada")
         }
     }
 
@@ -159,7 +162,7 @@
     static func bounded(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).typingStopsAtTheMaximumLength", proves: [
             Covered(TextInputContract.maximumLength, on: element),
-        ], needs: [Covered(TextualElementContract.text, on: element)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: element)]) { s in
             let words = State(wrappedValue: "")
             s.start { VStack { field(element, words, [Write(TextInputContract.maximumLength, 3)]) } }
             let view = try s.element("field")
@@ -170,21 +173,21 @@
             s.turn()
 
             s.expect(words.wrappedValue, "Ada")
-            s.expect(try s.held(TextualElementContract.text, on: view), "Ada")
+            s.expect(try s.held(TextElementContract.text, on: view), "Ada")
 
             try s.perform(.type("😀😀😀😀"), on: view)
             s.settle { words.wrappedValue == "😀😀😀" }
             s.expect(words.wrappedValue, "😀😀😀", "three characters, two units each to some platforms")
-            s.expect(try s.held(TextualElementContract.text, on: view), "😀😀😀")
+            s.expect(try s.held(TextElementContract.text, on: view), "😀😀😀")
         }
     }
 
     /// The program's words are shown, and not heard as typing.
     @MainActor
-    static func written(_ element: String) -> ConformanceCase {
+    static func writtenByTheProgram(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theProgramsWordsAreShownAndNotHeardAsTyping", proves: [
             Covered(TextInputContract.textChanged, on: element),
-        ], needs: [Covered(TextualElementContract.text, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let words = State(wrappedValue: "")
             let heard = Received<String>()
             s.start {
@@ -196,9 +199,9 @@
             let view = try s.element("field")
 
             try s.perform(.activate, on: s.element("ada"))
-            try s.settle { try s.held(TextualElementContract.text, on: view) == "Ada" }
+            try s.settle { try s.held(TextElementContract.text, on: view) == "Ada" }
 
-            s.expect(try s.held(TextualElementContract.text, on: view), "Ada")
+            s.expect(try s.held(TextElementContract.text, on: view), "Ada")
             s.turn()
             s.expect(heard.values, [])
         }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // listing: InteropEventsSample.Android.swift
@@ -12,7 +13,7 @@ enum GalleryEventSources {
     /// Declares the event the activity's watcher raises. Said once, as the library loads.
     @MainActor
     static func register() {
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
     }
 
     @MainActor private static var lastSaid: (level: Double, charging: Bool)?

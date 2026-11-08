@@ -16,4 +16,9 @@ struct ValueHandler<Value> {
     init(step: @escaping @MainActor (Value) throws -> Void) {
         self.init(run: { try step($0) }, gate: .own(.runConcurrently))
     }
+
+    /// The handler run with `value`, through the same gate.
+    @MainActor func given(_ value: Value) -> Handler {
+        Handler(run: { try await run(value) }, gate: gate)
+    }
 }

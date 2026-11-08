@@ -1,0 +1,81 @@
+# revision 2.1
+Button.pointerEntered: ✅
+Button.pointerExited: ✅
+Canvas.pointerEntered: ✅
+Canvas.pointerExited: ✅
+Capsule.pointerEntered: ✅
+Capsule.pointerExited: ✅
+CheckBox.pointerEntered: ✅
+CheckBox.pointerExited: ✅
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+DatePicker.pointerEntered: ✅
+DatePicker.pointerExited: ✅
+Ellipse.pointerEntered: ✅
+Ellipse.pointerExited: ✅
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Grid.pointerEntered: ✅
+Grid.pointerExited: ✅
+HStack.pointerEntered: ✅
+HStack.pointerExited: ✅
+Image.pointerEntered: ✅
+Image.pointerExited: ✅
+ItemsView.pointerEntered: ✅
+ItemsView.pointerExited: ✅
+Line.pointerEntered: ✅
+Line.pointerExited: ✅
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Map.pointerEntered: 🧩
+Map.pointerExited: 🧩
+MotionLayout.pointerEntered: ✅
+MotionLayout.pointerExited: ✅
+Path.pointerEntered: ✅
+Path.pointerExited: ✅
+Picker.pointerEntered: ✅
+Picker.pointerExited: ✅
+Polygon.pointerEntered: ✅
+Polygon.pointerExited: ✅
+Polyline.pointerEntered: ✅
+Polyline.pointerExited: ✅
+ProgressBar.pointerEntered: ✅
+ProgressBar.pointerExited: ✅
+Rectangle.pointerEntered: ✅
+Rectangle.pointerExited: ✅
+ScrollView.pointerEntered: ✅
+ScrollView.pointerExited: ✅
+SearchField.pointerEntered: ✅
+SearchField.pointerExited: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Slider.pointerEntered: ✅
+Slider.pointerExited: ✅
+Space.pointerEntered: ✅
+Space.pointerExited: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Stepper.pointerEntered: ✅
+Stepper.pointerExited: ✅
+Switch.pointerEntered: ✅
+Switch.pointerExited: ✅
+Text.pointerEntered: ✅
+Text.pointerExited: ✅
+TextEditor.pointerEntered: ✅
+TextEditor.pointerExited: ✅
+TextField.pointerEntered: ✅
+TextField.pointerExited: ✅
+TimePicker.pointerEntered: ✅
+TimePicker.pointerExited: ✅
+ToolbarButton.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+VStack.pointerEntered: ✅
+VStack.pointerExited: ✅
+WebView.pointerEntered: ✅
+WebView.pointerExited: ✅
+ZStack.pointerEntered: ✅
+ZStack.pointerExited: ✅

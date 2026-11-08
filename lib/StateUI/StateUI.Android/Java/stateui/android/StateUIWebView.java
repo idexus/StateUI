@@ -65,20 +65,15 @@ final class StateUIWebView extends FrameLayout {
         addView(web, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     }
 
-    /**
-     * Fetches the page at `address`, asking as `agent`. The agent is written first: written while the page
-     * loads, Android leaves the page out of the history, and there is no way back to it.
-     */
-    void load(String agent, String address) {
-        setUserAgent(agent);
+    /** Fetches the page at `address`, with the user agent already set by the Swift host. */
+    void load(String address) {
         document = null;
         lost = null;
         web.loadUrl(address);
     }
 
     /** Shows `document` at its own address, `base`, its relative links resolved against it, as `load` does. */
-    void show(String agent, String document, String base) {
-        setUserAgent(agent);
+    void show(String document, String base) {
         this.document = document;
         this.base = base;
         lost = null;
@@ -116,8 +111,14 @@ final class StateUIWebView extends FrameLayout {
         return true;
     }
 
+    /** Whether a page is present to reload, or was present when its process died. */
+    boolean canReload() {
+        return lost != null ? document != null || !lost.isEmpty() : web.getUrl() != null;
+    }
+
     /** Loads the page again - in a web view made again after its process died, the page it stood at. */
     void reload() {
+        if (!canReload()) return;
         if (lost != null) {
             showAgain();
             return;

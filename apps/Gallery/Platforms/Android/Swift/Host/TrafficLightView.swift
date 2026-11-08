@@ -3,6 +3,7 @@
 
 import Android
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // listing: InteropControlSample.Android.swift
@@ -29,7 +30,7 @@ final class TrafficLightView: AndroidControl {
 
     init() {
         number = GalleryControls.reserve()
-        view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+        view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
         Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
         GalleryControls.hold(self, as: number)
     }
@@ -59,7 +60,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }

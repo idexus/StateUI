@@ -12,12 +12,12 @@
 ///
 /// A point left unsaid is the top left corner, so `Line().to(Point(240, 0))`
 /// runs from it across.
-public struct Line: Shape, LineProperties {
+public struct Line: Shape {
     /// The node this control describes.
     public var node: Node
 
-    /// A line with nothing set - what a `Style<Line>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: LineContract.self)
     }
 
@@ -27,29 +27,28 @@ public struct Line: Shape, LineProperties {
         node.write(LineContract.from, start)
         node.write(LineContract.to, end)
     }
-}
 
-/// `Line`'s own properties, shared by the control and its `Style<Line>`.
-public protocol LineProperties: PropertyContainer {}
-
-extension LineProperties {
-    /// Where it starts.
-    public func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
-
-    /// Where it ends.
-    public func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
+    /// A line between two states' points, carried by the host as journeys: a write sends an end there under the
+    /// element's motion, and no view is rebuilt for it.
+    public init(from start: Binding<Point>, to end: Binding<Point>) {
+        self = Line().from(start).to(end)
+    }
 }
 
 extension Line {
-    /// `from` from a state, `$start`: the host animates the start to each new
-    /// point, and no view is rebuilt for it.
-    public func from(_ state: Binding<Point>) -> Modified {
+    /// Where the line starts.
+    func from(_ value: Point) -> Modified { setValue(LineContract.from, value) }
+
+    /// Where it starts, from a state carried by the host as a journey.
+    func from(_ state: Binding<Point>) -> Modified {
         twin(LineContract.from, by: state)
     }
 
-    /// `to` from a state, `$end`: the host animates the end to each new point,
-    /// and no view is rebuilt for it.
-    public func to(_ state: Binding<Point>) -> Modified {
+    /// Where the line ends.
+    func to(_ value: Point) -> Modified { setValue(LineContract.to, value) }
+
+    /// Where it ends, from a state carried by the host as a journey.
+    func to(_ state: Binding<Point>) -> Modified {
         twin(LineContract.to, by: state)
     }
 }

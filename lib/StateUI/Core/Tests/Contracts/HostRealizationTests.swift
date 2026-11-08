@@ -22,7 +22,7 @@ final class HostRealizationTests: XCTestCase {
     /// it realizes until it says otherwise.
     func testNothingIsSaidUntilTheHostSaysWhatItRealizes() {
         XCTAssertNil(HostRealizations.unrealized(ButtonContract.nodeType))
-        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.MemoryLow")))
+        XCTAssertNil(HostRealizations.unraised(KeyName("Test.MemoryLow")))
     }
 
     /// A node type the host realizes goes by without a word.
@@ -57,10 +57,10 @@ final class HostRealizationTests: XCTestCase {
     func testAnEventTheHostDoesNotRaiseIsSaidWithTheNamesItLikelyMeant() {
         HostBoundary.setRealization(Self.realization)
 
-        XCTAssertNil(HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChanged")))
+        XCTAssertNil(HostRealizations.unraised(KeyName("TestHostEvents.batteryChanged")))
         XCTAssertEqual(
-            HostRealizations.unraised(owner: KeyName("Test"), event: KeyName("Test.BatteryChangd")),
-            "the host raises no `Test.BatteryChangd` (nearest: `Test.BatteryChanged`): "
+            HostRealizations.unraised(KeyName("TestHostEvents.batteryChangd")),
+            "the host raises no `TestHostEvents.batteryChangd` (nearest: `TestHostEvents.batteryChanged`): "
                 + "the handler will not hear it.")
     }
 
@@ -69,11 +69,11 @@ final class HostRealizationTests: XCTestCase {
     func testARegistryRecordsTheApplicationsEventsItRaises() {
         let registry = Registry<Plain>()
 
-        registry.raises(TestHostEvents.batteryChanged)
+        registry.declares(TestHostEvents.batteryChanged)
         HostBoundary.setRealization(registry.realization)
 
         XCTAssertTrue(registry.realization.members.contains(
-            HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")))
+            HostRealizedMember(element: "Application", owner: "TestHostEvents", member: "batteryChanged")))
         XCTAssertTrue(HostBoundary.realizes(TestHostEvents.batteryChanged))
     }
 
@@ -94,8 +94,8 @@ final class HostRealizationTests: XCTestCase {
         let said = ContinuousClock.now - started
 
         XCTAssertLessThan(said, .milliseconds(500), "50 starts took \(said)")
-        XCTAssertTrue(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner7")))
-        XCTAssertFalse(HostRealizations.honors(KeyName("member7"), of: KeyName("Owner8")))
+        XCTAssertTrue(HostRealizations.honors(KeyName("Owner7.member7"), of: KeyName("Owner7")))
+        XCTAssertFalse(HostRealizations.honors(KeyName("Owner7.member7"), of: KeyName("Owner8")))
         HostBoundary.setRegister(nil)
     }
 
@@ -106,8 +106,8 @@ final class HostRealizationTests: XCTestCase {
         HostBoundary.setRealization(Self.realization)
         HostBoundary.setRegister(HostRegister(records: [
             .unrealized(TintElementContract.tint, on: SliderContract.self, why: "a range input takes no tint"),
-            .notPlanned(SliderContract.pressed, reason: "a range input says no press."),
-            .partial(SliderContract.value, missing: "steps"),
+            .notPlanned(PressElementContract.pressed, reason: "a range input says no press."),
+            .partial(RangeElementContract.value, missing: "steps"),
         ], unrealized: [ButtonContract.self]))
         defer { HostBoundary.setRegister(nil) }
 
@@ -115,10 +115,10 @@ final class HostRealizationTests: XCTestCase {
             HostRealizations.unhonored(TintElementContract.tint.token.key, on: SliderContract.nodeType),
             "`Slider.tint` is not realized on this host: a range input takes no tint.")
         XCTAssertEqual(
-            HostRealizations.unhonored(SliderContract.pressed.token.key, on: SliderContract.nodeType),
+            HostRealizations.unhonored(PressElementContract.pressed.token.key, on: SliderContract.nodeType),
             "`Slider.pressed` is never realized on this host: a range input says no press.")
-        XCTAssertNil(HostRealizations.unhonored(SliderContract.value.token.key, on: SliderContract.nodeType))
-        XCTAssertNil(HostRealizations.unhonored(SliderContract.maximum.token.key, on: SliderContract.nodeType),
+        XCTAssertNil(HostRealizations.unhonored(RangeElementContract.value.token.key, on: SliderContract.nodeType))
+        XCTAssertNil(HostRealizations.unhonored(RangeElementContract.maximum.token.key, on: SliderContract.nodeType),
                      "the register says nothing of it")
         XCTAssertNil(HostRealizations.unhonored(TintElementContract.tint.token.key, on: ButtonContract.nodeType),
                      "an element the host does not realize is said once, as an element")
@@ -171,7 +171,7 @@ final class HostRealizationTests: XCTestCase {
     /// A host realizing a label and a lamp, and raising one application event.
     private static let realization = HostRealization(
         elements: ["Text", "Test.Lamp"],
-        members: [HostRealizedMember(element: "Application", owner: "Test", member: "Test.BatteryChanged")])
+        members: [HostRealizedMember(element: "Application", owner: "TestHostEvents", member: "batteryChanged")])
 }
 
 /// A window whose page has a toolbar, saying nothing of its position or of the window's behavior.
@@ -187,9 +187,9 @@ private struct LeadingApp: Application {
 /// The application's events these tests name, declared the way an application
 /// declares its own.
 private enum TestHostEvents: ApplicationTier {
-    static let name = "Test"
+    static let name = "TestHostEvents"
 
-    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
+    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
     static let members: [any ContractMember] = [batteryChanged]
 }

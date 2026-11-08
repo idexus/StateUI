@@ -11,7 +11,7 @@ final class InspectorModel {
 
     /// Where each scene's inspector docks, by the scene's number - nothing
     /// for a scene whose inspector is not docked.
-    @State var places: [String: Inspector.Place] = [:]
+    @State var places: [String: DebugInspector.Place] = [:]
 
     /// The scenes whose inspector, docked along the bottom, is folded to its
     /// last render.

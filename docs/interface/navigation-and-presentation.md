@@ -156,7 +156,7 @@ On a phone - iOS and Android alike - the sidebar slides over the detail from
 the leading edge, the detail shaded behind it, and a tap on the shade closes
 it; on an iPad or a wide tablet it stands beside the detail.
 
-Where the sidebar stands is the host's to say: `.sidebarOverlays($over)`
+Where the sidebar stands is the host's to say: `.sidebarOverlays(into: $over)`
 writes into a state whether it lies over the detail now, as the platform
 places it for the room - true on a phone and in a narrow window, false
 beside the detail, changing as the window is resized or the device turned.
@@ -190,7 +190,7 @@ SplitView(sidebar: {
     MainPage()
 })
 .showsSidebar($menuOpen)
-.sidebarOverlays($menuOverlays)
+.sidebarOverlays(into: $menuOverlays)
 ```
 
 Nothing the application writes into the state reaches the host; it is the
@@ -392,7 +392,7 @@ struct FiltersButton: View {
             .onClicked { filtering = true }
             .popover(isPresented: $filtering) {
                 VStack {
-                    Switch($unreadOnly).text("Unread only")
+                    Switch("Unread only", isOn: $unreadOnly)
                     Button("Done").onClicked { filtering = false }
                 }
                 .spacing(12)
@@ -502,7 +502,7 @@ NavigationStack($settingsPath) {
     SettingsDestination(route: route)
 }
 .title("Settings")
-.icon("settings.png")
+.pageIcon("settings.png")
 ```
 
 The container's title and icon describe it when it is an item in another
@@ -565,14 +565,17 @@ VStack { … }
         ToolbarButton("Save")
             .id("save")
             .isEnabled(hasChanges)
-            .onClicked(.ignoreWhileRunning) { try await save() }
+            .onClicked(policy: .ignoreWhileRunning) { try await save() }
         ToolbarButton("Delete")
             .id("delete")
             .placement(at: .overflow)
             .role(.destructive)
-            .onClicked(.ignoreWhileRunning) { try await delete() }
+            .onClicked(policy: .ignoreWhileRunning) { try await delete() }
     }
 ```
+
+A bar's item and a menu's entry are each a `MenuItemElement`: its words, its
+`.icon`, `.isEnabled` and `.keyboardShortcut` are said the same way on both.
 
 The items are built with the body declaring them, so an item follows the state
 it reads - Save enables itself as `hasChanges` moves, with nothing written by
@@ -766,7 +769,7 @@ look. What the window shows around the bars is its own background
 Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
 how they stand: `.glass`, each on a round glass; `.plain`, no background until
 the pointer is over one; `.rounded`, a flat rounded rectangle; or the
-platform's own, `.system`, unless said - plain on the Web. It is found along
+platform's own, `.automatic`, unless said - plain on the Web. It is found along
 the path as the bar's colors are, and native bars keep their platform's
 buttons:
 
@@ -839,6 +842,10 @@ struct InboxPage: View {
     }
 }
 ```
+
+Every item on a bar is a `BarItemElement`, which says its `background`; a
+bar's button and toggle are `BarButtonElement`s: the pointer over one and a
+press on it are the states their style follows, as a button's are.
 
 ## A bar at the foot
 
@@ -962,7 +969,7 @@ VStack { … }
             MenuItem("Save")
                 .id("save")
                 .isEnabled(hasChanges)
-                .onClicked(.ignoreWhileRunning) { try await save() }
+                .onClicked(policy: .ignoreWhileRunning) { try await save() }
             Menu("Recent") {
                 recent.map { file in
                     MenuItem(file.name)
@@ -971,7 +978,7 @@ VStack { … }
                 }
             }
         }
-        .id(StandardMenu.file)
+        .joins(.file)
     }
 ```
 
@@ -982,7 +989,9 @@ an entry with the `.id` of an entry there stands in that entry's place while
 its page is shown - a window's disabled Save becomes the document page's own,
 and the window's comes back as the page goes. Other menus follow the ones
 declared further out, before the platform's Window and Help; `order` moves a
-declaration's menus and sections earlier or later, lower first.
+declaration's menus and sections earlier or later, lower first. Identities
+compare by their Hashable values: equal values join even when their descriptions
+differ, and equal descriptions do not join unequal values.
 
 ```swift
 struct Library: View { var body: some View { Text("Library") } }
@@ -1002,12 +1011,13 @@ SplitView {
             .id("save")
             .isEnabled(false)
     }
-    .id(StandardMenu.file)
+    .joins(.file)
 }
 ```
 
-The platform's own menus are joined by identity, never by caption:
-`.id(StandardMenu.file)` - `edit`, `view`, `window`, `help` - puts a menu's
+The platform's own menus are joined by `.joins(_:)`, never by caption; `.id`
+is a menu's identity among the application's own and joins none of the
+platform's. `.joins(.file)` - a `StandardMenu`: `edit`, `view`, `window`, `help` - puts a menu's
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
 own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
 ordinary menu of the application's; on GTK, a submenu of the header bar's main

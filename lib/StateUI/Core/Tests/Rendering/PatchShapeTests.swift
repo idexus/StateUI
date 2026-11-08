@@ -18,10 +18,10 @@ final class PatchShapeTests: XCTestCase {
     /// `Renderer.root`.
     private func page(count: Int, items: [String], sized: Bool = true) -> Node {
         var launched = window(count: count, items: items, sized: sized)
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         return Node(type: "Application", children: [scene])
     }
@@ -43,9 +43,9 @@ final class PatchShapeTests: XCTestCase {
 
     /// The window of that page, with the tree under it.
     private func window(count: Int, items: [String], sized: Bool = true) -> Node {
-        Node(type: "Window", props: ["title": .string("StateUI")], children: [
-            Node(type: "Page", props: ["title": .string("Counter")], children: [
-                Node(type: "VStack", props: ["spacing": .number(20)], children: [
+        Node(type: "Window", props: ["Window.title": .string("StateUI")], children: [
+            Node(type: "Page", props: ["PageElement.title": .string("Counter")], children: [
+                Node(type: "VStack", props: ["Stack.spacing": .number(20)], children: [
                     counter(count: count, sized: sized),
                     Node(type: "Button",
                          props: ["text": .string("Increment")],
@@ -69,7 +69,7 @@ final class PatchShapeTests: XCTestCase {
 
         // The page's counter, button and list, below the application: its
         // scene, the window launch opens, the page and the stack.
-        let stack: [ElementID] = [.manual("1"), .manual("window 1"), .auto(2), .auto(3)]
+        let stack: [ElementID] = [.scene("1"), .window(1), .auto(2), .auto(3)]
         let counter = stack + [.auto(4)]
         let button = stack + [.auto(5)]
         let list = stack + [.auto(6)]
@@ -133,9 +133,9 @@ final class PatchShapeTests: XCTestCase {
     func testTheWindowsLifetimeIsTheWindowsEvents() throws {
         let window = Node(
             type: "Window",
-            props: ["title": .string("StateUI")],
+            props: ["Window.title": .string("StateUI")],
             children: [
-                Node(type: "Page", props: ["title": .string("Home")], children: [
+                Node(type: "Page", props: ["PageElement.title": .string("Home")], children: [
                     Node(type: "Text", props: ["text": .string("one")]),
                 ]),
             ],
@@ -147,16 +147,16 @@ final class PatchShapeTests: XCTestCase {
         // Under the application and its scene, which is where every window
         // stands - the window launch opens, known by what the tree calls one.
         var launched = window
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         let patch = Differ().reconcile(nil, with: Node(type: "Application", children: [scene])).patch
-        let handlers = try XCTUnwrap(patch.at(.manual("1"), .manual("window 1"))?.events?.handlers)
+        let handlers = try XCTUnwrap(patch.at(.scene("1"), .window(1))?.events?.handlers)
 
         XCTAssertEqual(
-            handlers.keys.map(\.name).sorted(),
+            Set(handlers.keys),
             ["activated", "created", "deactivated", "destroying", "stopped"])
         XCTAssertEqual(Set(handlers.values).count, 5, "one handler id for each moment")
     }

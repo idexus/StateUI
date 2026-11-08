@@ -198,7 +198,7 @@ struct FilesPage: View {
 
             if files.isEmpty {
                 Image(res.emptyState)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
 
             Button(res.showReport)
@@ -254,13 +254,8 @@ struct LanguageSettings: View {
     var body: some View {
         VStack {
             Text(res.interfaceLanguage)
-            HStack {
-                Button(res.sameAsSystem)
-                    .onClicked { localization.language = .system }
-                Button("English")
-                    .onClicked { localization.language = .fixed(.english) }
-                Button("Polski")
-                    .onClicked { localization.language = .fixed(.polish) }
+            Picker([nil, AppLanguage.english, .polish], selection: localization.$language) { language in
+                language.map { $0 == .english ? "English" : "Polski" } ?? res.sameAsSystem
             }
         }
     }
@@ -292,7 +287,7 @@ extension ReportResources {
     static let english = ReportResources(
         heading: "Folder report",
         prepared: Message { day, context in
-            "Prepared on \(context.date(day, style: .long))"
+            "Prepared on \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)
@@ -309,7 +304,7 @@ extension ReportResources {
     static let polish = ReportResources(
         heading: "Raport folderu",
         prepared: Message { day, context in
-            "Sporządzono \(context.date(day, style: .long))"
+            "Sporządzono \(context.date(day, format: .long))"
         },
         fileCount: Message { count, context in
             let number = context.number(count)
@@ -329,8 +324,7 @@ extension ReportResources {
 /// The report's page: its buttons speak the interface's language, the document its own.
 struct ReportPage: View {
     @Environment private var res: FilesResources
-    @State private var report = Localization(
-        AppCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+    @State private var report = Localization(AppCatalog.self, language: .polish, formatLocale: "pl-PL")
     let files: [FileItem]
 
     var body: some View {
@@ -338,12 +332,12 @@ struct ReportPage: View {
             Text(res.reportLanguage)
             HStack {
                 Button("English").onClicked {
-                    report.language = .fixed(.english)
-                    report.formatLocale = .fixed("en-US")
+                    report.language = .english
+                    report.formatLocale = "en-US"
                 }
                 Button("Polski").onClicked {
-                    report.language = .fixed(.polish)
-                    report.formatLocale = .fixed("pl-PL")
+                    report.language = .polish
+                    report.formatLocale = "pl-PL"
                 }
             }
 
@@ -380,7 +374,7 @@ struct ReportView: View {
             ForEach(files) { file in
                 HStack {
                     Text(file.name)
-                    Text(localization.date(file.modified, style: .medium))
+                    Text(localization.date(file.modified, format: .medium))
                 }
             }
             Text(res.footer)
@@ -474,7 +468,7 @@ not to the window.
 ## A fragment in another language
 
 `report.speaking(.english)` is the same localization speaking English: its
-formats and zone follow the report's until it is given its own. It answers
+formats and zone follow the report's while its own are nil. It answers
 the same object for the same language, so a branch given it on every render
 is not built again for nothing. The pair under the report shows one
 document in two languages side by side, in two equal columns, so each wraps
@@ -514,15 +508,16 @@ enum ShopCatalog: LocalizationCatalog {
 
 @MainActor
 func written() -> [String] {
-    let localization = Localization(ShopCatalog.self, language: .fixed(.english), formatLocale: .fixed("pl-PL"))
+    let localization = Localization(ShopCatalog.self, language: .english, formatLocale: "pl-PL")
     let day = CalendarDate(year: 2026, month: 9, day: 30)
 
     return [
         localization.number(12_345.5),                      // 12 345,5
         localization.percent(0.25),                         // 25%
-        localization.date(day, style: .long),               // 30 September 2026
-        localization.date(day, style: .short),              // 30.09.2026
+        localization.date(day, format: .long),               // 30 September 2026
+        localization.date(day, format: .short),              // 30.09.2026
         localization.time(ClockTime(hour: 7, minute: 30)),  // 07:30
+        localization.time(ClockTime(hour: 7, minute: 30, second: 5), format: .medium),  // 07:30:05
         localization.list(["Ania", "Basia", "Celina"]),     // Ania, Basia, and Celina
     ]
 }
@@ -537,21 +532,28 @@ func written() -> [String] {
 
 An English sentence with Polish formats therefore says "30 September 2026"
 and writes `12 345,5`; Polish groups digits only from five up (`1234`,
-`12 345`). StateUI writes English and Polish today, with the formats of the
+`12 345`). A number with a fraction is written with up to three digits after
+the point, or exactly the `fractionDigits` asked for, nine at most, rounded
+half away from zero - and in full whatever its size, from the digits Swift
+writes for it: `1e20` is `100,000,000,000,000,000,000`. StateUI writes
+English and Polish today, with the formats of the
 United States, the United Kingdom and Poland. A language or region it does not
 write yet is said once in debug and written in English with the United
 States' formats.
 
 ## Which language is in effect
 
-Each choice of a `Localization` is a `LocaleChoice`, `.system` or `.fixed(value)`:
+Each choice of a `Localization` is optional: nil follows the system, its
+changes included, and a value holds whatever the system says. Each is a state,
+so a picker takes it by its binding - `localization.$language`, as the
+settings page above does:
 
-- `language` - with `.system`, the first of the user's languages the catalog
+- `language` - with nil, the first of the user's languages the catalog
   speaks: the same tag, then the same language in the same script (the script
   a language is written in where the tag says none: `sr` is Cyrillic), then the
   language alone where the catalog has it bare; the catalog's
   `defaultLanguage` where none matches;
-- `formatLocale` - with `.system`, the language in effect with the system's
+- `formatLocale` - with nil, the language in effect with the system's
   region and clock;
 - `timeZone` - the zone the host's zone acts are asked about,
   `resolvedTimeZone`.
@@ -576,14 +578,16 @@ Android. Where the platform has the control, it names those parts itself.
 ## What a host adds
 
 Every word and number above is worked out in Swift before anything reaches a
-host. Three things belong to the hosts and are still to come:
+host. The user's ordered languages, which `\.locale.languages` holds, every
+native host reads from its platform - the preferred languages on Apple's,
+GLib's locale names, Android's locale list, the profile's languages on
+Windows - so a localization following the system reaches the first language
+its catalog speaks. Two things belong to the hosts and are still to come:
 
 - the language of a branch's text, for a screen reader's pronunciation,
   hyphenation and the glyphs of Han characters;
 - the formats and zone of native date and time pickers, which write their own
-  months;
-- the user's ordered languages, which `\.locale.languages` holds; until a host
-  fills it, `language` and `name` stand in.
+  months.
 
 ## Related contracts
 

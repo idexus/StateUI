@@ -35,6 +35,6 @@ struct SecondTabPage: View {
             .padding(24)
         }
         .galleryPage("Second")
-        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+        .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
     }
 }

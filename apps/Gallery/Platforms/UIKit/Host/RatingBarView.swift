@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIUIKit
 import UIKit
 
@@ -146,7 +147,7 @@ extension RatingBarView {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         // listing: end
 

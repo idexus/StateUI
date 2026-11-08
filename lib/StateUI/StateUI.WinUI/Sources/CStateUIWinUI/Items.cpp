@@ -235,12 +235,14 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
         list.SelectionChanged(guarded("handling SelectionChanged",
             [view](controls::ItemsView const &sender, controls::ItemsViewSelectionChangedEventArgs const &) {
             if (cellsOf(sender)->choosing) return;
-            std::wstring joined;
+            std::vector<std::string> chosen;
             for (auto const &item : sender.SelectedItems()) {
-                if (!joined.empty()) joined += L'\n';
-                joined += identity(item);
+                chosen.push_back(winrt::to_string(identity(item)));
             }
-            callbacks.itemsChose(view, winrt::to_string(joined).c_str());
+            std::vector<char const *> identities;
+            identities.reserve(chosen.size());
+            for (auto const &name : chosen) identities.push_back(name.c_str());
+            callbacks.itemsChose(view, static_cast<int32_t>(identities.size()), identities.data());
         }));
         list.ItemInvoked(guarded("handling ItemInvoked",
             [view](controls::ItemsView const &, controls::ItemsViewItemInvokedEventArgs const &args) {
@@ -418,14 +420,20 @@ extern "C" void stateui_winui_items_release(StateUIObjectRef handle) {
     }
 }
 
-extern "C" int32_t stateui_winui_items_chosen(StateUIObjectRef handle, char *utf8, int32_t capacity) {
+extern "C" int32_t stateui_winui_items_chosen_count(StateUIObjectRef handle) {
     try {
-        std::wstring joined;
-        for (auto const &item : borrow<controls::ItemsView>(handle).SelectedItems()) {
-            if (!joined.empty()) joined += L'\n';
-            joined += identity(item);
-        }
-        auto words = winrt::to_string(joined);
+        return static_cast<int32_t>(borrow<controls::ItemsView>(handle).SelectedItems().Size());
+    } catch (...) {
+        report("counting an ItemsView's choice");
+        return 0;
+    }
+}
+
+extern "C" int32_t stateui_winui_items_chosen_at(StateUIObjectRef handle, int32_t index, char *utf8, int32_t capacity) {
+    try {
+        auto chosen = borrow<controls::ItemsView>(handle).SelectedItems();
+        if (index < 0 || static_cast<uint32_t>(index) >= chosen.Size()) return 0;
+        auto words = winrt::to_string(identity(chosen.GetAt(static_cast<uint32_t>(index))));
         if (utf8 && capacity > 0) {
             auto count = std::min<size_t>(words.size(), static_cast<size_t>(capacity - 1));
             std::memcpy(utf8, words.data(), count);

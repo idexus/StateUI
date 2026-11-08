@@ -112,7 +112,7 @@ extension AndroidDriver {
         switch property {
         case .text: return String(lines[0]).propValue
         case .isEnabled: return (lines[1] == "1").propValue
-        case .role: return (lines[2] == "1" ? ActionRole.destructive : .normal).propValue
+        case ActionElementContract.role.token: return (lines[2] == "1" ? ActionRole.destructive : .normal).propValue
         case .isOn: return (lines[4] == "1").propValue
         case .keyboardShortcut:
             guard let key = Int32(lines[5]), key != 0, let meta = Int32(lines[6]) else { return HostValue.nothing }

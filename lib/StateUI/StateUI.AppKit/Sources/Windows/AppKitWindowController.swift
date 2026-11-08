@@ -166,9 +166,9 @@ final class AppKitWindowController: NSWindowController {
         guard let window else { return nil }
 
         switch property {
-        case .width:
+        case WindowContract.width.token:
             return .number(Double(window.contentLayoutRect.width))
-        case .height:
+        case WindowContract.height.token:
             return .number(Double(window.contentLayoutRect.height))
         case .x:
             guard let area = Self.workArea(window) else { return nil }

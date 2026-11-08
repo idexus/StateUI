@@ -1,21 +1,18 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What every element showing words has: the words, and the case they are
-/// drawn in.
-public enum TextualElementContract: Contract {
+/// What every element drawing its words itself has: the case they are drawn
+/// in, their color, and the words.
+public enum TextualElementContract: Tier {
     /// The tier's name.
     public static let name = "TextualElement"
 
-    /// Words are drawn in a color and a spacing.
-    public static let tiers: [any Contract.Type] = [TextColorElementContract.self]
-
-    /// The words.
-    public static let text = ElementProperty<Self, String>("text", layer: .native)
+    /// Its words, drawn in a color.
+    public static let tiers: [any Tier.Type] = [TextColorElementContract.self, TextElementContract.self]
 
     /// Whether the words are drawn as written or in one case throughout.
     public static let textCase = ElementProperty<Self, TextCase>("textCase", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [text, textCase]
+    public static let members: [any ContractMember] = [textCase]
 }

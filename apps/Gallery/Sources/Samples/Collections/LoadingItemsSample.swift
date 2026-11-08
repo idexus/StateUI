@@ -3,17 +3,26 @@ import StateUI
 /// A list that asks for thirty more as the user nears its end.
 private struct LoadingList: ExampleContent {
     // listing: LoadingList
+    @State private var first = 0
     @State private var count = 30
+    @State private var asked = 0
     @State private var loading = false
 
     var body: some View {
         Grid {
             HStack {
                 Button("Start over")
-                    .isEnabled(count > 30)
-                    .onClicked { count = 30 }
+                    .isEnabled(first > 0 || count > 30)
+                    .onClicked {
+                        first = 0
+                        count = 30
+                        asked = 0
+                    }
 
-                Text(loading ? "Loading" : "\(count) items")
+                Button("Other items")
+                    .onClicked { first += 1000 }
+
+                Text(loading ? "Loading" : "\(count) items, asked \(asked) times")
                     .fontSize(13)
                     .textColor(Palette.accent)
                     .verticalAlignment(.center)
@@ -24,14 +33,16 @@ private struct LoadingList: ExampleContent {
             DebugInfoLabel()
                 .gridRow(0)
 
-            ItemsView(0..<count) { number in
+            ItemsView(first..<first + count) { number in
                 Text("Item \(number + 1)")
                     .fontSize(14)
                     .padding(horizontal: 14, vertical: 10)
             }
             // Within five items of the end, thirty more - one load at a time:
-            // reaching the end again while one runs lets that go.
+            // reaching the end again while one runs lets that go. Other items
+            // swaps them for as many others, and the end asks again.
             .onEndReached(within: 5, policy: .ignoreWhileRunning) {
+                asked += 1
                 guard count < 300 else { return }
 
                 loading = true
@@ -41,13 +52,13 @@ private struct LoadingList: ExampleContent {
             }
             .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(10)
     }
     // listing: end
 
     var notes: (any View)? {
-        Text("Scroll towards the end: thirty more arrive, up to three hundred.")
+        Text("Scroll towards the end: thirty more arrive, up to three hundred. Other items swaps them, and the end asks again.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

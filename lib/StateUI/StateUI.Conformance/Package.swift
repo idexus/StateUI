@@ -8,7 +8,7 @@ import PackageDescription
 // linked rather than copied.
 let package = Package(
     name: "StateUIConformance",
-    platforms: [.iOS(.v26), .macOS(.v26)],
+    platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUIConformance", targets: ["StateUIConformance"]),
     ],

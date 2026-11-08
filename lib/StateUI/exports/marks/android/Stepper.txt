@@ -1,7 +1,3 @@
-# revision 5.1
+# revision 7.1
 Stepper: ✅
-Stepper.maximum: ✅
-Stepper.minimum: ✅
 Stepper.step: ✅
-Stepper.value: ✅
-Stepper.valueChanged: ✅

@@ -67,21 +67,10 @@ public final class State<Value> {
             return storage.value
         }
         set {
-            guard storage.admitsWrite() else { return }
+            guard storage.admitsWrite(newValue) else { return }
 
             storage.write(newValue)
             storage.askForRender()
-            wakeForSave()
-        }
-    }
-
-    /// Asks the host for a turn to take the save a kept state's write recorded,
-    /// whether or not the write asked for a render.
-    /// Design: docs/design/core/state.md#kept-state
-    @usableFromInline
-    func wakeForSave() {
-        if storage.keep != nil {
-            UIThreadExecutor.shared.askForTurn()
         }
     }
 
@@ -136,15 +125,14 @@ public final class State<Value> {
 
 extension State where Value: Walked {
     /// State declared with its journey's law - how this value animates wherever it
-    /// is shown, and who animates it.
+    /// is shown.
     ///
     ///     @State(motion: .spring()) private var lift = 1.0    // a spring, wherever it is shown
     ///     @State(motion: .none) private var box = Rect.zero    // lands at once, wherever it is written
-    ///     @State(motion: .custom) private var ball = 0.0       // an engine of your own animates it
     ///
     /// The value's own law comes ahead of the element's `.motion(_:)`, the
     /// application's and the library's. It can be changed later through
-    /// `$x.journey.motion`, except `.custom`, which is settled here.
+    /// `$x.journey.motion`.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds, and where the journey starts.
@@ -153,6 +141,41 @@ extension State where Value: Walked {
         self.init(making: wrappedValue)
 
         storage.law = motion
+    }
+
+    /// State an engine of the application's animates: a write moves only where
+    /// the value is going, the host animates nothing, and the engine writes
+    /// where the value is and how fast it goes, frame by frame.
+    ///
+    ///     @State(animatedBy: .engine) private var ball = 0.0
+    ///
+    ///     Rectangle()
+    ///         .translationY($ball)
+    ///         .engine(tracking: $ball) { cycle in
+    ///             let journey = $ball.journey
+    ///             let seconds = cycle.elapsedSeconds
+    ///             // A spring towards the destination, damped by the speed.
+    ///             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 24
+    ///             journey.velocity += pull * seconds
+    ///             journey.value += journey.velocity * seconds
+    ///             let resting = abs(journey.destination - journey.value) < 0.5 && abs(journey.velocity) < 1
+    ///             guard resting else { return .again }
+    ///             journey.snap(to: journey.destination)
+    ///             return .wait
+    ///         }
+    ///
+    /// Who animates a state is settled here: the host is told at its first
+    /// crossing, and the state takes no law later.
+    ///
+    /// - Parameters:
+    ///   - wrappedValue: what the state holds, and where the journey starts.
+    ///   - owner: who animates it.
+    public convenience init(wrappedValue: @autoclosure @escaping () -> Value, animatedBy owner: AnimationOwner) {
+        self.init(making: wrappedValue)
+
+        switch owner {
+        case .engine: storage.law = .custom
+        }
     }
 }
 
@@ -311,6 +334,7 @@ extension State: StateBox {
     func adopt(from other: AnyObject) {
         guard let other = other as? State<Value>, other !== self else { return }
 
+        storage.giveUp(for: other.storage)
         storage = other.storage
     }
 }

@@ -115,13 +115,12 @@ typedef enum STATEUI_CLOSED_ENUM {
 // Swift: TextAlignment
 typedef enum { StateUITextAlignmentStart, StateUITextAlignmentCenter, StateUITextAlignmentEnd } StateUITextAlignment;
 
-/// The case typed letters are put in: as typed, the platform's own, lower, upper.
+/// The case typed letters are put in: as typed, lower, upper.
 // Swift: TextCase
 typedef enum {
-    StateUITextCaseNone,
-    StateUITextCaseDefault,
-    StateUITextCaseLowercase,
-    StateUITextCaseUppercase,
+    StateUITextCaseNone = 0,
+    StateUITextCaseLowercase = 2,
+    StateUITextCaseUppercase = 3,
 } StateUITextCase;
 
 /// How a picker shows its choices: in a menu, as segments, as radio buttons.
@@ -219,8 +218,8 @@ typedef enum {
     StateUIDrawingTranslate = 18,
     StateUIDrawingRotate = 19,
     StateUIDrawingScale = 20,
-    StateUIDrawingSaveState = 21,
-    StateUIDrawingRestoreState = 22,
+    StateUIDrawingSaveGraphics = 21,
+    StateUIDrawingRestoreGraphics = 22,
 } StateUIDrawing;
 
 /// A shape's figure: a rectangle, an ellipse, or a geometry of its own.
@@ -252,9 +251,9 @@ typedef enum STATEUI_CLOSED_ENUM {
     StateUIItemsShapeGrid,
 } StateUIItemsShape;
 
-/// A theme an element stands in: the system's, light, dark.
+/// A theme an element stands in: light or dark; 0, none, is the system's.
 // Swift: ColorScheme
-typedef enum { StateUIColorSchemeSystem, StateUIColorSchemeLight, StateUIColorSchemeDark } StateUIColorScheme;
+typedef enum { StateUIColorSchemeLight = 1, StateUIColorSchemeDark = 2 } StateUIColorScheme;
 
 /// What a question for the user is.
 typedef enum STATEUI_CLOSED_ENUM {
@@ -428,8 +427,8 @@ typedef struct {
     /// An ItemsView put the cell of the panel `cell` names aside.
     void (*itemLetGo)(int64_t view, int64_t cell);
 
-    /// The user changed an ItemsView's choice: every item chosen now, their identities joined by newlines.
-    void (*itemsChose)(int64_t view, char const *identities);
+    /// The user changed an ItemsView's choice: every identity chosen now, each string borrowed until return.
+    void (*itemsChose)(int64_t view, int32_t count, char const *const *identities);
 
     /// The user invoked an ItemsView's item.
     void (*itemInvoked)(int64_t view, char const *identity);
@@ -1164,8 +1163,11 @@ void stateui_winui_items_scroll_to(StateUIObjectRef items, int32_t index, int32_
 /// The ItemsView left: nothing waits, and every cell is let go.
 void stateui_winui_items_release(StateUIObjectRef items);
 
-/// What a test reads: the identities the list holds chosen, joined by newlines; the length it needs.
-int32_t stateui_winui_items_chosen(StateUIObjectRef items, char *utf8, int32_t capacity);
+/// What a test reads: how many identities the list holds chosen, including an empty identity.
+int32_t stateui_winui_items_chosen_count(StateUIObjectRef items);
+
+/// The chosen identity at `index`, written as UTF-8; the length it needs.
+int32_t stateui_winui_items_chosen_at(StateUIObjectRef items, int32_t index, char *utf8, int32_t capacity);
 
 /// What a test reads: how many items the user may choose, as `set_choice` numbers it.
 int32_t stateui_winui_items_mode(StateUIObjectRef items);

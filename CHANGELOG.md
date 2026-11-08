@@ -3,6 +3,88 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.2 - 2026-11-08
+
+### Breaking changes
+
+- **Apple's systems from 26.4.** StateUI runs on iOS, iPadOS, Mac Catalyst and macOS 26.4 or newer: an application's
+  manifest says `.iOS("26.4")`, `.macCatalyst("26.4")` and `.macOS("26.4")`. The Swift runtime of 26.0 to 26.2 stops
+  the process where one isolated deinit runs inside another.
+- **A control takes its purpose value once, in its initializer.** A text's words, a toggle's words and state, a
+  slider's or a stepper's value, a picker's date or time, a line's ends, a canvas's drawing and a web view's address
+  are given where the control is made; the modifiers that set them again, and a style's setters of them, are no
+  longer offered.
+- **Every kind is named a kind.** `MapType` is `MapKind`, `MarkerType` is `MarkerKind`, `WindowType` is `WindowKind`
+  and `WebNavigationType` is `WebNavigationKind`; `Map.type`, `Marker.type` and a web navigation's `type` are `kind`.
+- **Dates and times are read by a format.** `DateStyle` is `DateFormat`, and a time picker's `.format(_:)` takes a
+  `TimeFormat` - `.short` unless said. A date picker's `minimumDate` and `maximumDate` are `minimum` and `maximum`.
+- **A page's icon is `pageIcon`.** `.icon(_:)` on a view that stands as a page is `.pageIcon(_:)`; a button's
+  `icon` is its own picture.
+- **A drop is heard as it happens.** `.onDragOver`, `.onDragLeave` and `.onDrop` are `.onDragEntered`,
+  `.onDragExited` and `.onDropped`.
+- **A view's presence to accessibility is one setting.** `.isAccessibilityHidden(_:)` and
+  `.hidesChildrenFromAccessibility(_:)` are `.accessibilityPresence(_:)`: `.element`, `.hidden` or
+  `.hiddenWithContents`.
+- **The debug inspector says so.** `InspectorButton` is `DebugInspectorButton`, `Inspector.Place` is
+  `DebugInspector.Place` and `ToolbarButton.inspector` is `.debugInspector`; a window's inspector is
+  `window.debugInspector`, the place it shows in or nil, where `openInspector()`, `closeInspector()`,
+  `toggleInspector()` and `isInspectorOpen` stood.
+- **An event is written one way.** A policy is always `policy:`, after the event's own arguments, and every event is
+  heard plainly, with a policy or through a gate. `Picker.onSelectedIndexChanged` is `.onSelectionChanged`. A swipe
+  hears a `SwipeDirections` set and reports the one direction it took.
+- **Motion says what moves.** A motion layout's `.motion(_:)` for its parameters is `.parameterMotion(_:)`;
+  `.followsLayout(response:damping:)` is `.layoutBody(.followsLayout(response:damping:))`. `LayoutInput`'s
+  `pointsPerUnit:` is `lengthPerUnit:`. `Motion.custom`, `LayoutInput.Travel` and `MotionLanes` are gone.
+- **A clock reads in seconds.** `EngineCycle.now`, `.elapsed` and `.mostElapsed` are `nowSeconds`, `elapsedSeconds`
+  and `mostElapsedSeconds`. `Ticker.isRepeating` is gone: a delay is a ticker with `limit: 1`, and `$ticker.interval`
+  and `$ticker.limit` are bindings.
+- **A fact says what is; a request may be nil.** `application.info.versionString` and `buildString` are `version`
+  and `build`, `device.info.versionString` is `platformVersion`. `LocaleChoice` and `ColorScheme.system` are gone: a
+  locale choice and `application.colorScheme` are nil to follow the system. `LocaleTag.direction` and
+  `LocaleInfo.layoutDirection` are `writingDirection`, a `WritingDirection`.
+- **The platform's own choice reads automatic.** `GridLength.auto`, `GridTracks.auto`, `InputPurpose.default`,
+  `SubmitLabel.default` and `ToolbarStyle.system` are `.automatic`; `TextCase.default` is `.none`.
+- **Drawing speaks a transform's words.** `Draw.saveState()`, `.restoreState()`, `.translateBy` and `.scaleBy` are
+  `saveGraphics()`, `restoreGraphics()`, `translate` and `scale`, with `scaleX` and `scaleY`.
+- **Aims say where.** `Aim.scrollTo` is `scroll(to:anchor:)` and `Aim.moveToRegion` is `show(_:)`.
+- **A color is a background.** Every background takes a color or a brush; `Brush.solidColor` is gone.
+- **The application's surface names no host value.** Values only a host reads - a selection's mode, a corner's
+  radii, a web view's source, a kept value's kind - leave what an application writes; every view slot is a builder,
+  and every carried property takes a state.
+- **Host authors.** An element wears tiers - `RangeElement`, `PopupElement`, `PressElement`, `ToggleElement`,
+  `SubmitElement` and the others - and a member's key names its contract (`Text.maximumLines`). A state crosses to a
+  control by its `StatePassage`. A head imports StateUI by name and starts its host by the host's name; Android's
+  `Java.call` is generic over the answer it reads. The host layer fills in a range's unsaid ends, and each host's
+  module stands recorded in `lib/StateUI/exports/api/`.
+
+### New
+
+- `.accessibilityPresence(_:)`, `SwipeDirections`, `WritingDirection`, `Menu.joins(_:)` to place a menu in the
+  platform's, `ButtonRole.normal`, and the window's and session's own settings as bindings (`window.$title`,
+  `$width`, `$height`, `application.$colorScheme`, `localization.$language`).
+
+### Fixed
+
+- Identity: no key holds a NUL, a value stands in one place under one provider, a rebuilt element's key stands once
+  on its walk, and a host's tokens stand apart from an author's ids.
+- Lists: a list shows the header it was last given, an item's value stands once, the end is told again as items come
+  or go, and a collection's handlers run in the order written.
+- Handlers: each composed handler has a gate of its own, a handler no longer written ends its runs, a run superseded
+  in its first step is cancelled, and an aimed act begins on the control standing then.
+- Text and locale: a language tag is read as BCP 47 writes it, every host tells the user's languages in order, a
+  year or a number of any size round-trips through its text, and typed words are counted as they stand.
+- Input: what began on a view ends as it is disabled, a gesture taken away stays away to its end, and on the Mac
+  input meets a view where it is drawn and a flattened view takes none.
+- Hosts: the keyboard is found in a sheet over a stack, a hidden element says nothing of its own, a drawing's pixels
+  keep no view that left, an arc of any angle is drawn at once, a web view reloads its current source, and on WinUI
+  a list's rows and a popover draw no line along their top.
+
+### Tooling
+
+- The test window acts as its user can and waits for the work an act began; a closed test window leaves no work
+  behind.
+- The VS Code extension, the scripts and the manifests name one floor, which `ToolchainTests` holds.
+
 ## 0.8.1 - 2026-11-02
 
 ### Breaking changes

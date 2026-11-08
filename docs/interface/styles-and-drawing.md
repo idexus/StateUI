@@ -132,7 +132,9 @@ of its role's style.
 
 A picker's presentation chooses one the same way: `Style<Picker>(presentation:)`
 is the style every picker of that presentation wears - a picker saying none is
-a menu - over the implicit picker style.
+a menu - over the implicit picker style. The presentation is the picker's
+own, said where it is written, as a role is a button's: a style is chosen by
+it and gives none.
 
 ```swift
 @MainActor
@@ -326,6 +328,12 @@ Switch($isOn)
 
 Normal's values show only while no other state the control declares holds.
 
+A state follows what the control shows. A control is disabled while its own
+`isEnabled` says so, or that of any view holding it - a form disabled while it
+saves puts every control in it in its disabled look - and on or off as its
+bound state says, a value written beside the binding standing only where no
+state is bound.
+
 Leaving a state gives the control its own values back. A state's values are
 ordinary property changes: they move under the control's `.motion(_:)` like
 any other value, and `.motion(.none)` makes them change at once.
@@ -372,8 +380,8 @@ let wash = Brush.linearGradient(
         GradientStop(.cornflowerBlue, 0),
         GradientStop(.indigo, 1),
     ],
-    startPoint: Point(0, 0),
-    endPoint: Point(1, 1))
+    from: Point(0, 0),
+    to: Point(1, 1))
 
 VStack {
     Text("Gradient")
@@ -417,10 +425,10 @@ or glass cut to the figure, `Capsule().fill(.blur(.thin))` - or a state;
 Rectangle()
     .fill(.linearGradient(
         [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
-        startPoint: Point(0, 0),
-        endPoint: Point(1, 0)))
+        from: Point(0, 0),
+        to: Point(1, 0)))
     .cornerRadius(14)
-    .stroke(.solidColor(.white))
+    .stroke(.white)
     .lineWidth(2)
     .height(80)
 ```
@@ -492,8 +500,8 @@ Canvas {
 
 Commands execute in order. The color commands, `lineWidth`, `fontSize`,
 `opacity` and the transform commands (`translateBy`, `rotate(by:)`,
-`scaleBy`) change the state used by later drawing commands. `saveState` and
-`restoreState` bound temporary transform or paint changes.
+`scaleBy`) change the state used by later drawing commands. `saveGraphics` and
+`restoreGraphics` bound temporary transform or paint changes.
 
 A canvas hears a press as every view does, in its own points - the ones its
 drawing uses: `onPointerPressed`, the pan's `at` as the press moves

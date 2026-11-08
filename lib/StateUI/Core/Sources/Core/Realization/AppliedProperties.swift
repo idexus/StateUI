@@ -6,18 +6,18 @@
 
 /// Properties a host's view takes together - one property of a contract, or
 /// a list of them hosts share. No type of an application's own is one.
-public protocol AppliedProperties {
+@_spi(Host) public protocol AppliedProperties {
     /// The properties, in their order.
     @_spi(Host) var applied: PropertyList { get }
 }
 
-extension AppliedProperties {
+@_spi(Host) extension AppliedProperties {
     /// What leaves a type of an application's own out.
     @available(*, unavailable, message: "a view takes the properties of a contract, one by one or in a list")
     @_spi(Host) public var applied: PropertyList { PropertyList() }
 }
 
-extension ElementProperty: AppliedProperties {
+@_spi(Host) extension ElementProperty: AppliedProperties where Owner: WornContract {
     /// The property, alone.
     @_spi(Host) public var applied: PropertyList { PropertyList(self) }
 }

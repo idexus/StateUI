@@ -62,7 +62,7 @@ enum Styled {
     /// The style for a bar's item `Target`, on a background of steel blue.
     static func onSteelBlue<Target: StyleTarget & BarItemElement>(_ target: Target.Type) -> [AnyStyle] {
         StyleBuilder.buildExpression(
-            Style(StyleKey<Target>(key(Target.nodeType.name))).setValue(BarItemElementContract.background, Material.color(.steelBlue)))
+            Style(StyleKey<Target>(key(Target.nodeType.name))).setValue(BackgroundElementContract.background, Material.color(.steelBlue)))
     }
 
     /// The style for `Target`, dimming it to half its opacity.

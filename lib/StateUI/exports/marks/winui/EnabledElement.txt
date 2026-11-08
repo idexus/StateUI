@@ -1,0 +1,44 @@
+# revision 1.1
+Button.isEnabled: ✅
+Canvas.isEnabled: does not apply - read isEnabled of Canvas - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Capsule.isEnabled: ✅
+CheckBox.isEnabled: ✅
+ColorPicker.isEnabled: ✅
+DatePicker.isEnabled: ✅
+Ellipse.isEnabled: ✅
+Fill.isEnabled: ✅
+Grid.isEnabled: ✅
+HStack.isEnabled: ✅
+Image.isEnabled: ✅
+ItemsView.isEnabled: ✅
+Line.isEnabled: ✅
+Link.isEnabled: ✅
+Map.isEnabled: 🧩
+Menu.isEnabled: ✅
+MenuItem.isEnabled: ✅
+MenuToggle.isEnabled: ✅
+MotionLayout.isEnabled: ✅
+Path.isEnabled: ✅
+Picker.isEnabled: ✅
+Polygon.isEnabled: ✅
+Polyline.isEnabled: ✅
+ProgressBar.isEnabled: ✅
+Rectangle.isEnabled: ✅
+ScrollView.isEnabled: ✅
+SearchField.isEnabled: ✅
+Separator.isEnabled: does not apply - read isEnabled of Separator - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
+Slider.isEnabled: ✅
+Space.isEnabled: ✅
+Spinner.isEnabled: ✅
+Stepper.isEnabled: ✅
+Switch.isEnabled: ✅
+Text.isEnabled: ✅
+TextEditor.isEnabled: ✅
+TextField.isEnabled: ✅
+TimePicker.isEnabled: ✅
+ToolbarButton.isEnabled: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarToggle.isEnabled: ✅
+VStack.isEnabled: ✅
+WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
+ZStack.isEnabled: ✅

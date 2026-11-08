@@ -21,7 +21,7 @@
     static func held(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
             Covered(ButtonMenuElementContract.menuKind, on: element),
-        ], needs: [clicking(element), Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+        ], needs: [clicking(element), Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
             let heard = Received<String>()
             s.start {
                 MenuButtons.standing(
@@ -45,7 +45,7 @@
     static func arrow(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aMenusArrowShowsAsTheTreeSays", proves: [
             Covered(ButtonMenuElementContract.showsMenuArrow, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let shows = State(wrappedValue: true)
             s.start {
                 MenuButtons.standing(
@@ -64,7 +64,7 @@
 
     /// What clicking a button of `element`'s kind is heard as.
     static func clicking(_ element: String) -> Covered {
-        element == "ToolbarButton" ? Covered(ActionElementContract.clicked, on: element) : Covered(ButtonContract.clicked)
+        element == "ToolbarButton" ? Covered(ClickElementContract.clicked, on: element) : Covered(ClickElementContract.clicked, on: ButtonContract.self)
     }
 }
 

@@ -39,7 +39,7 @@ extension UIKitElement {
     var chrome: UIKitPageChrome {
         if type == .tabView {
             var chrome = element.selectedTab?.visiblePage?.uiKit.chrome ?? UIKitPageChrome()
-            chrome.title = element.titledPage?.value(.title)?.string ?? ""
+            chrome.title = element.titledPage?.value(PageElementContract.title.token)?.string ?? ""
             chrome.showsTitle = element.titledPage?.value(.showsTitle)?.bool != false
             return chrome
         }
@@ -153,7 +153,7 @@ extension UIKitElement {
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
                 arranged.compactMap { tab in
-                    tab.controller.map { ($0, tab.value(.title)?.string ?? "", HostPicture(tab.value(.icon))) }
+                    tab.controller.map { ($0, tab.value(PageElementContract.title.token)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }

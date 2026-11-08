@@ -49,7 +49,7 @@ private struct PlacePage: View {
             Text(over ? "Over" : "Beside")
         }
         .showsSidebar($menu)
-        .sidebarOverlays($over)
+        .sidebarOverlays(into: $over)
     }
 }
 

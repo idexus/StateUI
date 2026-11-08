@@ -184,8 +184,9 @@ final class AndroidActToolkit: ActToolkit {
 
     /// Shows the application in `theme` as its own night mode, which every activity takes: the system keeps it from
     /// Android 12, the host before.
-    func useColorScheme(_ theme: ColorScheme) {
-        Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme.rawValue))
+    func useColorScheme(_ theme: ColorScheme?) {
+        // The relay takes the theme's number, 0 for the system's.
+        Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme?.rawValue ?? 0))
     }
 
     /// Keeps the theme's accent, set before the activity starts - from Android 12 the user's.

@@ -13,7 +13,7 @@ public enum TabViewContract: ElementContract {
 
     /// Tabs have a bar, are shown as a page with a title and an icon, and
     /// automation finds them by their name.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         BarElementContract.self, PageElementContract.self, AutomationElementContract.self,
     ]
 

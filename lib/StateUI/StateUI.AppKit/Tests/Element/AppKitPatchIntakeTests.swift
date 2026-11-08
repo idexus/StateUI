@@ -25,7 +25,7 @@ final class AppKitPatchIntakeTests: XCTestCase {
     @MainActor
     func testADriftedMessageIsRecoveredWithACompleteRender() throws {
         let renderer = AppKitRenderer.running { Counter() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
         XCTAssertEqual(label.textForTesting.string, "0")
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIUIKit
 import UIKit
 import os
@@ -12,7 +13,7 @@ import os
 /// `GalleryContract` declares each name with what it takes and answers - see
 /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
 /// performs them. An act aimed at a control is its view's, registered beside
-/// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+/// it: `RatingBarView.register()` performs `flash`. `GalleryContract.nobody` is registered nowhere on purpose: the
 /// "Calling UIKit" sample calls it to show what a missing registration does.
 enum GalleryActs {
     /// Registers every act this host performs. Said once, before the

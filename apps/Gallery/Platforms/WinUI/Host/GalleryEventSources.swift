@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 // listing: InteropEventsSample.WinUI.swift
@@ -16,7 +17,7 @@ enum GalleryEventSources {
     @MainActor
     static func start() {
         // A handler listening for an event nothing declared is told, once, that it will not hear it.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
 
         // The gallery's relay asks Windows for each change of the battery's charge and of the power source
         // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.

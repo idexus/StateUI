@@ -163,13 +163,11 @@ extension Node {
         /// The scene this view is, where it is one (SceneRecord.swift).
         let scene: SceneRecord?
 
-        /// Fills every slot with the nearest provided object of its type; a slot nobody
-        /// provided for is left for its read to report.
+        /// Fills every slot with the nearest provided object of its type, or with nothing: a slot nobody provides
+        /// for keeps no provider from an earlier walk, and its read reports it.
         func resolve(from scope: [(key: ObjectIdentifier, object: AnyObject)]) {
             for slot in slots {
-                if let found = scope.last(where: { $0.key == slot.wants }) {
-                    slot.fill(found.object)
-                }
+                slot.fill(scope.last(where: { $0.key == slot.wants })?.object)
             }
         }
 

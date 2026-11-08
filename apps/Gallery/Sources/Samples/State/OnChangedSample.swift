@@ -85,8 +85,7 @@ private struct ChangesAcrossBranches: ExampleContent {
 
     var body: some View {
         VStack {
-            Switch($signedIn)
-                .text("Signed in")
+            Switch("Signed in", isOn: $signedIn)
                 .accessibilityIdentifier("onChanged.signedIn")
 
             // Written on the group holding the `if/else`: it watches whichever

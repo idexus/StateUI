@@ -225,7 +225,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession(OwnKey.window(kind: nil, serial: 1))
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
 
         runtime.windowStateChanged(element, minimized: true, activated: false)
@@ -275,7 +275,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         runtime.connectWindow()
         runtime.pump.turn()
         defer { HostBoundary.setApplicationPhase(.active) }
-        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
+        let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession(OwnKey.window(kind: nil, serial: 1))
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
         runtime.windowStateChanged(element, minimized: false, activated: true)
         runtime.settlePhases()
@@ -306,7 +306,7 @@ final class ApplicationLifecycleTests: XCTestCase {
     private static func window(_ name: String, kind: String? = nil, _ properties: [Prop: HostValue] = [:]) -> HostPatch {
         var window = HostPatch(id: .manual(name), type: .window)
         window.properties = properties
-        if let kind { window.properties[.windowType] = .name(kind) }
+        if let kind { window.properties[.windowKind] = .name(kind) }
         return window
     }
 
@@ -315,7 +315,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         try XCTUnwrap(runtime.tree.root?.first(id: .manual(scene))?.first(id: .manual(name)))
     }
 
-    /// What was told, as "scene event" and "scene/window event".
+    /// What was told, as "scene event" and "scene/window event", each event by its own name.
     private static func names(_ told: [ApplicationLifecycle.Told]) -> [String] {
         told.map { each in
             let name = { (element: MountedElement?) in
@@ -324,7 +324,7 @@ final class ApplicationLifecycleTests: XCTestCase {
             }
             let scene = each.element.enclosing(type: .scene)
             let path = each.element.type == .scene ? name(scene) : "\(name(scene))/\(name(each.element))"
-            return "\(path) \(each.event.name)"
+            return "\(path) \(each.event.memberName)"
         }
     }
 }

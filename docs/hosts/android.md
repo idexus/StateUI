@@ -57,6 +57,7 @@ which also says what it answers for the application:
 ```swift listing android.md.head
 // Platforms/Android/Swift/GalleryAndroid.swift
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
@@ -70,7 +71,7 @@ public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMu
         GalleryActs.register()
         GalleryEventSources.register()
     }
-    return StateUIAndroid.load(machine)
+    return AndroidHost.load(machine)
 }
 ```
 
@@ -99,7 +100,7 @@ is debugged as soon as it is made.
 
 An application extends the host from its Android head. Registrations run in
 `JNI_OnLoad`, on the UI thread - the main actor's - before
-`StateUIAndroid.load`. Registering a contract or an act again replaces the
+`AndroidHost.load`. Registering a contract or an act again replaces the
 earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's Android halves are in
@@ -110,14 +111,14 @@ of its own and must see them. The Gallery's Android halves are in
 A control of the application's own is an object holding the Android view it
 shows, an `AndroidControl`. The view is a class of the application's own
 Java, made from Swift through `Java` - the host's JNI, the same calls it
-makes itself - with the activity, `StateUIAndroid.context`, and held as a
+makes itself - with the activity, `AndroidHost.context`, and held as a
 `JavaObject`. `StateUIControls.add` says which contract it realizes:
 
 ```swift quote
 public static func add<Realized: ElementContract, Made: AndroidControl>(
     _ contract: Realized.Type,
-    create: @escaping (AndroidReports<Realized>) -> Made,
-    members: (AndroidRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (AndroidRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
@@ -126,7 +127,7 @@ public static func add<Realized: ElementContract, Made: AndroidControl>(
   a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the control raises.
+  described, and `declares(_:)` records an event the control raises.
 
 ```swift listing android.md.control
 // Platforms/Android/Swift/Host/TrafficLightView.swift
@@ -143,7 +144,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -183,7 +184,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -193,7 +194,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is an
-`AndroidChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 view of its own. The Gallery's Google map draws its markers so:
@@ -202,15 +203,15 @@ view of its own. The Gallery's Google map draws its markers so:
 // Platforms/Android/Swift/Host/GoogleMapView.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.type) { control, type in control.show(type) }
+    map.property(MapContract.kind) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
     map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-    map.raises(MapContract.locationTapped)
+    map.declares(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)
@@ -264,6 +265,16 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 }
 ```
 
+A head calls its Java half through `Java`: `Java.call` and `Java.callStatic`
+read the answer as the type the call stands for - `let width: Int32 =
+Java.call(view, method)` - an `int`, a `long`, a `boolean`, a `float`, a
+`double` or an object, each a `JavaResult` - and one standing as a statement
+answers nothing.
+`Java.frame` lets go of the local references the calls inside it make.
+`Java.env` and `Java.jni` are the main thread's environment and its function
+table, for what the calls do not cover; a call through them is the head's
+own, on the main thread, its exceptions its own to clear.
+
 A performer runs on the UI thread, and may await, the call answered once it
 returns. Its arguments and answer are the act's own types; a call carrying
 anything else fails with the reason. A thrown error fails the act, and so does
@@ -272,7 +283,7 @@ an aim at nothing; an act nobody registered is refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.declares` declares it before the host
 starts, so a handler listening for one no source raises is told so. Its
 source is often Android's own - the Gallery's activity registers a receiver
 for the battery while it lives:
@@ -282,7 +293,7 @@ for the battery while it lives:
 /// Declares the event the activity's watcher raises. Said once, as the library loads.
 @MainActor
 static func register() {
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 }
 
 @MainActor private static var lastSaid: (level: Double, charging: Bool)?

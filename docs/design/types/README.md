@@ -58,7 +58,7 @@ the member its contract declares, and the differ carries it to the host.
   PropValue                           .color(81, 43, 212, 255)   .numbers([24, 24, 24, 24])
                                       .enumeration(4)            .numbers([2026, 8, 2])
        |
-       |  setValue(TextContract.lineBreak, .tailTruncation)
+       |  setValue(LineBreakElementContract.lineBreak, .tailTruncation)
        |  a modifier writes through its member
        v
   Node.props   [Prop: PropValue]      what the element says this render
@@ -100,7 +100,7 @@ numbers back as the types `ApplicationContract.currentTime` declares.
 | --- | --- | --- |
 | `.string` | text an author wrote | captions, placeholders, picture file names, path data, formats |
 | `.name` | a word from an open vocabulary | `Name`: font families, kept keys; a style key is resolved in the core |
-| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection`, `SafeAreaEdges` |
+| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirections`, `SafeAreaEdges` |
 | `.number` | one number | `Double`, `Int`, a uniform `CornerRadius` |
 | `.bool` | true or false | `Bool` |
 | `.numbers` | a run of numbers in a stated order | `Insets`, `Rect`, `Point`, a list of points, `CalendarDate`, `ClockTime` |

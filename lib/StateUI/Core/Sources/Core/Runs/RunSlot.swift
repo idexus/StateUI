@@ -6,10 +6,11 @@
 @MainActor
 final class RunSlot {
     /// One run the slot took: under way, or waiting for its turn while `turn` is set.
-    private final class Entry {
+    @MainActor private final class Entry {
         let run = HandlerRun()
         let owner: ObjectIdentifier
         var task: Task<Void, Never>?
+        var teardown: HostTeardown?
         var turn: CheckedContinuation<Bool, Never>?
 
         init(owner: ObjectIdentifier) { self.owner = owner }
@@ -17,8 +18,17 @@ final class RunSlot {
 
     private var entries: [Entry] = []
 
-    /// How many runs of every slot are under way or wait: what a test waits on, and the tally's `runs`.
-    private(set) static var underWay = 0
+    /// The runs of every slot under way or waiting: each one's origin, by its number.
+    private static var standing: [Int: Int] = [:]
+
+    /// How many runs of every slot are under way or wait: the tally's `runs`.
+    static var underWay: Int { standing.count }
+
+    /// How many runs under way or waiting descend from a run begun after `mark` - a count `HandlerRun.begun` gave:
+    /// what a test waits on after an act, what a run begun before the mark began left out.
+    static func underWay(since mark: Int) -> Int {
+        standing.values.count { $0 > mark }
+    }
 
     /// Told whether a run is under way or waits, as that changes.
     var busyChanged: ((Bool) -> Void)?
@@ -33,6 +43,7 @@ final class RunSlot {
     func start(
         _ handler: @escaping EventHandler, _ policy: GatePolicy, payload: [PropValue]?, owner: RunOwner
     ) -> Task<Void, Never> {
+        guard owner.isCurrent else { return Task.immediate {} }
         owner.started(in: self)
         let entry = Entry(owner: ObjectIdentifier(owner))
         let run = entry.run
@@ -64,12 +75,24 @@ final class RunSlot {
         }
 
         entry.task = task
+        HostTeardown.record(task)
+        entry.teardown?.follow(task)
+        entry.teardown = nil
+        // Superseded in its first step, before the task was in hand: cancelled as it comes to hand.
+        if run.superseded { task.cancel() }
         return task
     }
 
     /// `owner`'s runs are superseded and its waiting ones end unrun; the other owners' stand.
     func orphan(_ owner: RunOwner) {
         let leaving = ObjectIdentifier(owner)
+        for entry in entries where entry.owner == leaving {
+            if let task = entry.task {
+                HostTeardown.record(task)
+            } else if entry.teardown == nil, let ending = HostTeardown.current, ending.reserve() {
+                entry.teardown = ending
+            }
+        }
         supersede { $0 == leaving }
         dropWaiting { $0.owner == leaving }
     }
@@ -103,7 +126,7 @@ final class RunSlot {
 
     private func take(_ entry: Entry) {
         entries.append(entry)
-        RunSlot.underWay += 1
+        RunSlot.standing[entry.run.number] = entry.run.origin
         busy = true
     }
 
@@ -111,7 +134,7 @@ final class RunSlot {
     private func dropWaiting(where chosen: (Entry) -> Bool) {
         let dropped = entries.filter { $0.turn != nil && chosen($0) }
         entries.removeAll { entry in dropped.contains { $0 === entry } }
-        RunSlot.underWay -= dropped.count
+        for entry in dropped { RunSlot.standing.removeValue(forKey: entry.run.number) }
         for entry in dropped {
             let turn = entry.turn
             entry.turn = nil
@@ -129,7 +152,7 @@ final class RunSlot {
 
     private func finished(_ entry: Entry) {
         entries.removeAll { $0 === entry }
-        RunSlot.underWay -= 1
+        RunSlot.standing.removeValue(forKey: entry.run.number)
 
         if !entries.contains(where: { $0.turn == nil }), let next = entries.first {
             let turn = next.turn
@@ -148,6 +171,8 @@ final class RunSlot {
 final class RunOwner {
     private var slots: [RunSlot] = []
 
+    private(set) var isCurrent = true
+
     /// The runs of a handler whose gate is a policy alone, each handler its own.
     private(set) lazy var ownRuns = RunSlot()
 
@@ -158,6 +183,8 @@ final class RunOwner {
 
     /// Every run this owner started is superseded, in the order its slots were first used.
     func orphan() {
+        guard isCurrent else { return }
+        isCurrent = false
         for slot in slots { slot.orphan(self) }
         slots.removeAll()
     }

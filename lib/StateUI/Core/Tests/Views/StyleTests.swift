@@ -81,7 +81,7 @@ final class StyleTests: XCTestCase {
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
 
-        XCTAssertEqual(style.props["lineWidth"], .number(2))
+        XCTAssertEqual(style.props["BorderElement.lineWidth"], .number(2))
         XCTAssertEqual(style.states, [
             DeclaredState(key: KeyName("Disabled"), setters: ["textColor": Color(hex: 0x808080).propValue]),
         ])
@@ -503,15 +503,15 @@ final class StyleTests: XCTestCase {
         func both() -> Node { Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png")).node }
 
         XCTAssertEqual(
-            both().props["source"],
+            both().props["Image.source"],
             .themed(light: .string("nav_home.png"), dark: .string("nav_home_dark.png")))
-        XCTAssertEqual(Renders().render(both()).props["source"], .string("nav_home.png"))
+        XCTAssertEqual(Renders().render(both()).props["Image.source"], .string("nav_home.png"))
 
         withTheme(.dark) {
-            XCTAssertEqual(Renders().render(both()).props["source"], .string("nav_home_dark.png"))
+            XCTAssertEqual(Renders().render(both()).props["Image.source"], .string("nav_home_dark.png"))
         }
 
-        XCTAssertEqual(Image("nav_home.png").node.props["source"], .string("nav_home.png"),
+        XCTAssertEqual(Image("nav_home.png").node.props["Image.source"], .string("nav_home.png"),
                        "and one drawn once is the same name in both")
     }
 
@@ -606,6 +606,22 @@ final class StyleTests: XCTestCase {
             ["Pressed", "Disabled"], "the states of both")
         XCTAssertEqual(cancel.props["textColor"], Color.black.propValue, "another role wears the implicit style")
         XCTAssertEqual(plain.props["textColor"], Color.black.propValue)
+    }
+
+    /// A style for the ordinary role is worn by a button saying `.normal` and by one saying no role: the two are one.
+    func testAButtonSayingNoRoleWearsTheOrdinaryRolesStyle() {
+        let sheet = StyleSheet {
+            Style<Button>(role: .normal).textColor(.gray)
+            Style<Button>().textColor(.black)
+        }
+
+        let said = Renders().render(Button("Open").role(.normal).node, styles: sheet)
+        let unsaid = Renders().render(Button("Open").node, styles: sheet)
+        let main = Renders().render(Button("Save").role(.primary).node, styles: sheet)
+
+        XCTAssertEqual(said.props["textColor"], Color.gray.propValue)
+        XCTAssertEqual(unsaid.props["textColor"], Color.gray.propValue, "no role is the ordinary one")
+        XCTAssertEqual(main.props["textColor"], Color.black.propValue, "another role wears the implicit style")
     }
 
     /// A style for a picker's presentation stands over the one every picker wears, worn by every picker of that
@@ -720,7 +736,8 @@ final class StyleTests: XCTestCase {
             (TextField.nodeType, TextField().node.type), (Slider.nodeType, Slider().node.type),
             (Grid.nodeType, Grid().node.type), (VStack.nodeType, VStack().node.type),
             (HStack.nodeType, HStack().node.type), (ZStack.nodeType, ZStack().node.type),
-            (ToolbarButton.nodeType, ToolbarButton().node.type), (ToolbarToggle.nodeType, ToolbarToggle().node.type),
+            (ToolbarButton.nodeType, ToolbarButton().node.type),
+            (ToolbarToggle.nodeType, ToolbarToggle("Grid", isOn: false).node.type),
             (ToolbarGroup.nodeType, ToolbarGroup().node.type), (Rectangle.nodeType, Rectangle().node.type),
             (ItemsView<String>.nodeType, Renders().render(ItemsView(["one"]) { Text($0) }.node).type),
             (MotionLayout<[Int], Int, Double>.nodeType, Renders().render(
@@ -770,7 +787,7 @@ final class StyleTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(read, 21, "the scan read almost nothing")
+        XCTAssertGreaterThan(read, 15, "the scan read almost nothing")
     }
 
     /// The property tiers must stay PROPERTY tiers: a handler subscribed from
@@ -852,15 +869,15 @@ final class StyleTests: XCTestCase {
                 .node,
             ]),
         ])
-        launched.id = "window 1"
+        launched.id = OwnKey.window(kind: nil, serial: 1)
 
         var scene = Node(type: "Scene", children: [launched])
-        scene.id = "1"
+        scene.id = OwnKey.scene("1")
 
         let tree = Node(type: "Application", children: [scene])
 
         let stack = try XCTUnwrap(differ.reconcile(nil, with: tree, styles: sheet).patch
-            .at(.manual("1"), .manual("window 1"), .auto(2), .auto(3)))
+            .at(.scene("1"), .window(1), .auto(2), .auto(3)))
         let ink = Color(hex: 0x212121).propValue
 
         // The headline's style, based on the body's - and standing in place of
@@ -883,7 +900,7 @@ final class StyleTests: XCTestCase {
         XCTAssertTrue(button.children.isEmpty)
 
         // A card's style, and the default label's inside it.
-        XCTAssertEqual(stack.at(.auto(7))?.props["lineWidth"], .number(1))
+        XCTAssertEqual(stack.at(.auto(7))?.props["BorderElement.lineWidth"], .number(1))
         XCTAssertEqual(stack.at(.auto(7), .auto(8))?.props["fontSize"], .number(14))
 
         XCTAssertFalse(

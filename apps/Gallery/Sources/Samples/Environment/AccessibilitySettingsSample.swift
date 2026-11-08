@@ -33,7 +33,7 @@ struct AccessibilitySettingsSample: SampleContent, ExampleContent {
             Rectangle()
                 .fill(settings.prefersHigherContrast ? Palette.accent : Palette.outline)
                 .height(settings.prefersHigherContrast ? 3 : 1)
-                .isAccessibilityHidden(true)
+                .accessibilityPresence(.hidden)
         }
         .spacing(10)
     }

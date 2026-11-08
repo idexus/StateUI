@@ -62,8 +62,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             }
 
             row("4 · a converted text") {
-                Text()
-                    .text($value.convert { percent($0) })
+                Text($value.convert { percent($0) })
                     .fontSize(15)
                 DebugInfoLabel()
             }
@@ -242,8 +241,7 @@ private struct Pulsed: View {
                 Text("1 · a state by binding")
                     .fontSize(11)
                     .textColor(Palette.subtle)
-                Text()
-                    .text($said)
+                Text($said)
                     .fontSize(15)
                 DebugInfoLabel()
             }

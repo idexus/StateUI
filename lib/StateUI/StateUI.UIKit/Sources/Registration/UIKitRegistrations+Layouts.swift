@@ -85,28 +85,28 @@ extension UIKitRegistrations {
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
             scroll.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 // A scroller cuts what it shows to its bounds; a shape cuts it to the shape.
                 view.setBox(
-                    background: values[VisualElementContract.background]?.propValue,
+                    background: values[BackgroundElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     width: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: true)
             }
-            scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.declares(ScrollViewContract.scrollStopped)
             scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
                 view.refresh.apply(values)
             }
-            scroll.raises(RefreshElementContract.refreshRequested)
+            scroll.declares(RefreshElementContract.refreshRequested)
         }
     }
 
 
     private static func applyBox<Realized: ElementContract>(_ view: UIKitLayoutView, _ values: ElementValues<Realized>) {
         view.setBox(
-            background: values[VisualElementContract.background]?.propValue,
+            background: values[BackgroundElementContract.background]?.propValue,
             stroke: values[BorderElementContract.stroke]?.propValue,
             width: values[BorderElementContract.lineWidth],
             shape: values[BorderElementContract.shape]?.propValue,

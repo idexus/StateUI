@@ -32,7 +32,7 @@ private struct KeptApplication: Application {
 private struct KeptScene: Scene {
     var body: some Scene {
         WindowGroup { Text("launch") }
-        WindowGroup(WindowType<Int>("uikit.kept.note")) { number in KeptNote(number: number.wrappedValue) }
+        WindowGroup(WindowKind<Int>("uikit.kept.note")) { number in KeptNote(number: number.wrappedValue) }
     }
 }
 
@@ -150,7 +150,7 @@ final class UIKitRendererTests: XCTestCase {
         host.connect(scene)
 
         let (element, controller) = try XCTUnwrap(host.roster.windows.first)
-        XCTAssertEqual(host.roster.windows.map(\.0.id), [.manual("uikit.kept.note 1")])
+        XCTAssertEqual(host.roster.windows.map(\.0.id), [.window(1, kind: "uikit.kept.note")])
         XCTAssertTrue(controller.window?.windowScene === scene)
         XCTAssertEqual(element.first(type: .text)?.value(.text)?.string, "note 7, section 2")
         XCTAssertEqual(Self.record(in: scene)?.kind, "uikit.kept.note")
@@ -177,7 +177,7 @@ final class UIKitRendererTests: XCTestCase {
 
         host.connect(scene)
 
-        XCTAssertEqual(host.roster.windows.map(\.0.id), [.manual("window 1")])
+        XCTAssertEqual(host.roster.windows.map(\.0.id), [.window(1)])
         XCTAssertTrue(host.roster.windows.first?.1.window?.windowScene === scene)
         XCTAssertNil(Self.record(in: scene)?.kind)
     }

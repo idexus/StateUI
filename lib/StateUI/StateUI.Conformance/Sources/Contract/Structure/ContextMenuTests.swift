@@ -14,10 +14,10 @@
             ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", proves: [
                 Covered(ContextMenuContract.self),
             ], needs: [
-                Covered(MenuContract.text),
+                Covered(TextElementContract.text, on: MenuContract.self),
                 Covered(MenuSeparatorContract.self),
-                Covered(MenuItemElementContract.text, on: "MenuItem"),
-                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
+                Covered(TextElementContract.text, on: "MenuItem"),
+                Covered(EnabledElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
 
@@ -26,8 +26,8 @@
             ConformanceCase("theMenuFollowsTheStatesItsEntriesRead", proves: [
                 Covered(ContextMenuContract.self),
             ], needs: [
-                Covered(MenuItemElementContract.isEnabled, on: "MenuItem"),
-                Covered(ButtonContract.clicked),
+                Covered(EnabledElementContract.isEnabled, on: "MenuItem"),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
                 let row = try s.element("row")
@@ -42,7 +42,7 @@
             },
             ConformanceCase("aMenuWithNoEntriesIsNone", proves: [
                 Covered(ContextMenuContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let entries = State(wrappedValue: ["Open"])
                 s.start {
                     VStack {

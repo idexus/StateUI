@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -11,8 +11,6 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.verticalAlignment: ✅
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
@@ -20,13 +18,13 @@ Capsule.tapped: ✅
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-CheckBox.swipeDirection: ✅
+CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ColorPicker.frameChanged: ✅
 ColorPicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ColorPicker.margin: ✅
@@ -54,8 +52,6 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.verticalAlignment: ✅
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
@@ -63,7 +59,7 @@ Image.tapped: ✅
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-ItemsView.swipeDirection: ✅
+ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 Line.area: ✅
@@ -82,8 +78,6 @@ Map.pinchUpdated: 🧩
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
 MotionLayout.tapCount: ✅
 MotionLayout.tapped: ✅
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
@@ -91,13 +85,13 @@ Path.tapped: ✅
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Picker.swipeDirection: ✅
+Picker.swipeDirections: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polygon.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polygon.frameChanged: ✅
 Polygon.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Polygon.margin: ✅
@@ -134,8 +128,6 @@ Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.verticalAlignment: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
@@ -143,7 +135,7 @@ Slider.tapped: ✅
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
-Space.swipeDirection: ✅
+Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
@@ -152,9 +144,9 @@ Spinner.dragText: ✓ dragAndDrop on Spinner: the relay's drag reports told by t
 Spinner.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Spinner.isDraggable: ✓ dragAndDrop on Spinner: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Stepper.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Stepper.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Stepper.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Stepper.frameChanged: ✅
 Stepper.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Stepper.margin: ✅
@@ -162,9 +154,9 @@ Switch.rotationUpdated: ✓ rotate on Switch: the relay's report of the manipula
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Text.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Text.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Text.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Text.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Text.frameChanged: ✅
 Text.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Text.margin: ✅
@@ -189,8 +181,6 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.verticalAlignment: ✅
-WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
@@ -198,6 +188,6 @@ WebView.tapped: – WebView2 gives the user's hand to its page: listened to by W
 ZStack.frameChanged: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
-ZStack.swipeDirection: ✅
+ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

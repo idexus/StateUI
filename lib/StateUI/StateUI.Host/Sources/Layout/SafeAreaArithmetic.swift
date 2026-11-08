@@ -93,13 +93,13 @@
 extension MountedElement {
     /// The edges this layout runs under what stands over its page on, as the tree says; none where it says nothing.
     public var ignoresSafeArea: SafeAreaEdges {
-        value(.ignoresSafeArea).flatMap(SafeAreaEdges.init(propValue:)) ?? .none
+        value(.ignoresSafeArea).flatMap(SafeAreaEdges.init(propValue:)) ?? []
     }
 
     /// The edges a room's content runs under the bars on - a page's, a popover's: its own content's, which is the
     /// room's one child.
     public var contentIgnoresSafeArea: SafeAreaEdges {
-        isRoom ? arrangedChildren.first?.ignoresSafeArea ?? .none : ignoresSafeArea
+        isRoom ? arrangedChildren.first?.ignoresSafeArea ?? [] : ignoresSafeArea
     }
 
     /// The scroller a room's content is, or the one it holds alone, layout in layout - a ScrollView, or an ItemsView,

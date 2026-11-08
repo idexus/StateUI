@@ -66,7 +66,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                 // high or fast, it flies off and the app closes - the others
                 // close up, the card in front staying in front.
                 .itemDrag(begins: .perpendicular)
-                .onItemDismissed(.up, beyond: 120) { name in close(name) }
+                .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
             }
             .gridRow(0)
             .clipsContent(true)
@@ -78,7 +78,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
         .rowSpacing(10)
     }
 
@@ -162,7 +162,7 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
                     .clipsContent(true)
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             .rowSpacing(8)
             .engine(following: turn) { _ in
                 named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)

@@ -60,7 +60,7 @@
             },
             ConformanceCase("anOffsetTheTreeWritesMovesItWithinReach", proves: [
                 Covered(ScrollViewContract.scrollOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let offset = State(wrappedValue: Point(0, 0))
                 s.start(reducesMotion: true) {
                     VStack {

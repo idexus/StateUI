@@ -17,58 +17,56 @@ android TextAlignmentElement 2
 appkit TextInput 3
 android TextInput 2
 ToolbarButton 6
-ToolbarToggle 2
-ToolbarGroup 9
+ToolbarToggle 3
+ToolbarGroup 10
 TitleView 3
-MenuBar 3
+MenuBar 4
 MenuItem 4
-Window 10
-Scene 3
+Window 13
+Scene 4
 Overlay 5
 BarElement 15
 NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 9
+Button 14
 ButtonMenu 2
 appkit Button 2
 uikit Button 2
 winui Button 3
-MenuItemElement 6
 FontElement 5
-winui MenuItemElement 2
 winui PageElement 2
-DatePicker 5
-TimePicker 4
-Picker 4
+DatePicker 6
+TimePicker 6
+Picker 6
 Image 3
 Page 9
-PageElement 4
-View 21
-VisualElement 24
-Shape 5
+PageElement 6
+View 23
+VisualElement 28
+Shape 6
 BorderElement 14
-TextInput 8
+TextInput 9
 Application 14
-TextSpan 4
+TextSpan 5
 Separator 4
 Canvas 4
 Rectangle 3
-Stepper 5
-KeyboardElement 6
+Stepper 7
+KeyboardElement 7
 LineHeightElement 2
 TextAlignmentElement 2
-Text 4
+Text 5
 TextColorElement 4
 TintElement 3
 ContextMenu 3
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
-TextField 5
-SearchField 5
-Polyline 3
+TextField 6
+SearchField 6
+Polyline 4
 FilledShape 3
 AutomationElement 8
 Layout 3
@@ -76,29 +74,38 @@ PaddingElement 3
 MotionLayout 16
 FocusElement 5
 ScrollView 5
-Slider 3
-Switch 3
+Slider 5
+Switch 4
 Spinner 2
 Capsule 2
-CheckBox 2
+CheckBox 3
 Ellipse 2
 Grid 2
 HStack 5
 ItemsView 5
 Line 3
-Map 3
+Map 4
 Path 2
-Polygon 2
+Polygon 3
 ProgressBar 3
 TabView 2
 VStack 3
-WebView 3
+WebView 4
 ZStack 2
-Popover 5
-TextualElement 2
-Link 2
+Popover 6
+TextualElement 3
+Link 3
 TextAndIconElement 2
 BottomBar 5
 appkit MotionLayout 2
 gtk MotionLayout 2
 web MotionLayout 2
+Marker 2
+MenuToggle 2
+Sheet 2
+ActionElement 2
+Menu 3
+ToolbarLabel 3
+ContentModeElement 2
+RangeElement 2
+HoverElement 2

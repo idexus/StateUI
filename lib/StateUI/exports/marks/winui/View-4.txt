@@ -1,8 +1,8 @@
-# revision 21.1
+# revision 23.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Button.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Button.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Button.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.frameChanged: ✅
 Button.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Button.margin: ✅
@@ -30,8 +30,6 @@ DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.verticalAlignment: ✅
-Ellipse.pointerEntered: ✅
-Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
@@ -39,13 +37,13 @@ Ellipse.tapped: ✅
 Fill.frameChanged: ✅
 Fill.gridColumn: ✅
 Fill.gridRow: ✅
-Fill.swipeDirection: ✅
+Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Grid.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Grid.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Grid.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Grid.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Grid.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Grid.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Grid.frameChanged: ✅
 Grid.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Grid.margin: ✅
@@ -61,8 +59,6 @@ ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the relay's drag reports t
 ItemsView.dragText: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 ItemsView.isDraggable: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
-Line.pointerEntered: ✅
-Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
@@ -70,13 +66,13 @@ Line.tapped: ✅
 Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridRow: ✅
-Link.swipeDirection: ✅
+Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Map.allowsDrop: 🧩
-Map.dragLeave: 🧩
-Map.dragOver: 🧩
-Map.drop: 🧩
+Map.dragEntered: 🧩
+Map.dragExited: 🧩
+Map.dropped: 🧩
 Map.frameChanged: 🧩
 Map.holdDuration: 🧩
 Map.margin: 🧩
@@ -109,8 +105,6 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.verticalAlignment: ✅
-ProgressBar.pointerEntered: ✅
-ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
@@ -118,13 +112,13 @@ ProgressBar.tapped: ✅
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
-Rectangle.swipeDirection: ✅
+Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.frameChanged: ✅
 ScrollView.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ScrollView.margin: ✅
@@ -146,7 +140,7 @@ Space.isDraggable: ✓ dragAndDrop on Space: the relay's drag reports told by th
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅
 Spinner.gridRow: ✅
-Spinner.swipeDirection: ✅
+Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Stepper.frameChanged: ✅
@@ -165,8 +159,6 @@ Text.frameChanged: ✅
 Text.gridColumnSpan: ✅
 Text.gridRowSpan: ✅
 Text.pinchUpdated: ✓ pinch on Text: the relay's report of the manipulation handed to the host, no touch sent
-TextEditor.pointerEntered: ✅
-TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
@@ -174,13 +166,13 @@ TextEditor.tapped: ✅
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridRow: ✅
-TextField.swipeDirection: ✅
+TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-TimePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+TimePicker.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.frameChanged: ✅
 TimePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 TimePicker.margin: ✅

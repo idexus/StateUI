@@ -258,7 +258,8 @@ same; only the animation is shortened or removed.
 
 ## Custom engines
 
-`Motion.custom` gives the walk to StateUI code. An engine runs inside the host
+A state declared `@State(animatedBy: .engine)` gives the walk to StateUI
+code. An engine runs inside the host
 display cycle and reads and writes state. An engine declared with
 `.engine(tracking:)` answers `.again` while it needs another frame, or `.wait`
 until a tracked state is written; one declared with `.engine(following:)` runs
@@ -267,7 +268,7 @@ writes came - and once after each render that describes its view.
 
 ```swift
 struct FallingDot: View {
-    @State(motion: .custom) private var y = 0.0
+    @State(animatedBy: .engine) private var y = 0.0
 
     var body: some View {
         VStack {
@@ -276,7 +277,7 @@ struct FallingDot: View {
                 .translationY($y)
                 .engine(tracking: $y) { cycle in
                     let journey = $y.journey
-                    let elapsed = cycle.elapsed / 1000
+                    let elapsed = cycle.elapsedSeconds
                     let pull = (journey.destination - journey.value) * 180
                     journey.velocity += (pull - journey.velocity * 24) * elapsed
                     journey.value += journey.velocity * elapsed
@@ -311,7 +312,7 @@ Application -> Scene -> windows -> a view
 
 Each structural protocol has one composition property. A window shows a view,
 which stands on a page - an arrangement is the page itself - and says what
-that page is by modifier: its values with `.title`, `.icon`,
+that page is by modifier: its values with `.title`, `.pageIcon`,
 `.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`
 and `.backButtonTitle`; its phases with `.onAppearing`, `.onDisappearing`,
 `.onNavigatedTo`, `.onNavigatingFrom` and `.onNavigatedFrom`; and what stands
@@ -344,7 +345,7 @@ a scene of its own - and a scene's body its windows.
 `WindowGroup { MainPage() }`, one in the application, is what launch and
 *File ▸ New Window* make a window of; `WindowGroup(.kind)` makes as many
 windows of a kind as are opened, `Window(.kind)` one, and
-`WindowGroup(.kind, for:)` one per value. Each scene stands at most once, from
+`WindowGroup(.kind) { $value in … }` one per value. Each scene stands at most once, from
 its first window to its last, and its windows share its `@State`; no window is
 a main one. `application.openWindow(.kind)` opens a window in the scene
 declaring the kind, which opens with it where it does not stand

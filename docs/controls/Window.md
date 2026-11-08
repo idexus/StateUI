@@ -24,7 +24,7 @@ struct MainPage: View {
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits nothing: every member below is its own.
+Inherits: [BackgroundElement](tiers/BackgroundElement.md) · [SessionElement](tiers/SessionElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -44,12 +44,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (21)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>14 ✅ · 1 ☑️ · 5 ✓</td><td><code>NSWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 3 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 3 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>13 ✅ · 1 ☑️ · 6 ✓</td><td><code>NSWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 8 –</td><td><code>UIWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 12 –</td><td><code>Activity</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>20 ✅ · 1 ☑️</td><td><code>Window</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 6 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 3 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>7 ✅ · 2 ☑️ · 5 ✓ · 7 –</td><td><code>AdwApplicationWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅ · 1 ☑️ · 4 ✓ · 14 –</td><td>fixed <code>&lt;div&gt;</code> over the browser window</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContract.swift`.
@@ -58,12 +58,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContrac
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">AppKit: A window's glass is drawn as the blur as clear as it is.<br>UIKit: iPadOS draws an application's window opaque: a blur or glass shows its color.<br>Android Views: An activity is opaque by the theme it starts in: a blur or glass shows its color.<br>WinUI 3: WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.<br>GTK 4: only through the host's own: read background of Window: the class of the host's style sheet the widget wears: GTK reads back no background<br>Web: A page draws its window opaque: a blur or glass shows its color.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>created</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>destroying</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: close on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: close on Window: the host told the activity's phase, no activity moved<br>Web: only through the host's own: close on Window: the notice the browser gives as it leaves the page, told by the driver: a page closes no tab</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>floatsOnTop</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✓</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
@@ -84,17 +79,39 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Structure/WindowContrac
 <tr><td colspan="9">UIKit: not realized<br>Android Views: Android bounds an activity's window itself: an activity sets it no bound at run time.<br>Web: A page bounds no browser window: the user sizes it.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>minimumWidth</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center"></td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: not realized<br>Android Views: Android bounds an activity's window itself: an activity sets it no bound at run time.<br>Web: A page bounds no browser window: the user sizes it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: minimize on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>width</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.<br>Android Views: Android sizes an activity's window itself - the user drags its edge: an activity asks for no size.<br>Web: A page sizes no browser window: the user does, and the page fills it.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>windowType</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: read windowType of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowType of Window: the scenes the host keeps for the next start<br>Web: A page is one window: it opens none of a kind.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>windowKind</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: read windowKind of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowKind of Window: the scenes the host keeps for the next start<br>Web: A page is one window: it opens none of a kind.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>windowValue</code></td><td>property</td><td><code>String</code></td><td>structure</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read windowValue of Window: the host's restoration record<br>UIKit, Android Views: not realized<br>GTK 4: only through the host's own: read windowValue of Window: the scenes the host keeps for the next start<br>Web: A page is one window: it opens none for a value.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>x</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: iPadOS places its windows itself: a UIKit scene asks for no place.<br>Android Views: Android places an activity's window itself: an activity asks for no place.<br>GTK 4: GNOME places its windows itself: GTK 4 asks no place of the desktop.<br>Web: A page places no browser window: the system does.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>y</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td></tr>
 <tr><td colspan="9">UIKit: iPadOS places its windows itself: a UIKit scene asks for no place.<br>Android Views: Android places an activity's window itself: an activity asks for no place.<br>GTK 4: GNOME places its windows itself: GTK 4 asks no place of the desktop.<br>Web: A page places no browser window: the system does.</td></tr></tbody>
+</table>
+
+## From [BackgroundElement](tiers/BackgroundElement.md)
+
+What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">AppKit: A window's glass is drawn as the blur as clear as it is.<br>UIKit: iPadOS draws an application's window opaque: a blur or glass shows its color.<br>Android Views: An activity is opaque by the theme it starts in: a blur or glass shows its color.<br>WinUI 3: WinUI has no glass: a window of glass shows the desktop acrylic at the glass's fallback thickness.<br>GTK 4: GNOME draws its windows opaque: a blur or glass shows its color.<br>Web: A page draws its window opaque: a blur or glass shows its color.</td></tr></tbody>
+</table>
+
+## From [SessionElement](tiers/SessionElement.md)
+
+What a scene and a window report of the user's attention: coming to the front, leaving it, going out of sight.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>activated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>deactivated</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: switchAway on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: switchAway on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: switchAway on Window: the host told the activity's phase, no activity moved<br>GTK 4: only through the host's own: switchAway on Window: the notice GTK's window would give, told by the driver: a desktop moves no window a test shows<br>Web: only through the host's own: switchAway on Window: the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>stopped</code></td><td>event</td><td></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✓</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: minimize on Window: the notification AppKit would post, posted by the driver; the window does not move<br>UIKit: only through the host's own: minimize on Window: the host told the scene's phase, no scene moved<br>Android Views: only through the host's own: minimize on Window: the host told the activity's phase, no activity moved<br>GTK 4: A Wayland desktop tells no window it was minimized, nor brought back.<br>Web: only through the host's own: minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab</td></tr></tbody>
 </table>

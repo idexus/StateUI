@@ -84,7 +84,7 @@ extension Bool: LaneValue {
     public static var lanes: Int { 1 }
 
     /// A Boolean.
-    public static var laneKind: LaneKind { .boolean }
+    public static var laneKind: LaneKind { .bool }
 }
 
 extension Point: LaneValue {
@@ -180,11 +180,11 @@ extension Color: LaneValue {
 
 extension String: StateValue {
     /// Its own bytes.
-    public var carried: StateCarried { .text(self) }
+    public var carried: StateCarried { .string(self) }
 
     /// The text, where that is what the image held.
     public init?(carried: StateCarried) {
-        guard case .text(let text) = carried else { return nil }
+        guard case .string(let text) = carried else { return nil }
 
         self = text
     }

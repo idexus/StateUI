@@ -1,0 +1,5 @@
+# revision 1.1
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the popup window dismissed as a touch beside it dismisses it, no touch sent
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

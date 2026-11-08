@@ -29,7 +29,7 @@ struct ReportView: View {
             ForEach(recent) { file in
                 VStack {
                     Text(file.name)
-                    Text(localization.date(file.modified, style: .medium))
+                    Text(localization.date(file.modified, format: .medium))
                         .textColor(Palette.subtle)
                 }
             }

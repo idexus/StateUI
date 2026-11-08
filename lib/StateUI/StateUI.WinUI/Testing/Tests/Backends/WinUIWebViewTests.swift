@@ -22,7 +22,7 @@ final class WinUIWebViewTests: XCTestCase {
     func testADocumentWrittenInPlaceStandsAtItsOwnAddress() throws {
         try onUIThread {
             let (host, said) = try Self.asking(
-                { WebView().source(html: "<p>Based</p>", baseAddress: "https://example.invalid/dir/") },
+                { WebView(html: "<p>Based</p>", baseAddress: "https://example.invalid/dir/") },
                 "document.body.innerText + ' ' + new URL('next', document.baseURI).href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/dir/next"])
             _ = host
@@ -34,7 +34,7 @@ final class WinUIWebViewTests: XCTestCase {
     func testADocumentAtAnAddressOfNoPathStandsThere() throws {
         try onUIThread {
             let (host, said) = try Self.asking(
-                { WebView().source(html: "<p>Based</p>", baseAddress: "https://Example.invalid") },
+                { WebView(html: "<p>Based</p>", baseAddress: "https://Example.invalid") },
                 "document.body.innerText + ' ' + location.href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/"])
             _ = host
@@ -51,11 +51,11 @@ final class WinUIWebViewTests: XCTestCase {
             let said = Received<String>()
             let host = WinUIRenderer.running {
                 VStack {
-                    WebView().source(html: second.wrappedValue ? "<p>Second</p>" : "<p>First</p>").aim(web)
+                    WebView(html: second.wrappedValue ? "<p>Second</p>" : "<p>First</p>").aim(web)
                         .onNavigated { arrived.values.append("\($0.result)") }
                         .height(200)
-                    Button("Back").onClicked(.ignoreWhileRunning) { try await web.goBack() }.id("back")
-                    Button("Ask").onClicked(.ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("document.body.innerText")) }
+                    Button("Back").onClicked(policy: .ignoreWhileRunning) { try await web.goBack() }.id("back")
+                    Button("Ask").onClicked(policy: .ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("document.body.innerText")) }
                 }
             }
             Self.wait(host) { arrived.values.count == 1 }
@@ -78,7 +78,7 @@ final class WinUIWebViewTests: XCTestCase {
             let arrived = Received<Bool>()
             let host = WinUIRenderer.running {
                 VStack {
-                    let web = WebView().source(html: "<p>First</p>").onNavigated { _ in arrived.values.append(true) }
+                    let web = WebView(html: "<p>First</p>").onNavigated { _ in arrived.values.append(true) }
                     (named.wrappedValue.map { web.userAgent($0) } ?? web).height(200)
                 }
             }
@@ -100,7 +100,7 @@ final class WinUIWebViewTests: XCTestCase {
             let named = State(wrappedValue: "First agent")
             let arrived = Received<Bool>()
             let host = WinUIRenderer.running {
-                WebView().source(html: "<p>First</p>").userAgent(named.wrappedValue)
+                WebView(html: "<p>First</p>").userAgent(named.wrappedValue)
                     .onNavigated { _ in arrived.values.append(true) }.height(200)
             }
             let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
@@ -122,7 +122,7 @@ final class WinUIWebViewTests: XCTestCase {
             defer { _ = _putenv("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER=") }
             let arrived = Received<WebNavigationResult>()
             let host = WinUIRenderer.running {
-                WebView().source(html: "<p>First</p>").onNavigated { arrived.values.append($0.result) }.height(200)
+                WebView(html: "<p>First</p>").onNavigated { arrived.values.append($0.result) }.height(200)
             }
             Self.wait(host) { !arrived.values.isEmpty }
             XCTAssertEqual(arrived.values, [.failure])
@@ -136,7 +136,7 @@ final class WinUIWebViewTests: XCTestCase {
             let words = State(wrappedValue: "First")
             let arrived = Received<Bool>()
             let host = WinUIRenderer.running {
-                WebView().source(html: "<p>\(words.wrappedValue)</p>").onNavigated { _ in arrived.values.append(true) }
+                WebView(html: "<p>\(words.wrappedValue)</p>").onNavigated { _ in arrived.values.append(true) }
                     .height(200)
             }
             let web = try XCTUnwrap(host.views(WinUIHostedView<WinUIWebView>.self).first?.control)
@@ -156,7 +156,7 @@ final class WinUIWebViewTests: XCTestCase {
             let arrived = Received<Bool>()
             let host = WinUIRenderer.running {
                 VStack {
-                    WebView().source(html: "<p>First</p>").onTapped {}.onPointerEntered {}
+                    WebView(html: "<p>First</p>").onTapped {}.onPointerEntered {}
                         .onNavigated { _ in arrived.values.append(true) }.height(200)
                 }
             }
@@ -175,7 +175,7 @@ final class WinUIWebViewTests: XCTestCase {
         let host = WinUIRenderer.running {
             VStack {
                 web().aim(aim).onNavigated { _ in arrived.values.append(true) }.height(200)
-                Button("Ask").onClicked(.ignoreWhileRunning) { said.values.append(try await aim.evaluateJavaScript(script)) }
+                Button("Ask").onClicked(policy: .ignoreWhileRunning) { said.values.append(try await aim.evaluateJavaScript(script)) }
             }
         }
         wait(host) { !arrived.values.isEmpty }

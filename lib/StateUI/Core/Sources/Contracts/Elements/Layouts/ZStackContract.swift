@@ -10,7 +10,7 @@ public enum ZStackContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// It is a layout; the area each child stands in is the child's own.
-    public static let tiers: [any Contract.Type] = [LayoutContract.self]
+    public static let tiers: [any Tier.Type] = [LayoutContract.self]
 
     /// The element's own members.
     public static let members: [any ContractMember] = []

@@ -11,21 +11,21 @@ extension WinUIRegistrations {
         registry.add(DatePickerContract.self, create: { reports in
             let picker = WinUIDatePickerView()
             picker.onChosen = { date in reports.report(DatePickerContract.date, date, as: DatePickerContract.dateChanged) }
-            picker.onOpened = { reports.raise(DatePickerContract.opened) }
-            picker.onClosed = { reports.raise(DatePickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
             picker.property(DatePickerContract.date) { view, date in view.setDate(date) }
-            picker.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate) { view, values in
-                view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
+            picker.applies(DatePickerContract.minimum, DatePickerContract.maximum) { view, values in
+                view.setRange(earliest: values[DatePickerContract.minimum], latest: values[DatePickerContract.maximum])
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }
-            picker.property(DatePickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(DatePickerContract.dateChanged)
-            picker.raises(DatePickerContract.opened)
-            picker.raises(DatePickerContract.closed)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(DatePickerContract.dateChanged)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
         registry.add(TimePickerContract.self, create: { reports in
             let picker = WinUITimePickerView()
@@ -35,8 +35,8 @@ extension WinUIRegistrations {
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(TimePickerContract.format) { _, _ in }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(TimePickerContract.timeChanged)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(TimePickerContract.timeChanged)
         })
     }
 }

@@ -11,11 +11,14 @@
 @_spi(Host) public enum PageElementTests: ConformanceFamily {
     public static let name = "PageElement"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(PageElementContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         Specimens.wearing(PageElementContract.self).flatMap { element in
             [
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
-                inTab(PageElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
+                inTab(IconElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
             ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)]) + [linked(element)]
         } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial]
     }
@@ -45,12 +48,12 @@
     @MainActor
     static func groundsItsPages(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.groundsItsPagesThatSayNone", proves: [
-            Covered(PageElementContract.background, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(BackgroundElementContract.background, on: element),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(.steelBlue), Material.color(.firebrick))
             let value = State(wrappedValue: first)
             s.start {
-                Presented.page(element, PageElementContract.background, value.wrappedValue, beside: [
+                Presented.page(element, BackgroundElementContract.background, value.wrappedValue, beside: [
                     Button("Change").onClicked { value.wrappedValue = second }.id("change"),
                 ])
             }
@@ -60,24 +63,24 @@
                 }
                 return page
             }
-            try s.settle { try s.held(PageElementContract.background, on: page()) == first }
-            s.expect(try s.held(PageElementContract.background, on: page()), first, "the ground the tree gave")
+            try s.settle { try s.held(BackgroundElementContract.background, on: page()) == first }
+            s.expect(try s.held(BackgroundElementContract.background, on: page()), first, "the ground the tree gave")
 
             try s.perform(.activate, on: s.element("change"))
-            try s.settle { try s.held(PageElementContract.background, on: page()) == second }
-            s.expect(try s.held(PageElementContract.background, on: page()), second, "the ground the tree changed it to")
+            try s.settle { try s.held(BackgroundElementContract.background, on: page()) == second }
+            s.expect(try s.held(BackgroundElementContract.background, on: page()), second, "the ground the tree changed it to")
         }
     }
 
     /// `member` of `element`, presented as a tabbed view's first tab, holds what the tree gives it and what the tree
     /// changes it to.
     @MainActor
-    static func inTab<Value: HostRepresentable & Sendable & Equatable>(
-        _ member: ElementProperty<PageElementContract, Value>, of element: String, _ first: Value, then second: Value
+    static func inTab<Owner: WornContract, Value: HostRepresentable & Sendable & Equatable>(
+        _ member: ElementProperty<Owner, Value>, of element: String, _ first: Value, then second: Value
     ) -> ConformanceCase {
         ConformanceCase("\(element).\(member.name).standsOnItsTab", proves: [
             Covered(member, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: first)
             s.start {
                 TabView([0, 1]) { tab in
@@ -108,8 +111,8 @@
     @MainActor
     static var groundHolds: ConformanceCase {
         ConformanceCase("Page.background.holdsWhatItsViewSaysAndChanges", proves: [
-            Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(BackgroundElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Material.color(.red))
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -118,7 +121,7 @@
                     Saying(value: value, second: .color(.blue)) { $0.pageBackground($1) }
                 }
             }
-            try PageTests.held(PageElementContract.background, .color(.red), then: .color(.blue), s)
+            try PageTests.held(BackgroundElementContract.background, .color(.red), then: .color(.blue), s)
         }
     }
 
@@ -127,8 +130,8 @@
     @MainActor
     static var groundFollowsColor: ConformanceCase {
         ConformanceCase("Page.background.followsItsState", proves: [
-            Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(BackgroundElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let value = State(wrappedValue: Color.red)
             s.start {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -137,7 +140,7 @@
                     PageTests.changing(value, to: .blue).pageBackground(value.projectedValue)
                 }
             }
-            try PageTests.held(PageElementContract.background, .color(.red), then: .color(.blue), s)
+            try PageTests.held(BackgroundElementContract.background, .color(.red), then: .color(.blue), s)
         }
     }
 
@@ -145,8 +148,8 @@
     @MainActor
     static var followsAMaterial: ConformanceCase {
         ConformanceCase("Page.background.followsAMaterialState", proves: [
-            Covered(PageElementContract.background, on: PageContract.self),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+            Covered(BackgroundElementContract.background, on: PageContract.self),
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
@@ -156,7 +159,7 @@
                     PageTests.changing(value, to: second).pageBackground(value.projectedValue)
                 }
             }
-            try PageTests.held(PageElementContract.background, first, then: second, s)
+            try PageTests.held(BackgroundElementContract.background, first, then: second, s)
         }
     }
 
@@ -186,7 +189,7 @@
     static var titledByState: ConformanceCase {
         ConformanceCase("Page.theTitleFromAStateFollowsIt", proves: [
             Covered(PageElementContract.title, on: "Page"),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let title = State(wrappedValue: "Notes")
             s.start {
                 VStack {
@@ -228,16 +231,16 @@ enum Presented {
     }
 
     /// A page of `element`'s kind whose `member` is `value`, `beside` its words.
-    static func page<Value: HostRepresentable & Sendable & Equatable>(
-        _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
+    static func page<Owner: WornContract, Value: HostRepresentable & Sendable & Equatable>(
+        _ element: String, _ member: ElementProperty<Owner, Value>, _ value: Value, beside: [any View]
     ) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
         AnyView(chosen(element, member, value, beside: beside))
     }
 
     /// The page `page(_:_:_:beside:)` shows, chosen by name.
-    private static func chosen<Value: HostRepresentable & Sendable & Equatable>(
-        _ element: String, _ member: ElementProperty<PageElementContract, Value>, _ value: Value, beside: [any View]
+    private static func chosen<Owner: WornContract, Value: HostRepresentable & Sendable & Equatable>(
+        _ element: String, _ member: ElementProperty<Owner, Value>, _ value: Value, beside: [any View]
     ) -> any View {
         let others: [any View] = beside
         let written = Write(member, value)
@@ -256,7 +259,7 @@ enum Presented {
         default:
             let words = VStack { Beside([Text("Page")] + others) }
             if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
-            if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.icon(icon) }
+            if let icon = value as? ImageSource, member.name == IconElementContract.icon.name { return words.pageIcon(icon) }
             return words
         }
     }

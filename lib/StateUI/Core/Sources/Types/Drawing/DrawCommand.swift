@@ -41,8 +41,8 @@ public struct DrawCommand: Equatable, Sendable {
         case translate = 18
         case rotate = 19
         case scale = 20
-        case saveState = 21
-        case restoreState = 22
+        case saveGraphics = 21
+        case restoreGraphics = 22
     }
 
     /// Which canvas call this instruction is.

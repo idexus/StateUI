@@ -33,7 +33,7 @@
             },
             ConformanceCase("endsTheTreeMovesDrawTheLineAnew", proves: [
                 Covered(LineContract.from), Covered(LineContract.to),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let down = State(wrappedValue: false)
                 s.start {
                     VStack {

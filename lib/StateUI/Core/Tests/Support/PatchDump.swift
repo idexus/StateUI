@@ -51,6 +51,8 @@ enum PatchDump {
         if case .arranged(let children) = patch.children { head += " arranged(\(children.count))" }
         out += head + "\n"
 
+        if let key = patch.menuKey { out += indent + "  menuKey: \(key)\n" }
+
         for key in patch.properties.keys.sorted() {
             out += indent + "  \(key.name): \(line(for: patch.properties[key]!, under: key.name, in: patch.type))\n"
         }
@@ -203,10 +205,10 @@ enum PatchDump {
             return spelled(member, as: ContentMode.self)
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
-        case Prop.type.name where element == MapContract.nodeType:
-            return spelled(member, as: MapType.self)
-        case Prop.type.name:
-            return spelled(member, as: MarkerType.self)
+        case MapContract.kind.token.name:
+            return spelled(member, as: MapKind.self)
+        case MarkerContract.kind.token.name:
+            return spelled(member, as: MarkerKind.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
         case Prop.accessibilityHeading.name:
@@ -246,26 +248,26 @@ enum PatchDump {
         // can enumerate, so their names are written out here.
         case Prop.fontAttributes.name:
             return spelled(member, asBitsOf: [
-                ("none", FontAttributes.none.rawValue),
+                ("[]", 0),
                 ("italic", FontAttributes.italic.rawValue),
             ])
         case Prop.textDecorations.name:
             return spelled(member, asBitsOf: [
-                ("none", TextDecorations.none.rawValue),
+                ("[]", 0),
                 ("underline", TextDecorations.underline.rawValue),
                 ("strikethrough", TextDecorations.strikethrough.rawValue),
             ])
-        case Prop.swipeDirection.name:
+        case Prop.swipeDirections.name:
             return spelled(member, asBitsOf: [
                 ("right", SwipeDirection.right.rawValue),
                 ("left", SwipeDirection.left.rawValue),
                 ("up", SwipeDirection.up.rawValue),
                 ("down", SwipeDirection.down.rawValue),
-                ("all", SwipeDirection.all.rawValue),
+                ("all", SwipeDirections.all.rawValue),
             ])
         case Prop.ignoresSafeArea.name:
             return spelled(member, asBitsOf: [
-                ("none", SafeAreaEdges.none.rawValue),
+                ("[]", 0),
                 ("start", SafeAreaEdges.start.rawValue),
                 ("top", SafeAreaEdges.top.rawValue),
                 ("end", SafeAreaEdges.end.rawValue),

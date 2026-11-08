@@ -7,28 +7,27 @@ and acts it declares, and the binding twins of its values.
 ## A control is a node and its modifiers
 
 ```text
-  public struct Slider: ElementView, TintElement, SliderProperties {
+  public struct Slider: ElementView, TintElement, RangeElement, … {
       public var node: Node                      Node(contract: SliderContract.self)
-      init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
       init(_ state: Binding<Double>)             the purpose value, two-way
-      func value(_:) / minimum(_:) / …           properties, from SliderProperties
-      func onValueChanged(_:)                    events, through onEvent(member)
+      func minimum(_:) / maximum(_:)             properties, from the RangeElement tier it wears
+      func onValueChanged(_:)                    events, from the tier, through onEvent(member)
   }
   extension Aim where Target == Map { … }       a control's acts, through call(member)
 ```
 
 What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
-a modifier (composition.md, what goes in the initializer). A two-way control
-whose bound value is its purpose takes its binding in the initializer and in a
-modifier of the same name; a picker takes its values and the state holding the
-chosen one together, in its initializer alone (bindings.md, both spellings).
+a modifier (composition.md, what goes in the initializer). A control's purpose
+value, a value or a state, goes in its initializer alone; a picker takes its
+values and the state holding the chosen one together
+(bindings.md, the purpose value is the initializer's).
 
 ## Closed vocabularies are numbered here
 
-A closed vocabulary a control uses - `IconPosition`, `MapType`,
-`WebNavigationType`, `WebNavigationResult` - crosses as an `.enumeration`
+A closed vocabulary a control uses - `IconPosition`, `MapKind`,
+`WebNavigationKind`, `WebNavigationResult` - crosses as an `.enumeration`
 whose numbers are the library's own, in declaration order, the rule of
 [closed vocabularies](../types/vocabularies.md#written-out-and-appended). A
 host translates its toolkit's value onto the member
@@ -107,7 +106,7 @@ page not navigated to.
 What a web view is told to do is an act - `goBack()`, `reload()`,
 `evaluateJavaScript(_:)` - because a description has no control to call a
 method on; what it reports travels the other way, into a binding
-(`.canGoBack($hasBack)`). Its source crosses as its kind and then what it is
+(`.canGoBack(into: $hasBack)`). Its source crosses as its kind and then what it is
 made of: an address as the kind and the address, a document as the kind, the
 document and its base address or nothing - three values whether or not there
 is a base address, so the host reads the same places every time and never tells

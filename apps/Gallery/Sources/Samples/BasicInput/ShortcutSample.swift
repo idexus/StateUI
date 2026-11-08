@@ -57,7 +57,7 @@ struct ShortcutSample: SampleContent, ExampleContent {
                     .keyboardShortcut("e", modifiers: [.primary, .shift])
                     .onClicked { pressed("Export") }
             }
-            .id(StandardMenu.file)
+            .joins(.file)
         }
         .toolbar {
             ToolbarButton("Mark")

@@ -11,6 +11,8 @@ extern void webkit_web_view_load_html(void *web_view, const char *content, const
 extern void webkit_web_view_go_back(void *web_view);
 extern void webkit_web_view_go_forward(void *web_view);
 extern void webkit_web_view_reload(void *web_view);
+extern int webkit_web_view_is_loading(void *web_view);
+extern void webkit_web_view_stop_loading(void *web_view);
 extern int webkit_web_view_can_go_back(void *web_view);
 extern int webkit_web_view_can_go_forward(void *web_view);
 extern const char *webkit_web_view_get_uri(void *web_view);

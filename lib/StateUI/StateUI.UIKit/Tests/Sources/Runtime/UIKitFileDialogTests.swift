@@ -15,7 +15,7 @@ private struct Saving: View {
 
     var body: some View {
         VStack {
-            Button("Save").onClicked(.ignoreWhileRunning) {
+            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                 let text = FileType("Text", extensions: ["txt"])
                 answer = try await window.saveFile(Array("Kept".utf8), name: "Note", types: [text])?.name ?? "nothing"
             }
@@ -29,7 +29,7 @@ private struct Opening: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Button("Open").onClicked(.ignoreWhileRunning) {
+        Button("Open").onClicked(policy: .ignoreWhileRunning) {
             _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

@@ -17,7 +17,7 @@ private struct AskingPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Time").onClicked(.ignoreWhileRunning) {
+            Button("Time").onClicked(policy: .ignoreWhileRunning) {
                 let time = try await application.clock.now()
                 let today = try await application.clock.today()
                 let tokyo = try await application.clock.utcOffset(of: "Asia/Tokyo")
@@ -28,7 +28,7 @@ private struct AskingPage: View {
                 said = "\((0..<24).contains(time.hour)) \(today.year >= 2026) \(tokyo.components.seconds / 60) "
                     + "\(winter.components.seconds / 60) \(summer.components.seconds / 60)"
             }
-            Button("Nowhere").onClicked(.ignoreWhileRunning) {
+            Button("Nowhere").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     _ = try await application.clock.utcOffset(of: "Nowhere/Else")
                     said = "answered"
@@ -36,7 +36,7 @@ private struct AskingPage: View {
                     said = "refused"
                 }
             }
-            Button("Say").onClicked(.ignoreWhileRunning) {
+            Button("Say").onClicked(policy: .ignoreWhileRunning) {
                 try await application.announce("done")
                 said = "announced"
             }
@@ -54,8 +54,8 @@ private struct FocusPage: View {
         VStack {
             Text(said)
             TextField($words).aim(field)
-            Button("Focus").onClicked(.ignoreWhileRunning) { said = "took \(try await field.focus())" }
-            Button("Unfocus").onClicked(.ignoreWhileRunning) {
+            Button("Focus").onClicked(policy: .ignoreWhileRunning) { said = "took \(try await field.focus())" }
+            Button("Unfocus").onClicked(policy: .ignoreWhileRunning) {
                 try await field.unfocus()
                 said = "let go"
             }
@@ -71,21 +71,21 @@ private struct QuestionsPage: View {
     var body: some View {
         VStack {
             Text(said)
-            Button("Alert").onClicked(.ignoreWhileRunning) {
+            Button("Alert").onClicked(policy: .ignoreWhileRunning) {
                 try await window.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
             }
-            Button("Confirm").onClicked(.ignoreWhileRunning) {
+            Button("Confirm").onClicked(policy: .ignoreWhileRunning) {
                 let accepted = try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
                 said += "confirmed \(accepted); "
             }
-            Button("Choose").onClicked(.ignoreWhileRunning) {
+            Button("Choose").onClicked(policy: .ignoreWhileRunning) {
                 let chosen = try await window.chooseAction(
                     "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete")
                 said += "chose \(chosen ?? "nothing"); "
             }
-            Button("Prompt").onClicked(.ignoreWhileRunning) {
+            Button("Prompt").onClicked(policy: .ignoreWhileRunning) {
                 let typed = try await window.prompt("Rename", placeholder: "Name", initialValue: "Draft")
                 said += "typed \(typed ?? "nothing"); "
             }

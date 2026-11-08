@@ -1,0 +1,36 @@
+swift.class TestWindow: @MainActor final class TestWindow
+swift.conformance TestElement: Swift.CustomStringConvertible
+swift.conformance TestElement: Swift.Sendable
+swift.conformance TestFailure: Swift.CustomStringConvertible
+swift.conformance TestFailure: Swift.Error
+swift.conformance TestFailure: Swift.Sendable
+swift.conformance TestWindow: Swift.Sendable
+swift.conformance UserAct: Swift.CustomStringConvertible
+swift.conformance UserAct: Swift.Equatable
+swift.conformance UserAct: Swift.Sendable
+swift.enum UserAct: enum UserAct
+swift.enum.case UserAct.activate: case activate
+swift.enum.case UserAct.adjust(_:): case adjust(AccessibilityAdjustment)
+swift.enum.case UserAct.choose(_:): case choose(String)
+swift.enum.case UserAct.focus: case focus
+swift.enum.case UserAct.performAccessibilityAction(_:): case performAccessibilityAction(String)
+swift.enum.case UserAct.pickColor(_:): case pickColor(Color)
+swift.enum.case UserAct.pickDate(_:): case pickDate(CalendarDate)
+swift.enum.case UserAct.pickTime(_:): case pickTime(ClockTime)
+swift.enum.case UserAct.slide(to:): case slide(to: Double)
+swift.enum.case UserAct.step(up:): case step(up: Bool)
+swift.enum.case UserAct.submit: case submit
+swift.enum.case UserAct.tap(count:): case tap(count: Int)
+swift.enum.case UserAct.toggle: case toggle
+swift.enum.case UserAct.type(_:): case type(String)
+swift.init TestWindow.init(motion:_:): @MainActor convenience init(motion: Motion = .standard, @ViewBuilder _ page: @escaping @MainActor @Sendable () -> some View) async throws
+swift.method TestElement.perform(_:): @MainActor func perform(_ act: UserAct) async throws
+swift.method TestElement.value(_:): @MainActor func value<Owner, Value>(_ member: ElementProperty<Owner, Value>) throws -> Value? where Owner : WornContract, Value : HostRepresentable
+swift.method TestWindow.close(): @MainActor func close() async throws
+swift.method TestWindow.element(_:): @MainActor func element(_ identifier: String) throws -> TestElement
+swift.method TestWindow.element(_:): @MainActor func element<Target>(_ aim: Aim<Target>) throws -> TestElement
+swift.property TestElement.description: @MainActor var description: String { get }
+swift.property TestFailure.description: let description: String
+swift.property UserAct.description: var description: String { get }
+swift.struct TestElement: @MainActor struct TestElement
+swift.struct TestFailure: struct TestFailure

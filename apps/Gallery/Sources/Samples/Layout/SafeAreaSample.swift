@@ -22,7 +22,7 @@ struct SafeAreaSample: SampleContent, ExampleContent {
                     Grid {
                         ScrollView {
                             VStack {
-                                Switch($under).text("Under the bars")
+                                Switch("Under the bars", isOn: $under)
                                 ForEach(Array(1...40), id: \.self) { row in
                                     Text("Row \(row)")
                                 }
@@ -31,7 +31,7 @@ struct SafeAreaSample: SampleContent, ExampleContent {
                             .padding(20)
                         }
                     }
-                    .ignoresSafeArea(under ? .all : .none)
+                    .ignoresSafeArea(under ? .all : [])
                     .galleryPage("Safe area")
                 } destination: { _ in
                     Text("")

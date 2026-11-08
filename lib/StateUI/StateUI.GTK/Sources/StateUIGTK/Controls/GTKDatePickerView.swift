@@ -56,7 +56,7 @@ final class GTKDatePickerView: GTKPopoverPickerView {
     }
 
     /// How much of the day is written out: the long form, else the short.
-    func setFormat(_ style: DateStyle?) {
+    func setFormat(_ style: DateFormat?) {
         isLong = style == .long
         write()
     }

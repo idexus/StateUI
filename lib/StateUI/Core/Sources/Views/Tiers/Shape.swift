@@ -5,7 +5,7 @@
 public protocol ShapeProperties: ViewProperties {}
 
 /// A drawn outline.
-public protocol Shape: ElementView, ShapeProperties {}
+public protocol Shape: ElementView, ShapeProperties, ContentModeElement {}
 
 extension ShapeProperties {
     /// A transform applied to the shape's geometry before it is drawn, in the
@@ -52,11 +52,6 @@ extension ShapeProperties {
     public func lineCap(_ value: LineCap) -> Modified {
         setValue(ShapeContract.lineCap, value)
     }
-
-    /// What the shape does with the room it is given - the `ContentMode` an Image
-    /// takes too. `.fit`, the default, scales the drawing to fit and keeps its
-    /// proportions; `.center` keeps the size its own numbers say.
-    public func contentMode(_ value: ContentMode) -> Modified { setValue(ShapeContract.contentMode, value) }
 }
 
 extension Shape {
@@ -64,12 +59,6 @@ extension Shape {
     /// each new value, and no view is rebuilt for it.
     public func stroke(_ state: Binding<Color>) -> Modified {
         twin(ShapeContract.stroke, carrying: state)
-    }
-
-    /// `contentMode` from a state, `$x`: the host sets each new value as it
-    /// stands, and no view is rebuilt for it.
-    public func contentMode(_ state: Binding<ContentMode>) -> Modified {
-        twin(ShapeContract.contentMode, by: state)
     }
 
     /// `dashPhase` from a state, `$x`: the host animates the property to

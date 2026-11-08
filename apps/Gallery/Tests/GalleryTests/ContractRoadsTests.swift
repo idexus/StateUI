@@ -35,13 +35,14 @@ final class ContractRoadsTests: XCTestCase {
     private static let declarations = """
         enum BeaconContract: ElementContract {
             static let nodeType: NodeType = "Maps.Beacon"
-            static let tiers: [any Contract.Type] = [ViewContract.self]
+            static let tiers: [any Tier.Type] = [ViewContract.self]
 
             static let title = ElementProperty<Self, String>("title")
             static let level = ElementProperty<Self, Double>("level")
+            static let isLit = ElementProperty<Self, Bool>("isLit")
             static let tapped = ElementEvent<Self, Int>("tapped")
 
-            static let members: [any ContractMember] = [title, level, tapped]
+            static let members: [any ContractMember] = [title, level, isLit, tapped]
         }
 
         struct Beacon: ElementView {
@@ -51,9 +52,9 @@ final class ContractRoadsTests: XCTestCase {
         enum NotesContract: ApplicationTier {
             static let name = "Notes"
 
-            static let export = ElementAct<Self, String, String>("Notes.Export")
-            static let log = ElementAct<Self, String, Void>("Notes.Log")
-            static let changed = ElementEvent<Self, Bool>("Notes.Changed")
+            static let export = ElementAct<Self, String, String>("export")
+            static let log = ElementAct<Self, String, Void>("log")
+            static let changed = ElementEvent<Self, Bool>("changed")
 
             static let members: [any ContractMember] = [export, log, changed]
         }
@@ -77,21 +78,41 @@ final class ContractRoadsTests: XCTestCase {
             name: "a property driven from a state by its token",
             closed: """
                 @State var level = 0.5
-                _ = Beacon().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(Prop("level"), on: $level, as: .journey)
                 """,
             open: """
                 @State var level = 0.5
-                _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(BeaconContract.level, on: $level, as: .journey)
                 """),
         Road(
-            name: "text from a state through a door for numbers",
+            name: "words from a state walked as a journey",
             closed: """
                 @State var title = "Harbour"
-                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out, kind: .plain)
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .journey)
                 """,
             open: """
                 @State var title = "Harbour"
-                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out)
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .oneWay)
+                """),
+        Road(
+            name: "a flag from a state walked as a journey",
+            closed: """
+                @State var lit = false
+                _ = Beacon().setValue(BeaconContract.isLit, on: $lit, as: .journey)
+                """,
+            open: """
+                @State var lit = false
+                _ = Beacon().setValue(BeaconContract.isLit, on: $lit, as: .twoWay)
+                """),
+        Road(
+            name: "words from a state fed by the host",
+            closed: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .feed)
+                """,
+            open: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .twoWay)
                 """),
         Road(
             name: "an event heard by its token",
@@ -99,15 +120,15 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
-            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.Export"), [.string("draft")])"#,
+            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.export"), [.string("draft")])"#,
             open: #"_ = try await Environment(\.application).wrappedValue.call(NotesContract.export, "draft")"#),
         Road(
             name: "an act sent by its token",
-            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.Log"), [.string("opened")])"#,
+            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.log"), [.string("opened")])"#,
             open: #"Environment(\.application).wrappedValue.tell(NotesContract.log, "opened")"#),
         Road(
             name: "an application's event heard by its token",
-            closed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,
+            closed: #"_ = HostEvents.on(Event("Notes.changed")) { payload in _ = payload }"#,
             open: "_ = HostEvents.on(NotesContract.changed) { online in _ = online }"),
         Road(
             name: "an aim's identity taken to aim by hand",
@@ -119,8 +140,8 @@ final class ContractRoadsTests: XCTestCase {
             open: "let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })"),
         Road(
             name: "a list scrolled to an identity of another type",
-            closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
-            open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),
+            closed: #"try await Aim(ItemsView<Int>.self).scroll(to: "500")"#,
+            open: "try await Aim(ItemsView<Int>.self).scroll(to: 500)"),
         Road(
             name: "an @Observable model held in a state, whose writes would redraw nothing",
             closed: "let held = State(wrappedValue: ObservedProfile()); _ = held",
@@ -248,11 +269,11 @@ final class ContractRoadsTests: XCTestCase {
             name: "the keyboard heard on a view that never takes it",
             closed: """
                 @State var focused = false
-                _ = Text("Name").isFocused($focused)
+                _ = Text("Name").isFocused(into: $focused)
                 """,
             open: """
                 @State var focused = false
-                _ = TextField("Name").isFocused($focused)
+                _ = TextField("Name").isFocused(into: $focused)
                 """),
         Road(
             name: "the keyboard put on a view that never takes it",
@@ -260,7 +281,7 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = try await Aim(TextField.self).focus()"),
         Road(
             name: "a fill inside a line",
-            closed: "_ = Line().to(Point(40, 0)).fill(.red)",
+            closed: "_ = Line(from: Point(0, 0), to: Point(40, 0)).fill(.red)",
             open: "_ = Polyline([Point(0, 0), Point(40, 0)]).fill(.red)"),
         Road(
             name: "a corner's join on an ellipse",
@@ -279,6 +300,96 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Style<Button>().accessibilityIdentifier("save")"#,
             open: #"_ = Button("Save").accessibilityIdentifier("save")"#),
         Road(
+            name: "a drop of files that does not say files",
+            closed: #"_ = Text("x").onDropped { (files: [ChosenFile]) in }"#,
+            open: #"_ = Text("x").onDropped(files: []) { files in }"#),
+        Road(
+            name: "a state handed to a style",
+            closed: #"_ = Style<Button>().tooltip(State(wrappedValue: "Saves").projectedValue)"#,
+            open: #"_ = Button("Save").tooltip(State(wrappedValue: "Saves").projectedValue)"#),
+        Road(
+            name: "a layout body by a shortcut",
+            closed: #"_ = Text("a").followsLayout(response: .milliseconds(420))"#,
+            open: #"_ = Text("a").layoutBody(.followsLayout(response: .milliseconds(420)))"#),
+        Road(
+            name: "a color written as a brush",
+            closed: #"_ = Rectangle().fill(.solidColor(.red))"#,
+            open: #"_ = Rectangle().fill(.red)"#),
+        Road(
+            name: "an engine said by a motion",
+            closed: #"_ = State(wrappedValue: 0.0, motion: .custom)"#,
+            open: #"_ = State(wrappedValue: 0.0, animatedBy: .engine)"#),
+        Road(
+            name: "a purpose value given by a modifier",
+            closed: #"_ = CheckBox(State(wrappedValue: false).projectedValue).isOn(true)"#,
+            open: #"_ = CheckBox(State(wrappedValue: false).projectedValue)"#),
+        Road(
+            name: "a control made with no purpose value",
+            closed: #"_ = Slider()"#,
+            open: #"_ = Slider(0.5)"#),
+        Road(
+            name: "a control's value given by a style",
+            closed: #"_ = Style<Slider>().value(0.5)"#,
+            open: #"_ = Slider(0.5)"#),
+        Road(
+            name: "a spinner's turning given by a style",
+            closed: #"_ = Style<Spinner>().isAnimating(true)"#,
+            open: #"_ = Spinner(true)"#),
+        Road(
+            name: "a canvas's drawing given by a modifier",
+            closed: #"_ = Canvas().drawing { Draw.lineWidth(2) }"#,
+            open: #"_ = Canvas { Draw.lineWidth(2) }"#),
+        Road(
+            name: "a variant's member given by a style",
+            closed: #"_ = Style<Picker>().presentation(.segmented)"#,
+            open: #"_ = Style<Picker>(presentation: .segmented)"#),
+        Road(
+            name: "a state handed to a style by setValue(_:on:)",
+            closed: #"_ = Style<Slider>().setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#,
+            open: #"_ = Slider(0.5).setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#),
+        Road(
+            name: "an application calling the library's own act",
+            closed: #"_ = ApplicationContract.handlerFailed"#,
+            open: #"_ = ApplicationContract.nodeType"#),
+        Road(
+            name: "an application's event heard as a control's",
+            closed: #"_ = Beacon().onEvent(NotesContract.changed) { _ in }"#,
+            open: #"_ = Beacon().onHostEvent(NotesContract.changed) { _ in }"#),
+        Road(
+            name: "an application's acts worn as a tier",
+            closed: #"enum Worn: ElementContract { static let nodeType: NodeType = "Worn"; static let tiers: [any Tier.Type] = [NotesContract.self]; static let members: [any ContractMember] = [] }"#,
+            open: #"enum Worn: ElementContract { static let nodeType: NodeType = "Worn"; static let tiers: [any Tier.Type] = [ViewContract.self]; static let members: [any ContractMember] = [] }"#),
+        Road(
+            name: "an application's act aimed at a control",
+            closed: #"_ = try await Aim(Beacon.self).call(NotesContract.log, "aimed")"#,
+            open: #"_ = try await Aim(Beacon.self).call(FocusElementContract.focus)"#),
+        Road(
+            name: "a control's words given by a style",
+            closed: #"_ = Style<Button>().text("Save")"#,
+            open: #"_ = Button("Save")"#),
+        Road(
+            name: "a control's words given beside its initializer",
+            closed: #"_ = Switch(true).text("Sound")"#,
+            open: #"_ = Switch("Sound", isOn: true)"#),
+        Road(
+            name: "a control's words from a state beside its initializer",
+            closed: """
+                @State var caption = "Save"
+                _ = Button().text($caption)
+                """,
+            open: """
+                @State var caption = "Save"
+                _ = Button($caption)
+                """),
+        Road(
+            name: "a field's cursor placed by a style",
+            closed: #"_ = Style<TextField>().cursorPosition(3)"#,
+            open: #"_ = TextField("Name").cursorPosition(3)"#),
+        Road(
+            name: "a picker opened by a style",
+            closed: #"_ = Style<TimePicker>().isOpen(true)"#,
+            open: #"_ = TimePicker(ClockTime(hour: 7, minute: 30)).isOpen(true)"#),
+        Road(
             name: "a field's words aligned down its box",
             closed: #"_ = TextField("Name").verticalTextAlignment(.center)"#,
             open: #"_ = Text("Name").verticalTextAlignment(.center)"#),
@@ -292,7 +403,7 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = CheckBox(true).tint(.red)"#),
         Road(
             name: "an outline around a check box",
-            closed: #"_ = CheckBox(true).text("Small").stroke(.gray)"#,
+            closed: #"_ = CheckBox("Small", isOn: true).stroke(.gray)"#,
             open: #"_ = Button("Small").stroke(.gray)"#),
         Road(
             name: "a stack's line in a menu",
@@ -347,7 +458,7 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = BeaconContract.tapped"),
         Road(
             name: "an act's key made from its name",
-            closed: #"_ = Act("Notes.Export")"#,
+            closed: #"_ = Act("Notes.export")"#,
             open: "_ = NotesContract.export"),
         Road(
             name: "a type of an application's own taken as properties",

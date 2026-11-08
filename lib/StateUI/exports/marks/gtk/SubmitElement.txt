@@ -1,0 +1,5 @@
+# revision 1.1
+SearchField.submitLabel: ☑️ The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.
+SearchField.submitted: ✅
+TextField.submitLabel: ☑️ The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.
+TextField.submitted: ✅

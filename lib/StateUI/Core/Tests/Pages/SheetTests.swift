@@ -105,7 +105,7 @@ final class SheetTests: XCTestCase {
         let patch = Renders().render(Presenting(editing: editing.projectedValue).node)
         let shown = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
         XCTAssertEqual(shown.children.map(\.type), [.page])
-        XCTAssertEqual(shown.children.first?.props[.title], .string("Editor"))
+        XCTAssertEqual(shown.children.first?.props["PageElement.title"], .string("Editor"))
     }
 
     /// The user's dismissal writes false into the state - described, which the host does not carry.
@@ -128,7 +128,7 @@ final class SheetTests: XCTestCase {
         let sheet = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
 
         XCTAssertEqual(sheet.props[.isPresented], .bool(true))
-        XCTAssertEqual(sheet.children.first?.props[.title], .string("Inbox"))
+        XCTAssertEqual(sheet.children.first?.props["PageElement.title"], .string("Inbox"))
         XCTAssertTrue(renders.fire(try XCTUnwrap(sheet.events?[.isPresentedChanged]), with: [.bool(false)]))
         XCTAssertNil(note.wrappedValue, "the dismissal written into the state")
     }
@@ -142,7 +142,7 @@ final class SheetTests: XCTestCase {
 
         XCTAssertNotEqual(first.children.first?.identity, second.children.first?.identity)
         let patch = Renders().render(PresentingANote(note: note.projectedValue).node)
-        XCTAssertEqual(patch.subtree.first { $0.type == .sheet }?.children.first?.props[.title], .string("Sent"))
+        XCTAssertEqual(patch.subtree.first { $0.type == .sheet }?.children.first?.props["PageElement.title"], .string("Sent"))
     }
 
     /// The view presenting a sheet leaves the tree: its sheet closes, and its state is written false.

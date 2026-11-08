@@ -12,7 +12,7 @@ public enum LineContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A line is a shape.
-    public static let tiers: [any Contract.Type] = [ShapeContract.self]
+    public static let tiers: [any Tier.Type] = [ShapeContract.self]
 
     /// Where it starts.
     public static let from = ElementProperty<Self, Point>("from", layer: .stateUI)

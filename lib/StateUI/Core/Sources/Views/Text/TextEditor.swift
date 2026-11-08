@@ -36,8 +36,8 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<TextEditor>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: TextEditorContract.self)
     }
 
@@ -45,7 +45,7 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
         node = Node(contract: TextEditorContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -53,21 +53,9 @@ public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentE
         self = TextEditor().text(state)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way text as `TextEditor($text)`, written as a modifier.
-    ///
-    ///     TextEditor($query)
-    ///     TextEditor().text($query)
-    ///
-    /// The host shows the state's text and writes back what the user types,
-    /// with no view rebuilt for it: a keystroke costs a render only in a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state shown, and written back into as the user
-    ///   types.
-    /// - Returns: the control, wearing and reporting that text.
-    public func text(_ state: Binding<String>) -> Modified {
-        words(TextualElementContract.text.token, by: state, mode: .inOut)
+    /// Its text from a state carried both ways.
+    func text(_ state: Binding<String>) -> Modified {
+        words(TextElementContract.text.token, by: state, mode: .inOut)
     }
 
 }

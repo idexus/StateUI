@@ -15,7 +15,7 @@ import QuartzCore
 /// foundational layouts and controls as AppKit objects. A control this host
 /// does not present shows as a diagnostic label in its place.
 @MainActor
-public enum StateUIAppKit {
+public enum AppKitHost {
     /// Starts `NSApplication`, displays the application already registered
     /// with `Application.register()`, and ends the process as the application ends.
     ///

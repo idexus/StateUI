@@ -7,51 +7,31 @@
 // Design: docs/design/views/bindings.md#driven-text
 
 extension Text {
-    /// What the label says, carried from a state: the host writes the text as
-    /// it changes, with no view rebuilt - only the label measured again.
-    ///
-    ///     @State private var caption = ""
-    ///
-    ///     Text().text($caption)
-    ///     …
-    ///     .engine(following: $level) { _ in
-    ///         caption = "\(Int($level.journey.value * 100))%"
-    ///     }
-    ///
-    /// - Parameter state: the state the words are read from.
-    /// - Returns: the label, with its text carried from that state.
-    public func text(_ state: Binding<String>) -> Text {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+    /// The words carried from a state - what `Text(_:)` of a state writes.
+    func text(_ state: Binding<String>) -> Text {
+        setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
 extension Button {
-    /// What the button says, carried from a state; see `Text.text(_:)`.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the button, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> Button {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+    /// What the button says, carried from a state: the host writes the text as it changes, with no view rebuilt -
+    /// what `Button(_:)` of a state writes.
+    func text(_ state: Binding<String>) -> Button {
+        setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
 extension CheckBox {
-    /// What the check box says beside its box, carried from a state; see `Text.text(_:)`.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the check box, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> CheckBox {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+    /// What the check box says beside its box, carried from a state - what `CheckBox(_:isOn:)` of a state writes.
+    func text(_ state: Binding<String>) -> CheckBox {
+        setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
 extension Switch {
-    /// What the switch says beside it, carried from a state; see `Text.text(_:)`.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the switch, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> Switch {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+    /// What the switch says beside it, carried from a state - what `Switch(_:isOn:)` of a state writes.
+    func text(_ state: Binding<String>) -> Switch {
+        setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
@@ -65,7 +45,7 @@ extension VisualElement {
     ///     @State private var columns = 1.0
     ///
     ///     Grid { tiles }
-    ///         .frame($room)
+    ///         .frame(into: $room)
     ///         .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
     ///
     /// For arithmetic that lays views out; `GeometryReader` is for content built
@@ -76,7 +56,7 @@ extension VisualElement {
     ///
     /// - Parameter state: the state the frame is written into.
     /// - Returns: the element, reporting its frame there.
-    public func frame(_ state: Binding<Rect>) -> Modified {
-        setValue(VisualElementContract.frame, on: state, mode: .in, kind: .feed)
+    public func frame(into state: Binding<Rect>) -> Modified {
+        setValue(VisualElementContract.frame, on: state, as: .feed)
     }
 }

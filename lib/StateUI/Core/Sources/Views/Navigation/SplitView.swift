@@ -47,7 +47,7 @@
 ///
 /// A sidebar row is an ordinary view whose handler assigns state: choosing and
 /// closing are two writes, and a sidebar that should stay open skips the
-/// second - one beside the page, which `sidebarOverlays(_:)` tells apart from
+/// second - one beside the page, which `sidebarOverlays(into:)` tells apart from
 /// one over it. The platform's own ways to show or hide the sidebar - its button,
 /// an edge swipe, a tap on the dimmed page - are written into the binding, and
 /// a host with room for both pages may open with the sidebar showing. The
@@ -145,12 +145,32 @@ extension SplitView {
         setValue(SplitViewContract.sidebarBackground, value)
     }
 
+    /// The sidebar in one color.
+    public func sidebarBackground(_ value: Color) -> Modified {
+        sidebarBackground(.color(value))
+    }
+
+    /// The sidebar in a gradient.
+    public func sidebarBackground(_ value: Brush) -> Modified {
+        sidebarBackground(.gradient(value))
+    }
+
     /// What the sidebar stands on while it slides over the detail - a phone's
     /// drawer, the sidebar of a narrow window. Leave it unwritten for the
     /// window's background laid over the platform's own surface there, which
     /// never lets the detail through.
     public func sidebarOverlayBackground(_ value: Material) -> Modified {
         setValue(SplitViewContract.sidebarOverlayBackground, value)
+    }
+
+    /// The overlaying sidebar in one color.
+    public func sidebarOverlayBackground(_ value: Color) -> Modified {
+        sidebarOverlayBackground(.color(value))
+    }
+
+    /// The overlaying sidebar in a gradient.
+    public func sidebarOverlayBackground(_ value: Brush) -> Modified {
+        sidebarOverlayBackground(.gradient(value))
     }
 
     /// Whether the sidebar lies over the detail - a phone's drawer, the
@@ -164,7 +184,7 @@ extension SplitView {
     ///
     ///     SplitView { MenuPage(menu: $menu, overlays: $menuOverlays) } detail: { NotesPage() }
     ///         .showsSidebar($menu)
-    ///         .sidebarOverlays($menuOverlays)
+    ///         .sidebarOverlays(into: $menuOverlays)
     ///
     ///     // in a sidebar row's handler
     ///     section = which
@@ -172,7 +192,7 @@ extension SplitView {
     ///
     /// - Parameter state: the state the sidebar's place is written into.
     /// - Returns: the split view, reporting its sidebar's place there.
-    public func sidebarOverlays(_ state: Binding<Bool>) -> Modified {
+    public func sidebarOverlays(into state: Binding<Bool>) -> Modified {
         plain(SplitViewContract.sidebarOverlays.token, by: state, mode: .in)
     }
 
@@ -182,9 +202,19 @@ extension SplitView {
         twin(SplitViewContract.sidebarBackground, by: state)
     }
 
+    /// The sidebar's color from a state, `$x`: the host animates it to each new value.
+    public func sidebarBackground(_ state: Binding<Color>) -> Modified {
+        twin(SplitViewContract.sidebarBackground, carrying: state)
+    }
+
     /// `sidebarOverlayBackground` from a state, `$x`: the host shows each new material
     /// as it stands, and no view is rebuilt for it.
     public func sidebarOverlayBackground(_ state: Binding<Material>) -> Modified {
         twin(SplitViewContract.sidebarOverlayBackground, by: state)
+    }
+
+    /// The overlaying sidebar's color from a state, `$x`: the host animates it to each new value.
+    public func sidebarOverlayBackground(_ state: Binding<Color>) -> Modified {
+        twin(SplitViewContract.sidebarOverlayBackground, carrying: state)
     }
 }

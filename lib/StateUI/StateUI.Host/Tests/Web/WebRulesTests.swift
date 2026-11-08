@@ -44,11 +44,90 @@ final class WebRulesTests: XCTestCase {
     func testANavigationBeginsForTheStepAskedElseWhatIsTold() {
         var cause = WebNavigationCause()
         XCTAssertEqual(cause.begin(told: .newPage), .newPage)
-        cause.ask(.forward)
+        cause.ask(.forward, if: true)
         XCTAssertEqual(cause.current, .newPage, "asked, not begun")
         XCTAssertEqual(cause.begin(told: .back), .forward)
         XCTAssertEqual(cause.current, .forward)
         XCTAssertEqual(cause.begin(told: .reload), .reload)
+    }
+
+    func testAQueuedStepDoesNotRewriteTheNavigationUnderWay() {
+        var cause = WebNavigationCause()
+        cause.ask(.back, if: true)
+        XCTAssertEqual(cause.begin(told: .newPage), .back, "a toolkit need not tell a history step apart")
+        cause.ask(.forward, if: true)
+        XCTAssertEqual(cause.current, .back, "the accepted next step has not begun")
+        XCTAssertEqual(cause.begin(told: .newPage), .forward)
+    }
+
+    func testAConsumedRequestDoesNotNameAnotherNativeNavigation() {
+        var cause = WebNavigationCause()
+        cause.ask(.reload, if: true)
+        XCTAssertEqual(cause.begin(told: .newPage), .reload)
+        XCTAssertEqual(cause.begin(told: .newPage), .newPage)
+        XCTAssertEqual(cause.current, .newPage)
+    }
+
+    func testARefusedStepDoesNotNameTheNextNavigation() {
+        for step in [WebNavigationKind.back, .forward, .reload] {
+            var cause = WebNavigationCause()
+            XCTAssertFalse(cause.ask(step, if: false))
+            XCTAssertEqual(cause.begin(told: .newPage), .newPage)
+        }
+    }
+
+    func testARefusedStepPreservesTheAcceptedOneStillWaiting() {
+        var cause = WebNavigationCause()
+        XCTAssertEqual(cause.begin(told: .newPage), .newPage)
+        XCTAssertTrue(cause.ask(.back, if: true))
+        XCTAssertFalse(cause.ask(.forward, if: false))
+        XCTAssertEqual(cause.current, .newPage, "no new navigation has begun")
+        XCTAssertEqual(cause.begin(told: .newPage), .back)
+    }
+
+    func testAnEmptyReloadSourceLeavesTheNativeDocumentInCharge() {
+        var source = WebReloadSource()
+        XCTAssertNil(source.value)
+        source.committed()
+        XCTAssertNil(source.value)
+    }
+
+    func testAReplacementKeepsItsCompleteDocumentAndBaseForReload() {
+        var source = WebReloadSource()
+        source.requested(.html("Previous", baseAddress: nil))
+        let current = WebViewSource.html("Current", baseAddress: "https://stateui.invalid/")
+        source.requested(current)
+        XCTAssertEqual(source.value, current)
+    }
+
+    func testAnAuthoredDocumentWithABaseKeepsItsBytesAfterCommit() {
+        var source = WebReloadSource()
+        let document = WebViewSource.html("Current", baseAddress: "https://stateui.invalid/")
+        source.requested(document)
+        source.committed()
+        source.committed()
+        XCTAssertEqual(source.value, document)
+    }
+
+    func testAFetchedOrDataDocumentUsesNativeReloadAfterCommit() {
+        for document in [WebViewSource.address("https://stateui.invalid/"), .html("Current", baseAddress: nil)] {
+            var source = WebReloadSource()
+            source.requested(document)
+            XCTAssertEqual(source.value, document, "a request precedes the native document")
+            source.committed()
+            XCTAssertNil(source.value)
+        }
+    }
+
+    func testANativeNavigationTakesOverFromTheAuthoredReloadSource() {
+        var source = WebReloadSource()
+        source.requested(.html("Current", baseAddress: "https://stateui.invalid/"))
+        source.committed()
+        source.takenOver()
+        XCTAssertNil(source.value)
+        let next = WebViewSource.address("https://next.invalid/")
+        source.requested(next)
+        XCTAssertEqual(source.value, next)
     }
 
     /// A document with no address of its own is gone to as a `data:` address holding it, its words in base64.

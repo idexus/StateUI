@@ -61,11 +61,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// The layout's own number for each item's identity, which its frames key the views by.
     @State private var numbers = LayoutSlotNumbers()
 
-    /// Who starts the runs of what `onItemDismissed` asked for, ended with the layout.
-    @State private var dismissalRuns = RunOwner()
+    /// The runs of what `onItemDismissed` asked for, each handler's its own, ended with the layout.
+    @State private var dismissalRuns = EventRegistration([])
 
-    /// The runs of the handler told the run came to rest.
-    @State private var settledRuns = RunOwner()
+    /// The runs of the handlers told the run came to rest, each its own.
+    @State private var settledRuns = EventRegistration([])
+
+    /// The runs of the handlers told the hand moves a view, each its own.
+    @State private var dragRuns = EventRegistration([])
 
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
@@ -163,13 +166,13 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var mask: Node?
 
     /// What runs when the user taps a view, through its gate.
-    private var activated: ValueHandler<ID>?
+    private var activated: [ValueHandler<ID>] = []
 
     /// How the hand takes one view by itself, what it is told as it moves it, and which way letting it go far enough
     /// dismisses it.
     private var itemStart: ItemDragStart?
-    private var dragged: (@MainActor (ItemDrag<ID>) throws -> Void)?
-    private var dismissal: LayoutDismissal<ID>?
+    private var dragged: [ValueHandler<ItemDrag<ID>>] = []
+    private var dismissals: [LayoutDismissal<ID>] = []
 
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
@@ -181,13 +184,16 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
     /// What is told once the run comes to rest.
-    private var settled: ValueHandler<Parameters>?
+    private var settled: [ValueHandler<Parameters>] = []
 
     /// Whether the layout turns about its middle where it lays out right to left.
     private var mirrors = false
 
     /// What a target the run names is told to beside the parameters: a composed control's own value worked out from it.
     private var named: ((Parameters) -> Void)?
+
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
 
     /// A layout of views, one per item, placed by `placements` on the host's frames.
     ///
@@ -355,19 +361,25 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// What to draw over a placed view to darken it, at the opacity its placement answers as `shade`.
     ///
-    ///     .shade(
+    ///     .shade {
     ///         Rectangle()
     ///             .fill(.black)
-    ///             .cornerRadius(14))
+    ///             .cornerRadius(14)
+    ///     }
     ///
     /// Give it the corners the views have. Where views overlap, a shade darkens a far view without showing the
     /// one behind it, as fading it would.
     ///
-    /// - Parameter view: what to draw over each placed view.
+    /// - Parameter content: what to draw over each placed view.
     /// - Returns: the layout, shaded.
-    public func shade(_ view: some View) -> Self {
+    public func shade<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
+        shading(content().node)
+    }
+
+    /// The layout with `mask` drawn over each placed view.
+    func shading(_ mask: Node) -> Self {
         var copy = self
-        copy.mask = view.node
+        copy.mask = mask
         return copy
     }
 
@@ -375,11 +387,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
     /// new place is the world's (`dynamics(_:)`).
     ///
-    ///     .motion(.spring(response: .milliseconds(240)))
+    ///     .parameterMotion(.spring(response: .milliseconds(240)))
     ///
     /// - Parameter motion: the law; the element's, the application's or the library's unless said.
     /// - Returns: the layout, traveling that way.
-    public func motion(_ motion: Motion) -> Self {
+    public func parameterMotion(_ motion: Motion) -> Self {
         var copy = self
         copy.law = motion
         return copy
@@ -407,7 +419,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .dynamics(.spring(response: .milliseconds(420), damping: 0.8))
     ///
     /// - Parameter dynamics: the layout's dynamics; `.standard` unless said, `.none` for views standing at their
-    ///   places at once - the parameters still travel under `motion(_:)`.
+    ///   places at once - the parameters still travel under `parameterMotion(_:)`.
     /// - Returns: the layout, its views moving by those dynamics.
     public func dynamics(_ dynamics: LayoutDynamics) -> Self {
         var copy = self
@@ -442,21 +454,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, answering an activation.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.activated = ValueHandler(step: handler)
+        copy.activated.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what an activation does while a run is under way.
-    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
+        copy.activated.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -466,21 +478,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .onSettled { parameters in save(parameters) }
     public func onSettled(_ handler: @escaping @MainActor (Parameters) throws -> Void) -> Self {
         var copy = self
-        copy.settled = ValueHandler(step: handler)
+        copy.settled.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what a rest does while a run is under way.
-    public func onSettled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
+    public func onSettled(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
         var copy = self
-        copy.settled = ValueHandler(run: handler, gate: .own(policy))
+        copy.settled.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSettled(gate: Gate, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
         var copy = self
-        copy.settled = ValueHandler(run: handler, gate: .shared(gate))
+        copy.settled.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -508,51 +520,66 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, telling the drag.
     public func onItemDragged(_ handler: @escaping @MainActor (ItemDrag<ID>) throws -> Void) -> Self {
         var copy = self
-        copy.dragged = handler
+        copy.dragged.append(ValueHandler(step: handler))
         return copy
     }
 
-    /// A view the hand lets go of past `beyond` points `directions` from where it took it - or thrown far enough
-    /// that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
-    /// application removes the item then. Let go short of it, the view goes back to its place.
+    /// The same, with a handler that awaits: its `policy` says what a move of the hand does while a run is under way.
+    public func onItemDragged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
+        var copy = self
+        copy.dragged.append(ValueHandler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemDragged(gate: Gate, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
+        var copy = self
+        copy.dragged.append(ValueHandler(run: handler, gate: .shared(gate)))
+        return copy
+    }
+
+    /// A view the hand lets go of past `threshold` device units `directions` from where it took it - or thrown far
+    /// enough that way - flies on out of the room, and `handler` runs with its item's identity once it has left: the
+    /// application removes the item then. Let go short of it, the view goes back to its place. Written again, each
+    /// one the view passed runs, in the order written.
     ///
-    ///     .onItemDismissed(.up, beyond: 120) { id in cards.removeAll { $0.id == id } }
+    ///     .onItemDismissed(directions: .up, threshold: 120) { id in cards.removeAll { $0.id == id } }
     ///
     /// - Parameters:
     ///   - directions: the ways a view is dismissed.
-    ///   - beyond: how far the hand takes it, in device units, before letting go dismisses it.
+    ///   - threshold: how far the hand takes it, in device units, before letting go dismisses it.
     ///   - handler: what to run, given the item's identity, once its view has left the room.
     /// - Returns: the layout, dismissing a view let go far enough.
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor (ID) throws -> Void
+        directions: SwipeDirections, threshold: Double, _ handler: @escaping @MainActor (ID) throws -> Void
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(directions: directions, beyond: beyond, handler: ValueHandler(step: handler))
+        copy.dismissals.append(LayoutDismissal(directions: directions, threshold: threshold, handler: ValueHandler(step: handler)))
         return copy
     }
 
     /// The same, with a handler that awaits - an archive does: its `policy` says what another view dismissed does
     /// while a run is under way.
     ///
-    ///     .onItemDismissed(.up, beyond: 120, policy: .cancelPrevious) { id in try await archive(id) }
+    ///     .onItemDismissed(directions: .up, threshold: 120, policy: .cancelPrevious) { id in try await archive(id) }
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, policy: GatePolicy,
+        directions: SwipeDirections, threshold: Double, policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .own(policy)))
+        copy.dismissals.append(LayoutDismissal(
+            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .own(policy))))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemDismissed(
-        _ directions: SwipeDirection, beyond: Double, gate: Gate,
+        directions: SwipeDirections, threshold: Double, gate: Gate,
         _ handler: @escaping ValueEventHandler<ID>
     ) -> Self {
         var copy = self
-        copy.dismissal = LayoutDismissal(
-            directions: directions, beyond: beyond, handler: ValueHandler(run: handler, gate: .shared(gate)))
+        copy.dismissals.append(LayoutDismissal(
+            directions: directions, threshold: threshold, handler: ValueHandler(run: handler, gate: .shared(gate))))
         return copy
     }
 
@@ -568,6 +595,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     public var body: some View {
         let run = self.run
         let mirrors = self.mirrors
+        // A handler no longer written ends its runs now, as an element's does.
+        dismissalRuns.keep(dismissals.count)
+        settledRuns.keep(settled.count)
+        dragRuns.keep(dragged.count)
 
         if Parameters.axes.isEmpty {
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
@@ -582,8 +613,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.translationOrientation, run.ways.count == 1 ? run.ways.first : nil)
             element.describe(MotionLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
-            if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
-            if run.settled != nil { element.destroying.append { run.states.settles.orphan() } }
+            element.destroying.append { run.states.dismissals.orphan() }
+            element.destroying.append { run.states.settles.orphan() }
+            element.destroying.append { run.states.drags.orphan() }
             if run.moves {
                 element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
                     run.translationUpdated(gesture, moved: moved, velocity: velocity)
@@ -605,14 +637,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
                 element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
-                    try run.item(gesture, at: at, velocity: velocity, still: still)
+                    run.item(gesture, at: at, velocity: velocity, still: still)
                 }
             }
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
         .setValue(MotionLayoutContract.parameters.token, on: run.parameters, mode: .inOut, kind: .property)
         .motion(law)
-        .frame($room)
+        .frame(into: $room)
         .engine([$room.followed, run.parameters.followed, $held.followed, $item.followed] + followed,
                 priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
@@ -722,11 +754,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             named: named,
             itemStart: itemStart,
             dragged: dragged,
-            dismissal: dismissal,
+            dismissals: dismissals,
             parameters: parameters,
             states: States(
                 held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
-                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns),
+                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns, drags: dragRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
             law: law,
@@ -746,8 +778,28 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let from: State<Parameters?>
         let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
-        let dismissals: RunOwner
-        let settles: RunOwner
+        let dismissals: EventRegistration
+        let settles: EventRegistration
+        let drags: EventRegistration
+    }
+}
+
+extension MotionLayout {
+    /// What every view's modifiers give back: the layout itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
     }
 }
 
@@ -759,12 +811,12 @@ extension MotionLayout: WalkedView {
         [
             ("_held", _held), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
-            ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns),
+            ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns), ("_dragRuns", _dragRuns),
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
-            ("followed", followed), ("mask", mask as Any), ("activated", activated as Any),
-            ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled as Any), ("mirrors", mirrors),
-            ("named", named as Any),
+            ("followed", followed), ("mask", mask as Any), ("activated", activated),
+            ("itemStart", itemStart as Any), ("dragged", dragged), ("dismissals", dismissals),
+            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled), ("mirrors", mirrors),
+            ("named", named as Any), ("written", written),
         ]
     }
 }

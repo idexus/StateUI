@@ -43,16 +43,16 @@ struct KeyboardSample: SampleContent, ExampleContent {
             HStack {
                 Button("Focus first")
                     .horizontalAlignment(.fill)
-                    .onClicked(.ignoreWhileRunning) { try await first.focus() }
+                    .onClicked(policy: .ignoreWhileRunning) { try await first.focus() }
 
                 Button("Unfocus first")
                     .horizontalAlignment(.fill)
-                    .onClicked(.ignoreWhileRunning) { try await first.unfocus() }
+                    .onClicked(policy: .ignoreWhileRunning) { try await first.unfocus() }
             }
             .spacing(8)
 
             Button("Close keyboard")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     said = try await window.hideOnScreenKeyboard()
                         ? "Focus released"
                         : "Nothing was focused"

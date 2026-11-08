@@ -47,7 +47,7 @@ final class StateLanesTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(met, [.number, .boolean, .choice, .color, .material], "the lane kinds the library's members are of")
+        XCTAssertEqual(met, [.number, .bool, .choice, .color, .material], "the lane kinds the library's members are of")
     }
 
     /// Whether some value of `type` was read back from its lanes, each as it crosses stated.
@@ -82,7 +82,7 @@ private enum Signal: Int32, HostRepresentable, StateChoice {
 
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "Test.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     static let isLit = ElementProperty<Self, Bool>("isLit")
     static let signal = ElementProperty<Self, Signal>("signal")
@@ -100,8 +100,8 @@ private struct LampPage: View {
 
     var body: some View {
         Lamp()
-            .setValue(LampContract.isLit, on: $isLit, mode: .out, kind: .plain)
-            .setValue(LampContract.signal, on: $signal, mode: .out, kind: .plain)
+            .setValue(LampContract.isLit, on: $isLit, as: .oneWay)
+            .setValue(LampContract.signal, on: $signal, as: .oneWay)
     }
 }
 

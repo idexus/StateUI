@@ -6,6 +6,7 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
     @State private var name = ""
     @State private var last = "nothing yet"
     @State private var platformLook = false
+    @State private var saveIsMain = true
     // listing: end
 
     static let id = "buttonRole"
@@ -38,16 +39,17 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
                     .role(.cancel)
                     .onClicked { last = "Cancel" }
 
-                // Return presses the main action.
+                // Return presses the main action; an ordinary button has no key.
                 Button("Save")
                     .style(look)
-                    .role(.primary)
+                    .role(saveIsMain ? .primary : .normal)
                     .onClicked { last = "Save" }
             }
             .spacing(12)
 
-            Switch($platformLook)
-                .text("Platform look")
+            Switch("Save is the main action", isOn: $saveIsMain)
+
+            Switch("Platform look", isOn: $platformLook)
 
             Text("Last: \(last)")
                 .fontSize(13)

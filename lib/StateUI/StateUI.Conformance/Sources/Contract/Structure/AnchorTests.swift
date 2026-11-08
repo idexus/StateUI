@@ -34,7 +34,7 @@
             },
             ConformanceCase("itsBranchFlippingKeepsWhatItPresentsAndWatches", proves: [
                 Covered(AnchorContract.self),
-            ], needs: [Covered(SheetContract.isPresented), Covered(TextContract.self)]) { s in
+            ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self), Covered(TextContract.self)]) { s in
                 let states = AnchorStates(shows: true)
                 s.start { AnchoredPage(states: states) }
                 try s.settle { try s.isShown("sheet") }

@@ -79,8 +79,8 @@ private struct Holding: Application {
     var body: some Scene { WindowGroup { First() } }
 }
 
-private extension WindowType where Value == Void {
-    static let second = WindowType("inspection.second")
+private extension WindowKind where Value == Void {
+    static let second = WindowKind("inspection.second")
 }
 
 /// An application of two scenes, each a window alone.
@@ -163,7 +163,7 @@ final class InspectionTests: XCTestCase {
     /// Two scenes, the way the platform hands their windows over.
     private func twoScenes() {
         HostBoundary.connectWindow()
-        HostBoundary.connectWindow(kind: WindowType.second.name)
+        HostBoundary.connectWindow(kind: WindowKind.second.name)
     }
 
     /// What each window of each scene holds, by type.
@@ -311,7 +311,7 @@ final class InspectionTests: XCTestCase {
         let first = pass { Renders().render(tree()) }
         let scenes = Set((first?.entries ?? []).filter { $0.depth == 0 }.map(\.scene))
 
-        XCTAssertEqual(scenes, [.manual("1"), .manual("2")])
+        XCTAssertEqual(scenes, [.scene("1"), .scene("2")])
     }
 
     /// An element's time holds the entries under it, and its own leaves them
@@ -432,14 +432,14 @@ final class InspectionTests: XCTestCase {
         let record = try XCTUnwrap(OpenScenes.shared.list.first)
         Inspector.show(in: record, .bottom)
         let docked = renders.render(tree(), changed: Renderer.shared.pendingChanges)
-        XCTAssertEqual(docked.at(.manual("1"), .manual("window 2"))?.children.map(\.type), [.page])
+        XCTAssertEqual(docked.at(.scene("1"), .window(2))?.children.map(\.type), [.page])
 
-        try record.closeWindow(key: "window 1")
+        try record.closeWindow(key: OwnKey.window(kind: nil, serial: 1))
         let moved = renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
-        XCTAssertEqual(moved.at(.manual("1"))?.arrangement, [.manual("window 2")])
+        XCTAssertEqual(moved.at(.scene("1"))?.arrangement, [.window(2)])
         XCTAssertEqual(
-            moved.at(.manual("1"), .manual("window 2"))?.children.map(\.type), [.page, .overlay],
+            moved.at(.scene("1"), .window(2))?.children.map(\.type), [.page, .overlay],
             "the window first now docks it, in the render that closed the other")
     }
 
@@ -456,7 +456,7 @@ final class InspectionTests: XCTestCase {
 
         XCTAssertEqual(
             whole.children[0].children.map(\.id),
-            [.manual("window 1"), .manual("stateui.debugInspector 2")])
+            [.window(1), .window(2, kind: "stateui.debugInspector")])
         XCTAssertNil(InspectorModel.shared.places["1"])
     }
 
@@ -468,7 +468,7 @@ final class InspectionTests: XCTestCase {
         Inspector.show(in: OpenScenes.shared.list[0], .window)
 
         XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
-        XCTAssertEqual(OpenScenes.shared.list[0].windows.map(\.key), ["window 1"])
+        XCTAssertEqual(OpenScenes.shared.list[0].windows.map(\.key), [OwnKey.window(kind: nil, serial: 1)])
     }
 
     /// The ⓘ opens the inspector of the scene whose window it is handed, and
@@ -479,13 +479,13 @@ final class InspectionTests: XCTestCase {
         let second = OpenScenes.shared.list[1]
         let window = second.windowSession(second.windows[0].key)
 
-        window.toggleInspector()
+        window.toggleDebugInspector()
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
-        XCTAssertTrue(window.isInspectorOpen)
+        XCTAssertNotNil(window.debugInspector)
         let other = OpenScenes.shared.list[0]
-        XCTAssertFalse(other.windowSession(other.windows[0].key).isInspectorOpen)
+        XCTAssertNil(other.windowSession(other.windows[0].key).debugInspector)
 
-        window.toggleInspector()
+        window.toggleDebugInspector()
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
     }
 
@@ -500,15 +500,15 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(scene.windows.count, 2)
         let (first, second) = (scene.windowSession(scene.windows[0].key), scene.windowSession(scene.windows[1].key))
 
-        second.toggleInspector()
+        second.toggleDebugInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [false, true], "in the window it was pressed in")
 
-        first.toggleInspector()
+        first.toggleDebugInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [true, false], "moved, and open")
-        XCTAssertTrue(second.isInspectorOpen, "open in every window's sense")
+        XCTAssertNotNil(second.debugInspector, "open in every window's sense")
 
-        first.toggleInspector()
-        XCTAssertFalse(second.isInspectorOpen, "pressed where it stands, it closes")
+        first.toggleDebugInspector()
+        XCTAssertNil(second.debugInspector, "pressed where it stands, it closes")
     }
 
     /// A scene that ends takes its docked inspector with it - and the record
@@ -563,16 +563,35 @@ final class InspectionTests: XCTestCase {
 
         let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
 
-        first.toggleInspector()
+        first.toggleDebugInspector()
 
         XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
         XCTAssertEqual(InspectorModel.shared.collapsed, ["1"])
         XCTAssertEqual(Array(docked()[0].suffix(2)), ["Expand", "Close"])
 
-        first.openInspector(.bottom)
+        first.debugInspector = .bottom
 
         XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty)
         XCTAssertEqual(pair(from: "Collapse", in: docked()[0]), ["Collapse", "Close"])
+    }
+
+    /// A window says where its scene's inspector shows, and is told: a place written shows it there, whole, and nil
+    /// hides it.
+    func testAWindowSaysWhereItsScenesInspectorShows() {
+        twoScenes()
+
+        _ = pass { Renders().render(tree()) }
+
+        let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
+
+        XCTAssertNil(first.debugInspector)
+
+        first.debugInspector = .side
+        XCTAssertEqual(first.debugInspector, .side)
+        XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty, "whole")
+
+        first.debugInspector = nil
+        XCTAssertNil(first.debugInspector)
     }
 
     /// A scene's history is the renders that reached it.
@@ -584,9 +603,9 @@ final class InspectionTests: XCTestCase {
             return pass
         }
 
-        let passes = [pass(3, in: .manual("1")), pass(2, in: .manual("2")), pass(1, in: .manual("1"))]
+        let passes = [pass(3, in: .scene("1")), pass(2, in: .scene("2")), pass(1, in: .scene("1"))]
 
-        XCTAssertEqual(InspectorView.history(of: .manual("1"), in: passes).map(\.number), [3, 1])
+        XCTAssertEqual(InspectorView.history(of: .scene("1"), in: passes).map(\.number), [3, 1])
     }
 
     // MARK: - Names

@@ -102,6 +102,11 @@ extent within its padding and border
 ([words on the way](../../host/motion.md#words-on-the-way)). At rest the
 view's own CSS stands again.
 
+Moved views are drawn once in their creation order (`WebDOMView.serial`),
+which remains stable when the relay reuses a released element's number.
+Overridden CSS properties are restored in name order. Both steps use the
+frames and style values already held, with no further layout reads.
+
 The trap: the place a child sets out from must be read before anything
 moves it. Read after the call's changes, every child already stands at its
 new place and nothing travels; read from a measurement kept since the last

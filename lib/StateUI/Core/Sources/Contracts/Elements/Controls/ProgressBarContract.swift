@@ -10,7 +10,7 @@ public enum ProgressBarContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A progress bar is a view, tinted.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, TintElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, TintElementContract.self]
 
     /// How far along, as a fraction from 0 to 1.
     public static let progress = ElementProperty<Self, Double>("progress", layer: .native)

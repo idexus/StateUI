@@ -20,7 +20,7 @@ struct MainPage: View {
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 2 –</td><td><code>UINavigationController</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 2 ☑️ · 1 ✓ · 2 –</td><td>custom <code>ViewGroup</code> stack + <code>Toolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>7 ✅ · 1 ☑️ · 1 ✓ · 2 –</td><td>custom <code>Panel</code> stack; title, back and actions in the window's <code>TitleBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 1 ☑️ · 2 ✓ · 4 –</td><td><code>AdwNavigationView</code> of <code>AdwNavigationPage</code>s</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>3 ✅ · 2 ☑️ · 1 ✓ · 4 –</td><td><code>AdwNavigationView</code> of <code>AdwNavigationPage</code>s</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>9 ✅ · 1 ☑️ · 1 ✓</td><td><code>&lt;div&gt;</code> stack; one History API entry to go back</td></tr></tbody>
 </table>
 
@@ -68,14 +68,34 @@ What an element the platform's automation meets has - a drawn element, a menu's 
 <tr><td colspan="9">GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
 </table>
 
+## From [IconElement](tiers/IconElement.md)
+
+The picture an element shows beside or for its words: a button's, a toolbar label's, a menu entry's, a page's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
+</table>
+
+## From [BackgroundElement](tiers/BackgroundElement.md)
+
+What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
+</table>
+
 ## From [BarElement](tiers/BarElement.md)
 
 What an arrangement declares of the bar while it stands on the visible path: its look.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>barBackground</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✓</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">AppKit: The bars' band is painted under the toolbar's own material: a blur or glass shows its color.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows its color.<br>WinUI 3: WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.<br>GTK 4: only through the host's own: read barBackground of NavigationStack: the class of the host's style sheet the header wears: GTK reads back no background<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>barBackground</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">AppKit: The bars' band is painted under the toolbar's own material: a blur or glass shows its color.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows its color.<br>WinUI 3: WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.<br>GTK 4: GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner or out from a point keeps the header bar's proportions as it was painted, not as the window resizes.<br>Web: A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barForegroundColor</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.<br>Android Views: The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>barScrollEdge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
@@ -92,10 +112,6 @@ What a page shows about itself - a title and a picture where another container p
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td></tr>
-<tr><td colspan="9">GTK 4: cannot read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of NavigationStack - AppKit's driver has no path for it yet<br>GTK 4: GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: openLink on NavigationStack: the host's entry the application's delegate calls, no Apple event sent<br>UIKit: only through the host's own: openLink on NavigationStack: the host's entry the scene's delegate calls, as no URL context can be made<br>Android Views: only through the host's own: openLink on NavigationStack: the host's entry the activity's intent reaches, no intent sent<br>WinUI 3: only through the host's own: openLink on NavigationStack: the relay's report of an activation told the driver's address, no activation<br>GTK 4: only through the host's own: openLink on NavigationStack: the host's entry the application's open signal reaches, no file opened<br>Web: only through the host's own: openLink on NavigationStack: the host's entry the page's address with a fragment reaches, no address loaded</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

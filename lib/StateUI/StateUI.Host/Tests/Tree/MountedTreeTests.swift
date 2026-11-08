@@ -210,7 +210,7 @@ final class MountedTreeTests: XCTestCase {
     func testTheLanguagesDirectionTurningArrangesEveryLayout() {
         let (tree, log) = Self.tree()
         let locale = StandardEnvironment.locale
-        defer { locale.layoutDirection = .leftToRight }
+        defer { locale.writingDirection = .leftToRight }
         tree.apply(Self.stack("stack", ["a"]), complete: true)
         tree.followTheLanguagesDirection()
         log.arranged.removeAll()
@@ -218,7 +218,7 @@ final class MountedTreeTests: XCTestCase {
         tree.followTheLanguagesDirection()
         XCTAssertEqual(log.arranged, [], "the language did not turn")
 
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
         tree.followTheLanguagesDirection()
         XCTAssertEqual(tree.root?.layoutDirection, .rightToLeft)
         XCTAssertEqual(log.arranged, ["stack"])
@@ -316,7 +316,7 @@ final class MountedTreeTests: XCTestCase {
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {
         let (tree, log) = Self.tree(viewless: ["bare"])
         var child = HostPatch(id: .manual("child"), type: .text)
-        child.properties = [.width: .number(10)]
+        child.properties = [VisualElementContract.width.token: .number(10)]
         var bare = HostPatch(id: .manual("bare"), type: .zStack)
         bare.children = .arranged([child])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -325,7 +325,7 @@ final class MountedTreeTests: XCTestCase {
         log.arranged.removeAll()
 
         let childMount = tree.root!.children[0].children[0].mount
-        tree.present(states: [:], properties: [childMount: [.width]])
+        tree.present(states: [:], properties: [childMount: [VisualElementContract.width.token]])
 
         XCTAssertEqual(log.arranged, ["child", "bare", "stack"], "the bare one has no view; its parent places the child too")
     }
@@ -357,7 +357,7 @@ final class MountedTreeTests: XCTestCase {
     func testALayoutsRunTurnsWithItsDirection() {
         let (tree, log) = Self.tree(viewless: [])
         let locale = StandardEnvironment.locale
-        defer { locale.layoutDirection = .leftToRight }
+        defer { locale.writingDirection = .leftToRight }
         func layout(_ name: String, mirrors: Bool) -> HostPatch {
             var layout = HostPatch(id: .manual(name), type: .motionLayout)
             layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
@@ -373,7 +373,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual([mirrored.runDirection, written.runDirection], [.leftToRight, .leftToRight])
         log.presented.removeAll()
 
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
         tree.followTheLanguagesDirection()
 
         XCTAssertEqual(log.presented["mirrored"], [.area], "its run presented again")
@@ -402,9 +402,9 @@ final class MountedTreeTests: XCTestCase {
         var asked = 0
         tree.onAnimation = { asked += 1 }
         var label = HostPatch(id: .manual("label"), type: .text)
-        label.properties = [.text: .string("7"), .width: .number(90), .opacity: .number(0.5)]
+        label.properties = [.text: .string("7"), VisualElementContract.width.token: .number(90), .opacity: .number(0.5)]
         var row = HostPatch(id: .manual("row"), type: .hStack)
-        row.properties = [.spacing: .number(12)]
+        row.properties = [StackContract.spacing.token: .number(12)]
         row.children = .arranged([label])
 
         tree.apply(row, complete: true)
@@ -462,6 +462,29 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(element.spokenWords, "Row five", "its own label stands for all it holds")
     }
 
+    /// An element hidden from assistive technology says nothing of its own - not its label, not its words - while
+    /// what it holds still speaks; one hidden with all it holds says nothing at all.
+    @MainActor
+    func testAHiddenElementSaysNothingOfItsOwnWhileWhatItHoldsSpeaks() throws {
+        var child = HostPatch(id: .manual("child"), type: .text)
+        child.properties = [.text: .string("Shown")]
+        var row = HostPatch(id: .manual("row"), type: .vStack)
+        row.properties = [
+            .accessibilityLabel: .string("Private"), .text: .string("Own"), .accessibilityPresence: AccessibilityPresence.hidden.propValue,
+        ]
+        row.children = .arranged([child])
+        let (tree, _) = Self.tree(viewless: [])
+        tree.apply(row, complete: true)
+        let element = try XCTUnwrap(tree.root)
+
+        XCTAssertEqual(element.spokenWords, "Shown", "neither the label nor the words of the hidden element")
+
+        var whole = HostPatch(id: .manual("row"), type: .vStack)
+        whole.properties = [.accessibilityPresence: AccessibilityPresence.hiddenWithContents.propValue]
+        tree.apply(whole, complete: false)
+        XCTAssertEqual(element.spokenWords, "", "hidden with all it holds")
+    }
+
     /// Four sides are read once for every host: leading, top, trailing, bottom, as the tree gives them; nothing all
     /// round where it gives none, or fewer than four.
     @MainActor
@@ -483,7 +506,7 @@ final class MountedTreeTests: XCTestCase {
     func testWhatAFrameAsksFollowsWhatMoved() {
         let (tree, log) = Self.tree(viewless: [])
         var label = HostPatch(id: .manual("label"), type: .text)
-        label.properties = [.width: .number(10)]
+        label.properties = [VisualElementContract.width.token: .number(10)]
         let bars = HostPatch(id: .manual("bars"), type: .navigationStack)
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label, bars])
@@ -496,7 +519,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertFalse(color.windowChrome)
 
         log.arranged.removeAll()
-        tree.present(states: [:], properties: [labelMount: [.width]])
+        tree.present(states: [:], properties: [labelMount: [VisualElementContract.width.token]])
         XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
 
         let bar = tree.present(states: [:], properties: [barsMount: [.barBackground]])
@@ -509,7 +532,7 @@ final class MountedTreeTests: XCTestCase {
     func testAPagesWordsOnItsBarMovedComposeTheChrome() {
         let (tree, _) = Self.tree(viewless: [])
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties = [.title: .string("Notes")]
+        page.properties = [PageElementContract.title.token: .string("Notes")]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([page])
         tree.apply(stack, complete: true)
@@ -661,7 +684,8 @@ final class MountedTreeTests: XCTestCase {
         let registry = Registry<AnyObject>()
         registry.everyElementMeetsAssistiveTechnology()
         registry.everyElementTakesAccessibilityActions()
-        let unrealized = Set(MountedElement.accessibilityProperties.map(\.name)).subtracting(registry.sharedNames)
+        let unrealized = Set(MountedElement.accessibilityProperties.map(\.memberName))
+            .subtracting(registry.sharedNames)
         XCTAssertEqual(unrealized, [])
     }
 
@@ -680,27 +704,27 @@ final class MountedTreeTests: XCTestCase {
             label("said", [
                 .accessibilityIdentifier: .string("greeting"), .accessibilityLabel: .string("Hello"),
                 .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
-                .isAccessibilityHidden: .bool(false),
+                .accessibilityPresence: AccessibilityPresence.element.propValue,
             ]),
             label("rated", [
                 .accessibilityLabel: .string("Rating"), .accessibilityRole: .enumeration(3),
                 .accessibilityValue: .string("3 of 5"),
             ]),
             label("kind", [.accessibilityRole: .enumeration(1)]),
-            label("both", [.isAccessibilityHidden: .bool(true), .hidesChildrenFromAccessibility: .bool(true)]),
-            label("hidden", [.isAccessibilityHidden: .bool(true)]),
+            label("both", [.accessibilityPresence: AccessibilityPresence.hiddenWithContents.propValue]),
+            label("hidden", [.accessibilityPresence: AccessibilityPresence.hidden.propValue]),
             label("silent", [:]),
         ])
         tree.apply(root, complete: true)
         func words(_ id: String) -> AccessibilityWords? { tree.root?.first(id: .manual(id))?.accessibilityWords }
 
         XCTAssertEqual(words("said"), AccessibilityWords(
-            identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .met))
+            identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .element))
         XCTAssertEqual(words("rated"), AccessibilityWords(
             identifier: nil, label: "Rating", hint: nil, role: .adjustable, value: "3 of 5", headingLevel: 0,
-            presence: .met))
-        XCTAssertEqual(words("kind")?.presence, .met, "a kind of its own said is words of its own")
-        XCTAssertEqual(words("both")?.presence, .hiddenWithChildren)
+            presence: .element))
+        XCTAssertEqual(words("kind")?.presence, .element, "a kind of its own said is words of its own")
+        XCTAssertEqual(words("both")?.presence, .hiddenWithContents)
         XCTAssertEqual(words("hidden")?.presence, .hidden)
         XCTAssertEqual(words("silent"), AccessibilityWords(
             identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: nil))
@@ -724,16 +748,16 @@ final class MountedTreeTests: XCTestCase {
             stack("hinted", [.accessibilityHint: .string("Opens it")]),
             stack("heading", [.accessibilityHeading: .enumeration(1)]),
             stack("tapped", [:], tapped: true),
-            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
+            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .accessibilityPresence: AccessibilityPresence.hidden.propValue]),
             stack("plain", [:]),
         ])
         tree.apply(root, complete: true)
-        func presence(_ id: String) -> AccessibilityWords.Presence? {
+        func presence(_ id: String) -> AccessibilityPresence? {
             tree.root?.first(id: .manual(id))?.accessibilityWords.presence
         }
 
         XCTAssertEqual(
-            ["labeled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
+            ["labeled", "hinted", "heading", "tapped"].map(presence), [.element, .element, .element, .element], "each met")
         XCTAssertEqual(presence("labeled but hidden"), .hidden, "as the author says")
         XCTAssertNil(presence("plain"), "as its view stands of itself")
     }
@@ -773,12 +797,12 @@ final class MountedTreeTests: XCTestCase {
     /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
     /// before any word reached it - never as the last word left it.
     func testAViewIsAnElementAsItsPresenceSaysElseAsItStoodOfItself() {
-        func words(_ presence: AccessibilityWords.Presence?) -> AccessibilityWords {
+        func words(_ presence: AccessibilityPresence?) -> AccessibilityWords {
             AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: presence)
         }
-        XCTAssertTrue(words(.met).isElement(standing: false))
+        XCTAssertTrue(words(.element).isElement(standing: false))
         XCTAssertFalse(words(.hidden).isElement(standing: true))
-        XCTAssertFalse(words(.hiddenWithChildren).isElement(standing: true))
+        XCTAssertFalse(words(.hiddenWithContents).isElement(standing: true))
         XCTAssertTrue(words(nil).isElement(standing: true))
         XCTAssertFalse(words(nil).isElement(standing: false))
     }
@@ -877,7 +901,7 @@ final class MountedTreeTests: XCTestCase {
     /// keeps it under any parent, and the root takes the language's, as the host reported the locale.
     @MainActor
     func testALayoutDirectionIsInheritedFromTheParentAndAtTheRootFromTheLocale() {
-        defer { StandardEnvironment.locale.layoutDirection = .leftToRight }
+        defer { StandardEnvironment.locale.writingDirection = .leftToRight }
         let (tree, _) = Self.tree()
         var outer = Self.stack("outer", [])
         outer.properties[.layoutDirection] = LayoutDirection.rightToLeft.propValue
@@ -895,7 +919,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(outerElement?.children.last?.layoutDirection, .leftToRight, "its own, under any parent")
         XCTAssertEqual(rootElement?.children.last?.layoutDirection, .leftToRight, "the language's at the root")
 
-        StandardEnvironment.locale.layoutDirection = .rightToLeft
+        StandardEnvironment.locale.writingDirection = .rightToLeft
         XCTAssertEqual(rootElement?.children.last?.layoutDirection, .rightToLeft, "a language written right to left")
     }
 
@@ -982,7 +1006,7 @@ final class MountedTreeTests: XCTestCase {
 
         XCTAssertTrue(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, which size it")
         XCTAssertFalse(changed("a") { $0.properties[.opacity] = .number(0.5) }, "a child's opacity, drawn in its place")
-        XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
+        XCTAssertTrue(changed("a") { $0.properties[VisualElementContract.width.token] = .number(80) }, "a child's size")
         XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
         XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")
         XCTAssertTrue(changed("a") { $0.replace = true }, "a child made anew")
@@ -999,7 +1023,7 @@ final class MountedTreeTests: XCTestCase {
             tree.apply(sparse, complete: false)
             return holder.childrenNeedArranging
         }
-        XCTAssertTrue(paged { $0.properties[.title] = .string("Inbox") }, "a page's own title")
+        XCTAssertTrue(paged { $0.properties[PageElementContract.title.token] = .string("Inbox") }, "a page's own title")
         XCTAssertFalse(paged { $0.children = .changed([]) }, "something inside a page")
     }
 
@@ -1128,6 +1152,6 @@ private final class ReadingNative: NativeElement {
 private struct TwoScenes: Application {
     var body: some Scene {
         WindowGroup { Text("first") }
-        Window(WindowType("tree.second")) { Text("second") }
+        Window(WindowKind("tree.second")) { Text("second") }
     }
 }

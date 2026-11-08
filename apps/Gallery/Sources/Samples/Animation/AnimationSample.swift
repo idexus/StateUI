@@ -145,7 +145,7 @@ struct AnimationSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(.cancelPrevious, act)
+            .onClicked(policy: .cancelPrevious, act)
     }
 
     /// What the picker calls a curve.

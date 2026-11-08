@@ -5,8 +5,11 @@
 /// under it.
 @MainActor
 final class SceneRecord {
-    /// Its number - "1" for the first scene - which is also its key in the tree.
+    /// Its number - "1" for the first scene - its name in an act and in what is kept.
     let id: String
+
+    /// Its key in the tree: its number behind StateUI's own separator.
+    var key: String { OwnKey.scene(id) }
 
     /// Where its scene stands among those the application's body declares.
     var declaration: Int
@@ -107,8 +110,22 @@ final class SceneRecord {
         windows[index].text = try? ValueText.write(value)
     }
 
+    /// Why one of its windows may not be made about `value`: another window of its kind is open for it - one
+    /// window of a kind per value, whoever writes, as opening one is refused; nil where it may.
+    /// Design: docs/design/core/scenes.md#a-window-for-a-value
+    func refusal<Value: Codable & Hashable>(of serial: Int, retargetingTo value: Value) -> String? {
+        guard let window = windows.first(where: { $0.serial == serial }),
+            windows.contains(where: { $0.serial != serial && $0.type == window.type && $0.value == AnyHashable(value) })
+        else { return nil }
+
+        return "The window `\(window.key)` was not made about \(value): a window of its kind is open for the "
+            + "value \(value) already, and a kind has one window per value, whoever writes - as `openWindow` "
+            + "refuses it. Close that window first, or write another value."
+    }
+
     /// The state saying which value one of its windows is about, kept with the window's session: a write
-    /// retargets the window, which is also what the platform restores it for.
+    /// retargets the window, which is also what the platform restores it for, and a value another window of the
+    /// kind is open for is refused.
     /// Design: docs/design/core/scenes.md#a-window-for-a-value
     func windowValue<Value: Codable & Hashable>(_ opened: OpenedWindow, as _: Value.Type) -> State<Value> {
         let session = windowSession(opened.key)
@@ -122,6 +139,7 @@ final class SceneRecord {
         }
         let made = State(wrappedValue: value)
         let serial = opened.serial
+        made.storage.refuses = { [weak self] in self?.refusal(of: serial, retargetingTo: $0) }
         made.storage.keep = { [weak self] in self?.retarget(serial, to: $0) }
         session.value = made
         return made
@@ -167,10 +185,12 @@ final class SceneRecord {
         return storage
     }
 
-    /// Marks a key as needing to be kept, replacing whatever value was
-    /// waiting.
+    /// Marks a key as needing to be kept, replacing whatever value was waiting, and asks the host for a turn to
+    /// take it.
+    /// Design: docs/design/core/state.md#kept-state
     func record(_ key: KeyName, _ value: PropValue) {
         waiting[key] = value
+        UIThreadExecutor.shared.askForTurn()
     }
 
     /// How many keys are waiting to be kept.
@@ -199,8 +219,8 @@ struct OpenedWindow: Equatable {
     /// That value written down, the way the platform keeps it.
     var text: String?
 
-    /// What the tree knows it by: its kind - "window" for the group with no name - and its number.
-    var key: String { "\(type?.name ?? "window") \(serial)" }
+    /// Its key in the tree: its kind - "window" for the group with no name - and its number, behind StateUI's own separator.
+    var key: String { OwnKey.window(kind: type?.name, serial: serial) }
 }
 
 /// A state box a scene may keep - one declared with a `SceneKey`, which the

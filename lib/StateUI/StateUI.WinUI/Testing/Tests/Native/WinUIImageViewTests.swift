@@ -202,7 +202,7 @@ private struct PicturesApplication: Application {
 private struct PicturesScene: Scene {
     var body: some Scene {
         WindowGroup { PicturesPage(opens: true) }
-        Window(WindowType("pictures.again")) { PicturesPage(opens: false) }
+        Window(WindowKind("pictures.again")) { PicturesPage(opens: false) }
     }
 }
 
@@ -215,7 +215,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
+                Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("pictures.again")) }
             }
             ForEach(Array(0..<17)) { index in
                 Image(index.isMultiple(of: 2) ? "test_wide.svg" : "test_halves.svg").width(177).height(248)

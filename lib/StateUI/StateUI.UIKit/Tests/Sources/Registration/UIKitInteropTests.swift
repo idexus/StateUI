@@ -12,13 +12,13 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke]
 }
@@ -26,7 +26,7 @@ private enum InteropTestContract: ApplicationTier {
 /// An element the application declares, realized by a view the application wrote.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -35,7 +35,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
@@ -83,7 +83,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked(.ignoreWhileRunning) {
+            Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     let doubled = try await application.call(InteropTestContract.doubled, 21)
                     said = "\(doubled)"
@@ -91,7 +91,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked(.ignoreWhileRunning) {
+            Button("Ask nobody").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     try await application.call(InteropTestContract.unregistered)
                     said = "that should have thrown"
@@ -99,7 +99,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Flash").onClicked(.ignoreWhileRunning) {
+            Button("Flash").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"
@@ -131,7 +131,7 @@ final class UIKitInteropTests: XCTestCase {
             return lamp
         }) { lamp in
             lamp.property(LampContract.lit) { view, lit in view.lit = lit ?? false }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
         StateUIActs.add(LampContract.flash, on: LampView.self) { lamp in lamp.flashes += 1 }
     }
@@ -140,7 +140,7 @@ final class UIKitInteropTests: XCTestCase {
     @MainActor
     private func running() -> UIKitRenderer {
         Self.registerLamp()
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         return UIKitRenderer.running { Calling() }
     }
 
@@ -180,7 +180,7 @@ final class UIKitInteropTests: XCTestCase {
         try press("Ask nobody", on: host)
 
         let answer = try XCTUnwrap(said(host))
-        XCTAssertTrue(answer.hasPrefix("thrown:") && answer.contains("InteropTest.Unregistered"), answer)
+        XCTAssertTrue(answer.hasPrefix("thrown:") && answer.contains("InteropTest.unregistered"), answer)
     }
 
     /// An event the application raises reaches every subscription to it, carrying the values its contract

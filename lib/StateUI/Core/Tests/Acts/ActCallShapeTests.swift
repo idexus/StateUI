@@ -42,7 +42,7 @@ final class ActCallShapeTests: XCTestCase {
     /// finished. Takes Void so the compiler does not have to prove an
     /// arbitrary result Sendable; a call with a result wraps itself in `_ =`.
     private func check(
-        _ act: String,
+        _ act: StateUI.Act,
         _ arguments: [PropValue],
         file: StaticString = #filePath,
         line: UInt = #line,
@@ -62,27 +62,25 @@ final class ActCallShapeTests: XCTestCase {
     /// with a completion id exactly when a caller waits for it.
     private func taken(
         _ batch: [HostActCall],
-        _ act: String,
+        _ act: StateUI.Act,
         _ arguments: [PropValue],
         awaited: Bool,
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        XCTAssertEqual(batch.map(\.name), [act], file: file, line: line)
+        XCTAssertEqual(batch.map(\.name), [act.name], file: file, line: line)
         XCTAssertEqual(batch.first?.arguments, arguments, file: file, line: line)
         XCTAssertEqual(batch.first?.completion != nil, awaited, "whether a caller waits", file: file, line: line)
     }
 
-    /// An act on a control the author never NAMED carries the element identity
-    /// as a NUMBER - `ElementID.auto`, the other namespace of the same argument
-    /// beside a name's `.manual`. The box is filled by hand
-    /// here because the differ's half is AimTests' business; what this
-    /// pins is the act.
+    /// An act on a control carries where the control stands - the keys from the root down, a NUMBER for an element
+    /// the author never named, `ElementID.auto`, a name's text for `.manual` - as its first argument. The box is
+    /// filled by hand here because the differ's half is AimTests' business; what this pins is the act.
     func testAnActByElementNumberCrossesWithItsArgumentsInPlace() async throws {
         let field = Aim(TextField.self)
-        field.box.attach(.auto(7), walk: 1)
+        field.box.attach([.manual("window"), .auto(7)], walk: 1)
 
-        try await check("focus", [.number(7)]) {
+        try await check("focus", [.values([.string("window"), .number(7)])]) {
             _ = try await field.focus()
         }
     }
@@ -144,12 +142,12 @@ final class ActCallShapeTests: XCTestCase {
     /// question's buttons alike, its sentence empty where none is given.
     func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
-            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+            language: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
+            firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight))
 
         try await check("prompt", Self.usersWindow + [
             .string("Rename"), .string(""), .string("OK"), .string("Anuluj"), .nothing, .nothing,
-            InputPurpose.default.propValue, .string(""),
+            InputPurpose.automatic.propValue, .string(""),
         ]) {
             _ = try await WindowSession().prompt("Rename")
         }
@@ -166,18 +164,18 @@ final class ActCallShapeTests: XCTestCase {
         }
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
-            isMetric: true, layoutDirection: .leftToRight))
+            language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
+            isMetric: true, writingDirection: .leftToRight))
     }
 
     func testFocusingAViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("focus", [.string("email")]) {
+        try await check("focus", [.values([.string("email")])]) {
             _ = try await named("email", TextField.self).focus()
         }
     }
 
     func testUnfocusingAViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("unfocus", [.string("email")]) {
+        try await check("unfocus", [.values([.string("email")])]) {
             try await named("email", TextField.self).unfocus()
         }
     }
@@ -197,19 +195,19 @@ final class ActCallShapeTests: XCTestCase {
     /// at 0 and nothing else - and each is pinned by name, so a rename on one
     /// side cannot slip past the other.
     func testGoingBackInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goBack", [.string("browser")]) {
+        try await check("goBack", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).goBack()
         }
     }
 
     func testGoingForwardInAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("goForward", [.string("browser")]) {
+        try await check("goForward", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).goForward()
         }
     }
 
     func testReloadingAWebViewCrossesWithItsArgumentsInPlace() async throws {
-        try await check("reload", [.string("browser")]) {
+        try await check("reload", [.values([.string("browser")])]) {
             try await named("browser", WebView.self).reload()
         }
     }
@@ -217,44 +215,48 @@ final class ActCallShapeTests: XCTestCase {
     /// The one WebView act with a second argument: the script after the view,
     /// and an answer somebody is waiting for.
     func testRunningJavaScriptCrossesWithItsArgumentsInPlace() async throws {
-        try await check("evaluateJavaScript", [.string("browser"), .string("document.title")]) {
+        try await check("evaluateJavaScript", [.values([.string("browser")]), .string("document.title")]) {
             _ = try await named("browser", WebView.self).evaluateJavaScript("document.title")
         }
     }
 
-    /// A list scrolls to an identity - a section's name before an item's where the
-    /// list has sections - and says where it stands, after the view.
+    /// A list scrolls to an item's identity and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
-        try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
-            try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
+        let list = Aim(ItemsView<Int>.self)
+        let renders = Renders()
+        let patch = renders.render(ItemsView(0..<1_000) { Text("\($0)") }.aim(list).id("list").node)
+        let entries = try XCTUnwrap(patch.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        drain()
+        try await check("scrollTo", [.values([.string("list")]), .string(entries.sections[0].items[500]),
+                                     .enumeration(ScrollAnchor.start.rawValue)]) {
+            try await list.scroll(to: 500, anchor: .start)
         }
-        try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
-            try await named("list", ItemsView<String>.self).scrollTo("Pear", inSection: "Fruit")
-        }
+        withExtendedLifetime(renders) {}
     }
 
-    /// A list of sections scrolls to an item by the identity its own source wrote for it - its section's name before
-    /// it - without being told the section.
-    func testScrollingASectionedListFindsTheItemsSection() async throws {
+    /// A list of sections scrolls to an item by the identity its own source wrote for it, whatever section holds it.
+    func testScrollingASectionedListFindsItsItem() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
-        Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
+        let renders = Renders()
+        renders.render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
         drain()
 
-        let task = Self.begin { try await list.scrollTo("Pear") }
+        let task = Self.begin { try await list.scroll(to: "Pear") }
         let batch = drain()
 
-        XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Fruit\u{1F}Pear"))
+        XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Pear"))
 
         await finish(batch)
         _ = try? await task.value
+        withExtendedLifetime(renders) {}
     }
 
     /// A map slides on its region after the view: one run of three numbers - latitude, longitude, and the radius in
     /// METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
-        try await check("moveToRegion", [.string("map"), .numbers([52.2297, 21.0122, 3000])]) {
-            try await named("map", Map.self).moveToRegion(
+        try await check("moveToRegion", [.values([.string("map")]), .numbers([52.2297, 21.0122, 3000])]) {
+            try await named("map", Map.self).show(
                 MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
         }
     }
@@ -299,8 +301,8 @@ final class ActCallShapeTests: XCTestCase {
 
         application.colorScheme = .dark
         XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
-        application.colorScheme = .system
-        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+        application.colorScheme = nil
+        taken(drain(), "useColorScheme", [.nothing], awaited: false)
 
         // The theme is a state: written through its binding - a control's, a picker's - it crosses the same way.
         application.$colorScheme.wrappedValue = .light
@@ -430,6 +432,15 @@ final class ActCallShapeTests: XCTestCase {
         ]) { _ = try await StandardEnvironment.application.send(request) }
     }
 
+    func testCustomRequestMethodsCrossWithTheirCasePreserved() async throws {
+        for name in ["ReadRecord", "READRECORD", "readRecord"] {
+            let request = HTTPRequest("https://example.com/parcels", method: HTTPMethod(name))
+            try await check("sendRequest", [
+                .string("https://example.com/parcels"), .name(name), .strings([]), .bytes([]),
+            ]) { _ = try await StandardEnvironment.application.send(request) }
+        }
+    }
+
     /// The server's answer comes back as its status, its headers - by name in any case, one said twice holding both
     /// values - and its body.
     func testAServersAnswerComesBackAsItWasSaid() async throws {
@@ -438,7 +449,7 @@ final class ActCallShapeTests: XCTestCase {
         let call = try XCTUnwrap(drain().first?.completion)
 
         HostBoundary.reply(call, with: [
-            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1", "set-cookie", "b=2"]),
+            .number(404), .strings(["content-type", "text/plain", "vary", "Accept", "vary", "Accept-Encoding"]),
             .bytes(Array("Not here".utf8)),
         ])
         await settle()
@@ -446,7 +457,7 @@ final class ActCallShapeTests: XCTestCase {
 
         XCTAssertEqual(response.status, 404, "a status is an answer")
         XCTAssertEqual(response.header("Content-Type"), "text/plain")
-        XCTAssertEqual(response.header("set-cookie"), "a=1, b=2")
+        XCTAssertEqual(response.header("Vary"), "Accept, Accept-Encoding")
         XCTAssertEqual(response.text, "Not here")
     }
 

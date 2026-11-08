@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// The fields a user types in. Their words are `TextualElementContract.text`
+    /// The fields a user types in. Their words are `TextElementContract.text`
     /// and the change they report is `TextInputContract.textChanged` - two
     /// tiers, both worn. A text the host CARRIES IN is the host's to write, so
     /// the tree's words are not put over it; anything else the tree describes
@@ -17,9 +17,9 @@ extension AppKitRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let entry = AppKitTextFieldView()
             entry.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            entry.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            entry.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return entry
         }, members: { entry in
             entry.applies(Self.fieldMembers, TextFieldContract.isPassword) { view, values in
@@ -28,17 +28,17 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     readOnly: values[TextInputContract.isReadOnly] ?? false,
                     secure: values[TextFieldContract.isPassword] ?? false,
                     maximumLength: values[TextInputContract.maximumLength],
@@ -53,14 +53,14 @@ extension AppKitRegistrations {
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            entry.raises(TextInputContract.textChanged)
-            entry.raises(TextFieldContract.submitted)
+            entry.declares(TextInputContract.textChanged)
+            entry.declares(SubmitElementContract.submitted)
         })
 
         registry.add(TextEditorContract.self, create: { reports in
             let editor = AppKitTextEditorView()
             editor.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             return editor
         }, members: { editor in
@@ -70,17 +70,17 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     readOnly: values[TextInputContract.isReadOnly] ?? false,
                     maximumLength: values[TextInputContract.maximumLength],
                     traits: InputTraits(values),
@@ -95,15 +95,15 @@ extension AppKitRegistrations {
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
 
         registry.add(SearchFieldContract.self, create: { reports in
             let search = AppKitSearchFieldView()
             search.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(Self.fieldMembers) { view, values in
@@ -112,17 +112,17 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
-                    placeholder: values[TextInputContract.placeholder],
+                    placeholder: values[PlaceholderElementContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
                     foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
-                    backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
+                    backgroundColor: paintedColor(values[BackgroundElementContract.background]?.propValue),
                     font: Self.font(values),
                     horizontalAlignment: values[TextAlignmentElementContract.horizontalTextAlignment],
-                    enabled: values[VisualElementContract.isEnabled] ?? true,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true,
                     readOnly: values[TextInputContract.isReadOnly] ?? false,
                     maximumLength: values[TextInputContract.maximumLength],
                     traits: InputTraits(values),
@@ -130,8 +130,8 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
             }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 
@@ -141,11 +141,11 @@ extension AppKitRegistrations {
 
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.placeholderColor, TextColorElementContract.textColor, VisualElementContract.background,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
+        TextInputContract.placeholderColor, TextColorElementContract.textColor, BackgroundElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontWeight, FontElementContract.textStyle,
-        TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
+        TextAlignmentElementContract.horizontalTextAlignment, EnabledElementContract.isEnabled,
         TextInputContract.isReadOnly, TextInputContract.maximumLength, TextInputContract.isSpellCheckEnabled,
         TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose, TextInputContract.cursorPosition,
         TextInputContract.selectionLength)

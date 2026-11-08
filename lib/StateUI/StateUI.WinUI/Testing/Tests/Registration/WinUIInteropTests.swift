@@ -14,16 +14,16 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     /// Declared by no test, so a handler listening for it hears nothing.
-    static let unheard = ElementEvent<Self, String>("InteropTest.Unheard")
+    static let unheard = ElementEvent<Self, String>("unheard")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke, unheard]
 }
@@ -38,7 +38,7 @@ private struct Calling: View {
     var body: some View {
         VStack {
             Button("Ask")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         let doubled = try await application.call(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
@@ -48,7 +48,7 @@ private struct Calling: View {
                 }
 
             Button("Ask nobody")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         try await application.call(InteropTestContract.unregistered)
                         answer = "that should have thrown"
@@ -74,7 +74,7 @@ private struct Calling: View {
 /// An element the APPLICATION declares, realized by a control the application wrote.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether the lamp is lit.
     static let lit = ElementProperty<Self, Bool>("lit")
@@ -83,7 +83,7 @@ private enum LampContract: ElementContract {
     static let pulled = ElementEvent<Self, Int>("pulled")
 
     /// Flashes the lamp this aim is on.
-    static let flash = ElementAct<Self, Void, Void>("InteropTest.Flash")
+    static let flash = ElementAct<Self, Void, Void>("flash")
 
     static let members: [any ContractMember] = [lit, pulled, flash]
 }
@@ -151,7 +151,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"
@@ -176,7 +176,7 @@ final class WinUIInteropTests: XCTestCase {
             return lamp
         }) { lamp in
             lamp.property(LampContract.lit) { control, lit in control.lit = lit ?? false }
-            lamp.raises(LampContract.pulled)
+            lamp.declares(LampContract.pulled)
         }
         StateUIActs.add(LampContract.flash, on: LampControl.self) { lamp in lamp.flashes += 1 }
     }
@@ -186,7 +186,7 @@ final class WinUIInteropTests: XCTestCase {
         try onUIThread {
             defer { WinUIInterop.acts.forget(InteropTestContract.doubled.token) }
             StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = WinUIRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
@@ -204,7 +204,7 @@ final class WinUIInteropTests: XCTestCase {
                 try await Task.sleep(nanoseconds: 20_000_000)
                 return number * 2
             }
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = WinUIRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
@@ -217,14 +217,14 @@ final class WinUIInteropTests: XCTestCase {
     /// An act nothing registered is refused by name, so a caller waiting on it throws.
     func testAnActNobodyRegisteredIsRefusedByName() throws {
         try onUIThread {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = WinUIRenderer.running { Calling() }
 
             try XCTUnwrap(host.views(WinUIButtonView.self).last).invoke()
             host.settle { host.said != "-" }
 
             XCTAssertTrue(host.said.hasPrefix("thrown:"), host.said)
-            XCTAssertTrue(host.said.contains("InteropTest.Unregistered"), host.said)
+            XCTAssertTrue(host.said.contains("InteropTest.unregistered"), host.said)
         }
     }
 
@@ -232,7 +232,7 @@ final class WinUIInteropTests: XCTestCase {
     /// declares.
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() {
         onUIThread {
-            StateUIEvents.raises(InteropTestContract.spoke)
+            StateUIEvents.declares(InteropTestContract.spoke)
             let host = WinUIRenderer.running { Calling() }
             XCTAssertEqual(host.said, "-")
 

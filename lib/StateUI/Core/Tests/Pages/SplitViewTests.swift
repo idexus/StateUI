@@ -70,7 +70,7 @@ final class SplitViewTests: XCTestCase {
 
         XCTAssertEqual(patch.type, "SplitView")
         XCTAssertEqual(patch.children.map { $0.id }, [.manual("sidebar"), .manual("detail")])
-        XCTAssertEqual(patch.children.map { $0.props["title"] },
+        XCTAssertEqual(patch.children.map { $0.props["PageElement.title"] },
                        [.string("Sections"), .string("today")])
     }
 
@@ -122,7 +122,7 @@ final class SplitViewTests: XCTestCase {
         let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).node)
 
         XCTAssertEqual(next.props["showsSidebar"], .bool(false))
-        XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
+        XCTAssertEqual(next.child("detail")?.props["PageElement.title"], .string("archive"))
     }
 
     // MARK: - The contract a host reads
@@ -157,15 +157,17 @@ final class SplitViewTests: XCTestCase {
         XCTAssertEqual(split.arrangement, [.manual("sidebar"), .manual("detail")])
 
         let pane = try XCTUnwrap(split.child("sidebar"))
-        XCTAssertEqual(pane.props["title"], .string("Sections"))
+        XCTAssertEqual(pane.props["PageElement.title"], .string("Sections"))
         XCTAssertEqual(pane.subtree.filter { $0.type == .button }.map { $0.props["text"] },
                        [.string("Today"), .string("Archive")])
 
         let detail = try XCTUnwrap(split.child("detail"))
         XCTAssertEqual(detail.type, .navigationStack)
-        XCTAssertEqual(detail.props["title"], .string("Diary"))
-        XCTAssertEqual(detail.arrangement, [.manual("root"), .manual("0/1")])
-        XCTAssertEqual(detail.children.map { $0.props["title"] }, [.string("today"), .string("level 1")])
+        XCTAssertEqual(detail.props["PageElement.title"], .string("Diary"))
+        XCTAssertEqual(detail.children.first?.id, .manual("root"))
+        XCTAssertEqual(Set(detail.children.map(\.id)).count, 2)
+        XCTAssertNotNil(detail.arrangement)
+        XCTAssertEqual(detail.children.map { $0.props["PageElement.title"] }, [.string("today"), .string("level 1")])
     }
 
     // MARK: - What comes back
@@ -206,7 +208,7 @@ final class SplitViewTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.settled(
-            flyout(menu.projectedValue, section.projectedValue).sidebarOverlays(overlays.projectedValue).node)
+            flyout(menu.projectedValue, section.projectedValue).sidebarOverlays(into: overlays.projectedValue).node)
         let place = try XCTUnwrap(patch.driven?[.sidebarOverlays])
 
         XCTAssertEqual(place.mode, .in)

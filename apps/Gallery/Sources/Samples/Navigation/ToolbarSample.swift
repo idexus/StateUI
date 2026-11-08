@@ -184,7 +184,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .id("recent")
                     .isEnabled(!recent.isEmpty)
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             // Locked, the branch takes no input: its switches, and the
             // actions and menu items declared on it, dimmed with it.
@@ -199,8 +199,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     /// A switch and what it says, told apart for scripts by `id`.
     private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-        Switch(value)
-            .text(words)
+        Switch(words, isOn: value)
             .accessibilityIdentifier(id)
     }
     // listing: end

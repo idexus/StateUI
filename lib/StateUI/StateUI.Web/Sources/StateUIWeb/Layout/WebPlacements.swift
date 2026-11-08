@@ -67,7 +67,7 @@ final class WebPlacements {
         let layouts = arranged.filter { !$0.isReleased }
         arranged = []
         if !layouts.isEmpty { place(layouts) }
-        for view in moved.values where !view.isReleased { view.writePlace() }
+        for view in moved.values.sorted(by: { $0.serial < $1.serial }) where !view.isReleased { view.writePlace() }
         moved = [:]
     }
 

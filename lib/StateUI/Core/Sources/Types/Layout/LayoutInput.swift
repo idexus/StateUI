@@ -9,9 +9,9 @@
 /// Design: docs/design/views/motion-layout.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
     /// How far the hand travels for one unit of the parameters.
-    public enum Travel: Equatable, Sendable {
+    enum Travel: Equatable, Sendable {
         /// So many device units, one at least.
-        case points(Double)
+        case length(Double)
 
         /// As far as the view drawn in front moves for one unit.
         case front
@@ -44,16 +44,16 @@ public struct LayoutInput: Equatable, Sendable {
     /// whichever way it goes.
     ///
     ///     .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
-    ///     .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...3)
+    ///     .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...3)
     ///
     /// - Parameters:
     ///   - orientation: which way it scrolls, horizontally or vertically.
-    ///   - pointsPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
+    ///   - lengthPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
     ///     Unless said, as far as the view drawn in front moves for one unit where the run stands - the hand carries it
     ///     with it, whatever size the room makes it.
     /// - Returns: the input.
-    public static func scroll(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput {
-        LayoutInput(gesture: .hand(orientation, travel(pointsPerUnit), swipes: false))
+    public static func scroll(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput {
+        LayoutInput(gesture: .hand(orientation, travel(lengthPerUnit), swipes: false))
     }
 
     /// One snap a hand: the hand moves the run with it, but one snap at most either way from where it took it,
@@ -65,12 +65,12 @@ public struct LayoutInput: Equatable, Sendable {
     ///
     /// - Parameters:
     ///   - orientation: which way it swipes, horizontally or vertically.
-    ///   - pointsPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
+    ///   - lengthPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
     ///     Unless said, as far as the view drawn in front moves for one unit as the hand takes the run - measured as if the
     ///     run stood on the snap nearest, and kept while the hand holds it.
     /// - Returns: the input.
-    public static func swipe(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput {
-        LayoutInput(gesture: .hand(orientation, travel(pointsPerUnit), swipes: true))
+    public static func swipe(_ orientation: Orientation, lengthPerUnit: Double? = nil) -> LayoutInput {
+        LayoutInput(gesture: .hand(orientation, travel(lengthPerUnit), swipes: true))
     }
 
     /// A page a hand: a swipe whose hand travels the room's length in `orientation` for one unit of the parameters, so
@@ -115,9 +115,9 @@ public struct LayoutInput: Equatable, Sendable {
         return LayoutInput(gesture: .rotation(degreesPerUnit: degrees))
     }
 
-    /// The travel `pointsPerUnit` says: so many points, one at least, or the view in front's.
-    static func travel(_ pointsPerUnit: Double?) -> Travel {
-        pointsPerUnit.map { .points(max($0, 1)) } ?? .front
+    /// The travel `lengthPerUnit` says: so many device units, one at least, or the view in front's.
+    static func travel(_ lengthPerUnit: Double?) -> Travel {
+        lengthPerUnit.map { .length(max($0, 1)) } ?? .front
     }
 }
 

@@ -9,13 +9,16 @@
 @_spi(Host) public enum TextTests: ConformanceFamily {
     public static let name = "Text"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(TextContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             Aspects.standsAlone("Text"),
             Aspects.holds(TextContract.verticalTextAlignment, on: "Text", .start, then: .end, with: Words.on("Text")),
             ConformanceCase("wordsTheTreeMakesSelectableCanBeSelected", proves: [
                 Covered(TextContract.isSelectable, on: "Text"),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let selectable = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -24,13 +27,13 @@
                     }
                 }
                 s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), false, "words not to select")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
 
                 // Another value makes the text anew: it is looked for again.
                 try s.perform(.activate, on: s.element("change"))
                 try s.settle { try s.held(TextContract.isSelectable, on: s.element("label")) == true }
                 s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), true, "words to select")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words",
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words",
                          "the same words, selectable")
 
                 try s.perform(.activate, on: s.element("change"))
@@ -39,14 +42,14 @@
             },
             ConformanceCase("aTextShowsItsWords", proves: [
                 Covered(TextContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: "Text")]) { s in
+            ], needs: [Covered(TextElementContract.text, on: "Text")]) { s in
                 s.start { VStack { Text("Some words").id("label") } }
 
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
             },
             ConformanceCase("noMoreLinesStandThanItsMaximum", proves: [
-                Covered(TextContract.maximumLines), Covered(TextContract.lineBreak),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(TextContract.maximumLines), Covered(LineBreakElementContract.lineBreak, on: TextContract.self),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let lines = State(wrappedValue: 1)
                 let frames = Received<[Double]>()
                 s.start {
@@ -66,31 +69,8 @@
                 s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true,
                          "three lines stand where one stood")
             },
-            ConformanceCase("wordsThatDoNotWrapStandOnOneLine", proves: [
-                Covered(TextContract.lineBreak),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let wraps = State(wrappedValue: false)
-                let frames = Received<[Double]>()
-                s.start {
-                    VStack {
-                        Text(Self.long).lineBreak(wraps.wrappedValue ? .wordWrap : .noWrap).width(100)
-                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("label")
-                        Button("Wrap").onClicked { wraps.wrappedValue = true }.id("change")
-                    }
-                    .horizontalAlignment(.start)
-                    .verticalAlignment(.start)
-                }
-                s.settle { !frames.values.isEmpty }
-                let one = frames.values.last.map(FrameReport.size)?[1] ?? 0
-
-                try s.perform(.activate, on: s.element("change"))
-                s.settle { (frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2 }
-                s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true, "wrapped over lines")
-            },
-            Aspects.holds(TextContract.lineBreak, on: "Text", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextualElementContract.text, Self.long)]),
             Aspects.holds(TextContract.maximumLines, on: "Text", 2, then: 1,
-                          with: [Write(TextualElementContract.text, Self.long)]),
+                          with: [Write(TextElementContract.text, Self.long)]),
         ]
     }
 

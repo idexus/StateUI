@@ -10,12 +10,10 @@ public enum DatePickerContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A date picker is a view whose text has a color, a spacing and a font.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextColorElementContract.self, FontElementContract.self, FocusElementContract.self,
+        PopupElementContract.self,
     ]
-
-    /// The calendar has closed - by a choice, a tap outside, or the platform.
-    public static let closed = ElementEvent<Self, Void>("closed", layer: .native)
 
     /// The day the field shows.
     public static let date = ElementProperty<Self, CalendarDate>("date", layer: .native)
@@ -24,22 +22,14 @@ public enum DatePickerContract: ElementContract {
     public static let dateChanged = ElementEvent<Self, CalendarDate>("dateChanged", layer: .native)
 
     /// How much of the day is written out in the field, in the user's language.
-    public static let format = ElementProperty<Self, DateStyle>("format", layer: .native)
-
-    /// Whether the calendar is showing.
-    public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)
+    public static let format = ElementProperty<Self, DateFormat>("format", layer: .native)
 
     /// The latest day the calendar offers.
-    public static let maximumDate = ElementProperty<Self, CalendarDate>("maximumDate", layer: .native)
+    public static let maximum = ElementProperty<Self, CalendarDate>("maximum", layer: .native, travels: false)
 
     /// The earliest day the calendar offers.
-    public static let minimumDate = ElementProperty<Self, CalendarDate>("minimumDate", layer: .native)
-
-    /// The calendar has opened.
-    public static let opened = ElementEvent<Self, Void>("opened", layer: .native)
+    public static let minimum = ElementProperty<Self, CalendarDate>("minimum", layer: .native, travels: false)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        closed, date, dateChanged, format, isOpen, maximumDate, minimumDate, opened,
-    ]
+    public static let members: [any ContractMember] = [date, dateChanged, format, maximum, minimum]
 }

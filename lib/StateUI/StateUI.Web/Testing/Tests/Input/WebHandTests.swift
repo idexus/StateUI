@@ -118,33 +118,34 @@ final class WebHandTests: XCTestCase {
         let open = "[...document.querySelectorAll('.stateui-menu')].some((m) => m.matches(':popover-open'))"
         let rang = "window.heldAsLong === true"
 
-        // Read once a timer as long as the hold, set by the same press after the page's own, has rung: the hold has
-        // rung by then, or the drag called it off - however late the page's timers run.
+        // The press and the finger's moves are one task of the page's, which no timer rings inside - however slow the
+        // machine. Read once a timer as long as the hold, set by the same press after the page's own, has rung: the
+        // hold has rung by then, or the drag called it off - however late the page's timers run.
         func asksForTheMenu(steps: Int, of step: Double) throws -> Bool {
             try WebBrowser.run("""
                 window.heldAsLong = false;
                 e.addEventListener("pointerdown", () => setTimeout(() => { window.heldAsLong = true; }, \(HandReading.hold)),
-                  { once: true })
+                  { once: true });
+                const box = e.getBoundingClientRect();
+                const finger = (type, x) => e.dispatchEvent(new PointerEvent(type, { pointerId: 7, pointerType: "touch",
+                  isPrimary: true, clientX: box.left + 40 + x, clientY: box.top + 100, bubbles: true, cancelable: true }));
+                finger("pointerdown", 0);
+                for (let each = 1; each <= \(steps); each++) finger("pointermove", \(step) * each);
                 """, on: shape.node)
-            let left = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().left", on: shape.node))
-            let top = try XCTUnwrap(WebBrowser.number("e.getBoundingClientRect().top", on: shape.node))
-            let pressed = Point(x: left + 40, y: top + 100)
-            WebBrowser.ask([("touch", .words("touchStart")), ("points", .points([pressed]))])
-            for each in 0..<steps {
-                let at = Point(x: pressed.x + step * Double(each + 1), y: pressed.y)
-                WebBrowser.ask([("touch", .words("touchMove")), ("points", .points([at]))])
-            }
             host.settle { (try? WebBrowser.truth(rang, on: 0)) == true }
             XCTAssertTrue(try WebBrowser.truth(rang, on: 0), "the press reached the shape")
             let asked = try WebBrowser.truth(open, on: 0)
-            WebBrowser.ask([("touch", .words("touchEnd")), ("points", .points([]))])
-            try WebBrowser.run("document.querySelectorAll('.stateui-menu').forEach((m) => m.hidePopover?.())")
+            try WebBrowser.run("""
+                e.dispatchEvent(new PointerEvent("pointerup", { pointerId: 7, pointerType: "touch", isPrimary: true,
+                  bubbles: true }));
+                document.querySelectorAll('.stateui-menu').forEach((m) => m.hidePopover?.());
+                """, on: shape.node)
             return asked
         }
 
         XCTAssertTrue(try asksForTheMenu(steps: 0, of: 0), "a finger held still")
         XCTAssertFalse(try asksForTheMenu(steps: 10, of: 3), "a finger dragged 30 points, 3 a step")
-        host.leave()
+        host.finish()
     }
 
     /// Whether the page's pan was kept from a touch pressed on `layout`, moved by `firstMove` and then `then`: the

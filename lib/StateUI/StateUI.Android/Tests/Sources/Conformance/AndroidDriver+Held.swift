@@ -18,10 +18,10 @@ extension AndroidDriver {
             return Self.barHolds(property, of: element)
         }
         if element.type == .page,
-           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle, .subtitle].contains(property) {
+           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle, PageContract.subtitle.token].contains(property) {
             return Self.pageBarHolds(property, of: element)
         }
-        if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
+        if property == PageElementContract.title.token || property == .icon, let tabs = element.parent, tabs.type == .tabView {
             return try tabHolds(property, of: element, in: tabs)
         }
         if property == .barScrollEdge {
@@ -31,7 +31,7 @@ extension AndroidDriver {
            let page = (element.enclosing(type: .page)?.native as? AndroidElement)?.view as? AndroidPageView {
             return page.edge.propValue
         }
-        if element.type == .window, property == .title { return Self.activityTitle() }
+        if element.type == .window, property == WindowContract.title.token { return Self.activityTitle() }
         if element.type == .window, property == .background { return Self.windowBackground() }
         if element.type == .sheet, property == .background {
             guard let page = element.children.first, let renderer else { throw DriverCannot(reading: property, of: element) }
@@ -47,15 +47,16 @@ extension AndroidDriver {
             return shape.fillForTesting.flatMap(Color.init(propValue:)).map { StandIns.material(painted: $0).propValue }
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
         case (.isPresented, let popover as AndroidPopoverView): return popover.windowShows.propValue
-        case (.role, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
+        case (ButtonContract.role.token, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
         case (.showsText, let button as AndroidButtonView): return (!button.text.isEmpty).propValue
         case (.showsMenuArrow, let button as AndroidButtonView):
             return Java.callStaticBool(Self.testMenus, Self.showsMenuArrow, .object(button.reference)).propValue
         case (.value, let slider as AndroidSliderView): return slider.value.propValue
-        case (.minimum, let slider as AndroidSliderView): return slider.minimum.propValue
-        case (.maximum, let slider as AndroidSliderView): return slider.maximum.propValue
+        case (RangeElementContract.minimum.token, let slider as AndroidSliderView): return slider.minimum.propValue
+        case (RangeElementContract.maximum.token, let slider as AndroidSliderView): return slider.maximum.propValue
         case (.value, let stepper as AndroidStepperView): return stepper.value.propValue
-        case (.minimum, is AndroidStepperView), (.maximum, is AndroidStepperView), (.step, is AndroidStepperView):
+        case (RangeElementContract.minimum.token, is AndroidStepperView), (RangeElementContract.maximum.token, is AndroidStepperView),
+             (.step, is AndroidStepperView):
             throw DriverCannot(
                 "read a stepper's range", because: "Android's stepper is two buttons, which hold none: an end turns one off")
         case (.isRefreshEnabled, let pulled as any AndroidRefreshing):
@@ -86,7 +87,7 @@ extension AndroidDriver {
         case (.selectionMode, let items as AndroidItemsView):
             // As the list's node tells TalkBack: Android's collection numbers its modes as StateUI does.
             return TestAccessibility.selectionMode(of: items).flatMap(SelectionMode.init(rawValue:))?.propValue
-        case (.isAnimating, let spinner as AndroidSpinnerView):
+        case (SpinnerContract.isAnimating.token, let spinner as AndroidSpinnerView):
             // A spinner that runs is visible; one that stopped is invisible, and the host keeps no other trace.
             return (Java.callInt(spinner.reference, JavaAPI.getVisibility) == 0).propValue
         case (.text, let text as AndroidTextualView): return text.text.propValue
@@ -99,7 +100,7 @@ extension AndroidDriver {
             case 4: .send
             case 5: .next
             case 6: .done
-            default: .default
+            default: .automatic
             }
             return key.propValue
         // Read only: the field offers a keyboard nothing to edit.
@@ -220,11 +221,13 @@ extension AndroidDriver {
             let kind = TestAccessibility.word("kind", of: view)
             return AccessibilityRole.allCases.first { AndroidView.accessibilityClass($0) == kind }?.propValue
         case .accessibilityValue: return TestAccessibility.word("value", of: view).propValue
-        case .isAccessibilityHidden:
-            let presence = Java.callInt(reference, JavaAPI.getImportantForAccessibility)
-            return (presence == 2 || presence == 4).propValue
-        case .hidesChildrenFromAccessibility:
-            return (Java.callInt(reference, JavaAPI.getImportantForAccessibility) == 4).propValue
+        case .accessibilityPresence:
+            // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
+            return switch Java.callInt(reference, JavaAPI.getImportantForAccessibility) {
+            case 4: AccessibilityPresence.hiddenWithContents.propValue
+            case 2: AccessibilityPresence.hidden.propValue
+            default: AccessibilityPresence.element.propValue
+            }
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "Android marks a heading, not its level")
         case .tooltip:

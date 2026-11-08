@@ -40,16 +40,30 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertNil(HostQuestion(HostActCall(act: .announce, arguments: [], completion: nil)))
     }
 
+    /// An act aimed at one of two views named alike under two parents reaches that view: each has a key of its own,
+    /// its aim naming it, whatever host mounts the tree.
+    func testAnActAimedAtOneOfTwoViewsNamedAlikeReachesItsOwn() throws {
+        TwoEditorsApplication.register()
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+
+        let right = HostActCall(act: .focus, arguments: [try TwoEditors.right.target], completion: nil)
+        XCTAssertEqual(try runtime.tree.aimed(right).string(.text), "right")
+        let left = HostActCall(act: .focus, arguments: [try TwoEditors.left.target], completion: nil)
+        XCTAssertEqual(try runtime.tree.aimed(left).string(.text), "left")
+    }
+
     /// A caption the act leaves out is the library's own word in the system's language, as the platform's own
     /// buttons are - never one fixed English word.
     func testAQuestionsOwnCaptionsSpeakTheSystemsLanguage() throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "", uses24HourClock: true, firstDayOfWeek: .monday,
-            isMetric: true, layoutDirection: .leftToRight))
+            language: "pl-PL", timeZone: nil, uses24HourClock: true, firstDayOfWeek: .monday,
+            isMetric: true, writingDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
-                language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
-                isMetric: true, layoutDirection: .leftToRight))
+                language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
+                isMetric: true, writingDirection: .leftToRight))
         }
         let confirm = try XCTUnwrap(HostQuestion(HostActCall(
             act: .confirm, arguments: HostActCall.usersWindow + [.string("Usunąć?")], completion: 1)))
@@ -64,7 +78,7 @@ final class ActAnswersTests: XCTestCase {
                 act: .prompt, arguments: HostActCall.usersWindow + [.string("Name"), .nothing, .nothing, .nothing, .nothing, .nothing,
                                           purpose.propValue], completion: 1)))
         }
-        for purpose in [InputPurpose.default, .plain, .email, .numeric] {
+        for purpose in [InputPurpose.automatic, .plain, .email, .numeric] {
             XCTAssertEqual(try prompt(purpose).traits, InputTraits(spellChecked: true, predicted: true, purpose: purpose))
         }
         XCTAssertFalse(try prompt(.plain).traits.checksSpelling)
@@ -151,5 +165,23 @@ final class ActAnswersTests: XCTestCase {
                        .manual("field"))
         XCTAssertThrowsError(try runtime.tree.aimed(HostActCall(act: .focus, arguments: [], completion: 1)))
         XCTAssertThrowsError(try runtime.tree.aimed(HostActCall(act: .focus, arguments: [.string("gone")], completion: 1)))
+    }
+}
+
+/// Two fields named alike under two parents, each with an aim of its own.
+@MainActor
+private enum TwoEditors {
+    static let left = Aim(TextField.self)
+    static let right = Aim(TextField.self)
+}
+
+private struct TwoEditorsApplication: Application {
+    var body: some Scene {
+        WindowGroup {
+            HStack {
+                VStack { TextField("left").id("editor").aim(TwoEditors.left) }
+                VStack { TextField("right").id("editor").aim(TwoEditors.right) }
+            }
+        }
     }
 }

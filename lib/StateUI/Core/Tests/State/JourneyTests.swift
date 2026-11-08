@@ -298,14 +298,14 @@ final class JourneyTests: XCTestCase {
                        "and a stated law is read before any cycle has run")
     }
 
-    /// `.custom` HANDS THE WALK TO AN ENGINE ON THIS SIDE. A write moves the
+    /// A STATE AN ENGINE ANIMATES IS WALKED ON THIS SIDE. A write moves the
     /// destination alone - whoever wears the state or not - and the value
     /// stays where the engine left it; the engine's own write to the value is
     /// what moves the screen. In the patch the host is handed `.none` and a
     /// destination that is wherever the engine wrote the value, so it wears
     /// every frame as it comes and walks nothing.
-    func testACustomLawLeavesTheValueToTheEngine() throws {
-        let ball = State(wrappedValue: 0.0, motion: .custom)
+    func testAStateAnEngineAnimatesLeavesTheValueToTheEngine() throws {
+        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
         let journey = ball.projectedValue.journey
         let renders = Renders()
 
@@ -333,32 +333,78 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(law(crossing: image), Motion.none, "the host is told not to walk")
         XCTAssertEqual(StateImage.lane(0, of: crossed), 40, "and where the engine put the value")
         XCTAssertEqual(StateImage.lane(1, of: crossed), 40, "is where it is told the value is going")
-        XCTAssertEqual(journey.motion, .custom, "while the image itself goes on saying whose the walk is")
+        XCTAssertEqual(journey.motion, Motion.none, "the law the host walks it under")
+        XCTAssertEqual(law(publishedBy: image), .custom, "while the image itself goes on saying whose the walk is")
     }
 
-    /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: `.custom` cannot be
-    /// written onto a walking value, and a value declared `.custom` is not
-    /// given the host's law later, because the host was told at the first
-    /// crossing and cannot be told again.
-    func testTheWalkerIsNotChangedAfterTheDeclaration() {
-        let hosted = State(wrappedValue: 0.0)
-        let own = State(wrappedValue: 0.0, motion: .custom)
+    /// A VIEW'S OWN STATE AN ENGINE ANIMATES MOVES ITS VIEW: written, the engine it tracks wakes and walks it there,
+    /// frame by frame, and the host is handed each step - the Gallery's Engine animation, written as a view.
+    func testAViewsStateAnEngineAnimatesMovesItsView() throws {
+        let handle = EngineHandle()
+        let renders = Renders()
+        renders.render(EngineDot(handle: handle).node)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
 
-        _ = hosted.projectedValue.journeyImage
-        _ = own.projectedValue.journeyImage
+        let offset = try XCTUnwrap(handle.offset)
+        offset.wrappedValue = 120
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        for frame in 1...150 { board.cycle(now: Double(frame) * 16, reducesMotion: false) }
 
-        hosted.projectedValue.journey.motion = .custom
-        XCTAssertEqual(hosted.projectedValue.journey.motion, .inherited, "refused, and said")
+        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
+        XCTAssertEqual(offset.journey.destination, 120)
+    }
+
+    /// A HOST'S REPORT IS NO WORD ON A STATE AN ENGINE ANIMATES: the host is
+    /// handed the engine's frame as its destination, lands there and says so
+    /// every frame; the destination the author wrote, which the host never
+    /// saw, stands, and so does the speed the engine gave it.
+    func testAHostsReportLeavesAStateAnEngineAnimatesAlone() throws {
+        let handle = EngineHandle()
+        let renders = Renders()
+        renders.render(EngineDot(handle: handle).node)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        let offset = try XCTUnwrap(handle.offset)
+        let number = try XCTUnwrap(offset.journeyImage?.number)
+        offset.wrappedValue = 120
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        for frame in 1...150 {
+            board.cycle(now: Double(frame) * 16, reducesMotion: false)
+            let (binding, handed) = try XCTUnwrap(HostAnimatorReport.standing(number))
+            let landed = HostJourney(
+                value: handed.destination, destination: handed.destination, velocity: handed.velocity.map { _ in 0 },
+                motion: handed.motion, completion: handed.completion, stopped: handed.stopped)
+            XCTAssertFalse(
+                HostBoundary.report(landed, updating: [.value, .destination, .velocity], through: binding),
+                "the engine's journey is not the host's to report")
+        }
+
+        XCTAssertEqual(offset.journey.destination, 120, "the author's destination stands")
+        XCTAssertEqual(offset.journey.value, 120, accuracy: 0.5, "the engine walked the value there")
+    }
+
+    /// WHO WALKS THE VALUE IS SETTLED AT THE DECLARATION: a state an engine
+    /// animates is not given the host's law later, because the host was told
+    /// at the first crossing and cannot be told again. No law says an engine:
+    /// the declaration does.
+    func testTheWalkerIsNotChangedAfterTheDeclaration() throws {
+        let own = State(wrappedValue: 0.0, animatedBy: .engine)
+        let renders = Renders()
+        renders.render(Rectangle().translationY(own.projectedValue).node)
+        let image = try XCTUnwrap(own.projectedValue.journeyImage)
 
         own.projectedValue.journey.motion = .spring()
-        XCTAssertEqual(own.projectedValue.journey.motion, .custom, "refused the other way too")
+        XCTAssertEqual(own.projectedValue.journey.motion, Motion.none, "refused, and said")
+        XCTAssertEqual(law(publishedBy: image), .custom, "the engine still animates it")
     }
 
-    /// A `move` awaited on a `.custom` value writes the destination and answers
-    /// at once: the walk is the engine's, and the engine is the only one that
-    /// knows when it is done.
-    func testAMoveUnderACustomLawAnswersAtOnce() throws {
-        let ball = State(wrappedValue: 0.0, motion: .custom)
+    /// A `move` awaited on a state an engine animates writes the destination
+    /// and answers at once: the walk is the engine's, and the engine is the
+    /// only one that knows when it is done.
+    func testAMoveOfAStateAnEngineAnimatesAnswersAtOnce() throws {
+        let ball = State(wrappedValue: 0.0, animatedBy: .engine)
         let binding = ball.projectedValue
         let renders = Renders()
 
@@ -431,6 +477,13 @@ final class JourneyTests: XCTestCase {
     }
 
     /// The law lying in a crossing's bytes, read the way the host reads it.
+    /// The law the image itself holds, before its crossing resolves it.
+    private func law(publishedBy image: HostStorage) -> Motion? {
+        guard let door = image.door, let at = StateLaw.within(door, lanes: image.published.count / 8) else { return nil }
+
+        return StateLaw.motion(of: (0..<StateLaw.lanes).map { StateImage.lane(at + $0, of: image.published) })
+    }
+
     private func law(crossing image: HostStorage) -> Motion? {
         let bytes = image.crossing()
 
@@ -440,5 +493,33 @@ final class JourneyTests: XCTestCase {
 
         return StateLaw.motion(
             of: (0..<StateLaw.lanes).map { StateImage.lane(at + $0, of: bytes) })
+    }
+}
+
+/// Where the dot's state is lent out to the test.
+@MainActor
+private final class EngineHandle {
+    var offset: Binding<Double>?
+}
+
+/// A dot an engine of its own springs to where its state is sent, as the Gallery's Engine animation does.
+private struct EngineDot: View {
+    @State(animatedBy: .engine) private var offset = 0.0
+    let handle: EngineHandle
+
+    var body: some View {
+        handle.offset = $offset
+        return Rectangle()
+            .translationX($offset)
+            .engine(tracking: $offset) { cycle in
+                let journey = $offset.journey
+                let seconds = cycle.elapsedSeconds
+                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
+                journey.velocity += pull * seconds
+                journey.value += journey.velocity * seconds
+                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
+                journey.snap(to: journey.destination)
+                return .wait
+            }
     }
 }

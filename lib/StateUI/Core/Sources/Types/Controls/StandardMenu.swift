@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A menu the platform keeps on its menu bar, which a `Menu` joins by taking
-/// it as its `.id`: the platform's own entries stay, and the menu's stand after
+/// A menu the platform keeps on its menu bar, which a `Menu` joins with
+/// `.joins(_:)`: the platform's own entries stay, and the menu's stand after
 /// them as a section of their own.
 ///
 ///     .menuBar {
 ///         Menu("File") {
 ///             MenuItem("Export…").onClicked { export() }
 ///         }
-///         .id(StandardMenu.file)
+///         .joins(.file)
 ///     }
 ///
-/// A menu joins by this identity, never by its caption, so a menu called
+/// A menu joins by this, never by its caption, so a menu called
 /// "Plik" joins the File menu too. Where the platform keeps no such menu, it
 /// stands where that menu stands on the platform's bar.
 public enum StandardMenu: Hashable, Sendable, CaseIterable, CustomStringConvertible {
@@ -31,8 +31,7 @@ public enum StandardMenu: Hashable, Sendable, CaseIterable, CustomStringConverti
     /// The menu of help.
     case help
 
-    /// The identity a menu takes with `.id(StandardMenu.file)`, apart from
-    /// every identity an author writes.
+    /// The menu's name in diagnostics. Its typed role is distinct from every string an author writes.
     public var description: String {
         switch self {
         case .file: "StandardMenu.file"
@@ -41,13 +40,5 @@ public enum StandardMenu: Hashable, Sendable, CaseIterable, CustomStringConverti
         case .window: "StandardMenu.window"
         case .help: "StandardMenu.help"
         }
-    }
-}
-
-@_spi(Host) extension StandardMenu {
-    /// The standard menu an element's identity names; nil for any other.
-    public init?(identity: String) {
-        guard let named = Self.allCases.first(where: { $0.description == identity }) else { return nil }
-        self = named
     }
 }

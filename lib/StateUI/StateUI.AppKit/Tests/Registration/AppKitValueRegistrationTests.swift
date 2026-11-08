@@ -23,11 +23,11 @@ final class AppKitValueRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["Slider", "Stepper"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "value")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "value")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "pressed")))
+            HostRealizedMember(element: "Slider", owner: "PressElement", member: "pressed")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")))
         XCTAssertTrue(realization.members.contains(
@@ -39,11 +39,11 @@ final class AppKitValueRegistrationTests: XCTestCase {
     @MainActor
     func testASliderShowsItsRangeAndItsValue() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
-        slider.properties[.minimum] = .number(0)
-        slider.properties[.maximum] = .number(10)
+        slider.properties[RangeElementContract.minimum.token] = .number(0)
+        slider.properties[RangeElementContract.maximum.token] = .number(10)
         slider.properties[.value] = .number(2.5)
         renderer.applyForTesting(tree(slider))
 
@@ -65,11 +65,11 @@ final class AppKitValueRegistrationTests: XCTestCase {
     @MainActor
     func testASliderWhoseValueTheTreeLeavesAloneKeepsIts() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
-        slider.properties[.minimum] = .number(0)
-        slider.properties[.maximum] = .number(1)
+        slider.properties[RangeElementContract.minimum.token] = .number(0)
+        slider.properties[RangeElementContract.maximum.token] = .number(1)
         slider.properties[.value] = .number(0.25)
         renderer.applyForTesting(tree(slider))
 
@@ -96,7 +96,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
                     .onValueChanged { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)
         native.doubleValue = 0.625
@@ -121,7 +121,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
                     .onValueChanged { heard.values.append($0) }
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let native = try XCTUnwrap(renderer.nativeViews(AppKitStepperView.self).first)
         XCTAssertEqual(native.minValue, 0)

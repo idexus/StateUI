@@ -55,6 +55,14 @@ The type is the key. `AccountBadge` needs no initializer argument, and an
 environment of another type cannot collide with it. If several ancestors
 provide `Account`, the nearest one wins for its branch.
 
+`@Environment` is resolved for the place the view stands in. One view value
+placed under two providers of its type would read one of them from both
+places, so it shows at the first place alone, and StateUI says so once; make a
+value for each place. The first place in the tree is the one that stands,
+whichever render moved a provider, and the second shows again once the two
+agree or the first leaves. Under one provider the same value may stand twice
+([state](state-and-reactivity.md#owning-a-value-with-state)).
+
 The provider passes a reference without reading its properties. A write to
 `account.visits` therefore invalidates bodies that read `visits`, not the body
 that merely provides the object. Replacing the `account` held by the provider's
@@ -101,14 +109,16 @@ SavePanel().environment(offline)
 
 Only that branch sees the override. The process-wide provider remains the
 answer everywhere else. A fact is the host's to write: the application reads
-it, and a fake states its facts as it is made.
+it, and a fake states its facts as it is made. A fact exposes its value without
+a writable `$` projection. Settings the application owns, such as
+`application.colorScheme`, expose their bindings as usual.
 
 ## What the library offers
 
 Every tree starts with one process-wide instance of each, read by its name.
 The host seeds the facts it knows before the first render and updates changing
-facts on its UI thread. Each field is `@State`, so reading one field subscribes
-to that field rather than to the whole object.
+facts on its UI thread. Each fact has its own private `@State`, so reading its
+public value subscribes to that fact rather than to the whole object.
 
 | Name | Type | What it holds |
 | --- | --- | --- |
@@ -127,16 +137,16 @@ contract:
 | `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numbers are nil and enums `.unknown` until reported, the rate nil where the platform does not say |
-| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
-| `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written; the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported, the release compiled in |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `platformVersion`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
+| `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `writingDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written (a `WritingDirection`, left to right or right to left); the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `version`, `build`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, the theme in force and the user's accent, live; text starts empty, theme `.light` and accent `#0A84FF` until reported, the release compiled in |
 | `application.phase` - `SessionPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
 guess. A host reports each fact group as one typed value; a field that does
 not change asks for no render. Closed enum values unknown to the runtime
-degrade to `.unknown`, a `Weekday` to `.sunday` and a `LayoutDirection` to
+degrade to `.unknown`, a `Weekday` to `.sunday` and a `WritingDirection` to
 `.leftToRight`, while open vocabulary, such as `device.info.platform`, stays
 authored text.
 
@@ -155,9 +165,9 @@ The closed vocabulary used by these fields is:
 | `DisplayOrientation` | `unknown`, `portrait`, `landscape` |
 | `DisplayRotation` | `unknown`, `rotation0`, `rotation90`, `rotation180`, `rotation270` |
 | `Weekday` | `sunday` through `saturday` |
-| `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
+| `WritingDirection` | `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
-| `ColorScheme` | `system`, `light`, `dark` |
+| `ColorScheme` | `light`, `dark` |
 | `SessionPhase` | `active`, `inactive`, `background` |
 
 No conformance case gives a verdict for the standard facts: each host's page
@@ -175,7 +185,7 @@ struct RuntimeSummary: View {
 
     var body: some View {
         VStack {
-            Text("\(app.info.name) \(app.info.versionString)")
+            Text("\(app.info.name) \(app.info.version)")
             Text("StateUI \(app.info.libraryVersion)")
             Text("\(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)")
             Text("\(Int((device.display.width ?? 0) / (device.display.density ?? 1))) points wide")
@@ -212,7 +222,7 @@ struct SizeChooser: View {
         VStack {
             Picker([1, 2, 3], selection: $size) { "\($0)" }
                 .isOpen($showing)
-            if device.honors(PickerContract.isOpen) {
+            if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
                 Button("Open the list").onClicked { showing = true }
             }
         }
@@ -223,7 +233,10 @@ struct SizeChooser: View {
 The answer is the host's own judgment, the one the
 [platform contract](../platform-contract.md) shows: in full or in part is
 honored, never or not realized is not. A property, an event and an act are
-asked alike - `device.honors(MapContract.moveToRegion)`.
+asked alike - `device.honors(MapContract.moveToRegion)`. A tier's member may
+stand on one element and not another - a picker's list opens where a date's
+does not - so it is asked of the element, `on: PickerContract.self`; asked
+alone, it is honored where any element wearing the tier honors it.
 
 `device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,

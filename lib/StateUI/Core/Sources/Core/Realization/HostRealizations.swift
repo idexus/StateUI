@@ -58,15 +58,16 @@ enum HostRealizations {
         var judged: Set<Owned> = []
         var honored: Set<Owned> = []
         for record in register.records {
-            let owned = Owned(owner: KeyName(record.owner), member: KeyName(record.member))
+            let declaring = register.declaring(record.member, on: record.owner) ?? record.owner
+            let owned = Owned(owner: KeyName(record.owner), member: KeyName("\(declaring).\(record.member)"))
             guard judged.insert(owned).inserted, case .complete? = register.judgment(ofElement: record.owner)
             else { continue }
             switch record.judgment {
             case .complete, .partial:
                 honored.insert(owned)
                 // A tier's member recorded on one of its wearers is honored by the tier too, in part at least.
-                if let tier = register.declaring(record.member, on: record.owner), tier != record.owner {
-                    honored.insert(Owned(owner: KeyName(tier), member: owned.member))
+                if declaring != record.owner {
+                    honored.insert(Owned(owner: KeyName(declaring), member: owned.member))
                 }
             case .notPlanned, .unrealized, .byApplication: break
             }
@@ -80,6 +81,19 @@ enum HostRealizations {
     /// Design: docs/design/core/contracts.md#what-a-platform-honors
     static func honors(_ member: KeyName, of owner: KeyName) -> Bool {
         honored.contains(Owned(owner: owner, member: member))
+    }
+
+    /// Whether the host realizes `member` of the tier `tier` on `element` - in full or in part - by its register,
+    /// else by what it said it realizes.
+    /// Design: docs/design/core/contracts.md#what-a-platform-honors
+    static func honors(_ member: String, of tier: String, on element: String) -> Bool {
+        guard let register else {
+            return realized.contains(Owned(owner: KeyName(tier), member: KeyName("\(tier).\(member)")))
+        }
+        switch register.judgment(of: member, on: element, from: tier) {
+        case .complete?, .partial?: return true
+        default: return false
+        }
     }
 
     /// Whether the host said it realizes `member` of the contract `owner`, on any element.
@@ -107,12 +121,13 @@ enum HostRealizations {
     /// where the register says nothing of it, and on an element the host realizes none of.
     /// Design: docs/design/core/contracts.md#unrealized-names
     static func unhonored(_ member: KeyName, on type: NodeType) -> String? {
-        let key = "\(type.name).\(member.name)"
+        let owner = member.name.lastIndex(of: ".").map { String(member.name[..<$0]) }
+        let name = owner.map { String(member.name.dropFirst($0.count + 1)) } ?? member.name
+        let key = "\(type.name).\(name)"
         if let said = unhonoredSaid[key] { return said }
         var said: String?
         if let register, case .complete? = register.judgment(ofElement: type.name) {
-            let tier = register.declaring(member.name, on: type.name)
-            switch register.judgment(of: member.name, on: type.name, from: tier) {
+            switch register.judgment(of: name, on: type.name, from: owner) {
             case .unrealized(let why)?: said = "`\(key)` is not realized on this host: \(Self.sentence(why))"
             case .notPlanned(let reason)?: said = "`\(key)` is never realized on this host: \(Self.sentence(reason))"
             default: break
@@ -133,10 +148,11 @@ enum HostRealizations {
     /// What to say about an event of the application's a handler listens for:
     /// nothing where the host raises it, or has said nothing at all, and
     /// otherwise that it does not - with the events it raises nearest in name.
-    static func unraised(owner: KeyName, event: KeyName) -> String? {
+    static func unraised(_ event: KeyName) -> String? {
         let realization = current
 
-        guard realization != HostRealization(), !realizes(event, of: owner) else { return nil }
+        guard realization != HostRealization(), !realization.members.contains(where: { $0.member == event })
+        else { return nil }
 
         let raised = Set(realization.members.filter { $0.element == .application }.map(\.member.name))
 

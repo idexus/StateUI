@@ -8,6 +8,7 @@
 
 import Android
 import GalleryUI
+import StateUI
 import StateUIAndroid
 
 @_cdecl("Java_com_stateui_gallery_GalleryNatives_lampTapped")

@@ -10,9 +10,9 @@ enum Listings {
     private static let shared: [String: String] = [
         "AboutScene": #"""
         // Sources/Samples/Windows/AboutScene.swift
-        extension WindowType where Value == Void {
+        extension WindowKind where Value == Void {
             /// About the gallery: one window for the whole application.
-            static let about = WindowType("gallery.about")
+            static let about = WindowKind("gallery.about")
         }
 
         /// About the gallery: one window for the whole application, in a scene of its
@@ -47,7 +47,7 @@ enum Listings {
                 Rectangle()
                     .fill(settings.prefersHigherContrast ? Palette.accent : Palette.outline)
                     .height(settings.prefersHigherContrast ? 3 : 1)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
         }
         """#,
@@ -84,6 +84,9 @@ enum Listings {
         // Sources/Samples/State/AimSample.swift
         @State private var text = ""
 
+        /// What the second field holds.
+        @State private var second = ""
+
         /// The control an act is about. `.aim` puts the element's own identity in
         /// here as the differ walks, so nothing is named and nothing collides.
         @Aim(TextField.self) private var field
@@ -97,6 +100,10 @@ enum Listings {
         /// it was built.
         @State private var says = "Press a button, and it says which view it reached."
 
+        /// Whether the first aim is on the second field too - on two views, which
+        /// an act aimed through it refuses, until it is on one again.
+        @State private var both = false
+
         var body: some View {
             VStack {
                 // `says` is written by the handlers and read here, so this is the
@@ -104,27 +111,35 @@ enum Listings {
                 // and an aim, neither of which reads anything.
                 DebugInfoLabel()
 
-                TextField($text)
-                    .placeholder("The first field")
-                    .aim(field)
+                // The first field is a view of its own, handed the aim and the text:
+                // nothing it holds changes as this page builds again, so it is
+                // carried - and keeps the aim on its field all the same.
+                AimedField(aim: field, text: $text)
 
-                TextField()
+                TextField($second)
                     .placeholder("The second field")
-                    .aim(note)
+                    .aim(both ? field : note)
+
+                Switch("The first aim on the second field too", isOn: $both)
 
                 HStack {
                     // Printing an aim says where it is: the element identity the
                     // differ settled - "#12" - or the name an .id() gave it. Read
                     // in the HANDLER, because the walk fills it after the body
-                    // that describes the view was built.
+                    // that describes the view was built. On two views, the act
+                    // throws before anything is sent.
                     Button("Focus the first")
-                        .onClicked(.ignoreWhileRunning) {
-                            try await field.focus()
-                            says = "focused \(field)"
+                        .onClicked(policy: .ignoreWhileRunning) {
+                            do {
+                                try await field.focus()
+                                says = "focused \(field)"
+                            } catch {
+                                says = "\(error)"
+                            }
                         }
 
                     Button("Focus the second")
-                        .onClicked(.ignoreWhileRunning) {
+                        .onClicked(policy: .ignoreWhileRunning) {
                             try await note.focus()
                             says = "focused \(note)"
                         }
@@ -132,13 +147,28 @@ enum Listings {
 
                 // Each aim reaches its own field: letting go of both is two acts.
                 Button("Let go")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await field.unfocus()
                         try await note.unfocus()
                         says = "let go of \(field) and \(note)"
                     }
 
                 Text(says)
+            }
+        }
+        """#,
+        "AimedField": #"""
+        // Sources/Samples/State/AimSample.swift
+        /// The first field: handed the page's aim and its text, so the page building
+        /// again carries it - and the aim stays on the field it was put on.
+        private struct AimedField: View {
+            let aim: Aim<TextField>
+            @Binding var text: String
+
+            var body: some View {
+                TextField($text)
+                    .placeholder("The first field")
+                    .aim(aim)
             }
         }
         """#,
@@ -379,8 +409,7 @@ enum Listings {
                     // A CONVERTED TEXT: an engine works it out from the same image
                     // the thumb is walking, on the display's frames, so the words
                     // keep up with the movement and cost no render.
-                    Text()
-                        .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                    Text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
 
                     // THE SAME DECLARATION as above, and the same spelling: what
                     // differs is that nothing here reads `level` at build.
@@ -397,8 +426,7 @@ enum Listings {
                 VStack {
                     DebugInfoLabel()
 
-                    Text()
-                        .text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                    Text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
 
                     Stepper($count)
                         .minimum(0)
@@ -421,7 +449,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(policy: .cancelPrevious, act)
         }
         """#,
         "AnimatedPropertySample": #"""
@@ -501,7 +529,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(policy: .cancelPrevious, act)
         }
         """#,
         "AnimationSample": #"""
@@ -594,7 +622,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.cancelPrevious, act)
+                .onClicked(policy: .cancelPrevious, act)
         }
 
         /// What the picker calls a curve.
@@ -761,7 +789,7 @@ enum Listings {
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
                     .itemDrag(begins: .perpendicular)
-                    .onItemDismissed(.up, beyond: 120) { name in close(name) }
+                    .onItemDismissed(directions: .up, threshold: 120) { name in close(name) }
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -773,7 +801,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The app `name` closed: the others close up; one before the card in front keeps
@@ -851,7 +879,7 @@ enum Listings {
                         .clipsContent(true)
                         .gridRow(1)
                 }
-                .rows(.auto, .fill)
+                .rows(.automatic, .fill)
                 .engine(following: turn) { _ in
                     named = min(max(1 + (Double(index) - turn.journey.value) / 0.6, 0), 1)
                 }
@@ -893,13 +921,13 @@ enum Listings {
         @Environment(\.device) private var device
 
         /// The themes the application may hold, in the order they are offered.
-        private static let themes: [(name: String, scheme: ColorScheme)] = [
-            ("The system's", .system), ("Light", .light), ("Dark", .dark),
+        private static let themes: [(name: String, scheme: ColorScheme?)] = [
+            ("The system's", nil), ("Light", .light), ("Dark", .dark),
         ]
 
         /// How the bars' buttons may stand, in the order they are offered.
         private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
-            ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+            ("The Web's own", .automatic), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
         ]
 
         /// The accents the application may hold, the platform's first.
@@ -935,8 +963,7 @@ enum Listings {
                 }
                 // The application's own look for them: a style for every group and
                 // every button on a bar, its states included (AppStyles.bars).
-                Switch(style.$barsInOwnLook)
-                    .text("In the gallery's own look")
+                Switch("In the gallery's own look", isOn: style.$barsInOwnLook)
                     .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
                 #endif
 
@@ -1029,15 +1056,15 @@ enum Listings {
                     Picker(SurfaceMaterial.offered(on: part), selection: material) {
                         $0.name
                     }
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                     Picker(AccentChoice.allCases, selection: color) {
                         $0.name
                     }
                         .isEnabled(made.showsColor)
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                     Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
                         .isEnabled(made.showsBlur)
-                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                        .onSelectionChanged { composed.wrappedValue = true }
                 }
             }
         }
@@ -1147,7 +1174,7 @@ enum Listings {
 
                 // Every letter cancels the search under way: only the last one finishes.
                 SearchField($query)
-                    .onTextChanged(.cancelPrevious) { text in
+                    .onTextChanged(policy: .cancelPrevious) { text in
                         try await Task.sleep(for: .milliseconds(600))
                         found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
                     }
@@ -1196,7 +1223,7 @@ enum Listings {
                 Text(caption)
                     .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
         """#,
         "BatterySample": #"""
@@ -1272,8 +1299,7 @@ enum Listings {
 
                 return VStack {
                     // A GET: this meter is a reader, and every report rebuilds it.
-                    ProgressBar()
-                        .progress(level)
+                    ProgressBar(level)
 
                     Text("a bar that reads the value — \(count)")
                 }
@@ -1291,8 +1317,7 @@ enum Listings {
                 return VStack {
                     // The words are the host's own arithmetic over the state, worked
                     // out on its frames - handing a conversion on reads nothing here.
-                    Text()
-                        .text($level.convert { "\(Int(($0 * 100).rounded()))%" })
+                    Text($level.convert { "\(Int(($0 * 100).rounded()))%" })
 
                     Text("a conversion of the same state — \(count)")
                 }
@@ -1355,9 +1380,9 @@ enum Listings {
                     }
                     .itemsLayout(.list())
                     .aim(list)
-                    .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                    .onCreated { try await list.scroll(to: messages.count - 1, anchor: .end) }
                     .onChanged(messages.count, policy: .cancelPrevious) {
-                        try await list.scrollTo(messages.count - 1, anchor: .end)
+                        try await list.scroll(to: messages.count - 1, anchor: .end)
                     }
                 }
                 .ignoresSafeArea(.all)
@@ -1386,7 +1411,7 @@ enum Listings {
                             .verticalAlignment(.end)
                             .gridColumn(1)
                     }
-                    .columns(.fill, .auto)
+                    .columns(.fill, .automatic)
                 }
             } destination: { _ in
                 Text("")
@@ -1423,6 +1448,9 @@ enum Listings {
 
         /// Words the host writes.
         @State private var hint = "Type here"   // words: the host writes them
+
+        /// What the user types into that field - its own text, which no row here reads.
+        @State private var typed = ""
 
         /// A value the host sets AND reports: the slider is handed `$level`
         /// both ways, and nothing here reads it.
@@ -1470,7 +1498,7 @@ enum Listings {
                 SwitchRow("Shown", $shown)
 
                 row("4 · words the host writes - placeholder($hint)") {
-                    TextField()
+                    TextField($typed)
                         .placeholder($hint)
                     DebugInfoLabel()
                 }
@@ -1548,11 +1576,11 @@ enum Listings {
                 SectionTitle("Along a line")
 
                 Rectangle()
-                    .fill(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
+                    .fill(.linearGradient(Self.stops, from: Point(0, 0), to: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
-                Button("endPoint: \(Self.ends[end].name)")
+                Button("to: \(Self.ends[end].name)")
                     .horizontalAlignment(.center)
                     .onClicked { end = (end + 1) % Self.ends.count }
 
@@ -1574,7 +1602,7 @@ enum Listings {
                 }
                 .style(.card)
                 .lineWidth(4)
-                .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
+                .stroke(.linearGradient(Self.stops, from: Point(0, 0), to: Point(1, 0)))
 
                 // Not a shape at all: `.background` takes a brush, so any view can
                 // carry one.
@@ -1597,8 +1625,7 @@ enum Listings {
                 // the closure a flip or a pick builds again.
                 DebugInfoLabel()
 
-                Switch($signedIn)
-                    .text("Signed in")
+                Switch("Signed in", isOn: $signedIn)
 
                 // An `if` with no `else`. The TextField below it is child 2 in one
                 // state and child 3 in the other - and it is the same control
@@ -1699,8 +1726,7 @@ enum Listings {
                         .verticalAlignment(.center)
                 }
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Platform look", isOn: $platformLook)
 
                 Text("Last: \(last)")
             }
@@ -1711,6 +1737,7 @@ enum Listings {
         @State private var name = ""
         @State private var last = "nothing yet"
         @State private var platformLook = false
+        @State private var saveIsMain = true
 
         var body: some View {
             // The gallery's style for each role, or the platform's own look.
@@ -1736,15 +1763,16 @@ enum Listings {
                         .role(.cancel)
                         .onClicked { last = "Cancel" }
 
-                    // Return presses the main action.
+                    // Return presses the main action; an ordinary button has no key.
                     Button("Save")
                         .style(look)
-                        .role(.primary)
+                        .role(saveIsMain ? .primary : .normal)
                         .onClicked { last = "Save" }
                 }
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Save is the main action", isOn: $saveIsMain)
+
+                Switch("Platform look", isOn: $platformLook)
 
                 Text("Last: \(last)")
             }
@@ -1809,8 +1837,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Switch($signedIn)
-                    .text("Signed in")
+                Switch("Signed in", isOn: $signedIn)
 
                 // Written on the group holding the `if/else`: it watches whichever
                 // branch shows. The group adds no view of its own.
@@ -1899,7 +1926,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(2)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .automatic, .automatic)
         }
 
         /// The next card not in the deck, if any is left.
@@ -1945,11 +1972,11 @@ enum Listings {
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
-            .onItemDismissed(.up, beyond: 120) { name in remove(name) }
-            // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
+            .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
+            // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
-            .motion(.eased(.milliseconds(400), curve: .cubicOut))
+            .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
             .dynamics(.spring(response: .milliseconds(300), damping: 1))
         }
 
@@ -2036,8 +2063,7 @@ enum Listings {
                 // The ticks are read here, so every box builds this closure.
                 DebugInfoLabel()
 
-                CheckBox($agreed)
-                    .text("I have read the terms")
+                CheckBox("I have read the terms", isOn: $agreed)
 
                 Text(agreed ? "Ticked" : "Not ticked")
 
@@ -2045,8 +2071,7 @@ enum Listings {
 
                 ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                     let (index, name) = pair
-                    return CheckBox(extras[index])
-                        .text(name)
+                    return CheckBox(name, isOn: extras[index])
                         .onToggled { ticked in extras[index] = ticked }
                         .id(name)
                 }
@@ -2071,14 +2096,14 @@ enum Listings {
                 TextField($words)
 
                 Button("Copy")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await application.clipboard.write(words)
                         answer = "copied"
                     }
 
                 // What another application copied pastes here too; nil is an empty clipboard.
                 Button("Paste")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         guard let pasted = try await application.clipboard.read() else { return answer = "the clipboard is empty" }
                         words = pasted
                         answer = "pasted"
@@ -2143,7 +2168,7 @@ enum Listings {
                 // The second press supersedes the first, whose write is refused.
                 Button("Press twice, quickly")
                     .horizontalAlignment(.center)
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(policy: .cancelPrevious) {
                         try? await Task.sleep(for: .seconds(1))
                         presses += 1
                     }
@@ -2298,7 +2323,7 @@ enum Listings {
         /// is under way is let go.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(.ignoreWhileRunning, act)
+                .onClicked(policy: .ignoreWhileRunning, act)
         }
         """#,
         "ConcurrentStateSample": #"""
@@ -2331,7 +2356,7 @@ enum Listings {
                 Button(running ? "Counting…" : "Count from 200 tasks at once")
                     .isEnabled(!running)
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         running = true
                         total = 0
                         expected = 200 * 100
@@ -2501,8 +2526,7 @@ enum Listings {
 
                 row("3 · a caption from the conversion") {
                     // A caption from the conversion: words the host writes.
-                    Text()
-                        .text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
+                    Text($volume.convert { "\(Int(($0 * 100).rounded()))%" })
                     DebugInfoLabel()
                 }
 
@@ -2518,16 +2542,14 @@ enum Listings {
                             .step(5)
                             .minimum(-20)
                             .maximum(60)
-                        Text()
-                            .text($celsius.convert { "\(Int($0)) °C" })
+                        Text($celsius.convert { "\(Int($0)) °C" })
                     }
                     HStack {
                         Stepper($celsius.convert { $0 * 9 / 5 + 32 } back: { ($0 - 32) * 5 / 9 })
                             .step(9)
                             .minimum(-4)
                             .maximum(140)
-                        Text()
-                            .text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
+                        Text($celsius.convert { "\(Int($0 * 9 / 5 + 32)) °F" })
                     }
                     DebugInfoLabel()
                 }
@@ -2540,13 +2562,12 @@ enum Listings {
                     Slider($height)
                         .minimum(20)
                         .maximum(200)
-                    Text()
-                        // The sides as they are shown, whole, and their product - not the product of what
-                        // the sliders hold, which would disagree with the sides it names.
-                        .text(.multi($width, $height).convert { w, h in
-                            let (across, down) = (Int(w.rounded()), Int(h.rounded()))
-                            return "\(across) × \(down) = \(across * down)"
-                        })
+                    // The sides as they are shown, whole, and their product - not the product of what
+                    // the sliders hold, which would disagree with the sides it names.
+                    Text(.multi($width, $height).convert { w, h in
+                        let (across, down) = (Int(w.rounded()), Int(h.rounded()))
+                        return "\(across) × \(down) = \(across * down)"
+                    })
                     DebugInfoLabel()
                 }
 
@@ -2565,8 +2586,7 @@ enum Listings {
                     // two to ten of them, of any types the host carries. Nothing
                     // is read here, so typing above rewrites this caption without
                     // building it.
-                    Text()
-                        .text(.multi($named, $width, $height)
+                    Text(.multi($named, $width, $height)
                             .convert { "\($0): \(Int($1.rounded())) × \(Int($2.rounded()))" })
                     DebugInfoLabel()
                 }
@@ -2608,7 +2628,7 @@ enum Listings {
         /// and its members, each with its value's type.
         public enum Cube3DContract: ElementContract {
             public static let nodeType: NodeType = "Gallery.Cube3D"
-            public static let tiers: [any Contract.Type] = [ViewContract.self]
+            public static let tiers: [any Tier.Type] = [ViewContract.self]
 
             /// How long the cube's edge is, as a share of the room the view is given,
             /// 0 through 1. A size HAS a half way, so a change travels and a walk of
@@ -2656,11 +2676,11 @@ enum Listings {
             /// same state grows the cube on the host's own frames, and nothing here is
             /// built again for it.
             ///
-            /// `.inOut`, because the host reports where a walk has got to, which is
-            /// what `$size.journey.value` reads - so `$size.journey.move(to: 1)` grows
-            /// the cube the way it moves any other walked value.
+            /// A `.journey`: the host walks it and reports where the walk has got to,
+            /// which is what `$size.journey.value` reads - so `$size.journey.move(to: 1)`
+            /// grows the cube the way it moves any other walked value.
             public func size(_ state: Binding<Double>) -> Modified {
-                setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
+                setValue(Cube3DContract.size, on: state, as: .journey)
             }
 
             /// Which color the cube is painted.
@@ -2676,7 +2696,7 @@ enum Listings {
             /// The same, set by the host from a state as it stands: a switch bound to
             /// the state stops and starts the cube, and nothing here is built again.
             public func isSpinning(_ state: Binding<Bool>) -> Modified {
-                setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
+                setValue(Cube3DContract.isSpinning, on: state, as: .oneWay)
             }
         }
         """#,
@@ -2696,8 +2716,7 @@ enum Listings {
                     .isSpinning($spinning)
                     .horizontalAlignment(.center)
 
-                Text()
-                    .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
+                Text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
 
                 Slider($size)
                     .minimum(0.2)
@@ -2706,8 +2725,7 @@ enum Listings {
                 Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
-                Switch($spinning)
-                    .text("Spin")
+                Switch("Spin", isOn: $spinning)
                     .horizontalAlignment(.center)
             }
         }
@@ -2725,8 +2743,8 @@ enum Listings {
                 DebugInfoLabel()
 
                 DatePicker($due)
-                    .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
-                    .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
+                    .minimum(CalendarDate(year: 2020, month: 1, day: 1))
+                    .maximum(CalendarDate(year: 2030, month: 12, day: 31))
                     .format(.long)
                     .onDateChanged { date in
                         chosen = date.text
@@ -2786,13 +2804,13 @@ enum Listings {
                 // These facts stand still, so this closure stands at one build.
                 DebugInfoLabel()
 
-                Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
+                Text("\(app.info.name) \(app.info.version) (\(app.info.build))")
                     .fontWeight(.bold)
 
                 Text(app.info.packageName)
 
                 Text("device · \(device.info.manufacturer) \(device.info.model)")
-                Text("system · \(device.info.platform) \(device.info.versionString)")
+                Text("system · \(device.info.platform) \(device.info.platformVersion)")
                 Text("formFactor · \(device.info.formFactor)")
                 Text("virtual · \(device.info.isVirtual.map { $0 ? "yes" : "no" } ?? "not said")")
                 Text("name · \(device.info.name.isEmpty ? "not said" : device.info.name)")
@@ -2828,7 +2846,7 @@ enum Listings {
                 // One button, nothing to answer: the handler resumes when it is
                 // dismissed, so the next line runs with the alert already gone.
                 Button("Tell me something")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await window.alert(
                             "Saved", message: "The draft is safe")
                         answer = "the alert was dismissed"
@@ -2837,7 +2855,7 @@ enum Listings {
                 // Ask, await, branch - in one place, which is what an act is for.
                 // The cancel says the system's own word.
                 Button("Ask me a question")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let ok = try await window.confirm(
                             "Delete draft?", message: "This cannot be undone", accept: "Delete")
                         answer = ok ? "Delete pressed" : "cancelled"
@@ -2846,7 +2864,7 @@ enum Listings {
                 // The answer is the action chosen, as a value - nil for the
                 // cancel, or a sheet tapped away where the platform allows that.
                 Button("Offer me choices")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let choice = try await window.chooseAction(
                             "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
                         answer = choice.map { "\($0.title) chosen" } ?? "nothing chosen"
@@ -2855,7 +2873,7 @@ enum Listings {
                 // nil is CANCELLED; an accepted prompt with nothing typed comes
                 // back as "" - an empty answer, which is still an answer.
                 Button("Ask me to type")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let typed = try await window.prompt(
                             "Rename", message: "A new name for the draft",
                             placeholder: "Name", initialValue: name, maximumLength: 40)
@@ -2922,11 +2940,11 @@ enum Listings {
                 // which is what the two events are for.
                 .stroke(over ? Palette.accent : Palette.outline)
                 .lineWidth(over ? 2 : 1)
-                .onDragOver { over = true }
-                .onDragLeave { over = false }
+                .onDragEntered { over = true }
+                .onDragExited { over = false }
                 // A drop is not a leave, so the light comes down here too. Words
                 // longer than 1 KB are left out.
-                .onDrop { text in
+                .onDropped { text in
                     basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                     over = false
                 }
@@ -2936,6 +2954,46 @@ enum Listings {
                     .isEnabled(!basket.isEmpty)
                     .onClicked { basket = [] }
             }
+        }
+        """#,
+        "DrawnAwaySample": #"""
+        // Sources/Samples/Gestures/DrawnAwaySample.swift
+        @State private var turned = 0
+        @State private var moved = 0
+        @State private var grown = 0
+
+        var body: some View {
+            VStack {
+                // The counts are read here, so every tap builds this closure.
+                DebugInfoLabel()
+
+                // Turned: its corners stand outside the frame it was laid out in, and a tap on a corner is its own.
+                card("Tap the turned card")
+                    .rotation(20)
+                    .onTapped { turned += 1 }
+
+                // Moved a card's width to the right: a tap where it stands counts, one where its frame lies does not.
+                card("Tap the moved card")
+                    .translationX(120)
+                    .onTapped { moved += 1 }
+
+                // Grown by half: a tap on the grown edge counts.
+                card("Tap the grown card")
+                    .scale(1.5)
+                    .onTapped { grown += 1 }
+
+                Text("Turned \(turned), moved \(moved), grown \(grown)")
+            }
+        }
+
+        private func card(_ words: String) -> some View {
+            ZStack {
+                Text(words)
+            }
+            .width(220)
+            .style(.card)
+            .stroke(Palette.outline)
+            .lineWidth(1)
         }
         """#,
         "DrivenReadingSample": #"""
@@ -2964,8 +3022,7 @@ enum Listings {
 
                 // The two readings, off ONE journey: `destination` is where the
                 // value is going and `value` where it has got to.
-                Text()
-                    .text($width.journey.convert {
+                Text($width.journey.convert {
                         "going to \(Int($0.destination)) — showing \(Int($0.value))"
                     })
 
@@ -3053,8 +3110,7 @@ enum Listings {
                 // A CONVERSION of the same driven value: the host works the words
                 // out on its own frames, from where the marker HAS GOT TO, and
                 // nothing here reads anything.
-                Text()
-                    .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
+                Text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                     .fontWeight(.bold)
                     .horizontalAlignment(.center)
 
@@ -3091,6 +3147,48 @@ enum Listings {
                 .onClicked(act)
         }
         """#,
+        "EngineAnimationSample": #"""
+        // Sources/Samples/Driven/EngineAnimationSample.swift
+        /// Where the dot is going - and, frame by frame, where the engine has it.
+        @State(animatedBy: .engine) private var offset = 0.0
+
+        var body: some View {
+            VStack {
+                Ellipse()
+                    .fill(Palette.accent)
+                    .width(32)
+                    .height(32)
+                    .translationX($offset)
+                    .horizontalAlignment(.center)
+
+                HStack {
+                    Button("Left").onClicked { offset = -120 }
+                    Button("Center").onClicked { offset = 0 }
+                    Button("Right").onClicked { offset = 120 }
+                }
+                .horizontalAlignment(.center)
+            }
+            .engine(tracking: $offset) { cycle in
+                let journey = $offset.journey
+
+                // With less motion the dot lands where it is sent.
+                guard !cycle.reducesMotion else {
+                    journey.snap(to: journey.destination)
+                    return .wait
+                }
+
+                // A spring towards the destination, damped by the speed.
+                let seconds = cycle.elapsedSeconds
+                let pull = (journey.destination - journey.value) * 180 - journey.velocity * 12
+                journey.velocity += pull * seconds
+                journey.value += journey.velocity * seconds
+
+                guard abs(journey.destination - journey.value) < 0.5, abs(journey.velocity) < 1 else { return .again }
+                journey.snap(to: journey.destination)
+                return .wait
+            }
+        }
+        """#,
         "EngineSample": #"""
         // Sources/Samples/Driven/EngineSample.swift
         /// The reading as it stood when Lap was last pressed - ORDINARY state, so
@@ -3108,7 +3206,7 @@ enum Listings {
         /// wakes the engine.
         @State private var running = false   // followed by the engine, read by no view
 
-        /// How long the clock has run, in milliseconds - the engine's own to
+        /// How long the clock has run, in seconds - the engine's own to
         /// count up, read by no view: the reading is worked out FROM it, so
         /// nothing outside this page ever needs the number itself.
         @State private var elapsed = 0.0   // the engine's own count
@@ -3123,8 +3221,7 @@ enum Listings {
 
                 ZStack {
                     // Off a driven state: written ten times a second, never described.
-                    Text()
-                        .text($reading)
+                    Text($reading)
                         .fontWeight(.bold)
                         .horizontalAlignment(.center)
                 }
@@ -3137,8 +3234,7 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 HStack {
-                    Button()
-                        .text($caption)
+                    Button($caption)
                         .onClicked {
                             running.toggle()
                             caption = running ? "Stop" : "Start"
@@ -3161,9 +3257,9 @@ enum Listings {
             .engine(tracking: $running) { cycle in
                 guard running else { return .wait }
 
-                elapsed += cycle.elapsed
+                elapsed += cycle.elapsedSeconds
 
-                let tenths = Int(elapsed / 100)
+                let tenths = Int(elapsed * 10)
                 reading = "\(tenths / 10).\(tenths % 10) s"
 
                 return .again
@@ -3269,7 +3365,7 @@ enum Listings {
 
                 // The contents go first; nil is a cancel.
                 Button("Save…")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt"])
                         saved = try await window.saveFile(Array(words.utf8), name: "Note", types: [text])
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
@@ -3277,7 +3373,7 @@ enum Listings {
 
                 // No file longer than 1 KB is read whole: one byte past it says it is longer.
                 Button("Open…")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt", "md"])
                         guard let file = try await window.openFile(types: [text]) else {
                             return answer = "cancelled"
@@ -3291,12 +3387,12 @@ enum Listings {
                 // The system opens it in the application it gives its kind.
                 Button("Launch the saved file")
                     .isEnabled(saved != nil)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         if let saved { try await saved.launch() }
                     }
 
                 Button("Launch swift.org")
-                    .onClicked(.ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
+                    .onClicked(policy: .ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
 
                 // A text file dragged from the system onto it is read into the editor.
                 ZStack {
@@ -3304,9 +3400,9 @@ enum Listings {
                 }
                 .stroke(dropping ? Palette.accent : Palette.outline)
                 .lineWidth(dropping ? 2 : 1)
-                .onDragOver { dropping = true }
-                .onDragLeave { dropping = false }
-                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
+                .onDragEntered { dropping = true }
+                .onDragExited { dropping = false }
+                .onDropped(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)
                     guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
@@ -3350,8 +3446,7 @@ enum Listings {
                 .spacing(8)
                 .height(160)
 
-                Switch($spaced)
-                    .text("A space, not a fill")
+                Switch("A space, not a fill", isOn: $spaced)
 
                 SectionTitle("Across")
 
@@ -3780,17 +3875,17 @@ enum Listings {
         // Sources/Gallery/SessionStyle.swift
         /// The kinds of window the galleries' scene opens beside its gallery windows -
         /// each a window of that scene. See `GalleryScene`.
-        extension WindowType where Value == Void {
+        extension WindowKind where Value == Void {
             /// The window that chooses the gallery's font.
-            static let fonts = WindowType("gallery.fonts")
+            static let fonts = WindowKind("gallery.fonts")
 
             /// The window that chooses the gallery's accent.
-            static let colors = WindowType("gallery.colors")
+            static let colors = WindowKind("gallery.colors")
         }
 
-        extension WindowType where Value == Int {
+        extension WindowKind where Value == Int {
             /// A window per swatch number - one kind, a window for each value.
-            static let swatch = WindowType("gallery.swatch")
+            static let swatch = WindowKind("gallery.swatch")
         }
 
         /// What the galleries' scene KEEPS with itself - handed back with it when the
@@ -4073,7 +4168,7 @@ enum Listings {
                 #if WEB
                 .glass
                 #else
-                .system
+                .automatic
                 #endif
             }
 
@@ -4132,22 +4227,22 @@ enum Listings {
             public static let name = "Gallery"
 
             /// Writes a line to the platform's own log, where its tools read it.
-            public static let log = ElementAct<Self, String, Void>("Gallery.Log")
+            public static let log = ElementAct<Self, String, Void>("log")
 
             /// The battery's level, 0 through 1, and whether it is charging.
-            public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+            public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("batteryLevel")
 
             /// Declared here and registered nowhere: calling it shows what an act no
             /// performer answers does.
-            public static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+            public static let nobody = ElementAct<Self, Void, Void>("nobody")
 
             /// The battery reported: its level and whether it is charging.
             public static let batteryChanged =
-                ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+                ElementEvent<Self, (Double, Bool)>("batteryChanged")
 
             /// The network came or went: whether the internet is reachable.
             public static let connectivityChanged =
-                ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+                ElementEvent<Self, Bool>("connectivityChanged")
 
             public static let members: [any ContractMember] = [
                 log, batteryLevel, nobody, batteryChanged, connectivityChanged,
@@ -4368,7 +4463,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(4)
             }
-            .rows(.fill, .auto, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         }
 
         /// The next card not in the gallery, if any is left.
@@ -4406,9 +4501,10 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(
+            return run.shade {
                 Rectangle()
-                    .fill(Color(hex: 0x000000)))
+                    .fill(Color(hex: 0x000000))
+            }
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -4491,6 +4587,12 @@ enum Listings {
 
         @State private var width = 220.0
 
+        // The rectangle fed into a state: the first, or the second while the
+        // switch says so. A state handed over reads it as it is handed over.
+        @State private var first = Rect(0, 0, 0, 0)
+        @State private var second = Rect(0, 0, 0, 0)
+        @State private var feedsSecond = false
+
         var body: some View {
             VStack {
                 // `slot`, `window` and `safe` are read in these braces - the three
@@ -4527,11 +4629,17 @@ enum Listings {
                     .onFrameChanged { slot = $0 }
                     .onFrameChanged(in: .global) { window = $0 }
                     .onFrameChanged(in: .safeArea) { safe = $0 }
+                    // Fed one way into a state, with no body reading it.
+                    .frame(into: feedsSecond ? $second : $first)
                 }
 
                 Slider($width)
                     .minimum(140)
                     .maximum(340)
+
+                Switch("Feed the rectangle into the second state", isOn: $feedsSecond)
+
+                Text("first · \(Int(first.width)) × \(Int(first.height))     second · \(Int(second.width)) × \(Int(second.height))")
 
                 // Where the panel sits, in three spaces. The first is against the
                 // tinted box above, which is why that box is drawn at all.
@@ -4577,7 +4685,7 @@ enum Listings {
                 Text(opened.map { "Tile \($0) opened." } ?? "Open a tile.")
                     .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
         """#,
         "GridPlacement": #"""
@@ -4607,7 +4715,7 @@ enum Listings {
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(64, count: 2), .auto)
+                .rows(.fixed(64, count: 2), .automatic)
                 .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
 
                 // Changing a definition patches the grid in place: the cells keep
@@ -4651,17 +4759,21 @@ enum Listings {
                 SwitchRow("Counts", $counts)
                     .gridRow(0)
 
-                // A section per shelf, named so two shelves may hold the same item.
+                // A section per shelf, known by its name.
                 ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                     let section = Section(shelf.items) { item in
                         Text(item)
                     }
                     .id(shelf.name)
-                    .header(Text(shelf.name)
-                        .fontWeight(.bold))
+                    .header {
+                        Text(shelf.name)
+                            .fontWeight(.bold)
+                    }
 
                     return counts
-                        ? section.footer(Text("\(shelf.items.count) items"))
+                        ? section.footer {
+                            Text("\(shelf.items.count) items")
+                        }
                         : section
                 })
                 .gridRow(1)
@@ -4670,7 +4782,7 @@ enum Listings {
                     .gridRow(2)
                     .horizontalAlignment(.end)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "GrowingWords": #"""
@@ -4700,7 +4812,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 Button("Weather in Kraków")
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(policy: .cancelPrevious) {
                         said = "Asking…"
                         do {
                             let response = try await application.send(HTTPRequest(
@@ -4887,13 +4999,13 @@ enum Listings {
                             }
                         }
                     }
-                    .motion(Self.turning)
+                    .parameterMotion(Self.turning)
                 }
                 .gridRow(0)
                 .clipsContent(true)
                 // THE GRID THE ROOM FITS: a turned phone or a window grown or
                 // shrunk moves icons to other boards, or makes them larger.
-                .frame($room)
+                .frame(into: $room)
                 .engine(following: $room) { _ in fitted() }
 
                 // THE DOTS wear the same parameters - one state, so one motion: they go
@@ -4904,11 +5016,11 @@ enum Listings {
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
-                .motion(Self.turning)
+                .parameterMotion(Self.turning)
                 .height(16)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The grid the room fits now, written where it changed - the board in
@@ -5052,7 +5164,7 @@ enum Listings {
 
                 Button("Read again")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { try await read() }
+                    .onClicked(policy: .ignoreWhileRunning) { try await read() }
             }
             .onCreated { try await read() }
         }
@@ -5190,7 +5302,7 @@ enum Listings {
                     }
                 }
                 .columns(.fill(count: 4))
-                .rows(.auto(count: 8))
+                .rows(.automatic(count: 8))
 
                 SectionTitle("In the button's color")
 
@@ -5271,6 +5383,7 @@ enum Listings {
         private struct IdentityRow: View {
             let item: String
             @Binding var items: [String]
+            @State private var typed = ""
 
             var body: some View {
                 // The field takes what the name and the button leave.
@@ -5278,7 +5391,7 @@ enum Listings {
                     Text(item)
                         .verticalAlignment(.center)
 
-                    TextField()
+                    TextField($typed)
                         .placeholder("type here")
                         .gridColumn(1)
 
@@ -5288,7 +5401,7 @@ enum Listings {
                         }
                         .gridColumn(2)
                 }
-                .columns(.fixed(90), .fill, .auto)
+                .columns(.fixed(90), .fill, .automatic)
             }
         }
         """#,
@@ -5390,13 +5503,13 @@ enum Listings {
                 TextField($line)
 
                 Button("Write it to the system's log")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await application.call(GalleryContract.log, line)
                         status = "logged"
                     }
 
                 Button("Ask about the battery")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let (level, charging) = try await application.call(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
@@ -5407,7 +5520,7 @@ enum Listings {
                     }
 
                 Button("Call something nobody registered")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         do {
                             try await application.call(GalleryContract.nobody)
                             status = "that should have thrown"
@@ -5425,7 +5538,7 @@ enum Listings {
                 SwitchRow("Ten stars", $tenStars)
 
                 Button("Flash the bar")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await stars.flash()
                         status = "flashed \(stars)"
                     }
@@ -5534,15 +5647,15 @@ enum Listings {
                 HStack {
                     Button("Focus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(.ignoreWhileRunning) { try await first.focus() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await first.focus() }
 
                     Button("Unfocus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(.ignoreWhileRunning) { try await first.unfocus() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await first.unfocus() }
                 }
 
                 Button("Close keyboard")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         said = try await window.hideOnScreenKeyboard()
                             ? "Focus released"
                             : "Nothing was focused"
@@ -5838,7 +5951,7 @@ enum Listings {
                 .axis(\.round, input: hand, range: 0...4, periodic: true)
                 // ...and round and round, a card at a time.
                 .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
-                .motion(.spring(response: .milliseconds(360), damping: 0.8))
+                .parameterMotion(.spring(response: .milliseconds(360), damping: 0.8))
             }
             .clipsContent(true)
         }
@@ -5976,7 +6089,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .gridRow(3)
             }
-            .rows(.fill, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic)
         }
 
         /// The cards: one arithmetic, asked at the keyframes alone.
@@ -5990,12 +6103,12 @@ enum Listings {
             // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
             // input, the axis is keyframes alone and the buttons move it.
             .axis(
-                \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+                \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
                 keyframes: .every(1), snaps: byHand ? .every(1) : nil)
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
         }
 
         /// How large a card is in every layout - the size the grid's cells allow -
@@ -6131,7 +6244,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// The cards, placed from both axes of the parameters.
@@ -6144,9 +6257,9 @@ enum Listings {
             // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
             // no hand, so it is declared no axis.
             .axis(
-                \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+                \.turn, input: .scroll(.horizontal, lengthPerUnit: 90),
                 range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-            .motion(.eased(.milliseconds(600), curve: .cubicOut))
+            .parameterMotion(.eased(.milliseconds(600), curve: .cubicOut))
         }
 
         /// Where one card stands: between a pile and an arc by the spread, the
@@ -6357,7 +6470,7 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .gridRow(2)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .automatic, .automatic)
         }
 
         /// The photos, placed from every axis of the table.
@@ -6380,7 +6493,7 @@ enum Listings {
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
                 periodic: true)
-            .motion(.spring(response: .milliseconds(420), damping: 0.82))
+            .parameterMotion(.spring(response: .milliseconds(420), damping: 0.82))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
@@ -6545,17 +6658,26 @@ enum Listings {
         """#,
         "LoadingList": #"""
         // Sources/Samples/Collections/LoadingItemsSample.swift
+        @State private var first = 0
         @State private var count = 30
+        @State private var asked = 0
         @State private var loading = false
 
         var body: some View {
             Grid {
                 HStack {
                     Button("Start over")
-                        .isEnabled(count > 30)
-                        .onClicked { count = 30 }
+                        .isEnabled(first > 0 || count > 30)
+                        .onClicked {
+                            first = 0
+                            count = 30
+                            asked = 0
+                        }
 
-                    Text(loading ? "Loading" : "\(count) items")
+                    Button("Other items")
+                        .onClicked { first += 1000 }
+
+                    Text(loading ? "Loading" : "\(count) items, asked \(asked) times")
                         .verticalAlignment(.center)
                 }
                 .gridRow(0)
@@ -6563,12 +6685,14 @@ enum Listings {
                 DebugInfoLabel()
                     .gridRow(0)
 
-                ItemsView(0..<count) { number in
+                ItemsView(first..<first + count) { number in
                     Text("Item \(number + 1)")
                 }
                 // Within five items of the end, thirty more - one load at a time:
-                // reaching the end again while one runs lets that go.
+                // reaching the end again while one runs lets that go. Other items
+                // swaps them for as many others, and the end asks again.
                 .onEndReached(within: 5, policy: .ignoreWhileRunning) {
+                    asked += 1
                     guard count < 300 else { return }
 
                     loading = true
@@ -6578,7 +6702,7 @@ enum Listings {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "LocaleInfoSample": #"""
@@ -6597,6 +6721,9 @@ enum Listings {
 
                 Text("language · \(locale.language?.language ?? "not said")")
                 Text("region · \(locale.language?.region ?? "none")")
+                // The user's languages, most wanted first - what a
+                // localization following the system chooses from.
+                Text("languages · \(locale.languages.map(\.identifier).joined(separator: ", "))")
                 Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")
@@ -6607,7 +6734,7 @@ enum Listings {
         "LocalizationSample": #"""
         // Sources/Samples/Environment/Localization/LocalizationSample.swift
         @State private var localization = Localization(
-            ReportCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+            ReportCatalog.self, language: .polish, formatLocale: "pl-PL")
         @State private var count = 22.0
         private let prepared = CalendarDate(year: 2026, month: 10, day: 11)
         private let recent = [
@@ -6619,16 +6746,12 @@ enum Listings {
         var body: some View {
             VStack {
                 HStack {
-                    Button("English")
-                        .onClicked {
-                            localization.language = .fixed(.english)
-                            localization.formatLocale = .fixed("en-US")
-                        }
-                    Button("Polski")
-                        .onClicked {
-                            localization.language = .fixed(.polish)
-                            localization.formatLocale = .fixed("pl-PL")
-                        }
+                    Picker([nil, ReportLanguage.english, .polish], selection: localization.$language) { language in
+                        language.map { $0 == .english ? "English" : "Polski" } ?? "As the system"
+                    }
+                    Picker([nil, LocaleTag("en-US"), "pl-PL"], selection: localization.$formatLocale) { formats in
+                        formats.map { "Formats \($0)" } ?? "The system's formats"
+                    }
                 }
 
                 HStack {
@@ -6671,7 +6794,7 @@ enum Listings {
             static let english = ReportResources(
                 heading: "Folder report",
                 prepared: Message { day, context in
-                    "Prepared on \(context.date(day, style: .long))"
+                    "Prepared on \(context.date(day, format: .long))"
                 },
                 fileCount: Message { count, context in
                     let number = context.number(count)
@@ -6689,7 +6812,7 @@ enum Listings {
             static let polish = ReportResources(
                 heading: "Raport folderu",
                 prepared: Message { day, context in
-                    "Sporządzono \(context.date(day, style: .long))"
+                    "Sporządzono \(context.date(day, format: .long))"
                 },
                 fileCount: Message { count, context in
                     let number = context.number(count)
@@ -6759,7 +6882,7 @@ enum Listings {
                     ForEach(recent) { file in
                         VStack {
                             Text(file.name)
-                            Text(localization.date(file.modified, style: .medium))
+                            Text(localization.date(file.modified, format: .medium))
                         }
                     }
 
@@ -6799,9 +6922,13 @@ enum Listings {
                             .verticalAlignment(.center)
                     }
                 }
-                .header(Text("N and N², a thousand times")
-                    .fontWeight(.bold))
-                .footer(Text("That is all of them."))
+                .header {
+                    Text("N and N², a thousand times")
+                        .fontWeight(.bold)
+                }
+                .footer {
+                    Text("That is all of them.")
+                }
                 .selection($chosen)
                 .gridRow(1)
 
@@ -6813,7 +6940,7 @@ enum Listings {
                 Text(chosen.map { "Row \($0) is chosen." } ?? "Tap a row.")
                     .gridRow(2)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "MailFilters": #"""
@@ -6829,8 +6956,8 @@ enum Listings {
                     .onClicked { filtering = true }
                     .popover(isPresented: $filtering) {
                         VStack {
-                            Switch($unreadOnly).text("Unread only")
-                            Switch($flaggedOnly).text("Flagged only")
+                            Switch("Unread only", isOn: $unreadOnly)
+                            Switch("Flagged only", isOn: $flaggedOnly)
                             Button("Done").onClicked { filtering = false }
                         }
                     }
@@ -6863,7 +6990,7 @@ enum Listings {
                 }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "MainPage.bar": #"""
@@ -6876,8 +7003,7 @@ enum Listings {
         // for accessibility and for bars that show words.
         .toolbar {
             ToolbarGroup {
-                ToolbarButton.inspector(window)
-                    .text("Inspector")
+                ToolbarButton.debugInspector(window, text: "Inspector")
                     .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
                 if !nav.showing(.home) {
@@ -7007,7 +7133,7 @@ enum Listings {
         .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
-        .sidebarOverlays(nav.$menuOverlays)
+        .sidebarOverlays(into: nav.$menuOverlays)
         // Whether the bar offers the menu's button - the Split view
         // sample's switch takes it away.
         .showsSidebarToggle(nav.$showsMenuButton)
@@ -7029,7 +7155,7 @@ enum Listings {
                     // tab's page is the stack rather than the page inside it - so
                     // they are written on the stack.
                     .title("Stack")
-                    .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                    .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
                 case .second:
                     SecondTabPage(nav: nav)
@@ -7046,7 +7172,7 @@ enum Listings {
         @State private var said = "tap the map, a pin, or its details"
 
         @Aim(Map.self) private var map
-        @State private var kind = MapType.standard
+        @State private var kind = MapKind.standard
         @State private var traffic = false
         @State private var showsMe = false
         @State private var locked = false
@@ -7062,7 +7188,7 @@ enum Listings {
         private struct Place {
             let name: String
             let address: String
-            let type: MarkerType
+            let type: MarkerKind
             let latitude: Double
             let longitude: Double
         }
@@ -7075,14 +7201,14 @@ enum Listings {
 
                 HStack {
                     Button("Old Town")
-                        .onClicked(.cancelPrevious) {
-                            try await map.moveToRegion(
+                        .onClicked(policy: .cancelPrevious) {
+                            try await map.show(
                                 MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                         }
 
                     Button("Poland")
-                        .onClicked(.cancelPrevious) {
-                            try await map.moveToRegion(
+                        .onClicked(policy: .cancelPrevious) {
+                            try await map.show(
                                 MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                         }
 
@@ -7116,7 +7242,7 @@ enum Listings {
                 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     .aim(map)
                     // What the map draws, and whether the user may move it.
-                    .type(kind)
+                    .kind(kind)
                     .showsTraffic(traffic)
                     .showsUserLocation(showsMe)
                     .isZoomEnabled(!locked)
@@ -7131,7 +7257,7 @@ enum Listings {
                                 .subtitle(place.address)
                                 // What the marker stands for, which is what decides
                                 // the icon the platform draws for it.
-                                .type(place.type)
+                                .kind(place.type)
                                 .onSelected { said = "pin: \(place.name)" }
                                 .onDetailsClicked { said = "details: \(place.name)" }
                         }
@@ -7286,7 +7412,7 @@ enum Listings {
                         .id("export")
                         .onClicked { exported += 1 }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
 
                 // Edit holds the platform's own entries, acting on the field the
                 // user typed into; Clear stands after them, this page's own.
@@ -7295,7 +7421,7 @@ enum Listings {
                         .id("clear")
                         .onClicked { note = "" }
                 }
-                .id(StandardMenu.edit)
+                .joins(.edit)
 
                 if ownMenu {
                     Menu("Sample") {
@@ -7309,8 +7435,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
         """#,
         "MenuPage": #"""
@@ -7371,7 +7496,7 @@ enum Listings {
                 }
                 .ignoresSafeArea(.all)
                 .title("StateUI")
-                .icon(Self.mark)
+                .pageIcon(Self.mark)
                 // The line about what this is stands at the menu's foot, and the rows
                 // scroll under it.
                 .bottomBar {
@@ -7451,6 +7576,10 @@ enum Listings {
             @State private var presentsAnother = false
             @State private var presentsStack = false
 
+            /// What the field says, and which of the two words the arrows mark.
+            @State private var query = ""
+            @State private var mark = 0
+
             var body: some View {
                 VStack {
                     SectionTitle("Over everything")
@@ -7459,6 +7588,15 @@ enum Listings {
                         .fontWeight(.bold)
 
                     Text("Present a stack: its bar comes with it.")
+
+                    // The field holds the keyboard in the sheet; the stack holding it takes the arrows.
+                    VStack {
+                        TextField($query)
+                            .placeholder("Type here: Up and Down move the mark")
+
+                        Text(mark == 0 ? "▸ One    Two" : "One    ▸ Two")
+                    }
+                    .onKeyPressed([.upArrow, .downArrow]) { press in mark = press.key == .upArrow ? 0 : 1 }
 
                     Button("Close")
                         .horizontalAlignment(.center)
@@ -7493,7 +7631,7 @@ enum Listings {
             var body: some View {
                 NavigationStack($path) {
                     VStack {
-                        Switch($offersClose).text("Close button")
+                        Switch("Close button", isOn: $offersClose)
                         Button("Push").onClicked { path.append(path.count + 1) }
                         Button("Close").onClicked { shown = false }
                     }
@@ -7688,7 +7826,7 @@ enum Listings {
                 .horizontalAlignment(.center)
                 .gridRow(4)
             }
-            .rows(.fill, .auto, .auto, .auto, .auto)
+            .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         }
 
         /// The ring of cards and its dots, placed by the arithmetic below.
@@ -7701,7 +7839,7 @@ enum Listings {
                     // settles back onto its place.
                     if swaying {
                         face(Self.cards[index])
-                            .followsLayout(response: .milliseconds(420), damping: 0.55)
+                            .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
                     } else {
                         face(Self.cards[index])
                     }
@@ -7728,10 +7866,11 @@ enum Listings {
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
-            .shade(
+            .shade {
                 Rectangle()
-                    .fill(Color(hex: 0x000000)))
-            .motion(.eased(.milliseconds(300), curve: .cubicOut))
+                    .fill(Color(hex: 0x000000))
+            }
+            .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
             // AT REST - the ring and every card still - it says where, once.
             .onSettled { turned in
                 let count = Self.cards.count
@@ -8025,17 +8164,17 @@ enum Listings {
 
                 Button("Close swatch 2")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
+                    .onClicked(policy: .ignoreWhileRunning) { await closeSwatch(2) }
 
                 SectionTitle("More gallery windows")
 
                 Button("New gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await openAnother() }
+                    .onClicked(policy: .ignoreWhileRunning) { await openAnother() }
 
                 Button("Close every gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await closeThis() }
+                    .onClicked(policy: .ignoreWhileRunning) { await closeThis() }
             }
         }
 
@@ -8048,21 +8187,21 @@ enum Listings {
         }
 
         /// The button that opens one of the scene's windows.
-        private func opens(_ caption: String, _ type: WindowType<Void>) -> some View {
+        private func opens(_ caption: String, _ kind: WindowKind<Void>) -> some View {
             Button(caption)
-                .onClicked(.ignoreWhileRunning) { await open(type, caption) }
+                .onClicked(policy: .ignoreWhileRunning) { await open(kind, caption) }
         }
 
         /// The button that closes it.
-        private func closes(_ caption: String, _ type: WindowType<Void>) -> some View {
+        private func closes(_ caption: String, _ kind: WindowKind<Void>) -> some View {
             Button(caption)
-                .onClicked(.ignoreWhileRunning) { await close(type, caption) }
+                .onClicked(policy: .ignoreWhileRunning) { await close(kind, caption) }
         }
 
         /// Opens a window of the scene, and says what came of it.
-        private func open(_ type: WindowType<Void>, _ caption: String) async {
+        private func open(_ kind: WindowKind<Void>, _ caption: String) async {
             do {
-                try await application.openWindow(type)
+                try await application.openWindow(kind)
                 said = "\(caption): opened."
             } catch WindowError.alreadyOpen {
                 said = "\(caption): WindowError.alreadyOpen - it is open already."
@@ -8072,9 +8211,9 @@ enum Listings {
         }
 
         /// Closes one, and says what came of it.
-        private func close(_ type: WindowType<Void>, _ caption: String) async {
+        private func close(_ kind: WindowKind<Void>, _ caption: String) async {
             do {
-                try await application.closeWindow(type)
+                try await application.closeWindow(kind)
                 said = "\(caption): closed."
             } catch WindowError.notOpen {
                 said = "\(caption): WindowError.notOpen - it is not open."
@@ -8096,7 +8235,7 @@ enum Listings {
         /// The button that opens one swatch's window.
         private func swatch(_ number: Int) -> some View {
             Button("Swatch \(number)")
-                .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
+                .onClicked(policy: .ignoreWhileRunning) { await openSwatch(number) }
         }
 
         /// Opens a swatch's window, and says what came of it.
@@ -8285,7 +8424,7 @@ enum Listings {
                     spelling("a get in these braces")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8323,7 +8462,7 @@ enum Listings {
                     spelling(".samples($offset, into: $shown, .every(.milliseconds(100)))")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8356,7 +8495,7 @@ enum Listings {
                     spelling("$offset.journey.convert { … }")
                         .gridRow(4)
                 }
-                .rows(.auto, .fill, .auto, .auto, .auto)
+                .rows(.automatic, .fill, .automatic, .automatic, .automatic)
             }
         }
 
@@ -8397,15 +8536,15 @@ enum Listings {
 
                 HStack {
                     Button("Top")
-                        .onClicked(.cancelPrevious) { try await move(to: 0) }
+                        .onClicked(policy: .cancelPrevious) { try await move(to: 0) }
 
                     Button("Line 9")
-                        .onClicked(.cancelPrevious) { try await move(to: 240) }
+                        .onClicked(policy: .cancelPrevious) { try await move(to: 240) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .automatic)
         }
 
         /// Puts all three strips at the same offset, one after another.
@@ -8545,7 +8684,7 @@ enum Listings {
                 Text("Press each button three times, quickly.")
 
                 row("Ignore while running", ignored)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         ignored.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         ignored.finished += 1
@@ -8554,21 +8693,21 @@ enum Listings {
                 // The run a press cancels ends at its sleep: what it would write
                 // after is never written.
                 row("Cancel previous", cancelled)
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(policy: .cancelPrevious) {
                         cancelled.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         cancelled.finished += 1
                     }
 
                 row("Wait for previous", waited)
-                    .onClicked(.waitForPrevious) {
+                    .onClicked(policy: .waitForPrevious) {
                         waited.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         waited.finished += 1
                     }
 
                 row("Run concurrently", unheld)
-                    .onClicked(.runConcurrently) {
+                    .onClicked(policy: .runConcurrently) {
                         unheld.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         unheld.finished += 1
@@ -8733,8 +8872,7 @@ enum Listings {
 
                 // Two states into one conversion: the host works the words out
                 // from where the box HAS GOT TO, on its own frames.
-                Text()
-                    .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
+                Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
 
@@ -8831,8 +8969,7 @@ enum Listings {
 
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
-                Switch(shade == .bold)
-                    .text("Bold shade")
+                Switch("Bold shade", isOn: shade == .bold)
                     .onToggled { on in shade = on ? .bold : .quiet }
 
                 Rectangle()
@@ -8850,10 +8987,10 @@ enum Listings {
             Grid {
                 HStack {
                     Button("Top")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                        .onClicked(policy: .cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
 
                     Button("Row 500")
-                        .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                        .onClicked(policy: .cancelPrevious) { try await list.scroll(to: 500, anchor: .start) }
 
                     Button("Clear")
                         .isEnabled(!chosen.isEmpty)
@@ -8876,7 +9013,7 @@ enum Listings {
                 Text("\(chosen.count) chosen")
                     .gridRow(2)
             }
-            .rows(.auto, .fill, .auto)
+            .rows(.automatic, .fill, .automatic)
         }
         """#,
         "PickerSample": #"""
@@ -8909,7 +9046,7 @@ enum Listings {
                     .onOpened { opened += 1 }
 
                 // Only where the platform opens a list at the program's asking.
-                if device.honors(PickerContract.isOpen) {
+                if device.honors(PopupElementContract.isOpen, on: PickerContract.self) {
                     Button("Open the list")
                         .onClicked { showing = true }
                         .horizontalAlignment(.center)
@@ -9000,10 +9137,10 @@ enum Listings {
 
         var body: some View {
             VStack {
-                supported("Opening a picker's list", device.honors(PickerContract.isOpen))
-                supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+                supported("Opening a picker's list", device.honors(PopupElementContract.isOpen, on: PickerContract.self))
+                supported("Hearing a picker's list open", device.honors(PopupElementContract.opened, on: PickerContract.self))
                 supported("A tooltip", device.honors(VisualElementContract.tooltip))
-                supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
+                supported("A picture beside a menu's entry", device.honors(IconElementContract.icon, on: MenuItemContract.self))
             }
         }
 
@@ -9071,7 +9208,7 @@ enum Listings {
         /// One tick, then stopped - and the tick starts the next round when its
         /// work is done. So the gap is measured from where the work ENDED, and two
         /// rounds can never overlap however long one takes.
-        @State private var poll = Ticker(every: .seconds(2), isRepeating: false)
+        @State private var poll = Ticker(every: .seconds(2), limit: 1)
 
         @State private var status = "Not started"
         @State private var rounds = 0
@@ -9269,13 +9406,10 @@ enum Listings {
                     .step(1)
                     .horizontalAlignment(.center)
 
-                SectionTitle("The same property, as a modifier")
+                SectionTitle("What is left")
 
-                // A bar built empty carries no value at all, so `.progress` is
-                // how one reaches it. This one shows what is LEFT, so the two
-                // move opposite ways.
-                ProgressBar()
-                    .progress(1 - done / steps)
+                // This one shows what is LEFT, so the two move opposite ways.
+                ProgressBar(1 - done / steps)
                     .height(8)
 
             }
@@ -9389,8 +9523,7 @@ enum Listings {
                 }
 
                 row("4 · a converted text") {
-                    Text()
-                        .text($value.convert { percent($0) })
+                    Text($value.convert { percent($0) })
                     DebugInfoLabel()
                 }
 
@@ -9493,8 +9626,7 @@ enum Listings {
                 ZStack {
                     VStack {
                         Text("1 · a state by binding")
-                        Text()
-                            .text($said)
+                        Text($said)
                         DebugInfoLabel()
                     }
                 }
@@ -9595,7 +9727,7 @@ enum Listings {
                     TextField($title)
                         .gridColumn(1)
                 }
-                .columns(.auto, .fill)
+                .columns(.automatic, .fill)
             }
         }
 
@@ -9643,7 +9775,7 @@ enum Listings {
                     }
                     .selection($chosen)
                     .isRefreshing($refreshing)
-                    .onRefreshRequested(.ignoreWhileRunning) {
+                    .onRefreshRequested(policy: .ignoreWhileRunning) {
                         defer { refreshing = false }
                         try await Task.sleep(for: .seconds(1))
                     }
@@ -9654,14 +9786,13 @@ enum Listings {
                             TextField(chore.title)
                                 .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                            CheckBox(chore.done)
-                                .text("Done")
+                            CheckBox("Done", isOn: chore.done)
                                 .onToggled { done in edit(chore.id) { $0.done = done } }
                         }
                     }
                     .gridRow(2)
                 }
-                .rows(.auto, .fill, .auto)
+                .rows(.automatic, .fill, .automatic)
             }
 
             /// The chore of `id`, changed in place - found by its identity, never by
@@ -9679,7 +9810,7 @@ enum Listings {
                 KeptChores()
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
         """#,
         "RefreshingList": #"""
@@ -9694,7 +9825,7 @@ enum Listings {
                     // Where the platform has no pull, a command refreshes - its spinner showing where it has one.
                     Button("Refresh")
                         .isEnabled(!refreshing)
-                        .onClicked(.ignoreWhileRunning) { try await fetch() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await fetch() }
 
                     Button("Clear")
                         .onClicked { items = [] }
@@ -9708,12 +9839,12 @@ enum Listings {
                     Text(item)
                 }
                 // An empty list keeps its pull.
-                .emptyView(Text("Nothing yet").textColor(Palette.subtle))
+                .emptyView { Text("Nothing yet").textColor(Palette.subtle) }
                 .isRefreshing($refreshing)
-                .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
+                .onRefreshRequested(policy: .ignoreWhileRunning) { try await fetch() }
                 .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
         }
 
         /// Fetches what is new, the spinner showing until it is in.
@@ -9757,7 +9888,7 @@ enum Listings {
                                 .gridColumn(1)
                                 .onClicked { remove(row) }
                         }
-                        .columns(.fill, .auto)
+                        .columns(.fill, .automatic)
                         .height(46)
                         .isVisible(!gone.contains(row) && !atOnce.contains(row))
                         // The other half of the sample: a row told to travel at no
@@ -9837,7 +9968,7 @@ enum Listings {
                 Text("the platform's own rest")
                     .gridRow(4)
             }
-            .rows(.auto, .auto, .auto, .auto, .auto)
+            .rows(.automatic, .automatic, .automatic, .automatic, .automatic)
             // The bands are as tall as they need to be, so the pair sits in the
             // middle of whatever height the window gave the cell.
             .verticalAlignment(.center)
@@ -9857,14 +9988,14 @@ enum Listings {
                         Grid {
                             ScrollView {
                                 VStack {
-                                    Switch($under).text("Under the bars")
+                                    Switch("Under the bars", isOn: $under)
                                     ForEach(Array(1...40), id: \.self) { row in
                                         Text("Row \(row)")
                                     }
                                 }
                             }
                         }
-                        .ignoresSafeArea(under ? .all : .none)
+                        .ignoresSafeArea(under ? .all : [])
                         .galleryPage("Safe area")
                     } destination: { _ in
                         Text("")
@@ -10011,11 +10142,11 @@ enum Listings {
             VStack {
                 Button("New scratchpad")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
+                    .onClicked(policy: .ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
                 Button("About")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) { await open(.about, "About") }
+                    .onClicked(policy: .ignoreWhileRunning) { await open(.about, "About") }
 
                 VStack {
                     DebugInfoLabel()
@@ -10027,10 +10158,10 @@ enum Listings {
             }
         }
 
-        /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-        private func open(_ type: WindowType<Void>, _ caption: String) async {
+        /// Opens a window of `kind`, in the scene declaring it, and says what came of it.
+        private func open(_ kind: WindowKind<Void>, _ caption: String) async {
             do {
-                try await application.openWindow(type)
+                try await application.openWindow(kind)
                 said = "\(caption): opened."
             } catch WindowError.alreadyOpen {
                 said = "\(caption): WindowError.alreadyOpen - it is open already."
@@ -10067,10 +10198,10 @@ enum Listings {
 
                     HStack {
                         Button("Close this window")
-                            .onClicked(.ignoreWhileRunning) { try await window.close() }
+                            .onClicked(policy: .ignoreWhileRunning) { try await window.close() }
 
                         Button("Close every scratchpad")
-                            .onClicked(.ignoreWhileRunning) { try await scene.close() }
+                            .onClicked(policy: .ignoreWhileRunning) { try await scene.close() }
                     }
                     .horizontalAlignment(.end)
                 }
@@ -10086,9 +10217,9 @@ enum Listings {
         """#,
         "ScratchpadScene": #"""
         // Sources/Samples/Windows/ScratchpadScene.swift
-        extension WindowType where Value == Void {
+        extension WindowKind where Value == Void {
             /// A scratchpad window: as many as the user opens.
-            static let scratchpad = WindowType("gallery.scratchpad")
+            static let scratchpad = WindowKind("gallery.scratchpad")
         }
 
         /// What the scratchpads KEEP - handed back with their scene when the system restores the application's windows.
@@ -10224,8 +10355,7 @@ enum Listings {
                 Text("A caption the user only reads.")
                     .textStyle(.caption)
 
-                Switch($selectable)
-                    .text("Selectable")
+                Switch("Selectable", isOn: $selectable)
             }
         }
         """#,
@@ -10338,7 +10468,7 @@ enum Listings {
                 // view can hold.
                 Button("Announce the count")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                         try await application.announce(words)
                         said = words
@@ -10374,14 +10504,14 @@ enum Listings {
                         }
                     }
                     .style(.card)
-                    .hidesChildrenFromAccessibility(true)
+                    .accessibilityPresence(.hiddenWithContents)
                 }
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
                 Fill(Palette.outline)
                     .height(1)
-                    .isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
             }
         }
 
@@ -10643,7 +10773,7 @@ enum Listings {
 
                 // False is a cancel; a platform with no share sheet throws why.
                 Button("Share")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         do {
                             let shared = try await window.share(text: words, address: address)
                             answer = shared ? "shared" : "cancelled"
@@ -10700,7 +10830,7 @@ enum Listings {
                         .keyboardShortcut("e", modifiers: [.primary, .shift])
                         .onClicked { pressed("Export") }
                 }
-                .id(StandardMenu.file)
+                .joins(.file)
             }
             .toolbar {
                 ToolbarButton("Mark")
@@ -10811,8 +10941,7 @@ enum Listings {
 
                 Text(dragging ? "Dragging..." : "At rest")
 
-                Switch($soundOn)
-                    .text("Sound")
+                Switch("Sound", isOn: $soundOn)
                     .horizontalAlignment(.center)
             }
         }
@@ -10830,8 +10959,7 @@ enum Listings {
                 Spinner($loading)
                     .height(48)
 
-                Switch($loading)
-                    .text("Working")
+                Switch("Working", isOn: $loading)
                     .horizontalAlignment(.center)
 
             }
@@ -11021,8 +11149,7 @@ enum Listings {
                         .verticalAlignment(onBaseline ? .firstBaseline : .center)
                 }
 
-                Switch($onBaseline)
-                    .text("On one baseline")
+                Switch("On one baseline", isOn: $onBaseline)
 
                 SectionTitle("Space")
 
@@ -11033,8 +11160,7 @@ enum Listings {
                     StackCell(text: "Send")
                 }
 
-                Switch($spaced)
-                    .text("Space")
+                Switch("Space", isOn: $spaced)
 
                 SectionTitle("Short of room")
 
@@ -11062,8 +11188,7 @@ enum Listings {
                 .wraps(wraps)
                 .lineAlignment(lines)
 
-                Switch($wraps)
-                    .text("Wraps")
+                Switch("Wraps", isOn: $wraps)
 
                 // Where a line shorter than the row stands.
                 Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
@@ -11291,12 +11416,10 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked {}
 
-                Switch($enabled)
-                    .text("Enabled")
+                Switch("Enabled", isOn: $enabled)
                     .horizontalAlignment(.center)
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Platform look", isOn: $platformLook)
                     .horizontalAlignment(.center)
 
                 SectionTitle("A style for a role")
@@ -11384,7 +11507,7 @@ enum Listings {
                 .stroke(Palette.outline)
                 .lineWidth(1)
                 // A recognizer that listens for nothing recognizes nothing, so
-                // `direction` defaults to every way.
+                // `directions` defaults to every way.
                 .onSwiped { direction in
                     swipe = Self.name(of: direction)
                 }
@@ -11399,7 +11522,7 @@ enum Listings {
                 .lineWidth(1)
                 // Narrowed: two of the four ways, and a finger that must travel
                 // 150 device units before anything fires.
-                .onSwiped(direction: [.left, .right], threshold: 150) { direction in
+                .onSwiped(directions: [.left, .right], threshold: 150) { direction in
                     narrowed = Self.name(of: direction)
                 }
 
@@ -11413,7 +11536,6 @@ enum Listings {
             case .right: return "right"
             case .up: return "up"
             case .down: return "down"
-            default: return "somewhere"
             }
         }
         """#,
@@ -11430,8 +11552,7 @@ enum Listings {
                 // The flag is read here, so every flip builds this closure.
                 DebugInfoLabel()
 
-                Switch($soundOn)
-                    .text("Sound")
+                Switch("Sound", isOn: $soundOn)
                     // Runs beside the binding's write-back, carrying what the
                     // switch NOW is rather than what this side guessed.
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
@@ -11492,7 +11613,7 @@ enum Listings {
                             Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                         }
                         .title("Inbox")
-                        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+                        .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
                     case .drafts:
                         NavigationStack($drafts) {
@@ -11512,7 +11633,7 @@ enum Listings {
                             Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                         }
                         .title("Drafts")
-                        .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
+                        .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
                     }
                 }
                 .selection($tab)
@@ -11595,7 +11716,7 @@ enum Listings {
                     // A press while the loop runs cancels it - Stop, or Start
                     // straight after Reset - so no two loops count together.
                     Button(running ? "Stop" : "Start")
-                        .onClicked(.cancelPrevious) {
+                        .onClicked(policy: .cancelPrevious) {
                             if running {
                                 running = false
                                 return
@@ -11694,6 +11815,7 @@ enum Listings {
         @State private var email = ""
         @State private var done = 0
         @State private var hidden = true
+        @State private var password = ""
         @State private var user = ""
         @State private var newPassword = ""
         @State private var signInCode = ""
@@ -11710,7 +11832,7 @@ enum Listings {
                 TextField($name)
                     .placeholder("Type your name")
                     .showsClearButton(true)
-                    .isFocused($editing)
+                    .isFocused(into: $editing)
 
                 Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
 
@@ -11742,13 +11864,12 @@ enum Listings {
                 TextField("read only")
                     .isReadOnly(true)
 
-                TextField()
+                TextField($password)
                     .placeholder("a password")
                     .isPassword(hidden)
                     .submitLabel(.done)
 
-                Switch($hidden)
-                    .text("Hidden")
+                Switch("Hidden", isOn: $hidden)
                     .horizontalAlignment(.center)
 
                 // The keyboard the platform brings up, a cap on the length, and
@@ -11958,8 +12079,8 @@ enum Listings {
 
                 // With digits of their own width, the words after the number move as it counts.
                 HStack {
-                    Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : .none)
-                    Button("Count down").onClicked(.cancelPrevious) {
+                    Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : [])
+                    Button("Count down").onClicked(policy: .cancelPrevious) {
                         seconds = 20
                         while seconds > 0 {
                             try await Task.sleep(for: .milliseconds(300))
@@ -11968,7 +12089,7 @@ enum Listings {
                     }
                 }
 
-                Switch($monospaced).text("Digits of one width")
+                Switch("Digits of one width", isOn: $monospaced)
             }
         }
         """#,
@@ -12031,7 +12152,7 @@ enum Listings {
                 DebugInfoLabel()
 
                 TimePicker($alarm)
-                    .format("t")
+                    .format(.short)
 
                 Text("Alarm at \(alarm.text)")
 
@@ -12049,11 +12170,10 @@ enum Listings {
 
                 SectionTitle("One-way, written back by hand")
 
-                // The same time, one-way: `.time` is what puts it in the field,
-                // and the write back is by hand.
-                TimePicker()
-                    .time(alarm)
-                    .format("t")
+                // The same time, one-way: the plain value is what puts it in the
+                // field, and the write back is by hand.
+                TimePicker(alarm)
+                    .format(.short)
                     .onTimeChanged { time in
                         alarm = time
                         picks += 1
@@ -12301,7 +12421,7 @@ enum Listings {
                         .id("recent")
                         .isEnabled(!recent.isEmpty)
                     }
-                    .id(StandardMenu.file)
+                    .joins(.file)
                 }
                 // Locked, the branch takes no input: its switches, and the
                 // actions and menu items declared on it, dimmed with it.
@@ -12315,8 +12435,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
         """#,
         "TooltipSample": #"""
@@ -12356,8 +12475,7 @@ enum Listings {
                         .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
                 }
 
-                Switch($detailed)
-                    .text("Detailed")
+                Switch("Detailed", isOn: $detailed)
             }
         }
         """#,
@@ -12435,7 +12553,7 @@ enum Listings {
         /// wears, and its members, each with its value's type.
         public enum TrafficLightContract: ElementContract {
             public static let nodeType: NodeType = "Gallery.TrafficLight"
-            public static let tiers: [any Contract.Type] = [ViewContract.self]
+            public static let tiers: [any Tier.Type] = [ViewContract.self]
 
             /// Which lamp is lit.
             public static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -12626,7 +12744,7 @@ enum Listings {
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
                     periodic: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
-                .motion(.spring(response: .milliseconds(420), damping: 0.8))
+                .parameterMotion(.spring(response: .milliseconds(420), damping: 0.8))
             }
             .clipsContent(true)
         }
@@ -12700,7 +12818,6 @@ enum Listings {
                     // the dot are the ones a Button actually enters: .pressed is there,
                     // and .on - which is a Switch's - does not compile.
                     Button(enabled ? "Hold me" : "Disabled")
-                        .isEnabled(enabled)
                         .scale($press)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
@@ -12720,7 +12837,6 @@ enum Listings {
                     // side: a visual state travels under the control's own motion, and
                     // `.motion(.none)` is what none of it looks like.
                     Button(enabled ? "Hold me too" : "Disabled")
-                        .isEnabled(enabled)
                         .motion(.none)
                         .visualState(.pressed) { $0.background(Palette.brand) }
                         .visualState(.disabled) { $0
@@ -12729,11 +12845,13 @@ enum Listings {
                         }
                         .onClicked { presses += 1 }
                 }
+                // The switch below enables the pair as one branch, through its
+                // state: each button takes its disabled look from the branch.
+                .isEnabled($enabled)
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                Switch($enabled)
-                    .text("Enabled")
+                Switch("Enabled", isOn: $enabled)
                     .horizontalAlignment(.center)
 
                 Text("entered \(entered) · pressed \(presses) times")
@@ -12763,14 +12881,14 @@ enum Listings {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
-                            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+                            .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
 
                         Button("Forward")
                             .isEnabled(hasForward)
-                            .onClicked(.ignoreWhileRunning) { try await browser.goForward() }
+                            .onClicked(policy: .ignoreWhileRunning) { try await browser.goForward() }
 
                         Button("Reload")
-                            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
+                            .onClicked(policy: .ignoreWhileRunning) { try await browser.reload() }
                     }
                     .horizontalAlignment(.center)
                 }
@@ -12783,8 +12901,8 @@ enum Listings {
                     // What the view calls itself to the server. Left unwritten it
                     // is the platform's own browser string.
                     .userAgent("StateUI Gallery")
-                    .canGoBack($hasBack)
-                    .canGoForward($hasForward)
+                    .canGoBack(into: $hasBack)
+                    .canGoForward(into: $hasForward)
                     .onNavigating { report in
                         status = "fetching \(report.address)"
                     }
@@ -12803,7 +12921,7 @@ enum Listings {
 
                 Button("Title?")
                     .horizontalAlignment(.center)
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         answer = try await browser.evaluateJavaScript("document.title")
                     }
                     .gridRow(3)
@@ -12811,7 +12929,7 @@ enum Listings {
                 Text(answer)
                     .gridRow(4)
             }
-            .rows(.auto, .fill, .auto(count: 3))
+            .rows(.automatic, .fill, .automatic(count: 3))
         }
         """#,
         "WindowBarSample": #"""
@@ -12834,8 +12952,7 @@ enum Listings {
                 TextField(bar.$subtitle)
                     .placeholder("Window subtitle")
 
-                Switch(bar.$showsSurprise)
-                    .text("Surprise me on every page")
+                Switch("Surprise me on every page", isOn: bar.$showsSurprise)
             }
             // The line under the page's title, wherever its title shows.
             .subtitle(bar.$subtitle)
@@ -12913,8 +13030,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
 
         /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
@@ -13071,8 +13187,7 @@ enum Listings {
 
         /// A native boolean window capability.
         private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-            Switch(value)
-                .text(title)
+            Switch(title, isOn: value)
         }
         """#,
         "WorkFromCode": #"""
@@ -13118,8 +13233,7 @@ enum Listings {
         "WrittenInPlacePart": #"""
         // Sources/Samples/Media/WebViewSample.swift
         var body: some View {
-            WebView()
-                .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
+            WebView(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
         }
         """#,
         "extending.md.properties": #"""
@@ -13155,14 +13269,14 @@ enum Listings {
         ///
         ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
         ///
-        /// `.inOut`, because the host reports where the walk has got to, which is
-        /// what `$stars.journey.value` reads. A tap does not arrive this way;
-        /// `.onRatingChanged(_:)` hears it.
+        /// A `.journey`: the host walks it and reports where the walk has got to,
+        /// which is what `$stars.journey.value` reads. A tap does not arrive this
+        /// way; `.onRatingChanged(_:)` hears it.
         ///
         /// On the control and not on `RatingBarProperties`: a style wears that
         /// protocol, and a style has no state to follow.
         public func rating(_ state: Binding<Double>) -> Modified {
-            setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+            setValue(RatingBarContract.rating, on: state, as: .journey)
         }
         """#,
     ]
@@ -13357,7 +13471,7 @@ extension Listings {
 
             init() {
                 number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
                 GalleryControls.hold(self, as: number)
             }
 
@@ -14436,7 +14550,7 @@ extension Listings {
                 GalleryActs.register()
                 GalleryEventSources.register()
             }
-            return StateUIAndroid.load(machine)
+            return AndroidHost.load(machine)
         }
         """#,
         "InteropActsSample.Android.swift": #"""
@@ -14462,7 +14576,7 @@ extension Listings {
             static func battery() -> (Double, Bool) {
                 let reading = Java.frame { () -> [Double] in
                     var values = [0.0, 0.0]
-                    guard let array = Java.callStaticObject(Self.device, Self.batteryNow, .object(StateUIAndroid.context))
+                    guard let array: jobject = Java.callStatic(Self.device, Self.batteryNow, .object(AndroidHost.context))
                     else { return values }
                     values.withUnsafeMutableBufferPointer { Java.jni.GetDoubleArrayRegion(Java.env, array, 0, 2, $0.baseAddress) }
                     return values
@@ -14492,7 +14606,7 @@ extension Listings {
                         control.show(
                             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
                     }
-                    bar.raises(RatingBarContract.ratingChanged)
+                    bar.declares(RatingBarContract.ratingChanged)
                 }
 
                 // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
@@ -14511,7 +14625,7 @@ extension Listings {
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
         /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// it: `RatingBarView.register()` performs `flash`. `GalleryContract.nobody` is registered nowhere on purpose: the
         /// "Calling AppKit" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the
@@ -14560,7 +14674,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarWidget.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling GTK" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.
@@ -14607,7 +14721,7 @@ extension Listings {
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
         /// performs them. An act aimed at a control is its view's, registered beside
-        /// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
+        /// it: `RatingBarView.register()` performs `flash`. `GalleryContract.nobody` is registered nowhere on purpose: the
         /// "Calling UIKit" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the
@@ -14648,7 +14762,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "InteropActsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
@@ -14677,7 +14791,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling Web" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.
@@ -14760,7 +14874,7 @@ extension Listings {
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `Gallery.Nobody` is
+        /// is its control's, registered beside it: `RatingBarControl.register()` performs `flash`. `GalleryContract.nobody` is
         /// registered nowhere on purpose: the "Calling WinUI" sample calls it to show what a missing registration does.
         enum GalleryActs {
             /// Registers every act this host performs. Said once, before the application runs.
@@ -14792,7 +14906,7 @@ extension Listings {
                 }
 
         // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        // Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()
         """#,
@@ -14934,7 +15048,7 @@ extension Listings {
 
             init() {
                 number = GalleryControls.reserve()
-                view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+                view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
                 Java.call(view.reference, Self.setSignal, .int(signal.rawValue))
                 GalleryControls.hold(self, as: number)
             }
@@ -14963,7 +15077,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15110,7 +15224,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15189,7 +15303,7 @@ extension Listings {
                         light.property(TrafficLightContract.signal) { control, signal in
                             control.signal = signal ?? .stop
                         }
-                        light.raises(TrafficLightContract.lampTapped)
+                        light.declares(TrafficLightContract.lampTapped)
                     }
                 }
             }
@@ -15289,7 +15403,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15376,7 +15490,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15489,7 +15603,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15601,7 +15715,7 @@ extension Listings {
             /// Declares the event the activity's watcher raises. Said once, as the library loads.
             @MainActor
             static func register() {
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
             }
 
             @MainActor private static var lastSaid: (level: Double, charging: Bool)?
@@ -15651,7 +15765,7 @@ extension Listings {
             static func start() {
                 // Declared where the source is wired: a handler listening for an
                 // event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // Named in full: a C function pointer carries no context at all, and
                 // an unqualified call to a static method captures the type implicitly.
@@ -15702,7 +15816,7 @@ extension Listings {
             @MainActor
             static func start() {
                 // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // UPower's display device signals each change of its properties, the battery's among them.
                 guard let device = GalleryPower.device else { return }
@@ -15756,7 +15870,7 @@ extension Listings {
                 static func start() {
                     // What the host raises, declared where its source is wired: a handler
                     // listening for an event nothing raises is told so.
-                    StateUIEvents.raises(GalleryContract.batteryChanged)
+                    StateUIEvents.declares(GalleryContract.batteryChanged)
 
                     UIDevice.current.isBatteryMonitoringEnabled = true
                     for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
@@ -15787,7 +15901,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "InteropEventsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
@@ -15819,7 +15933,7 @@ extension Listings {
             static func start() {
                 // What the host raises, declared where its source is wired: a handler listening for an event nothing
                 // declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
                 StateUIScripts.hear("battery") { words in
                     let (level, charging) = GalleryActs.battery(words)
                     guard level > 0 else { return }
@@ -15830,7 +15944,7 @@ extension Listings {
 
         // Platforms/Web/main.swift
         GalleryEventSources.start()
-        StateUIWeb.run(name: "Gallery")
+        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
         """#,
         "InteropEventsSample.WinUI.cpp": #"""
         // Platforms/WinUI/Relay/System.cpp
@@ -15891,7 +16005,7 @@ extension Listings {
             @MainActor
             static func start() {
                 // A handler listening for an event nothing declared is told, once, that it will not hear it.
-                StateUIEvents.raises(GalleryContract.batteryChanged)
+                StateUIEvents.declares(GalleryContract.batteryChanged)
 
                 // The gallery's relay asks Windows for each change of the battery's charge and of the power source
                 // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
@@ -15918,7 +16032,7 @@ extension Listings {
         }
 
         // Platforms/WinUI/main.swift
-        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        // Before WinUIHost.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
         """#,
         "android.md.acts": #"""
@@ -15949,22 +16063,22 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "android.md.children": #"""
         // Platforms/Android/Swift/Host/GoogleMapView.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)
@@ -15986,7 +16100,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -15996,7 +16110,7 @@ extension Listings {
         /// Declares the event the activity's watcher raises. Said once, as the library loads.
         @MainActor
         static func register() {
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
         }
 
         @MainActor private static var lastSaid: (level: Double, charging: Bool)?
@@ -16015,6 +16129,7 @@ extension Listings {
         "android.md.head": #"""
         // Platforms/Android/Swift/GalleryAndroid.swift
         import GalleryUI
+        import StateUI
         import StateUIAndroid
 
         // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
@@ -16028,7 +16143,7 @@ extension Listings {
                 GalleryActs.register()
                 GalleryEventSources.register()
             }
-            return StateUIAndroid.load(machine)
+            return AndroidHost.load(machine)
         }
         """#,
         "appkit.md.acts": #"""
@@ -16073,7 +16188,7 @@ extension Listings {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "appkit.md.control": #"""
@@ -16094,7 +16209,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16117,6 +16232,12 @@ extension Listings {
                 MetalCube3DView.register()
             }
         }
+        """#,
+        "appkit.md.declares": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        // Declared where the source is wired: a handler listening for an
+        // event nothing declared is told, once, that it will not hear it.
+        StateUIEvents.declares(GalleryContract.batteryChanged)
         """#,
         "appkit.md.event": #"""
         // Platforms/AppKit/Host/GalleryEventSources.swift
@@ -16143,6 +16264,7 @@ extension Listings {
         "appkit.md.head": #"""
         // Platforms/AppKit/main.swift
         import GalleryUI
+        import StateUI
         import StateUIAppKit
 
         GalleryApp.register()
@@ -16154,13 +16276,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
-        """#,
-        "appkit.md.raises": #"""
-        // Platforms/AppKit/Host/GalleryEventSources.swift
-        // Declared where the source is wired: a handler listening for an
-        // event nothing declared is told, once, that it will not hear it.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        AppKitHost.run()
         """#,
         "gtk.md.acts": #"""
         // Platforms/GTK/Host/GalleryActs.swift
@@ -16193,7 +16309,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "gtk.md.control": #"""
@@ -16212,7 +16328,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16223,7 +16339,7 @@ extension Listings {
         @MainActor
         static func start() {
             // A handler listening for an event nothing declared is told, once, that it will not hear it.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             // UPower's display device signals each change of its properties, the battery's among them.
             guard let device = GalleryPower.device else { return }
@@ -16250,6 +16366,7 @@ extension Listings {
         "gtk.md.head": #"""
         // Platforms/GTK/main.swift
         import GalleryUI
+        import StateUI
         import StateUIGTK
         import StateUIWebViewGTK
 
@@ -16261,9 +16378,9 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
         // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-        StateUIWebViewGTK.register()
+        WebViewGTK.register()
         // Then GTK holds this thread until the last window closes.
-        StateUIGTK.run(applicationID: "com.stateui.gallery")
+        GTKHost.run(applicationID: "com.stateui.gallery")
         """#,
         "uikit.md.acts": #"""
         // Platforms/UIKit/Host/GalleryActs.swift
@@ -16304,7 +16421,7 @@ extension Listings {
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "uikit.md.control": #"""
@@ -16325,7 +16442,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { view, signal in
                         view.signal = (signal ?? .stop).rawValue
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16337,7 +16454,7 @@ extension Listings {
         static func start() {
             // What the host raises, declared where its source is wired: a handler
             // listening for an event nothing raises is told so.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             UIDevice.current.isBatteryMonitoringEnabled = true
             for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
@@ -16362,6 +16479,7 @@ extension Listings {
         "uikit.md.head": #"""
         // Platforms/UIKit/main.swift
         import GalleryUI
+        import StateUI
         import StateUIUIKit
 
         GalleryApp.register()
@@ -16373,7 +16491,7 @@ extension Listings {
         GalleryActs.register()
         GalleryEventSources.start()
 
-        StateUIUIKit.run()
+        UIKitHost.run()
         """#,
         "web.md.acts": #"""
         // Platforms/Web/Host/GalleryActs.swift
@@ -16404,22 +16522,22 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "web.md.children": #"""
         // Platforms/Web/Host/GoogleMapElement.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)
@@ -16470,6 +16588,7 @@ extension Listings {
         "web.md.head": #"""
         // Platforms/Web/main.swift
         import GalleryUI
+        import StateUI
         import StateUIWeb
 
         // Name the application to the host, then say what this host answers for it
@@ -16480,7 +16599,7 @@ extension Listings {
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.start()
-        StateUIWeb.run(name: "Gallery")
+        WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
         """#,
         "winui.md.acts": #"""
         // Platforms/WinUI/Host/GalleryActs.swift
@@ -16510,7 +16629,7 @@ extension Listings {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         """#,
         "winui.md.control": #"""
@@ -16529,7 +16648,7 @@ extension Listings {
                     light.property(TrafficLightContract.signal) { control, signal in
                         control.signal = signal ?? .stop
                     }
-                    light.raises(TrafficLightContract.lampTapped)
+                    light.declares(TrafficLightContract.lampTapped)
                 }
             }
         }
@@ -16540,7 +16659,7 @@ extension Listings {
         @MainActor
         static func start() {
             // A handler listening for an event nothing declared is told, once, that it will not hear it.
-            StateUIEvents.raises(GalleryContract.batteryChanged)
+            StateUIEvents.declares(GalleryContract.batteryChanged)
 
             // The gallery's relay asks Windows for each change of the battery's charge and of the power source
             // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
@@ -16568,6 +16687,7 @@ extension Listings {
         "winui.md.head": #"""
         // Platforms/WinUI/main.swift
         import GalleryUI
+        import StateUI
         import StateUIWebViewWinUI
         import StateUIWinUI
 
@@ -16575,14 +16695,14 @@ extension Listings {
         // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
         // relay in Relay/. Then hand WinUI this thread until the last window closes.
         GalleryApp.register()
-        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        // Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()
-        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        // Before WinUIHost.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
         // The backends the Gallery shows a library element through: the web view, over WebView2.
-        StateUIWebViewWinUI.register()
-        StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
+        WebViewWinUI.register()
+        WinUIHost.run(linkSchemes: ["stateui-gallery"])
         """#,
     ]
 }

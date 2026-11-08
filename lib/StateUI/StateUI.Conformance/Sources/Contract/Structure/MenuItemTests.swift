@@ -12,7 +12,7 @@
         [
             ConformanceCase("anItemChosenRunsItsOwnHandler", proves: [
                 Covered(MenuItemContract.self),
-            ], needs: [Covered(ActionElementContract.clicked, on: "MenuItem")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "MenuItem")]) { s in
                 let heard = Received<String>()
                 s.start { MenuPage(heard: heard) }
 

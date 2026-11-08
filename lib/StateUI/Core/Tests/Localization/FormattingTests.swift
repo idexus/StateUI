@@ -10,7 +10,7 @@ final class FormattingTests: XCTestCase {
     private let day = CalendarDate(year: 2026, month: 9, day: 30)
 
     private func localization(_ language: TestLanguage, _ formats: LocaleTag) -> Localization<TestCatalog> {
-        Localization(TestCatalog.self, language: .fixed(language), formatLocale: .fixed(formats))
+        Localization(TestCatalog.self, language: language, formatLocale: formats)
     }
 
     func testWholeNumbers() {
@@ -43,23 +43,55 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.number(12_000_000_000.5, fractionDigits: 9), "12,000,000,000.500000000")
         XCTAssertEqual(english.number(0.9996, fractionDigits: 3), "1.000")
         XCTAssertEqual(english.number(-2.5, fractionDigits: 0), "-3")
+        XCTAssertEqual(english.number(1.125, fractionDigits: 2), "1.13", "a tie rounds away from zero")
+        XCTAssertEqual(english.number(-1.125, fractionDigits: 2), "-1.13")
+    }
+
+    /// A number of any size is written in full from the digits Swift writes for it - the shortest that read back
+    /// as the same number - grouped, with the digits asked for after the point: a whole number too large for an
+    /// `Int`, the largest there is, and one too small to show its digits alike; only infinity and not-a-number
+    /// keep Swift's own spelling.
+    func testANumberOfAnySizeIsWrittenInFull() {
+        let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
+        let whole = 1_000_000_000_000_000
+
+        XCTAssertEqual(english.number(Double(whole), fractionDigits: 2), english.number(whole) + ".00")
+        XCTAssertEqual(english.number(-Double(whole), fractionDigits: 2), english.number(-whole) + ".00")
+        XCTAssertEqual(english.number(1e15 + 0.5), "1,000,000,000,000,000.5")
+        XCTAssertEqual(english.number(1e20, fractionDigits: 2), "100,000,000,000,000,000,000.00")
+        XCTAssertEqual(polish.number(-1e20, fractionDigits: 0), "-100\u{A0}000\u{A0}000\u{A0}000\u{A0}000\u{A0}000\u{A0}000")
+        XCTAssertEqual(english.number(1e23), "100,000,000,000,000,000,000,000", "the digits Swift writes, not the binary value's")
+
+        let largest = english.number(Double.greatestFiniteMagnitude, fractionDigits: 99)
+        XCTAssertTrue(largest.hasPrefix("179,769,313,486,231,570,000,"), largest)
+        XCTAssertTrue(largest.hasSuffix(",000.000000000"), "nine digits at most after the point")
+        XCTAssertEqual(largest.filter(\.isNumber).count, 309 + 9)
+
+        XCTAssertEqual(english.number(1.5e-7), "0")
+        XCTAssertEqual(english.number(1.5e-7, fractionDigits: 7), "0.0000002")
+        XCTAssertEqual(english.number(-1.5e-7, fractionDigits: 2), "0.00", "no minus before nothing")
+        for value in [Double.infinity, -Double.infinity, Double.nan] {
+            XCTAssertEqual(english.number(value, fractionDigits: 2), String(value))
+        }
     }
 
     func testDays() {
         let english = localization(.english, "en-US"), polish = localization(.polish, "pl-PL")
 
-        XCTAssertEqual(english.date(day, style: .long), "September 30, 2026")
-        XCTAssertEqual(english.date(day, style: .medium), "Sep 30, 2026")
-        XCTAssertEqual(english.date(day, style: .short), "9/30/26")
-        XCTAssertEqual(polish.date(day, style: .long), "30 września 2026", "a month in a date is in the genitive")
-        XCTAssertEqual(polish.date(day, style: .medium), "30 wrz 2026")
-        XCTAssertEqual(polish.date(day, style: .short), "30.09.2026")
+        XCTAssertEqual(english.date(day, format: .long), "September 30, 2026")
+        XCTAssertEqual(english.date(day, format: .medium), "Sep 30, 2026")
+        XCTAssertEqual(english.date(day, format: .short), "9/30/26")
+        XCTAssertEqual(polish.date(day, format: .long), "30 września 2026", "a month in a date is in the genitive")
+        XCTAssertEqual(polish.date(day, format: .medium), "30 wrz 2026")
+        XCTAssertEqual(polish.date(day, format: .short), "30.09.2026")
+        XCTAssertEqual(english.date(day), "9/30/26", "a day is short unless said, as a time is")
+        XCTAssertEqual(english.context.date(day), "9/30/26")
     }
 
     func testWordsFollowTheLanguageAndTheOrderFollowsTheFormats() {
         let english = localization(.english, "pl-PL")
 
-        XCTAssertEqual(english.date(day, style: .long), "30 September 2026")
+        XCTAssertEqual(english.date(day, format: .long), "30 September 2026")
         XCTAssertEqual(english.number(12_345.5), "12\u{A0}345,5")
         XCTAssertEqual(english.list(["Ania", "Basia", "Celina"]), "Ania, Basia, and Celina")
     }
@@ -67,9 +99,9 @@ final class FormattingTests: XCTestCase {
     func testALanguageWhoseGrammarFixesTheOrderKeepsIt() {
         let polish = localization(.polish, "en-US")
 
-        XCTAssertEqual(polish.date(day, style: .long), "30 września 2026", "a genitive month follows its day")
-        XCTAssertEqual(polish.date(day, style: .medium), "30 wrz 2026")
-        XCTAssertEqual(polish.date(day, style: .short), "9/30/26", "digits follow the region")
+        XCTAssertEqual(polish.date(day, format: .long), "30 września 2026", "a genitive month follows its day")
+        XCTAssertEqual(polish.date(day, format: .medium), "30 wrz 2026")
+        XCTAssertEqual(polish.date(day, format: .short), "9/30/26", "digits follow the region")
     }
 
     func testTimesOfDay() {
@@ -81,6 +113,8 @@ final class FormattingTests: XCTestCase {
         XCTAssertEqual(english.time(ClockTime(hour: 0, minute: 15)), "12:15\u{202F}AM")
         XCTAssertEqual(polish.time(morning), "07:30")
         XCTAssertEqual(polish.time(evening), "19:05")
+        XCTAssertEqual(english.time(ClockTime(hour: 19, minute: 5, second: 7), format: .medium), "7:05:07\u{202F}PM")
+        XCTAssertEqual(polish.time(ClockTime(hour: 7, minute: 30, second: 0), format: .medium), "07:30:00")
     }
 
     func testLists() {
@@ -95,12 +129,12 @@ final class FormattingTests: XCTestCase {
 
     func testTheSystemsClockDecidesWhereTheFormatsAreTheSystems() {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "en", region: "US", name: "en-US", timeZone: "America/New_York", uses24HourClock: true,
-            firstDayOfWeek: .sunday, isMetric: false, layoutDirection: .leftToRight))
+            language: "en-US", timeZone: "America/New_York", uses24HourClock: true,
+            firstDayOfWeek: .sunday, isMetric: false, writingDirection: .leftToRight))
         defer {
             HostBoundary.setLocaleInfo(HostLocaleInfo(
-                language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
-                isMetric: true, layoutDirection: .leftToRight))
+                language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
+                isMetric: true, writingDirection: .leftToRight))
         }
 
         XCTAssertEqual(Localization(TestCatalog.self).time(ClockTime(hour: 7, minute: 30)), "07:30")

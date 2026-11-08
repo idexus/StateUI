@@ -3,7 +3,7 @@
 
 /// What an element showing words and a picture has - a button, a bar's item: whether its words stand beside its
 /// picture.
-public enum TextAndIconElementContract: Contract {
+public enum TextAndIconElementContract: Tier {
     /// The tier's name.
     public static let name = "TextAndIconElement"
 

@@ -1,11 +1,10 @@
-# revision 8.1
+# revision 9.1
 SearchField.cursorPosition: ✅
 SearchField.inputPurpose: ✅
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
 SearchField.maximumLength: ✅
-SearchField.placeholder: ✅
 SearchField.placeholderColor: ✅
 SearchField.selectionLength: ✅
 SearchField.textChanged: ✅
@@ -15,7 +14,6 @@ TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
 TextEditor.maximumLength: ✅
-TextEditor.placeholder: ✅
 TextEditor.placeholderColor: ✅
 TextEditor.selectionLength: ✅
 TextEditor.textChanged: ✅
@@ -25,7 +23,6 @@ TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅
 TextField.maximumLength: ✅
-TextField.placeholder: ✅
 TextField.placeholderColor: ✅
 TextField.selectionLength: ✅
 TextField.textChanged: ✅

@@ -89,7 +89,7 @@ final class DrawnChildrenTests: XCTestCase {
 /// The shelf's view: every list of books it was handed, each book with its title.
 @MainActor
 final class ShelfView {
-    var handed: [[(child: ChildElement<BookContract>, title: String)]] = []
+    var handed: [[(child: ControlChild<BookContract>, title: String)]] = []
 }
 
 /// A native half handing its view the children it draws, as every host's does.
@@ -122,7 +122,7 @@ private final class Drawing: NativeElement {
 /// A view drawing its books itself.
 enum ShelfContract: ElementContract {
     static let nodeType: NodeType = "Test.Shelf"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let caption = ElementProperty<Self, String>("caption")
     static let members: [any ContractMember] = [caption]
 }

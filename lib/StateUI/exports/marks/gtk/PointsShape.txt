@@ -1,0 +1,5 @@
+# revision 1.1
+Polygon.fillRule: ✅
+Polygon.points: ✅
+Polyline.fillRule: ✅
+Polyline.points: ✅

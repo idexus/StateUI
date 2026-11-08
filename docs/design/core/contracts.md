@@ -48,6 +48,19 @@ map's pins - carries no modifiers but its own. It writes a member on its node,
 view's `setValue` and `onEvent` are written over, so the compiler still pairs
 each member with its value.
 
+## A member the element does not wear
+
+A member's type pairs it with its value, not with who may wear it: a view is
+handed a member of any contract, and the compiler takes it. The description
+checks instead. A node made through its contract, `Node(contract:)`, keeps
+it, and a value, a state, a handler, or an act through an aim on it - each
+written with its member - is judged once per element, contract and member:
+the element takes a member a contract it wears declares among its `members`.
+One it does not take is said once and still written; no host shows it there.
+A node made by type - a style's, the library's structure - judges nothing.
+A test reads the same judgment: `TestElement.value` fails for a member of a
+contract its view does not wear.
+
 ## Member facts
 
 A property says three things about itself beside its value's type and its
@@ -107,9 +120,13 @@ name and its number - with the library's entries as static members. A token is
 a key and only a key; a host reads it by its name. That is what makes the
 library's tokens and an application's the same thing.
 
-Nobody writes a token by hand. A member's token is made from its name - a
-token's `init(_ name:)` is the host's alone, behind `@_spi(Host)` - and each
-name is spelled once, where a contract declares its member; the library's
+Nobody writes a token by hand. A member's token is made from its contract's
+name, a dot, and its own name - `TextContract.maximumLines` crosses as
+`Text.maximumLines`, an application's `log` in `Gallery` as `Gallery.log` - so
+two contracts' members of one name are two keys, and a member a library tier
+gains never meets an application's. A token's `init(_ name:)` is the host's
+alone, behind `@_spi(Host)`, and each name is spelled once, where a contract
+declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Node
@@ -119,10 +136,11 @@ are ([a key is a number](#a-key-is-a-number)).
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host
-visible without hiding the rest of the interface. An application's act shares
-the one vocabulary with the library's, and the library's case is consulted
-first, so a registration can never shadow it; prefixing an application's names
-with its own keeps the two sets apart.
+visible without hiding the rest of the interface. A contract's name is its own
+in a process (`ContractNames`): a second contract of one name stops it as its
+first member is made, as a second name of one number does - so no application
+act crosses as the library's, and no two of an application's tiers write each
+other's keys.
 
 ## A key is a number
 
@@ -165,7 +183,7 @@ views through it. It is generic over the platform's view type, so every Swift
 host takes the same machinery.
 
 ```text
-  Reports         what a view tells the application: raise(event, values)
+  ControlReports  what a view tells the application: raise(event, values)
                   and report(property, value, as: event) - a user's value lands
                   on the state carrying it and the event is raised with it
   ElementValues   what a registration reads: each member typed, whether it
@@ -173,7 +191,7 @@ host takes the same machinery.
                   source), and whether the patch changed it
   Registration    property(...), applies(...), raises(...),
                   children(Contract, properties:, events:) - children the view draws
-                  itself, a map's markers, handed over whole as ChildElements
+                  itself, a map's markers, handed over whole as ControlChild values
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
                   childTypes, applyChildren, realization
@@ -186,6 +204,12 @@ application's own offered as properties: `AppliedProperties` keeps its one
 requirement on the host's side, and the default it offers every other type is
 unavailable. A child the view draws itself is named the same way, its
 properties apart from its events (`children(_:properties:events:apply:)`).
+
+`ControlReports` and `ControlChild` are the common public native-control
+facades. Hosts construct them through the Host SPI. Reports, live value and
+child reads, registrations and their callbacks run on `MainActor`; child identity
+has no UI dependency. An adapter preserves the actor on the callback type
+rather than scheduling a new task, so event delivery stays synchronous.
 
 A member of a contract the element does not wear is refused and said once, at
 registration, at a raise and at a report alike. `apply` puts changed properties registered

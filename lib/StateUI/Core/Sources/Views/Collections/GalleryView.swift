@@ -41,8 +41,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// walks - a position written travels there through it.
     @State private var turn = 0.0
 
-    /// Who starts the runs of what `onPositionChanged` asked for, ended with the gallery.
-    @State private var positionRuns = RunOwner()
+    /// The runs of what `onPositionChanged` asked for, each handler's its own, ended with the gallery.
+    @State private var positionRuns = EventRegistration([])
+
+    /// The runs of what `onItemActivated` asked for, each handler's its own, ended with the gallery.
+    @State private var activationRuns = EventRegistration([])
 
     /// The items and their card face, behind a class so the state walk stops.
     private let source: Source
@@ -51,10 +54,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var pin: Binding<Int>?
 
     /// What runs when the middle card changes, beside any binding, through its gate.
-    private var moved: ValueHandler<Int>?
+    private var moved: [ValueHandler<Int>] = []
 
     /// What runs when the user activates the card in front, with its identity, through its gate.
-    private var activated: ValueHandler<ID>?
+    private var activated: [ValueHandler<ID>] = []
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.wheel
@@ -74,7 +77,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What stands in when there are no items at all.
     private var empty: (any View)?
 
-    /// What is drawn over a far card to darken it. See `shade(_:amount:)`.
+    /// What is drawn over a far card to darken it. See `shade(amount:_:)`.
     private var mask: (any View)?
 
     /// How far the shade goes, from 0 to 1.
@@ -85,6 +88,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// How each card moves as a body of the gallery's world, where the author said. See `itemBody`.
     private var cardBody: LayoutBody?
+
+    /// What every view's modifiers wrote on it.
+    private var written = WrittenOnView()
 
     /// One card per item, the item its identity.
     ///
@@ -160,22 +166,22 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Returns: the gallery, telling that handler.
     public func onPositionChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         var copy = self
-        copy.moved = ValueHandler(step: handler)
+        copy.moved.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits: its `policy` says what another card coming to the middle does while
     /// a run is under way.
-    public func onPositionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: .own(policy))
+        copy.moved.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPositionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: .shared(gate))
+        copy.moved.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -192,22 +198,22 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// - Returns: the gallery, answering its card's activation.
     public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.activated = ValueHandler(step: handler)
+        copy.activated.append(ValueHandler(step: handler))
         return copy
     }
 
     /// The same, with a handler that awaits - opening a page does: its `policy` says what opening the card again
     /// does while a run is under way.
-    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
+        copy.activated.append(ValueHandler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -270,21 +276,22 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// What the gallery shows while it has no items at all.
     ///
-    /// - Parameter view: what stands in for the cards.
+    /// - Parameter content: what stands in for the cards.
     /// - Returns: the gallery, showing that instead of nothing.
-    public func emptyView(_ view: some View) -> Self {
+    public func emptyView<Content: View>(@ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.empty = view
+        copy.empty = content()
         return copy
     }
 
     /// What to draw over a card to send it into the background, and how far.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(
+    ///         .shade {
     ///             Rectangle()
     ///                 .fill(Color(hex: 0x000000))
-    ///                 .cornerRadius(14))
+    ///                 .cornerRadius(14)
+    ///         }
     ///
     /// A shade darkens a far card without showing the card behind it, as
     /// fading would; the card in front wears none of it. Give the view the
@@ -292,26 +299,27 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// `fade(_:)` says otherwise.
     ///
     /// - Parameters:
-    ///   - view: what to draw over each card.
     ///   - amount: how dark the furthest card goes, from 0 (not at all) to 1
     ///     (as far as the shape says). The whole of it, unless said.
+    ///   - content: what to draw over each card.
     /// - Returns: the gallery, darkening its far cards.
-    public func shade(_ view: some View, amount: Double = 1) -> Self {
+    public func shade<Content: View>(amount: Double = 1, @ViewBuilder _ content: () -> Content) -> Self {
         var copy = self
-        copy.mask = view
-        copy.shades = Self.fraction(amount, "shade(_:amount:)")
+        copy.mask = content()
+        copy.shades = Self.fraction(amount, "shade(amount:_:)")
         return copy
     }
 
     /// How far the cards away from the middle fade, from 0 (not at all) to 1
-    /// (as far as the shape says): all of it unless a `shade(_:amount:)` is
+    /// (as far as the shape says): all of it unless a `shade(amount:_:)` is
     /// given, and then a quarter.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(
+    ///         .shade {
     ///             Rectangle()
     ///                 .fill(Color(hex: 0x000000))
-    ///                 .cornerRadius(14))
+    ///                 .cornerRadius(14)
+    ///         }
     ///         .fade(0)
     ///
     /// - Parameter amount: how far a far card fades.
@@ -346,6 +354,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     public var body: some View {
         let items = source.items
         let count = items.count
+        // A handler no longer written ends its runs now, as an element's does.
+        positionRuns.keep(moved.count)
+        activationRuns.keep(activated.count)
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
@@ -408,12 +419,13 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
 
         // The shade sits beside the press: the card that dips wears none.
-        if let mask { layout = layout.shade(mask) }
+        if let mask { layout = layout.shading(mask.node) }
 
-        // The activation, answered on the card in front: the press shows, and the card is back at its size, before
-        // the activation's own work, which usually builds a page.
-        if let activated {
-            let tapped: ValueEventHandler<ID> = { id in
+        // The activation, answered on the card in front: the press shows once, and the card is back at its size,
+        // before the activation's own work - each handler's, in the order written, through its own gate.
+        if !activated.isEmpty {
+            let (activated, activationRuns) = (activated, activationRuns)
+            layout = layout.onItemActivated(policy: .runConcurrently) { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard id == front[keyPath: path] else { return }
@@ -424,11 +436,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
                 dips.wrappedValue = nil
 
-                try await activated.run(id)
-            }
-            switch activated.gate {
-            case .own(let policy): layout = layout.onItemActivated(policy, tapped)
-            case .shared(let gate): layout = layout.onItemActivated(gate: gate, tapped)
+                activationRuns.starting(activated.map { $0.given(id) })()
             }
         }
 
@@ -440,16 +448,16 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             Watcher(at: asked) { position in
                 if turns.wrappedValue != Double(position) { turns.wrappedValue = Double(position) }
 
-                guard let moved else { return }
-
-                moved.gate.runs(for: positionRuns).start(
-                    { try await moved.run(position) }, moved.gate.policy, payload: nil, owner: positionRuns)
+                positionRuns.starting(moved.map { $0.given(position) })()
             }
         }
         // The run starts where the position stands, with no journey to it.
         .onCreated { turns.projectedValue.journey.snap(to: Double(asked())) }
-        // What the position asked for ends with the gallery.
-        .onDestroying { positionRuns.orphan() }
+        // What the position and the activation asked for ends with the gallery.
+        .onDestroying {
+            positionRuns.orphan()
+            activationRuns.orphan()
+        }
 
         return AnyView(deck)
     }
@@ -636,6 +644,25 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             self.path = path
             self.card = card
         }
+    }
+}
+
+extension GalleryView {
+    /// What every view's modifiers give back: the gallery itself, so its own modifiers come after any of theirs.
+    public typealias Modified = Self
+
+    /// The placeholder its body is built under, with what every view's modifiers wrote on it. Assigning to it does
+    /// nothing.
+    public var node: Node {
+        get { written.node(of: self) }
+        set {}
+    }
+
+    /// A copy with one more modifier written on it.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        copy.written.write(change, on: Self.self)
+        return copy
     }
 }
 

@@ -44,7 +44,8 @@ Without either, `.fill` takes the whole slot.
 Down a row, `.firstBaseline` rests a view's first line of words on one line
 with the row's other views aligned so - a label and a value of other sizes
 read as one line; a view with no words rests its foot there, and a stack its
-first child's line. Anywhere else it is the near edge:
+first child's line. Anywhere else - across a column, and as a
+`horizontalAlignment` - it is the near edge, as `.start`:
 
 ```swift
 HStack {
@@ -253,8 +254,8 @@ Grid {
         .gridRow(1)
         .gridColumnSpan(2)
 }
-.rows(.auto, .fill)
-.columns(.auto, .fill)
+.rows(.automatic, .fill)
+.columns(.automatic, .fill)
 .rowSpacing(8)
 .columnSpacing(12)
 ```
@@ -264,12 +265,12 @@ Grid {
 | Value | Meaning |
 | --- | --- |
 | `.fixed(100)` | 100 device-independent units |
-| `.auto` | enough room for measured content |
+| `.automatic` | enough room for measured content |
 | `.fill` | one share of remaining room |
 | `.proportional(2)` | two shares of remaining room |
 
 Rows or columns alike are written once, with their count:
-`.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
+`.rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
 `.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`,
 and each is a `GridTracks`: a run of tracks as long as one `GridLength` says.
 
@@ -440,7 +441,7 @@ There are three readings of the same native measurement:
 
 | Surface | Use |
 | --- | --- |
-| `.frame($room)` | a one-way host feed of the parent-space rectangle into state |
+| `.frame(into: $room)` | a one-way host feed of the parent-space rectangle into state |
 | `.onFrameChanged(in:)` | a handler run after layout for one selected coordinate space |
 | `GeometryReader` | local content rebuilt from its last measured rectangle |
 
@@ -453,13 +454,14 @@ rectangle without making a body read it:
 let tiles = Text("Tiles")
 
 Grid { tiles }
-    .frame($room)
+    .frame(into: $room)
     .engine(following: $room) { _ in columns = max((room.width / 240).rounded(.down), 1) }
 ```
 
 Handing over `$room` is not a state read and therefore causes no body rebuild
-by itself. The host writes the standing parent-space rectangle into the state;
-an application write to that input feed does not set a native frame. A body
+by itself. The host writes the standing parent-space rectangle into the state
+as it is handed over and again as the rectangle changes; an application write
+to that input feed does not set a native frame. A body
 that separately reads `room` still follows ordinary state invalidation, and an
 engine listing the state in `following:` wakes on the host write.
 
@@ -491,7 +493,7 @@ partial rectangle.
 
 The handler runs as an ordinary StateUI event after layout. It may write state;
 such a write requests a later description. A handler that awaits names what a
-newer rectangle does while it runs: `.onFrameChanged(.cancelPrevious) { frame
+newer rectangle does while it runs: `.onFrameChanged(policy: .cancelPrevious) { frame
 in … }`. The
 report never changes layout by itself. A visual transform never reports,
 because it does not alter the layout rectangle; an animated layout property
@@ -615,7 +617,7 @@ struct AlbumsPage: View {
             Text("\(opened) · card \(shown + 1) of \(albums.count)")
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
     }
 }
 ```
@@ -704,7 +706,7 @@ struct Carousel: View {
                 }
             }
             .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .motion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(response: .milliseconds(240)))
             .height(200)
 
             Button("Next").onClicked { turn = min(turn + 1, Double(names.count - 1)) }
@@ -717,7 +719,7 @@ The arithmetic is handed the parameters as they stand each frame, and each
 placement lands as written: what moves smoothly are the parameters, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap the run rests on: written by the
-program, the run travels there under `.motion(_:)` - with a hand or none -
+program, the run travels there under `.parameterMotion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap activates the view
@@ -751,7 +753,7 @@ struct Drawer: View {
             [Placement(Rect(0, room.height - 60 - open * 200, room.width, 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
-        .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .endpoints)
+        .axis(\.self, input: .scroll(.vertical, lengthPerUnit: 200), range: 0...1, snaps: .endpoints)
         .height(300)
     }
 }
@@ -760,7 +762,7 @@ struct Drawer: View {
 The hand carries the view in front: it travels as far for one unit of the
 parameters as the front view of those the parameters move goes for it, so a carousel
 that grows with its window turns as far under the finger as on a phone.
-`pointsPerUnit:` gives the distance instead, for a run whose front view
+`lengthPerUnit:` gives the distance instead, for a run whose front view
 hardly moves - a pile of cards fanned out by another axis.
 
 A hand let go with speed throws the run: it goes on to the snap nearest
@@ -772,11 +774,11 @@ the hand's speed; a spring carries it as far as its response and settles as
 springs do. A throw sets out at the hand's speed, and goes on as the parameters'
 journey does: `$turn.journey` says where the run is and how fast it goes while
 it does, as for any journey. The landing on the next snap is never slower
-than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
+than `.parameterMotion(_:)` moves a unit: a hand let go still, thrown back, or too slow
 to get there sooner, brings the run onto it under that motion over as much of
 its length as the way left is of a unit - the last tenth of a card takes a
 tenth of the motion. A mouse's wheel turned notch by notch steps
-the run a snap a notch, under `.motion(_:)`, however far apart the snaps
+the run a snap a notch, under `.parameterMotion(_:)`, however far apart the snaps
 stand - an axis with none, a hundred points' worth of the hand.
 
 A change of the layout where its parameters stand travels too. A view
@@ -786,7 +788,7 @@ switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
 go. `.dynamics(_:)` says how, a `LayoutDynamics`: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
-views standing at their places at once - the parameters still travel; `.motion(_:)`
+views standing at their places at once - the parameters still travel; `.parameterMotion(_:)`
 is the parameters' law alone, moving between the views' rests, and `.dynamics`
 the views reaching their new places:
 
@@ -820,10 +822,10 @@ struct Hand: View {
 Removing the card at the front brings the one behind it there, as the
 others close up. Where the front card was the last, the parameters themselves have to
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
-before it, under `.motion(_:)`.
+before it, under `.parameterMotion(_:)`.
 
-A view can be a body of its own: `.followsLayout(response:damping:)` on it - short for
-`.layoutBody(.followsLayout(response:damping:))` - makes it follow its place on a spring of its own - carried by the run, it
+A view can be a body of its own: `.layoutBody(.followsLayout(response:damping:))` on
+it makes it follow its place on a spring of its own - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
@@ -839,7 +841,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .followsLayout(response: .milliseconds(420), damping: 0.55)
+                .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
         } placements: { room, turn in
             (0..<4).map { index in
                 Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))
@@ -987,13 +989,15 @@ struct Board: View {
 }
 ```
 
-`.onItemDismissed(.up, beyond: 120) { id in … }` lets a view go for good:
+`.onItemDismissed(directions: .up, threshold: 120) { id in … }` lets a view go for good:
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
 removes the item it names. Short of it, the view goes back. A handler that
-awaits takes a policy, as an event's does - `.onItemDismissed(.up, beyond: 120,
+awaits takes a policy, as an event's does - `.onItemDismissed(directions: .up, threshold: 120,
 policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
-ends with the layout.
+ends with the layout. Written more than once - `.up` to archive, `.down` to
+delete - a view let go runs every one whose way and distance it passed, in the
+order written.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn
@@ -1027,7 +1031,7 @@ struct Ring: View {
 
 Parameters of several axes are a `LayoutParameters` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
-written by the program - and travels under the same `.motion(_:)`:
+written by the program - and travels under the same `.parameterMotion(_:)`:
 
 ```swift
 struct Orbit: LayoutParameters {
@@ -1055,7 +1059,7 @@ struct Planets: View {
                 }
             }
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
-            .motion(.spring(response: .milliseconds(240)))
+            .parameterMotion(.spring(response: .milliseconds(240)))
             .height(160)
 
             Button("Nearer").onClicked { orbit.zoom = orbit.zoom == 1 ? 2 : 1 }
@@ -1239,7 +1243,7 @@ struct Rearranged: View {
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
-            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+            .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
             .height(300)
 
             HStack {

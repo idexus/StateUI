@@ -1,12 +1,12 @@
-# revision 21.1
+# revision 23.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Button.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Button.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Button.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragStarting: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragText: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Button.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Button.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop target's signal told the driver's files, no drag GTK began
 Button.filesDropped: ✓ dropFiles on Button: the drop target's signal told the driver's files, no drag GTK began
 Button.frameChanged: ✅
@@ -25,13 +25,11 @@ Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
 Button.pinchUpdated: ✓ pinch on Button: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Button.pointerEntered: ✅
-Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
 Button.rotationUpdated: ✓ rotate on Button: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Button.swipeDirection: ✅
+Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
@@ -40,11 +38,11 @@ Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.area: ✅
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Canvas.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Canvas.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Canvas.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragText: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Canvas.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Canvas.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the drop target's signal told the driver's files, no drag GTK began
 Canvas.filesDropped: ✓ dropFiles on Canvas: the drop target's signal told the driver's files, no drag GTK began
 Canvas.frameChanged: ✅
@@ -63,13 +61,11 @@ Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
 Canvas.pinchUpdated: ✓ pinch on Canvas: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Canvas.pointerEntered: ✅
-Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
 Canvas.rotationUpdated: ✓ rotate on Canvas: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Canvas.swipeDirection: ✅
+Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
@@ -78,11 +74,11 @@ Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.area: ✅
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Capsule.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragStarting: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragText: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Capsule.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Capsule.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the drop target's signal told the driver's files, no drag GTK began
 Capsule.filesDropped: ✓ dropFiles on Capsule: the drop target's signal told the driver's files, no drag GTK began
 Capsule.frameChanged: ✅
@@ -101,13 +97,11 @@ Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.panYChannel: ✅
 Capsule.pinchUpdated: ✓ pinch on Capsule: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
 Capsule.rotationUpdated: ✓ rotate on Capsule: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Capsule.swipeDirection: ✅
+Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
@@ -116,11 +110,11 @@ Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragText: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-CheckBox.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+CheckBox.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the drop target's signal told the driver's files, no drag GTK began
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the drop target's signal told the driver's files, no drag GTK began
 CheckBox.frameChanged: ✅
@@ -139,13 +133,11 @@ CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
 CheckBox.rotationUpdated: ✓ rotate on CheckBox: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-CheckBox.swipeDirection: ✅
+CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
@@ -154,11 +146,11 @@ CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.area: ✅
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
 ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
 ColorPicker.frameChanged: ✅
@@ -177,13 +169,11 @@ ColorPicker.panUpdated: ✅
 ColorPicker.panXChannel: ✅
 ColorPicker.panYChannel: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ColorPicker.pointerEntered: ✅
-ColorPicker.pointerExited: ✅
 ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
 ColorPicker.pointerReleased: ✅
 ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ColorPicker.swipeDirection: ✅
+ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
@@ -192,11 +182,11 @@ ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-DatePicker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+DatePicker.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the drop target's signal told the driver's files, no drag GTK began
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the drop target's signal told the driver's files, no drag GTK began
 DatePicker.frameChanged: ✅
@@ -215,13 +205,11 @@ DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-DatePicker.pointerEntered: ✅
-DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
 DatePicker.rotationUpdated: ✓ rotate on DatePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-DatePicker.swipeDirection: ✅
+DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
@@ -230,11 +218,11 @@ DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Ellipse.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Ellipse.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the drop target's signal told the driver's files, no drag GTK began
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the drop target's signal told the driver's files, no drag GTK began
 Ellipse.frameChanged: ✅
@@ -253,13 +241,11 @@ Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Ellipse.pointerEntered: ✅
-Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
 Ellipse.rotationUpdated: ✓ rotate on Ellipse: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Ellipse.swipeDirection: ✅
+Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
@@ -268,11 +254,11 @@ Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.area: ✅
 Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Fill.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Fill.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragStarting: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragText: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Fill.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the drop target's signal told the driver's files, no drag GTK began
 Fill.filesDropped: ✓ dropFiles on Fill: the drop target's signal told the driver's files, no drag GTK began
 Fill.frameChanged: ✅
@@ -291,13 +277,11 @@ Fill.panUpdated: ✅
 Fill.panXChannel: ✅
 Fill.panYChannel: ✅
 Fill.pinchUpdated: ✓ pinch on Fill: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Fill.pointerEntered: ✅
-Fill.pointerExited: ✅
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
 Fill.rotationUpdated: ✓ rotate on Fill: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Fill.swipeDirection: ✅
+Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
@@ -306,11 +290,11 @@ Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Grid.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Grid.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Grid.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Grid.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragText: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Grid.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Grid.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the drop target's signal told the driver's files, no drag GTK began
 Grid.filesDropped: ✓ dropFiles on Grid: the drop target's signal told the driver's files, no drag GTK began
 Grid.frameChanged: ✅
@@ -329,13 +313,11 @@ Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
 Grid.rotationUpdated: ✓ rotate on Grid: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Grid.swipeDirection: ✅
+Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
@@ -344,11 +326,11 @@ Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.area: ✅
 HStack.dragEnded: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-HStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-HStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+HStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+HStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragStarting: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragText: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-HStack.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+HStack.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the drop target's signal told the driver's files, no drag GTK began
 HStack.filesDropped: ✓ dropFiles on HStack: the drop target's signal told the driver's files, no drag GTK began
 HStack.frameChanged: ✅
@@ -367,13 +349,11 @@ HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-HStack.pointerEntered: ✅
-HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
 HStack.rotationUpdated: ✓ rotate on HStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-HStack.swipeDirection: ✅
+HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
@@ -382,11 +362,11 @@ HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.area: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Image.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Image.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Image.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Image.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragStarting: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragText: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Image.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Image.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.droppedFileTypes: ✓ dropFiles on Image: the drop target's signal told the driver's files, no drag GTK began
 Image.filesDropped: ✓ dropFiles on Image: the drop target's signal told the driver's files, no drag GTK began
 Image.frameChanged: ✅
@@ -405,13 +385,11 @@ Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
 Image.pinchUpdated: ✓ pinch on Image: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
 Image.rotationUpdated: ✓ rotate on Image: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Image.swipeDirection: ✅
+Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
@@ -420,11 +398,11 @@ Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.area: ✅
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ItemsView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ItemsView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragText: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ItemsView.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ItemsView.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the drop target's signal told the driver's files, no drag GTK began
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the drop target's signal told the driver's files, no drag GTK began
 ItemsView.frameChanged: ✅
@@ -443,13 +421,11 @@ ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
 ItemsView.rotationUpdated: ✓ rotate on ItemsView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ItemsView.swipeDirection: ✅
+ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
@@ -458,11 +434,11 @@ ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Line.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Line.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Line.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragStarting: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragText: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Line.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Line.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.droppedFileTypes: ✓ dropFiles on Line: the drop target's signal told the driver's files, no drag GTK began
 Line.filesDropped: ✓ dropFiles on Line: the drop target's signal told the driver's files, no drag GTK began
 Line.frameChanged: ✅
@@ -481,13 +457,11 @@ Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
 Line.pinchUpdated: ✓ pinch on Line: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Line.pointerEntered: ✅
-Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
 Line.rotationUpdated: ✓ rotate on Line: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Line.swipeDirection: ✅
+Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
@@ -496,11 +470,11 @@ Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.area: ✅
 Link.dragEnded: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Link.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragStarting: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragText: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Link.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.droppedFileTypes: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
 Link.filesDropped: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
 Link.frameChanged: ✅
@@ -519,13 +493,11 @@ Link.panUpdated: ✅
 Link.panXChannel: ✅
 Link.panYChannel: ✅
 Link.pinchUpdated: ✓ pinch on Link: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Link.pointerEntered: ✅
-Link.pointerExited: ✅
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
 Link.rotationUpdated: ✓ rotate on Link: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Link.swipeDirection: ✅
+Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
@@ -534,11 +506,11 @@ Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.dragEnded: 🧩
-Map.dragLeave: 🧩
-Map.dragOver: 🧩
+Map.dragEntered: 🧩
+Map.dragExited: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
-Map.drop: 🧩
+Map.dropped: 🧩
 Map.droppedFileTypes: 🧩
 Map.filesDropped: 🧩
 Map.frameChanged: 🧩
@@ -557,13 +529,11 @@ Map.panUpdated: 🧩
 Map.panXChannel: 🧩
 Map.panYChannel: 🧩
 Map.pinchUpdated: 🧩
-Map.pointerEntered: 🧩
-Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 Map.rotationUpdated: 🧩
-Map.swipeDirection: 🧩
+Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
@@ -572,11 +542,11 @@ Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.area: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop target's signal told the driver's files, no drag GTK began
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop target's signal told the driver's files, no drag GTK began
 MotionLayout.frameChanged: ✅
@@ -595,13 +565,11 @@ MotionLayout.panUpdated: ✅
 MotionLayout.panXChannel: ✅
 MotionLayout.panYChannel: ✅
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-MotionLayout.pointerEntered: ✅
-MotionLayout.pointerExited: ✅
 MotionLayout.pointerMoved: ✅
 MotionLayout.pointerPressed: ✅
 MotionLayout.pointerReleased: ✅
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-MotionLayout.swipeDirection: ✅
+MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
@@ -610,11 +578,11 @@ MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Path.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Path.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Path.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragStarting: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragText: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Path.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Path.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.droppedFileTypes: ✓ dropFiles on Path: the drop target's signal told the driver's files, no drag GTK began
 Path.filesDropped: ✓ dropFiles on Path: the drop target's signal told the driver's files, no drag GTK began
 Path.frameChanged: ✅
@@ -633,13 +601,11 @@ Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
 Path.pinchUpdated: ✓ pinch on Path: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.rotationUpdated: ✓ rotate on Path: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Path.swipeDirection: ✅
+Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
@@ -648,11 +614,11 @@ Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Picker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Picker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Picker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Picker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragStarting: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragText: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Picker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Picker.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the drop target's signal told the driver's files, no drag GTK began
 Picker.filesDropped: ✓ dropFiles on Picker: the drop target's signal told the driver's files, no drag GTK began
 Picker.frameChanged: ✅
@@ -671,13 +637,11 @@ Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
 Picker.rotationUpdated: ✓ rotate on Picker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Picker.swipeDirection: ✅
+Picker.swipeDirections: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
 Picker.tapCount: ✅
@@ -686,11 +650,11 @@ Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.area: ✅
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polygon.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polygon.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragStarting: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragText: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polygon.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the drop target's signal told the driver's files, no drag GTK began
 Polygon.filesDropped: ✓ dropFiles on Polygon: the drop target's signal told the driver's files, no drag GTK began
 Polygon.frameChanged: ✅
@@ -709,13 +673,11 @@ Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Polygon.pointerEntered: ✅
-Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
 Polygon.rotationUpdated: ✓ rotate on Polygon: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Polygon.swipeDirection: ✅
+Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
@@ -724,11 +686,11 @@ Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.area: ✅
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polyline.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polyline.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polyline.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragStarting: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragText: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Polyline.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Polyline.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the drop target's signal told the driver's files, no drag GTK began
 Polyline.filesDropped: ✓ dropFiles on Polyline: the drop target's signal told the driver's files, no drag GTK began
 Polyline.frameChanged: ✅
@@ -747,13 +709,11 @@ Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Polyline.pointerEntered: ✅
-Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
 Polyline.rotationUpdated: ✓ rotate on Polyline: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Polyline.swipeDirection: ✅
+Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
@@ -762,11 +722,11 @@ Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.area: ✅
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ProgressBar.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ProgressBar.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ProgressBar.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ProgressBar.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the drop target's signal told the driver's files, no drag GTK began
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the drop target's signal told the driver's files, no drag GTK began
 ProgressBar.frameChanged: ✅
@@ -785,13 +745,11 @@ ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ProgressBar.pointerEntered: ✅
-ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ProgressBar.swipeDirection: ✅
+ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
@@ -800,11 +758,11 @@ ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Rectangle.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Rectangle.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Rectangle.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Rectangle.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the drop target's signal told the driver's files, no drag GTK began
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the drop target's signal told the driver's files, no drag GTK began
 Rectangle.frameChanged: ✅
@@ -823,13 +781,11 @@ Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Rectangle.pointerEntered: ✅
-Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Rectangle.swipeDirection: ✅
+Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
@@ -838,11 +794,11 @@ Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.area: ✅
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragText: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the drop target's signal told the driver's files, no drag GTK began
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the drop target's signal told the driver's files, no drag GTK began
 ScrollView.frameChanged: ✅
@@ -861,13 +817,11 @@ ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ScrollView.pointerEntered: ✅
-ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
 ScrollView.rotationUpdated: ✓ rotate on ScrollView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ScrollView.swipeDirection: ✅
+ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
@@ -876,11 +830,11 @@ ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.area: ✅
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-SearchField.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-SearchField.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+SearchField.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragStarting: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragText: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-SearchField.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+SearchField.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the drop target's signal told the driver's files, no drag GTK began
 SearchField.filesDropped: ✓ dropFiles on SearchField: the drop target's signal told the driver's files, no drag GTK began
 SearchField.frameChanged: ✅
@@ -899,13 +853,11 @@ SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-SearchField.pointerEntered: ✅
-SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
 SearchField.rotationUpdated: ✓ rotate on SearchField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-SearchField.swipeDirection: ✅
+SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
@@ -914,11 +866,11 @@ SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.area: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragStarting: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragText: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Separator.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the drop target's signal told the driver's files, no drag GTK began
 Separator.filesDropped: ✓ dropFiles on Separator: the drop target's signal told the driver's files, no drag GTK began
 Separator.frameChanged: ✅
@@ -937,13 +889,11 @@ Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.panYChannel: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Separator.pointerEntered: ✅
-Separator.pointerExited: ✅
 Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
 Separator.pointerReleased: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Separator.swipeDirection: ✅
+Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
@@ -952,11 +902,11 @@ Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Slider.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Slider.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Slider.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Slider.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragStarting: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragText: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Slider.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Slider.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the drop target's signal told the driver's files, no drag GTK began
 Slider.filesDropped: ✓ dropFiles on Slider: the drop target's signal told the driver's files, no drag GTK began
 Slider.frameChanged: ✅
@@ -975,13 +925,11 @@ Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
 Slider.rotationUpdated: ✓ rotate on Slider: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Slider.swipeDirection: ✅
+Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
@@ -990,11 +938,11 @@ Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.area: ✅
 Space.dragEnded: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Space.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragStarting: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragText: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Space.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.droppedFileTypes: ✓ dropFiles on Space: the drop target's signal told the driver's files, no drag GTK began
 Space.filesDropped: ✓ dropFiles on Space: the drop target's signal told the driver's files, no drag GTK began
 Space.frameChanged: ✅
@@ -1013,13 +961,11 @@ Space.panUpdated: ✅
 Space.panXChannel: ✅
 Space.panYChannel: ✅
 Space.pinchUpdated: ✓ pinch on Space: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
 Space.rotationUpdated: ✓ rotate on Space: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Space.swipeDirection: ✅
+Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
@@ -1028,11 +974,11 @@ Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.area: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragStarting: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragText: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spinner.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the drop target's signal told the driver's files, no drag GTK began
 Spinner.filesDropped: ✓ dropFiles on Spinner: the drop target's signal told the driver's files, no drag GTK began
 Spinner.frameChanged: ✅
@@ -1051,13 +997,11 @@ Spinner.panUpdated: ✅
 Spinner.panXChannel: ✅
 Spinner.panYChannel: ✅
 Spinner.pinchUpdated: ✓ pinch on Spinner: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Spinner.pointerEntered: ✅
-Spinner.pointerExited: ✅
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
 Spinner.rotationUpdated: ✓ rotate on Spinner: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Spinner.swipeDirection: ✅
+Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
@@ -1066,11 +1010,11 @@ Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Stepper.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Stepper.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragText: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Stepper.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Stepper.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop target's signal told the driver's files, no drag GTK began
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop target's signal told the driver's files, no drag GTK began
 Stepper.frameChanged: ✅
@@ -1089,13 +1033,11 @@ Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Stepper.pointerEntered: ✅
-Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Stepper.swipeDirection: ✅
+Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
@@ -1104,11 +1046,11 @@ Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.area: ✅
 Switch.dragEnded: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Switch.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Switch.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Switch.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Switch.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragStarting: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragText: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Switch.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Switch.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the drop target's signal told the driver's files, no drag GTK began
 Switch.filesDropped: ✓ dropFiles on Switch: the drop target's signal told the driver's files, no drag GTK began
 Switch.frameChanged: ✅
@@ -1127,13 +1069,11 @@ Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Switch.pointerEntered: ✅
-Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
 Switch.rotationUpdated: ✓ rotate on Switch: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Switch.swipeDirection: ✅
+Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
@@ -1142,11 +1082,11 @@ Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.area: ✅
 Text.dragEnded: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Text.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Text.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Text.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Text.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragStarting: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragText: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Text.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Text.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.droppedFileTypes: ✓ dropFiles on Text: the drop target's signal told the driver's files, no drag GTK began
 Text.filesDropped: ✓ dropFiles on Text: the drop target's signal told the driver's files, no drag GTK began
 Text.frameChanged: ✅
@@ -1165,13 +1105,11 @@ Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
 Text.pinchUpdated: ✓ pinch on Text: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Text.pointerEntered: ✅
-Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
 Text.rotationUpdated: ✓ rotate on Text: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Text.swipeDirection: ✅
+Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
@@ -1180,11 +1118,11 @@ Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.area: ✅
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragText: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextEditor.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextEditor.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the drop target's signal told the driver's files, no drag GTK began
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the drop target's signal told the driver's files, no drag GTK began
 TextEditor.frameChanged: ✅
@@ -1203,13 +1141,11 @@ TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-TextEditor.pointerEntered: ✅
-TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
 TextEditor.rotationUpdated: ✓ rotate on TextEditor: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TextEditor.swipeDirection: ✅
+TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
@@ -1218,11 +1154,11 @@ TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.area: ✅
 TextField.dragEnded: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextField.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextField.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextField.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextField.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragStarting: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragText: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TextField.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TextField.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the drop target's signal told the driver's files, no drag GTK began
 TextField.filesDropped: ✓ dropFiles on TextField: the drop target's signal told the driver's files, no drag GTK began
 TextField.frameChanged: ✅
@@ -1241,13 +1177,11 @@ TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-TextField.pointerEntered: ✅
-TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
 TextField.rotationUpdated: ✓ rotate on TextField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TextField.swipeDirection: ✅
+TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
@@ -1256,11 +1190,11 @@ TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.area: ✅
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-TimePicker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+TimePicker.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the drop target's signal told the driver's files, no drag GTK began
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the drop target's signal told the driver's files, no drag GTK began
 TimePicker.frameChanged: ✅
@@ -1279,13 +1213,11 @@ TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-TimePicker.pointerEntered: ✅
-TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
 TimePicker.rotationUpdated: ✓ rotate on TimePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TimePicker.swipeDirection: ✅
+TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
@@ -1294,11 +1226,11 @@ TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.area: ✅
 VStack.dragEnded: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-VStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-VStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+VStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragStarting: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragText: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-VStack.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+VStack.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the drop target's signal told the driver's files, no drag GTK began
 VStack.filesDropped: ✓ dropFiles on VStack: the drop target's signal told the driver's files, no drag GTK began
 VStack.frameChanged: ✅
@@ -1317,13 +1249,11 @@ VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-VStack.pointerEntered: ✅
-VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-VStack.swipeDirection: ✅
+VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
@@ -1332,11 +1262,11 @@ VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.area: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-WebView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-WebView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragStarting: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragText: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-WebView.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+WebView.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the drop target's signal told the driver's files, no drag GTK began
 WebView.filesDropped: ✓ dropFiles on WebView: the drop target's signal told the driver's files, no drag GTK began
 WebView.frameChanged: ✅
@@ -1355,13 +1285,11 @@ WebView.panUpdated: ✅
 WebView.panXChannel: ✅
 WebView.panYChannel: ✅
 WebView.pinchUpdated: ✓ pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-WebView.pointerEntered: ✅
-WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
 WebView.rotationUpdated: ✓ rotate on WebView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-WebView.swipeDirection: ✅
+WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
@@ -1370,11 +1298,11 @@ WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.area: ✅
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ZStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ZStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragStarting: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragText: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ZStack.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the drop target's signal told the driver's files, no drag GTK began
 ZStack.filesDropped: ✓ dropFiles on ZStack: the drop target's signal told the driver's files, no drag GTK began
 ZStack.frameChanged: ✅
@@ -1393,13 +1321,11 @@ ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
 ZStack.rotationUpdated: ✓ rotate on ZStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ZStack.swipeDirection: ✅
+ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅

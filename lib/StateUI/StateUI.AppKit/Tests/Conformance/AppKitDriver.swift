@@ -97,8 +97,7 @@ final class AppKitDriver: HostDriver {
 
     /// Ends the running host without the system keeping its windows, and empties the preferences.
     func forgetWhatIsKept() {
-        renderer?.closeForTesting()
-        renderer = nil
+        close()
         store.removePersistentDomain(forName: "StateUI.AppKitConformance")
         restorable = []
     }
@@ -111,7 +110,7 @@ final class AppKitDriver: HostDriver {
         clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
     ) -> MountedTree {
         restorable = renderer.map { Self.encoded($0.windowsForTesting) } ?? []
-        renderer?.closeForTesting()
+        close()
         Renderer.shared.setApplication(application())
         written.listen()
         let renderer = testRenderer(
@@ -160,14 +159,19 @@ final class AppKitDriver: HostDriver {
 
     /// One pass of the main loop, what AppKit autoreleases in it let go as it ends.
     func step() {
-        guard let renderer else { return }
         autoreleasepool {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-            _ = renderer.runtime.core.runJobs()
+            _ = HostBoundary.runJobs()
+            guard let renderer else { return }
             renderer.runtime.pump.turn()
             if renderer.frameClock.held { renderer.displayFrameForTesting() }
             layOutWindows()
         }
+    }
+
+    func close() {
+        renderer?.finish()
+        renderer = nil
     }
 
     /// Lays each window out as the display cycle does: the windows stand off the screen, where none runs. A user
@@ -228,7 +232,7 @@ final class AppKitDriver: HostDriver {
             let middle = Point(Double(shape.bounds.midX), Double(shape.bounds.midY))
             return try color(of: element, at: middle).map { Material.color($0).propValue }
         }
-        if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
+        if property == PageElementContract.title.token, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
         }
@@ -238,7 +242,7 @@ final class AppKitDriver: HostDriver {
         if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
             return .number(hold.minimumPressDuration * 1000)
         }
-        if property == .subtitle, element.type == .page { return try subtitleHolds(element) }
+        if property == PageContract.subtitle.token, element.type == .page { return try subtitleHolds(element) }
         if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
@@ -265,14 +269,14 @@ final class AppKitDriver: HostDriver {
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue
         case (.isOn, let check as AppKitCheckBoxView): return (check.state == .on).propValue
         case (.value, let slider as AppKitSliderView): return slider.doubleValue.propValue
-        case (.minimum, let slider as AppKitSliderView): return slider.minValue.propValue
-        case (.maximum, let slider as AppKitSliderView): return slider.maxValue.propValue
+        case (RangeElementContract.minimum.token, let slider as AppKitSliderView): return slider.minValue.propValue
+        case (RangeElementContract.maximum.token, let slider as AppKitSliderView): return slider.maxValue.propValue
         case (.value, let stepper as AppKitStepperView): return stepper.doubleValue.propValue
-        case (.minimum, let stepper as AppKitStepperView): return stepper.minValue.propValue
-        case (.maximum, let stepper as AppKitStepperView): return stepper.maxValue.propValue
+        case (RangeElementContract.minimum.token, let stepper as AppKitStepperView): return stepper.minValue.propValue
+        case (RangeElementContract.maximum.token, let stepper as AppKitStepperView): return stepper.maxValue.propValue
         case (.step, let stepper as AppKitStepperView): return stepper.increment.propValue
         case (.progress, let bar as AppKitProgressView): return bar.doubleValue.propValue
-        case (.isAnimating, let spinner as AppKitSpinnerView): return spinner.isSpinning.propValue
+        case (SpinnerContract.isAnimating.token, let spinner as AppKitSpinnerView): return spinner.isSpinning.propValue
         case (.text, let label as AppKitTextView): return label.stringValue.propValue
         case (.text, let field as AppKitTextFieldView): return field.textField.stringValue.propValue
         case (.text, let search as AppKitSearchFieldView): return search.stringValue.propValue
@@ -288,8 +292,8 @@ final class AppKitDriver: HostDriver {
         case (.tint, let check as AppKitCheckBoxView): return check.contentTintColor.map { Self.color($0).propValue }
         case (.tint, let slider as AppKitSliderView): return slider.trackFillColor.map { Self.color($0).propValue }
         case (.date, let picker as AppKitDatePickerView): return picker.date.propValue
-        case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
-        case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
+        case (DatePickerContract.minimum.token, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
+        case (DatePickerContract.maximum.token, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
         case (.color, let picker as AppKitColorPickerView): return Self.color(picker.color).propValue
         case (.choosesOpacity, let picker as AppKitColorPickerView): return picker.supportsAlpha.propValue

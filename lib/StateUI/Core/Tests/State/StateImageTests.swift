@@ -53,9 +53,9 @@ final class StateImageTests: XCTestCase {
 
     /// TEXT LIES AS ITS LENGTH AND ITS UTF-8.
     func testTextLiesAsItsLengthAndItsUTF8() {
-        let bytes = StateImage.bytes(of: .text("żółw"))
+        let bytes = StateImage.bytes(of: .string("żółw"))
 
         XCTAssertEqual(Array(bytes.prefix(4)), [7, 0, 0, 0])
-        XCTAssertEqual(StateImage.carried(of: bytes, lanes: 0), .text("żółw"))
+        XCTAssertEqual(StateImage.carried(of: bytes, lanes: 0), .string("żółw"))
     }
 }

@@ -43,7 +43,7 @@
         switch role {
         case .primary: return KeyboardShortcut(.return, modifiers: [])
         case .cancel: return KeyboardShortcut(.escape, modifiers: [])
-        case .destructive, nil: return nil
+        case .normal, .destructive, nil: return nil
         }
     }
 
@@ -130,7 +130,7 @@
     public var keyboardShortcut: KeyboardShortcut? {
         KeyboardShortcuts.pressing(
             stated: value(.keyboardShortcut).flatMap(KeyboardShortcut.init(propValue:)),
-            role: value(.role).flatMap(ButtonRole.init(propValue:)))
+            role: value(ButtonContract.role.token).flatMap(ButtonRole.init(propValue:)))
     }
 
     /// Whether the element stands where the user meets it: it and everything holding it shown, on the page each

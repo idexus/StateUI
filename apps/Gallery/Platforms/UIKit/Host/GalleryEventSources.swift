@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIUIKit
 import UIKit
 
@@ -31,7 +32,7 @@ enum GalleryEventSources {
     static func start() {
         // What the host raises, declared where its source is wired: a handler
         // listening for an event nothing raises is told so.
-        StateUIEvents.raises(GalleryContract.batteryChanged)
+        StateUIEvents.declares(GalleryContract.batteryChanged)
 
         UIDevice.current.isBatteryMonitoringEnabled = true
         for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {

@@ -85,6 +85,7 @@ and this table maps the two.
 | image (`HostStorage`) | shared value buffer | the bytes both sides read for a carried state |
 | crossing | boundary encoding | the published bytes, inherited and custom timing resolved |
 | door (`StateKind`) | binding kind | how a carried state reaches a control: text, plain value, animated value, placement run, feed |
+| passage (`StatePassage`) | binding direction | how a state crosses to an extension's control: a journey, one way, two ways, a feed |
 | latch, publish | snapshot, commit | the first and the last step of a cycle |
 | stamp | write counter | what an engine compares to know a state changed |
 | armed, stirred, awake | wake reasons | why an engine runs on a frame |
@@ -141,7 +142,7 @@ and this table maps the two.
 | layout parameters (`LayoutParameters`) | animatable layout parameters | the state a motion layout is worked out from: one number an axis, each axis one degree of freedom, moved by the user's hand or the program |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
-| section (`Section`) | list section, group | a run of a list's items under its own header and footer: `ItemsView(sections:)`, `scrollTo(_:inSection:)` |
+| section (`Section`) | list section, group | a run of a list's items under its own header and footer, known by its `.id`: `ItemsView(sections:)` |
 | fill (`Alignment.fill`) | stretch | a child taking its whole slot across or down, where it would stand at its own size |
 | fill (`.fill(_:)` on a shape) | fill paint | the brush a shape's inside is painted with, beside its outline's `stroke` |
 | fill (`GridLength.fill`, `.fill(count:)`) | star sizing, fractional track | a grid track taking an equal share of the room the fixed and automatic ones leave |

@@ -31,7 +31,7 @@ final class AndroidIndicatorViewTests: XCTestCase {
             let running = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
                 VStack {
-                    Spinner().isAnimating(running.wrappedValue)
+                    Spinner(running.wrappedValue)
                     Button("Run").onClicked { running.wrappedValue = true }
                 }
             }
@@ -79,8 +79,8 @@ final class AndroidIndicatorViewTests: XCTestCase {
                     if shown.wrappedValue { Stepper(State(wrappedValue: 5.0).projectedValue) }
                 }
             }
-            let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
-            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
             defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
             host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(polish) }
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()

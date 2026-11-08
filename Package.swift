@@ -12,7 +12,7 @@ import PackageDescription
 // package's manifest from the root of the checkout and nowhere else, so this is
 // the one place it can sit if anybody is to write
 //
-//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.8.1")
+//     .package(url: "https://github.com/idexus/StateUI.git", exact: "0.8.2")
 //
 // The code stays under lib/StateUI/ regardless, which is what the paths below
 // say. Native host packages remain siblings so their platform dependencies do
@@ -26,12 +26,13 @@ let linkage: Product.Library.LibraryType? = Context.environment["STATEUI_HOST"] 
 
 let package = Package(
     name: "StateUI",
-    // iOS 26, Mac Catalyst 26 and macOS 26: the releases StateUI is built and
-    // tested against, with Xcode 27.
+    // iOS 26.4, Mac Catalyst 26.4 and macOS 26.4: the oldest releases whose Swift runtime StateUI runs on, built
+    // and tested with Xcode 27.
+    // Design: docs/design/core/concurrency.md#the-floor
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: [
         // StateUIFoundation travels in the same library: the basics StateUI and an

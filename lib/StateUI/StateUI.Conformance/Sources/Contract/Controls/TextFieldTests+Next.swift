@@ -7,14 +7,13 @@
 /// A field whose return says Next, submitted, hands the keyboard on - the case every field with a return key wears.
 /// Design: docs/design/types/keyboard.md#the-next-field
 extension TextFieldTests {
-    /// `element`'s return saying Next - `label` - hands the keyboard, as it submits, to the next field its page
+    /// `element`'s return saying Next hands the keyboard, as it submits, to the next field its page
     /// reads, past what is no field and a field disabled.
     @MainActor
-    static func handsTheKeyboardOn<Owner: ElementContract>(
-        from element: String, saying label: ElementProperty<Owner, SubmitLabel>
-    ) -> ConformanceCase {
-        ConformanceCase("\(element).aReturnSayingNextHandsTheKeyboardOn", proves: [
-            Covered(label),
+    static func handsTheKeyboardOn(from element: String) -> ConformanceCase {
+        let label = SubmitElementContract.submitLabel
+        return ConformanceCase("\(element).aReturnSayingNextHandsTheKeyboardOn", proves: [
+            Covered(label, on: element),
         ], needs: [Covered(FocusElementContract.focus, on: element)]) { s in
             s.start {
                 VStack {

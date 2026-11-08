@@ -10,6 +10,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
+import { appleFloor, atLeast } from "./toolchain";
 
 /** An iPhone or an iPad a UIKit head can run on, a real one or a simulator. */
 export interface UIKitDevice {
@@ -30,16 +31,14 @@ export type ChosenUIKitDevice = Pick<UIKitDevice, "id" | "name">;
 
 const chosenKey = "stateui.uiKitDevice";
 
-/** The oldest iOS a head installs on - the deployment target .scripts/UIKit/tools.sh builds for. */
-export const oldestIOS = 26;
-
 /** One of the scripts in `root`/.scripts/UIKit, which build and run the UIKit host. */
 export function uiKitScript(root: string, script: "run-app.sh" | "test-uikit.sh"): string {
     return path.join(root, ".scripts", "UIKit", script);
 }
 
+/** Whether a head installs on iOS `version`: the floor, .scripts/UIKit/tools.sh's deployment target, or newer. */
 function supported(version: string | undefined): boolean {
-    return Number(version?.split(".")[0] ?? 0) >= oldestIOS;
+    return version !== undefined && atLeast(version, appleFloor);
 }
 
 /**
@@ -88,8 +87,8 @@ export function parseSimulators(json: string): UIKitDevice[] {
     }
 
     const runtimes = Object.entries(listed.devices ?? {}).flatMap(([runtime, devices]) => {
-        const version = runtime.match(/\.iOS-(\d+)-(\d+)$/);
-        return version && supported(version[1]) ? [{ version: `${version[1]}.${version[2]}`, devices }] : [];
+        const version = runtime.match(/\.iOS-(\d+)-(\d+)$/)?.slice(1).join(".");
+        return version && supported(version) ? [{ version, devices }] : [];
     });
     const newestFirst = runtimes.sort((a, b) => b.version.localeCompare(a.version, undefined, { numeric: true }));
     return newestFirst.flatMap(({ version, devices }) => devices.map((device): UIKitDevice => ({
@@ -162,7 +161,7 @@ export async function uiKitSimulatorToTestOn(state: vscode.Memento): Promise<str
     const simulators = listed.filter((each) => each.kind === "simulator");
     if (simulators.length === 0) {
         void vscode.window.showErrorMessage(
-            `StateUI: the host's suite runs on a simulator, and none of iOS ${oldestIOS} or later is available - add one in Xcode's Devices and Simulators.`);
+            `StateUI: the host's suite runs on a simulator, and none of iOS ${appleFloor} or later is available - add one in Xcode's Devices and Simulators.`);
         return undefined;
     }
     const simulator = (await vscode.window.showQuickPick(simulators.map((each) => entry(each)),
@@ -192,7 +191,7 @@ export async function askForUIKitDevice(state: vscode.Memento, listed?: UIKitDev
     }
     if (listed.length === 0) {
         void vscode.window.showErrorMessage(
-            `StateUI: no iPhone or iPad of iOS ${oldestIOS} or later is paired, and no simulator of it is available - connect a device, or add a simulator in Xcode's Devices and Simulators.`);
+            `StateUI: no iPhone or iPad of iOS ${appleFloor} or later is paired, and no simulator of it is available - connect a device, or add a simulator in Xcode's Devices and Simulators.`);
         return undefined;
     }
 

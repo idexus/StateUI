@@ -3,7 +3,7 @@
 
 /// What an element draws of its own box: the shape its background, its outline and its cut follow, and the
 /// outline.
-public enum BorderElementContract: Contract {
+public enum BorderElementContract: Tier {
     /// The tier's name.
     public static let name = "BorderElement"
 

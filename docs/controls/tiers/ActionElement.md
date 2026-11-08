@@ -15,7 +15,7 @@ Text(deleted ? "Deleted" : "Report.pdf")
     }
 ```
 
-Wears: [AutomationElement](AutomationElement.md)
+Wears: [AutomationElement](AutomationElement.md) · [ClickElement](ClickElement.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [ToolbarButton](../ToolbarButton.md)
 
@@ -25,5 +25,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `onClicked` (`clicked`) | event |  | native |
 | `role` | property | `ActionRole` | adaptive |

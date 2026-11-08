@@ -1,0 +1,9 @@
+# revision 1.1
+Button.pressed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
+Button.released: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
+Slider.pressed: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.released: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
+ToolbarButton.pressed: – A bar's items stand in the system's own look.
+ToolbarButton.released: – A bar's items stand in the system's own look.
+ToolbarToggle.pressed: – A bar's items stand in the system's own look.
+ToolbarToggle.released: – A bar's items stand in the system's own look.

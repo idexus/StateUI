@@ -509,7 +509,7 @@ extern "C" int32_t stateui_winui_title_bar_theme(StateUIObjectRef handle) {
         return colorScheme(borrow<controls::TitleBar>(handle).RequestedTheme());
     } catch (...) {
         report("reading a title bar's theme");
-        return StateUIColorSchemeSystem;
+        return 0;
     }
 }
 

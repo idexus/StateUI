@@ -33,14 +33,17 @@ enum WinUIRealization {
     /// The entries Windows will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
-    /// Every record, the tiers' first.
     /// Why a list is not pulled to refresh here.
     private static let noListPull = "WinUI's RefreshContainer pulls a ScrollViewer, and an ItemsView scrolls in a "
         + "ScrollView it does not pull."
 
-    static let records: [HostRecord] = [
+    /// Every record, the tiers' first.
+    static let records: [HostRecord] = tierRecords + entryRecords + pageRecords + HostRecord.motionLayout
+        + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
+
+    /// A tier's member every wearer realizes alike.
+    private static let tierRecords: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
-        // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),
         .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),
@@ -62,7 +65,7 @@ enum WinUIRealization {
         .partial(ViewContract.held, missing: "WinUI tells a hold of a finger or a pen: a mouse button held is no hold."),
         .notPlanned(ViewContract.holdDuration,
             reason: "WinUI's hold comes after the system's own time: a view keeps no time of its own."),
-        .partial(VisualElementContract.background,
+        .partial(BackgroundElementContract.background, on: VisualElementContract.self,
             missing: "An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(BarElementContract.barBackground,
             missing: "WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient "
@@ -70,27 +73,42 @@ enum WinUIRealization {
         .complete(BarElementContract.barScrollEdge),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep WinUI's own look."),
         .complete(BarElementContract.barForegroundColor),
-        .complete(MenuToggleContract.isOn),
-        .complete(MenuToggleContract.toggled),
-        .complete(ActionElementContract.clicked),
-        .complete(MenuItemElementContract.icon),
+        .complete(ToggleElementContract.isOn, on: MenuToggleContract.self),
+        .complete(ToggleElementContract.toggled, on: MenuToggleContract.self),
+        .complete(ClickElementContract.clicked, on: ActionElementContract.self),
+        .complete(IconElementContract.icon, on: MenuItemContract.self),
+        .complete(IconElementContract.icon, on: MenuToggleContract.self),
+        .complete(IconElementContract.icon, on: ToolbarButtonContract.self),
+        .complete(IconElementContract.icon, on: ToolbarToggleContract.self),
         .complete(ActionElementContract.role),
-        .complete(MenuItemElementContract.isEnabled),
-        .complete(MenuItemElementContract.keyboardShortcut),
+        .complete(EnabledElementContract.isEnabled, on: MenuItemContract.self),
+        .complete(EnabledElementContract.isEnabled, on: MenuToggleContract.self),
+        .complete(EnabledElementContract.isEnabled, on: ToolbarButtonContract.self),
+        .complete(EnabledElementContract.isEnabled, on: ToolbarToggleContract.self),
+        .complete(ShortcutElementContract.keyboardShortcut, on: MenuItemContract.self),
+        .complete(ShortcutElementContract.keyboardShortcut, on: MenuToggleContract.self),
+        .complete(ShortcutElementContract.keyboardShortcut, on: ToolbarButtonContract.self),
+        .complete(ShortcutElementContract.keyboardShortcut, on: ToolbarToggleContract.self),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
         .complete(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self),
         .complete(ButtonMenuElementContract.showsMenuArrow, on: ButtonContract.self),
         .complete(TextAndIconElementContract.showsText, on: ButtonContract.self),
         .complete(ButtonMenuElementContract.showsMenuArrow, on: ToolbarButtonContract.self),
         .complete(ButtonContract.role),
-        .complete(MenuItemElementContract.text),
-        .complete(PageElementContract.icon),
+        .complete(TextElementContract.text, on: MenuItemContract.self),
+        .complete(TextElementContract.text, on: MenuToggleContract.self),
+        .complete(TextElementContract.text, on: ToolbarButtonContract.self),
+        .complete(TextElementContract.text, on: ToolbarToggleContract.self),
+        .complete(IconElementContract.icon, on: PageElementContract.self),
         .complete(PageElementContract.title),
         .complete(VisualElementContract.ignoresInput),
         .complete(VisualElementContract.layoutDirection),
-        .complete(VisualElementContract.style),
+        .complete(StyledElementContract.style, on: VisualElementContract.self),
 
-        // MARK: Entries - a control's or a part's own
+    ]
+
+    /// A control's or a part's own.
+    private static let entryRecords: [HostRecord] = [
         .notPlanned(PageContract.backButtonTitle, reason: "WinUI's way back is an arrow, with no words."),
         .notPlanned(TextInputContract.cursorPosition, on: SearchFieldContract.self, reason: searchCaret),
         .notPlanned(TextInputContract.selectionLength, on: SearchFieldContract.self, reason: searchCaret),
@@ -109,40 +127,40 @@ enum WinUIRealization {
         .partial(TextInputContract.inputPurpose,
             missing: "Filling in: WinUI's text box keeps no saved names, passwords or codes to fill it in from; a "
             + "name, a password and a code get their keys and checking all the same."),
-        .partial(SearchFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: SearchFieldContract.self,
             missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
-        .partial(TextFieldContract.submitLabel,
+        .partial(SubmitElementContract.submitLabel, on: TextFieldContract.self,
             missing: "The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next "
             + "hands the keyboard on all the same."),
-        .notPlanned(VisualElementContract.background, on: SpinnerContract.self,
+        .notPlanned(BackgroundElementContract.background, on: SpinnerContract.self,
             reason: "WinUI's progress ring paints its Background as its "
             + "track, no ground under its frame."),
-        .partial(VisualElementContract.background, on: CanvasContract.self,
+        .partial(BackgroundElementContract.background, on: CanvasContract.self,
             missing: "A brush fills the canvas with its first color alone."),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: SpinnerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: SpinnerContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: DatePickerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: DatePickerContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: SearchFieldContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: SearchFieldContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: StepperContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: StepperContract.self,
             missing: Self.partsStayMet),
-        .partial(VisualElementContract.hidesChildrenFromAccessibility, on: TimePickerContract.self,
+        .partial(VisualElementContract.accessibilityPresence, on: TimePickerContract.self,
             missing: Self.partsStayMet),
-        .notPlanned(VisualElementContract.background, on: CapsuleContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: EllipseContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: ImageContract.self,
+        .notPlanned(BackgroundElementContract.background, on: CapsuleContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: EllipseContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: ImageContract.self,
             reason: "WinUI's picture paints the picture alone, no ground around it."),
-        .notPlanned(VisualElementContract.background, on: LineContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: PathContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: PolygonContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: PolylineContract.self, reason: figurePaintsNoGround),
-        .notPlanned(VisualElementContract.background, on: ProgressBarContract.self,
+        .notPlanned(BackgroundElementContract.background, on: LineContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: PathContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: PolygonContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: PolylineContract.self, reason: figurePaintsNoGround),
+        .notPlanned(BackgroundElementContract.background, on: ProgressBarContract.self,
             reason: "WinUI's progress bar paints its Background as its track, no "
             + "ground under its frame."),
-        .notPlanned(VisualElementContract.background, on: RectangleContract.self, reason: figurePaintsNoGround),
-        .unrealized(VisualElementContract.background, on: WebViewContract.self,
+        .notPlanned(BackgroundElementContract.background, on: RectangleContract.self, reason: figurePaintsNoGround),
+        .unrealized(BackgroundElementContract.background, on: WebViewContract.self,
             why: "WebView2 is no control and takes no Background: what shows "
             + "where its page paints nothing is its DefaultBackgroundColor, which the backend does not set yet."),
         .unrealized(VisualElementContract.ignoresInput, on: SpinnerContract.self, why: hitOnlyWherePainted),
@@ -159,14 +177,18 @@ enum WinUIRealization {
         .complete(MotionLayoutContract.pans),
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
-        .complete(MenuContract.isEnabled),
-        .complete(MenuContract.text),
+        .complete(EnabledElementContract.isEnabled, on: MenuContract.self),
+        .complete(TextElementContract.text, on: MenuContract.self),
         .complete(MenuBarContract.order),
-        .complete(SheetContract.isPresented),
-        .complete(SheetContract.isPresentedChanged),
+        .complete(PresentedElementContract.isPresented, on: SheetContract.self),
+        .complete(PresentedElementContract.isPresentedChanged, on: SheetContract.self),
         .complete(NavigationStackContract.popped),
+    ]
+
+    /// A page's, a presentation's, a scene's and the rest, in order.
+    private static let pageRecords: [HostRecord] = [
         .complete(PageContract.appearing),
-        .complete(PageElementContract.background),
+        .complete(BackgroundElementContract.background, on: PageElementContract.self),
         .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
@@ -174,19 +196,19 @@ enum WinUIRealization {
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
         .complete(PageContract.subtitle),
-        .complete(PopoverContract.isPresented),
-        .complete(PopoverContract.isPresentedChanged),
+        .complete(PresentedElementContract.isPresented, on: PopoverContract.self),
+        .complete(PresentedElementContract.isPresentedChanged, on: PopoverContract.self),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),
         .partial(TextAlignmentElementContract.horizontalTextAlignment, on: SearchFieldContract.self,
             missing: "The placeholder stands at the start: "
             + "AutoSuggestBox's text box template aligns only the words typed."),
-        .complete(SceneContract.activated),
-        .complete(SceneContract.deactivated),
-        .complete(SceneContract.stopped),
+        .complete(SessionElementContract.activated, on: SceneContract.self),
+        .complete(SessionElementContract.deactivated, on: SceneContract.self),
+        .complete(SessionElementContract.stopped, on: SceneContract.self),
         .complete(SceneContract.windowClosed),
-        .complete(TextSpanContract.background),
+        .complete(BackgroundElementContract.background, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(PickerContract.presentation),
         .complete(FontElementContract.fontAttributes, on: TextSpanContract.self),
@@ -196,7 +218,7 @@ enum WinUIRealization {
         .complete(FontElementContract.fontSize, on: TextSpanContract.self),
         .notPlanned(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self,
             reason: "WinUI scales a text's runs with the text: a run has no text scaling of its own."),
-        .complete(TextualElementContract.text, on: TextSpanContract.self),
+        .complete(TextElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
         .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
@@ -211,23 +233,23 @@ enum WinUIRealization {
         .partial(TextFieldContract.isPassword, missing: "A PasswordBox has no read-only state, alignment, case, caret "
             + "or selection: a password field keeps none of these."),
         .partial(TimePickerContract.format,
-            missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
+            missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the style asks: no seconds."),
         .complete(ToolbarGroupContract.barEdge),
         .complete(ToolbarGroupContract.order),
         .complete(ToolbarGroupContract.part),
         .complete(ToolbarGroupContract.hidesWithSidebar),
-        .complete(ToolbarGroupContract.isEnabled),
+        .complete(EnabledElementContract.isEnabled, on: ToolbarGroupContract.self),
         .complete(ToolbarGroupContract.position),
         .complete(ToolbarGroupContract.standsAlone),
         .complete(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self),
-        .complete(ToolbarToggleContract.isOn),
+        .complete(ToggleElementContract.isOn, on: ToolbarToggleContract.self),
         .complete(ToolbarToggleContract.onIcon),
         .complete(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self),
-        .complete(ToolbarToggleContract.toggled),
+        .complete(ToggleElementContract.toggled, on: ToolbarToggleContract.self),
         .complete(ViewContract.layoutBody),
-        .complete(ToolbarLabelContract.icon),
-        .complete(ToolbarLabelContract.text),
-        .notPlanned(VisualElementContract.isEnabled, on: WebViewContract.self,
+        .complete(IconElementContract.icon, on: ToolbarLabelContract.self),
+        .complete(TextElementContract.text, on: ToolbarLabelContract.self),
+        .notPlanned(EnabledElementContract.isEnabled, on: WebViewContract.self,
             reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
             + "its page takes the user's hand whatever the tree says."),
         .notPlanned(ViewContract.panTouchCount, on: WebViewContract.self, reason: webViewTakesTheHand),
@@ -236,22 +258,22 @@ enum WinUIRealization {
         .notPlanned(ViewContract.panXChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.panYChannel, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pinchUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.pointerEntered, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.pointerExited, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(HoverElementContract.pointerEntered, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(HoverElementContract.pointerExited, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerMoved, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerPressed, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.pointerReleased, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.rotationUpdated, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .notPlanned(ViewContract.swipeDirection, on: WebViewContract.self, reason: webViewTakesTheHand),
+        .notPlanned(ViewContract.swipeDirections, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.swipeThreshold, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.swiped, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.tapCount, on: WebViewContract.self, reason: webViewTakesTheHand),
         .notPlanned(ViewContract.tapped, on: WebViewContract.self, reason: webViewTakesTheHand),
-        .complete(WindowContract.activated),
-        .partial(WindowContract.background, missing: "WinUI has no glass: a window of glass shows the desktop acrylic "
+        .complete(SessionElementContract.activated, on: WindowContract.self),
+        .partial(BackgroundElementContract.background, on: WindowContract.self, missing: "WinUI has no glass: a window of glass shows the desktop acrylic "
             + "at the glass's fallback thickness."),
         .complete(WindowContract.created),
-        .complete(WindowContract.deactivated),
+        .complete(SessionElementContract.deactivated, on: WindowContract.self),
         .complete(WindowContract.destroying),
         .complete(WindowContract.floatsOnTop),
         .complete(WindowContract.height),
@@ -262,15 +284,14 @@ enum WinUIRealization {
         .complete(WindowContract.maximumWidth),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .complete(WindowContract.stopped),
+        .complete(SessionElementContract.stopped, on: WindowContract.self),
         .complete(WindowContract.title),
         .complete(WindowContract.width),
-        .complete(WindowContract.windowType),
+        .complete(WindowContract.windowKind),
         .complete(WindowContract.windowValue),
         .complete(WindowContract.x),
         .complete(WindowContract.y),
-    ] + HostRecord.motionLayout
-        + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
+    ]
 
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."
@@ -301,7 +322,8 @@ enum WinUIRealization {
     /// Why a control left out with its children is left out alone: WinUI has no property that leaves out a
     /// subtree, and the host reaches into no template's parts.
     private static let partsStayMet =
-        "WinUI leaves out the control itself; the parts its template draws stay where assistive technology meets them."
+        "Hidden with its contents, WinUI leaves out the control itself; the parts its template draws stay where "
+        + "assistive technology meets them."
 
     /// What WinUI realizes, member by member: these records before what its registry says.
     @MainActor static var register: HostRegister {

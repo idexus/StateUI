@@ -12,7 +12,7 @@
 /// Its words are always its name - to assistive technology, in its tip and
 /// in the overflow, where it stands checked or not. An item that acts is a
 /// `ToolbarButton`.
-public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElement, BarButtonElement, BorderElement,
+public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, ToggleElement, TextAndIconElement, BarButtonElement, BorderElement,
     TextColorElement, FontElement, PaddingElement {
     /// The node this item describes.
     public var node: Node
@@ -24,46 +24,24 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElem
     /// turn goes nowhere without `.onToggled`.
     public init(_ text: String, isOn: Bool) {
         node = Node(contract: ToolbarToggleContract.self)
-        node.write(MenuItemElementContract.text, text)
-        node.write(ToolbarToggleContract.isOn, isOn)
-    }
-
-    /// An item with nothing set - what a `Style<ToolbarToggle>` is written for.
-    public init() {
-        node = Node(contract: ToolbarToggleContract.self)
+        node.write(TextElementContract.text, text)
+        node.write(ToggleElementContract.isOn, isOn)
     }
 
     /// An item captioned `text`, standing on as the state holds; choosing it
     /// turns the state over.
     public init(_ text: String, isOn: Binding<Bool>) {
         self.init(text, isOn: false)
-        node.readsWhenDescribed { $0.write(ToolbarToggleContract.isOn, isOn.wrappedValue) }
-        node.addHandler(ToolbarToggleContract.toggled.token) {
+        node.readsWhenDescribed { $0.write(ToggleElementContract.isOn, isOn.wrappedValue) }
+        node.addHandler(ToggleElementContract.toggled.token) {
             if let turned = EventBuffer.current.value()?.bool { isOn.wrappedValue = turned }
         }
-    }
-
-    /// Fires when the user chooses it, with the way it turned to. Runs after
-    /// the state's write.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
-        modified { $0.addHandler(ToolbarToggleContract.toggled, handler) }
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        modified { $0.addHandler(ToolbarToggleContract.toggled, policy: policy, handler) }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        modified { $0.addHandler(ToolbarToggleContract.toggled, gate: gate, handler) }
     }
 
     /// Its picture while off, and `on` while on - each resolved from the
     /// application's image resources.
     public func icon(_ value: ImageSource, on: ImageSource) -> Modified {
-        setValue(MenuItemElementContract.icon, value).setValue(ToolbarToggleContract.onIcon, on)
+        setValue(IconElementContract.icon, value).setValue(ToolbarToggleContract.onIcon, on)
     }
 
     /// Who this item is among the others of its declaration, so an item

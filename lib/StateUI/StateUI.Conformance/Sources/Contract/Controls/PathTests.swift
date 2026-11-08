@@ -14,7 +14,7 @@
             Aspects.standsAlone("Path"),
             ConformanceCase("aPathIsFilledInsideTheFigureItsDataDraws", proves: [
                 Covered(PathContract.data),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let flipped = State(wrappedValue: false)
                 s.start {
                     VStack {

@@ -15,12 +15,12 @@ import StateUIAndroid
 final class GoogleMapView: AndroidControl {
     let view: JavaObject
 
-    private let reports: AndroidReports<MapContract>
+    private let reports: ControlReports<MapContract>
     private let number: Int64
 
     /// Each marker shown, by the number the view knows it by.
-    private var markers: [Int64: AndroidChild<MarkerContract>] = [:]
-    private var numbers: [AndroidChild<MarkerContract>: Int64] = [:]
+    private var markers: [Int64: ControlChild<MarkerContract>] = [:]
+    private var numbers: [ControlChild<MarkerContract>: Int64] = [:]
     private var nextNumber: Int64 = 1
 
     private static let viewClass = Java.findClass("com/stateui/gallery/GoogleMapView")
@@ -37,10 +37,10 @@ final class GoogleMapView: AndroidControl {
     private var zooms = true
     private var scrolls = true
 
-    init(_ reports: AndroidReports<MapContract>) {
+    init(_ reports: ControlReports<MapContract>) {
         self.reports = reports
         number = GalleryControls.reserve()
-        view = Java.new(Self.viewClass, Self.make, .object(StateUIAndroid.context), .long(number))
+        view = Java.new(Self.viewClass, Self.make, .object(AndroidHost.context), .long(number))
         GalleryControls.hold(self, as: number)
     }
 
@@ -58,7 +58,7 @@ final class GoogleMapView: AndroidControl {
     }
 
     /// How the world is drawn.
-    func show(_ type: MapType?) {
+    func show(_ type: MapKind?) {
         let kind: Int32 = switch type ?? .standard {
         case .standard: 0
         case .satellite: 1
@@ -84,8 +84,8 @@ final class GoogleMapView: AndroidControl {
 
     /// Shows `children` as the map's markers, a line each - its number, where it stands, its kind, its label and
     /// what is under the label - so the view keeps a marker the same for as long as its child lives.
-    func show(_ children: [AndroidChild<MarkerContract>]) {
-        var kept: [AndroidChild<MarkerContract>: Int64] = [:]
+    func show(_ children: [ControlChild<MarkerContract>]) {
+        var kept: [ControlChild<MarkerContract>: Int64] = [:]
         markers = [:]
         let lines = children.compactMap { child -> String? in
             guard let location = child.value(MarkerContract.location) else { return nil }
@@ -93,7 +93,7 @@ final class GoogleMapView: AndroidControl {
             if number == nextNumber { nextNumber += 1 }
             kept[child] = number
             markers[number] = child
-            let kind = switch child.value(MarkerContract.type) ?? .generic {
+            let kind = switch child.value(MarkerContract.kind) ?? .generic {
             case .generic: "generic"
             case .place: "place"
             case .saved: "saved"
@@ -136,15 +136,15 @@ extension GoogleMapView {
         // listing: android.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

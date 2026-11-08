@@ -17,8 +17,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
             // The ticks are read here, so every box builds this closure.
             DebugInfoLabel()
 
-            CheckBox($agreed)
-                .text("I have read the terms")
+            CheckBox("I have read the terms", isOn: $agreed)
                 .accessibilityIdentifier("checkBox.agreed")
                 .tint(Palette.accent)
 
@@ -30,8 +29,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
             ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                 let (index, name) = pair
-                return CheckBox(extras[index])
-                    .text(name)
+                return CheckBox(name, isOn: extras[index])
                     .accessibilityIdentifier("checkBox.extra.\(index)")
                     .tint(Palette.accent)
                     .onToggled { ticked in extras[index] = ticked }

@@ -183,8 +183,8 @@ final class ControlTests: XCTestCase {
             ControlCase("DatePicker", source: "DatePicker.swift",
                 DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
                     .date(CalendarDate(year: 2026, month: 8, day: 9))
-                    .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
-                    .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+                    .minimum(CalendarDate(year: 2026, month: 1, day: 1))
+                    .maximum(CalendarDate(year: 2026, month: 12, day: 31))
                     .format(.long)
                     .isOpen(false)
                     .onDateChanged { _ in }
@@ -194,7 +194,7 @@ final class ControlTests: XCTestCase {
             ControlCase("TimePicker", source: "TimePicker.swift",
                 TimePicker(ClockTime(hour: 9, minute: 30))
                     .time(ClockTime(hour: 21, minute: 5, second: 30))
-                    .format("t")
+                    .format(.short)
                     .isOpen(false)
                     .onTimeChanged { _ in }
                     .onOpened {}
@@ -253,7 +253,6 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Spinner", source: "Spinner.swift",
                 Spinner(true)
-                    .isAnimating(true)
                     .tint(.cornflowerBlue)),
 
             ControlCase("ProgressBar", source: "ProgressBar.swift",
@@ -285,7 +284,7 @@ final class ControlTests: XCTestCase {
                         .gridRow(1)
                         .gridColumnSpan(2)
                 }
-                .rows(.fixed(70), .auto)
+                .rows(.fixed(70), .automatic)
                 .columns(.fill, .proportional(2))
                 .rowSpacing(12)
                 .columnSpacing(8)),
@@ -342,7 +341,7 @@ final class ControlTests: XCTestCase {
             // end raise. A composed view, so the case is its body built.
             ControlCase("ItemsView", source: "ItemsView.swift",
                 ItemsView(["one", "two"]) { Text($0) }
-                    .header(Text("Words"))
+                    .header { Text("Words") }
                     .itemsLayout(.grid(minimumItemWidth: 120, spacing: 8))
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
@@ -361,18 +360,19 @@ final class ControlTests: XCTestCase {
                 } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
-                .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
+                .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
-                .shade(
+                .shade {
                     Rectangle()
-                        .fill(.black))
-                .motion(.spring(response: .milliseconds(240)))
+                        .fill(.black)
+                }
+                .parameterMotion(.spring(response: .milliseconds(240)))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
                 .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
-                .onItemDismissed(.up, beyond: 80) { _ in }
+                .onItemDismissed(directions: .up, threshold: 80) { _ in }
                 .node.built),
 
             // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
@@ -382,8 +382,8 @@ final class ControlTests: XCTestCase {
                 }
                 .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)
-                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
-                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
@@ -393,7 +393,7 @@ final class ControlTests: XCTestCase {
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
                 Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                    .type(.hybrid)
+                    .kind(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
@@ -402,7 +402,7 @@ final class ControlTests: XCTestCase {
                         Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
                             .title("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
-                            .type(.place)
+                            .kind(.place)
                             .onSelected {}
                             .onDetailsClicked {}
 
@@ -418,8 +418,8 @@ final class ControlTests: XCTestCase {
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
                     .userAgent("StateUI/1.0")
-                    .canGoBack(hasBack.projectedValue)
-                    .canGoForward(hasForward.projectedValue)
+                    .canGoBack(into: hasBack.projectedValue)
+                    .canGoForward(into: hasForward.projectedValue)
                     .onNavigating { _ in }
                     .onNavigated { _ in }
                     .onProcessTerminated {}),
@@ -435,9 +435,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Capsule", source: "Capsule.swift", Capsule()),
 
             ControlCase("Line", source: "Line.swift",
-                Line()
-                    .from(Point(0, 0))
-                    .to(Point(240, 40))),
+                Line(from: Point(0, 0), to: Point(240, 40))),
 
             ControlCase("Path", source: "Path.swift",
                 Path("M 0,40 L 20,0 L 40,40 Z")
@@ -491,11 +489,11 @@ final class ControlTests: XCTestCase {
                         "Hello, world", x: 10, y: 20, width: 80, height: 16,
                         horizontalAlignment: .center, verticalAlignment: .end)
 
-                    Draw.saveState()
-                    Draw.translateBy(x: 4, y: 4)
-                    Draw.rotate(by: 45)
-                    Draw.scaleBy(x: 2, y: 2)
-                    Draw.restoreState()
+                    Draw.saveGraphics()
+                    Draw.translate(4, 4)
+                    Draw.rotate(45)
+                    Draw.scale(2)
+                    Draw.restoreGraphics()
                 }),
 
             // The protocol tiers, once, on the four controls it takes to reach all
@@ -516,7 +514,7 @@ final class ControlTests: XCTestCase {
                         .stroke(.linearGradient([
                             GradientStop(.gold, 0),
                             GradientStop(.tomato, 1),
-                        ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
+                        ], from: Point(0, 0), to: Point(1, 1)))
                         .lineWidth(2)
                         .dash([4, 2])
                         .dashPhase(1)
@@ -529,7 +527,7 @@ final class ControlTests: XCTestCase {
                         .geometryTransform(Self.leaned)
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
-                        .background(.solidColor(Color(light: .whiteSmoke, dark: .black)))
+                        .background(Color(light: .whiteSmoke, dark: .black))
 
                     Text("Tiers")
                         .textColor(.firebrick)
@@ -550,8 +548,7 @@ final class ControlTests: XCTestCase {
                         .accessibilityValue("3 of 5")
                         .tooltip("Every view can say what it does")
                         .accessibilityHeading(.h2)
-                        .isAccessibilityHidden(false)
-                        .hidesChildrenFromAccessibility(false)
+                        .accessibilityPresence(.element)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)
@@ -619,7 +616,7 @@ final class ControlTests: XCTestCase {
                 // own terms.
                 .onTapped(count: 2) {}
                 .onHeld(minimum: .milliseconds(800)) {}
-                .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
+                .onSwiped(directions: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
                 .onRotationUpdated { _ in }
@@ -632,10 +629,10 @@ final class ControlTests: XCTestCase {
                 .isDraggable(true)
                 .onDragStarting {}
                 .onDragEnded {}
-                .onDrop { _ in }
-                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }
-                .onDragOver {}
-                .onDragLeave {}),
+                .onDropped { _ in }
+                .onDropped(files: [FileType("Text", extensions: ["txt"])]) { _ in }
+                .onDragEntered {}
+                .onDragExited {}),
         ]
     }
 
@@ -667,6 +664,19 @@ final class ControlTests: XCTestCase {
         XCTAssertFalse(showing.wrappedValue, "the user's close came back")
     }
 
+    /// A button can say it has no role of its own: `.normal` takes the main action's role off it in one spelling,
+    /// with no `if` around the modifier to change what the button is.
+    func testAButtonSaysItHasNoRole() {
+        let renders = Renders()
+
+        let first = renders.render(Button("Save").role(.primary).id("save").node)
+        let then = renders.render(Button("Save").role(.normal).id("save").node)
+
+        XCTAssertEqual(first.props["Button.role"], ButtonRole.primary.propValue)
+        XCTAssertEqual(then.props["Button.role"], ButtonRole.normal.propValue, "the same button, its role changed")
+        XCTAssertFalse(then.replace, "no new button")
+    }
+
     /// Runs written on a text replace the runs it had and nothing else: a menu written on it first stays.
     func testRunsWrittenAfterAMenuLeaveTheMenu() {
         let node = Text().contextMenu { MenuItem("Copy") }.spans { TextSpan("let ") }.node
@@ -690,7 +700,7 @@ final class ControlTests: XCTestCase {
                     .union(element.cleared.map(\.name))
                     .union(element.driven?.bindings.keys.map(\.name) ?? [])
                     .union(element.transitions.keys.map(\.name))
-                    .union(element.eventNames)
+                    .union(element.eventNames.map(\.name))
 
                 XCTAssertEqual(
                     carried.subtracting(Self.names(wornBy: contract)).sorted(), [],
@@ -705,10 +715,9 @@ final class ControlTests: XCTestCase {
     /// Every member name a contract lets its element carry: its own, and its
     /// tiers' with theirs.
     private static func names(wornBy contract: any Contract.Type) -> Set<String> {
-        contract.tiers.reduce(into: Set(contract.members.map(\.name))) { names, tier in
-            names.formUnion(Self.names(wornBy: tier))
-        }
+        Set(contract.worn.flatMap { $0.members }.compactMap(keyName(of:)))
     }
+
 
     // MARK: - The set, kept honest
 
@@ -802,30 +811,27 @@ final class ControlTests: XCTestCase {
     /// added without its twin is named here.
     ///
     /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
-    /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
+    /// gives: a value it cannot be handed whole (a brush, a picture, a
     /// shape, a transform, a law, a run of numbers), a NAME rather than a
     /// value (a style key, a font family, a radio group), a rectangle - four
-    /// lanes where a plain value is one - the tiers no view wears: a page,
-    /// a bar, a menu item, a map's own flags - and a value that makes its
-    /// element anew, which a state the host carries past the tree cannot.
+    /// lanes where a plain value is one - the tiers no view wears: a bar's
+    /// item, a run of text, a map's marker - a button's role, said where it
+    /// is written - and a value that makes its element anew, which a state
+    /// the host carries past the tree cannot.
     func testEveryValueModifierHasABindingTwin() throws {
-        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let remaking = Set(LibraryContracts.remaking.map { $0.memberName })
         let allowed: Set<String> = remaking.union([
             // A button's purpose in its window, said where it is written.
             "role",
             // Named rather than valued.
-            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
-            // A value the host cannot be handed whole.
-            "background", "pageBackground", "fill", "stroke", "icon", "icon",
-            "icon", "maximumDate",
-            "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody", "followsLayout", "id",
-            "assign", "area",
-            // Tiers no view wears.
-            "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",
-            "isScrollEnabled",
-            "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
-            "type", "ignoresSafeArea",
+            "style", "fontFamily", "source", "userAgent", "data", "content",
+            // A value the host cannot be handed whole - a gradient among them.
+            "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
+            "shape", "geometryTransform", "transform", "motion", "parameterMotion", "throwMotion", "layoutBody",
+            "id", "assign", "area",
+            // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
+            // whose twin a view's tier carries.
+            "title", "ignoresSafeArea", "accessibilityIdentifier",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -870,17 +876,18 @@ final class ControlTests: XCTestCase {
         // declaration's: no view wears them. The driven text goes per control, its direction differing (bindings.md,
         // driven text): the tier holds the value form.
         let tiersNoViewWears = [
-            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
-            "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
-            "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
+            "Views/Mixins/MenuItemElement.swift", "Views/Mixins/BarItemElement.swift", "Views/Menus/ToolbarButton.swift",
+            "Views/Menus/ToolbarGroup.swift", "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift",
+            "Views/Menus/Menu.swift", "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
-        // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
-        // state carried past the tree cannot - a gallery's shape, fading and its cards' body, a list's layout, a
-        // layout's drag, its mirror and its world.
+        // A map's markers are rebuilt with the map, a text's runs with the text; a composed view's configuration
+        // changes what it builds, which a state carried past the tree cannot - a gallery's shape, fading and its
+        // cards' body, a list's layout, a layout's drag, its mirror and its world.
         let perControl = [
-            "Views/Mixins/TextualElement.swift|text:String",
+            "Views/Mixins/TextualElement.swift|text:String", "Views/Text/Text.swift|text:String",
+            "Views/Text/Text.swift|background:Color", "Views/Text/Text.swift|background:Material",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
-            "Views/Controls/Map.swift|type:MarkerType",
+            "Views/Controls/Map.swift|kind:MarkerKind",
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
@@ -893,7 +900,8 @@ final class ControlTests: XCTestCase {
             .filter { value in
                 let parts = value.split(separator: "|")
                 let name = parts[1].split(separator: ":")[0]
-                return !twins.contains(value) && !allowed.contains(String(name))
+                // A brush is handed whole only as a value: its stops are no lane a state rides.
+                return !twins.contains(value) && !allowed.contains(String(name)) && !value.hasSuffix(":Brush")
                     && !tiersNoViewWears.contains(String(parts[0])) && !perControl.contains(value)
             }
             .sorted()
@@ -910,7 +918,7 @@ final class ControlTests: XCTestCase {
     /// A member that makes its element anew takes no binding twin: a state the host carries past the tree never
     /// reaches the patch the element is made from, so later writes would change nothing on screen.
     func testNoRemakingMemberHasABindingTwin() throws {
-        let remaking = Set(LibraryContracts.remaking.map(\.name))
+        let remaking = Set(LibraryContracts.remaking.map { $0.memberName })
         var twinned: [String] = []
 
         for (path, text) in try SourceTree.allSources() where path.contains("Views") {
@@ -942,7 +950,7 @@ final class ControlTests: XCTestCase {
         // Anywhere in the active Swift suites: an event is proved by a test
         // firing it or by a case carrying it.
         let named = try (SourceTree.testSources().map(\.text)
-            + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap(\.eventNames) })
+            + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap { $0.eventNames.map(\.name) } })
             .joined(separator: "\n")
 
         let missing = subscribed
@@ -1026,7 +1034,7 @@ final class ControlTests: XCTestCase {
             for member in contract.members
             where member is any PropertyMember
                 && !rendered.contains(member.name)
-                && !Self.reads(member.name, in: tests) {
+                && !Self.reads(member.name, in: tests) && !Self.reads("\(contract.name).\(member.name)", in: tests) {
                 missing.append("\(contract.name).\(member.name) is carried by no case and built by no test")
             }
         }
@@ -1051,7 +1059,7 @@ final class ControlTests: XCTestCase {
         node.materialize()
         node.readAsDescribed()
 
-        let own = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+        let own = Set(node.props.keys.map { $0.memberName }).union(node.driven.keys.map { $0.memberName })
 
         return node.children.reduce(into: own) { names, child in
             names.formUnion(carriedNames(in: child))
@@ -1129,6 +1137,7 @@ final class ControlTests: XCTestCase {
         for day in [
             CalendarDate(year: -5, month: 3, day: 1), CalendarDate(year: 0, month: 12, day: 31),
             CalendarDate(year: 2026, month: 8, day: 2), CalendarDate(year: 12345, month: 6, day: 7),
+            CalendarDate(year: Int.min, month: 3, day: 1), CalendarDate(year: Int.max, month: 2, day: 29),
         ] {
             XCTAssertEqual(CalendarDate(day.text), day, "\(day.text) reads back as the day it was written from")
         }
@@ -1355,7 +1364,7 @@ final class ControlTests: XCTestCase {
     ///
     /// Measured on Windows: a web view's FIRST navigation - the source it was
     /// handed before its browser existed - arrives with a reason no
-    /// `WebNavigationType` member names, and the host has nothing to
+    /// `WebNavigationKind` member names, and the host has nothing to
     /// translate it onto but `.unknown`. Refusing that report would leave a
     /// page loaded on screen while the interface still said nothing had, with
     /// only a second navigation ever reporting. An unknown member degrades; a
@@ -1371,13 +1380,13 @@ final class ControlTests: XCTestCase {
 
         renders.fire(handler(patch, "navigated"), with: [
             .enumeration(WebNavigationResult.success.rawValue),
-            .enumeration(WebNavigationType.unknown.rawValue),
+            .enumeration(WebNavigationKind.unknown.rawValue),
             .string("https://example.com/"),
         ])
 
         XCTAssertEqual(seen.count, 1)
         XCTAssertEqual(seen.first?.result, .success)
-        XCTAssertEqual(seen.first?.type, .unknown)
+        XCTAssertEqual(seen.first?.kind, .unknown)
         XCTAssertEqual(seen.first?.address, "https://example.com/")
 
         // `.unknown` is what this platform actually reports, and it has a case
@@ -1389,7 +1398,7 @@ final class ControlTests: XCTestCase {
 
         XCTAssertEqual(seen.count, 2)
         XCTAssertEqual(seen.last?.result, .unknown)
-        XCTAssertEqual(seen.last?.type, .unknown)
+        XCTAssertEqual(seen.last?.kind, .unknown)
     }
 
     /// The other half of the same rule: a value of the wrong KIND is a
@@ -1407,7 +1416,7 @@ final class ControlTests: XCTestCase {
         // The reason as a plain NUMBER where a member is wanted - what a host
         // that stopped translating would send.
         renders.fire(handler(patch, "navigating"), with: [
-            .number(Double(WebNavigationType.newPage.rawValue)),
+            .number(Double(WebNavigationKind.newPage.rawValue)),
             .string("https://example.com/"),
         ])
 
@@ -1429,7 +1438,7 @@ final class ControlTests: XCTestCase {
         node.readAsDescribed()
 
         // A property driven from a state is carried as much as one stated.
-        let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+        let carried = Set(node.props.keys.map { $0.memberName }).union(node.driven.keys.map { $0.memberName })
 
         return node.children.reduce(into: carried) { names, child in
             names.formUnion(propNames(in: child))

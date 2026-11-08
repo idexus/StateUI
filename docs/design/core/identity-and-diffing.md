@@ -42,17 +42,46 @@ the control, focus and caret of the one that left. Hand-written nodes, such as
 a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
-`ElementID` has two cases that are two namespaces: `.auto` is a number the
-differ assigns and `.manual` is the author's identity described. One is a
-number and the other a string, so they can never collide.
+`ElementID` has two namespaces: `.manual` preserves a literal string name,
+including a structural name StateUI writes; `.auto` numbers every other
+element. An authored value can have either representation. Position matches
+only an element with no authored identity, whatever its runtime key looks
+like. The root uses the same value equality when it has an authored identity.
 
 An identity is matched as the value it is (`ElementIdentity`): the value, and
 its hash worked out once as it is written, so siblings are looked up by a
 number and two values compared only where their numbers meet. Its
-description is made once, as an element is born, for the patch's `.manual`
-key; an element matched by value keeps the key it was born with. Two values
-that describe themselves alike are two elements: the second born with a key
-the first already holds takes a fresh number instead.
+description is used only for diagnostics. A non-string identity receives a
+number in traversal order as its element is born; one matched by value keeps
+that number. Allocated numbers are never reused, including after removal.
+Two values that describe themselves alike are two elements. A name is distinct
+among siblings, no further: two parents may each hold an `editor`, a stack
+describes one declaration into each of its pages, two lists hold items `1`,
+and a scene is keyed by its record as a view is by its id - the key tells
+siblings apart, and what reaches one element among many of a name reaches it
+by where it stands ([aims](#aims-and-readings-on-an-element)).
+
+## Menu identities
+
+A menu's scoped runtime key identifies its native element. Its authored
+identity also joins declarations across page levels, which is a separate
+scope. `HostPatch.menuKey` carries that semantic identity: a literal name,
+the platform's menu a menu `.joins(_:)`, or a number shared by equal authored
+values. The join is an identity no value an application writes is: a
+`StandardMenu` given to `.id` is an authored value like any other, and a
+menu that joins takes no `.id`.
+
+`MenuKeys` assigns numbers in traversal order. A rendered menu or entry owns
+its key object; the lookup book holds only weak references indexed by cached
+hashes. Hashes never cross in the patch or determine output order. Dead weak
+entries are pruned at the start of a walk, so the book neither retains an
+author's id object nor accumulates old identities. A value whose last live
+declaration leaves receives a new allocated key when it returns.
+
+The complete menu key accompanies first creation, resync and replacement.
+A partial patch omits it. Changing authored identity makes another element;
+a replacement with no menu identity starts with no key. The common host
+composes menus by this key and interprets the typed standard role directly.
 
 ## Another kind of view
 
@@ -129,6 +158,13 @@ desktop's - overflows some fifteen levels down a WebAssembly Gallery, before
 its first frame (`RangeError: Maximum call stack size exceeded`).
 `DifferStackTests` holds a level under eight kilobytes.
 
+The element walk and expansion live in `Differ+Element.swift`; preparation
+and final assembly live in `Differ+Prepare.swift` and `Differ+Finish.swift`.
+`ElementPass.swift` owns their shared working values: authored inputs, the
+scope entered while expanding them, the prepared registration and patch,
+and the result assembled after walking children. Each bounded step completes
+before the walk descends into the children.
+
 ## Ids are never reused
 
 Element ids and handler ids come from counters that are never reset, not even
@@ -142,8 +178,12 @@ Two siblings written with one value cannot both keep it: the host matches
 children by key and one control cannot stand in two places. A fresh automatic
 id every render would rebuild the repeat's control, handlers and state each
 time. The repeat takes a stable variant instead (`RepeatedIdentity`) - the
-value and its occurrence, described as the id, a NUL and the number - which is
-the same key every render and can never equal a value an author writes. A
+value and its occurrence, described as the id, a group separator (`\u{1D}`)
+and the number - which is the same key every render and never equals a value
+an author writes. The keys StateUI makes for itself - a scene's, a window's -
+hold the record separator the same way ([the scene
+tree](scenes.md#the-scene-tree)). No identity StateUI makes holds a NUL: GTK
+and WinUI hand words to their toolkits as C strings, which end at one. A
 repeat is said once.
 
 ## State survives a rebuild
@@ -163,6 +203,42 @@ as a different control type replaces the control. A view a body ends on is
 the same view only when every view outside it is too, type and branch: the
 other branch of an `if` at a body's root holds a view of the same type, and
 starts over as it does inside a stack.
+
+## One value in two places
+
+A view's `@State` and `@Environment` are objects the value holds, so every
+copy of one value holds the same boxes and slots, and one value placed twice
+puts them at two places. A box shared is a state shared: both places adopt
+the one storage, so a write in either shows in both and the box keeps that
+storage across renders - two copies of a list, two readouts of one `State`
+handed in as a property. A slot is another matter: it resolves to the
+nearest provider of the place it stands in, and a handler the body captured
+reads it later with no place to ask - so one value under two providers of its
+type would have both places read the one filled last, the first place's
+button writing the second place's model. The walk records, by the slot, which
+element it stands at and what it resolved to there (`Differ.placed`,
+forgotten as a walk begins): a view built places its slots as they resolve
+where it stands, and a view standing as it was - carried, or outside the
+view a clean walk builds again - places them as they were built (the
+`slots` of its `BuiltView`), so every place in the tree is on record in the
+tree's order, built or kept. A slot met again at another element, outside
+the elements the walk is inside, resolving to another object, refuses the
+placing: the second place shows nothing - an anchor of no view - and the
+library says so once, naming the type. The tree's order decides, whichever
+walk placed the value first: a kept place met after a built one it
+disagrees with is built again, from that view, and refused there. Make a
+value for each place, where each stands. Under one provider, or none, the
+places read the same object and both stand.
+
+A refused place is asked again by every walk, built again from its
+placeholder whether or not it read what moved (`RenderedNode.refused`): once
+the first place leaves, or comes to the same provider, the second stands.
+
+A view a body holds in a property is one lineage, not two places: the
+holder's walk meets the held view's slots under the holder's paths before the
+held view's own place does, which stands inside the holder - so a placing
+checks the elements the walk is inside (`Differ.standing`, kept by the clean
+walk too), not the last claimant alone.
 
 ## Paths pair state
 
@@ -529,9 +605,14 @@ what left, so an element replaced in the same render answers nothing.
 
 ## Aims and readings on an element
 
-An aim written on a view takes the key the element settled on; that is the
-whole of how an act aims. The content a composed view unwraps to may carry an
-aim of its own on its root, which is the same element and takes the same key.
+An aim written on a view takes where the element stands: the keys from the
+root down to it, the key the element settled on last (`Differ.standing` as
+the element is prepared). A key is distinct among siblings alone, so two
+views named alike under two parents are two aims, each reaching its own; the
+act sends the keys as its first argument and the host walks them from its
+root (`MountedTree.aimed`). The content a composed view unwraps to may carry
+an aim of its own on its root, which is the same element and takes the same
+place.
 A reading asked for with `.samples` is held by the element and keyed by its
 target, so a view described again replaces its own reading.
 

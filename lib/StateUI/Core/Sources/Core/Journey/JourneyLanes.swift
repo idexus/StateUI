@@ -39,7 +39,7 @@ struct JourneyLanes<Value: Walked>: StateValue {
 
     /// The stand-in for text, which has no numbers; nothing reads it.
     private static var value0: Value {
-        Value(carried: .text(""))!
+        Value(carried: .string(""))!
     }
 
     /// Every lane: value, destination, velocity, law, waiter, stops - a value that

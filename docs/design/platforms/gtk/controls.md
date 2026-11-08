@@ -200,8 +200,10 @@ sentence's start, and the keys. GTK holds no hint for correction.
 GTK's text widgets mark no spelling themselves; the input method is what
 checks. A password field hides each character behind a dot. The words stand
 across the field as their alignment says, and the caret and the selection are
-put where the tree put them, in the characters GTK counts, only where the
-tree changed them: the caret at the selection's end, as GTK selects. GNOME
+put where the tree put them, in the Unicode scalars GTK counts as the
+characters the tree counts take ([typed
+words](../../host/runtime.md#typed-words)), only where the tree changed them:
+the caret at the selection's end, as GTK selects. GNOME
 selects a field's words whole as it takes the focus; a caret or a selection
 the program put stands over the field's first focus, written again once GTK
 has selected - and once that focus has passed or the user has changed the
@@ -360,6 +362,14 @@ behind and ahead, said as the history changes; and the end of its web
 process. A script's answer is the JSON WebKit writes its value in, read by
 the host layer's rule. WebKit's calls are declared by the backend itself
 over untyped pointers, as GTK's headers belong to the host's own module.
+
+`WebReloadSource` keeps the complete requested source for a reload before
+WebKit commits it, and keeps authored HTML with a base while that document
+stands. A reload uses those bytes and the base together. The backend records
+its requested load before calling WebKit; the next `load-changed` start
+consumes that record. A start without a request, or an accepted step back or
+forward, gives reload back to native history. `load-changed` commit applies
+the shared source rule. Redirects continue the same load.
 
 ## A text style
 

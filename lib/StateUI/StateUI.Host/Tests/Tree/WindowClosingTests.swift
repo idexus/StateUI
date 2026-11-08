@@ -13,7 +13,7 @@ final class WindowClosingTests: XCTestCase {
     func testClosingAWindowTellsItThenItsSceneTheKey() throws {
         let runtime = scene()
 
-        for (key, handler) in [("window 1", Int32(3)), ("note 2", Int32(4))] {
+        for (key, handler) in [(OwnKey.window(kind: nil, serial: 1), Int32(3)), (OwnKey.window(kind: "note", serial: 2), Int32(4))] {
             let told = HostRuntime.toldOnClosing(try XCTUnwrap(runtime.tree.root?.first(id: .manual(key))))
 
             XCTAssertEqual(told.map { $0.handler }, [handler, 2])
@@ -26,10 +26,10 @@ final class WindowClosingTests: XCTestCase {
         let runtime = HostRuntime.still()
         var scene = HostPatch(id: .manual("scene"), type: .scene)
         scene.events = .replace([.windowClosed: 2])
-        var window = HostPatch(id: .manual("window 1"), type: .window)
+        var window = HostPatch(id: .window(1), type: .window)
         window.events = .replace([.destroying: 3])
-        var note = HostPatch(id: .manual("note 2"), type: .window)
-        note.properties = [.windowType: .name("notes.note")]
+        var note = HostPatch(id: .window(2, kind: "note"), type: .window)
+        note.properties = [.windowKind: .name("notes.note")]
         note.events = .replace([.destroying: 4])
         scene.children = .arranged([window, note])
         runtime.tree.apply(scene, complete: true)

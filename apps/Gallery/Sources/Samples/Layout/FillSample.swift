@@ -39,8 +39,7 @@ struct FillSample: SampleContent, ExampleContent {
             .spacing(8)
             .height(160)
 
-            Switch($spaced)
-                .text("A space, not a fill")
+            Switch("A space, not a fill", isOn: $spaced)
                 .accessibilityIdentifier("fill.spaced")
 
             SectionTitle("Across")

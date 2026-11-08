@@ -35,7 +35,7 @@
         case fillRectangle = 12, fillRoundedRectangle = 13, fillEllipse = 14
         case fillPath = 16, text = 17
         case translate = 18, rotate = 19, scale = 20
-        case saveState = 21, restoreState = 22
+        case saveGraphics = 21, restoreGraphics = 22
     }
 
     private mutating func append(_ instruction: CanvasInstruction) {
@@ -71,8 +71,8 @@
         case .translate(let x, let y): record(Kind.translate, [x, y])
         case .rotate(let degrees): record(Kind.rotate, [degrees])
         case .scale(let x, let y): record(Kind.scale, [x, y])
-        case .saveState: ints.append(Kind.saveState.rawValue)
-        case .restoreState: ints.append(Kind.restoreState.rawValue)
+        case .saveGraphics: ints.append(Kind.saveGraphics.rawValue)
+        case .restoreGraphics: ints.append(Kind.restoreGraphics.rawValue)
         }
     }
 

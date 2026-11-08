@@ -83,6 +83,25 @@ final class ValueTextTests: XCTestCase {
         XCTAssertThrowsError(try ValueText.write(Double.infinity))
         XCTAssertThrowsError(try ValueText.write([Double.nan]))
     }
+
+    /// A number is read as JSON writes it - a sign only before, no nought leading, digits on both sides of a point -
+    /// and one its type cannot hold reads as nothing, as `write` would refuse it; words hold no raw control.
+    func testWhatJSONWouldNotWriteReadsAsNothing() {
+        for text in ["+1", "01", "-01", ".5", "1.", "-", "1e", "1e+", "--1", "0x1"] {
+            XCTAssertNil(ValueText.read(Double.self, from: text), text)
+            XCTAssertNil(ValueText.read(Int.self, from: text), text)
+        }
+        for (text, value) in [("0", 0.0), ("-0", 0.0), ("0.5", 0.5), ("-1.25e-3", -0.00125), ("1E5", 1e5), ("2e+2", 200)] {
+            XCTAssertEqual(ValueText.read(Double.self, from: text), value, text)
+        }
+        XCTAssertNil(ValueText.read(Double.self, from: "1e999"), "past what a Double holds")
+        XCTAssertNil(ValueText.read(Float.self, from: "1e100"), "past what a Float holds")
+        XCTAssertNil(ValueText.read(String.self, from: "\"a\nb\""), "a raw line feed")
+        XCTAssertNil(ValueText.read(String.self, from: "\"a\u{01}b\""), "a raw control")
+        XCTAssertNil(ValueText.read(String.self, from: #""\u+041""#), "four hex digits after a \\u")
+        XCTAssertNil(ValueText.read(String.self, from: #""\u-041""#))
+        XCTAssertEqual(ValueText.read(String.self, from: #""\u0041""#), "A")
+    }
 }
 
 private struct Inner: Codable, Equatable {

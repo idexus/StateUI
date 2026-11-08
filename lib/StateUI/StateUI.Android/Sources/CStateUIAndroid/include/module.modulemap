@@ -1,0 +1,4 @@
+module CStateUIAndroid {
+    umbrella header "CStateUIAndroid.h"
+    export *
+}

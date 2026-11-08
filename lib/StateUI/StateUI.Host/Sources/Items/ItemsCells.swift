@@ -81,6 +81,7 @@
         let now = element?.value(.items).flatMap(ItemsEntries.init(propValue:)) ?? ItemsEntries(sections: [])
         guard now != entries else { return nil }
         let old = identities
+        let items = Set(itemPositions.keys)
         entries = now
         identities = now.identities
         positions = Dictionary(identities.enumerated().map { ($1, $0) }, uniquingKeysWith: { first, _ in first })
@@ -88,6 +89,7 @@
         for (position, identity) in now.sections.flatMap(\.items).enumerated() {
             itemPositions[identity] = position
         }
+        if Set(itemPositions.keys) != items { endWatch.itemsCameOrWent() }
         held = held.filter { positions[$0] != nil }
         built = built.filter { positions[$0] != nil }
         // A cell holding an entry that went lets it go: the cells keep nothing of what the list no longer has.
@@ -273,7 +275,7 @@
         runtime.frames.laidOut()
         guard element.handler(.endReached) != nil else { return }
         let last = inView.compactMap { itemPositions[$0] }.max() ?? -1
-        let within = element.value(.endReachedWithin)?.number.map { Int($0) } ?? 0
+        let within = element.whole(.endReachedWithin) ?? 0
         guard endWatch.reached(count: itemPositions.count, last: last, within: within) else { return }
         element.send(.endReached, [], in: runtime)
     }

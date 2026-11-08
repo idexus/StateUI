@@ -1,0 +1,10 @@
+# revision 1.1
+DatePicker.closed: ✅
+DatePicker.isOpen: ✅
+DatePicker.opened: ✅
+Picker.closed: – GTK's drop-down tells no one its list opened or closed.
+Picker.isOpen: – GTK's drop-down tells no one its list opened or closed.
+Picker.opened: – GTK's drop-down tells no one its list opened or closed.
+TimePicker.closed: ✅
+TimePicker.isOpen: ✅
+TimePicker.opened: ✅

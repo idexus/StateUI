@@ -115,7 +115,7 @@ final class WindowPresentationTests: XCTestCase {
     func testAWindowsFrameIsFourRequestsEachAlone() throws {
         let runtime = HostRuntime.still()
         var window = HostPatch(id: .manual("window"), type: .window)
-        window.properties = [.x: .number(40), .width: .number(640)]
+        window.properties = [.x: .number(40), WindowContract.width.token: .number(640)]
         runtime.tree.apply(window, complete: true)
         let presentation = WindowPresentation()
         let root = try XCTUnwrap(runtime.tree.root)
@@ -129,18 +129,18 @@ final class WindowPresentationTests: XCTestCase {
 
         XCTAssertEqual(presentation.show(root, in: runtime.lifecycle).frame, WindowFrame(x: 40, width: 640))
         XCTAssertEqual(
-            change([.x: .number(40), .width: .number(800), .height: .number(480)]), WindowFrame(width: 800, height: 480))
+            change([.x: .number(40), WindowContract.width.token: .number(800), WindowContract.height.token: .number(480)]), WindowFrame(width: 800, height: 480))
         XCTAssertNil(change([:]), "nothing changed: the window stays where the user put it")
         XCTAssertNil(change([:], clearing: [.x]), "a request taken away moves nothing")
         XCTAssertEqual(change([.x: .number(40)]), WindowFrame(x: 40), "asked again, it moves the window again")
-        XCTAssertNil(change([.width: .number(-1)]), "a size below nothing asks for none")
+        XCTAssertNil(change([WindowContract.width.token: .number(-1)]), "a size below nothing asks for none")
     }
 
     /// A window's bounds are said the first time and where they change; a greatest below the least is the least.
     func testAWindowsGreatestSizeNeverStandsBelowItsLeast() throws {
         let runtime = HostRuntime.still()
         var window = HostPatch(id: .manual("window"), type: .window)
-        window.properties = [.minimumWidth: .number(400), .maximumWidth: .number(300), .maximumHeight: .number(900)]
+        window.properties = [WindowContract.minimumWidth.token: .number(400), WindowContract.maximumWidth.token: .number(300), WindowContract.maximumHeight.token: .number(900)]
         runtime.tree.apply(window, complete: true)
         let presentation = WindowPresentation()
         let root = try XCTUnwrap(runtime.tree.root)

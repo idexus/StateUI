@@ -26,7 +26,7 @@ struct EngineSample: SampleContent, ExampleContent {
     /// wakes the engine.
     @State private var running = false   // followed by the engine, read by no view
 
-    /// How long the clock has run, in milliseconds - the engine's own to
+    /// How long the clock has run, in seconds - the engine's own to
     /// count up, read by no view: the reading is worked out FROM it, so
     /// nothing outside this page ever needs the number itself.
     @State private var elapsed = 0.0   // the engine's own count
@@ -47,8 +47,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
             ZStack {
                 // Off a driven state: written ten times a second, never described.
-                Text()
-                    .text($reading)
+                Text($reading)
                     .fontSize(44)
                     .fontWeight(.bold)
                     .horizontalTextAlignment(.center)
@@ -68,8 +67,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             HStack {
-                Button()
-                    .text($caption)
+                Button($caption)
                     .onClicked {
                         running.toggle()
                         caption = running ? "Stop" : "Start"
@@ -94,9 +92,9 @@ struct EngineSample: SampleContent, ExampleContent {
         .engine(tracking: $running) { cycle in
             guard running else { return .wait }
 
-            elapsed += cycle.elapsed
+            elapsed += cycle.elapsedSeconds
 
-            let tenths = Int(elapsed / 100)
+            let tenths = Int(elapsed * 10)
             reading = "\(tenths / 10).\(tenths % 10) s"
 
             return .again
@@ -124,7 +122,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.text($reading)` takes its words off a driven state the engine writes "
+            Text("`Text($reading)` takes its words off a driven state the engine writes "
                 + "on the display's own frame, and the button's caption is driven the same "
                 + "way by the handler that toggles the clock: one tap starts the clock and "
                 + "renames the button, and neither is a render. Driven text is written onto "

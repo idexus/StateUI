@@ -17,6 +17,7 @@
 #include <winrt/Windows.Security.ExchangeActiveSyncProvisioning.h>
 #include <winrt/Windows.System.Power.h>
 #include <winrt/Windows.System.Profile.h>
+#include <winrt/Windows.System.UserProfile.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Microsoft.UI.Windowing.h>
 
@@ -69,13 +70,15 @@ namespace {
         wchar_t name[LOCALE_NAME_MAX_LENGTH] = {};
         GetUserDefaultLocaleName(name, LOCALE_NAME_MAX_LENGTH);
         auto full = winrt::to_string(name);
-        auto dash = full.find('-');
         auto firstDay = std::stoi(localeInfo(LOCALE_IFIRSTDAYOFWEEK));
-        facts << full.substr(0, dash) << (dash == std::string::npos ? std::string() : full.substr(dash + 1)) << full
-              << winrt::Windows::Globalization::Calendar().GetTimeZone()
+        facts << full << winrt::Windows::Globalization::Calendar().GetTimeZone()
               << (localeInfo(LOCALE_STIMEFORMAT).find('H') != std::string::npos)
               << static_cast<double>((firstDay + 1) % 7) << (localeInfo(LOCALE_IMEASURE) == "0")
               << (localeInfo(LOCALE_IREADINGLAYOUT) == "1");
+        // Then the user's languages as tags, most wanted first: the profile's ordered list.
+        for (auto const &language : winrt::Windows::System::UserProfile::GlobalizationPreferences::Languages()) {
+            facts << language;
+        }
     }
 
     void battery(Facts &facts) {

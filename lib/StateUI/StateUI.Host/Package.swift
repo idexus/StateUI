@@ -9,9 +9,9 @@ let linkage: Product.Library.LibraryType? = Context.environment["STATEUI_HOST"] 
 let package = Package(
     name: "StateUIHost",
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: [
         .library(name: "StateUIHost", type: linkage, targets: ["StateUIHost"]),

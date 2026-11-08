@@ -1,0 +1,10 @@
+# revision 2.1
+Button.contentMode: not realized
+Capsule.contentMode: ✅
+Ellipse.contentMode: ✅
+Image.contentMode: ✅
+Line.contentMode: ✅
+Path.contentMode: ✅
+Polygon.contentMode: ✅
+Polyline.contentMode: ✅
+Rectangle.contentMode: ✅

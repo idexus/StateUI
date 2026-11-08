@@ -12,7 +12,7 @@ public enum SpaceContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A space is a view drawing its own box.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, BorderElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, BorderElementContract.self]
 
     /// The element's own members: none.
     public static let members: [any ContractMember] = []

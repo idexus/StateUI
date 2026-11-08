@@ -49,9 +49,9 @@ final class GTKRendererTests: XCTestCase {
 
             let clock = try XCTUnwrap(gtk_widget_get_frame_clock(second.window.widget))
             GTKWindow.reportLaidOut(clock, window: second.window.number)
-            XCTAssertTrue(GTKWindow.keepsFrame(of: second.window.number))
+            XCTAssertNotNil(GTKWindow.reportedFrame(of: second.window.number))
             second.window.close()
-            XCTAssertFalse(GTKWindow.keepsFrame(of: second.window.number), "a window gone keeps no frame of its readers")
+            XCTAssertNil(GTKWindow.reportedFrame(of: second.window.number), "a window gone keeps no frame of its readers")
         }
     }
 
@@ -225,6 +225,25 @@ extension GTKRendererTests {
         }
     }
 
+    /// The user's languages are the locale names GLib reads, most wanted first, each as a tag said once - without
+    /// its codeset and modifier, the C locale no language - and the core holds them so, the first the locale's own.
+    func testTheUsersLanguagesAreGLibsNamesAsTags() {
+        XCTAssertEqual(
+            GTKEnvironment.languages(of: ["pl_PL.UTF-8", "pl_PL", "pl", "en_US@latin", "en_US.UTF-8", "C"]),
+            ["pl-PL", "pl", "en-US"])
+        XCTAssertEqual(GTKEnvironment.languages(of: ["C", "POSIX"]), [])
+        onUIThread {
+            _ = GTKRenderer.running { Text("Languages") }
+            let locale = StandardEnvironment.locale
+            let first = g_get_language_names()?.pointee.map { String(cString: $0) } ?? "C"
+            if GTKEnvironment.languages(of: [first]).isEmpty {
+                XCTAssertEqual(locale.languages, [], "the C locale is no language")
+            } else {
+                XCTAssertEqual(locale.languages.first, locale.language, "the first is the locale's own")
+            }
+        }
+    }
+
     /// The page reads the machine the desktop describes: the locale GLib and the C library have, the power UPower
     /// has - none on a machine with no battery - and the network GIO has; none is left unknown.
     func testThePageReadsTheMachinesLocalePowerAndNetwork() throws {
@@ -352,7 +371,7 @@ private struct FirstScene: Scene {
 
 private struct SecondScene: Scene {
     var body: some Scene {
-        Window(WindowType("frames.second")) { Text("Second") }
+        Window(WindowKind("frames.second")) { Text("Second") }
     }
 }
 
@@ -361,6 +380,6 @@ private struct OpeningSecondPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("frames.second")) }
+        return Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("frames.second")) }
     }
 }

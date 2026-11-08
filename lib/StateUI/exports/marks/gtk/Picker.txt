@@ -1,10 +1,6 @@
-# revision 4.1
+# revision 6.1
 Picker: ✅
-Picker.closed: – GTK's drop-down tells no one its list opened or closed.
-Picker.isOpen: – GTK's drop-down tells no one its list opened or closed.
-Picker.opened: – GTK's drop-down tells no one its list opened or closed.
 Picker.options: ✅
-Picker.placeholder: – GTK's drop-down shows a choice or nothing: it has no words standing for none.
 Picker.presentation: ✅
 Picker.selectedIndex: ✅
 Picker.selectedIndexChanged: ✅

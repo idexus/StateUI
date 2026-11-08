@@ -15,7 +15,7 @@ final class GTKMotionTests: XCTestCase {
             XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .text))
             XCTAssertTrue(GTKTransitionSurface.presents(.translationX, on: .button))
             XCTAssertTrue(GTKTransitionSurface.presents(.value, on: .slider))
-            XCTAssertTrue(GTKTransitionSurface.presents(.spacing, on: .vStack))
+            XCTAssertTrue(GTKTransitionSurface.presents(StackContract.spacing.token, on: .vStack))
             XCTAssertFalse(GTKTransitionSurface.presents(.value, on: .text))
             XCTAssertTrue(GTKTransitionSurface.presents(.opacity, on: .switch), "every registered view")
             XCTAssertFalse(GTKTransitionSurface.presents(.opacity, on: .map))
@@ -105,7 +105,7 @@ final class GTKMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(.ignoreWhileRunning) {
+                    Button("Go").onClicked(policy: .ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), curve: .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -168,7 +168,7 @@ final class GTKMotionTests: XCTestCase {
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked(.ignoreWhileRunning) {
+                    Button("Go").onClicked(policy: .ignoreWhileRunning) {
                         try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), curve: .linear)).arrived()
                     }
                 }

@@ -15,17 +15,37 @@ public final class Battery {
     /// How full the battery is, 0 to 1; nil until the host has said - which a
     /// host without battery information may never do - and where no battery
     /// stands.
-    @State public internal(set) var chargeLevel: Double?
+    public internal(set) var chargeLevel: Double? {
+        get { _chargeLevel }
+        set { _chargeLevel = newValue }
+    }
+
+    @State private var _chargeLevel: Double?
 
     /// Charging, discharging, full, or another settled battery state.
-    @State public internal(set) var state: BatteryState = .unknown
+    public internal(set) var state: BatteryState {
+        get { _state }
+        set { _state = newValue }
+    }
+
+    @State private var _state: BatteryState = .unknown
 
     /// Wall, USB, wireless, or the battery itself.
-    @State public internal(set) var powerSource: BatteryPowerSource = .unknown
+    public internal(set) var powerSource: BatteryPowerSource {
+        get { _powerSource }
+        set { _powerSource = newValue }
+    }
+
+    @State private var _powerSource: BatteryPowerSource = .unknown
 
     /// Whether the platform's battery saver is on - a good reason to animate
     /// less.
-    @State public internal(set) var energySaverStatus: EnergySaverStatus = .unknown
+    public internal(set) var energySaverStatus: EnergySaverStatus {
+        get { _energySaverStatus }
+        set { _energySaverStatus = newValue }
+    }
+
+    @State private var _energySaverStatus: EnergySaverStatus = .unknown
 
     /// A battery as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts
     /// as a headless host's does.

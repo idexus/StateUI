@@ -5,22 +5,22 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
     /// report is `TextInputContract.textChanged`. Their words and caret reach the view only where the tree changed
     /// them, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<WinUIView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = WinUITextFieldView()
             hearInput(field, reports)
-            field.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = WinUITextEditorView()
@@ -31,12 +31,12 @@ extension WinUIRegistrations {
             editor.applies(boxMembers) { view, values in applyBox(view, values) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = WinUISearchFieldView()
             hearInput(search, reports)
-            search.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
@@ -49,8 +49,8 @@ extension WinUIRegistrations {
             search.applies(
                 TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
                 TextInputContract.inputPurpose) { view, values in view.setTraits(InputTraits(values)) }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 
@@ -64,27 +64,27 @@ extension WinUIRegistrations {
             shape: values[BorderElementContract.shape]?.propValue)
     }
 
-    private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: Reports<Realized>) {
-        view.onTextChanged = { typed in reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged) }
+    private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: ControlReports<Realized>) {
+        view.onTextChanged = { typed in reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged) }
     }
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
     /// many it holds, whether it takes them, and their font and color.
     private static let wordMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled)
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
+        TextInputContract.maximumLength, EnabledElementContract.isEnabled)
         + TextMembers.lookMembers
 
     private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
         let textCase = values[TextualElementContract.textCase] ?? .none
         if values.changed(TextualElementContract.textCase) { view.setCasing(textCase) }
-        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) {
-            view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
+        if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) {
+            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
-        if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
-        if values.changed(VisualElementContract.isEnabled) {
-            view.setEnabled(values[VisualElementContract.isEnabled] ?? true)
+        if values.changed(PlaceholderElementContract.placeholder) { view.setPlaceholder(values[PlaceholderElementContract.placeholder]) }
+        if values.changed(EnabledElementContract.isEnabled) {
+            view.setEnabled(values[EnabledElementContract.isEnabled] ?? true)
         }
         if let look = TextMembers.look(values) { view.setLook(look) }
     }

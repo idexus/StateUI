@@ -64,15 +64,19 @@ stands at the speed it has; a motion layout's throw finds the snap it goes on
 to by the same rule, so a value an application throws and a run the hand
 throws reach alike.
 
-## Custom animates in an engine
+## An engine animates a state of its own
 
-`.custom` is not a third law but a third animator. The host animates nothing,
-and an engine of the application writes where the value is and how fast it
-is going, frame by frame, toward a destination the state still holds. It is
-said where the value is declared, `@State(motion: .custom)`, because which
-side animates a state is fixed when the state is first registered with the
-host. The host never sees `.custom`: what crosses is `.none` over the value
-the engine wrote, so the host wears each frame as it comes.
+An engine is not a third law but a third animator. The host animates
+nothing, and an engine of the application writes where the value is and how
+fast it is going, frame by frame, toward a destination the state still
+holds. It is said where the value is declared, `@State(animatedBy: .engine)`,
+because which side animates a state is fixed when the state is first
+registered with the host - so no `Motion` spells it, and no place taking a
+law can be handed one that means nothing there. The state's image carries
+it as a law of its own, `custom`, which only the host's side names; the host
+never sees it: what crosses is `.none` over the value the engine wrote, so
+the host wears each frame as it comes, and `$x.journey.motion` answers
+`.none`.
 
 ## Inherited and none
 
@@ -82,9 +86,10 @@ what makes `move(to:)` without a motion and a plain assignment agree, so the
 two differ only in being awaited. `.none` applies a change at once, and an
 ordinary property that snaps carries no `HostTransition` beside its value.
 
-Each is a kind of its own, as `.custom` is: a motion is one of five kinds -
-inherited, none, custom, eased, spring - and only the last two carry numbers,
-an eased one its length and curve, a spring its response and damping. An
+Each is a kind of its own: a motion is one of five kinds - inherited, none,
+eased, spring, glide - and only the last three carry numbers, an eased one
+its length and curve, a spring its response and damping, a glide its longest
+time. An
 eased motion of no time is `none`, so nothing has two spellings, and a host
 asks a motion whether it animates (`animates`) rather than reading flags
 that could disagree. On a carried state each kind crosses as itself, the

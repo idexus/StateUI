@@ -30,7 +30,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testAProgressBarShowsItsProgressAndNoneOnceCleared() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var bar = HostPatch(id: .manual("bar"), type: .progressBar)
         bar.properties[.progress] = .number(0.4)
@@ -51,10 +51,10 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testASpinnerSpinsWhileItRuns() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var running = HostPatch(id: .manual("activity"), type: .spinner)
-        running.properties[.isAnimating] = .bool(true)
+        running.properties[SpinnerContract.isAnimating.token] = .bool(true)
         renderer.applyForTesting(tree(running))
 
         let native = try XCTUnwrap(
@@ -62,7 +62,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertTrue(native.isSpinning)
 
         var stopped = HostPatch(id: .manual("activity"), type: .spinner)
-        stopped.properties[.isAnimating] = .bool(false)
+        stopped.properties[SpinnerContract.isAnimating.token] = .bool(false)
         renderer.applyForTesting(changedTree(stopped))
 
         XCTAssertFalse(native.isSpinning)
@@ -75,7 +75,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     @MainActor
     func testAnIndicatorMadeStillStartsWhenTheTreeSaysItRuns() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .spinner)))
 
@@ -84,13 +84,13 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
         XCTAssertFalse(native.isSpinning, "nothing described, nothing spinning")
 
         var checking = HostPatch(id: .manual("activity"), type: .spinner)
-        checking.properties[.isAnimating] = .bool(true)
+        checking.properties[SpinnerContract.isAnimating.token] = .bool(true)
         renderer.applyForTesting(changedTree(checking))
 
         XCTAssertTrue(native.isSpinning)
 
         var done = HostPatch(id: .manual("activity"), type: .spinner)
-        done.properties[.isAnimating] = .bool(false)
+        done.properties[SpinnerContract.isAnimating.token] = .bool(false)
         renderer.applyForTesting(changedTree(done))
 
         XCTAssertFalse(native.isSpinning)

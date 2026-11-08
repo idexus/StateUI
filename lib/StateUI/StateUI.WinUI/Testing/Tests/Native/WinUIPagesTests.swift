@@ -10,6 +10,21 @@ import StateUIConformance
 import XCTest
 
 final class WinUIPagesTests: XCTestCase {
+    /// A bar's edge shows only where a window told a bar stands: a list's row, a popover, an overlay and a page no
+    /// window told of a bar draw no line.
+    func testABarsEdgeShowsOnlyWhereABarStands() {
+        onUIThread {
+            let containers: [WinUISingleChildView] = [
+                WinUIItemCell(), WinUIPopoverView(), WinUISingleChildView(), WinUIPageView(),
+            ]
+            for container in containers {
+                container.layout(Rect(x: 0, y: 0, width: 300, height: 40))
+                let lines = container.heldViews().filter { $0 is WinUIStackPartView && $0.isShown }
+                XCTAssertEqual(lines.count, 0, "\(type(of: container)) draws a bar's edge with no bar over it")
+            }
+        }
+    }
+
     /// A detail page beside the open sidebar is laid out in the room beside it, however the sidebar opened: a
     /// scroller's content there is as wide as the scroller.
     func testADetailBesideTheSidebarTakesTheRoomBesideIt() throws {
@@ -146,7 +161,7 @@ final class WinUIPagesTests: XCTestCase {
                         }
                         Text("footer").gridRow(1)
                     }
-                    .rows(.fill, .auto)
+                    .rows(.fill, .automatic)
                 } detail: {
                     Text("detail")
                 }
@@ -176,7 +191,7 @@ final class WinUIPagesTests: XCTestCase {
                         }
                         Text("footer").gridRow(1)
                     }
-                    .rows(.fill, .auto)
+                    .rows(.fill, .automatic)
                 } detail: {
                     Text("detail")
                 }
@@ -227,7 +242,7 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 TabView([0, 1]) { tab in
                     if tab == 0 {
-                        Text("Wide").title("Wide").icon("test_wide.png")
+                        Text("Wide").title("Wide").pageIcon("test_wide.png")
                     } else {
                         Text("Plain").title("Plain")
                     }
@@ -352,7 +367,7 @@ final class WinUIPagesTests: XCTestCase {
                         TextField(words.projectedValue)
                         Button("Other")
                     }
-                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
                 } destination: { _ in Text("Pushed") }
             }
             let window = try XCTUnwrap(host.window)
@@ -840,7 +855,7 @@ private struct AimedFieldPage: View {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onAppearing(.ignoreWhileRunning) { try await field.focus() }
+        .onAppearing(policy: .ignoreWhileRunning) { try await field.focus() }
     }
 }
 

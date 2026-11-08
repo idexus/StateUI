@@ -5,7 +5,7 @@
 //
 // The promises pinned here:
 //
-//   - `.system` follows the user's languages in order, the catalog's default where none matches;
+//   - no language chosen follows the user's languages in order, the catalog's default where none matches;
 //   - a part read with `@Environment` comes in the nearest localization's language;
 //   - a change of language rebuilds the readers and never the provider, nor a document with its own;
 //   - `speaking(_:)` is one stable object per language, its formats following its base.
@@ -113,8 +113,8 @@ final class LocalizationTests: XCTestCase {
 
     override func tearDown() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
-            isMetric: true, layoutDirection: .leftToRight))
+            language: nil, timeZone: nil, uses24HourClock: false, firstDayOfWeek: .sunday,
+            isMetric: true, writingDirection: .leftToRight))
         Renderer.shared.clearInvalidation()
     }
 
@@ -123,9 +123,9 @@ final class LocalizationTests: XCTestCase {
     private func system(_ name: String, languages: [String] = []) {
         let tag = LocaleTag(name)
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: tag.language, region: tag.region ?? "", name: name, timeZone: "Europe/Warsaw",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight,
-            languages: languages))
+            language: tag, timeZone: "Europe/Warsaw",
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight,
+            languages: languages.map { LocaleTag($0) }))
     }
 
     // MARK: - Which language
@@ -154,7 +154,7 @@ final class LocalizationTests: XCTestCase {
 
     func testAFixedLanguageWinsOverTheSystems() {
         system("pl-PL")
-        let localization = Localization(TestCatalog.self, language: .fixed(.english))
+        let localization = Localization(TestCatalog.self, language: .english)
 
         XCTAssertEqual(localization.resolvedLanguage, .english)
     }
@@ -171,7 +171,7 @@ final class LocalizationTests: XCTestCase {
 
     func testAPartComesInTheLanguageOfTheLocalizationAbove() {
         let renders = Renders()
-        let localization = Localization(TestCatalog.self, language: .fixed(.polish))
+        let localization = Localization(TestCatalog.self, language: .polish)
 
         let patch = renders.render(stack(
             [Provider(builds: Builds(), reader: Builds(), localization: localization).node], id: "root"))
@@ -185,7 +185,7 @@ final class LocalizationTests: XCTestCase {
         let localization = Localization(TestCatalog.self)
         renders.render(stack([Provider(builds: owner, reader: reader, localization: localization).node], id: "root"))
 
-        localization.language = .fixed(.polish)
+        localization.language = .polish
         let patch = renders.revisit(changed: changed)
 
         XCTAssertEqual(owner.count, 1, "the provider passes a reference and reads nothing of it")
@@ -209,7 +209,7 @@ final class LocalizationTests: XCTestCase {
         let renders = Renders()
         let interfaceReader = Builds(), documentReader = Builds()
         let interface = Localization(TestCatalog.self)
-        let document = Localization(TestCatalog.self, language: .fixed(.polish))
+        let document = Localization(TestCatalog.self, language: .polish)
         let view = InterfaceAndDocument(
             interfaceReader: interfaceReader, documentReader: documentReader, interface: interface,
             document: document)
@@ -217,10 +217,10 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(first.child(.auto(1))?.child(.auto(2))?.props["text"], .string("Save"))
         XCTAssertEqual(first.child(.auto(1))?.child(.auto(3))?.props["text"], .string("Zapisz"))
 
-        interface.language = .fixed(.polish)
+        interface.language = .polish
         renders.revisit(changed: changed)
         Renderer.shared.clearInvalidation()
-        interface.language = .fixed(.english)
+        interface.language = .english
         let patch = renders.revisit(changed: changed)
 
         XCTAssertEqual(interfaceReader.count, 3)
@@ -239,19 +239,57 @@ final class LocalizationTests: XCTestCase {
     }
 
     func testAFragmentsFormatsFollowItsBase() {
-        let localization = Localization(TestCatalog.self, formatLocale: .fixed("pl-PL"))
+        let localization = Localization(TestCatalog.self, formatLocale: "pl-PL")
         let english = localization.speaking(.english)
 
         XCTAssertEqual(english.number(12_345), "12\u{A0}345")
-        localization.formatLocale = .fixed("en-US")
+        localization.formatLocale = "en-US"
         XCTAssertEqual(english.number(12_345), "12,345")
+    }
+
+    /// A fragment's own choice of formats and zone holds over its base's, and nil gives it back to the base's.
+    func testAFragmentsOwnChoiceHoldsUntilItIsTakenBack() {
+        system("pl-PL")
+        let localization = Localization(TestCatalog.self, formatLocale: "pl-PL", timeZone: "Europe/Paris")
+        let english = localization.speaking(.english)
+
+        english.formatLocale = "en-US"
+        english.timeZone = "America/New_York"
+        XCTAssertEqual(english.number(12_345), "12,345")
+        XCTAssertEqual(english.resolvedTimeZone, "America/New_York")
+
+        english.formatLocale = nil
+        english.timeZone = nil
+        XCTAssertEqual(english.number(12_345), "12\u{A0}345")
+        XCTAssertEqual(english.resolvedTimeZone, "Europe/Paris")
+    }
+
+    /// Each choice is a state a picker takes by its binding: a choice made through it is the one in use, and nil
+    /// gives it back to the system.
+    func testAChoiceMadeThroughItsBindingHolds() {
+        system("pl-PL")
+        let localization = Localization(TestCatalog.self)
+
+        localization.$language.wrappedValue = .english
+        localization.$formatLocale.wrappedValue = "en-US"
+        localization.$timeZone.wrappedValue = "Asia/Tokyo"
+        XCTAssertEqual(localization.resolvedLanguage, .english)
+        XCTAssertEqual(localization.number(12_345), "12,345")
+        XCTAssertEqual(localization.resolvedTimeZone, "Asia/Tokyo")
+
+        localization.$language.wrappedValue = nil
+        localization.$formatLocale.wrappedValue = nil
+        localization.$timeZone.wrappedValue = nil
+        XCTAssertEqual(localization.resolvedLanguage, .polish)
+        XCTAssertEqual(localization.number(12_345), "12\u{A0}345")
+        XCTAssertEqual(localization.resolvedTimeZone, "Europe/Warsaw")
     }
 
     // MARK: - Messages
 
     func testAMessageIsSaidInTheResolvedLanguage() {
-        let english = Localization(TestCatalog.self, language: .fixed(.english), formatLocale: .fixed("en-US"))
-        let polish = Localization(TestCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+        let english = Localization(TestCatalog.self, language: .english, formatLocale: "en-US")
+        let polish = Localization(TestCatalog.self, language: .polish, formatLocale: "pl-PL")
 
         XCTAssertEqual(english.text(TestWords.english.files, 22), "22 files")
         XCTAssertEqual(english.text(TestWords.english.files, 1), "1 file")

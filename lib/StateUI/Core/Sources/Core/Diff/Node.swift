@@ -199,7 +199,7 @@ extension [PropValue] {
 /// What a handler that awaits runs - through a gate, or once by `.onCreated`
 /// and `.onDestroying`:
 ///
-///     Button("Save").onClicked(.ignoreWhileRunning) { try await model.save() }
+///     Button("Save").onClicked(policy: .ignoreWhileRunning) { try await model.save() }
 ///
 /// It runs on `@MainActor`, up to its first `await` inside its event; what it
 /// throws is reported to the host.
@@ -208,7 +208,7 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged(.cancelPrevious) { text in try await model.search(text) }
+///     TextField("").onTextChanged(policy: .cancelPrevious) { text in try await model.search(text) }
 ///     let heard = HostEvents.on(NotesContract.batteryChanged, policy: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
@@ -233,8 +233,11 @@ public struct Node {
     /// `.vStack`, or an application's own registered type.
     public internal(set) var type: NodeType
 
-    /// Who this element is, when the author says so - `.id("row-7")` - as its patch names it. An element that
-    /// keeps its key keeps its control, with its focus, caret and scroll offset; a collection's rows need one.
+    /// The contract the node was made through, which says what members it takes; nil for one made by type.
+    var declaration: (any ElementContract.Type)?
+
+    /// The authored identity described for diagnostics, or nil where none was given. The renderer compares the
+    /// original value and assigns its host key separately; this description is not a host lookup key.
     public internal(set) var id: String? {
         get { identity.map(Self.described) }
         set { identity = newValue.map { ElementIdentity(AnyHashable($0)) } }
@@ -249,7 +252,7 @@ public struct Node {
         identity = ElementIdentity(AnyHashable(value))
     }
 
-    /// An identity as the patch names it: its description, made where an element is born.
+    /// An authored identity described for diagnostics; never used to allocate or match a host key.
     /// Design: docs/design/core/identity-and-diffing.md#keys
     static func described(_ identity: ElementIdentity) -> String {
         if let text = identity.value.base as? String { return text }
@@ -417,7 +420,15 @@ public struct Node {
         id: String? = nil,
         children: [Node] = []
     ) {
-        self.init(type: Declaration.nodeType, id: id, children: children)
+        self.init(declaration: Declaration.self, id: id, children: children)
+    }
+
+    /// A node of `declaration`'s type: one body for every element's contract.
+    /// Design: docs/design/platforms/web/runtime.md#the-modules-size
+    private init(declaration: any ElementContract.Type, id: String?, children: [Node]) {
+        self.init(type: declaration.nodeType, id: id, children: children)
+        self.declaration = declaration
+        Wearing.declare(declaration)
     }
 }
 

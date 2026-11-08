@@ -1,60 +1,53 @@
-# revision 24.1
-Button.accessibilityHint: ✅
-Canvas.isEnabled: ✅
-Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself
-Capsule.isAccessibilityHidden: ✅
-CheckBox.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-ColorPicker.opacity: ✅
-ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform, checked against the layer it composed itself
-DatePicker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Ellipse.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Fill.isVisible: ✅
-Fill.rotation: ✓ read rotation of Fill: the host's own transform, checked against the layer it composed itself
-Grid.accessibilityValue: ✅
-HStack.isVisible: ✅
-HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked against the layer it composed itself
-Image.accessibilityHint: ✅
-ItemsView.isEnabled: ✅
-ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself
-Line.layoutDirection: ✅
-Link.accessibilityRole: ✅
-Map.maximumHeight: ✅
-Map.maximumWidth: ✅
-Map.minimumHeight: ✅
-Map.minimumWidth: ✅
-Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
-MotionLayout.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-MotionLayout.layoutDirection: ✅
-Path.accessibilityRole: ✅
-Picker.height: ✅
-Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
-Picker.width: ✅
-Polygon.hidesChildrenFromAccessibility: ✅
-Polyline.accessibilityLabel: ✅
-ProgressBar.opacity: ✅
+# revision 28.1
+Button.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+Canvas.accessibilityRole: ✅
+Capsule.frame: ✅
+CheckBox.isVisible: ✅
+CheckBox.scale: ✓ read scale of CheckBox: the host's own transform, checked against the layer it composed itself
+ColorPicker.pivotX: ✓ read pivotX of ColorPicker: the host's own transform, checked against the layer it composed itself
+DatePicker.tooltip: ✅
+Ellipse.accessibilityHint: ✅
+Fill.ignoresInput: ✅
+Fill.translationY: ✓ read translationY of Fill: the host's own transform, checked against the layer it composed itself
+Grid.rotationY: ✓ read rotationY of Grid: the host's own transform, checked against the layer it composed itself
+HStack.accessibilityPresence: ✅
+Image.accessibilityValue: ✅
+ItemsView.zIndex: ✅
+Line.tooltip: ✅
+Link.accessibilityHint: ✅
+Map.ignoresInput: ✅
+Map.translationY: ✓ read translationY of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform, checked against the layer it composed itself
+Path.layoutDirection: ✅
+Picker.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+Polygon.accessibilityLabel: ✅
+Polyline.maximumHeight: ✅
+Polyline.maximumWidth: ✅
+Polyline.minimumHeight: ✅
+Polyline.minimumWidth: ✅
+Polyline.translationX: ✓ read translationX of Polyline: the host's own transform, checked against the layer it composed itself
 ProgressBar.rotationX: ✓ read rotationX of ProgressBar: the host's own transform, checked against the layer it composed itself
-Rectangle.tooltip: ✅
-ScrollView.style: ✅
-ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform, checked against the layer it composed itself
-SearchField.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Separator.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-Slider.accessibilityRole: ✅
-Space.maximumHeight: ✅
-Space.maximumWidth: ✅
-Space.minimumHeight: ✅
-Space.minimumWidth: ✅
-Space.scaleX: ✓ read scaleX of Space: the host's own transform, checked against the layer it composed itself
-Spinner.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+Rectangle.accessibilityPresence: ✅
+ScrollView.accessibilityActionPerformed: ✅
+ScrollView.accessibilityActions: ✅
+SearchField.zIndex: ✅
+Separator.rotationY: ✓ read rotationY of Separator: the host's own transform, checked against the layer it composed itself
+Slider.opacity: ✅
+Slider.scaleX: ✓ read scaleX of Slider: the host's own transform, checked against the layer it composed itself
+Space.pivotY: ✓ read pivotY of Space: the host's own transform, checked against the layer it composed itself
+Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform, checked against the layer it composed itself
 Stepper.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-Switch.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Text.isAccessibilityHidden: ✅
-TextEditor.opacity: ✅
-TextEditor.rotationX: ✓ read rotationX of TextEditor: the host's own transform, checked against the layer it composed itself
-TextField.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-TimePicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-VStack.opacity: ✅
-VStack.rotationX: ✓ read rotationX of VStack: the host's own transform, checked against the layer it composed itself
-WebView.accessibilityHint: ✅
-ZStack.height: ✅
-ZStack.scale: ✓ read scale of ZStack: the host's own transform, checked against the layer it composed itself
-ZStack.width: ✅
+Switch.accessibilityRole: ✅
+Text.opacity: ✅
+Text.scaleX: ✓ read scaleX of Text: the host's own transform, checked against the layer it composed itself
+TextEditor.frame: ✅
+TextField.isVisible: ✅
+TextField.scale: ✓ read scale of TextField: the host's own transform, checked against the layer it composed itself
+TimePicker.pivotX: ✓ read pivotX of TimePicker: the host's own transform, checked against the layer it composed itself
+VStack.tooltip: ✅
+WebView.accessibilityLabel: ✅
+ZStack.maximumHeight: ✅
+ZStack.maximumWidth: ✅
+ZStack.minimumHeight: ✅
+ZStack.minimumWidth: ✅
+ZStack.translationX: ✓ read translationX of ZStack: the host's own transform, checked against the layer it composed itself

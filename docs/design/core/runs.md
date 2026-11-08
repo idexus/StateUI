@@ -19,6 +19,22 @@ the policy, what an event that comes while one is under way does.
 slot for its turn, or is let go - so a run that never starts still ends and
 nothing keeps its handler.
 
+A composed view's own event - a motion layout's rest and dismissal, a
+gallery's position and activation - keeps an `EventRegistration` of its own in
+a state, so
+each of its handlers given a policy alone has a gate of its own too, as an
+element's do: one held under `.ignoreWhileRunning` keeps no other from
+running. A dismissal starts only the handlers whose way the view passed, each
+through its own. Every render keeps the registration to the handlers written
+(`keep`), so one no longer written ends its runs then, with no event to come,
+and the view leaving ends them all, however many it wrote last. An event told
+after the frame - a rest, a dismissal - starts through the owners kept when it
+came (`starting`), each handler with that event's own values, and starts
+nothing for an owner no longer kept by then: a render that dropped the handler,
+or the view gone, between the frame and the start. A gallery's tap presses the
+card once and then starts every activation handler, in the order written: a
+press each, each waiting its own, would let them resume in any order.
+
 ## A gate
 
 An awaiting handler passes through a gate, whose policy says what an event
@@ -35,7 +51,7 @@ does while a run is under way through it:
 ```
 
 A gate is a handler's own or shared, and the argument's label says which. A
-`GatePolicy` given alone - `.onClicked(.ignoreWhileRunning)`, or
+`GatePolicy` given alone - `.onClicked(policy: .ignoreWhileRunning)`, or
 `policy: .cancelPrevious` after the event's own arguments, as in
 `.onChanged(query, policy: .cancelPrevious)` - gives the handler a gate of its
 own: its runs stand in its owner's slot, so two buttons written with
@@ -49,15 +65,31 @@ both overloads; inside the library a handler keeps `Gating`, `.own` or
 time. The policies are a struct's static members over an internal kind, so
 `.runConcurrently` names one thing given alone or to `Gate(_:)`. An element
 leaving supersedes its owners' runs alone, so behind a shared gate the
-others' runs stand.
+others' runs stand. Every run is numbered as it begins
+(`HandlerRun.number`; `begun`, how many have) and carries its origin: the
+number of the run under way as it began - the one whose task started it, a
+`Task(gate:)` inside a handler - or its own where none was, so a run's origin
+is the first of the runs it descends from. The runs standing are known by
+number and origin, so a test waits on the runs whose origin began after a
+mark it took (`HostBoundary.runsUnderWay(since:)`) and on none descending
+from a run begun before, however late those began: a service the page began
+runs on, and the work it starts while an act runs is the service's, not the
+act's. A handler the host begins - an event's, or one a render's walk found -
+starts outside every run (`Renderer.start`, `Renderer.run`): the task the
+host was called from is the platform's or a test's, never the handler's
+parent. So a test acting from a task through a gate still waits on the
+handlers its act raised, and a run superseded around the call refuses nothing
+they write.
 
-The policy stands first and unlabelled where the modifier takes nothing else,
-and `policy:` follows the event's own arguments, which keep the step
-overload's spelling: a parameter after a variadic - `.onKeyPressed`'s keys -
-needs a label, and a parameter's label is fixed, so a modifier whose own
-arguments have defaults - `.onEndReached(within:)`, `.onSwiped(direction:
-threshold:)` - has one overload with none of them, the policy first, and
-others that name them, the policy after: one call, one spelling.
+The policy is written `policy:`, as a shared gate is `gate:`, after the
+event's own arguments, which keep the step overload's spelling and its
+defaults: `.onClicked(policy: .ignoreWhileRunning)`,
+`.onEndReached(within: 5, policy: .ignoreWhileRunning)`,
+`.onSwiped(directions: [.left], policy: .cancelPrevious)`. An argument that may
+be left out stands before `policy:` with its default, so each event is heard
+three ways - plainly, with a policy, through a gate - and never two ways with
+a policy. `ModifierShapeTests` holds it: no policy stands unlabeled, and an
+event has as many policy forms as plain ones and gate ones.
 
 There is no default. Each event modifier comes as a step, `() throws ->
 Void`, which Swift picks for a closure with no `await`, and the same with a
@@ -102,7 +134,8 @@ run as a later event would - a run still waiting its turn leaves the queue at
 once, through a job on the UI thread - and a task the gate lets go ends at
 once, its work not run. Its owner is the gate's own `RunOwner`, which nothing orphans, so no
 element leaving ends the run; started inside a handler, it runs under a
-`HandlerRun` of its own, not the handler's. A policy is no gate for a task -
+`HandlerRun` of its own, not the handler's, descending from it: its origin
+is the handler's. A policy is no gate for a task -
 it has no element to keep its runs - so `Task(gate:)` takes a `Gate`
 alone.
 
@@ -114,7 +147,10 @@ or leaves the tree; an orphaned run still waiting its turn never starts, and
 its task ends. Its task
 is cancelled, so `Task.sleep` and whatever else checks cancellation ends it,
 and a superseded run ending in `CancellationError` is not reported; another
-error it ends in is refused, as the rest of what it asks of the host is. An element
+error it ends in is refused, as the rest of what it asks of the host is. A run
+superseded in its first step - before `RunSlot.start` has its task in hand: a
+task started through the same `.cancelPrevious` gate inside it, or its own
+render taking its element out - is cancelled as the task comes to hand. An element
 leaving cancels in one order every time - its events' runs by the events'
 names, then what its walk runs in the order begun - so what a cancellation
 handler does comes in that order too.
@@ -166,12 +202,15 @@ where the run stopped.
 ## What a walk runs
 
 `.onChanged`, `.onVisualStateChanged` and `.onCreated` run what a render's walk
-found. Each starts its runs under an owner the element's `RunSlots` keep, under
-a key the element keeps from one render to the next - its watch's place, its
-listener's place, its handler's place - so a change passes through its gate as
-an event does, and an element leaving supersedes them all. `.onCreated` runs once; it keeps
-runs only so that its element leaving ends them. `.onDestroying` runs as its
-element leaves, a farewell, with no runs of its own: it goes to its end.
+found. Each starts its runs under an owner the element's `RunSlots` keep by
+registration: a watch's place and value type, a listener's place and state
+filter, or a created handler's place. Every render keeps only the registrations
+still written, so removing one or changing a watch's type supersedes its runs
+without another event. A retained registration keeps its owner and gate work.
+An owner that leaves is retired: queued delivery cannot start it again.
+An element leaving supersedes all of its owners. `.onCreated` runs once; its
+runs belong to that registration's lifetime. `.onDestroying` runs as its element
+leaves, a farewell, with no runs of its own: it goes to its end.
 
 A subscription to a host event is an owner, and `cancel()` supersedes its
 runs. A control the library composes that hears an author's handler inside its

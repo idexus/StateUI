@@ -16,7 +16,7 @@
 ///     .toolbarStyle(.rounded)
 public enum ToolbarStyle: Int32, Sendable, CaseIterable {
     /// The platform's own: on the Web, `.plain`.
-    case system = 0
+    case automatic = 0
 
     /// Each button on a round glass of its own, a group of them sharing one.
     case glass = 1
@@ -30,3 +30,5 @@ public enum ToolbarStyle: Int32, Sendable, CaseIterable {
 }
 
 extension ToolbarStyle: HostRepresentable {}
+
+extension ToolbarStyle: StateChoice {}

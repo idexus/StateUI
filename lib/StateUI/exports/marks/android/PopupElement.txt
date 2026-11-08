@@ -1,0 +1,10 @@
+# revision 1.1
+DatePicker.closed: ✅
+DatePicker.isOpen: ✅
+DatePicker.opened: ✅
+Picker.closed: cannot open on Picker - Android's driver has no path for it yet
+Picker.isOpen: cannot open on Picker - Android's driver has no path for it yet
+Picker.opened: cannot open on Picker - Android's driver has no path for it yet
+TimePicker.closed: ✅
+TimePicker.isOpen: ✅
+TimePicker.opened: ✅

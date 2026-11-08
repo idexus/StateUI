@@ -52,7 +52,7 @@ public struct WallClock {
         let numbers = try await callAct(ApplicationContract.currentTime)
         guard numbers.count == 7 else {
             throw StateUIError.unreadableAnswer(
-                act: ApplicationContract.currentTime.name, answered: "\(numbers.count) numbers",
+                act: ApplicationContract.currentTime.token.name, answered: "\(numbers.count) numbers",
                 declared: "seven: a date and a time of day")
         }
         return numbers.map { Int($0) }

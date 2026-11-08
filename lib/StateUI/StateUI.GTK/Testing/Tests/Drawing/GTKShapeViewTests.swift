@@ -82,7 +82,7 @@ final class GTKShapeViewTests: XCTestCase {
             Rectangle()
                 .fill(.linearGradient(
                     [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
-                    startPoint: Point(0, 0), endPoint: Point(1, 0)))
+                    from: Point(0, 0), to: Point(1, 0)))
                 .width(100)
                 .height(20)
         }

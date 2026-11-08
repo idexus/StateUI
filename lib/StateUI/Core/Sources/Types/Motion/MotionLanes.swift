@@ -7,7 +7,7 @@
 /// or `.height` becomes this, carried in `HostLayoutMotion`.
 ///
 /// Design: docs/design/types/motion.md#layout-lanes
-public struct MotionLanes: OptionSet, Sendable {
+@_spi(Host) public struct MotionLanes: OptionSet, Sendable {
     /// The lane bits carried by `HostLayoutMotion`.
     public let rawValue: UInt8
 

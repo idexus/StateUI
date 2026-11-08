@@ -74,7 +74,7 @@ The presenter is held weakly; the host keeps it.
 The registry is the core's
 ([realizations](../design/core/contracts.md#realizations)): each registration
 makes an element's view, puts the members the view takes, and raises its
-events through `Reports`. What every element realizes by the layer's rules -
+events through `ControlReports`. What every element realizes by the layer's rules -
 its place, its drawing, what assistive technology meets, the user's input - a
 host names in one line each: `everyElementTakesItsPlace`,
 `everyElementIsDrawnOverItsPlace`, `everyElementMeetsAssistiveTechnology` and
@@ -478,6 +478,10 @@ host.
   where the press went down, and it completes or is cancelled with the press.
   The host tells it the press and holds the pointer as it becomes a drag.
   ([A press dragged](../design/host/runtime.md#a-press-dragged))
+- **`ToldGesture`** is a platform's gesture as a host tells it on: under way
+  from its beginning to its end, and nothing more told once the host takes it
+  away - to the platform's end, or the next beginning.
+  ([A gesture taken away](../design/host/runtime.md#a-gesture-taken-away))
 - **`SwipeDirection.swiped`** tells a swipe from a press and how far it moved:
   the way it moved most, far enough, where the view listens for that way.
   ([A swipe](../design/host/runtime.md#a-swipe))
@@ -580,7 +584,9 @@ and nothing more.
 - **`HostLocaleInfo(words:)`**, **`HostDeviceInfo`**,
   **`HostConnectivityInfo`**, **`HostBatteryInfo`** and **`HostDisplayInfo`**
   (`Environment/`) turn what a host reads of its machine into what the core is
-  told: the locale as eight words, the device as five, the network by its
+  told: the locale as a typed language tag, zone, calendar habits and preferred
+  languages (the native relay decoder takes six words and then the preferences),
+  the device as five words, the network by its
   access and a set of bits, a desktop's power, and a screen that is landscape
   where it is at least as wide as it is tall. The host reports them through
   `CoreLink`'s setters. A change goes through `HostRuntime.environmentChanged`,

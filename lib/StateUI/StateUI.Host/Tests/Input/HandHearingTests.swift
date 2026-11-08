@@ -212,8 +212,8 @@ private struct HandPage: View {
             handed.append(phase)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), curve: .linear))
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
+        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 
@@ -229,7 +229,7 @@ private struct TappedHandPage: View {
         MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
         .onItemActivated { _ in tapped += 1 }
     }
 }
@@ -248,8 +248,8 @@ private struct RightToLeftPage: View {
             handed.append(phase)
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), curve: .linear))
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
+        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }

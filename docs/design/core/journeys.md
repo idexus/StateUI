@@ -65,7 +65,7 @@ the host is told at the first crossing and cannot be told again.
 ```text
   handed to a driven modifier, a two-way control or a scroller
       -> the HOST animates it and writes value and velocity back every frame
-  @State(motion: .custom)
+  @State(animatedBy: .engine)
       -> an engine of the application's writes value and velocity
   worn by no live element (no tie, number or not)
       -> nothing animates it: a write lands at the destination at once
@@ -78,7 +78,9 @@ the host is told at the first crossing and cannot be told again.
 law and one without (`move(to:)`, under the value's own), and no optional
 law: `.none` written there is always the law that does not move, which a law
 that defaults to nil would read as "none given". A move is a write of the
-destination: the state reads the target at once, its readers are built again
+destination: admitted as one (`Storage.admits`, state.md - a destination the
+state refuses is no journey, and the arrival answers false), the state reads
+the target at once, its readers are built again
 and a kept state keeps it, as after an assignment (`Storage.moved(to:)`) - and
 the journey the host walks is the move's, on its law, never a second one on the
 value's own. A stop, in turn, comes back as a write of where the value stood:
@@ -232,16 +234,23 @@ whole - a way back that comes and goes stays one call, `back: editing ? { … } 
 nil`, so the derived state stays the same object.
 
 ```text
-  derived state   known to the first source's storage under the element being
-                  built and the call's file, line and column - one number
-                  (PathNumber), spelled nowhere - and held by that element as it
-                  holds its readings: one state per element and line across
-                  renders - the host's tie keeps its number - two views
-                  converting one source on one line keep two, and an element
-                  that leaves takes its own; made with no element being built,
-                  the source holds it, worked out at once - its arithmetic
-                  reads the source, which would otherwise hold what holds it
-  sources         held WEAKLY by the conversion
+  derived state   known to the first source's storage under a key spelled
+                  nowhere (DerivationKey): the element being built and the
+                  call's file, line and column (PathNumber), the identities of
+                  the ForEach rows it stands in - values, compared as values -
+                  and which time that line ran in the build; held by that
+                  element as it holds its readings: one state per use across
+                  renders - the host's tie keeps its number - so two views
+                  converting one source on one line keep two, each row of a
+                  ForEach its own, kept with its row as the rows move, and a
+                  helper called twice two, told apart by its place in the
+                  build as a view without an id is; an element that leaves
+                  takes its own; made with no element being built, the source
+                  holds it, worked out at once - its arithmetic reads the
+                  source, which would otherwise hold what holds it
+  sources         each the storage its binding was made from, held, asked for
+                  the one it stands for - itself, or the one it was given up for
+                  at an adoption while that stands (state.md, storage and box)
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result
 ```
@@ -255,13 +264,16 @@ then derives again from what it landed. Otherwise a report arriving in the very
 cycle the engines first run would be derived over by sources it has not
 reached.
 
-The weak references break a ring. The derived state is kept on the first
-source, and its conversion's arithmetic reads the sources; held strongly, the
-source would keep the derived state, the derived state its conversion, and the
-conversion the source, and no state of that view would ever be freed - every
-visit to a page with a converted text leaving them behind, walked every frame.
-What owns a conversion is the engine the differ arms for it, which hands its
-number back when the element goes, and the binding it was made for.
+No ring closes. The derived state is kept on the first source, strongly where
+no element was being built, and its conversion's arithmetic holds the sources;
+were the derived state to hold its conversion too, the source would keep the
+derived state, the derived state its conversion, and the conversion the source,
+and no state of that view would ever be freed - every visit to a page with a
+converted text leaving them behind, walked every frame. So the derived state
+knows its conversion weakly, and the value a source holds is worked out at
+once, its making closure let go. What owns a conversion is the engine the
+differ arms for it, which hands its number back when the element goes, and the
+binding it was made for.
 
 ## A chain of conversions
 

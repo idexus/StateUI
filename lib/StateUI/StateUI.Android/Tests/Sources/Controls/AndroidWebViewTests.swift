@@ -49,7 +49,7 @@ final class AndroidWebViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running { BrowsingPage(heard: Received<String>()) }
             let web = try XCTUnwrap(host.views(AndroidWebView.self).first)
-            let source: () -> HostValue? = { (try? AndroidDriver.webHolds(.source, web)) ?? nil }
+            let source: () -> HostValue? = { (try? AndroidDriver.webHolds(WebViewContract.source.token, web)) ?? nil }
             host.settle { source() != nil }
             let shown = try XCTUnwrap(source(), "the page shown")
 
@@ -124,16 +124,16 @@ private struct BrowsingPage: View {
         let browser = self.browser
         let heard = self.heard
         return VStack {
-            WebView().source(html: "<p>Written</p>")
+            WebView(html: "<p>Written</p>")
                 .aim(browser)
-                .canGoBack($back)
-                .canGoForward($forward)
-                .onNavigating { heard.values.append("navigating \($0.type) \($0.address)") }
-                .onNavigated { heard.values.append("navigated \($0.result) \($0.type) \($0.address)") }
+                .canGoBack(into: $back)
+                .canGoForward(into: $forward)
+                .onNavigating { heard.values.append("navigating \($0.kind) \($0.address)") }
+                .onNavigated { heard.values.append("navigated \($0.result) \($0.kind) \($0.address)") }
                 .onProcessTerminated { heard.values.append("gone") }
                 .height(200)
-            Button("Reload").onClicked(.ignoreWhileRunning) { try await browser.reload() }
-            Button("Title?").onClicked(.ignoreWhileRunning) {
+            Button("Reload").onClicked(policy: .ignoreWhileRunning) { try await browser.reload() }
+            Button("Title?").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     heard.values.append("title \(try await browser.evaluateJavaScript("document.title"))")
                 } catch {

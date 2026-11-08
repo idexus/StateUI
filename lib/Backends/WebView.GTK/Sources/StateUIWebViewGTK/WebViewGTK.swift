@@ -1,0 +1,45 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import StateUIGTK
+import StateUI
+
+/// The web view's GTK backend: WebKitGTK's web view, realized through the GTK host's registration of an application's
+/// own controls.
+@MainActor
+public enum WebViewGTK {
+    /// Registers the web view with the GTK host - its control, the members it takes and tells, and its four acts.
+    /// Said once, from the application's GTK head, before `GTKHost.run(applicationID:)`.
+    ///
+    ///     WebViewGTK.register()
+    ///     GTKHost.run(applicationID: "com.example.App")
+    public static func register() {
+        StateUIControls.add(WebViewContract.self, create: { reports -> GTKWebView in
+            let web = GTKWebView()
+            web.onNavigating = { event, address in reports.raise(WebViewContract.navigating, event, address) }
+            web.onNavigated = { result, event, address in
+                reports.raise(WebViewContract.navigated, result, event, address)
+            }
+            web.onCanGoBack = { can in reports.raise(WebViewContract.canGoBackChanged, can) }
+            web.onCanGoForward = { can in reports.raise(WebViewContract.canGoForwardChanged, can) }
+            web.onProcessGone = { reports.raise(WebViewContract.processTerminated) }
+            return web
+        }) { web in
+            web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
+                if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
+                if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+            }
+            web.declares(WebViewContract.navigating)
+            web.declares(WebViewContract.navigated)
+            web.declares(WebViewContract.canGoBackChanged)
+            web.declares(WebViewContract.canGoForwardChanged)
+            web.declares(WebViewContract.processTerminated)
+        }
+        StateUIActs.add(WebViewContract.goBack, on: GTKWebView.self) { web in web.step(.back) }
+        StateUIActs.add(WebViewContract.goForward, on: GTKWebView.self) { web in web.step(.forward) }
+        StateUIActs.add(WebViewContract.reload, on: GTKWebView.self) { web in web.step(.reload) }
+        StateUIActs.add(WebViewContract.evaluateJavaScript, on: GTKWebView.self) { web, script in
+            try await web.evaluate(script)
+        }
+    }
+}

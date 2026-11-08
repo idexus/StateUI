@@ -83,7 +83,7 @@
             message = nil
             accept = own.accept
             let offered = arguments.count > 1 ? [String](propValue: arguments[1]) ?? [] : []
-            let dangerous = arguments.count > 2 ? arguments[2].number.map(Int.init) : nil
+            let dangerous = arguments.count > 2 ? Int(propValue: arguments[2]) : nil
             choices = offered
             destructive = dangerous.flatMap { offered.indices.contains($0) ? $0 : nil }
             cancel = text(3) ?? own.cancel
@@ -95,8 +95,9 @@
             destructive = nil
         }
         placeholder = kind == .prompt ? text(4) : nil
-        maximumLength = kind == .prompt && arguments.count > 5 ? arguments[5].number.map(Int.init).flatMap { $0 > 0 ? $0 : nil } : nil
-        purpose = kind == .prompt && arguments.count > 6 ? InputPurpose(propValue: arguments[6]) ?? .default : .default
+        maximumLength = kind == .prompt && arguments.count > 5
+            ? Int(propValue: arguments[5]).flatMap { $0 > 0 ? $0 : nil } : nil
+        purpose = kind == .prompt && arguments.count > 6 ? InputPurpose(propValue: arguments[6]) ?? .automatic : .automatic
         words = kind == .prompt ? text(7) ?? "" : ""
     }
 

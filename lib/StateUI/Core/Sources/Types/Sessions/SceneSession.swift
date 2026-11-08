@@ -15,7 +15,12 @@
 public final class SceneSession {
     /// Where the scene stands right now. Starts `.active`: a scene being
     /// described is one being brought up.
-    @State public internal(set) var phase: SessionPhase = .active
+    public internal(set) var phase: SessionPhase {
+        get { _phase }
+        set { _phase = newValue }
+    }
+
+    @State private var _phase: SessionPhase = .active
 
     /// The sessions of the scene's windows open right now, in the order they opened - read like any state, so a
     /// view that shows them is built again as a window opens or closes. Nothing for a scene that has ended.

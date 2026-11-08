@@ -77,7 +77,7 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .gridRow(3)
         }
-        .rows(.fill, .auto, .auto, .auto)
+        .rows(.fill, .automatic, .automatic, .automatic)
         .rowSpacing(10)
     }
 
@@ -92,12 +92,12 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
         // input, the axis is keyframes alone and the buttons move it.
         .axis(
-            \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+            \.self, input: byHand ? .scroll(.horizontal, lengthPerUnit: 260) : nil, range: 0...2,
             keyframes: .every(1), snaps: byHand ? .every(1) : nil)
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
-        .motion(.eased(.milliseconds(700), curve: .cubicInOut))
+        .parameterMotion(.eased(.milliseconds(700), curve: .cubicInOut))
     }
 
     /// How large a card is in every layout - the size the grid's cells allow -

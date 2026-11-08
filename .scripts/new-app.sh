@@ -106,7 +106,7 @@ cat <<DONE
 Created $APP
 
 Next, from the repository root:
-  STATEUI_HOST=appkit swift run --package-path apps/$NAME --scratch-path apps/$NAME/.build/appkit ${NAME}AppKit   # the AppKit head
+  .scripts/AppKit/run-app.sh apps/$NAME                                     # the AppKit head
   .scripts/UIKit/run-app.sh apps/$NAME                                      # the UIKit head, on a simulator
   .scripts/Android/run-app.sh apps/$NAME                                    # the Android head
   .scripts\\WinUI\\run-app.ps1 -App apps\\$NAME                                # the WinUI head, on Windows

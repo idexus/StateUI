@@ -135,7 +135,7 @@ final class StateWalkTests: XCTestCase {
     /// AN ITEMSVIEW'S ENTRY IS ONE VALUE to the walk: what it shows and where from, compared whole with no mirror -
     /// every entry the list keeps is walked at each of its renders.
     func testAnItemsViewsEntryIsOneValue() {
-        let source = ItemsSource<Int>(sections: [], sectioned: false)
+        let source = ItemsSource<Int>(sections: [])
         XCTAssertEqual(said(ItemsEntry(identity: "7", source: source)), [" value"])
     }
 

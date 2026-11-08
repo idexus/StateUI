@@ -403,7 +403,7 @@ final class GTKPageFrame {
             var from = graphene_point_t(x: 0, y: 0)
             var to = graphene_point_t(x: 0, y: 0)
             if gtk_widget_compute_point(header, each, &from, &to) != 0 {
-                room = min(room, gtk_widget_get_width(each) - Int32(to.x.rounded(.up)))
+                room = min(room, gtk_widget_get_width(each) - GTKPixels.distance(Double(to.x), rounding: .up))
             }
             around = gtk_widget_get_parent(each)
         }

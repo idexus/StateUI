@@ -20,10 +20,10 @@ extension AppKitDriver {
                 throw DriverCannot("read a transform: the view's layer holds another")
             }
             return transform(property, drawn)
-        case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .isAccessibilityHidden,
-             .hidesChildrenFromAccessibility, .accessibilityRole, .accessibilityValue:
+        case .accessibilityLabel, .accessibilityHint, .accessibilityIdentifier, .accessibilityPresence,
+             .accessibilityRole, .accessibilityValue:
             guard let native else { return nil }
-            return accessibility(property, native.accessibilityTarget(of: view), view)
+            return accessibility(property, native.accessibilityTarget(of: view), view, native)
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "AppKit marks a heading, not its level")
         case .tooltip: return view.toolTip.propValue
@@ -34,7 +34,7 @@ extension AppKitDriver {
             return AppKitKeys.shortcut(key: button.keyEquivalent, modifiers: button.keyEquivalentModifierMask)?.propValue
         case .showsMenuArrow where view is AppKitButtonView:
             return (view as! AppKitButtonView).showsMenuMark.propValue
-        case .role where view is NSButton:
+        case ButtonContract.role.token where view is NSButton:
             // As AppKit holds it: the destructive mark, the main action's accent, the way out's Escape.
             let button = view as! NSButton
             if button.hasDestructiveAction { return ButtonRole.destructive.propValue }
@@ -93,8 +93,11 @@ extension AppKitDriver {
         }
     }
 
-    /// What assistive technology meets of the view, as its accessibility object says it.
-    private static func accessibility(_ property: Prop, _ target: NSAccessibilityProtocol, _ view: NSView) -> HostValue? {
+    /// What assistive technology meets of the view, as its accessibility object says it - what it holds left out as
+    /// the element suppressed the view's children.
+    private static func accessibility(
+        _ property: Prop, _ target: NSAccessibilityProtocol, _ view: NSView, _ native: AppKitElement
+    ) -> HostValue? {
         switch property {
         case .accessibilityLabel: return target.accessibilityLabel().propValue
         case .accessibilityHint: return target.accessibilityHelp().propValue
@@ -103,16 +106,16 @@ extension AppKitDriver {
             return AccessibilityRole.allCases.first { AppKitElement.accessibilityRole($0) == role }?.propValue
         case .accessibilityValue: return (target.accessibilityValue() as? String).propValue
         case .accessibilityIdentifier: return target.accessibilityIdentifier().propValue
-        case .isAccessibilityHidden: return (!target.isAccessibilityElement()).propValue
-        case .hidesChildrenFromAccessibility:
-            return (!target.isAccessibilityElement() && (view.accessibilityChildren() ?? []).isEmpty).propValue
+        case .accessibilityPresence:
+            guard !target.isAccessibilityElement() else { return AccessibilityPresence.element.propValue }
+            return (native.accessibilityChildrenSuppressed ? AccessibilityPresence.hiddenWithContents : .hidden).propValue
         default: return nil
         }
     }
 
     /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
     static func attributes(of font: NSFont) -> FontAttributes {
-        var attributes = FontAttributes.none
+        var attributes: FontAttributes = []
         if NSFontManager.shared.traits(of: font).contains(.italicFontMask) { attributes.insert(.italic) }
         let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[NSFontDescriptor.FeatureKey: Int]]
         if features?.contains(where: {
@@ -157,7 +160,7 @@ extension AppKitDriver {
     func tabTitle(of element: MountedElement, in tabs: MountedElement) throws -> HostValue? {
         let control = try controller(of: element).tabRowForTesting.controlForTesting
         guard let place = tabs.children.firstIndex(where: { $0 === element }), place < control.segmentCount else {
-            throw DriverCannot(reading: .title, of: element)
+            throw DriverCannot(reading: PageElementContract.title.token, of: element)
         }
         return control.label(forSegment: place)?.propValue
     }
@@ -173,7 +176,7 @@ extension AppKitDriver {
                 return AppKitKeys.shortcut(key: item.keyEquivalent, modifiers: item.keyEquivalentModifierMask)?.propValue
             case .accessibilityIdentifier: return item.accessibilityIdentifier().propValue
             case .icon: return pictureName(item.image)
-            case .role:
+            case ActionElementContract.role.token:
                 let words = item.attributedTitle
                 let red = words.flatMap { $0.length > 0 ? $0.attribute(.foregroundColor, at: 0, effectiveRange: nil) : nil }
                 let destructive = (red as? NSColor) == .systemRed

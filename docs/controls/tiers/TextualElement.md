@@ -2,14 +2,14 @@
 
 # TextualElement
 
-What every element showing words has: the words, and the case they are drawn in.
+What every element drawing its words itself has: the case they are drawn in, their color, and the words.
 
 ```swift
 Button("Continue")
     .textCase(.uppercase)
 ```
 
-Wears: [TextColorElement](TextColorElement.md)
+Wears: [TextColorElement](TextColorElement.md) · [TextElement](TextElement.md)
 
 Worn by: [Button](../Button.md) · [CheckBox](../CheckBox.md) · [Link](../Link.md) · [SearchField](../SearchField.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TextSpan](../TextSpan.md)
 
@@ -19,5 +19,4 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `text` | property | `String` | native |
 | `textCase` | property | `TextCase` | native |

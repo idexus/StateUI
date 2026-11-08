@@ -10,7 +10,7 @@ public enum CanvasContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A canvas is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// What the canvas draws: its instructions, in order.
     public static let drawing = ElementProperty<Self, [DrawCommand]>("drawing", layer: .structure)

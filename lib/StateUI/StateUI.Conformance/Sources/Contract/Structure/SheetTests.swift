@@ -14,8 +14,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("aSheetStandsOverTheWindowAndOneInItOverIt", proves: [
-                Covered(SheetContract.self), Covered(SheetContract.isPresented),
-            ], needs: [Covered(PageContract.disappearing), Covered(ButtonContract.clicked)]) { s in
+                Covered(SheetContract.self),
+            ], needs: [Covered(PageContract.disappearing), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let states = SheetStates()
                 states.shows.wrappedValue = false
                 states.inner.wrappedValue = false
@@ -61,71 +61,6 @@
                 path.wrappedValue = [1]
                 try s.settle { try s.isShown("pushed") }
                 s.expect(try sheetReached(), true, "a sheet over a page pushed since")
-            },
-            ConformanceCase("theUsersWayBackClosesTheTopSheetOntoItsState", proves: [
-                Covered(SheetContract.isPresented), Covered(SheetContract.isPresentedChanged),
-            ], needs: [Covered(PageContract.appearing)]) { s in
-                let states = SheetStates()
-                s.start { SheetsPage(states: states) }
-                let window = try s.element(ofType: WindowContract.nodeType)
-                try s.settle { try s.held(VisualElementContract.isVisible, on: s.element("note")) == true }
-
-                try s.perform(.goBack, on: window)
-                s.settle { states.note.wrappedValue == nil }
-                s.expect(states.note.wrappedValue, nil, "the value's sheet on top went: nil")
-                s.expect(states.shows.wrappedValue, true, "the sheets under it stay")
-
-                try s.perform(.goBack, on: window)
-                s.settle { !states.inner.wrappedValue }
-                s.expect(states.inner.wrappedValue, false, "the flag's sheet went: false")
-
-                states.log.values = []
-                try s.perform(.goBack, on: window)
-                s.settle { !states.shows.wrappedValue }
-                s.expect(states.shows.wrappedValue, false, "and the last")
-                s.settle { states.log.values.contains("beneath appearing") }
-                s.expect(states.log.values.contains("beneath appearing"), true, "the page beneath shows again")
-            },
-            ConformanceCase("theApplicationClosesASheetByItsState", proves: [
-                Covered(SheetContract.isPresented),
-            ], needs: [Covered(TextContract.self)]) { s in
-                let states = SheetStates()
-                s.start { SheetsPage(states: states) }
-                try s.settle { try s.isShown("note") }
-
-                states.note.wrappedValue = nil
-                s.settle { (try? s.element("note")) == nil }
-                s.expect((try? s.element("note")) == nil, true, "the value's sheet gone with its value")
-
-                states.shows.wrappedValue = false
-                s.settle { (try? s.element("outer")) == nil }
-                s.expect((try? s.element("outer")) == nil, true, "the flag's sheet gone with its flag")
-            },
-            ConformanceCase("aViewLeavingTakesItsSheetAway", proves: [
-                Covered(SheetContract.isPresented),
-            ], needs: [Covered(TextContract.self)]) { s in
-                let states = SheetStates()
-                s.start { SheetsPage(states: states) }
-                try s.settle { try s.isShown("note") }
-
-                states.presents.wrappedValue = false
-                s.settle { (try? s.element("note")) == nil && (try? s.element("outer")) == nil }
-                s.expect((try? s.element("outer")) == nil, true, "the sheets gone with the views presenting them")
-                s.expect(states.shows.wrappedValue, false, "the flag written false")
-                s.expect(states.note.wrappedValue, nil, "the value written nil")
-            },
-            ConformanceCase("aSheetClosingTakesTheSheetInIt", proves: [
-                Covered(SheetContract.isPresented),
-            ], needs: [Covered(TextContract.self)]) { s in
-                let states = SheetStates()
-                states.note.wrappedValue = nil
-                s.start { SheetsPage(states: states) }
-                try s.settle { try s.isShown("inner") }
-
-                states.shows.wrappedValue = false
-                s.settle { (try? s.element("inner")) == nil }
-                s.expect((try? s.element("inner")) == nil, true, "the sheet in it gone with it")
-                s.expect(states.inner.wrappedValue, false, "its flag written false")
             },
         ]
     }

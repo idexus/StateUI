@@ -73,7 +73,7 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         let page = column?.visiblePage
         return SafeAreaArithmetic.room(
             safe: bottomBarPlace?.safe ?? safeAreaRect.placed, whole: bounds.placed,
-            edges: page?.contentIgnoresSafeArea ?? .none, direction: page?.layoutDirection ?? .leftToRight)
+            edges: page?.contentIgnoresSafeArea ?? [], direction: page?.layoutDirection ?? .leftToRight)
     }
 
     override func layout() {

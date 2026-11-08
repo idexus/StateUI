@@ -21,7 +21,7 @@
     static var madeOfItsMaterial: ConformanceCase {
         ConformanceCase("aFillIsMadeOfItsMaterial", proves: [
             Covered(FillContract.self),
-        ], needs: [Covered(VisualElementContract.background, on: "Fill"), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(BackgroundElementContract.background, on: "Fill"), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let warm = State(wrappedValue: true)
             s.start {
                 VStack {

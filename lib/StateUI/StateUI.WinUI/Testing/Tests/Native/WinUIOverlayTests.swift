@@ -43,12 +43,12 @@ final class WinUIOverlayTests: XCTestCase {
             let host = WinUIRenderer.running { sheetsOver(sheets, menus: menus, windows: windows) }
             let window = try XCTUnwrap(host.window)
             let session = try XCTUnwrap(windows.values.last)
-            defer { session.closeInspector() }
+            defer { session.debugInspector = nil }
             let beneath = try XCTUnwrap(host.views(WinUIButtonView.self).first)
             let size = beneath.frame
             XCTAssertTrue(beneath.reaches(size.width / 2, size.height - 20), "nothing over the page yet")
 
-            session.openInspector()
+            session.debugInspector = .bottom
             host.settle { !window.overlays.isEmpty }
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? WinUIElement)?.view)
             XCTAssertTrue(window.overlays.elementsEqual([overlay], by: ===))
@@ -62,7 +62,7 @@ final class WinUIOverlayTests: XCTestCase {
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }
             XCTAssertTrue(overlay.reaches(size.width / 2, size.height - 20), "over the sheet presented after it")
 
-            session.closeInspector()
+            session.debugInspector = nil
             host.settle { window.overlays.isEmpty }
             XCTAssertTrue(window.overlays.isEmpty)
             XCTAssertFalse(overlay.reaches(size.width / 2, size.height - 20), "taken out of the window")
@@ -77,8 +77,8 @@ final class WinUIOverlayTests: XCTestCase {
             let host = WinUIRenderer.running { sheetsOver(sheets, menus: menus, windows: windows) }
             let window = try XCTUnwrap(host.window)
             let session = try XCTUnwrap(windows.values.last)
-            defer { session.closeInspector() }
-            session.openInspector()
+            defer { session.debugInspector = nil }
+            session.debugInspector = .bottom
             host.settle { !window.overlays.isEmpty && stateui_winui_window_sheets(window.handle) == 1 }
             XCTAssertEqual(stateui_winui_window_sheets(window.handle), 1)
 

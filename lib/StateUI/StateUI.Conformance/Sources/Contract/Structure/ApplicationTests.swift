@@ -25,12 +25,12 @@
             },
             ConformanceCase("anAlertIsShownAndDismissed", proves: [
                 Covered(ApplicationContract.alert),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Alert").onClicked(.ignoreWhileRunning) {
+                            Button("Alert").onClicked(policy: .ignoreWhileRunning) {
                                 try await window.alert("Saved", message: "The draft is kept", accept: "Fine")
                                 said.values.append("dismissed")
                             }.id("ask")
@@ -51,12 +51,12 @@
             },
             ConformanceCase("aConfirmationAnswersWhetherItWasAccepted", proves: [
                 Covered(ApplicationContract.confirm),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                            Button("Confirm").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await window.confirm(
                                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
                             }.id("ask")
@@ -80,12 +80,12 @@
             },
             ConformanceCase("aChoiceAnswersTheActionChosen", proves: [
                 Covered(ApplicationContract.chooseAction),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Share").onClicked(.ignoreWhileRunning) {
+                            Button("Share").onClicked(policy: .ignoreWhileRunning) {
                                 let chosen = try await window.chooseAction(
                                     "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete",
                                     cancel: "Cancel")
@@ -115,12 +115,12 @@
             },
             ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", proves: [
                 Covered(ApplicationContract.prompt),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Rename").onClicked(.ignoreWhileRunning) {
+                            Button("Rename").onClicked(policy: .ignoreWhileRunning) {
                                 let typed = try await window.prompt(
                                     "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
                                     placeholder: "Name", initialValue: "Draft")
@@ -146,16 +146,16 @@
             },
             ConformanceCase("questionsWaitTheirTurn", proves: [
                 Covered(ApplicationContract.alert), Covered(ApplicationContract.confirm),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Alert").onClicked(.ignoreWhileRunning) {
+                            Button("Alert").onClicked(policy: .ignoreWhileRunning) {
                                 try await window.alert("First", message: "")
                                 said.values.append("first")
                             }.id("first")
-                            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                            Button("Confirm").onClicked(policy: .ignoreWhileRunning) {
                                 let accepted = try await window.confirm("Second", message: "", accept: "Yes", cancel: "No")
                                 said.values.append("second \(accepted)")
                             }.id("second")
@@ -178,17 +178,17 @@
             ConformanceCase("aFileSavedIsOpenedAndReadBack", proves: [
                 Covered(ApplicationContract.saveFile), Covered(ApplicationContract.openFiles),
                 Covered(ApplicationContract.readFile),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(.ignoreWhileRunning) {
+                            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                                 let saved = try await window.saveFile(Array("Kept words".utf8), name: "note", types: [text])
                                 said.values.append(saved?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(.ignoreWhileRunning) {
+                            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                                 guard let file = try await window.openFile(types: [text]) else {
                                     return said.values.append("nothing")
                                 }
@@ -216,7 +216,7 @@
             ConformanceCase("aFileIsReadNoFurtherThanAsked", proves: [
                 Covered(ApplicationContract.readFile),
             ], needs: [
-                Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile),
                 Covered(ApplicationContract.openFiles),
             ]) { s in
                 let said = Received<String>()
@@ -224,11 +224,11 @@
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(.ignoreWhileRunning) {
+                            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                                 let saved = try await window.saveFile(Array("Kept words".utf8), name: "start", types: [text])
                                 said.values.append(saved?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(.ignoreWhileRunning) {
+                            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                                 guard let file = try await window.openFile(types: [text]) else {
                                     return said.values.append("nothing")
                                 }
@@ -256,15 +256,15 @@
             },
             ConformanceCase("severalFilesAreOpenedAtOnce", proves: [
                 Covered(ApplicationContract.openFiles),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Save").onClicked(.ignoreWhileRunning) {
+                            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await window.saveFile([1], name: "file.txt")?.name ?? "nothing")
                             }.id("save")
-                            Button("Open").onClicked(.ignoreWhileRunning) {
+                            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                                 let names = try await window.openFiles().map(\.name).sorted()
                                 said.values.append(names.joined(separator: " "))
                             }.id("open")
@@ -288,15 +288,15 @@
             },
             ConformanceCase("aFileDialogCancelledAnswersNothing", proves: [
                 Covered(ApplicationContract.openFiles), Covered(ApplicationContract.saveFile),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Open").onClicked(.ignoreWhileRunning) {
+                            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append("opened \(try await window.openFiles().count)")
                             }.id("open")
-                            Button("Save").onClicked(.ignoreWhileRunning) {
+                            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                                 let saved = try await window.saveFile([1], name: "never.txt")
                                 said.values.append("saved \(saved?.name ?? "nothing")")
                             }.id("save")
@@ -318,13 +318,13 @@
             },
             ConformanceCase("aRequestIsAnsweredAsTheServerSaidIt", proves: [
                 Covered(ApplicationContract.sendRequest),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let address = try s.served()
                 let said = Received<String>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Send").onClicked(.ignoreWhileRunning) {
+                            Button("Send").onClicked(policy: .ignoreWhileRunning) {
                                 let response = try await application.send(HTTPRequest(
                                     address + "/parcels", method: .post, headers: ["X-Asked": "kept"],
                                     body: Array("Kept words".utf8)))
@@ -343,7 +343,7 @@
             },
             ConformanceCase("aRequestEndsWithItsRun", proves: [
                 Covered(ApplicationContract.cancelCall),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.sendRequest)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.sendRequest)]) { s in
                 let address = try s.served()
                 let before = try s.held()
                 let said = Received<String>()
@@ -352,7 +352,7 @@
                     WithSessions { _, application in
                         VStack {
                             // The first press asks for what the server holds; the second ends the first's run.
-                            Button("Send").onClicked(.cancelPrevious) {
+                            Button("Send").onClicked(policy: .cancelPrevious) {
                                 presses.values.append(presses.values.count)
                                 let path = presses.values.count == 1 ? "/held" : "/parcels"
                                 let response = try await application.send(HTTPRequest(address + path))
@@ -374,12 +374,12 @@
             },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
                 Covered(ApplicationContract.launchAddress), Covered(ApplicationContract.launchFile),
-            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Launch").onClicked(.ignoreWhileRunning) {
+                            Button("Launch").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await application.launch("https://www.swift.org"))
                                 if let saved = try await window.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
                                     said.values.append(try await saved.launch())
@@ -398,12 +398,12 @@
             },
             ConformanceCase("theScreenReaderIsToldAndTheCallerGoesOn", proves: [
                 Covered(ApplicationContract.announce),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
-                            Button("Say").onClicked(.ignoreWhileRunning) {
+                            Button("Say").onClicked(policy: .ignoreWhileRunning) {
                                 try await application.announce("Saved the draft")
                                 said.values.append("announced")
                             }.id("say")
@@ -418,12 +418,12 @@
             },
             ConformanceCase("wordsPutOnTheClipboardAreReadBack", proves: [
                 Covered(ApplicationContract.writeClipboard), Covered(ApplicationContract.readClipboard),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let read = Received<String>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Copy").onClicked(.ignoreWhileRunning) {
+                            Button("Copy").onClicked(policy: .ignoreWhileRunning) {
                                 try await application.clipboard.write("Copied with StateUI")
                                 read.values.append(try await application.clipboard.read() ?? "nothing")
                             }.id("copy")
@@ -436,12 +436,12 @@
                 s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
             },
             ConformanceCase("wordsAndAnAddressAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
-                            needs: [Covered(ButtonContract.clicked)]) { s in
+                            needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, _ in
                         VStack {
-                            Button("Share").onClicked(.ignoreWhileRunning) {
+                            Button("Share").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await window.share(text: "Notes", address: "https://www.swift.org"))
                             }.id("share")
                         }
@@ -462,11 +462,11 @@
             },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
-            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextElementContract.text, on: TextContract.self)]) { s in
                 s.start { ThemeChoices() }
 
                 @MainActor func inForce() throws -> String? {
-                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                    try s.held(TextElementContract.text, on: s.element("inForce"))
                 }
                 try s.perform(.activate, on: s.element("dark"))
                 try s.settle { try s.theme() == .dark && inForce() == "dark" }
@@ -488,11 +488,11 @@
             },
             ConformanceCase("theApplicationDrawsInTheAccentItHolds", proves: [
                 Covered(ApplicationContract.useAccentColor),
-            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextElementContract.text, on: TextContract.self)]) { s in
                 s.start { AccentChoices() }
 
                 @MainActor func inForce() throws -> String? {
-                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                    try s.held(TextElementContract.text, on: s.element("inForce"))
                 }
                 let own = try s.accent()
                 try s.perform(.activate, on: s.element("brick"))
@@ -507,12 +507,12 @@
             },
             ConformanceCase("theHostTellsTheDayAndTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<(CalendarDate, ClockTime)>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Time").onClicked(.ignoreWhileRunning) {
+                            Button("Time").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append((try await application.clock.today(), try await application.clock.now()))
                             }.id("ask")
                         }
@@ -528,12 +528,12 @@
             },
             ConformanceCase("theUsersOwnZoneIsAnsweredWhereNoneIsNamed", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Int64>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Here").onClicked(.ignoreWhileRunning) {
+                            Button("Here").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await application.clock.utcOffset().components.seconds / 60)
                             }.id("ask")
                         }
@@ -546,12 +546,12 @@
             },
             ConformanceCase("aZonesDistanceFromUTCIsItsOwnOnTheDayAsked", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<[Int64]>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Offsets").onClicked(.ignoreWhileRunning) {
+                            Button("Offsets").onClicked(policy: .ignoreWhileRunning) {
                                 let tokyo = try await application.clock.utcOffset(of: "Asia/Tokyo")
                                 let winter = try await application.clock.utcOffset(
                                     of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
@@ -569,12 +569,12 @@
             },
             ConformanceCase("aZoneNobodyKnowsIsRefused", proves: [
                 Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<String>()
                 s.start {
                     WithSessions { _, application in
                         VStack {
-                            Button("Nowhere").onClicked(.ignoreWhileRunning) {
+                            Button("Nowhere").onClicked(policy: .ignoreWhileRunning) {
                                 do {
                                     _ = try await application.clock.utcOffset(of: "Nowhere/Else")
                                     said.values.append("answered")
@@ -592,13 +592,13 @@
             },
             ConformanceCase("theKeyboardIsTakenDownFromTheViewHoldingIt", proves: [
                 Covered(ApplicationContract.hideOnScreenKeyboard),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let said = Received<Bool>()
                 s.start {
                     WithSessions { window, application in
                         VStack {
                             TextField("").id("field")
-                            Button("Done").onClicked(.ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
+                            Button("Done").onClicked(policy: .ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
                         }
                     }
                 }
@@ -613,7 +613,7 @@
             },
             ConformanceCase("aValueIsKeptForTheNextLaunch", proves: [
                 Covered(ApplicationContract.persistValue),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let name = State(wrappedValue: "", persistentKey: PersistentKey<String>("conformance.name"))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
                 s.expect(try s.kept("conformance.name"), nil, "nothing kept before the case wrote it")
@@ -624,7 +624,7 @@
             },
             ConformanceCase("aScenesValueIsKeptForItsNextLaunch", proves: [
                 Covered(ApplicationContract.persistSceneValue),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start { SectionPage() }
                 s.expect(try s.kept("conformance.section", inScene: true), nil, "nothing kept before the case wrote it")
 
@@ -634,7 +634,7 @@
             },
             ConformanceCase("aHandlersFailureIsReportedToTheHost", proves: [
                 Covered(ApplicationContract.handlerFailed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 s.start {
                     VStack {
                         Button("Fail").onClicked { throw ConformanceFailure(message: "the draft could not be saved") }
@@ -692,7 +692,7 @@ private struct ThemeChoices: View {
             Text("\(application.info.colorScheme)").id("inForce")
             Button("Dark").onClicked { application.colorScheme = .dark }.id("dark")
             Button("Light").onClicked { application.colorScheme = .light }.id("light")
-            Button("System").onClicked { application.colorScheme = .system }.id("system")
+            Button("System").onClicked { application.colorScheme = nil }.id("system")
         }
     }
 }

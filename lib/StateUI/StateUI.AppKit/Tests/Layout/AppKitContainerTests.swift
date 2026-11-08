@@ -126,7 +126,7 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testHStackGivesAPaddedTextItsCompleteNativeTextWidth() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("One"),
@@ -152,7 +152,7 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAWidthConstrainedNestedStackKeepsWrappedTextInsideItsFrame() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
@@ -185,12 +185,12 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let binding = HostStateBinding(state: handMadeState(71), mode: .inOut, kind: .property, laneKind: .number)
 
         var frame = HostPatch(id: .manual("frame"), type: .zStack)
-        frame.properties[.height] = .number(90)
-        frame.driven = .replace([.height: binding])
+        frame.properties[VisualElementContract.height.token] = .number(90)
+        frame.driven = .replace([VisualElementContract.height.token: binding])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([frame])
         renderer.applyForTesting(stack)
@@ -232,12 +232,12 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testANegativeSizeRequestMeansNoExplicitNativeExtent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Measured by AppKit"),
-            .width: .number(-1),
-            .height: .number(-1),
+            VisualElementContract.width.token: .number(-1),
+            VisualElementContract.height.token: .number(-1),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -260,13 +260,13 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAnExplicitExtentIsClampedToItsAuthoredBounds() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Bounded"),
-            .width: .number(200),
-            .minimumWidth: .number(100),
-            .maximumWidth: .number(120),
+            VisualElementContract.width.token: .number(200),
+            VisualElementContract.minimumWidth.token: .number(100),
+            VisualElementContract.maximumWidth.token: .number(120),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -287,11 +287,11 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAFillAlignmentStillRespectsAMaximumExtent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Maximum"),
-            .maximumWidth: .number(80),
+            VisualElementContract.maximumWidth.token: .number(80),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -320,9 +320,9 @@ final class AppKitContainerTests: XCTestCase {
 
         for (container, origin) in expected {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-            defer { renderer.closeForTesting() }
+            defer { renderer.finish() }
             var box = HostPatch(id: .manual("box"), type: .rectangle)
-            box.properties = [.width: .number(44), .height: .number(20)]
+            box.properties = [VisualElementContract.width.token: .number(44), VisualElementContract.height.token: .number(20)]
             var layout = HostPatch(id: .manual("layout"), type: container)
             layout.children = .arranged([box])
             renderer.applyForTesting(tree(layout))
@@ -340,11 +340,11 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAMinimumExtentRaisesTheNativeMeasuredSize() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties = [
             .text: .string("Minimum"),
-            .minimumHeight: .number(44),
+            VisualElementContract.minimumHeight.token: .number(44),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -369,12 +369,12 @@ final class AppKitContainerTests: XCTestCase {
     func testAnInvisibleChildIsHiddenAndTakesNoRoom() throws {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([
-            box("first", [.height: .number(10)]),
-            box("hidden", [.height: .number(10), .isVisible: .bool(false)]),
-            box("last", [.height: .number(10), .isVisible: .bool(true)]),
+            box("first", [VisualElementContract.height.token: .number(10)]),
+            box("hidden", [VisualElementContract.height.token: .number(10), .isVisible: .bool(false)]),
+            box("last", [VisualElementContract.height.token: .number(10), .isVisible: .bool(true)]),
         ])
         let renderer = arranged(stack, in: NSSize(width: 100, height: 100))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         let nativeStack = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
         XCTAssertEqual(renderer.viewForTesting(id: .manual("hidden"))?.isHidden, true)
@@ -388,10 +388,10 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAStackPlacesChildrenByMarginAlignmentPaddingAndSpacing() throws {
         func sized(_ width: Double, _ properties: [Prop: HostValue]) -> [Prop: HostValue] {
-            properties.merging([.width: .number(width), .height: .number(10)]) { $1 }
+            properties.merging([VisualElementContract.width.token: .number(width), VisualElementContract.height.token: .number(10)]) { $1 }
         }
         var column = HostPatch(id: .manual("column"), type: .vStack)
-        column.properties = [.padding: .numbers([10, 8, 12, 6]), .spacing: .number(4)]
+        column.properties = [.padding: .numbers([10, 8, 12, 6]), StackContract.spacing.token: .number(4)]
         column.children = .arranged([
             box("start", sized(30, [
                 .margin: .numbers([5, 2, 0, 3]),
@@ -410,9 +410,9 @@ final class AppKitContainerTests: XCTestCase {
             box("middle", sized(10, [.verticalAlignment: .enumeration(Alignment.center.rawValue)])),
         ])
         let columnRenderer = arranged(column, in: NSSize(width: 200, height: 200))
-        defer { columnRenderer.closeForTesting() }
+        defer { columnRenderer.finish() }
         let rowRenderer = arranged(row, in: NSSize(width: 200, height: 100))
-        defer { rowRenderer.closeForTesting() }
+        defer { rowRenderer.finish() }
 
         XCTAssertEqual(
             columnRenderer.viewForTesting(id: .manual("start"))?.frame,
@@ -436,12 +436,12 @@ final class AppKitContainerTests: XCTestCase {
     @MainActor
     func testAZStacksSubviewsFollowTheDrawingOrder() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let binding = HostStateBinding(state: handMadeState(72), mode: .inOut, kind: .property, laneKind: .number)
         func layers(front: String) -> HostPatch {
             var layers = HostPatch(id: .manual("layers"), type: .zStack)
             layers.children = .arranged(["red", "blue", "bound"].map { id in
-                var layer = box(id, [.width: .number(20), .height: .number(20)])
+                var layer = box(id, [VisualElementContract.width.token: .number(20), VisualElementContract.height.token: .number(20)])
                 layer.properties[.zIndex] = .number(id == front ? 1 : 0)
                 if id == "bound" { layer.driven = .replace([.zIndex: binding]) }
                 return layer
@@ -536,16 +536,16 @@ final class AppKitContainerTests: XCTestCase {
             outer.properties = [.layoutDirection: .enumeration(direction.rawValue)]
             guard arranging else { return outer }
             var row = HostPatch(id: .manual("row"), type: .hStack)
-            row.properties = [.padding: .numbers([6, 0, 2, 0]), .spacing: .number(4)]
+            row.properties = [.padding: .numbers([6, 0, 2, 0]), StackContract.spacing.token: .number(4)]
             row.children = .arranged([
-                box("first", [.width: .number(30), .height: .number(10)]),
-                box("second", [.width: .number(10), .height: .number(10)]),
+                box("first", [VisualElementContract.width.token: .number(30), VisualElementContract.height.token: .number(10)]),
+                box("second", [VisualElementContract.width.token: .number(10), VisualElementContract.height.token: .number(10)]),
             ])
             outer.children = .arranged([row])
             return outer
         }
         let renderer = arranged(outer(.rightToLeft, arranging: true), in: NSSize(width: 200, height: 100))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(renderer.viewForTesting(id: .manual("first"))?.frame.minX, 164)
         XCTAssertEqual(renderer.viewForTesting(id: .manual("second"))?.frame.minX, 150)
@@ -564,25 +564,25 @@ final class AppKitContainerTests: XCTestCase {
         var column = HostPatch(id: .manual("column"), type: .vStack)
         column.children = .arranged([
             box("raised", [
-                .height: .number(10),
+                VisualElementContract.height.token: .number(10),
                 .horizontalAlignment: .enumeration(Alignment.start.rawValue),
-                .minimumWidth: .number(50),
+                VisualElementContract.minimumWidth.token: .number(50),
             ]),
-            box("stopped", [.height: .number(10), .maximumWidth: .number(60)]),
+            box("stopped", [VisualElementContract.height.token: .number(10), VisualElementContract.maximumWidth.token: .number(60)]),
         ])
         var row = HostPatch(id: .manual("row"), type: .hStack)
         row.children = .arranged([
             box("tall", [
-                .width: .number(10),
+                VisualElementContract.width.token: .number(10),
                 .verticalAlignment: .enumeration(Alignment.start.rawValue),
-                .minimumHeight: .number(40),
+                VisualElementContract.minimumHeight.token: .number(40),
             ]),
-            box("short", [.width: .number(10), .maximumHeight: .number(30)]),
+            box("short", [VisualElementContract.width.token: .number(10), VisualElementContract.maximumHeight.token: .number(30)]),
         ])
         let columnRenderer = arranged(column, in: NSSize(width: 200, height: 200))
-        defer { columnRenderer.closeForTesting() }
+        defer { columnRenderer.finish() }
         let rowRenderer = arranged(row, in: NSSize(width: 200, height: 100))
-        defer { rowRenderer.closeForTesting() }
+        defer { rowRenderer.finish() }
 
         XCTAssertEqual(
             columnRenderer.viewForTesting(id: .manual("raised"))?.frame,
@@ -619,7 +619,7 @@ final class AppKitContainerTests: XCTestCase {
         grid.properties = [
             .rows: .values([track(0, 30), track(1, 1)]),
             .columns: .values([track(0, 50), track(1, 1)]),
-            .rowSpacing: .number(5),
+            GridContract.rowSpacing.token: .number(5),
             .columnSpacing: .number(10),
             .padding: .numbers([4, 4, 4, 4]),
         ]
@@ -630,7 +630,7 @@ final class AppKitContainerTests: XCTestCase {
             cell("down", row: 0, column: 0, rowSpan: 2),
         ])
         let renderer = arranged(grid, in: NSSize(width: 200, height: 100))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(
             renderer.viewForTesting(id: .manual("corner"))?.frame,
@@ -656,7 +656,7 @@ final class AppKitContainerTests: XCTestCase {
             box("proportional", [.area: Area.proportional(Rect(0.375, 0.5, 0.25, 0.5)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(
             renderer.viewForTesting(id: .manual("fixed"))?.frame,
@@ -677,7 +677,7 @@ final class AppKitContainerTests: XCTestCase {
             box("fixed", [.area: Area.absolute(Rect(10, 20, 30, 40)).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(
             renderer.viewForTesting(id: .manual("whole"))?.frame,
@@ -696,11 +696,11 @@ final class AppKitContainerTests: XCTestCase {
                 ZStack().background(.red)
                 ZStack().background(.linearGradient(
                     [GradientStop(.red, 0), GradientStop(.blue, 1)],
-                    startPoint: Point(0, 0),
-                    endPoint: Point(1, 0)))
+                    from: Point(0, 0),
+                    to: Point(1, 0)))
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let boxes = renderer.nativeViews(AppKitZStackView.self)
         XCTAssertEqual(boxes.count, 2)
         guard boxes.count == 2 else { return }
@@ -745,7 +745,7 @@ final class AppKitContainerTests: XCTestCase {
                 }.shape(.roundedRectangle(16)).width(100).height(40)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let boxes = renderer.nativeViews(AppKitZStackView.self)
         XCTAssertEqual(boxes.count, 4)
         guard boxes.count == 4 else { return }
@@ -783,7 +783,7 @@ final class AppKitContainerTests: XCTestCase {
                     .height(60)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let scroll = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
         scroll.window?.contentView?.layoutSubtreeIfNeeded()
         // AppKit repaints a scroller's layer as it displays it; the box must come through that.
@@ -810,12 +810,12 @@ final class AppKitContainerTests: XCTestCase {
         layout.properties = [
             .padding: .numbers([4, 6, 8, 10]),
             .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
-            .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
-            .lineWidth: .number(6),
+            BorderElementContract.stroke.token: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
+            BorderElementContract.lineWidth.token: .number(6),
         ]
         layout.children = .arranged([box("inside", [:])])
         let renderer = arranged(layout, in: NSSize(width: 100, height: 60))
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertEqual(
             renderer.viewForTesting(id: .manual("inside"))?.frame,
@@ -838,9 +838,9 @@ final class AppKitContainerTests: XCTestCase {
             .axes: .enumeration(ScrollAxes.horizontal.rawValue),
             .padding: .numbers([5, 3, 11, 7]),
         ]
-        scroll.children = .arranged([box("wide", [.width: .number(500), .height: .number(36)])])
+        scroll.children = .arranged([box("wide", [VisualElementContract.width.token: .number(500), VisualElementContract.height.token: .number(36)])])
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(scroll))
 
         let nativeScroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")))

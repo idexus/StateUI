@@ -276,8 +276,8 @@ final class AndroidPagesTests: XCTestCase {
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
             }
-            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
-            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en-GB", "Europe/London", "1", "1", "1", "0"]))
             defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
             host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(hebrew) }
             host.layOut()
@@ -881,7 +881,7 @@ extension AndroidPagesTests {
                     } destination: { _ in
                         TitledPage(title: "Pushed")
                     }
-                    .icon(number == 0 ? "test_dot.png" : "test_wide.png")
+                    .pageIcon(number == 0 ? "test_dot.png" : "test_wide.png")
                 }
             }
             host.layOut()
@@ -1009,7 +1009,7 @@ extension AndroidPagesTests {
         try onMainActor {
             let under = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content")
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
             host.layOut()
@@ -1116,10 +1116,10 @@ extension AndroidPagesTests {
             let windows = Received<WindowSession>()
             let host = AndroidRenderer.running(reducesMotion: true) { sheetsPage(first, second, windows: windows) }
             let session = try XCTUnwrap(windows.values.last)
-            defer { session.closeInspector() }
+            defer { session.debugInspector = nil }
             host.layOut()
 
-            session.openInspector()
+            session.debugInspector = .bottom
             host.runtime.pump.turn()
             host.layOut()
             let overlay = try XCTUnwrap((host.runtime.tree.root?.first(type: .overlay)?.native as? AndroidElement)?.view, "no overlay view")
@@ -1135,7 +1135,7 @@ extension AndroidPagesTests {
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
 
-            session.closeInspector()
+            session.debugInspector = nil
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 2, "the page and the sheet")
             XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), -1)
@@ -1233,7 +1233,7 @@ private struct TitledPage: View {
 
     var body: some View {
         let words = Text(title).toolbar { actions }.title(title)
-        return (icon.map { words.icon($0) } ?? words).loggingPhases(log, as: title)
+        return (icon.map { words.pageIcon($0) } ?? words).loggingPhases(log, as: title)
     }
 }
 

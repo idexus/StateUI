@@ -16,7 +16,7 @@ Text()
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
+Inherits: [TextualElement](tiers/TextualElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [DecorableTextElement](tiers/DecorableTextElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -48,19 +48,33 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextSpanContract.s
 
 ## TextSpan's own members
 
-<table>
-<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-</table>
+TextSpan declares no members of its own.
 
 ## From [TextualElement](tiers/TextualElement.md)
 
-What every element showing words has: the words, and the case they are drawn in.
+What every element drawing its words itself has: the case they are drawn in, their color, and the words.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [TextElement](tiers/TextElement.md)
+
+The words an element shows: a control's caption, a text's or a field's words, a menu's caption and its items', a bar's label.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [BackgroundElement](tiers/BackgroundElement.md)
+
+What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [TextColorElement](tiers/TextColorElement.md)

@@ -13,17 +13,17 @@ import StateUIWeb
 final class GoogleMapElement: WebControl {
     let element = WebPageElement(tag: "gallery-map")
 
-    private let reports: WebReports<MapContract>
+    private let reports: ControlReports<MapContract>
 
     /// Each marker shown, by the number the element knows it by.
-    private var markers: [Int: WebChild<MarkerContract>] = [:]
-    private var numbers: [WebChild<MarkerContract>: Int] = [:]
+    private var markers: [Int: ControlChild<MarkerContract>] = [:]
+    private var numbers: [ControlChild<MarkerContract>: Int] = [:]
     private var nextNumber = 1
 
     /// How many times the map was sent somewhere, so the same place asked twice moves it twice.
     private var moves = 0
 
-    init(_ reports: WebReports<MapContract>) {
+    init(_ reports: ControlReports<MapContract>) {
         self.reports = reports
         element.listen("mapclick", words: { [weak self] words in
             let place = words.split(separator: " ").compactMap { Double($0) }
@@ -55,7 +55,7 @@ final class GoogleMapElement: WebControl {
     }
 
     /// How the world is drawn.
-    func show(_ type: MapType?) {
+    func show(_ type: MapKind?) {
         let name = switch type ?? .standard {
         case .standard: "standard"
         case .satellite: "satellite"
@@ -66,8 +66,8 @@ final class GoogleMapElement: WebControl {
 
     /// Shows `children` as the map's markers, a line each - its number, where it stands, its kind, its label and
     /// what is under the label - so the element keeps a marker the same for as long as its child lives.
-    func show(_ children: [WebChild<MarkerContract>]) {
-        var kept: [WebChild<MarkerContract>: Int] = [:]
+    func show(_ children: [ControlChild<MarkerContract>]) {
+        var kept: [ControlChild<MarkerContract>: Int] = [:]
         markers = [:]
         let lines = children.compactMap { child -> String? in
             guard let location = child.value(MarkerContract.location) else { return nil }
@@ -75,7 +75,7 @@ final class GoogleMapElement: WebControl {
             if number == nextNumber { nextNumber += 1 }
             kept[child] = number
             markers[number] = child
-            let kind = switch child.value(MarkerContract.type) ?? .generic {
+            let kind = switch child.value(MarkerContract.kind) ?? .generic {
             case .generic: "generic"
             case .place: "place"
             case .saved: "saved"
@@ -89,7 +89,7 @@ final class GoogleMapElement: WebControl {
         element.setAttribute("markers", lines.joined(separator: "\n"))
     }
 
-    private func marker(_ number: String) -> WebChild<MarkerContract>? {
+    private func marker(_ number: String) -> ControlChild<MarkerContract>? {
         Int(number).flatMap { markers[$0] }
     }
 
@@ -112,15 +112,15 @@ extension GoogleMapElement {
         // listing: web.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.type) { control, type in control.show(type) }
+            map.property(MapContract.kind) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.locationTapped)
+            map.declares(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

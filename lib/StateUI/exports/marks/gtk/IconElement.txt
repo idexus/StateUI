@@ -1,0 +1,11 @@
+# revision 1.1
+Button.icon: ✓ read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name
+MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
+MenuToggle.icon: – GNOME's menus show words alone, no picture beside them.
+NavigationStack.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
+Page.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
+SplitView.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
+TabView.icon: – GTK's tab switcher shows a tab's picture in place of its caption, not beside it: the tabs show their captions.
+ToolbarButton.icon: ✅
+ToolbarLabel.icon: ✅
+ToolbarToggle.icon: ✅

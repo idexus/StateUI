@@ -6,7 +6,7 @@
 /// alone, so no event or act stands in one; joined with `+`.
 ///
 ///     static let look = PropertyList(FontElementContract.fontSize, TextColorElementContract.textColor)
-///     registration.applies(TextualElementContract.text, look) { view, values in … }
+///     registration.applies(TextElementContract.text, look) { view, values in … }
 @_spi(Host) public struct PropertyList: AppliedProperties, Sendable {
     /// The properties, in their order.
     let properties: [any RegisteredProperty]
@@ -14,7 +14,7 @@
     /// The properties given, in their order.
     ///
     /// - Parameter properties: each written with its contract.
-    public init<each Owner: Contract, each Value: HostRepresentable>(
+    public init<each Owner: WornContract, each Value: HostRepresentable>(
         _ properties: repeat ElementProperty<each Owner, each Value>
     ) {
         var listed: [any RegisteredProperty] = []

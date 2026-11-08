@@ -94,15 +94,30 @@ final class AndroidConformanceTests: XCTestCase {
             ("testDecorableTextElement", testDecorableTextElement),
             ("testPaddingElement", testPaddingElement),
             ("testBorderElement", testBorderElement),
-            ("testImageElement", testImageElement),
+            ("testContentModeElement", testContentModeElement),
             ("testTintElement", testTintElement),
+            ("testPointsShape", testPointsShape),
+            ("testLineBreakElement", testLineBreakElement),
+            ("testPlaceholderElement", testPlaceholderElement),
+            ("testStyledElement", testStyledElement),
+            ("testTextElement", testTextElement),
+            ("testShortcutElement", testShortcutElement),
+            ("testIconElement", testIconElement),
+            ("testBackgroundElement", testBackgroundElement),
+            ("testEnabledElement", testEnabledElement),
+            ("testClickElement", testClickElement),
+            ("testRangeElement", testRangeElement),
+            ("testSubmitElement", testSubmitElement),
+            ("testSessionElement", testSessionElement),
+            ("testHoverElement", testHoverElement),
+            ("testPressElement", testPressElement),
+            ("testPresentedElement", testPresentedElement),
+            ("testPopupElement", testPopupElement),
+            ("testToggleElement", testToggleElement),
             ("testKeyboardElement", testKeyboardElement),
             ("testFocusElement", testFocusElement),
             ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
-            ("testBarItemElement", testBarItemElement),
-            ("testBarButtonElement", testBarButtonElement),
-            ("testMenuItemElement", testMenuItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
             ("testLink", testLink),
@@ -193,15 +208,30 @@ final class AndroidConformanceTests: XCTestCase {
     func testDecorableTextElement() throws { try conform(DecorableTextElementTests.self) }
     func testPaddingElement() throws { try conform(PaddingElementTests.self) }
     func testBorderElement() throws { try conform(BorderElementTests.self) }
-    func testImageElement() throws { try conform(ImageElementTests.self) }
+    func testContentModeElement() throws { try conform(ContentModeElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testPointsShape() throws { try conform(PointsShapeTests.self) }
+    func testLineBreakElement() throws { try conform(LineBreakElementTests.self) }
+    func testPlaceholderElement() throws { try conform(PlaceholderElementTests.self) }
+    func testStyledElement() throws { try conform(StyledElementTests.self) }
+    func testTextElement() throws { try conform(TextElementTests.self) }
+    func testShortcutElement() throws { try conform(ShortcutElementTests.self) }
+    func testIconElement() throws { try conform(IconElementTests.self) }
+    func testBackgroundElement() throws { try conform(BackgroundElementTests.self) }
+    func testEnabledElement() throws { try conform(EnabledElementTests.self) }
+    func testClickElement() throws { try conform(ClickElementTests.self) }
+    func testRangeElement() throws { try conform(RangeElementTests.self) }
+    func testSubmitElement() throws { try conform(SubmitElementTests.self) }
+    func testSessionElement() throws { try conform(SessionElementTests.self) }
+    func testHoverElement() throws { try conform(HoverElementTests.self) }
+    func testPressElement() throws { try conform(PressElementTests.self) }
+    func testPresentedElement() throws { try conform(PresentedElementTests.self) }
+    func testPopupElement() throws { try conform(PopupElementTests.self) }
+    func testToggleElement() throws { try conform(ToggleElementTests.self) }
     func testKeyboardElement() throws { try conform(KeyboardElementTests.self) }
     func testFocusElement() throws { try conform(FocusElementTests.self) }
     func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
-    func testBarItemElement() throws { try conform(BarItemElementTests.self) }
-    func testBarButtonElement() throws { try conform(BarButtonElementTests.self) }
-    func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
     func testLink() throws { try conform(LinkTests.self) }
@@ -229,7 +259,7 @@ final class AndroidConformanceTests: XCTestCase {
             let driver = AndroidDriver()
             let verdicts = Conformance.run(
                 family, part: part, on: driver, report: { XCTFail($0.message, file: $0.file, line: $0.line) })
-            driver.finish()
+            driver.close()
             let all = (Self.gathered.removeValue(forKey: family.name) ?? []) + verdicts
             guard part.number == part.count else { return Self.gathered[family.name] = all }
             try TestFiles.write(HostVerdict.text(HostVerdict.merged(all)), to: "marks/android/\(family.name).txt")

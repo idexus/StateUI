@@ -12,7 +12,7 @@
         ShapeContract.stroke, ShapeContract.lineWidth,
         ShapeContract.dash, ShapeContract.dashPhase,
         ShapeContract.lineCap,
-        ShapeContract.contentMode, ShapeContract.geometryTransform)
+        ContentModeElementContract.contentMode, ShapeContract.geometryTransform)
 
     /// What a shape enclosing an area takes: its fill besides.
     public static let filledMembers = members + PropertyList(FilledShapeContract.fill)

@@ -1,19 +1,10 @@
-# revision 2.1
-Button.text: ✅
+# revision 3.1
 Button.textCase: ✅
-CheckBox.text: ✅
 CheckBox.textCase: ✅
-Link.text: ✅
 Link.textCase: ✅
-SearchField.text: ✅
 SearchField.textCase: ✅
-Switch.text: ✅
 Switch.textCase: ✅
-Text.text: ✅
 Text.textCase: ✅
-TextEditor.text: ✅
 TextEditor.textCase: ✅
-TextField.text: ✅
 TextField.textCase: ✅
-TextSpan.text: ✅
 TextSpan.textCase: ✅

@@ -121,15 +121,17 @@ final class ItemsRulesTests: XCTestCase {
     }
 
     /// The end is told once as the last item in view comes within reach of the last of all; again only after the
-    /// user scrolled away, or once the list gained or lost items.
-    func testTheEndIsToldOnceUntilTheUserLeavesItOrMoreArrive() {
+    /// user scrolled away, or once items came or went.
+    func testTheEndIsToldOnceUntilTheUserLeavesItOrItemsComeOrGo() {
         var watch = EndReachedWatch()
         XCTAssertFalse(watch.reached(count: 30, last: 20, within: 5))
         XCTAssertTrue(watch.reached(count: 30, last: 24, within: 5), "within five of the last")
         XCTAssertFalse(watch.reached(count: 30, last: 29, within: 5), "told once")
         XCTAssertFalse(watch.reached(count: 30, last: 10, within: 5))
         XCTAssertTrue(watch.reached(count: 30, last: 26, within: 5), "again, after leaving it")
-        XCTAssertTrue(watch.reached(count: 60, last: 29, within: 30), "again, once more arrived")
+        XCTAssertFalse(watch.reached(count: 60, last: 29, within: 30), "a count alone is no reason")
+        watch.itemsCameOrWent()
+        XCTAssertTrue(watch.reached(count: 60, last: 29, within: 30), "again, once items came or went")
         XCTAssertFalse(watch.reached(count: 0, last: -1, within: 5), "an empty list has no end")
     }
 
@@ -140,5 +142,16 @@ final class ItemsRulesTests: XCTestCase {
         XCTAssertEqual(ItemsGrid.columns(width: 375, minimumItemWidth: 120, spacing: 8), 2)
         XCTAssertEqual(ItemsGrid.columns(width: 80, minimumItemWidth: 120, spacing: 8), 1, "one at least")
         XCTAssertEqual(ItemsGrid.columnWidth(width: 400, columns: 3, spacing: 8), 128)
+    }
+
+    /// Any numbers count the columns, and none traps: a spacing below nought or not finite is nought, a width not
+    /// finite holds one column, and no column is narrower than a point.
+    func testAGridCountsItsColumnsForAnyNumbers() {
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: -100), 4, "below nought is nought")
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: .nan), 4)
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 100, spacing: .infinity), 4)
+        XCTAssertEqual(ItemsGrid.columns(width: .infinity, minimumItemWidth: 100, spacing: 8), 1)
+        XCTAssertEqual(ItemsGrid.columns(width: 400, minimumItemWidth: 1e-300, spacing: 0), 400, "a point at least")
+        XCTAssertEqual(ItemsGrid.columnWidth(width: 400, columns: 4, spacing: -100), 100)
     }
 }

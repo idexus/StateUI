@@ -21,10 +21,10 @@
 
     /// What `window` allows now: each a finite size not negative, a greatest smaller than the least being the least.
     @MainActor public init(of window: MountedElement) {
-        minimumWidth = WindowFrame.extent(.minimumWidth, of: window)
-        minimumHeight = WindowFrame.extent(.minimumHeight, of: window)
-        maximumWidth = WindowFrame.extent(.maximumWidth, of: window).map { [minimumWidth] in max($0, minimumWidth ?? 0) }
-        maximumHeight = WindowFrame.extent(.maximumHeight, of: window)
+        minimumWidth = WindowFrame.extent(WindowContract.minimumWidth.token, of: window)
+        minimumHeight = WindowFrame.extent(WindowContract.minimumHeight.token, of: window)
+        maximumWidth = WindowFrame.extent(WindowContract.maximumWidth.token, of: window).map { [minimumWidth] in max($0, minimumWidth ?? 0) }
+        maximumHeight = WindowFrame.extent(WindowContract.maximumHeight.token, of: window)
             .map { [minimumHeight] in max($0, minimumHeight ?? 0) }
     }
 }

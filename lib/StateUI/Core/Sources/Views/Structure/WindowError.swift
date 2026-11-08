@@ -16,11 +16,11 @@ public enum WindowError: Error, Equatable, Sendable {
     case noScene
 
     /// No scene declares windows of the kind of this name.
-    case undeclared(Name)
+    case undeclared(String)
 
     /// The scene declares the kind of this name for another value - two kinds
     /// share the name, one of them with a value of another type, or none.
-    case wrongValue(Name)
+    case wrongValue(String)
 
     /// The platform opens no second window - a phone, a page in a browser.
     case unsupported

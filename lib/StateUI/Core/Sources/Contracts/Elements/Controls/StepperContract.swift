@@ -10,23 +10,11 @@ public enum StepperContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A stepper is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
-
-    /// The highest it goes.
-    public static let maximum = ElementProperty<Self, Double>("maximum", layer: .native, travels: false)
-
-    /// The lowest it goes.
-    public static let minimum = ElementProperty<Self, Double>("minimum", layer: .native, travels: false)
+    public static let tiers: [any Tier.Type] = [ViewContract.self, FocusElementContract.self, RangeElementContract.self]
 
     /// How far one tap moves the value.
     public static let step = ElementProperty<Self, Double>("step", layer: .native, travels: false)
 
-    /// The number it shows, between the minimum and the maximum.
-    public static let value = ElementProperty<Self, Double>("value", layer: .native)
-
-    /// A button was tapped, stepping to the value it carries.
-    public static let valueChanged = ElementEvent<Self, Double>("valueChanged", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [maximum, minimum, step, value, valueChanged]
+    public static let members: [any ContractMember] = [step]
 }

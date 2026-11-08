@@ -206,7 +206,7 @@ final class CycleBoard {
     func cycle(now instant: Double, reducesMotion: Bool) -> CycleReport {
         var report = CycleReport()
         let now = max(last, instant)
-        let started = count == 0 || now - last > EngineCycle.mostElapsed
+        let started = count == 0 || now - last > EngineCycle.mostElapsedMilliseconds
 
         count &+= 1
         cycling = true
@@ -236,7 +236,7 @@ final class CycleBoard {
 
             // Taken out first: the engine may arm or disarm others as it runs.
             let (run, lastRan) = (engines[place].run, engines[place].lastRan)
-            let elapsed = min(max(now - lastRan, 0), EngineCycle.mostElapsed)
+            let elapsed = min(max(now - lastRan, 0), EngineCycle.mostElapsedMilliseconds)
             let answer = run(EngineCycle(
                 now: now,
                 elapsed: elapsed,

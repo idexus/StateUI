@@ -81,8 +81,8 @@
 
     /// The platform's menu this one joins, where its `.id` is a `StandardMenu`.
     public var standard: StandardMenu? {
-        guard case .manual(let identity) = element?.id else { return nil }
-        return StandardMenu(identity: identity)
+        guard case .standard(let standard) = element?.menuKey else { return nil }
+        return standard
     }
 
     /// The entries `container` holds - a menu, a context menu, a submenu - in order; what is none of them is none.
@@ -141,7 +141,7 @@
         title = element?.value(.text)?.string ?? ""
         icon = HostPicture(Self.picture(of: element))
         isEnabled = element.map { $0.type != .toolbarLabel && $0.isEffectivelyEnabled } ?? true
-        isDestructive = element?.value(.role).flatMap(ActionRole.init(propValue:)) == .destructive
+        isDestructive = element?.value(ActionElementContract.role.token).flatMap(ActionRole.init(propValue:)) == .destructive
         identifier = element?.value(.accessibilityIdentifier)?.string
         isOn = kind == .item ? element?.value(.isOn)?.bool : nil
         keyboardShortcut = kind == .item ? element?.keyboardShortcut : nil

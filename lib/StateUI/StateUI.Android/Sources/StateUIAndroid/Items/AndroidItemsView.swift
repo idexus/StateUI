@@ -222,7 +222,7 @@ final class AndroidItemsView: AndroidView, AndroidRefreshing, AndroidPageScrolle
               let place = anchor.place(
                 of: Double(start), length: Double(end - start), in: Double(boxEnd - boxStart), at: Double(boxStart))
         else { return 0 }
-        return Int32((Double(boxStart) - place).rounded())
+        return AndroidPixels.distance(Double(boxStart) - place)
     }
 
     // MARK: - Acts

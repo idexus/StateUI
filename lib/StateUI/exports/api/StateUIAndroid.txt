@@ -1,0 +1,71 @@
+swift.class AndroidRegistration: @MainActor final class AndroidRegistration<Realized, Made> where Realized : ElementContract, Made : AndroidControl
+swift.class JavaObject: @MainActor final class JavaObject
+swift.conformance @SwiftBool: StateUIAndroid.JavaResult
+swift.conformance @SwiftDouble: StateUIAndroid.JavaResult
+swift.conformance @SwiftFloat: StateUIAndroid.JavaResult
+swift.conformance @SwiftInt32: StateUIAndroid.JavaResult
+swift.conformance @SwiftInt64: StateUIAndroid.JavaResult
+swift.conformance @SwiftOptional: StateUIAndroid.JavaResult where Wrapped == UnsafeMutableRawPointer
+swift.conformance AndroidRegistration: Swift.Sendable
+swift.conformance Java: Swift.Sendable
+swift.conformance JavaObject: Swift.Sendable
+swift.conformance StateUIActs: Swift.Sendable
+swift.conformance StateUIControls: Swift.Sendable
+swift.enum AndroidHost: enum AndroidHost
+swift.enum Java: @MainActor enum Java
+swift.enum StateUIActs: @MainActor enum StateUIActs
+swift.enum StateUIControls: @MainActor enum StateUIControls
+swift.enum StateUIEvents: enum StateUIEvents
+swift.init JavaObject.init(_:): @MainActor init(_ local: jobject)
+swift.method AndroidRegistration.applies(_:apply:): @MainActor func applies<each Owner, each Value>(_ properties: repeat ElementProperty<each Owner, each Value>, apply: @escaping @MainActor @Sendable (Made, ControlValues<Realized>) -> Void) where repeat each Owner : WornContract, (repeat (each Owner, each Value)) : Any, repeat each Value : HostRepresentable
+swift.method AndroidRegistration.children(_:properties:events:apply:): @MainActor func children<Child, each PropertyOwner, each Value, each EventOwner, each Payload>(_ contract: Child.Type, properties: repeat ElementProperty<each PropertyOwner, each Value>, events: repeat ElementEvent<each EventOwner, each Payload>, apply: @escaping @MainActor @Sendable (Made, [ControlChild<Child>]) -> Void) where Child : ElementContract, repeat each PropertyOwner : WornContract, (repeat (each PropertyOwner, each Value)) : Any, repeat each Value : HostRepresentable, repeat each EventOwner : WornContract, (repeat (each EventOwner, each Payload)) : Any
+swift.method AndroidRegistration.declares(_:): @MainActor func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : WornContract
+swift.method AndroidRegistration.property(_:_:): @MainActor func property<Owner, Value>(_ member: ElementProperty<Owner, Value>, _ apply: @escaping @MainActor @Sendable (Made, Value?) -> Void) where Owner : WornContract, Value : HostRepresentable
+swift.property AndroidControl.view: @MainActor var view: JavaObject { get }
+swift.property JavaObject.reference: @MainActor let reference: jobject
+swift.protocol AndroidControl: @MainActor protocol AndroidControl : AnyObject
+swift.protocol JavaResult: protocol JavaResult
+swift.type.method @SwiftBool.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Bool
+swift.type.method @SwiftBool.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Bool
+swift.type.method @SwiftDouble.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Double
+swift.type.method @SwiftDouble.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Double
+swift.type.method @SwiftFloat.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Float
+swift.type.method @SwiftFloat.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Float
+swift.type.method @SwiftInt32.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Int32
+swift.type.method @SwiftInt32.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Int32
+swift.type.method @SwiftInt64.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Int64
+swift.type.method @SwiftInt64.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Int64
+swift.type.method @SwiftOptional.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> jobject?
+swift.type.method @SwiftOptional.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> jobject?
+swift.type.method @jnijvalue.bool(_:): static func bool(_ value: Bool) -> jvalue
+swift.type.method @jnijvalue.double(_:): static func double(_ value: Double) -> jvalue
+swift.type.method @jnijvalue.float(_:): static func float(_ value: Float) -> jvalue
+swift.type.method @jnijvalue.int(_:): static func int(_ value: Int32) -> jvalue
+swift.type.method @jnijvalue.long(_:): static func long(_ value: Int64) -> jvalue
+swift.type.method @jnijvalue.object(_:): static func object(_ value: jobject?) -> jvalue
+swift.type.method AndroidHost.load(_:): static func load(_ machine: UnsafeMutableRawPointer?) -> Int32
+swift.type.method Java.call(_:_:_:): @MainActor static func call(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...)
+swift.type.method Java.call(_:_:_:): @MainActor static func call<Result>(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Result where Result : JavaResult
+swift.type.method Java.callStatic(_:_:_:): @MainActor static func callStatic(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...)
+swift.type.method Java.callStatic(_:_:_:): @MainActor static func callStatic<Result>(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Result where Result : JavaResult
+swift.type.method Java.findClass(_:): @MainActor static func findClass(_ name: String) -> jclass
+swift.type.method Java.floats(_:): @MainActor static func floats(_ values: [Float]) -> jfloatArray?
+swift.type.method Java.frame(_:): @MainActor static func frame<Result>(_ body: () -> Result) -> Result
+swift.type.method Java.ints(_:): @MainActor static func ints(_ values: [Int32]) -> jintArray?
+swift.type.method Java.method(_:_:_:): @MainActor static func method(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID
+swift.type.method Java.new(_:_:_:): @MainActor static func new(_ owner: jclass, _ constructor: jmethodID, _ arguments: jvalue...) -> JavaObject
+swift.type.method Java.release(local:): @MainActor static func release(local: jobject?)
+swift.type.method Java.staticMethod(_:_:_:): @MainActor static func staticMethod(_ owner: jclass, _ name: String, _ signature: String) -> jmethodID
+swift.type.method Java.string(_:): @MainActor static func string(_ text: String) -> jstring?
+swift.type.method Java.text(_:): @MainActor static func text(_ string: jstring?) -> String
+swift.type.method Java.texts(_:): @MainActor static func texts(_ array: jobjectArray?) -> [String]
+swift.type.method JavaResult.answer(of:_:_:): @MainActor static func answer(of object: jobject, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Self
+swift.type.method JavaResult.answer(ofStatic:_:_:): @MainActor static func answer(ofStatic owner: jclass, _ method: jmethodID, _ arguments: UnsafePointer<jvalue>?) -> Self
+swift.type.method StateUIActs.add(_:_:): @MainActor static func add<Owner, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, _ perform: @escaping @MainActor @Sendable (repeat each Argument) async throws -> (repeat each Answer)) where Owner : ApplicationTier, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIActs.add(_:on:_:): @MainActor static func add<Owner, Made, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, on control: Made.Type, _ perform: @escaping @MainActor @Sendable (Made, repeat each Argument) async throws -> (repeat each Answer)) where Owner : WornContract, Made : AndroidControl, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
+swift.type.method StateUIControls.add(_:create:members:): @MainActor static func add<Realized, Made>(_ contract: Realized.Type, create: @escaping @MainActor @Sendable (ControlReports<Realized>) -> Made, members: @MainActor @Sendable (AndroidRegistration<Realized, Made>) -> Void = { _ in }) where Realized : ElementContract, Made : AndroidControl
+swift.type.method StateUIEvents.declares(_:): @MainActor static func declares<Owner, Payload>(_ event: ElementEvent<Owner, Payload>) where Owner : ApplicationTier
+swift.type.method StateUIEvents.raise(_:_:): nonisolated static func raise<Owner, each Value>(_ event: ElementEvent<Owner, (repeat each Value)>, _ value: repeat each Value) where Owner : ApplicationTier, repeat each Value : HostRepresentable
+swift.type.property AndroidHost.context: @MainActor static var context: jobject { get }
+swift.type.property Java.env: @MainActor static var env: UnsafeMutablePointer<JNIEnv?>! { get }
+swift.type.property Java.jni: @MainActor static var jni: JNINativeInterface { get }

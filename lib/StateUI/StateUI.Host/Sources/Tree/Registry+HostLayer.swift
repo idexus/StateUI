@@ -61,8 +61,7 @@ extension Registry {
             everyElementRealizes(VisualElementContract.accessibilityValue)
         }
         everyElementRealizes(VisualElementContract.accessibilityHeading)
-        everyElementRealizes(VisualElementContract.isAccessibilityHidden)
-        everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)
+        everyElementRealizes(VisualElementContract.accessibilityPresence)
     }
 
     /// The actions a screen reader offers on a view, and its steps of one that is adjustable, told to the element by
@@ -92,14 +91,14 @@ extension Registry {
         everyElementRealizes(ViewContract.panXChannel)
         everyElementRealizes(ViewContract.panYChannel)
         everyElementRealizes(ViewContract.panTouchCount)
-        everyElementRealizes(ViewContract.swipeDirection)
+        everyElementRealizes(ViewContract.swipeDirections)
         everyElementRealizes(ViewContract.swipeThreshold)
         everyElementRaises(ViewContract.panUpdated)
         everyElementRaises(ViewContract.pinchUpdated)
         everyElementRaises(ViewContract.rotationUpdated)
         everyElementRaises(ViewContract.swiped)
-        everyElementRaises(ViewContract.pointerEntered)
-        everyElementRaises(ViewContract.pointerExited)
+        everyElementRaises(HoverElementContract.pointerEntered)
+        everyElementRaises(HoverElementContract.pointerExited)
         everyElementRaises(ViewContract.pointerMoved)
         everyElementRaises(ViewContract.pointerPressed)
         everyElementRaises(ViewContract.pointerReleased)
@@ -121,9 +120,9 @@ extension Registry {
         everyElementRealizes(ViewContract.allowsDrop)
         everyElementRaises(ViewContract.dragStarting)
         everyElementRaises(ViewContract.dragEnded)
-        everyElementRaises(ViewContract.dragOver)
-        everyElementRaises(ViewContract.dragLeave)
-        everyElementRaises(ViewContract.drop)
+        everyElementRaises(ViewContract.dragEntered)
+        everyElementRaises(ViewContract.dragExited)
+        everyElementRaises(ViewContract.dropped)
     }
 
     /// Every element's view takes files dropped on it from the system, of the kinds it lists (`DragAndDrop.taken`).

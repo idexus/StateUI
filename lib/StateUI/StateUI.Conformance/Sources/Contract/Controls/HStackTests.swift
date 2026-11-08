@@ -15,7 +15,7 @@
             Aspects.standsAlone("HStack"),
             ConformanceCase("itsChildrenStandSideBySideInTheirOrder", proves: [
                 Covered(HStackContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let both = State(wrappedValue: true)
                 let second = Received<[Double]>()
                 s.start {
@@ -76,7 +76,7 @@
             },
             ConformanceCase("aRowThatWrapsGoesOnOntoFurtherLines", proves: [
                 Covered(HStackContract.wraps), Covered(HStackContract.rowSpacing),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let step = State(wrappedValue: 0)
                 let third = Received<[Double]>()
                 s.start {
@@ -113,7 +113,7 @@
             },
             ConformanceCase("aWrappedRowsLinesStandWhereItsLineAlignmentSays", proves: [
                 Covered(HStackContract.lineAlignment),
-            ], needs: [Covered(HStackContract.wraps), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(HStackContract.wraps), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let alignment = State(wrappedValue: TextAlignment.center)
                 let third = Received<[Double]>()
                 s.start {

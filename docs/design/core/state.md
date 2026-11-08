@@ -32,6 +32,29 @@ two boxes sharing a storage must share them: posts through either land in one
 order. The storage is internal so tests can hold its invariants directly; no
 public signature names it.
 
+A binding made from a box lends the box's state as the box holds it, not the
+storage it held when the binding was made: one made in a view's initializer,
+before the box adopted its predecessor's storage, lends the adopted state - its
+tie to the host on its number, its journey, a control's report. What is made
+from it reaches the state the same way: a part reads and writes the adopted
+whole, keeping the elements it does not write, and a conversion - of one source
+or several - holds the storage each source's binding was made from and asks it,
+each time, for the storage it stands for: itself, or the one it was given up
+for at an adoption while that stands. So a conversion works out from the
+adopted state and writes a report back into it, whether made before the
+adoption or kept past the box it was made from - a view's conversion kept
+across its builds follows the state the box built last holds - and does
+nothing once the state is gone. A storage a later box adopted is one the
+element keeps, and is given up for nothing from then on, itself least of all:
+a view instance rendered again after another adopted its state holds that
+state still, and a box standing in two places keeps each place's own. The
+storage given up sends what is posted to it on to the
+adopted one's queue, what waited there with it: every post has its place in
+the order posted, across queues, and the two queues are merged step by step
+in that order, a value replacing what waited before it for its part - so the
+last post stands whichever queue it waited in; a storage whose queue nobody
+made has nothing to send.
+
 A read and a write of a value the host does not carry are `@inlinable`, down
 to the storage's fields: the application's module, which knows `Value`,
 compiles them for its own type. Called unspecialized across the module
@@ -97,6 +120,11 @@ written, so two spellings of one state are two values; the storage is how they
 recognize each other. A view's inputs compare by it (`lends`), the host's
 image, the journey and an engine's following all hang off it, and a post
 through it waits for the whole.
+
+A projected binding retains its state storage and can outlive the view or
+model that declared it. An application session's state hooks keep the session
+weakly: when it is gone, its retained theme or accent binding still changes
+its state, while the hook performs no host effect.
 
 `$` lends a capability: a borrower may write the whole value or one property of
 it, and a model lent this way may be edited or replaced outright. Handing over
@@ -209,14 +237,15 @@ A value that lies as numbers is a `LaneValue`, and its type says what a host
 reads its lanes as: numbers, a Boolean, a choice, a color or a material
 (`LaneKind`). A registration takes the kind from the value it is handed and
 the patch carries it beside the state's door, so a value said from a state
-reaches the control as the same value said directly - `.isOn($x)` a Boolean,
+reaches the control as the same value said directly - `Switch($x)` a Boolean,
 `.horizontalAlignment($side)` a case, an application's own `Bool` member a
 Boolean too. A host reading lanes by the property's name would know only the
 names it lists, and any other member would arrive as a number.
 
 Text is no `LaneValue`: it has no lanes, and it goes through the text door
-alone. `plain` and the lane form of `setValue(_:on:mode:kind:)` refuse it by
-type; its own form takes the mode alone.
+alone. `plain` and the lane form of `setValue(_:on:as:)` refuse it by type;
+its own form takes `.oneWay` and `.twoWay` alone - words are never walked and
+never fed.
 
 ## Three protocols, three capabilities
 
@@ -290,8 +319,10 @@ a host shows nothing of them rather than trapping.
 
 `Binding.land` writes a report - a value the platform measured or the user
 moved - so that it lands where it is rather than animating there: value,
-destination and a speed of nought together. The state's readers are asked as
-for every write. A landed value is not saved: a measurement is not a setting.
+destination and a speed of nought together. It is a value coming in like any
+other: admitted first (`Storage.admits`), the state's readers asked, and the
+storage's `keep` run - a window's value snapped to is the value the window
+is about.
 
 ## Kept state
 
@@ -322,9 +353,13 @@ the storage itself, on every road a value comes in by, a moving value by where
 it is going. The saves go out as one act
 per key per take, sorted by name, holding the last value: a key written five
 times inside one handler is saved once. It is a collapse per drain, not a
-delay. A write to a kept state asks the host for a turn itself, and waiting
-saves count as pending work, because a kept state nobody reads asks for no
-render and its save must not wait for the next event.
+delay. The store asks the host for a turn as it records a save, and a
+scene's record as it records a value, as the act queue does for an act sent
+(concurrency.md#the-doorbell): whoever holds the work rings, so every road a
+value comes in by - a write, a landing, a movement's arrival - wakes the host
+alike, and none has to remember to. Waiting saves count as pending work,
+because a kept state nobody reads asks for no render and its save must not
+wait for the next event.
 
 The hook that marks the key - the storage's `keep`, run on every road a value
 comes in by - serves two more states whose every write must leave the core: a
@@ -332,6 +367,18 @@ window's value, which retargets its window (scenes.md), and the application's
 theme and accent, which reach the host as the acts that set them. A control
 handed `application.$colorScheme` writes the state, and the host is told as if
 the application had assigned it.
+
+A state may refuse a value before it lands - the storage's `refuses`, asked
+through one door, `Storage.admits`, on every road a value comes in by: a
+write and a post (`admitsWrite`, once the run's admission is answered), a
+movement (`Journey.send`, which starts no journey), a landing
+(`Binding.land`), and the host's report. A setter cannot throw, so the
+refusal is said once, and the state, its keep and its readers stand as they
+were. The host's report is on the board before the storage hears it, so a
+reported value the state refuses is put back - the bytes it last knew, a
+journey's known destination landed still - which the host hears at the next
+cycle as any write: its control returns to the value that stands. A window's
+value refuses one another window of its kind is open for (scenes.md).
 
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
@@ -370,7 +417,8 @@ about it crosses to the host.
   .environment(obj)   stored on the node, outside the patch
   the differ          keeps a stack of provided objects as it walks, in both
                       walks, and fills each @Environment slot BEFORE the body
-                      builds; refilled on every build, never adopted
+                      builds; refilled on every build - to nothing where no
+                      provider stands any more - and never adopted
   invalidation        untouched: reading a provided object's @State records the
                       read as for any object; the provider only passes a
                       reference, so only replacing the object rebuilds it

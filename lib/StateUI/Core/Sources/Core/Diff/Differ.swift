@@ -14,6 +14,8 @@ final class Differ {
     /// Design: docs/design/core/identity-and-diffing.md#ids-are-never-reused
     private var nextElementId = 1
 
+    let menuKeys = MenuKeys()
+
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
@@ -70,6 +72,17 @@ final class Differ {
     /// The composed views whose bodies the walk is inside, outermost first.
     var bodies: [String] = []
 
+    /// The elements the walk is inside, outermost first (Differ+Element.swift).
+    var standing: [ElementID] = []
+
+    /// Where each `@Environment` slot met this walk last stood, built or kept, and what it resolved to there.
+    /// Design: docs/design/core/identity-and-diffing.md#one-value-in-two-places
+    var placed: [ObjectIdentifier: (element: ElementID, object: ObjectIdentifier?)] = [:]
+
+    /// What each element holding the one walked says of its enablement, outermost first - those that say any.
+    /// Design: docs/design/views/styles.md#which-state-a-control-is-in
+    var enablements: [Enablement] = []
+
     /// What every live element's events run, and their runs, kept between renders.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     var handlers: [Int: EventRegistration] = [:]
@@ -97,6 +110,7 @@ final class Differ {
         changed: Set<ObjectIdentifier> = [],
         buildsEveryView: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
+        menuKeys.prune()
         self.describeAll = describeAll
         self.buildsEveryView = buildsEveryView
         self.changed = changed
@@ -105,9 +119,8 @@ final class Differ {
         walkStamp += 1
         seedScope()
 
-        // The root keeps whatever key it was given until the author states another.
-        let id = tree.identity.map { ElementID.manual(Node.described($0)) } ?? rendered?.id ?? identity(for: tree)
-        let previous = rendered?.id == id ? rendered : nil
+        let previous = rendered?.identity == tree.identity ? rendered : nil
+        let id = previous?.id ?? identity(for: tree)
 
         if let rendered = rendered, previous == nil {
             forget(rendered)
@@ -125,6 +138,7 @@ final class Differ {
         _ rendered: RenderedNode,
         changed: Set<ObjectIdentifier>
     ) -> (node: RenderedNode, patch: HostPatch) {
+        menuKeys.prune()
         describeAll = false
         buildsEveryView = false
         self.changed = changed
@@ -164,24 +178,41 @@ final class Differ {
     }
 
     /// One kept element: built again from its placeholder when its reads moved - from the outermost of its views
-    /// whose own body read what moved, those outside it standing as they were - walked for changed descendants when
-    /// they did not.
+    /// whose own body read what moved, those outside it standing as they were - or when it stands refused, to ask
+    /// again; else its views stand, their slots placed as they were, from the first one refused this walk built
+    /// again, which refuses it; walked for changed descendants.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     func revisit(
         _ rendered: RenderedNode,
-        walking: Bool = true
+        walking: Bool = true,
+        standingAlready: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
-        if let placeholder = rendered.placeholder,
-            !rendered.reads.isDisjoint(with: changed) {
-            return element(
-                id: rendered.id,
-                rendered: rendered,
-                node: placeholder,
-                forced: true,
-                sizesArrive: rendered.sizesArrive,
-                atPagePosition: rendered.atPagePosition,
-                from: Self.start(of: rendered, changed: changed))
+        if let placeholder = rendered.placeholder {
+            let moved = !rendered.reads.isDisjoint(with: changed)
+            let from = moved
+                ? Self.start(of: rendered, changed: changed)
+                : rendered.refused ? 0 : stand(rendered.views[...], at: rendered.id)
+
+            if moved || rendered.refused || from < rendered.views.count {
+                return element(
+                    id: rendered.id,
+                    rendered: rendered,
+                    node: placeholder,
+                    forced: true,
+                    sizesArrive: rendered.sizesArrive,
+                    atPagePosition: rendered.atPagePosition,
+                    from: from)
+            }
         }
+
+        // Its key on the walk's stack while it stands here, unless the caller pushed it (the carried road).
+        if !standingAlready { standing.append(rendered.id) }
+        defer { if !standingAlready { standing.removeLast() } }
+
+        // An element left standing attaches its aims in this walk as a built one does: the one its parent wrote on
+        // it, and the one on its content's root (Aim.swift).
+        rendered.placeholder?.aim?.attach(standing, walk: walkStamp)
+        rendered.contentAim?.attach(standing, walk: walkStamp)
 
         // A composed view walked past is written down only as the path to something
         // built below it, and not for a view just carried.
@@ -192,15 +223,18 @@ final class Differ {
         // And the scene it is in, whose record the kept state below is claimed from.
         let outer = sceneRecord
         if rendered.type == .scene, sceneRecord == nil, case .manual(let name) = rendered.id {
-            sceneRecord = OpenScenes.shared.record(id: name)
+            sceneRecord = OpenScenes.shared.record(key: name)
         }
         defer { sceneRecord = outer }
 
         var patch = HostPatch(id: rendered.id, type: rendered.type)
 
-        // What this element provided stays in scope while its children are walked.
+        // What this element provided stays in scope while its children are walked, and what it says of its
+        // enablement holds for them.
         scope.append(contentsOf: rendered.provided)
         defer { scope.removeLast(rendered.provided.count) }
+        if let enablement = rendered.enablement { enablements.append(enablement) }
+        defer { if rendered.enablement != nil { enablements.removeLast() } }
 
         var changedChildren: [HostPatch] = []
 
@@ -287,18 +321,20 @@ final class Differ {
         leaving.append(contentsOf: node.destroying)
     }
 
-    /// Starts a walk's scope with the standard providers, so any view resolves them
-    /// and an app's own `.environment()` below is nearer (StandardEnvironment.swift).
+    /// Starts a walk's scope with the standard providers, so any view resolves them and an app's own
+    /// `.environment()` below is nearer (StandardEnvironment.swift); forgets where the last walk placed its slots.
     private func seedScope() {
         scope.removeAll(keepingCapacity: true)
         scope.append(contentsOf: StandardEnvironment.scope)
+        placed.removeAll(keepingCapacity: true)
     }
 
     // MARK: - Identity
 
-    /// A new element's key: the author's, or a fresh number.
+    /// A literal string keeps its name; every other element gets a fresh number.
     func identity(for node: Node) -> ElementID {
-        node.identity.map { .manual(Node.described($0)) } ?? .auto(allocateElementId())
+        if let name = node.identity?.value.base as? String { return .manual(name) }
+        return .auto(allocateElementId())
     }
 
     /// The next element id. Never reused.

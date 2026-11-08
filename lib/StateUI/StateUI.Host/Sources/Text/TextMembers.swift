@@ -8,13 +8,13 @@
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public enum TextMembers {
     /// What every element showing words takes: the words in their case, their look, and the room around them.
-    public static let members = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+    public static let members = PropertyList(TextElementContract.text, TextualElementContract.textCase)
         + lookMembers + PropertyList(PaddingElementContract.padding)
 
     /// What a toggle takes for the words beside it - a check box's, a switch's: the words in their case and their
     /// color, in the platform's own font.
     public static let captionMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
+        TextElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
 
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' color.
@@ -27,12 +27,14 @@
         FontElementContract.fontAttributes, FontElementContract.fontFamily)
 
     /// A toggle's words beside it in their case, whether or not they changed; empty where it says none.
+    @MainActor
     public static func caption<Realized>(_ values: ElementValues<Realized>) -> String {
-        let text = values[TextualElementContract.text] ?? ""
+        let text = values[TextElementContract.text] ?? ""
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
     /// A toggle's words' look: their color, in the platform's own font.
+    @MainActor
     public static func captionLook<Realized>(_ values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.color = values[TextColorElementContract.textColor]?.propValue
@@ -40,15 +42,17 @@
     }
 
     /// The words in their case, where the words or their case changed; nil where neither did.
+    @MainActor
     public static func words<Realized>(_ values: ElementValues<Realized>) -> String? {
-        guard values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) else {
+        guard values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) else {
             return nil
         }
-        let text = values[TextualElementContract.text] ?? ""
+        let text = values[TextElementContract.text] ?? ""
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
     /// The look the font, its scaling and the color give the words, where one of them changed; nil where none did.
+    @MainActor
     public static func look<Realized>(_ values: ElementValues<Realized>) -> TextLook? {
         guard values.changed(FontElementContract.textStyle) || values.changed(FontElementContract.fontWeight)
             || values.changed(FontElementContract.fontSize) || values.changed(FontElementContract.fontAttributes)
@@ -65,7 +69,7 @@
         look.style = value(.textStyle).flatMap(TextStyle.init(propValue:))
         look.size = value(.fontSize)?.number
         look.weight = value(.fontWeight).flatMap(FontWeight.init(propValue:))
-        look.attributes = value(.fontAttributes).flatMap(FontAttributes.init(propValue:)) ?? .none
+        look.attributes = value(.fontAttributes).flatMap(FontAttributes.init(propValue:)) ?? []
         look.attributesGiven = value(.fontAttributes) != nil
         look.family = value(.fontFamily)?.name
         look.color = value(.textColor)
@@ -74,12 +78,13 @@
     }
 
     /// The look the font and the color give the words, whether or not they changed.
+    @MainActor
     public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()
         look.style = values[FontElementContract.textStyle]
         look.size = values[FontElementContract.fontSize]
         look.weight = values[FontElementContract.fontWeight]
-        look.attributes = values[FontElementContract.fontAttributes] ?? .none
+        look.attributes = values[FontElementContract.fontAttributes] ?? []
         look.attributesGiven = values[FontElementContract.fontAttributes] != nil
         look.family = values[FontElementContract.fontFamily]?.text
         look.color = values[TextColorElementContract.textColor]?.propValue

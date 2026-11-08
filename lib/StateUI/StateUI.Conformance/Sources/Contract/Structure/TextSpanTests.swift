@@ -9,11 +9,14 @@
 @_spi(Host) public enum TextSpanTests: ConformanceFamily {
     public static let name = "TextSpan"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(TextSpanContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aTextsSpansAreItsWordsRunByRun", proves: [
                 Covered(TextSpanContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: "TextSpan")]) { s in
+            ], needs: [Covered(TextElementContract.text, on: "TextSpan")]) { s in
                 s.start {
                     VStack {
                         Text().spans {
@@ -24,14 +27,14 @@
                     }
                 }
 
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "let x = 1")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "let x = 1")
                 let spans = s.elements(ofType: TextSpanContract.nodeType)
-                s.expect(try spans.map { try s.held(TextualElementContract.text, on: $0) }, ["let ", "x", " = 1"],
+                s.expect(try spans.map { try s.held(TextElementContract.text, on: $0) }, ["let ", "x", " = 1"],
                          "a span a run")
             },
             ConformanceCase("aSpanTheTreeChangesChangesItsRun", proves: [
                 Covered(TextSpanContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: "TextSpan"), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(TextElementContract.text, on: "TextSpan"), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {
                     VStack {
@@ -45,10 +48,9 @@
                 let label = try s.element("label")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(TextualElementContract.text, on: label) == "let y" }
-                s.expect(try s.held(TextualElementContract.text, on: label), "let y")
+                try s.settle { try s.held(TextElementContract.text, on: label) == "let y" }
+                s.expect(try s.held(TextElementContract.text, on: label), "let y")
             },
-            Aspects.holds(TextSpanContract.background, on: "TextSpan", .color(.yellow), then: .color(.cyan)),
         ]
     }
 }

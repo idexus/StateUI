@@ -38,10 +38,10 @@ final class RestoredWindowsTests: XCTestCase {
     /// The record of a window is what the tree says of it - its kind and its value - with the values its scene keeps.
     func testARecordIsWhatTheTreeSaysOfItsWindow() throws {
         let runtime = HostRuntime.still()
-        var scene = HostPatch(id: .manual("1"), type: .scene)
+        var scene = HostPatch(id: .scene("1"), type: .scene)
         var note = HostPatch(id: .manual("restored.note 2"), type: .window)
-        note.properties = [.windowType: .name("restored.note"), .windowValue: .string("7")]
-        scene.children = .arranged([HostPatch(id: .manual("window 1"), type: .window), note])
+        note.properties = [.windowKind: .name("restored.note"), .windowValue: .string("7")]
+        scene.children = .arranged([HostPatch(id: .window(1), type: .window), note])
         runtime.tree.apply(scene, complete: true)
         let windows = try XCTUnwrap(runtime.tree.root?.windows)
 
@@ -80,8 +80,8 @@ final class RestoredWindowsTests: XCTestCase {
 
         let windows = try XCTUnwrap(runtime.tree.root?.windows)
         XCTAssertEqual(windows.map(\.id), [
-            .manual("restored.note 1"), .manual("restored.tool 2"), .manual("restored.note 3"), .manual("window 4"),
-            .manual("restored.about 1"),
+            .window(1, kind: "restored.note"), .window(2, kind: "restored.tool"), .window(3, kind: "restored.note"),
+            .window(4), .window(1, kind: "restored.about"),
         ])
         let scene = try XCTUnwrap(windows[0].enclosing(type: .scene).map(SceneValues.key(of:)))
         XCTAssertEqual(RestoredApplication.sections.first, 2, "the scene's value, read at its first render")
@@ -114,7 +114,7 @@ final class RestoredWindowsTests: XCTestCase {
             native: Shown(), values: &values, in: runtime))
         runtime.pump.turn()
 
-        XCTAssertEqual(try XCTUnwrap(runtime.tree.root?.windows).map(\.id), [.manual("window 1")])
+        XCTAssertEqual(try XCTUnwrap(runtime.tree.root?.windows).map(\.id), [.window(1)])
         XCTAssertEqual(RestoredApplication.sections, [2], "built once, with what the scene kept")
     }
 
@@ -151,15 +151,15 @@ private struct RestoredApplication: Application {
 
     var body: some Scene {
         RestoredScene()
-        Window(WindowType("restored.about")) { Text("about") }
+        Window(WindowKind("restored.about")) { Text("about") }
     }
 }
 
 private struct RestoredScene: Scene {
     var body: some Scene {
         WindowGroup { RestoredSectionPage() }
-        WindowGroup(WindowType<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
-        WindowGroup(WindowType("restored.tool")) { Text("tool") }
+        WindowGroup(WindowKind<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowKind("restored.tool")) { Text("tool") }
     }
 }
 

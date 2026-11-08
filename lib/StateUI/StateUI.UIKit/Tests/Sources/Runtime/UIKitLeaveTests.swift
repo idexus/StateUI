@@ -29,7 +29,7 @@ final class UIKitLeaveTests: XCTestCase {
     @MainActor
     func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
         let driver = UIKitDriver()
-        defer { driver.finish() }
+        defer { driver.close() }
         // UIKit itself keeps every UIStepper it ever drew (iOS 27): one made by UIKit alone outlives its window too.
         let elements = Leaving.walked.filter { $0 != "Stepper" }
         XCTAssertEqual(try Leaving.outlived(on: driver, elements), [])

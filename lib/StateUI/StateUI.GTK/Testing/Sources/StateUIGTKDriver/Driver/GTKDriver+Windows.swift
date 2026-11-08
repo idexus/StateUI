@@ -24,17 +24,17 @@ extension GTKDriver {
         let window = try window(of: element)
         var size: (width: Int32, height: Int32) = (0, 0)
         switch property {
-        case .title:
+        case WindowContract.title.token:
             return gtk_window_get_title(window.widget.of(GtkWindow.self)).map { String(cString: $0).propValue }
-        case .width, .height:
+        case WindowContract.width.token, WindowContract.height.token:
             gtk_window_get_default_size(window.widget.of(GtkWindow.self), &size.width, &size.height)
-            return Double(property == .width ? size.width : size.height).propValue
+            return Double(property == WindowContract.width.token ? size.width : size.height).propValue
         case .isVisible: return (gtk_widget_get_visible(window.widget) != 0).propValue
         case .background: return Self.fill(of: window.widget).map { StandIns.material(painted: $0).propValue }
-        case .windowType, .windowValue: return try recorded(property, on: element, view: nil) ?? nil
-        case .minimumWidth, .minimumHeight:
+        case .windowKind, .windowValue: return try recorded(property, on: element, view: nil) ?? nil
+        case WindowContract.minimumWidth.token, WindowContract.minimumHeight.token:
             gtk_widget_get_size_request(window.widget, &size.width, &size.height)
-            return Double(property == .minimumWidth ? size.width : size.height).propValue
+            return Double(property == WindowContract.minimumWidth.token ? size.width : size.height).propValue
         default:
             throw DriverCannot(reading: property, of: element)
         }

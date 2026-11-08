@@ -13,7 +13,7 @@ Text("Tapped \(taps) times")
     .onTapped { taps += 1 }
 ```
 
-Wears: [VisualElement](VisualElement.md)
+Wears: [VisualElement](VisualElement.md) · [HoverElement](HoverElement.md)
 
 Worn by: [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [ColorPicker](../ColorPicker.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Link](../Link.md) · [Map](../Map.md) · [MotionLayout](../MotionLayout.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Separator](../Separator.md) · [Slider](../Slider.md) · [Space](../Space.md) · [Spinner](../Spinner.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 
@@ -25,14 +25,14 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `allowsDrop` | property | `Bool` | native |
 | `area` | property | `Area` | structure |
-| `onDragLeave` (`dragLeave`) | event |  | native |
-| `onDragOver` (`dragOver`) | event |  | native |
+| `onDragEntered` (`dragEntered`) | event |  | native |
+| `onDragExited` (`dragExited`) | event |  | native |
 | `onDragStarting` (`dragStarting`) | event |  | native |
 | `dragText` | property | `String` | native |
-| `onDrop` (`drop`) | event | `String` | native |
+| `onDropped` (`dropped`) | event | `String` | native |
 | `droppedFileTypes` | property | `[FileType]` | native |
 | `onDragEnded` (`dragEnded`) | event |  | native |
-| `onDrop` (`filesDropped`) | event | `[ChosenFile]` | native |
+| `onDropped` (`filesDropped`) | event | `[ChosenFile]` | native |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |
 | `gridColumn` | property | `Int` | stateUI |
 | `gridColumnSpan` | property | `Int` | stateUI |
@@ -49,13 +49,11 @@ How each of them realizes these members is on its own page.
 | `panYChannel` | property | `Int` | structure |
 | `layoutBody` | property | `LayoutBody` | stateUI |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
-| `onPointerEntered` (`pointerEntered`) | event |  | native |
-| `onPointerExited` (`pointerExited`) | event |  | native |
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
 | `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
-| `swipeDirection` | property | `SwipeDirection` | structure |
+| `swipeDirections` | property | `SwipeDirections` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |
 | `tapCount` | property | `Int` | structure |

@@ -6,16 +6,17 @@ and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
 Six hosts are active - AppKit, UIKit, Android Views, WinUI 3, GTK 4 and the
-Web - each Swift, in the application's own process. The supported setup is a
-StateUI checkout: each host is a sibling Swift package whose manifest uses a
-local dependency on the repository root. No host has a published package route
-yet, so an application outside the checkout sits in a
-[project group](editors/VSCode/README.md#a-project-group) that builds with a
-checkout on disk.
+Web - each Swift, in the application's own process. Install StateUI as a
+complete checkout: a release tag for a released application, or a local
+development checkout. Each host is a sibling Swift package whose manifest uses
+a local dependency on the repository root. An application outside the checkout
+lives in a [project group](editors/VSCode/README.md#a-project-group): the group clones a
+release into its `StateUI/` directory or names an existing checkout. The library,
+the selected host, and any backends are built from that same checkout.
 
 ## Requirements
 
-- macOS 26 or newer, with Xcode 27 and its Swift 6.4, for the AppKit host;
+- macOS 26.4 or newer, with Xcode 27 and its Swift 6.4, for the AppKit host;
 - a checkout of this repository;
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
@@ -42,15 +43,15 @@ project group for applications outside the checkout.
 
 ### From the command line
 
-Every launch has a command-line equivalent. Build HelloWorld's AppKit head from
-the repository root:
+Every launch has a command-line equivalent. Build and start HelloWorld's
+AppKit head from the repository root:
 
 ```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
 ```
 
-The variable is what makes it an AppKit build: the manifest then declares the
+The script builds it with `STATEUI_HOST=appkit`, the variable that makes it an
+AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
 [Project structure and development](development.md). Each host builds an
@@ -94,6 +95,13 @@ which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 
 ```bash
 .scripts/new-app.sh Notes
+```
+
+Test it, then build and start its AppKit head from the same repository root:
+
+```bash
+swift test --package-path apps/Notes
+.scripts/AppKit/run-app.sh apps/Notes debug
 ```
 
 ## Application shape
@@ -143,9 +151,9 @@ from its first window to its last. A scene's body declares its windows:
 - `WindowGroup(.kind) { $id in ... }`, a kind with a value, makes one window per
   value.
 
-A kind is a `WindowType` the application names in an extension of it, for the
+A kind is a `WindowKind` the application names in an extension of it, for the
 value its windows stand for - `Void` where they stand for none:
-`extension WindowType where Value == Void { static let editor = WindowType("editor") }`. A view reads the application's session with `@Environment(\.application)`,
+`extension WindowKind where Value == Void { static let editor = WindowKind("editor") }`. A view reads the application's session with `@Environment(\.application)`,
 and `application.openWindow(.kind)` opens a window of that kind in the scene
 declaring it, opening the scene with it where it is not open.
 
@@ -199,6 +207,7 @@ Gallery's head, which also registers its own controls, reads:
 ```swift listing appkit.md.head
 // Platforms/AppKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 GalleryApp.register()
@@ -210,13 +219,13 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+AppKitHost.run()
 ```
 
-The head finds its artwork beside itself where a deployed copy carries it -
-`.scripts/AppKit/deploy.sh` lays the application's `Resources` there - else
-from its own source file, so it runs from any directory, and on another Mac. Its icon is drawn on macOS's icon grid; see
-[AppKit host](hosts/appkit.md).
+The host finds the artwork beside the program - its bundle's, or the
+`Resources` that `.scripts/AppKit/run-app.sh` and `deploy.sh` lay there - so a
+head runs from any directory, and on another Mac. Its icon is drawn on
+macOS's icon grid; see [AppKit host](hosts/appkit.md).
 
 Registration and `run` happen once per process. All scenes and windows then
 belong to one application tree, renderer generation, and native host. Opening a
@@ -248,6 +257,7 @@ The Gallery's GTK head registers both:
 ```swift listing gtk.md.head
 // Platforms/GTK/main.swift
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -259,9 +269,9 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-StateUIWebViewGTK.register()
+WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+GTKHost.run(applicationID: "com.stateui.gallery")
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's
@@ -313,13 +323,15 @@ apps/Notes/
 ```
 
 The application target depends only on the `StateUI` product, its tests on
-`StateUITesting` too. The executable
-target depends on the application target and `StateUIHead`
-(`lib/StateUI.Head`), which brings it the host the build is for -
-`StateUIAppKit` on an AppKit build - and on a backend's product where it
-registers one. Both targets
-enable `NonisolatedNonsendingByDefault`; [Concurrency](interface/concurrency.md) explains
-why that module-wide setting is part of the application contract.
+`StateUITesting` too. The executable target depends on the application
+target, `StateUI` and `StateUIHead` (`lib/StateUI.Head`), which brings it the
+host the build is for - `StateUIAppKit` on an AppKit build - and on a
+backend's product where it registers one. Every target enables
+`NonisolatedNonsendingByDefault`; [Concurrency](interface/concurrency.md)
+explains why that module-wide setting is part of the application contract.
+Every target enables `MemberImportVisibility` too, so each file imports what
+it uses by name: a head imports `StateUI` beside its host, a test `StateUI`
+beside `StateUITesting`.
 
 ## Controls and modifiers
 

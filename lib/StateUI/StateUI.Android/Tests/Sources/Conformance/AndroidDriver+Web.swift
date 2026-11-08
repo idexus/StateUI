@@ -20,7 +20,7 @@ extension AndroidDriver {
                     Java.callObject(web, getSettings).flatMap { Java.callObject($0, getUserAgentString) }.map { Java.text($0) }
                 } ?? nil
             }?.propValue)
-        case .source:
+        case WebViewContract.source.token:
             // A document with no address of its own from the `data:` address holding it.
             let address = Java.frame { onWeb(view) { web in Java.callObject(web, getUrl).map { Java.text($0) } } ?? nil }
             guard let address else { return .some(nil) }

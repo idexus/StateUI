@@ -17,7 +17,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testADrawingTransformSurvivesItsViewsFrameMoving() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(tree(stack(box(rotation: 30))))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
 
@@ -30,7 +30,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testARotationPivotsAboutTheAnchor() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var cornered = box(id: "cornered", rotation: 90)
         cornered.properties[.pivotX] = .number(0)
         cornered.properties[.pivotY] = .number(0)
@@ -48,7 +48,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testAPlacementIsDrawnOverTheViewsOwnTransform() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         var own = box(rotation: 10)
         own.properties[.opacity] = .number(0.5)
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
@@ -98,7 +98,7 @@ final class AppKitViewDrawingTests: XCTestCase {
                 view.frame = NSRect(x: 3, y: 4, width: 90, height: 50)
                 XCTAssertEqual(abs(try rotation(of: view)), 30, accuracy: 0.001, node.name)
             }
-            renderer.closeForTesting()
+            renderer.finish()
         }
     }
 
@@ -109,10 +109,10 @@ final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testEveryDrawingPropertyReachesTheViewsLayer() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         func drawnBox(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
             var box = HostPatch(id: .manual(id), type: .rectangle)
-            box.properties = properties.merging([.width: .number(100), .height: .number(60)]) { $1 }
+            box.properties = properties.merging([VisualElementContract.width.token: .number(100), VisualElementContract.height.token: .number(60)]) { $1 }
             return box
         }
         renderer.applyForTesting(tree(stack(
@@ -158,8 +158,8 @@ final class AppKitViewDrawingTests: XCTestCase {
     private func box(id: String = "box", rotation: Double) -> HostPatch {
         var box = HostPatch(id: .manual(id), type: .rectangle)
         box.properties[.rotation] = .number(rotation)
-        box.properties[.width] = .number(100)
-        box.properties[.height] = .number(60)
+        box.properties[VisualElementContract.width.token] = .number(100)
+        box.properties[VisualElementContract.height.token] = .number(60)
         return box
     }
 

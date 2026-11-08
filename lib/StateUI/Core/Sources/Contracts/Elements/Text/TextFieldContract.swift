@@ -10,24 +10,19 @@ public enum TextFieldContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A field is an input of text in a font, aligned.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, BorderElementContract.self,
+        SubmitElementContract.self,
     ]
 
     /// Whether what is typed is hidden behind the platform's secure-entry
     /// marks.
     public static let isPassword = ElementProperty<Self, Bool>("isPassword", layer: .native)
 
-    /// What the keyboard's return key is captioned; Next hands the keyboard on to the next field as it submits.
-    public static let submitLabel = ElementProperty<Self, SubmitLabel>("submitLabel", layer: .adaptive)
-
     /// Whether the field shows the native button that empties it.
     public static let showsClearButton = ElementProperty<Self, Bool>("showsClearButton", layer: .adaptive)
 
-    /// The return key was pressed.
-    public static let submitted = ElementEvent<Self, Void>("submitted", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [isPassword, submitLabel, showsClearButton, submitted]
+    public static let members: [any ContractMember] = [isPassword, showsClearButton]
 }

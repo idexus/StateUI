@@ -21,6 +21,8 @@
 #   SWIFT_BIN=<path>             the compiler, where PATH has the wrong one
 #   ANDROID_NDK_ROOT=<path>      the NDK, 30 or newer, where it is not found on its own
 #   ANDROID_NDK_HOME=<path>      the same, read after ANDROID_NDK_ROOT
+#   STATEUI_API_RECORD=1         holds the facade each ABI's build made to lib/StateUI/exports/api/StateUIAndroid.txt
+#                                (.scripts/API/record.sh), as the host's suite asks
 #
 # The application's manifest reads STATEUI_HOST=android to declare its Android
 # head; the caller sets it for an Android Views build.
@@ -179,6 +181,16 @@ for abi in $ABIS; do
 
   swift_build "$triple" --product "$PRODUCT"
   built="$(swift_build "$triple" --show-bin-path)"
+  # The host's facade, as this build made it, held to its API record where the caller asks (test-android.sh).
+  if [[ -n "${STATEUI_API_RECORD:-}" ]]; then
+    repository="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+    configuration="$("$SWIFT_BIN" sdk configure --show-configuration "$SDK_ID" "$triple" 2>&1)"
+    "$repository/.scripts/API/record.sh" StateUIAndroid "$built" "$triple" \
+      "$(sed -n 's/^sdkRootPath: //p' <<< "$configuration")" \
+      -resource-dir "$(sed -n 's/^swiftResourcesPath: //p' <<< "$configuration")" \
+      -Xcc -fmodule-map-file="$repository/lib/StateUI/StateUI.Android/Sources/CStateUIAndroid/include/module.modulemap" \
+      -Xcc -fmodule-map-file="$repository/lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap"
+  fi
   runtime="$(dirname "$(find -L "$SDK_BUNDLE" -name libswiftCore.so -path "*$(ndk_arch_of "$abi" | cut -d- -f1)*" | head -n 1)")"
   platform_libs="$(find "$NDK_ROOT/toolchains/llvm/prebuilt" -type d -path "*/sysroot/usr/lib/$(ndk_arch_of "$abi")/$API" | head -n 1)"
   libcxx="$(find "$NDK_ROOT/toolchains/llvm/prebuilt" -name libc++_shared.so -path "*/$(ndk_arch_of "$abi")/*" | head -n 1)"

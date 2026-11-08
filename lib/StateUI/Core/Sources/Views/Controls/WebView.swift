@@ -13,22 +13,6 @@ extension WebViewProperties {
     public func userAgent(_ value: String) -> Modified {
         setValue(WebViewContract.userAgent, value)
     }
-
-    /// The page it shows, by its address.
-    public func source(_ address: String) -> Modified {
-        setValue(WebViewContract.source, .address(address))
-    }
-
-    /// The page it shows, written here rather than fetched.
-    ///
-    ///     WebView().source(html: "<h1>Offline</h1>")
-    ///
-    /// - Parameter html: The document itself, not a path to one.
-    /// - Parameter baseAddress: What relative links in it resolve against, when
-    ///   there are any.
-    public func source(html: String, baseAddress: String? = nil) -> Modified {
-        setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
-    }
 }
 
 /// A view showing web content - a page fetched from its address, or HTML written here.
@@ -44,13 +28,13 @@ extension WebViewProperties {
 /// What the view is told to do is an act called through its aim -
 /// `browser.goBack()`, `browser.reload()`,
 /// `browser.evaluateJavaScript("…")`; what it reports arrives in a binding,
-/// `.canGoBack($hasBack)`.
+/// `.canGoBack(into: $hasBack)`.
 public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<WebView>` is written against.
-    public init() {
+    /// A web view with no page, which a host's driver and the conformance cases make to prove what no source does.
+    @_spi(Host) public init() {
         node = Node(contract: WebViewContract.self)
     }
 
@@ -60,11 +44,31 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
         self = setValue(WebViewContract.source, .address(address))
     }
 
+    /// A view on a document of its own.
+    public init(html: String) {
+        self = WebView().source(html: html)
+    }
+
+    /// A view on a document of its own, its relative addresses read against `baseAddress`.
+    public init(html: String, baseAddress: String?) {
+        self = WebView().source(html: html, baseAddress: baseAddress)
+    }
+
+    /// The page at an address.
+    func source(_ address: String) -> Modified {
+        setValue(WebViewContract.source, .address(address))
+    }
+
+    /// A document of its own.
+    func source(html: String, baseAddress: String? = nil) -> Modified {
+        setValue(WebViewContract.source, .html(html, baseAddress: baseAddress))
+    }
+
     // MARK: What the platform reports
 
     /// Whether there is a page behind this one - what enables a Back button -
     /// written into the binding by the platform after every navigation.
-    public func canGoBack(_ state: Binding<Bool>) -> Modified {
+    public func canGoBack(into state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoBackChanged) { can in
             state.wrappedValue = can
         }
@@ -72,7 +76,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Whether there is a page ahead of this one - true only after going back,
     /// and what enables a Forward button - written into the binding.
-    public func canGoForward(_ state: Binding<Bool>) -> Modified {
+    public func canGoForward(into state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoForwardChanged) { can in
             state.wrappedValue = can
         }
@@ -83,44 +87,44 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigating) { type, address in try handler(WebNavigation(type: type, address: address)) }
+        onEvent(WebViewContract.navigating) { kind, address in try handler(WebNavigation(kind: kind, address: address)) }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, policy: policy) { type, address in
-            try await handler(WebNavigation(type: type, address: address))
+    public func onNavigating(policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
+        onEvent(WebViewContract.navigating, policy: policy) { kind, address in
+            try await handler(WebNavigation(kind: kind, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigating(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
-        onEvent(WebViewContract.navigating, gate: gate) { type, address in
-            try await handler(WebNavigation(type: type, address: address))
+        onEvent(WebViewContract.navigating, gate: gate) { kind, address in
+            try await handler(WebNavigation(kind: kind, address: address))
         }
     }
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Modified {
-        onEvent(WebViewContract.navigated) { result, type, address in
-            try handler(WebNavigated(result: result, type: type, address: address))
+        onEvent(WebViewContract.navigated) { result, kind, address in
+            try handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, policy: policy) { result, type, address in
-            try await handler(WebNavigated(result: result, type: type, address: address))
+    public func onNavigated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
+        onEvent(WebViewContract.navigated, policy: policy) { result, kind, address in
+            try await handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
-        onEvent(WebViewContract.navigated, gate: gate) { result, type, address in
-            try await handler(WebNavigated(result: result, type: type, address: address))
+        onEvent(WebViewContract.navigated, gate: gate) { result, kind, address in
+            try await handler(WebNavigated(result: result, kind: kind, address: address))
         }
     }
 
@@ -132,7 +136,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onProcessTerminated(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onProcessTerminated(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(WebViewContract.processTerminated, policy: policy, handler)
     }
 
@@ -145,7 +149,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 // MARK: - What a navigation reports
 
 /// Why a navigation happened.
-public enum WebNavigationType: Int32, Sendable, HostRepresentable {
+public enum WebNavigationKind: Int32, Sendable, HostRepresentable {
     /// No reason named - what the host answers for a reason it has no case
     /// for. Windows sends it for a view's first navigation, so it is an
     /// ordinary answer there rather than a fault.
@@ -168,7 +172,7 @@ public enum WebNavigationType: Int32, Sendable, HostRepresentable {
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard case .enumeration(let member) = propValue else { return nil }
-        self = WebNavigationType(rawValue: member) ?? .unknown
+        self = WebNavigationKind(rawValue: member) ?? .unknown
     }
 }
 
@@ -202,7 +206,7 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
 /// One navigation, as it starts.
 public struct WebNavigation: Equatable, Sendable {
     /// Why it happened.
-    public var type: WebNavigationType
+    public var kind: WebNavigationKind
 
     /// Where it is going.
     public var address: String
@@ -214,7 +218,7 @@ public struct WebNavigated: Equatable, Sendable {
     public var result: WebNavigationResult
 
     /// Why it happened.
-    public var type: WebNavigationType
+    public var kind: WebNavigationKind
 
     /// Where it went.
     public var address: String
@@ -290,11 +294,11 @@ extension Aim where Target == WebView {
     ///
     ///     WebView("https://example.com")
     ///         .aim(browser)
-    ///         .canGoBack($hasBack)
+    ///         .canGoBack(into: $hasBack)
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)
-    ///         .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+    ///         .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.

@@ -15,8 +15,8 @@ final class GTKWebView: GTKControl {
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its
     /// web process gone.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
     var onCanGoBack: ((Bool) -> Void)?
     var onCanGoForward: ((Bool) -> Void)?
     var onProcessGone: (() -> Void)?
@@ -26,9 +26,11 @@ final class GTKWebView: GTKControl {
 
     private var history = WebHistory()
     private var cause = WebNavigationCause()
+    private var reloadSource = WebReloadSource()
+    private var requestedLoad = false
 
     /// Why the navigation WebKit decides on next began, as its action says.
-    private var told = WebNavigationType.newPage
+    private var told = WebNavigationKind.newPage
 
     /// Whether the navigation under way failed, so its finish tells nothing more.
     private var failed = false
@@ -57,6 +59,12 @@ final class GTKWebView: GTKControl {
         guard source != self.source else { return }
         self.source = source
         guard let source else { return }
+        request(source)
+    }
+
+    private func request(_ source: WebViewSource) {
+        reloadSource.requested(source)
+        requestedLoad = true
         switch source {
         case .address(let address): webkit_web_view_load_uri(webView, address)
         case .html(let document, let baseURL?): webkit_web_view_load_html(webView, document, baseURL)
@@ -73,13 +81,31 @@ final class GTKWebView: GTKControl {
     // MARK: - Its acts
 
     /// Takes the program's step - back, forward, the page again - which the navigation it begins is told as.
-    func step(_ step: WebNavigationType) {
-        cause.ask(step)
-        switch step {
-        case .back: webkit_web_view_go_back(webView)
-        case .forward: webkit_web_view_go_forward(webView)
-        default: webkit_web_view_reload(webView)
+    func step(_ step: WebNavigationKind) {
+        let possible: Bool = switch step {
+        case .back: webkit_web_view_can_go_back(webView) != 0
+        case .forward: webkit_web_view_can_go_forward(webView) != 0
+        default: reloadSource.value != nil || address != nil || webkit_web_view_is_loading(webView) != 0
         }
+        guard cause.ask(step, if: possible) else { return }
+        switch step {
+        case .back:
+            nativeTookOver()
+            webkit_web_view_go_back(webView)
+        case .forward:
+            nativeTookOver()
+            webkit_web_view_go_forward(webView)
+        default:
+            if let source = reloadSource.value {
+                if webkit_web_view_is_loading(webView) != 0 { webkit_web_view_stop_loading(webView) }
+                request(source)
+            } else { webkit_web_view_reload(webView) }
+        }
+    }
+
+    private func nativeTookOver() {
+        requestedLoad = false
+        reloadSource.takenOver()
     }
 
     /// Runs `script` in the page, answering what it evaluated to as text (`ScriptAnswer`).
@@ -125,10 +151,14 @@ final class GTKWebView: GTKControl {
         let address = self.address ?? ""
         switch event {
         case LoadEvent.started:
+            if requestedLoad { requestedLoad = false }
+            else { reloadSource.takenOver() }
             failed = false
             let event = cause.begin(told: told)
             told = .newPage
             onNavigating?(event, address)
+        case LoadEvent.committed:
+            reloadSource.committed()
         case LoadEvent.finished where !failed:
             behind = pagesBehind
             onNavigated?(.success, cause.current, address)
@@ -160,6 +190,7 @@ final class GTKWebView: GTKControl {
     /// WebKit's `WebKitLoadEvent` cases the view tells.
     private enum LoadEvent {
         static let started: Int32 = 0
+        static let committed: Int32 = 2
         static let finished: Int32 = 3
     }
 

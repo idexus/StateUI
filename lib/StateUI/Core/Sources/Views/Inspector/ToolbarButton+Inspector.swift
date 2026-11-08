@@ -3,18 +3,20 @@
 
 extension ToolbarButton {
     /// The button that shows its scene's inspector docked in its window, and
-    /// hides it again - for a page's `.toolbar { }`. See `Inspector`.
+    /// hides it again - for a page's `.toolbar { }`. See `DebugInspector`.
     ///
     ///     @Environment(\.window) private var window
     ///
     ///     VStack { … }
-    ///         .toolbar { ToolbarButton.inspector(window) }
+    ///         .toolbar { ToolbarButton.debugInspector(window) }
     ///
-    /// - Parameter window: the window it stands in - the page's own.
-    public static func inspector(_ window: WindowSession) -> ToolbarButton {
-        ToolbarButton("ⓘ")
+    /// - Parameters:
+    ///   - window: the window it stands in - the page's own.
+    ///   - text: what it says, on a bar that shows words and to assistive technology; `ⓘ` until told otherwise.
+    public static func debugInspector(_ window: WindowSession, text: String = "ⓘ") -> ToolbarButton {
+        ToolbarButton(text)
             .id("stateui.inspector")
             .accessibilityIdentifier("stateui.inspector")
-            .onClicked { window.toggleInspector() }
+            .onClicked { window.toggleDebugInspector() }
     }
 }

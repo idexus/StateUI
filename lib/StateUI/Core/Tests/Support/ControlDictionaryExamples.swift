@@ -42,7 +42,7 @@ extension ControlDictionary {
 
                 var body: some View {
                     Button("About")
-                        .onClicked(.ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
+                        .onClicked(policy: .ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
                 }
             }
             """#),
@@ -68,7 +68,7 @@ extension ControlDictionary {
         (CheckBoxContract.self, #"""
             @State var agreed = false
 
-            CheckBox($agreed).text("I agree to the terms")
+            CheckBox("I agree to the terms", isOn: $agreed)
             """#),
 
         (ButtonMenuContract.self, #"""
@@ -106,8 +106,8 @@ extension ControlDictionary {
             @State var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 
             DatePicker($birthday)
-                .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
-                .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+                .minimum(CalendarDate(year: 1900, month: 1, day: 1))
+                .maximum(CalendarDate(year: 2026, month: 12, day: 31))
             """#),
 
         (EllipseContract.self, #"""
@@ -135,8 +135,8 @@ extension ControlDictionary {
                     .gridRow(1)
                     .gridColumnSpan(2)
             }
-            .rows(.auto, .auto)
-            .columns(.auto, .fill)
+            .rows(.automatic, .automatic)
+            .columns(.automatic, .fill)
             .columnSpacing(12)
             """#),
 
@@ -183,7 +183,7 @@ extension ControlDictionary {
             @State var tapped = "nowhere yet"
 
             Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                .type(.hybrid)
+                .kind(.hybrid)
                 .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
 
@@ -209,7 +209,7 @@ extension ControlDictionary {
                     Menu("File") {
                         MenuItem("Save").onClicked { saved = true }
                     }
-                    .id(StandardMenu.file)
+                    .joins(.file)
                 }
             """#),
 
@@ -371,8 +371,8 @@ extension ControlDictionary {
             """#),
 
         (SceneContract.self, #"""
-            extension WindowType where Value == Void {
-                static let inspector = WindowType("notes.inspector")
+            extension WindowKind where Value == Void {
+                static let inspector = WindowKind("notes.inspector")
             }
 
             struct NotePage: View {
@@ -483,7 +483,7 @@ extension ControlDictionary {
         (SwitchContract.self, #"""
             @State var soundOn = true
 
-            Switch($soundOn).text("Sound")
+            Switch("Sound", isOn: $soundOn)
                 .tint(.green)
             """#),
 
@@ -523,7 +523,7 @@ extension ControlDictionary {
             @State var alarm = ClockTime(hour: 7, minute: 0)
 
             TimePicker($alarm)
-                .format("t")
+                .format(.short)
             """#),
 
         (BottomBarContract.self, #"""
@@ -561,9 +561,10 @@ extension ControlDictionary {
             """#),
 
         (ToolbarGroupContract.self, #"""
+            @State var notes = ""
             @State var edited = false
 
-            TextEditor()
+            TextEditor($notes)
                 .onTextChanged { _ in edited = true }
                 .toolbar {
                     ToolbarButton("New").placement(at: .start)
@@ -595,13 +596,13 @@ extension ControlDictionary {
             Grid {
                 Button("Back")
                     .isEnabled(canGoBack)
-                    .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+                    .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
                 WebView("https://example.com")
-                    .canGoBack($canGoBack)
+                    .canGoBack(into: $canGoBack)
                     .aim(browser)
                     .gridRow(1)
             }
-            .rows(.auto, .fill)
+            .rows(.automatic, .fill)
             """#),
 
         (WindowContract.self, #"""
@@ -700,8 +701,7 @@ extension ControlDictionary {
             """#),
 
         (ShapeContract.self, #"""
-            Line()
-                .to(Point(120, 0))
+            Line(from: Point(0, 0), to: Point(120, 0))
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])
@@ -777,7 +777,7 @@ extension ControlDictionary {
             .lineWidth(1)
             """#),
 
-        (ImageElementContract.self, #"""
+        (ContentModeElementContract.self, #"""
             Button("Delete")
                 .icon("trash.png")
                 .showsText(false)
@@ -791,11 +791,130 @@ extension ControlDictionary {
                 .tint(.green)
             """#),
 
+        (ToggleElementContract.self, #"""
+            @State var wifi = true
+
+            Switch("Wi-Fi", isOn: $wifi)
+                .onToggled { on in print("Wi-Fi \(on)") }
+            """#),
+
+        (PopupElementContract.self, #"""
+            @State var due = CalendarDate(year: 2026, month: 11, day: 7)
+            @State var choosing = false
+
+            DatePicker($due)
+                .isOpen($choosing)
+                .onClosed { print("chosen") }
+            """#),
+
+        (PresentedElementContract.self, #"""
+            @State var editing = false
+
+            Button("Edit")
+                .onClicked { editing = true }
+                .sheet(isPresented: $editing) {
+                    Text("Editing").padding(16)
+                }
+            """#),
+
+        (HoverElementContract.self, #"""
+            @State var over = false
+
+            Rectangle()
+                .fill(over ? .steelBlue : .lightGray)
+                .onPointerEntered { over = true }
+                .onPointerExited { over = false }
+            """#),
+
+        (SessionElementContract.self, #"""
+            struct StatusPage: View {
+                @Environment(\.window) private var window
+
+                var body: some View {
+                    Text(window.phase == .active ? "In front" : "Behind")
+                }
+            }
+            """#),
+
+        (SubmitElementContract.self, #"""
+            @State var city = ""
+
+            TextField($city)
+                .submitLabel(.done)
+                .onSubmitted { print("saved") }
+            """#),
+
+        (RangeElementContract.self, #"""
+            @State var volume = 5.0
+
+            Slider($volume)
+                .minimum(0)
+                .maximum(11)
+                .onValueChanged { print($0) }
+            """#),
+
+        (ClickElementContract.self, #"""
+            @State var saved = false
+
+            Button(saved ? "Saved" : "Save")
+                .onClicked { saved = true }
+            """#),
+
+        (TextElementContract.self, #"""
+            @State var count = 0
+
+            Button("Clicked \(count) times")
+                .onClicked { count += 1 }
+            """#),
+
+        (PlaceholderElementContract.self, #"""
+            @State var city = ""
+
+            TextField($city)
+                .placeholder("City")
+            """#),
+
+        (LineBreakElementContract.self, #"""
+            Text("Words enough to take several lines of a narrow label")
+                .lineBreak(.tailTruncation)
+                .width(120)
+            """#),
+
+        (PointsShapeContract.self, #"""
+            Polygon([Point(20, 0), Point(40, 40), Point(0, 15), Point(40, 15), Point(0, 40)])
+                .fillRule(.evenOdd)
+                .fill(.gold)
+            """#),
+
+        (ShortcutElementContract.self, #"""
+            Button("Save")
+                .keyboardShortcut("s")
+                .onClicked { print("saved") }
+            """#),
+
+        (EnabledElementContract.self, #"""
+            @State var name = ""
+
+            Button("Send")
+                .isEnabled(!name.isEmpty)
+            """#),
+
+        (BackgroundElementContract.self, #"""
+            Text("On a colored ground")
+                .padding(12)
+                .background(.cornflowerBlue)
+            """#),
+
+        (IconElementContract.self, #"""
+            Button("Share")
+                .icon("square.and.arrow.up")
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 
             TextField("Name")
-                .isFocused($editing)
+                .isFocused(into: $editing)
             """#),
 
         (RefreshElementContract.self, #"""
@@ -837,21 +956,12 @@ extension ControlDictionary {
             }
             """#),
 
-        (BarItemElementContract.self, #"""
-            Text("Inbox")
-                .toolbar {
-                    ToolbarGroup {
-                        ToolbarButton("Archive")
-                        ToolbarButton("Move")
-                    }
-                    .background(.white)
-                    .shape(.roundedRectangle(12))
-                    .stroke(.gray)
-                    .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
-                }
+        (StyledElementContract.self, #"""
+            Button("Save")
+                .style(.platform)
             """#),
 
-        (BarButtonElementContract.self, #"""
+        (PressElementContract.self, #"""
             Text("Inbox")
                 .toolbar {
                     ToolbarButton("Sign out")
@@ -903,18 +1013,6 @@ extension ControlDictionary {
                 .showsText($wordsShown)
             """#),
 
-        (MenuItemElementContract.self, #"""
-            @State var saved = false
-
-            Text(saved ? "Saved" : "Draft")
-                .toolbar {
-                    ToolbarButton("Save")
-                        .icon("save.png")
-                        .isEnabled(!saved)
-                        .onClicked { saved = true }
-                }
-            """#),
-
         (PageElementContract.self, #"""
             @State var path: [String] = []
 
@@ -924,7 +1022,7 @@ extension ControlDictionary {
                 Text(section)
             }
             .title("Settings")
-            .icon("settings.png")
+            .pageIcon("settings.png")
             """#),
     ]
 

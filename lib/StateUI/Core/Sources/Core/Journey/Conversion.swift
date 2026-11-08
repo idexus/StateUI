@@ -10,15 +10,19 @@
 /// the derived state.
 @MainActor
 final class Conversion {
-    /// The sources, weakly: held strongly, they would make a ring nothing breaks.
+    /// The sources, each as its binding reaches it when asked: the storage it was made from, held, answering the
+    /// one it stands for - so a conversion made before its view's adoption, or kept past the box it was made from,
+    /// reaches the state as it stands. The derived side knows this conversion weakly, so no ring closes.
     /// Design: docs/design/core/journeys.md#conversions
-    private var kept: [WeakSource] = []
+    private var reaches: [() -> (any AnyStateStorage)?] = []
 
     /// The sources that still exist, for a read at build to record and the back
     /// engine to write.
-    var sources: [any AnyStateStorage] {
-        get { kept.compactMap { $0.storage } }
-        set { kept = newValue.map { WeakSource($0) } }
+    var sources: [any AnyStateStorage] { reaches.compactMap { $0() } }
+
+    /// Takes the sources as their bindings reach them.
+    func reach(_ sources: [() -> (any AnyStateStorage)?]) {
+        reaches = sources
     }
 
     /// The same, as what the forward engine follows.
@@ -100,14 +104,6 @@ final class Conversion {
     }
 }
 
-/// One source as the conversion knows it: weakly.
-@MainActor
-final class WeakSource {
-    weak var storage: (any AnyStateStorage)?
-
-    init(_ storage: any AnyStateStorage) { self.storage = storage }
-}
-
 /// What a conversion needs of a source's storage without its type: whether a
 /// build read it, where a derived state is kept, and its write count.
 protocol AnyStateStorage: FollowedState {
@@ -157,7 +153,7 @@ extension Journey {
         let conversion = derived.conversion ?? Conversion()
 
         conversion.declareAgain()
-        conversion.sources = [source]
+        conversion.reach([anyReach])
         conversion.upstream = source.conversion.map { [$0] } ?? []
         conversion.forward = { [weak derived] (asking: Bool) in
             guard let derived else { return }
@@ -207,16 +203,18 @@ extension Binding where Value: StateValue {
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> {
-        let source = storage
+        // The source reached as it stands when asked: a conversion made before its view's adoption follows the
+        // adopted state.
+        let (source, reach) = (storage, reach)
 
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
         conversion.declareAgain()
-        conversion.sources = [source]
+        conversion.reach([anyReach])
         conversion.upstream = source.conversion.map { [$0] } ?? []
-        conversion.forward = { [weak source, weak derived] asking in
-            guard let source, let derived else { return }
+        conversion.forward = { [weak derived] asking in
+            guard let source = reach(), let derived else { return }
 
             derived.settle(transform(source.value), asking: asking)
         }
@@ -224,8 +222,8 @@ extension Binding where Value: StateValue {
         derived.conversion = conversion
 
         if let back {
-            conversion.declareBack { [weak source, weak derived] in
-                guard let source, let derived else { return }
+            conversion.declareBack { [weak derived] in
+                guard let source = reach(), let derived else { return }
 
                 source.settle(back(derived.value), asking: true)
                 // A source that is a link of a chain carries the report on to its own sources.

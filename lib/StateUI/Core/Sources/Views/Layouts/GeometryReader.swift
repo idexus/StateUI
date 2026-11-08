@@ -54,17 +54,8 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onFrameChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Rect>) -> Modified {
-        let last = LastFrame()
-
-        return onEvent(ViewContract.frameChanged, policy: policy) { numbers in
-            if let frame = last.changed(numbers, in: .parent) { try await handler(frame) }
-        }
-    }
-
-    /// The same, answered in `space`.
     public func onFrameChanged(
-        in space: CoordinateSpace,
+        in space: CoordinateSpace = .parent,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {

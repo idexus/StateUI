@@ -43,20 +43,20 @@ extension WinUIRegistrations {
         }
         registry.add(PolygonContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolygonContract.points] ?? [], closed: true).flatMap(\.numbers),
-                    evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: true).flatMap(\.numbers),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
         registry.add(PolylineContract.self, create: { _ in WinUIPathView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolylineContract.points] ?? [], closed: false).flatMap(\.numbers),
-                    evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: false).flatMap(\.numbers),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
     }
@@ -82,7 +82,7 @@ extension WinUIRegistrations {
     private static func authored<Realized: ElementContract>(
         _ commands: [Double], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> WinUIPathView.Geometry {
-        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: moved(values))
+        .authored(commands, evenOdd: evenOdd, aspect: values[ContentModeElementContract.contentMode] ?? .fit, transform: moved(values))
     }
 
     /// The shape's transform, as the six numbers of its matrix; nil for none.

@@ -20,8 +20,7 @@ struct SwitchSample: SampleContent, ExampleContent {
             // The flag is read here, so every flip builds this closure.
             DebugInfoLabel()
 
-            Switch($soundOn)
-                .text("Sound")
+            Switch("Sound", isOn: $soundOn)
                 .accessibilityIdentifier("switch.sound")
                 .tint(Palette.accent)
                 // Runs beside the binding's write-back, carrying what the

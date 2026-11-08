@@ -72,6 +72,9 @@ Badge()
 Write a component-specific modifier before common view modifiers. A common
 modifier such as `margin` returns StateUI's modified wrapper, whose surface is
 the shared view contract rather than the original component's custom methods.
+The library's own composed views - `ItemsView`, `GalleryView`,
+`MotionLayout`, `PositionDots` - take their own modifiers and the common ones
+in any order, as a control does.
 
 ## What makes a composed view rebuild
 
@@ -112,18 +115,19 @@ StateUI resolves identity in this order:
 4. Position among siblings when no stronger identity exists.
 
 An explicit id must be unique among siblings and stable while the element means
-the same thing. Its text representation is the boundary, so a custom
-`description` must remain just as distinct as the underlying value. Identify a
+the same thing. It is compared as its value: two identities that describe
+themselves alike are two elements, and one id written under two parents is
+two elements, each with its own aim and automation handle. Identify a
 class instance by a stable property it owns rather than by the class value
-itself. Siblings sharing one identity, and two identities that describe
-themselves alike, are said once, naming which it is.
+itself. Siblings sharing one identity are said once, naming which it is.
 
 ```swift
 struct FileRow: View {
     let path: String
+    @State private var name = ""
 
     var body: some View {
-        TextField()
+        TextField($name)
             .placeholder(path)
             .id(path)
     }
@@ -370,10 +374,11 @@ its own inspector window:
 ```swift
 struct EditorPage: View {
     @Environment(\.window) private var window
+    @State private var text = ""
 
     var body: some View {
-        TextEditor()
-            .toolbar { ToolbarButton.inspector(window) }
+        TextEditor($text)
+            .toolbar { ToolbarButton.debugInspector(window) }
     }
 }
 

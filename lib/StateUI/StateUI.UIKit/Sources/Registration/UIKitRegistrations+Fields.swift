@@ -7,27 +7,27 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
     /// report is `TextInputContract.textChanged`. Each member reaches the view only where the tree changed it,
     /// which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<UIView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = UIKitTextFieldView()
             hearInput(field, reports)
-            field.typing.onSubmitted = { reports.raise(TextFieldContract.submitted) }
+            field.typing.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.isSecureTextEntry = hidden ?? false }
-            field.property(TextFieldContract.submitLabel) { view, key in
+            field.property(SubmitElementContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: false))
             }
             field.property(TextFieldContract.showsClearButton) { view, shows in
                 view.clearButtonMode = shows == true ? .whileEditing : .never
             }
-            field.raises(TextInputContract.textChanged)
-            field.raises(TextFieldContract.submitted)
+            field.declares(TextInputContract.textChanged)
+            field.declares(SubmitElementContract.submitted)
         })
         registry.add(TextEditorContract.self, create: { reports in
             let editor = UIKitTextEditorView()
@@ -37,21 +37,21 @@ extension UIKitRegistrations {
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
             editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
-            editor.raises(TextInputContract.textChanged)
+            editor.declares(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
             let search = UIKitSearchFieldView()
             hearInput(search, reports)
-            search.typing.onSubmitted = { reports.raise(SearchFieldContract.submitted) }
+            search.typing.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
             search.applies(outlineMembers) { view, values in applyOutline(view, values) }
-            search.property(SearchFieldContract.submitLabel) { view, key in
+            search.property(SubmitElementContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: true))
             }
-            search.raises(TextInputContract.textChanged)
-            search.raises(SearchFieldContract.submitted)
+            search.declares(TextInputContract.textChanged)
+            search.declares(SubmitElementContract.submitted)
         })
     }
 
@@ -68,17 +68,17 @@ extension UIKitRegistrations {
         view.setNeedsLayout()
     }
 
-    private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: Reports<Realized>) {
+    private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: ControlReports<Realized>) {
         view.typing.onTextChanged = { typed in
-            reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+            reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
         }
     }
 
     /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextElementContract.text, TextualElementContract.textCase, PlaceholderElementContract.placeholder,
+        TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
         + TextMembers.lookMembers
@@ -94,17 +94,17 @@ extension UIKitRegistrations {
         }
         if values.changed(TextualElementContract.textCase) { view.typing.textCase = values[TextualElementContract.textCase] }
         if let words = TextMembers.words(values) { view.setText(words) }
-        if values.changed(TextInputContract.placeholder) || values.changed(TextInputContract.placeholderColor) {
+        if values.changed(PlaceholderElementContract.placeholder) || values.changed(TextInputContract.placeholderColor) {
             view.setPlaceholder(
-                values[TextInputContract.placeholder],
+                values[PlaceholderElementContract.placeholder],
                 color: values[TextInputContract.placeholderColor].flatMap { UIColor(stateUI: $0.propValue) })
         }
-        if values.changed(VisualElementContract.isEnabled) || values.changed(TextInputContract.isReadOnly)
+        if values.changed(EnabledElementContract.isEnabled) || values.changed(TextInputContract.isReadOnly)
             || values.changed(TextInputContract.isSpellCheckEnabled)
             || values.changed(TextInputContract.isTextPredictionEnabled)
             || values.changed(TextInputContract.inputPurpose) {
             view.setBehavior(
-                enabled: values[VisualElementContract.isEnabled] ?? true,
+                enabled: values[EnabledElementContract.isEnabled] ?? true,
                 readOnly: values[TextInputContract.isReadOnly] ?? false,
                 keyboard: UIKitKeyboard(InputTraits(values)))
         }

@@ -287,7 +287,9 @@ final class AndroidButtonView: AndroidTextualView {
     /// An icon standing alone is sized to the room the button is placed in, before it is placed there; a
     /// button only moving keeps it.
     override func layout(_ place: Rect) {
-        let room = (width: pixels(place.width), height: pixels(place.height))
+        let room = (
+            width: AndroidPixels.size(place.width, density: density),
+            height: AndroidPixels.size(place.height, density: density))
         if !hasWords, placedSize.map({ $0 != room }) ?? true { showIcon(room: room) }
         standTogether(width: room.width)
         super.layout(place)
@@ -299,9 +301,10 @@ final class AndroidButtonView: AndroidTextualView {
         let measured: (width: Int32, height: Int32)
         if sideRoom > 0 {
             let mode = width & ViewConstants.modes
-            let widened = mode == ViewConstants.unspecified ? width : mode | ((width & ~ViewConstants.modes) + 2 * sideRoom)
+            let wider = AndroidPixels.size(Double(Int64(ViewConstants.size(width)) + 2 * Int64(sideRoom)))
+            let widened = mode == ViewConstants.unspecified ? width : ViewConstants.spec(mode, wider)
             let wide = super.measure(width: widened, height: height)
-            measured = (wide.width - 2 * sideRoom, wide.height)
+            measured = (AndroidPixels.size(Double(Int64(wide.width) - 2 * Int64(sideRoom))), wide.height)
         } else {
             measured = super.measure(width: width, height: height)
         }
@@ -314,9 +317,11 @@ final class AndroidButtonView: AndroidTextualView {
             default: max(measured, least)
             }
         }
-        let across = Java.callInt(reference, JavaAPI.getPaddingLeft) + Java.callInt(reference, JavaAPI.getPaddingRight)
-        let down = Java.callInt(reference, JavaAPI.getPaddingTop) + Java.callInt(reference, JavaAPI.getPaddingBottom)
-        return (holding(width, measured.width, size.width + across), holding(height, measured.height, size.height + down))
+        let across = Int64(Java.callInt(reference, JavaAPI.getPaddingLeft)) + Int64(Java.callInt(reference, JavaAPI.getPaddingRight))
+        let down = Int64(Java.callInt(reference, JavaAPI.getPaddingTop)) + Int64(Java.callInt(reference, JavaAPI.getPaddingBottom))
+        return (
+            holding(width, measured.width, AndroidPixels.size(Double(Int64(size.width) + across))),
+            holding(height, measured.height, AndroidPixels.size(Double(Int64(size.height) + down))))
     }
 
     /// Stands the icon beside the words in the middle with them, on a button `width` pixels wide.
@@ -328,15 +333,17 @@ final class AndroidButtonView: AndroidTextualView {
         var side: Int32 = 0
         if hasWords, icon.picture != nil {
             let gap = Java.callInt(reference, JavaAPI.getCompoundDrawablePadding)
-            let picture = Java.callInt(reference, JavaAPI.getCompoundPaddingLeft)
-                + Java.callInt(reference, JavaAPI.getCompoundPaddingRight) - left - right - gap
-            side = Int32(ButtonArithmetic.sideRoom(
-                Double(width - left - right + 2 * sideRoom), picture: Double(picture), gap: Double(gap),
-                words: Double(wordsWidth), position: icon.position).rounded(.down))
+            let picture = Int64(Java.callInt(reference, JavaAPI.getCompoundPaddingLeft))
+                + Int64(Java.callInt(reference, JavaAPI.getCompoundPaddingRight)) - Int64(left) - Int64(right) - Int64(gap)
+            side = AndroidPixels.distance(ButtonArithmetic.sideRoom(
+                Double(Int64(width) - Int64(left) - Int64(right) + 2 * Int64(sideRoom)),
+                picture: Double(picture), gap: Double(gap),
+                words: Double(wordsWidth), position: icon.position), rounding: .down)
         }
         guard side != sideRoom else { return }
         Java.call(reference, JavaAPI.setPadding,
-                  .int(left - sideRoom + side), .int(top), .int(right - sideRoom + side), .int(bottom))
+                  .int(Int32(exactly: Int64(left) - Int64(sideRoom) + Int64(side)) ?? 0), .int(top),
+                  .int(Int32(exactly: Int64(right) - Int64(sideRoom) + Int64(side)) ?? 0), .int(bottom))
         sideRoom = side
     }
 
@@ -399,7 +406,8 @@ final class AndroidButtonView: AndroidTextualView {
         case .bottom: 3
         }
         let splits = opening == .arrow
-        let arrowRight = splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2) : paddingRight - pixels(Self.arrowSide / 4)
+        let arrowRight = splits ? pixels((Self.arrowWidth - Self.arrowSide) / 2)
+            : Int32(exactly: Int64(paddingRight) - Int64(pixels(Self.arrowSide / 4))) ?? 0
         let arrow = shown.arrow ? Java.string(StateUI.Icon.down.androidDrawable) : nil
         defer { Java.release(local: arrow) }
         withExtendedLifetime(icon.picture) {
@@ -418,19 +426,19 @@ final class AndroidButtonView: AndroidTextualView {
         else { return (0, 0) }
 
         let inside = (
-            width: Double(room.width - Java.callInt(reference, JavaAPI.getPaddingLeft)
-                - Java.callInt(reference, JavaAPI.getPaddingRight)),
-            height: Double(room.height - Java.callInt(reference, JavaAPI.getPaddingTop)
-                - Java.callInt(reference, JavaAPI.getPaddingBottom)))
+            width: Double(Int64(room.width) - Int64(Java.callInt(reference, JavaAPI.getPaddingLeft))
+                - Int64(Java.callInt(reference, JavaAPI.getPaddingRight))),
+            height: Double(Int64(room.height) - Int64(Java.callInt(reference, JavaAPI.getPaddingTop))
+                - Int64(Java.callInt(reference, JavaAPI.getPaddingBottom))))
 
         switch icon.aspect {
         case .center:
             return size
         case .stretch:
-            return (Int32(max(inside.width, 0)), Int32(max(inside.height, 0)))
+            return (AndroidPixels.size(inside.width), AndroidPixels.size(inside.height))
         case .fit, .fill:
             let scale = max(0, min(inside.width / Double(size.width), inside.height / Double(size.height)))
-            return (Int32((Double(size.width) * scale).rounded()), Int32((Double(size.height) * scale).rounded()))
+            return (AndroidPixels.size(Double(size.width) * scale), AndroidPixels.size(Double(size.height) * scale))
         }
     }
 

@@ -62,20 +62,20 @@ final class HostDeclarationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Text", owner: "FontElement", member: "fontSize")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged")))
+            HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged")))
     }
 
     /// What the shared machinery realizes is a tier's member: an element that declares a member of the same name
-    /// of its own - a menu's `isEnabled` - and registers nothing takes nothing from it, so a realization read back
+    /// of its own - a window's `width` - and registers nothing takes nothing from it, so a realization read back
     /// through its declaration is the realization it was.
     func testASharedNameReachesOnlyTheWearersOfItsTier() {
         let realization = HostRealization(
-            elements: ["Menu", "Button"],
-            members: [HostRealizedMember(element: "Button", owner: "VisualElement", member: "isEnabled")])
+            elements: ["Window", "Button"],
+            members: [HostRealizedMember(element: "Button", owner: "VisualElement", member: "width")])
 
-        let back = HostDeclaration(realization: realization, shared: ["isEnabled"], acts: []).realization
+        let back = HostDeclaration(realization: realization, shared: ["width"], acts: []).realization
 
-        XCTAssertFalse(back.members.contains(HostRealizedMember(element: "Menu", owner: "Menu", member: "isEnabled")))
+        XCTAssertFalse(back.members.contains(HostRealizedMember(element: "Window", owner: "Window", member: "width")))
         XCTAssertEqual(back.members, realization.members)
     }
 
@@ -126,12 +126,12 @@ final class HostDeclarationTests: XCTestCase {
             // A host's first slice already has a button: its own member reaches it through its own contract.
             XCTAssertTrue(realization.elements.contains("Button"), "\(host) realizes no Button")
             XCTAssertTrue(realization.members.contains(
-                HostRealizedMember(element: "Button", owner: "Button", member: "clicked")))
+                HostRealizedMember(element: "Button", owner: "ClickElement", member: "clicked")))
 
             // The drift this road exists to end: `contentMode` reaches an Image
             // through the tier declaring it, whatever the host called the member.
             XCTAssertTrue(realization.members.contains(
-                HostRealizedMember(element: "Image", owner: "ImageElement", member: "contentMode")))
+                HostRealizedMember(element: "Image", owner: "ContentModeElement", member: "contentMode")))
         }
     }
 
@@ -149,7 +149,7 @@ final class HostDeclarationTests: XCTestCase {
             members: [
                 HostRealizedMember(element: "Text", owner: "Text", member: "maximumLines"),
                 HostRealizedMember(element: "Text", owner: "VisualElement", member: "opacity"),
-                HostRealizedMember(element: "Slider", owner: "Slider", member: "valueChanged"),
+                HostRealizedMember(element: "Slider", owner: "RangeElement", member: "valueChanged"),
                 HostRealizedMember(element: "Slider", owner: "VisualElement", member: "opacity"),
                 HostRealizedMember(element: "Slider", owner: "View", member: "tapped"),
                 HostRealizedMember(element: "Doodle", owner: "Doodle", member: "ink"),
@@ -163,6 +163,10 @@ final class HostDeclarationTests: XCTestCase {
         ])
         XCTAssertEqual(declaration.shared, HostDeclaration.Element(members: ["opacity"], events: ["tapped"]))
         XCTAssertEqual(declaration.acts, ["focus"])
+        XCTAssertTrue(
+            declaration.realization.members.contains(
+                HostRealizedMember(element: "Slider", owner: "FocusElement", member: "focus")),
+            "an act is found by its name among the contracts its element wears")
         XCTAssertEqual(declaration.text, """
             Slider
               valueChanged()

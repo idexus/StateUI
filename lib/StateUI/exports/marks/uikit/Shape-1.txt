@@ -1,32 +1,25 @@
-# revision 5.1
+# revision 6.1
 Capsule.dashPhase: ✅
-Capsule.geometryTransform: does not apply - read geometryTransform of Capsule - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Capsule.lineCap: ✅
 Capsule.lineWidth: ✅
 Capsule.stroke: ✅
-Ellipse.contentMode: does not apply - read contentMode of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Ellipse.dash: ✅
-Ellipse.dashPhase: ✅
 Ellipse.geometryTransform: ✅
-Line.contentMode: ✅
+Ellipse.lineCap: ✅
 Line.dash: ✅
-Line.lineCap: ✅
-Line.lineWidth: ✅
+Line.dashPhase: ✅
+Line.stroke: ✅
 Path.dashPhase: ✅
-Path.geometryTransform: does not apply - read geometryTransform of Path - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Path.lineCap: ✅
 Path.lineWidth: ✅
 Path.stroke: ✅
-Polygon.contentMode: does not apply - read contentMode of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no contentMode; its drawing proves it
 Polygon.dash: ✅
-Polygon.dashPhase: ✅
 Polygon.geometryTransform: ✅
-Polyline.contentMode: ✅
+Polygon.lineCap: ✅
 Polyline.dash: ✅
-Polyline.lineCap: ✅
-Polyline.lineWidth: ✅
+Polyline.dashPhase: ✅
+Polyline.stroke: ✅
 Rectangle.dashPhase: ✅
-Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
 Rectangle.lineCap: ✅
 Rectangle.lineWidth: ✅
 Rectangle.stroke: ✅

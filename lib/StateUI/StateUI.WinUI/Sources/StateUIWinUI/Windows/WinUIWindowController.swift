@@ -34,7 +34,7 @@ final class WinUIWindowController {
         let view = page?.winUI.view as? WinUILayoutView
         if headed !== view { headed?.setHeading(nil, line: nil) }
         headed = view
-        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
+        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
     }
 
     init(_ element: MountedElement) {
@@ -55,7 +55,7 @@ final class WinUIWindowController {
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
         // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
         for page in element.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
-            let holder = page.winUI.view as? WinUISingleChildView
+            let holder = page.winUI.view as? WinUIPageView
             holder?.showBottomBar(
                 page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
                 scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)

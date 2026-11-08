@@ -39,7 +39,7 @@ extension WebDOMView: PlacedView {
 
     /// Gives the view its own CSS back where a traveling place wrote over it.
     func clearSizeOverride() {
-        for name in overridden { WebRelay.setStyle(node, name, styled(name)) }
+        for name in overridden.sorted() { WebRelay.setStyle(node, name, styled(name)) }
         overridden = []
     }
 

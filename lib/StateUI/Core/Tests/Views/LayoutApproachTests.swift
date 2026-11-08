@@ -32,8 +32,8 @@ final class LayoutApproachTests: XCTestCase {
             handed.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-        .motion(motion)
+        .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+        .parameterMotion(motion)
         .node
     }
 

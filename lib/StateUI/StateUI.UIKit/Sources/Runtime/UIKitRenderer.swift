@@ -248,7 +248,7 @@ final class UIKitRenderer {
         #endif
         runtime.core.setDeviceInfo(HostDeviceInfo(
             formFactor: device.userInterfaceIdiom == .pad ? .tablet : .phone, platform: "iOS", model: device.model,
-            manufacturer: "Apple", name: device.name, versionString: device.systemVersion, isVirtual: isVirtual))
+            manufacturer: "Apple", name: device.name, platformVersion: device.systemVersion, isVirtual: isVirtual))
         runtime.core.setApplicationInfo(SystemFacts.application)
     }
 

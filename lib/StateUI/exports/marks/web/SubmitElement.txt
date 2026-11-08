@@ -1,0 +1,5 @@
+# revision 1.1
+SearchField.submitLabel: ✅
+SearchField.submitted: ✅
+TextField.submitLabel: ✅
+TextField.submitted: ✅

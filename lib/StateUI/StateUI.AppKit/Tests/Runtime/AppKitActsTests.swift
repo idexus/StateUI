@@ -29,7 +29,7 @@ final class AppKitActsTests: XCTestCase {
     @MainActor
     func testTheFocusActsReachTheWindowAndAnswer() throws {
         let renderer = AppKitRenderer.running { Focusing() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         let field = try XCTUnwrap(renderer.nativeViews(NSTextField.self).first { $0.isEditable })
         let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
@@ -63,7 +63,7 @@ final class AppKitActsTests: XCTestCase {
     @MainActor
     func testAnActLandsOnTheInterfaceItsHandlerChanged() throws {
         let renderer = AppKitRenderer.running { EnablingAndFocusing() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let button = try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first)
         let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
 
@@ -84,12 +84,12 @@ private struct Focusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field)
-            Button("Focus").onClicked(.ignoreWhileRunning) { answer = try await field.focus() ? "took" : "refused" }
-            Button("Unfocus").onClicked(.ignoreWhileRunning) {
+            Button("Focus").onClicked(policy: .ignoreWhileRunning) { answer = try await field.focus() ? "took" : "refused" }
+            Button("Unfocus").onClicked(policy: .ignoreWhileRunning) {
                 try await field.unfocus()
                 answer = "released"
             }
-            Button("Hide").onClicked(.ignoreWhileRunning) {
+            Button("Hide").onClicked(policy: .ignoreWhileRunning) {
                 answer = try await window.hideOnScreenKeyboard() ? "hid" : "nothing"
             }
             Text(answer)
@@ -107,7 +107,7 @@ private struct EnablingAndFocusing: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isEnabled(enabled)
-            Button("Enable and focus").onClicked(.ignoreWhileRunning) {
+            Button("Enable and focus").onClicked(policy: .ignoreWhileRunning) {
                 enabled = true
                 answer = try await field.focus() ? "took" : "refused"
             }

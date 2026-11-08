@@ -10,7 +10,7 @@ public enum ImageContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// An image is a view whose picture is fitted.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, ImageElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, ContentModeElementContract.self]
 
     /// Whether an animated picture is running.
     public static let isAnimating = ElementProperty<Self, Bool>("isAnimating", layer: .native)

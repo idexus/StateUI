@@ -6,16 +6,13 @@
 public protocol ColorPickerProperties: PropertyContainer {}
 
 extension ColorPickerProperties {
-    /// The color the well shows. Usually given in the initializer.
-    public func color(_ value: Color) -> Modified {
-        setValue(ColorPickerContract.color, value)
-    }
-
     /// Whether the user chooses the color's opacity too; an opaque color only where false, the default.
     public func choosesOpacity(_ value: Bool) -> Modified {
         setValue(ColorPickerContract.choosesOpacity, value)
     }
+}
 
+extension ColorPicker {
     /// `choosesOpacity` from a state, `$x`: the host sets each new value as it stands, and no view is rebuilt
     /// for it.
     public func choosesOpacity(_ state: Binding<Bool>) -> Modified {
@@ -37,8 +34,8 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ColorPicker>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: ColorPickerContract.self)
     }
 
@@ -55,19 +52,13 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
         self = ColorPicker().color(state)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// Two-way: shows what the state holds and writes back what the user
-    /// chooses, with no view rebuilt for it. The host carries the state as a
-    /// journey, as it carries a fill or a background, so one state paints
-    /// what the picker chooses:
-    ///
-    ///     ColorPicker($tint)
-    ///     Rectangle().fill($tint)
-    ///
-    /// - Parameter state: the state shown, and written back into as the user
-    ///   chooses.
-    /// - Returns: the picker, wearing and reporting that color.
-    public func color(_ state: Binding<Color>) -> Modified {
+    /// The color it shows.
+    func color(_ value: Color) -> Modified {
+        setValue(ColorPickerContract.color, value)
+    }
+
+    /// The color from a state carried both ways.
+    func color(_ state: Binding<Color>) -> Modified {
         journey(ColorPickerContract.color.token, by: state)
     }
 
@@ -81,7 +72,7 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onColorChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Color>) -> Modified {
+    public func onColorChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Color>) -> Modified {
         onEvent(ColorPickerContract.colorChanged, policy: policy, handler)
     }
 

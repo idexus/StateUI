@@ -193,7 +193,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(4)
         }
-        .rows(.fill, .auto, .auto, .auto, .auto)
+        .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         .rowSpacing(10)
     }
 
@@ -207,7 +207,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 // settles back onto its place.
                 if swaying {
                     face(Self.cards[index])
-                        .followsLayout(response: .milliseconds(420), damping: 0.55)
+                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55))
                 } else {
                     face(Self.cards[index])
                 }
@@ -235,11 +235,12 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
-        .shade(
+        .shade {
             Rectangle()
                 .fill(Color(hex: 0x000000))
-                .cornerRadius(16))
-        .motion(.eased(.milliseconds(300), curve: .cubicOut))
+                .cornerRadius(16)
+        }
+        .parameterMotion(.eased(.milliseconds(300), curve: .cubicOut))
         // AT REST - the ring and every card still - it says where, once.
         .onSettled { turned in
             let count = Self.cards.count
@@ -411,7 +412,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "the card nearest where the throw would end, in one movement. It has no "
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the parameters themselves travel, under the layout's "
-                + "`.motion`. The parameters, `parameters: $turn`, are the card at the front; "
+                + "`.parameterMotion`. The parameters, `parameters: $turn`, are the card at the front; "
                 + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), periodic: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.throwMotion(_:)` takes any motion: eased, its length says how far a "

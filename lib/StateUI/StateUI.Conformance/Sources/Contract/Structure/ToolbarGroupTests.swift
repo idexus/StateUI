@@ -12,11 +12,14 @@
 @_spi(Host) public enum ToolbarGroupTests: ConformanceFamily {
     public static let name = "ToolbarGroup"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(ToolbarGroupContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("theVisiblePagesItemsStandOnItsBar", proves: [
                 Covered(ToolbarGroupContract.self),
-            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "ToolbarButton")]) { s in
                 let path = State(wrappedValue: [Int]())
                 let heard = Received<String>()
                 s.start {
@@ -135,25 +138,6 @@
                 try s.settle { try bar() == "[filter] [home]|save" }
                 s.expect(try bar(), "[filter] [home]|save", "behind the overflow")
             },
-            ConformanceCase("aDisabledGroupsItemsAreOutOfReach", proves: [
-                Covered(ToolbarGroupContract.isEnabled),
-            ]) { s in
-                s.start {
-                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("Page").toolbar {
-                            ToolbarGroup {
-                                ToolbarButton("Bold").id("bold")
-                                ToolbarButton("Italic").id("italic")
-                            }
-                            .isEnabled(false)
-                        }
-                    } destination: { _ in Text("Pushed") }
-                }
-                let bar = { try s.bar(of: try shownPage(s)) }
-
-                try s.settle { try bar() == "|[!bold !italic]|" }
-                s.expect(try bar(), "|[!bold !italic]|")
-            },
             ConformanceCase("aStacksItemsStandOnEveryPageItShows", proves: [
                 Covered(ToolbarGroupContract.self),
             ]) { s in
@@ -175,7 +159,7 @@
             },
             ConformanceCase("aBottomToolbarsItemsStandAtThePagesFoot", proves: [
                 Covered(ToolbarGroupContract.barEdge),
-            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: "ToolbarButton")]) { s in
                 let path = State(wrappedValue: [Int]())
                 let heard = Received<String>()
                 s.start {
@@ -248,7 +232,7 @@
             },
             ConformanceCase("anItemWhosePartChangesMovesToTheOther", proves: [
                 Covered(ToolbarGroupContract.part),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let inDetail = State(wrappedValue: false)
                 s.start {
                     SplitView {

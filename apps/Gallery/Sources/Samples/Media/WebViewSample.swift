@@ -41,14 +41,14 @@ private struct WebBrowserPart: ExampleContent {
                 HStack {
                     Button("Back")
                         .isEnabled(hasBack)
-                        .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
 
                     Button("Forward")
                         .isEnabled(hasForward)
-                        .onClicked(.ignoreWhileRunning) { try await browser.goForward() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await browser.goForward() }
 
                     Button("Reload")
-                        .onClicked(.ignoreWhileRunning) { try await browser.reload() }
+                        .onClicked(policy: .ignoreWhileRunning) { try await browser.reload() }
                 }
                 .spacing(8)
                 .horizontalAlignment(.center)
@@ -63,8 +63,8 @@ private struct WebBrowserPart: ExampleContent {
                 // What the view calls itself to the server. Left unwritten it
                 // is the platform's own browser string.
                 .userAgent("StateUI Gallery")
-                .canGoBack($hasBack)
-                .canGoForward($hasForward)
+                .canGoBack(into: $hasBack)
+                .canGoForward(into: $hasForward)
                 .onNavigating { report in
                     status = "fetching \(report.address)"
                 }
@@ -86,7 +86,7 @@ private struct WebBrowserPart: ExampleContent {
 
             Button("Title?")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     answer = try await browser.evaluateJavaScript("document.title")
                 }
                 .gridRow(3)
@@ -96,7 +96,7 @@ private struct WebBrowserPart: ExampleContent {
                 .textColor(Palette.subtle)
                 .gridRow(4)
         }
-        .rows(.auto, .fill, .auto(count: 3))
+        .rows(.automatic, .fill, .automatic(count: 3))
         .rowSpacing(12)
     }
     // listing: end
@@ -127,8 +127,7 @@ private struct WrittenInPlacePart: ExampleContent {
 
     // listing: WrittenInPlacePart
     var body: some View {
-        WebView()
-            .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
+        WebView(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
     }
     // listing: end
 

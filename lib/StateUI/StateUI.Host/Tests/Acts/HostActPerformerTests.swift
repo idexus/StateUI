@@ -21,7 +21,7 @@ private final class Toolkit: ActToolkit {
     var announced: [String] = []
     var clipboard: String?
     var shares: [(shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)] = []
-    var themes: [ColorScheme] = []
+    var themes: [ColorScheme?] = []
     var accents: [Color?] = []
     var takesAccent = true
     var focusable: Set<ElementID> = []
@@ -55,7 +55,7 @@ private final class Toolkit: ActToolkit {
         shares.append((shared, answered))
         return window ?? self.window
     }
-    func useColorScheme(_ theme: ColorScheme) { themes.append(theme) }
+    func useColorScheme(_ theme: ColorScheme?) { themes.append(theme) }
     func useAccentColor(_ accent: Color?) -> Bool {
         accents.append(accent)
         return takesAccent
@@ -144,12 +144,12 @@ final class HostActPerformerTests: XCTestCase {
         let (network, answers) = (Network(), Answers())
         let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
         network.answer = .success(HostResponse(status: 404, headers: [
-            HostHeader(name: "Set-Cookie", value: "a=1"), HostHeader(name: "Content-Type", value: "text/plain"),
-            HostHeader(name: "set-cookie", value: "b=2"),
+            HostHeader(name: "Vary", value: "Accept"), HostHeader(name: "Content-Type", value: "text/plain"),
+            HostHeader(name: "vary", value: "Accept-Encoding"),
         ], body: Array("Not here".utf8)))
 
         acts.perform(HostActCall(act: .sendRequest, arguments: [
-            .string("https://example.com/parcels"), .name("post"), .strings(["Accept", "json"]), .bytes([1, 2]),
+            .string("https://example.com/parcels"), .name("POST"), .strings(["Accept", "json"]), .bytes([1, 2]),
         ], completion: 1))
         network.answer = .failure(ActFailure("the server could not be found"))
         acts.perform(HostActCall(act: .sendRequest, arguments: [
@@ -160,9 +160,25 @@ final class HostActPerformerTests: XCTestCase {
             address: "https://example.com/parcels", method: "POST", headers: [HostHeader(name: "Accept", value: "json")],
             body: [1, 2]))
         XCTAssertEqual(answers.replies[1], [
-            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1, b=2"]), .bytes(Array("Not here".utf8)),
+            .number(404), .strings(["content-type", "text/plain", "vary", "Accept, Accept-Encoding"]),
+            .bytes(Array("Not here".utf8)),
         ])
         XCTAssertEqual(answers.failures[2], "the server could not be found")
+    }
+
+    func testCustomMethodNamesReachTheNetworkUnchanged() {
+        let (network, answers) = (Network(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), network: network, answers: answers, tree: { nil })
+        let names = ["ReadRecord", "READRECORD", "readRecord"]
+
+        for (index, name) in names.enumerated() {
+            acts.perform(HostActCall(act: .sendRequest, arguments: [
+                .string("https://example.com/parcels"), .name(name), .strings([]), .bytes([]),
+            ], completion: index + 1))
+        }
+
+        XCTAssertEqual(network.sent.map(\.method), names)
+        XCTAssertEqual(answers.replies.count, names.count)
     }
 
     /// An address with no scheme is read against a page, where one stands - the Web's; elsewhere it fails before
@@ -180,7 +196,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(
             answers.failures[1], "the address '/api/parcels' names no scheme, and no page stands to read it against")
         XCTAssertEqual(network.sent.map(\.address), ["/api/parcels"], "sent where a page reads it")
-        XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'sendRequest'"), true)
+        XCTAssertEqual(answers.failures[3]?.contains("does not perform the act 'Application.sendRequest'"), true)
         XCTAssertFalse(HostRequest(address: "parcels/42").namesItsScheme)
         XCTAssertTrue(HostRequest(address: "http://localhost:8080").namesItsScheme)
     }
@@ -261,17 +277,17 @@ final class HostActPerformerTests: XCTestCase {
         let runtime = HostRuntime.still()
         var root = HostPatch(id: .manual("application"), type: .application)
         root.children = .arranged(["1", "2"].map { name in
-            var scene = HostPatch(id: .manual(name), type: .scene)
-            scene.children = .arranged([HostPatch(id: .manual("window 1"), type: .window)])
+            var scene = HostPatch(id: .scene(name), type: .scene)
+            scene.children = .arranged([HostPatch(id: .window(1), type: .window)])
             return scene
         })
         runtime.tree.apply(root, complete: true)
-        let second = try XCTUnwrap(runtime.tree.root?.first(id: .manual("2"))?.first(id: .manual("window 1")))
+        let second = try XCTUnwrap(runtime.tree.root?.first(id: .scene("2"))?.first(id: .window(1)))
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers, tree: runtime.tree)
 
         acts.perform(HostActCall(
-            act: .confirm, arguments: HostActCall.window("window 1", of: "2") + [.string("Delete?")], completion: 1))
+            act: .confirm, arguments: HostActCall.window(OwnKey.window(kind: nil, serial: 1), of: "2") + [.string("Delete?")], completion: 1))
         acts.perform(HostActCall(act: .alert, arguments: HostActCall.usersWindow + [.string("Done")], completion: 2))
         acts.perform(HostActCall(
             act: .alert, arguments: HostActCall.window("window 7", of: "1") + [.string("Gone")], completion: 3))
@@ -286,7 +302,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(toolkit.shown.map(\.question.title), ["Delete?", "Done", "Last"], "and the next shows")
 
         acts.perform(HostActCall(
-            act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 1", of: "2"), completion: 5))
+            act: .hideOnScreenKeyboard, arguments: HostActCall.window(OwnKey.window(kind: nil, serial: 1), of: "2"), completion: 5))
         acts.perform(HostActCall(
             act: .hideOnScreenKeyboard, arguments: HostActCall.window("window 7", of: "2"), completion: 6))
         XCTAssertTrue(try XCTUnwrap(toolkit.keyboards.first) === second)
@@ -375,7 +391,7 @@ final class HostActPerformerTests: XCTestCase {
     func testTheApplicationsThemeIsShownAndInForce() {
         let (toolkit, answers) = (Toolkit(), Answers())
         let acts = performer(toolkit, answers)
-        defer { acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: nil)) }
+        defer { acts.perform(HostActCall(act: .useColorScheme, arguments: [.nothing], completion: nil)) }
         CoreLink().setColorScheme(.light)
 
         acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.dark.propValue], completion: 1))
@@ -386,8 +402,8 @@ final class HostActPerformerTests: XCTestCase {
         CoreLink().setColorScheme(.light)
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark, "a system report leaves it held")
 
-        acts.perform(HostActCall(act: .useColorScheme, arguments: [ColorScheme.system.propValue], completion: 2))
-        XCTAssertEqual(toolkit.themes, [.dark, .system])
+        acts.perform(HostActCall(act: .useColorScheme, arguments: [.nothing], completion: 2))
+        XCTAssertEqual(toolkit.themes, [.dark, nil])
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .light, "the system's again")
     }
 
@@ -583,6 +599,19 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.replies[1], [.bytes([60, 104])], "the first two bytes")
         XCTAssertEqual(answers.replies[2], [.bytes([60, 104, 49, 62])], "the whole file")
         XCTAssertEqual(answers.replies[3], [.bytes([])], "none")
+    }
+
+    func testAReadLimitIsBoundedBeforeItsCheckedIntegerConversion() {
+        let (files, answers) = (Files(), Answers())
+        let acts = HostActPerformer(toolkit: Toolkit(), files: files, answers: answers, tree: { nil })
+        files.contents = [report: [1, 2, 3]]
+        for (index, number) in [Double.nan, .infinity, -.infinity, .greatestFiniteMagnitude].enumerated() {
+            acts.perform(HostActCall(act: .readFile, arguments: [report.propValue, .number(number)], completion: index + 1))
+        }
+        let bound = Int(exactly: 0x1p52 as Double) ?? 0
+        XCTAssertEqual(files.maxima, [0, bound, 0, bound])
+        XCTAssertEqual(answers.replies[1], [.bytes([])])
+        XCTAssertEqual(answers.replies[3], [.bytes([])])
     }
 
     /// A host with no toolkit for files fails every act for files by name and the host's.

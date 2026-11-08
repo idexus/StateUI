@@ -35,11 +35,11 @@ final class AppKitCanvasViewTests: XCTestCase {
                 startAngle: 0, endAngle: 90, clockwise: true)
             Draw.fillPath("M0 0 L10 0 L10 10 Z")
             Draw.text("text", x: 0, y: 0, width: 20, height: 10)
-            Draw.translateBy(x: 2, y: 3)
-            Draw.rotate(by: 30)
-            Draw.scaleBy(x: 2, y: 2)
-            Draw.saveState()
-            Draw.restoreState()
+            Draw.translate(2, 3)
+            Draw.rotate(30)
+            Draw.scale(2)
+            Draw.saveGraphics()
+            Draw.restoreGraphics()
         }
         let value = try XCTUnwrap(element.node.props[.drawing])
         let view = AppKitCanvasView()
@@ -47,7 +47,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         view.apply(Self.drawing(value))
 
         XCTAssertEqual(view.instructionsForTesting.count, 23, "every kind read")
-        XCTAssertEqual(view.instructionsForTesting.last, .restoreState)
+        XCTAssertEqual(view.instructionsForTesting.last, .restoreGraphics)
     }
 
     @MainActor
@@ -91,7 +91,7 @@ final class AppKitCanvasViewTests: XCTestCase {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let element = Canvas {
             Draw.fillColor(.blue)
             Draw.fillEllipse(x: 0, y: 0, width: 20, height: 20)

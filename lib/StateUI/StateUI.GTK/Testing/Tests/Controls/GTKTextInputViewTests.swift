@@ -55,6 +55,61 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
+    /// A caret and a selection the tree puts in characters reach GTK in the scalars it counts: an emoji of several
+    /// scalars is one character, so the character after it is selected whole, in a field and an editor alike.
+    func testASelectionInCharactersReachesGTKInItsScalars() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "👩🏽‍💻x")
+            let host = GTKRenderer.running {
+                VStack {
+                    Button("First")
+                    TextField(words.projectedValue).cursorPosition(1).selectionLength(1)
+                    TextEditor(words.projectedValue).cursorPosition(1).selectionLength(1)
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
+            let after = Int32("👩🏽‍💻".unicodeScalars.count)
+
+            var (start, end): (Int32, Int32) = (0, 0)
+            _ = gtk_editable_get_selection_bounds(field.widget.opaque, &start, &end)
+            XCTAssertEqual([start, end], [after, after + 1], "the x after the emoji, in the field")
+            let buffer = gtk_text_view_get_buffer(
+                UnsafeMutablePointer<GtkTextView>(OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque))))
+            var (from, to) = (GtkTextIter(), GtkTextIter())
+            _ = gtk_text_buffer_get_selection_bounds(buffer, &from, &to)
+            XCTAssertEqual(
+                [gtk_text_iter_get_offset(&from), gtk_text_iter_get_offset(&to)], [after, after + 1], "in the editor")
+        }
+    }
+
+    /// A mark typed after the letter it joins fits at the most characters allowed, as the two are one character; a
+    /// letter of its own at the bound does not - in a field and an editor alike.
+    func testAMarkJoiningTheLetterBeforeItFitsAtTheBound() throws {
+        try onUIThread {
+            let (fieldWords, editorWords) = (State(wrappedValue: "e"), State(wrappedValue: "e"))
+            let host = GTKRenderer.running {
+                VStack {
+                    TextField(fieldWords.projectedValue).maximumLength(1)
+                    TextEditor(editorWords.projectedValue).maximumLength(1)
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            let editor = try XCTUnwrap(host.views(GTKTextEditorView.self).first)
+            XCTAssertEqual([field.text, editor.text], ["e", "e"])
+            let text = try XCTUnwrap(gtk_editable_get_delegate(field.widget.opaque))
+            let view = try XCTUnwrap(OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
+
+            GTKTestHost.emit(text, "insert-at-cursor", words: "\u{301}")
+            GTKTestHost.emit(view, "insert-at-cursor", words: "\u{301}")
+            XCTAssertEqual([field.text, editor.text], ["e\u{301}", "e\u{301}"], "the mark joins the e")
+
+            GTKTestHost.emit(text, "insert-at-cursor", words: "x")
+            GTKTestHost.emit(view, "insert-at-cursor", words: "x")
+            XCTAssertEqual([field.text, editor.text], ["e\u{301}", "e\u{301}"], "a letter of its own does not fit")
+        }
+    }
+
     /// Typing stops at the most characters allowed - an emoji one character, whole or not at all - in a field and an
     /// editor alike.
     func testTypingStopsAtTheMostCharactersAllowed() throws {

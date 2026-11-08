@@ -10,7 +10,7 @@ public enum HStackContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A row is a stack.
-    public static let tiers: [any Contract.Type] = [StackContract.self]
+    public static let tiers: [any Tier.Type] = [StackContract.self]
 
     /// The gap between one line and the next of a row that wraps, in device units.
     public static let rowSpacing = ElementProperty<Self, Double>("rowSpacing", layer: .stateUI, moves: .spacing)

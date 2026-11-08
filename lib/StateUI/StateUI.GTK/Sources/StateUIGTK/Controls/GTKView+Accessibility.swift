@@ -30,7 +30,7 @@ extension GTKView {
         }
 
         var states = [GTK_ACCESSIBLE_STATE_HIDDEN]
-        if words.presence == .hidden || words.presence == .hiddenWithChildren {
+        if words.presence == .hidden || words.presence == .hiddenWithContents {
             var hidden = GValue()
             g_value_init(&hidden, g_type_from_name("gboolean"))
             g_value_set_boolean(&hidden, 1)

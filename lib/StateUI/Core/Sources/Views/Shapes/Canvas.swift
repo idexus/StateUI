@@ -1,25 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Canvas`'s own properties, shared by the control and its `Style<Canvas>`.
-public protocol CanvasProperties: PropertyContainer {}
-
-extension CanvasProperties {
-    /// What to draw, written as the canvas calls that make the drawing.
-    ///
-    ///     .drawing {
-    ///         Draw.strokeColor(.firebrick)
-    ///         Draw.lineWidth(2)
-    ///         Draw.strokeLine(x1: 0, y1: 0, x2: 120, y2: 0)
-    ///     }
-    ///
-    /// Usually given in the initializer instead; this is how a `Style<Canvas>`
-    /// states one.
-    public func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Modified {
-        setValue(CanvasContract.drawing, drawing())
-    }
-}
-
 /// A canvas to draw on, one instruction at a time.
 ///
 ///     Canvas {
@@ -43,14 +24,9 @@ extension CanvasProperties {
 ///     Canvas { strokes(trail) }
 ///         .onPointerPressed { point in trail = [point] }
 ///         .onPanUpdated { pan in trail.append(pan.at) }
-public struct Canvas: ElementView, CanvasProperties {
+public struct Canvas: ElementView {
     /// The node this control describes.
     public var node: Node
-
-    /// An empty canvas - what a `Style<Canvas>` is written against.
-    public init() {
-        node = Node(contract: CanvasContract.self)
-    }
 
     /// A canvas showing what the closure draws.
     public init(@DrawingBuilder drawing: () -> [DrawCommand]) {

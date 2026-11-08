@@ -1,0 +1,5 @@
+# revision 1.1
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✅
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

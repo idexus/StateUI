@@ -16,9 +16,19 @@ how; whether there is a page behind and ahead, said as a whole as a
 navigation commits and ends - the way back first, and only a flag that
 changed; its web process dying. A step back, forward or a load again the
 program asks for carries that as its cause; a page still coming, which WebKit
-reloads without asking, is asked for again. A script's value is written as
-JSON and answers as text by the host layer's rule.
+reloads without asking, is asked for again. Its complete source is kept
+by `WebReloadSource` until that native navigation commits. HTML with a base keeps its source
+after commit too: fetching the base address does not reproduce the authored
+HTML, even when only the document's resources are still loading. Reload
+reissues that HTML with the same base while it remains the authored page.
+An address or a document carried in a data address uses native reload after
+commit. The native navigation's identity keeps an older callback from
+clearing the current reload source. A navigation started natively takes
+over from the authored source and keeps native reload and history. The
+host keeps navigation identities, not the navigation objects themselves.
+A script's value is written as JSON and answers as text by the host layer's
+rule.
 
-macOS's WebKit also declares a legacy `WebNavigationType` and `WebHistory`, so
+macOS's WebKit also declares a legacy `WebNavigationKind` and `WebHistory`, so
 the shared code names StateUI's and the host layer's in full
-(`StateUI.WebNavigationType`, `StateUIHost.WebHistory`).
+(`StateUI.WebNavigationKind`, `StateUIHost.WebHistory`).

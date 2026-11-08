@@ -26,7 +26,7 @@
             ConformanceCase("aUsersChoiceLandsOnceAndTheProgramsComesBackFromNobody", proves: [
                 Covered(PickerContract.selectedIndex),
                 Covered(PickerContract.selectedIndexChanged),
-            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(TextElementContract.text, on: TextContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
                 let sizes = ["S", "M", "L"]
@@ -34,7 +34,7 @@
                     VStack {
                         Text("size \(size.wrappedValue)").id("label")
                         Picker(sizes, selection: size.projectedValue)
-                            .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                            .onSelectionChanged { written.values.append(size.wrappedValue) }
                             .id("picker")
                         Button("Small").onClicked { size.wrappedValue = "S" }.id("small")
                     }
@@ -43,38 +43,18 @@
                 let label = try s.element("label")
 
                 try s.perform(.choose(2), on: picker)
-                try s.settle { try written.values == ["L"] && s.held(TextualElementContract.text, on: label) == "size L" }
+                try s.settle { try written.values == ["L"] && s.held(TextElementContract.text, on: label) == "size L" }
                 s.expect(written.values, ["L"])
-                s.expect(try s.held(TextualElementContract.text, on: label), "size L", "the state took the user's choice")
+                s.expect(try s.held(TextElementContract.text, on: label), "size L", "the state took the user's choice")
 
                 try s.perform(.activate, on: s.element("small"))
                 try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 0 }
                 s.expect(try s.held(PickerContract.selectedIndex, on: picker), 0, "the program's choice shown")
                 s.expect(written.values, ["L"], "and come back from nobody")
             },
-            ConformanceCase("theUsersChoiceStandsWhileTheTreeChangesItsTitle", proves: [
-                Covered(PickerContract.placeholder),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let named = State(wrappedValue: false)
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .placeholder(named.wrappedValue ? "Size" : "Pick").id("picker")
-                        Button("Name").onClicked { named.wrappedValue = true }.id("change")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.choose(2), on: picker)
-                try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 2 }
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(PickerContract.placeholder, on: picker) == "Size" }
-                s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the user's choice, not argued with")
-            },
             ConformanceCase("choicesTheTreeChangesAreOffered", proves: [
                 Covered(PickerContract.options),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let more = State(wrappedValue: false)
                 let size = State<String?>(wrappedValue: nil)
                 s.start {
@@ -90,66 +70,10 @@
                 try s.settle { try s.held(PickerContract.options, on: picker) == ["S", "M", "L", "XL"] }
                 s.expect(try s.held(PickerContract.options, on: picker), ["S", "M", "L", "XL"])
             },
-            ConformanceCase("theListTheUserOpensAndClosesIsHeard", proves: [
-                Covered(PickerContract.isOpen), Covered(PickerContract.opened), Covered(PickerContract.closed),
-            ]) { s in
-                let heard = Received<String>()
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed { heard.values.append("closed") }
-                            .id("picker")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.open, on: picker)
-                s.settle { heard.values == ["opened"] }
-                s.expect(try s.held(PickerContract.isOpen, on: picker), true)
-                try s.perform(.close, on: picker)
-                s.settle { heard.values.count == 2 }
-
-                s.expect(heard.values, ["opened", "closed"])
-                s.expect(try s.held(PickerContract.isOpen, on: picker), false)
-            },
-            ConformanceCase("theListTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
-                Covered(PickerContract.isOpen), Covered(PickerContract.closed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let showing = State(wrappedValue: false)
-                let heard = Received<String>()
-                let size = State<String?>(wrappedValue: nil)
-                s.start {
-                    VStack {
-                        Picker(["S", "M", "L"], selection: size.projectedValue)
-                            .isOpen(showing.wrappedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed {
-                                heard.values.append("closed")
-                                showing.wrappedValue = false
-                            }
-                            .id("picker")
-                        Button("Open").onClicked { showing.wrappedValue = true }.id("open")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.activate, on: s.element("open"))
-                try s.settle { try s.held(PickerContract.isOpen, on: picker) == true }
-                s.turn()
-                s.expect(heard.values, [], "the program's opening heard by nobody")
-
-                try s.perform(.close, on: picker)
-                s.settle { heard.values == ["closed"] }
-                s.expect(heard.values, ["closed"], "the user closing what the program opened")
-            },
             offersItsValues(as: .segmented),
             takesTheUsersChoice(as: .segmented),
             offersItsValues(as: .radio),
             takesTheUsersChoice(as: .radio),
-            Aspects.holds(PickerContract.placeholder, on: "Picker", "Size", then: "Color",
-                          with: [Write(PickerContract.options, ["S", "M"])]),
         ]
     }
 
@@ -157,7 +81,7 @@
     @MainActor static func offersItsValues(as presentation: PickerPresentation) -> ConformanceCase {
         ConformanceCase("\(presentation)OffersItsValuesAndShowsTheOneChosen", proves: [
             Covered(PickerContract.presentation), Covered(PickerContract.options), Covered(PickerContract.selectedIndex),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let size = State(wrappedValue: "M")
             s.start {
                 VStack {
@@ -179,7 +103,7 @@
     @MainActor static func takesTheUsersChoice(as presentation: PickerPresentation) -> ConformanceCase {
         ConformanceCase("\(presentation)TakesTheUsersChoice", proves: [
             Covered(PickerContract.presentation), Covered(PickerContract.selectedIndexChanged),
-        ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: TextContract.self)]) { s in
             let size = State(wrappedValue: "M")
             let written = Received<String>()
             let sizes = ["S", "M", "L"]
@@ -187,14 +111,14 @@
                 VStack {
                     Text("size \(size.wrappedValue)").id("label")
                     Picker(sizes, selection: size.projectedValue)
-                        .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                        .onSelectionChanged { written.values.append(size.wrappedValue) }
                         .presentation(presentation)
                         .id("picker")
                 }
             }
             try s.perform(.choose(2), on: s.element("picker"))
-            try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "size L" }
-            s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "size L")
+            try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "size L" }
+            s.expect(try s.held(TextElementContract.text, on: s.element("label")), "size L")
             s.expect(written.values, ["L"], "the user's choice landed once")
         }
     }

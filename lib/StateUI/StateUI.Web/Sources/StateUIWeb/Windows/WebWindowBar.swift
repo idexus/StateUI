@@ -146,7 +146,7 @@ final class WebWindowBar: WebDOMView {
     static func look(of style: ToolbarStyle) -> String? {
         switch style {
         case .glass: nil
-        case .system, .plain: "plain"
+        case .automatic, .plain: "plain"
         case .rounded: "rounded"
         }
     }
@@ -191,7 +191,7 @@ final class WebWindowBar: WebDOMView {
         attribute("data-edge", chrome.barScrollEdge == .none ? "none" : chrome.barScrollEdge == .hard ? "hard" : nil)
         // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
-        // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
+        // The buttons on glass unless said otherwise: the Web's own look for them, `.automatic`, is plain.
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
         style("--stateui-bar-spacing", WebCSS.pixels(chrome.toolbarSpacing))
         for button in [toggle, back, closer, more, sideMore] { showOwnLook(button) }

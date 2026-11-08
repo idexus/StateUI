@@ -16,7 +16,7 @@ Button("Filters")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits nothing: every member below is its own.
+Inherits: [PresentedElement](tiers/PresentedElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -47,6 +47,12 @@ See [the dictionary](README.md) for how a mark is given.
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/PopoverContract.swift`.
 
 ## Popover's own members
+
+Popover declares no members of its own.
+
+## From [PresentedElement](tiers/PresentedElement.md)
+
+What a page shown over the one beneath it holds and reports: a sheet, a popover.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

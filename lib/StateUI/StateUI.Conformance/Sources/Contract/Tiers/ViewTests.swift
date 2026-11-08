@@ -168,7 +168,7 @@
     static func bodied(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aBodyFollowingItsPlaceLagsAndSettles", proves: [
             Covered(ViewContract.layoutBody, on: element),
-        ], needs: [Covered(MotionLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(MotionLayoutContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
@@ -184,7 +184,7 @@
                         laid.values.append(at)
                         return [Placement(Rect(at * 100, 0, 40, 40))]
                     }
-                    .motion(.none)
+                    .parameterMotion(.none)
                     .width(200).height(40)
                     // The place leaps a hundred on.
                     Button("Leap").onClicked { phase.wrappedValue = 1 }.id("leap")
@@ -282,7 +282,7 @@
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let shared = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {
@@ -460,7 +460,7 @@
     static func heldAfterItsTime(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aHoldWaitsItsTime", proves: [
             Covered(ViewContract.holdDuration, on: element),
-        ], needs: [Covered(ViewContract.held, on: element), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ViewContract.held, on: element), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let long = State(wrappedValue: false)
             s.start {
                 VStack {
@@ -549,7 +549,7 @@
     @MainActor
     static func swiped(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanFarEnoughItsWayIsASwipe", proves: [
-            Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirection, on: element),
+            Covered(ViewContract.swiped, on: element), Covered(ViewContract.swipeDirections, on: element),
             Covered(ViewContract.swipeThreshold, on: element),
         ]) { s in
             let heard = Received<SwipeDirection>()
@@ -557,7 +557,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        Write(ViewContract.swipeDirection, [.left, .right]), Write(ViewContract.swipeThreshold, 50),
+                        Write(ViewContract.swipeDirections, [.left, .right]), Write(ViewContract.swipeThreshold, 50),
                         Hear(ViewContract.swiped) { heard.values.append($0) },
                     ])
                 }
@@ -634,20 +634,28 @@
     @MainActor
     static func pointed(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).thePointerIsHeardComingMovingPressingAndGoing", proves: [
-            Covered(ViewContract.pointerEntered, on: element), Covered(ViewContract.pointerMoved, on: element),
-            Covered(ViewContract.pointerPressed, on: element), Covered(ViewContract.pointerReleased, on: element),
-            Covered(ViewContract.pointerExited, on: element),
-        ]) { s in
+            Covered(ViewContract.pointerMoved, on: element), Covered(ViewContract.pointerPressed, on: element),
+            Covered(ViewContract.pointerReleased, on: element),
+        ], needs: [
+            Covered(HoverElementContract.pointerEntered, on: element), Covered(HoverElementContract.pointerExited, on: element),
+        ], pointing(element))
+    }
+
+    /// The pointer coming over the view, pressing, letting go and leaving: what `pointed` and the hover's case on a
+    /// view both run.
+    @MainActor
+    static func pointing(_ element: String) -> @MainActor (Session) throws -> Void {
+        { s in
             let heard = Received<String>()
             s.start {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        HearDone(ViewContract.pointerEntered) { heard.values.append("entered") },
+                        HearDone(HoverElementContract.pointerEntered) { heard.values.append("entered") },
                         Hear(ViewContract.pointerMoved) { heard.values.append("moved \(Self.at($0))") },
                         Hear(ViewContract.pointerPressed) { heard.values.append("pressed \(Self.at($0))") },
                         Hear(ViewContract.pointerReleased) { heard.values.append("released \(Self.at($0))") },
-                        HearDone(ViewContract.pointerExited) { heard.values.append("exited") },
+                        HearDone(HoverElementContract.pointerExited) { heard.values.append("exited") },
                     ])
                 }
                 .horizontalAlignment(.start)
@@ -685,7 +693,7 @@
                         .width(80)
                         .height(40)
                         .setValue(ViewContract.allowsDrop, true)
-                        .onEvent(ViewContract.drop) { heard.values.append("drop \($0)") }.id("target")
+                        .onEvent(ViewContract.dropped) { heard.values.append("drop \($0)") }.id("target")
                 }
                 .horizontalAlignment(.start)
             }
@@ -700,8 +708,8 @@
     @MainActor
     static func droppedOn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDropOnItIsHeardWithItsWords", proves: [
-            Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.drop, on: element),
-            Covered(ViewContract.dragOver, on: element), Covered(ViewContract.dragLeave, on: element),
+            Covered(ViewContract.allowsDrop, on: element), Covered(ViewContract.dropped, on: element),
+            Covered(ViewContract.dragEntered, on: element), Covered(ViewContract.dragExited, on: element),
         ]) { s in
             let heard = Received<String>()
             s.start {
@@ -714,13 +722,13 @@
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
                         Write(ViewContract.allowsDrop, true),
-                        HearDone(ViewContract.dragOver) { heard.values.append("over") },
-                        HearDone(ViewContract.dragLeave) { heard.values.append("left") },
-                        Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
+                        HearDone(ViewContract.dragEntered) { heard.values.append("over") },
+                        HearDone(ViewContract.dragExited) { heard.values.append("left") },
+                        Hear(ViewContract.dropped) { heard.values.append("drop \($0)") },
                     ], id: "crossed")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.allowsDrop, true), Hear(ViewContract.drop) { heard.values.append("drop \($0)") },
+                        Write(ViewContract.allowsDrop, true), Hear(ViewContract.dropped) { heard.values.append("drop \($0)") },
                     ], id: "target")
                 }
                 .horizontalAlignment(.start)

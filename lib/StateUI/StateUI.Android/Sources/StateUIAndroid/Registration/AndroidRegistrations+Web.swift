@@ -25,11 +25,11 @@ extension AndroidRegistrations {
                     view.setUserAgent(values[WebViewContract.userAgent])
                 }
             }
-            web.raises(WebViewContract.navigating)
-            web.raises(WebViewContract.navigated)
-            web.raises(WebViewContract.canGoBackChanged)
-            web.raises(WebViewContract.canGoForwardChanged)
-            web.raises(WebViewContract.processTerminated)
+            web.declares(WebViewContract.navigating)
+            web.declares(WebViewContract.navigated)
+            web.declares(WebViewContract.canGoBackChanged)
+            web.declares(WebViewContract.canGoForwardChanged)
+            web.declares(WebViewContract.processTerminated)
         })
     }
 }

@@ -75,7 +75,7 @@ final class UIKitDriver: HostDriver {
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
-        finish()
+        close()
         forgetWhatIsKept()
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
@@ -86,7 +86,7 @@ final class UIKitDriver: HostDriver {
 
     /// Runs `application` on a new host, as the next launch does: what the last kept stands.
     func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
-        finish()
+        close()
         written.listen()
         let renderer = UIKitRenderer.running(clock: clock, application: application)
         self.renderer = renderer
@@ -153,8 +153,7 @@ final class UIKitDriver: HostDriver {
     }
 
     /// Ends the host the driver started last.
-    func finish() {
-        renderer?.fileToolkit.showing?.chooseForTesting([])
+    func close() {
         renderer?.finish()
         renderer = nil
     }
@@ -202,10 +201,10 @@ final class UIKitDriver: HostDriver {
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
     /// process of its own takes on a busy Mac. What UIKit autoreleases in it is let go as it ends.
     func step() {
-        guard let renderer else { return }
         autoreleasepool {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
-            _ = renderer.runtime.core.runJobs()
+            _ = HostBoundary.runJobs()
+            guard let renderer else { return }
             renderer.runtime.pump.turn()
             renderer.layOut()
             if renderer.frameClock.held { renderer.frame() }
@@ -481,10 +480,10 @@ final class UIKitDriver: HostDriver {
         case (.isSelectable, let label as UIKitSelectableTextView): return label.isSelectable.propValue
         case (.text, let field as any UIKitTextInputView): return field.words.propValue
         // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
-        case (.stroke, let field as any UIKitTextInputView):
+        case (BorderElementContract.stroke.token, let field as any UIKitTextInputView):
             guard field.layer.borderWidth > 0 else { return nil }
             return field.layer.borderColor.map { Brush.solidColor(Self.color(UIColor(cgColor: $0))).propValue }
-        case (.lineWidth, let field as any UIKitTextInputView): return Double(field.layer.borderWidth).propValue
+        case (BorderElementContract.lineWidth.token, let field as any UIKitTextInputView): return Double(field.layer.borderWidth).propValue
         case (.shape, let field as any UIKitTextInputView):
             let radius = Double(field.layer.cornerRadius)
             return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
@@ -509,14 +508,14 @@ final class UIKitDriver: HostDriver {
         case (.text, let check as UIKitCheckView): return (check.configuration?.title ?? "").propValue
         case (.text, let toggle as UIKitSwitchView): return (toggle.caption.text ?? "").propValue
         case (.value, let slider as UIKitSliderView): return Double(slider.value).propValue
-        case (.minimum, let slider as UIKitSliderView): return Double(slider.minimumValue).propValue
-        case (.maximum, let slider as UIKitSliderView): return Double(slider.maximumValue).propValue
+        case (RangeElementContract.minimum.token, let slider as UIKitSliderView): return Double(slider.minimumValue).propValue
+        case (RangeElementContract.maximum.token, let slider as UIKitSliderView): return Double(slider.maximumValue).propValue
         case (.value, let stepper as UIKitStepperView): return stepper.value.propValue
-        case (.minimum, let stepper as UIKitStepperView): return stepper.minimumValue.propValue
-        case (.maximum, let stepper as UIKitStepperView): return stepper.maximumValue.propValue
+        case (RangeElementContract.minimum.token, let stepper as UIKitStepperView): return stepper.minimumValue.propValue
+        case (RangeElementContract.maximum.token, let stepper as UIKitStepperView): return stepper.maximumValue.propValue
         case (.step, let stepper as UIKitStepperView): return stepper.stepValue.propValue
         case (.progress, let bar as UIKitProgressBarView): return Double(bar.bar.progress).propValue
-        case (.isAnimating, let spinner as UIKitSpinnerView): return spinner.isAnimating.propValue
+        case (SpinnerContract.isAnimating.token, let spinner as UIKitSpinnerView): return spinner.isAnimating.propValue
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
         case (.tint, let spinner as UIKitSpinnerView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
@@ -536,8 +535,8 @@ final class UIKitDriver: HostDriver {
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
         case (.color, let picker as UIKitColorPickerView): return picker.selectedColor.map { Self.color($0).propValue }
         case (.choosesOpacity, let picker as UIKitColorPickerView): return picker.supportsAlpha.propValue
-        case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
-        case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
+        case (DatePickerContract.minimum.token, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
+        case (DatePickerContract.maximum.token, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
         case (.isRefreshEnabled, let pulled as any UIKitRefreshing):
             return (pulled.refresh.scroller?.refreshControl != nil).propValue
         case (.isRefreshing, let pulled as any UIKitRefreshing):
@@ -548,9 +547,9 @@ final class UIKitDriver: HostDriver {
         case (.scrollOffset, let scroll as UIKitScrollView):
             return scroll.toolkitStanding.propValue
         case (.axes, let scroll as UIKitScrollView): return scroll.axes.propValue
-        case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
+        case (ImageContract.source.token, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue
-        case (.source, let web as WebKitView): return Self.shown(by: web)?.propValue
+        case (WebViewContract.source.token, let web as WebKitView): return Self.shown(by: web)?.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
         case (.isVisible, let view?):
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
@@ -565,7 +564,7 @@ final class UIKitDriver: HostDriver {
             case .send: .send
             case .next: .next
             case .done: .done
-            case .default: .default
+            case .default: .automatic
             default: nil
             }
             return key?.propValue

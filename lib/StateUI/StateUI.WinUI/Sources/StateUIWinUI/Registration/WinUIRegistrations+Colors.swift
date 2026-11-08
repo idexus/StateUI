@@ -20,8 +20,8 @@ extension WinUIRegistrations {
                     write: values.changed(ColorPickerContract.color),
                     choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false)
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(ColorPickerContract.colorChanged)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(ColorPickerContract.colorChanged)
         })
     }
 }

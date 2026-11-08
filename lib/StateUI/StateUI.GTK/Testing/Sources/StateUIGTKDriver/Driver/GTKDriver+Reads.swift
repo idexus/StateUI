@@ -21,7 +21,7 @@ extension GTKDriver {
         if property == .keyboardShortcut, let shortcut = (view as? GTKButtonView)?.shortcutForTesting {
             return .some(GTKKeys.shortcut(keyval: shortcut.keyval, modifiers: shortcut.modifiers)?.propValue)
         }
-        if property == .role, let button = view as? GTKButtonView {
+        if property == ButtonContract.role.token, let button = view as? GTKButtonView {
             // As the classes libadwaita draws a role by; the way out wears none, its Escape its only mark.
             let has = { (name: String) in gtk_widget_has_css_class(button.widget, name) != 0 }
             if has("suggested-action") { return .some(ButtonRole.primary.propValue) }
@@ -32,7 +32,7 @@ extension GTKDriver {
         if property == .tooltip {
             return .some(view.flatMap { gtk_widget_get_tooltip_text($0.widget) }.map { String(cString: $0) }?.propValue)
         }
-        if property == .title, let tab = tabTitle(of: element) { return .some(tab.propValue) }
+        if property == PageElementContract.title.token, let tab = tabTitle(of: element) { return .some(tab.propValue) }
         switch view {
         case let field as GTKTextFieldView: return fieldHolds(property, field)
         case let editor as GTKTextEditorView: return editorHolds(property, editor)
@@ -132,7 +132,7 @@ extension GTKDriver {
             default:
                 has(GTK_INPUT_HINT_EMOJI) ? .chat
                     : has(GTK_INPUT_HINT_UPPERCASE_SENTENCES) ? .text
-                    : has(GTK_INPUT_HINT_NO_SPELLCHECK) && !has(GTK_INPUT_HINT_WORD_COMPLETION) ? .plain : .default
+                    : has(GTK_INPUT_HINT_NO_SPELLCHECK) && !has(GTK_INPUT_HINT_WORD_COMPLETION) ? .plain : .automatic
             }
             return read.propValue
         }
@@ -209,7 +209,7 @@ extension GTKDriver {
         case .fontWeight:
             return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
             if Self.tabularDigits(widget) { attributes.insert(.monospacedDigits) }
             return attributes.propValue
@@ -306,8 +306,8 @@ extension GTKDriver {
         gtk_spin_button_get_range(stepper.widget.opaque, &low, &high)
         gtk_spin_button_get_increments(stepper.widget.opaque, &step, &page)
         switch property {
-        case .minimum: return low.propValue
-        case .maximum: return high.propValue
+        case RangeElementContract.minimum.token: return low.propValue
+        case RangeElementContract.maximum.token: return high.propValue
         case .step: return step.propValue
         default: return nil
         }
@@ -415,9 +415,16 @@ extension GTKDriver {
                 }
             }
             return nil
-        case .isAccessibilityHidden, .hidesChildrenFromAccessibility:
-            return (!differs(stateui_test_accessible_state_is(
-                UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))).propValue
+        case .accessibilityPresence:
+            // GTK leaves an accessible out with everything in it, its one hidden state - the view alone as the
+            // register records it missing.
+            let hidden = !differs(stateui_test_accessible_state_is(
+                UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))
+            guard hidden else { return AccessibilityPresence.element.propValue }
+            let alone = element.accessibilityWords.presence == .hidden
+                && register.judgment(of: "accessibilityPresence", on: element.type.name, from: "VisualElement")
+                    .map { if case .partial = $0 { true } else { false } } == true
+            return (alone ? AccessibilityPresence.hidden : .hiddenWithContents).propValue
         default: return nil
         }
     }
@@ -464,7 +471,7 @@ private struct PangoRun {
             return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
             guard first(PANGO_ATTR_STYLE) != nil || tabularDigits != nil else { return nil }
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
             if tabularDigits == true { attributes.insert(.monospacedDigits) }
             return attributes.propValue

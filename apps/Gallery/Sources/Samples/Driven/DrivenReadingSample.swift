@@ -30,15 +30,14 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .style(.card)
             .width($width)
             .height(28)
-            .background(.solidColor(Palette.accent))
+            .background(Palette.accent)
             .shape(.roundedRectangle(8))
             .lineWidth(0)
             .horizontalAlignment(.start)
 
             // The two readings, off ONE journey: `destination` is where the
             // value is going and `value` where it has got to.
-            Text()
-                .text($width.journey.convert {
+            Text($width.journey.convert {
                     "going to \(Int($0.destination)) — showing \(Int($0.value))"
                 })
                 .fontSize(17)
@@ -56,7 +55,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .style(.card)
             .width($width.journey.convert { abs($0.destination - $0.value) })
             .height(10)
-            .background(.solidColor(Palette.subtle))
+            .background(Palette.subtle)
             .shape(.roundedRectangle(5))
             .lineWidth(0)
             .horizontalAlignment(.start)

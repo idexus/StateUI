@@ -11,8 +11,8 @@ final class UserChangeTests: XCTestCase {
     /// A reported value becomes the value a state carries: words as text, flags, numbers, choices and colors as
     /// lanes - a color's four channels as fractions of full, as a color state lays them.
     func testAReportedValueIsTheValueAStateCarries() {
-        XCTAssertEqual(HostStateValue(carrying: .string("Ada")), .text("Ada"))
-        XCTAssertEqual(HostStateValue(carrying: .name("size")), .text("size"))
+        XCTAssertEqual(HostStateValue(carrying: .string("Ada")), .string("Ada"))
+        XCTAssertEqual(HostStateValue(carrying: .name("size")), .string("size"))
         XCTAssertEqual(HostStateValue(carrying: .bool(true)), .lanes([1]))
         XCTAssertEqual(HostStateValue(carrying: .number(0.5)), .lanes([0.5]))
         XCTAssertEqual(HostStateValue(carrying: .numbers([1, 2])), .lanes([1, 2]))

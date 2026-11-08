@@ -33,6 +33,9 @@
     /// The properties the patches described.
     public private(set) var properties: [Prop: HostValue] = [:]
 
+    /// The semantic key a menu or entry composes by across page levels, separate from its scoped element id.
+    public private(set) var menuKey: HostMenuKey?
+
     /// The properties bound to states, by property.
     public private(set) var driven: [Prop: HostStateBinding] = [:]
 
@@ -57,8 +60,10 @@
     /// Whether the pointer stands over the element's view, as its toolkit last told it.
     var pointerIsOver = false
 
-    /// The frame report this element last said, which a report the same says again to nobody.
+    /// The frame report this element last said, which a report the same says again to nobody - but to a reader
+    /// come since, which hears where the element stands once (`frameReportDue`).
     var reportedFrame: [Double] = []
+    var frameReportDue = false
 
     /// Where a split view last said its sidebar stands, and onto which state; nil before it said.
     var reportedOverlays: (binding: HostStateBinding, over: Bool)?
@@ -101,6 +106,9 @@
     /// How far the pan heard on the element has come since it began, as it last told.
     var panFromStart = Point(x: 0, y: 0)
 
+    /// Whether a pan heard on the element is under way: begun, and not yet ended or cancelled.
+    var panUnderWay = false
+
     /// How fast the pan, the pinch and the rotation heard on the element go (`SpeedReading`).
     var panSpeed = SpeedReading()
     var pinchSpeed = SpeedReading()
@@ -139,6 +147,7 @@
         Self.liveCount += 1
         id = patch.id
         type = patch.type
+        menuKey = patch.menuKey
         self.tree = tree
         self.parent = parent
         mount = tree.allocateMount()
@@ -157,7 +166,7 @@
     }
 
     /// The patch the element is made from while its native half is made - what a toolkit making another control of
-    /// what the element holds reads (`Reports.made`); nil after.
+    /// what the element holds reads (`ControlReports.made`); nil after.
     public private(set) var made: HostPatch?
 
     /// Applies a patch of this element. The tree is made and applied by recursion - an element, then its children -
@@ -199,11 +208,13 @@
     /// The patch's own values taken: its properties, events, driven states and motion, before its children.
     @inline(never)
     private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
+        if let key = patch.menuKey { menuKey = key }
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
 
         let previouslyShown = isPagePresented ? shownChildren : []
         let heardPull = hearsPull
+        let readFrameBefore = frameReaders
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)
         if case .replace(let replacement) = patch.driven {
@@ -244,6 +255,8 @@
             }
         }
         wear(driven)
+        // A reader of where the element stands come since hears the standing report (MountedElement+Frames.swift).
+        if frameReaders != readFrameBefore { frameReportDue = frameReaders != nil }
 
         for (property, binding) in driven where binding.mode != .in {
             drivenValues[property] = tree.core.value(for: binding)
@@ -534,6 +547,18 @@
         return nil
     }
 
+    /// The element standing at `place` - the keys from this one down, this one's first, each the next's among
+    /// those it holds; nil where none stands so.
+    public func element(at place: [ElementID]) -> MountedElement? {
+        guard place.first == id else { return nil }
+        var element = self
+        for key in place.dropFirst() {
+            guard let next = element.held.first(where: { $0.id == key }) else { return nil }
+            element = next
+        }
+        return element
+    }
+
     /// The element numbered `sought` in this subtree, this one first; nil where none is.
     public func first(mount sought: UInt64) -> MountedElement? {
         if mount == sought { return self }
@@ -675,11 +700,13 @@
 
     /// The value `property` presents: a running animation's, else the described or bound one.
     public func value(_ property: Prop) -> HostValue? {
+        let shown: HostValue?
         if driven[property].map({ $0.mode != .in }) == true {
-            return resolvedValue(property)
+            shown = resolvedValue(property)
+        } else {
+            shown = tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
         }
-
-        return tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
+        return GeometryArithmetic.value(shown, for: property)
     }
 
     /// The text value of `property`.
@@ -690,6 +717,9 @@
 
     /// The number value of `property`.
     public func number(_ property: Prop) -> Double? { value(property)?.number }
+
+    /// The whole number a property presents, rounded as its contract says; nil for another kind or a number outside Int.
+    public func whole(_ property: Prop) -> Int? { value(property).flatMap(Int.init(propValue:)) }
 
     /// The Boolean value of `property`.
     public func bool(_ property: Prop) -> Bool? { value(property)?.bool }
@@ -723,12 +753,12 @@
         }
         values.horizontal = value(.horizontalAlignment)?.enumeration ?? NodeType.unsaidHorizontal[type] ?? 3
         values.vertical = value(.verticalAlignment)?.enumeration ?? 3
-        values.width = stated(.width)
-        values.height = stated(.height)
-        values.minimumWidth = stated(.minimumWidth)
-        values.minimumHeight = stated(.minimumHeight)
-        values.maximumWidth = stated(.maximumWidth)
-        values.maximumHeight = stated(.maximumHeight)
+        values.width = stated(VisualElementContract.width.token)
+        values.height = stated(VisualElementContract.height.token)
+        values.minimumWidth = stated(VisualElementContract.minimumWidth.token)
+        values.minimumHeight = stated(VisualElementContract.minimumHeight.token)
+        values.maximumWidth = stated(VisualElementContract.maximumWidth.token)
+        values.maximumHeight = stated(VisualElementContract.maximumHeight.token)
         values.row = whole(.gridRow) ?? 0
         values.column = whole(.gridColumn) ?? 0
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
@@ -743,11 +773,6 @@
     private func stated(_ property: Prop) -> Double? {
         guard let value = number(property), value.isFinite, value >= 0 else { return nil }
         return value
-    }
-
-    private func whole(_ property: Prop) -> Int? {
-        guard let number = value(property)?.number, number.isFinite else { return nil }
-        return Int(number.rounded())
     }
 
     /// The bound state's value for `property`, as the last frame carried it or the core holds it.
@@ -776,7 +801,7 @@
         }
 
         switch (binding.kind, state) {
-        case (.text, .text(let text)):
+        case (.text, .string(let text)):
             return .string(text)
 
         case (.plain, .lanes(let lanes)):
@@ -807,9 +832,10 @@
         switch property {
         case .margin, .padding:
             return .numbers([0, 0, 0, 0])
-        case .spacing, .rowSpacing, .columnSpacing:
+        case StackContract.spacing.token, ToolbarGroupContract.spacing.token, GridContract.rowSpacing.token,
+             HStackContract.rowSpacing.token, .columnSpacing:
             return .number(0)
-        case .lineWidth:
+        case ShapeContract.lineWidth.token, BorderElementContract.lineWidth.token:
             return .number(1)
         case .dashPhase:
             return .number(0)
@@ -859,10 +885,10 @@
         switch kind {
         case .number:
             return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
-        case .boolean:
+        case .bool:
             return Bool(carried: .lanes(lanes))?.propValue
         case .choice:
-            return .enumeration(Int32(lanes[0].rounded()))
+            return Int32(exactly: lanes[0].rounded()).map(HostValue.enumeration)
         case .color:
             return Color(carried: .lanes(lanes))?.propValue
         case .material:

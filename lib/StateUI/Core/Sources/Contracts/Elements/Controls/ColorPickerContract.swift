@@ -10,7 +10,7 @@ public enum ColorPickerContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A color picker is a view the keyboard reaches.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, FocusElementContract.self]
 
     /// Whether the user chooses the color's opacity too; an opaque color only where false, the default.
     public static let choosesOpacity = ElementProperty<Self, Bool>("choosesOpacity", layer: .native)

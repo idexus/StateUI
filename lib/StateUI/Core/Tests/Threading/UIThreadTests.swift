@@ -61,7 +61,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Nap")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     try await Task.sleep(nanoseconds: 30_000_000)
                     woke = true
                 }
@@ -125,7 +125,7 @@ final class UIThreadTests: XCTestCase {
 
         XCTAssertEqual(asked, 1, "the queued act asked for no turn - the host would not perform it until the next event")
         XCTAssertTrue(
-            drainedActs().contains { $0.name == "focus" },
+            drainedActs().contains { $0.name == "FocusElement.focus" },
             "the act the turn is asked for is there to take")
     }
 
@@ -190,7 +190,35 @@ final class UIThreadTests: XCTestCase {
         XCTAssertEqual(asked { kept.wrappedValue = 0.5 }, 1, "the write asked for no turn")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
         XCTAssertGreaterThan(Renderer.shared.actCallsPending, 0, "but the save is pending work")
-        XCTAssertEqual(drainedActs().map { $0.name }, ["persistValue"], "which then takes the save")
+        XCTAssertEqual(drainedActs().map { $0.name }, ["Application.persistValue"], "which then takes the save")
+    }
+
+    /// A SAVE RECORDED asks for a turn whatever road the value came in by: a kept
+    /// state nobody reads, snapped to where a measurement put it, is saved with
+    /// no other event.
+    func testAKeptStateSnappedNobodyReadsStillAsksForATurn() throws {
+        _ = drainedActs()
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+
+        let key = PersistentKey<Double>("mainThread.snapped")
+        let kept = State(wrappedValue: 1.0, persistentKey: key)
+
+        XCTAssertEqual(asked { kept.projectedValue.journey.snap(to: 0.5) }, 1, "the snap asked for no turn")
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
+        XCTAssertEqual(drainedActs().map { $0.name }, ["Application.persistValue"], "the turn takes the save")
+    }
+
+    /// A scene's record asks for a turn as it records a value to keep, as the
+    /// store does: the save is the host's work whoever recorded it.
+    func testASceneValueRecordedAsksForATurn() throws {
+        _ = drainedActs()
+        stateUIRunJobs()
+
+        let record = SceneRecord(id: "1", declaration: 0)
+
+        XCTAssertEqual(asked { record.record(SceneKey<Double>("shade").key, .number(0.5)) }, 1)
+        XCTAssertEqual(record.pending, 1)
     }
 
     /// A MOVEMENT asks for a turn: `move(to:)` books its waiter and writes the
@@ -355,7 +383,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     try await WindowSession().alert("//list", message: "saved")
                     reached = true
                 }
@@ -367,7 +395,7 @@ final class UIThreadTests: XCTestCase {
         XCTAssertFalse(reached, "the handler is suspended, waiting for the host")
 
         let acts = drainedActs()
-        XCTAssertEqual(acts.first?.name, "alert")
+        XCTAssertEqual(acts.first?.name, "Application.alert")
 
         // What the host does when the navigation is over.
         let completion = try XCTUnwrap(acts.compactMap(\.completion).first)
@@ -400,7 +428,7 @@ final class UIThreadTests: XCTestCase {
         XCTAssertTrue(renders.fire(id))
 
         let acts = drainedActs()
-        XCTAssertEqual(acts.first?.name, "handlerFailed")
+        XCTAssertEqual(acts.first?.name, "Application.handlerFailed")
         XCTAssertEqual(acts.first?.arguments.first, .string("no route"))
     }
 

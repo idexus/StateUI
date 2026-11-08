@@ -10,6 +10,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var email = ""
     @State private var done = 0
     @State private var hidden = true
+    @State private var password = ""
     @State private var user = ""
     @State private var newPassword = ""
     @State private var signInCode = ""
@@ -34,7 +35,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Name")
                 .placeholder("Type your name")
                 .showsClearButton(true)
-                .isFocused($editing)
+                .isFocused(into: $editing)
 
             Text(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
                 .fontSize(17)
@@ -78,15 +79,14 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityLabel("A field that cannot be typed in")
                 .isReadOnly(true)
 
-            TextField()
+            TextField($password)
                 .accessibilityIdentifier("entry.password")
                 .accessibilityLabel("Password")
                 .placeholder("a password")
                 .isPassword(hidden)
                 .submitLabel(.done)
 
-            Switch($hidden)
-                .text("Hidden")
+            Switch("Hidden", isOn: $hidden)
                 .accessibilityIdentifier("entry.hidden")
                 .horizontalAlignment(.center)
 

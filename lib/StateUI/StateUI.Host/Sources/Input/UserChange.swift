@@ -8,8 +8,8 @@
     /// or a color's channels as fractions of full as lanes; nil for what no state carries.
     public init?(carrying value: HostValue) {
         switch value {
-        case .string(let text): self = .text(text)
-        case .name(let name): self = .text(name)
+        case .string(let text): self = .string(text)
+        case .name(let name): self = .string(name)
         case .bool(let flag): self = .lanes([flag ? 1 : 0])
         case .number(let number): self = .lanes([number])
         case .numbers(let numbers): self = .lanes(numbers)
@@ -33,16 +33,17 @@ extension MountedElement {
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }
 
-    /// Tells every element in this subtree that follows its focus where the focus now is, where that changed since
-    /// it was last told - `holds` saying whether the focus stands in an element's view, nil where it shows none: what
-    /// a toolkit telling only that the focus moved asks, once the move has settled.
+    /// Tells every element this one holds that follows its focus - the sheet an arrangement keeps apart from its
+    /// pages included - where the focus now is, where that changed since it was last told: `holds` saying whether
+    /// the focus stands in an element's view, nil where it shows none, what a toolkit telling only that the focus
+    /// moved asks, once the move has settled.
     /// Design: docs/design/host/runtime.md#the-focus
     public func reportFocus(in runtime: HostRuntime, holds: (MountedElement) -> Bool?) {
         if handler(.isFocusedChanged) != nil, let focused = holds(self), focused != reportedFocus {
             reportedFocus = focused
             send(.isFocusedChanged, [.bool(focused)], in: runtime)
         }
-        for child in children { child.reportFocus(in: runtime, holds: holds) }
+        for child in held { child.reportFocus(in: runtime, holds: holds) }
     }
 
     /// A value the user changed: onto the state carrying it, then the event with it. What the program writes reports

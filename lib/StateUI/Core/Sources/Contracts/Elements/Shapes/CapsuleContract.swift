@@ -11,7 +11,7 @@ public enum CapsuleContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A capsule is a shape.
-    public static let tiers: [any Contract.Type] = [FilledShapeContract.self]
+    public static let tiers: [any Tier.Type] = [FilledShapeContract.self]
 
     /// The element's own members.
     public static let members: [any ContractMember] = []

@@ -22,7 +22,7 @@ fails at once, so a handler awaiting it goes on.
 ## Starting
 
 The page loads the module and calls its `_start`, which runs the head's
-`main`: it names the application and calls `StateUIWeb.run(name:)`. The host
+`main`: it names the application and calls `WebHost.run(name:applicationID:)`. The host
 claims the page's one thread as the UI thread, hands the relay the two
 functions the page calls it through, and starts in the order every host keeps
 ([starting](../../host/runtime.md#starting)): it tells the core what it
@@ -120,7 +120,10 @@ a 24-hour clock where that language's hours run from 0, the week's first day
 where the browser says it (Sunday where not), and the writing's direction.
 The browser says nothing of measures: they are metric but in the three
 countries of none - the United States, Liberia and Myanmar. The relay hands
-over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
+over the browser's words; Swift decides (`WebEnvironment.locale`). A browser
+that names no language leaves the locale untold: the clock, the week and
+the writing's direction are the language's, and none is invented in its
+place; an empty entry in the list of languages is none. Swift tells
 the locale again as the user's languages change, and as the page comes back
 to the front, since the browser tells no change of the zone ([facts read again
 at the front](../../host/runtime.md#facts-read-again-at-the-front)). So the
@@ -161,6 +164,9 @@ not know has none, and the act fails. A word for a screen reader goes to one
 polite live region of the page's, emptied first so the same words are told
 again. The on-screen keyboard goes down with the focus of the field holding
 it. The focus goes to an element's view, or the first in it that takes it.
+A request is the browser's `fetch`, its method as written; fetch refuses
+CONNECT, TRACE and TRACK ("HTTP method is unsupported"), which fails the
+request with that reason: `sendRequest` stands ☑️ in the register.
 
 A kept value stands in the browser's storage for the page's site, under the
 application's name, in the host layer's text (`KeptValuesText`): a key read
@@ -300,3 +306,10 @@ HelloWorld's and the Gallery's - and CI runs it after the Web tests. A module
 past its budget fails the run: what grew it is found, or the budget is raised
 in the same change, with the reason. One a twentieth or more under its budget
 says so, and the budget comes down with it, so a gain stays won.
+
+A generic function is compiled once for each type it is called with. One
+the library calls with every member's or every contract's type - a hundred
+of them - keeps its body non-generic behind a generic call that only names
+the type (`Node(contract:)`, `Wearing.takes`, `ContractNames.claim`, a
+state's write asking `HandlerRun`): the body stands in the module once, not a
+hundred times.

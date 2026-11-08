@@ -40,7 +40,7 @@ private struct GridPlacement: ExampleContent {
                     .gridRow(2)
                     .gridColumnSpan(2)
             }
-            .rows(.fixed(64, count: 2), .auto)
+            .rows(.fixed(64, count: 2), .automatic)
             .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
             .rowSpacing(10)
             .columnSpacing(10)
@@ -69,7 +69,7 @@ private struct GridPlacement: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("A row or column is `.fixed(64)`, `.auto`, `.fill` or `.proportional(2)`; "
+            Text("A row or column is `.fixed(64)`, `.automatic`, `.fill` or `.proportional(2)`; "
                 + "`count` repeats it - `.fixed(64, count: 2)` is two rows 64 points tall.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -1,0 +1,5 @@
+# revision 1.1
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the flyout hidden as a click beside it hides it, no click sent
+Sheet.isPresented: ✅
+Sheet.isPresentedChanged: ✅

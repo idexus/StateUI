@@ -20,4 +20,19 @@ export ADW_DEBUG_ACCENT_COLOR=blue
 if [[ $# -eq 0 ]]; then
   swift test --package-path "$repository_dir" --filter StateUIFoundationTests
 fi
-exec swift test --package-path "$repository_dir/lib/StateUI/StateUI.GTK/Testing" "$@"
+testing="$repository_dir/lib/StateUI/StateUI.GTK/Testing"
+swift test --package-path "$testing" "$@"
+
+# The facade and the web view's backend, as this build made them, held to their API records
+# (lib/StateUI/exports/api/StateUIGTK.txt, StateUIWebViewGTK.txt): their C modules found by their maps and
+# pkg-config's flags.
+modules="$(swift build --package-path "$testing" --show-bin-path)"
+arguments=()
+for map in StateUI/StateUI.GTK/Sources/CStateUIGTK StateUI/StateUI.GTK/Sources/CStateUISoup StateUI/StateUI.Host/CStateUIHost \
+    Backends/WebView.GTK/Sources/CWebKitGTK; do
+  arguments+=(-Xcc "-fmodule-map-file=$repository_dir/lib/$map/module.modulemap")
+done
+for flag in $(pkg-config --cflags libadwaita-1 libsoup-3.0 webkitgtk-6.0); do arguments+=(-Xcc "$flag"); done
+for module in StateUIGTK StateUIWebViewGTK; do
+  "$repository_dir/.scripts/API/record.sh" "$module" "$modules" "" "" "${arguments[@]}"
+done

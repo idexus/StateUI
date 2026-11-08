@@ -7,40 +7,16 @@
 extension View {
     // MARK: Tap
 
-    /// Runs when the view is tapped by the platform's native recognizer.
+    /// Runs when the view is tapped by the platform's native recognizer: `count` taps in a row, one until told
+    /// otherwise.
     ///
     ///     HStack { … }
     ///         .onTapped { path.append(.details(id)) }
     ///
-    /// The whole view answers, not a button inside it.
-    public func onTapped(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        modified {
-            $0.hearsTaps(1)
-            $0.addHandler(ViewContract.tapped.token, handler)
-        }
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        modified {
-            $0.hearsTaps(1)
-            $0.addHandler(ViewContract.tapped.token, gate: .own(policy), handler)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        modified {
-            $0.hearsTaps(1)
-            $0.addHandler(ViewContract.tapped.token, gate: .shared(gate), handler)
-        }
-    }
-
-    /// The same, for a double tap or more: `count` taps in a row.
-    ///
     ///     Text("Reset").onTapped(count: 2) { taps = 0 }
-    public func onTapped(count: Int, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
+    ///
+    /// The whole view answers, not a button inside it.
+    public func onTapped(count: Int = 1, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
         // One `modified`: chaining would return `Modified.Modified`.
         modified {
             $0.hearsTaps(count)
@@ -50,7 +26,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onTapped(count: Int = 1, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsTaps(count)
             $0.addHandler(ViewContract.tapped.token, gate: .own(policy), handler)
@@ -58,7 +34,7 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onTapped(count: Int = 1, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsTaps(count)
             $0.addHandler(ViewContract.tapped.token, gate: .shared(gate), handler)
@@ -68,40 +44,16 @@ extension View {
     // MARK: Hold
 
     /// Runs when the user holds the view down - a finger, a pen or a button
-    /// pressed and kept still - as long as the platform's long press.
+    /// pressed and kept still - once the press has stood still `minimum`, or
+    /// as long as the platform's long press where it is nil, the default.
     ///
     ///     Photo(item)
     ///         .onHeld { selection.insert(item.id) }
     ///
-    /// A press held is the hold's: its release is no tap, and it drags nothing.
-    public func onHeld(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        modified {
-            $0.hearsHolds(nil)
-            $0.addHandler(ViewContract.held.token, handler)
-        }
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onHeld(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        modified {
-            $0.hearsHolds(nil)
-            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
-        }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onHeld(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        modified {
-            $0.hearsHolds(nil)
-            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
-        }
-    }
-
-    /// The same, once the press has stood still `minimum`.
-    ///
     ///     Photo(item).onHeld(minimum: .milliseconds(800)) { showActions(for: item) }
-    public func onHeld(minimum: Duration, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
+    ///
+    /// A press held is the hold's: its release is no tap, and it drags nothing.
+    public func onHeld(minimum: Duration? = nil, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
         modified {
             $0.hearsHolds(minimum)
             $0.addHandler(ViewContract.held.token, handler)
@@ -110,7 +62,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onHeld(minimum: Duration, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onHeld(minimum: Duration? = nil, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsHolds(minimum)
             $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
@@ -118,7 +70,7 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onHeld(minimum: Duration, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onHeld(minimum: Duration? = nil, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsHolds(minimum)
             $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
@@ -130,25 +82,25 @@ extension View {
     /// Runs when the view is swiped, with the one dominant direction it went.
     ///
     ///     VStack { … }
-    ///         .onSwiped(direction: [.left, .right]) { direction in
+    ///         .onSwiped(directions: [.left, .right]) { direction in
     ///             if direction == .left { items.removeLast() }
     ///         }
     ///
     /// - Parameters:
-    ///   - direction: which ways to listen for. A view that listens for nothing
+    ///   - directions: which ways to listen for. A view that listens for nothing
     ///     recognizes nothing, so the default is every direction.
     ///   - threshold: how far a swipe must travel to count, in device units.
     ///   - handler: what to run, given the direction the swipe went.
     public func onSwiped(
-        direction: SwipeDirection = .all,
+        directions: SwipeDirections = .all,
         threshold: Double? = nil,
         _ handler: @escaping @MainActor (SwipeDirection) throws -> Void
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
+            $0.hearsSwipes(directions, threshold: threshold)
             $0.addHandler(ViewContract.swiped.token) {
                 // A payload that does not read leaves the handler alone, and so does a direction it did not ask for.
-                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
+                if let went = EventBuffer.current.value().flatMap(SwipeDirection.init(propValue:)), directions.contains(went) {
                     try handler(went)
                 }
             }
@@ -157,46 +109,28 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Modified {
-        modified {
-            $0.hearsSwipes(.all, threshold: nil)
-            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(.all, handler))
-        }
-    }
-
-    /// The same, for the ways `direction` names, traveling `threshold` to count.
     public func onSwiped(
-        direction: SwipeDirection,
+        directions: SwipeDirections = .all,
         threshold: Double? = nil,
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(direction, handler))
-        }
-    }
-
-    /// The same, every way, traveling `threshold` to count.
-    public func onSwiped(
-        threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
-    ) -> Modified {
-        modified {
-            $0.hearsSwipes(.all, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(.all, handler))
+            $0.hearsSwipes(directions, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(directions, handler))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSwiped(
-        direction: SwipeDirection = .all,
+        directions: SwipeDirections = .all,
         threshold: Double? = nil,
         gate: Gate,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.hearsSwipes(direction, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: .shared(gate), swiped(direction, handler))
+            $0.hearsSwipes(directions, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .shared(gate), swiped(directions, handler))
         }
     }
 
@@ -263,16 +197,8 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Modified {
-        modified {
-            $0.hearsPans(nil)
-            $0.addHandler(ViewContract.panUpdated, policy: policy, panned(handler))
-        }
-    }
-
-    /// The same, with `touchCount` pointers.
     public func onPanUpdated(
-        touchCount: Int, policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>
+        touchCount: Int? = nil, policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
@@ -307,7 +233,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
+    public func onPinchUpdated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
         onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, pivot, velocity in
             try await handler(PinchUpdate(phase: phase, scale: scale, pivot: pivot, velocity: velocity))
         }
@@ -342,7 +268,7 @@ extension View {
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onRotationUpdated(
-        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>
+        policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>
     ) -> Modified {
         onEvent(ViewContract.rotationUpdated, policy: policy) { phase, angle, velocity in
             try await handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
@@ -363,34 +289,34 @@ extension View {
     /// A pointer is a mouse, a trackpad or a pen; on a touch-only device these
     /// never fire.
     public func onPointerEntered(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.pointerEntered, handler)
+        onEvent(HoverElementContract.pointerEntered, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerEntered, policy: policy, handler)
+    public func onPointerEntered(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(HoverElementContract.pointerEntered, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPointerEntered(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerEntered, gate: gate, handler)
+        onEvent(HoverElementContract.pointerEntered, gate: gate, handler)
     }
 
     /// Runs when a pointer leaves the view - the other half of a hover.
     public func onPointerExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.pointerExited, handler)
+        onEvent(HoverElementContract.pointerExited, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerExited, policy: policy, handler)
+    public func onPointerExited(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(HoverElementContract.pointerExited, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPointerExited(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.pointerExited, gate: gate, handler)
+        onEvent(HoverElementContract.pointerExited, gate: gate, handler)
     }
 
     /// Runs as the pointer moves over the view, with where it is in the view's
@@ -406,7 +332,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerMoved(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerMoved(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerMoved, policy: policy) { point in
             if let point {
                 try await handler(point)
@@ -435,7 +361,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerPressed(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerPressed, policy: policy) { point in
             if let point {
                 try await handler(point)
@@ -463,7 +389,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerReleased(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerReleased, policy: policy) { point in
             if let point {
                 try await handler(point)
@@ -516,7 +442,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onDragStarting(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragStarting, policy: policy, handler)
     }
 
@@ -532,7 +458,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragEnded(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onDragEnded(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragEnded, policy: policy, handler)
     }
 
@@ -544,13 +470,13 @@ extension View {
     /// Accepts what is dropped on the view, with the text it carried.
     ///
     ///     VStack { … }
-    ///         .onDrop { text in items.append(text) }
-    public func onDrop(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
+    ///         .onDropped { text in items.append(text) }
+    public func onDropped(_ handler: @escaping @MainActor (String) throws -> Void) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token) {
+            $0.addHandler(ViewContract.dropped.token) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try handler(text)
                 }
             }
@@ -559,12 +485,12 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onDropped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token, gate: .own(policy)) {
+            $0.addHandler(ViewContract.dropped.token, gate: .own(policy)) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try await handler(text)
                 }
             }
@@ -572,12 +498,12 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onDropped(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token, gate: .shared(gate)) {
+            $0.addHandler(ViewContract.dropped.token, gate: .shared(gate)) {
                 if let text = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    EventBuffer.current, by: ViewContract.dropped.name, as: String.self) {
                     try await handler(text)
                 }
             }
@@ -585,17 +511,18 @@ extension View {
     }
 
     /// Accepts files the user drops on the view from the system - of
-    /// `types`, any file where none is given - with those dropped.
+    /// `types`, any file where the list is empty - with those dropped.
     ///
     ///     Text("Drop a report here")
-    ///         .onDrop(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
+    ///         .onDropped(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
     ///             notes = String(decoding: try await files[0].read(), as: UTF8.self)
     ///         }
     ///
     /// A dropped file reads and launches as one the user opened
-    /// (`ChosenFile`); files of other kinds are not taken.
-    public func onDrop(
-        files types: [FileType] = [], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
+    /// (`ChosenFile`); files of other kinds are not taken. `files:` is always
+    /// written, so a drop of files never reads as a drop of words.
+    public func onDropped(
+        files types: [FileType], _ handler: @escaping @MainActor ([ChosenFile]) throws -> Void
     ) -> Modified {
         modified {
             $0.takesFiles(types)
@@ -611,15 +538,7 @@ extension View {
 
     /// The same, with a handler that awaits - reading a file does: its `policy` says what a drop does while a
     /// run is under way.
-    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
-        modified {
-            $0.takesFiles([])
-            $0.addHandler(ViewContract.filesDropped.token, gate: .own(policy), dropped([], handler))
-        }
-    }
-
-    /// The same, taking files of `types` alone.
-    public func onDrop(
+    public func onDropped(
         files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
@@ -629,8 +548,8 @@ extension View {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDrop(
-        files types: [FileType] = [], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
+    public func onDropped(
+        files types: [FileType], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
             $0.takesFiles(types)
@@ -638,47 +557,47 @@ extension View {
         }
     }
 
-    /// Runs while a drag is over the view, before it is let go.
-    public func onDragOver(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.dragOver, handler)
+    /// Runs as a drag comes over the view, before it is let go - where a highlight goes up.
+    public func onDragEntered(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(ViewContract.dragEntered, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragOver, policy: policy, handler)
+    public func onDragEntered(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEntered, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragOver, gate: gate, handler)
+    public func onDragEntered(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEntered, gate: gate, handler)
     }
 
     /// Runs when a drag leaves the view without being let go - the mirror of
-    /// `onDragOver`, and where a highlight put up there is taken down.
-    public func onDragLeave(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(ViewContract.dragLeave, handler)
+    /// `onDragEntered`, and where a highlight put up there is taken down.
+    public func onDragExited(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(ViewContract.dragExited, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragLeave(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragLeave, policy: policy, handler)
+    public func onDragExited(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragExited, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDragLeave(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(ViewContract.dragLeave, gate: gate, handler)
+    public func onDragExited(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragExited, gate: gate, handler)
     }
 }
 
 // What one view hears of a gesture is the sum of what its handlers asked, each hearing its own.
 // Design: docs/design/views/modifiers.md#gestures
 extension Node {
-    /// Listens for `direction` beside the directions it listens for already; a second threshold is said.
-    fileprivate mutating func hearsSwipes(_ direction: SwipeDirection, threshold: Double?) {
-        let heard = props[ViewContract.swipeDirection.token].flatMap(SwipeDirection.init(propValue:)) ?? []
-        write(ViewContract.swipeDirection, heard.union(direction))
+    /// Listens for `directions` beside the directions it listens for already; a second threshold is said.
+    fileprivate mutating func hearsSwipes(_ directions: SwipeDirections, threshold: Double?) {
+        let heard = props[ViewContract.swipeDirections.token].flatMap(SwipeDirections.init(propValue:)) ?? []
+        write(ViewContract.swipeDirections, heard.union(directions))
 
         guard let threshold else { return }
         if let said = props[ViewContract.swipeThreshold.token].flatMap(Double.init(propValue:)), said != threshold {
@@ -739,13 +658,15 @@ extension ChosenFile {
     }
 }
 
-/// What an awaiting swipe's handler runs: `handler`, given the way the swipe went, where `direction` names it.
+/// What an awaiting swipe's handler runs: `handler`, given the way the swipe went, where `directions` names it.
 @MainActor
 private func swiped(
-    _ direction: SwipeDirection, _ handler: @escaping ValueEventHandler<SwipeDirection>
+    _ directions: SwipeDirections, _ handler: @escaping ValueEventHandler<SwipeDirection>
 ) -> EventHandler {
     {
-        if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) { try await handler(went) }
+        if let went = EventBuffer.current.value().flatMap(SwipeDirection.init(propValue:)), directions.contains(went) {
+            try await handler(went)
+        }
     }
 }
 

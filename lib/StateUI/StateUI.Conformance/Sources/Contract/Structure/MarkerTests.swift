@@ -13,12 +13,12 @@
         [
             ConformanceCase("aPinStandsOnItsMapAsTheTreeSays", proves: [
                 Covered(MarkerContract.self), Covered(MarkerContract.title), Covered(MarkerContract.subtitle),
-                Covered(MarkerContract.type), Covered(MarkerContract.location),
+                Covered(MarkerContract.kind), Covered(MarkerContract.location),
             ]) { s in
                 s.start {
                     VStack {
                         Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).markers {
-                            Marker(at: Location(latitude: 52.23, longitude: 21.02)).title("Home").subtitle("Nowy Świat 1").type(.place)
+                            Marker(at: Location(latitude: 52.23, longitude: 21.02)).title("Home").subtitle("Nowy Świat 1").kind(.place)
                         }.height(300)
                     }
                 }
@@ -26,7 +26,7 @@
 
                 s.expect(try s.held(MarkerContract.title, on: pin), "Home")
                 s.expect(try s.held(MarkerContract.subtitle, on: pin), "Nowy Świat 1")
-                s.expect(try s.held(MarkerContract.type, on: pin), .place)
+                s.expect(try s.held(MarkerContract.kind, on: pin), .place)
                 s.expect(try s.held(MarkerContract.location, on: pin), Location(latitude: 52.23, longitude: 21.02))
             },
             ConformanceCase("aClickOnAPinAndOnItsDetailsIsHeard", proves: [

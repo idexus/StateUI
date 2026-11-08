@@ -10,16 +10,14 @@ public enum LinkContract: ElementContract {
     public static let layer: ElementLayer = .adaptive
 
     /// A link is a view of words the keyboard reaches.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, FocusElementContract.self,
+        ClickElementContract.self,
     ]
-
-    /// The user chose the link - a click, a tap, the keyboard - and its address went to the system.
-    public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
 
     /// The address it opens, handed to the system as `application.launch` hands one.
     public static let address = ElementProperty<Self, String>("address", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [address, clicked]
+    public static let members: [any ContractMember] = [address]
 }

@@ -141,7 +141,7 @@
             },
             ConformanceCase("thePhaseTravelsWhereTheProgramSendsIt", proves: [
                 Covered(MotionLayoutContract.parameters),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: 0.0)
                 let (handed, arrived) = (Received<Double>(), Received<Bool>())
@@ -154,9 +154,9 @@
                             handed.values.append(phase)
                             return [Placement(Rect(phase * 10, 0, 20, 20))]
                         }
-                        .motion(.eased(.milliseconds(400), curve: .linear))
+                        .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
-                        Button("Go").onClicked(.ignoreWhileRunning) {
+                        Button("Go").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: 4).arrived())
                         }
                         .id("go")
@@ -180,7 +180,7 @@
             },
             ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
                 Covered(MotionLayoutContract.parameters),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: Orbit())
                 let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
@@ -193,9 +193,9 @@
                             handed.values.append(phase)
                             return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
                         }
-                        .motion(.eased(.milliseconds(400), curve: .linear))
+                        .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
-                        Button("Turn").onClicked(.ignoreWhileRunning) {
+                        Button("Turn").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).arrived())
                         }
                         .id("turn")
@@ -295,7 +295,7 @@
             },
             ConformanceCase("anAxisOfKeyframesAloneLeavesTheHandAlone", proves: [
                 Covered(MotionLayoutContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let (clock, arrangement, handed) = (TestClock(), State(wrappedValue: 0.0), Received<Double>())
                 s.start(clock: clock) {
                     VStack {
@@ -307,7 +307,7 @@
                             return [Placement(Rect(at * 60, 0, 20, 20))]
                         }
                         .axis(\.self, range: 0...1, keyframes: .every(1))
-                        .motion(.eased(.milliseconds(200), curve: .linear))
+                        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
                         .width(100).height(40)
                         Button("Go").onClicked { arrangement.wrappedValue = 1 }
                             .id("go")
@@ -444,12 +444,12 @@ private func itemLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
-            .motion(.eased(.milliseconds(200), curve: .linear))
+            .parameterMotion(.eased(.milliseconds(200), curve: .linear))
             if dismissing {
-                layout.onItemDismissed(.down, beyond: 10) { told.values.append("\($0) dismissed") }
+                layout.onItemDismissed(directions: .down, threshold: 10) { told.values.append("\($0) dismissed") }
                     .width(100).height(40)
             } else {
                 layout.width(100).height(40)
@@ -484,8 +484,8 @@ private func handLayout(
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...5, snaps: .every(1))
-            .motion(.eased(.milliseconds(300), curve: .linear))
+            .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...5, snaps: .every(1))
+            .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .mirrorsRightToLeft(mirrored)
             .width(100).height(40)
         }
@@ -517,9 +517,9 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
-            .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-            .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-            .motion(.eased(.milliseconds(300), curve: .linear))
+            .axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
+            .parameterMotion(.eased(.milliseconds(300), curve: .linear))
             .width(200).height(160)
         }
         .horizontalAlignment(.start)
@@ -544,7 +544,7 @@ private func fingersLayout(
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
             .axis(\.self, input: input, range: 0.5...2, snaps: [1])
-            .motion(.eased(.milliseconds(200), curve: .linear))
+            .parameterMotion(.eased(.milliseconds(200), curve: .linear))
             .width(300).height(240)
         }
         .horizontalAlignment(.start)

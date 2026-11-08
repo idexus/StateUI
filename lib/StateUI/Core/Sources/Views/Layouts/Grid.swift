@@ -8,7 +8,7 @@ extension GridProperties {
     /// How tall each row is - one length per row, or a run of rows alike with a
     /// count, so together they say how many rows there are.
     ///
-    ///     .rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))
+    ///     .rows(.fill, .automatic(count: 2), .fill(count: 5), .fixed(80))
     ///
     /// `.auto` fits what is in the row, `.fill` and `.proportional` take a
     /// share of what is left over, and `.fixed` is that many device units. A
@@ -51,7 +51,7 @@ extension GridProperties {
 ///             .gridRow(1)
 ///             .gridColumnSpan(2)
 ///     }
-///     .rows(.auto, .fill)
+///     .rows(.automatic, .fill)
 ///     .columns(.fill, .proportional(2))
 ///     .rowSpacing(12)
 ///     .columnSpacing(12)
@@ -65,7 +65,7 @@ public struct Grid: Layout, GridProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Grid>` is written against.
+    /// A grid with no children.
     public init() {
         node = Node(contract: GridContract.self)
     }

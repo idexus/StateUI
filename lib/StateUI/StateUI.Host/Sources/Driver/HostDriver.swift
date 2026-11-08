@@ -1,0 +1,323 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+
+/// A host as the conformance suite drives it: what a user does to its native controls, and what they hold. Each
+/// host's tests implement one over its toolkit, which names no widget to a case.
+/// Design: docs/design/host/conformance.md#the-driver
+@MainActor
+@_spi(Host) public protocol HostDriver: AnyObject {
+    /// The host's column in the control dictionary.
+    var host: String { get }
+
+    /// What the host realizes, member by member: whether a case runs on it, and what its verdict says.
+    var register: HostRegister { get }
+
+    /// What this driver cannot do on its host yet, each with why: a case needing it stops there, and says so.
+    var cannot: [String: String] { get }
+
+    /// What its platform holds nothing of - a value no control of it keeps, its effect proven by another case - each
+    /// with why: a case needing it does not apply on this host, and the member's other cases judge it.
+    var platformHasNone: [String: String] { get }
+
+    /// Why this driver cannot do `ability` - what `cannot` says of it, unless the driver says more; nil where it says
+    /// nothing, and the case needing it fails.
+    func reason(cannot ability: String) -> String?
+
+    /// Why `ability` - an act, "tap on Text"; a read, "read isOn of CheckBox" - reaches past the toolkit, where it
+    /// does: an act handed to the host's own entry rather than the toolkit's input, a read of what the host keeps
+    /// rather than what the toolkit holds. A member a case proves only that way is proven by the host's own - ✓,
+    /// not ✅. Nil where the toolkit's own input or state serves it.
+    func byHost(_ ability: String) -> String?
+
+    /// Shows `page` in a window of its own on a new host, its display frames at `clock`'s time where one is
+    /// given; the tree it mounted.
+    func start(
+        clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
+    ) -> MountedTree
+
+    /// Runs `application` on a new host, its display frames at `clock`'s time where one is given; the tree it
+    /// mounted.
+    /// - Throws: `DriverCannot` where this driver runs one page alone.
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree
+
+    /// Forgets what the host's stores keep - the values, the scenes - as an application's first launch finds them.
+    func forgetWhatIsKept()
+
+    /// Closes the window `start` showed and lets go of its native controls. Repeated calls do nothing more; `step`
+    /// still drains toolkit callbacks and UI jobs while lifecycle work finishes, without rendering another page.
+    func close()
+
+    /// One bounded step of the host: its toolkit's loop a moment, the jobs, a turn of the pump, and a display
+    /// frame while one is asked for.
+    func step()
+
+    /// One turn of the pump alone: what a user's change raised lands, and nothing is waited for.
+    func turn()
+
+    /// One display frame at the clock's time, and the layout in it.
+    func frame()
+
+    /// Does `act` to `element` as the user does, through its toolkit's own path.
+    /// - Throws: `DriverCannot` where this driver has no such path for the element.
+    func perform(_ act: UserAct, on element: MountedElement) throws
+
+    /// What the native control of `element` holds of `property`, as the contract writes it.
+    /// - Throws: `DriverCannot` where this driver cannot read it - never a nil standing for "unknown".
+    func held(_ property: Prop, on element: MountedElement) throws -> HostValue?
+
+    /// The menu `element` offers as the user meets it - a view's context menu, a window's menu bar: each item by
+    /// its caption, "!" before one that cannot be chosen, "-" a separator, a submenu's entries in brackets after its
+    /// caption, ";" between; empty for none.
+    func menu(of element: MountedElement) throws -> String
+
+    /// The menu `button` opens (`Button.menu`), written as `menu(of:)` writes one.
+    func buttonMenu(of button: MountedElement) throws -> String
+
+    /// The bar at `edge` of `page` as the user meets it: the leading groups, "|", the trailing groups, "|", the
+    /// actions in the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be
+    /// chosen.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String
+
+    /// Whether `element` holds the keyboard.
+    func focused(_ element: MountedElement) throws -> Bool
+
+    /// Whether a press at `point`, in the element's own coordinates, reaches `element` or what stands in it, through
+    /// everything its window shows over it.
+    func reaches(_ element: MountedElement, at point: Point) throws -> Bool
+
+    /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
+    func drawingOrder(of layout: MountedElement) throws -> [MountedElement]
+
+    /// Whether assistive technology meets `element`'s view as a heading, whatever level it says.
+    func isHeading(_ element: MountedElement) throws -> Bool
+
+    /// The question the window of `element` shows now; nil where it shows none.
+    func question(over element: MountedElement) throws -> Question?
+
+    /// What the platform's screen reader was told to say, in order, since the host started.
+    func announced() throws -> [String]
+
+    /// The theme the platform shows the application in now: light or dark.
+    func theme() throws -> ColorScheme
+
+    /// The platform's bars over the window's edges, `top` and `bottom` points deep, as a phone's status bar and
+    /// gesture bar stand - told to a host whose test window stands under none; a host whose window has its own, or
+    /// whose platform stands nothing over a window's content, leaves it.
+    func standUnderSystemBars(top: Double, bottom: Double)
+
+    /// The accent the platform draws the application's controls in now.
+    func accent() throws -> Color
+
+    /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
+    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
+    /// request's own `X-Asked` said, and the request's body.
+    /// Design: docs/design/host/conformance.md#the-driver
+    func served() throws -> String
+
+    /// How many requests for `/held` the driver's server took, and how many of them their client stopped - the
+    /// connection closed before the answer.
+    func held() throws -> (taken: Int, stopped: Int)
+
+    /// The file dialog the window of `element` shows now; nil where it shows none.
+    func fileDialog(over element: MountedElement) throws -> FileDialog?
+
+    /// What the share sheet over the window of `element` offers now - its words, then its address on a line of its
+    /// own; nil where none shows.
+    func shared(over element: MountedElement) throws -> String?
+
+    /// What the host handed the system to launch, in order, since the host started: an address as written, a file
+    /// by its name.
+    func launched() throws -> [String]
+
+    /// The color `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
+    /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
+    func color(of element: MountedElement, at point: Point) throws -> Color?
+
+    /// The colors `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
+    /// window a frame at a time reads them all from one; nil where it shows nothing.
+    func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
+
+    /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
+    /// included; `NotPlaced` where its view stands in no window yet.
+    func place(of element: MountedElement) throws -> Rect
+
+    /// What the host wrote to its log, a line a message, since it started.
+    func logged() throws -> [String]
+
+    /// The words the host's store keeps under `key` - one every scene shares, or one of the scene the case's page
+    /// is in - as the next launch reads them; nil where it keeps nothing.
+    func kept(_ key: String, inScene: Bool) throws -> String?
+
+    /// How many of its own views the host holds alive - the count its tally writes; nil where it counts none.
+    var liveViews: Int? { get }
+
+    /// How many of those views are alive by their kind, where a host can say - what names a view that outlived its
+    /// element; nil where it cannot.
+    var liveViewKinds: [String: Int]? { get }
+}
+
+extension HostDriver {
+    /// What `cannot` says of `ability`.
+    public func reason(cannot ability: String) -> String? {
+        cannot[ability]
+    }
+
+    /// Nothing: the platform holds what every case reads.
+    public var platformHasNone: [String: String] {
+        [:]
+    }
+
+    /// None: every act and read goes through the toolkit.
+    public func byHost(_ ability: String) -> String? {
+        nil
+    }
+
+    /// Nothing to forget: the host keeps nothing.
+    public func forgetWhatIsKept() {}
+
+    /// None counted.
+    public var liveViews: Int? {
+        nil
+    }
+
+    /// None counted.
+    public var liveViewKinds: [String: Int]? {
+        nil
+    }
+
+    /// None: the driver runs one page alone.
+    public func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
+        throw DriverCannot("start an application")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func menu(of element: MountedElement) throws -> String {
+        throw DriverCannot("read the menu of \(element.type.name)")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func buttonMenu(of button: MountedElement) throws -> String {
+        throw DriverCannot("read the menu \(button.type.name) opens")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        throw DriverCannot("read the bar of \(page.type.name)")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func focused(_ element: MountedElement) throws -> Bool {
+        throw DriverCannot("read the focus of \(element.type.name)")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
+        throw DriverCannot("read what reaches \(element.type.name)")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
+        throw DriverCannot("read the drawing order of \(layout.type.name)")
+    }
+
+    /// A heading is a view whose level the toolkit holds above none.
+    public func isHeading(_ element: MountedElement) throws -> Bool {
+        (try held(.accessibilityHeading, on: element)?.enumeration ?? 0) > 0
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func question(over element: MountedElement) throws -> Question? {
+        throw DriverCannot("read a question")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func announced() throws -> [String] {
+        throw DriverCannot("read what the screen reader said")
+    }
+
+    /// Nothing: the window stands under no bars.
+    public func standUnderSystemBars(top: Double, bottom: Double) {}
+
+    /// None read: the driver has no path for it yet.
+    public func theme() throws -> ColorScheme {
+        throw DriverCannot("read the theme the application shows in")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func accent() throws -> Color {
+        throw DriverCannot("read the accent the application draws in")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func fileDialog(over element: MountedElement) throws -> FileDialog? {
+        throw DriverCannot("read a file dialog")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func shared(over element: MountedElement) throws -> String? {
+        throw DriverCannot("read a share sheet")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func launched() throws -> [String] {
+        throw DriverCannot("read what was launched")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func color(of element: MountedElement, at point: Point) throws -> Color? {
+        throw DriverCannot("read the color of \(element.type.name)")
+    }
+
+    /// Each point's color, read one at a time.
+    public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
+        try points.map { try color(of: element, at: $0) }
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func place(of element: MountedElement) throws -> Rect {
+        throw DriverCannot("read where \(element.type.name) stands")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func logged() throws -> [String] {
+        throw DriverCannot("read the log")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func kept(_ key: String, inScene: Bool) throws -> String? {
+        throw DriverCannot("read what is kept")
+    }
+}
+
+/// A question a window shows the user: its words, and its buttons' captions.
+@_spi(Host) public struct Question: Equatable, Sendable {
+    /// Its title.
+    public var title: String
+
+    /// Its message; empty for none.
+    public var message: String
+
+    /// Its buttons' captions, sorted: their order is the platform's.
+    public var buttons: [String]
+
+    /// The words its field holds; nil for a question with no field.
+    public var field: String?
+
+    /// A question titled `title`, saying `message`, answered by `buttons`, its field holding `field`.
+    public init(title: String, message: String, buttons: [String], field: String? = nil) {
+        self.title = title
+        self.message = message
+        self.buttons = buttons.sorted()
+        self.field = field
+    }
+}
+
+/// A file dialog a window shows the user: one that opens files, or one that saves.
+@_spi(Host) public enum FileDialog: Equatable, Sendable {
+    /// It asks for files to open.
+    case open
+    /// It asks for a place to save.
+    case save
+}

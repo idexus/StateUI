@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIGTK
 
 // Name the application to the host, then hand GTK this thread until the last
 // window closes.
 HelloWorldApp.register()
-StateUIGTK.run(applicationID: "com.stateui.helloworld")
+GTKHost.run(applicationID: "com.stateui.helloworld")

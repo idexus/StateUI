@@ -30,7 +30,7 @@ final class RegistryTests: XCTestCase {
         var strayed: ((Double) -> Void)?
         var settled: (() -> Void)?
         var straySettled: (() -> Void)?
-        var bulbs: [ChildElement<BulbContract>] = []
+        var bulbs: [ControlChild<BulbContract>] = []
         var handed = 0
     }
 
@@ -124,7 +124,7 @@ final class RegistryTests: XCTestCase {
 
         XCTAssertEqual(view.opacity, 0.5)
         XCTAssertTrue(registry.realization.members.contains(
-            HostRealizedMember(element: "Test.Lamp", owner: "VisualElement", member: "opacity")))
+            HostRealizedMember(element: "Test.RegisteredLamp", owner: "VisualElement", member: "opacity")))
         XCTAssertFalse(registry.realization.members.contains { $0.member.name == "maximumLines" })
     }
 
@@ -137,7 +137,7 @@ final class RegistryTests: XCTestCase {
 
         view.tapped?(2)
 
-        XCTAssertEqual(told.events, ["lampTapped \([2.propValue])"])
+        XCTAssertEqual(told.events, ["Test.RegisteredLamp.lampTapped \([2.propValue])"])
         XCTAssertTrue(told.values.isEmpty, "an event of its own carries no value of the element's")
     }
 
@@ -151,7 +151,7 @@ final class RegistryTests: XCTestCase {
 
         view.dialed?(3)
 
-        XCTAssertEqual(told.values, ["signal signalChanged \(3.propValue)"])
+        XCTAssertEqual(told.values, ["Test.RegisteredLamp.signal Test.RegisteredLamp.signalChanged \(3.propValue)"])
         XCTAssertTrue(told.events.isEmpty, "a reported value raises its event through the report")
     }
 
@@ -165,7 +165,7 @@ final class RegistryTests: XCTestCase {
 
         view.tuned?(0.5)
 
-        XCTAssertEqual(told.values, ["setting settingChanged \(0.5.propValue)"])
+        XCTAssertEqual(told.values, ["TestDial.setting TestDial.settingChanged \(0.5.propValue)"])
     }
 
     /// A member of a contract the element does not wear reports nothing at all,
@@ -189,7 +189,7 @@ final class RegistryTests: XCTestCase {
 
         view.settled?()
 
-        XCTAssertEqual(told.events, ["settled []"])
+        XCTAssertEqual(told.events, ["TestDial.settled []"])
     }
 
     /// An event of a contract the element does not wear raises nothing at all,
@@ -202,7 +202,7 @@ final class RegistryTests: XCTestCase {
         view.straySettled?()
 
         XCTAssertTrue(told.events.isEmpty, "the lamp wears no StrayDial, so nothing is raised")
-        XCTAssertTrue(hasComplained("Test.Lamp raised `StrayDial.settled`"))
+        XCTAssertTrue(hasComplained("Test.RegisteredLamp raised `StrayDial.settled`"))
     }
 
     /// A view taking several members at once is applied whole, once, when any
@@ -254,7 +254,7 @@ final class RegistryTests: XCTestCase {
         registry.everyElementRealizes(VisualElementContract.isVisible)
 
         XCTAssertTrue(registry.realization.members.contains(
-            HostRealizedMember(element: "Test.Lamp", owner: "VisualElement", member: "isVisible")))
+            HostRealizedMember(element: "Test.RegisteredLamp", owner: "VisualElement", member: "isVisible")))
         XCTAssertFalse(registry.realization.members.contains(
             HostRealizedMember(element: "Test.Plain", owner: "VisualElement", member: "isVisible")))
     }
@@ -367,7 +367,7 @@ final class RegistryTests: XCTestCase {
         registry.applyChildren(to: view, of: LampContract.nodeType) { $0 == BulbContract.nodeType ? [blue] : [] }
 
         XCTAssertEqual(first.map { $0.value(BulbContract.color) }, ["red", "blue"])
-        XCTAssertEqual(told.events, ["blue bulbTapped"])
+        XCTAssertEqual(told.events, ["blue Test.Bulb.bulbTapped"])
         XCTAssertEqual(view.bulbs, [first[1]], "the same child is the same element")
         XCTAssertEqual(view.handed, 2)
     }
@@ -422,7 +422,7 @@ final class RegistryTests: XCTestCase {
                     + (values[LampContract.emphasis] == true ? "!" : "")
                 view.captions += 1
             }
-            lamp.raises(LampContract.lampTapped)
+            lamp.declares(LampContract.lampTapped)
         })
 
         return registry
@@ -457,7 +457,7 @@ final class RegistryTests: XCTestCase {
 
 /// A tier the lamp wears: a value and the change it reports, declared apart
 /// from the element itself - as a field's words and its text change are.
-private enum DialContract: Contract {
+private enum DialContract: Tier {
     static let name = "TestDial"
 
     static let setting = ElementProperty<Self, Double>("setting")
@@ -468,7 +468,7 @@ private enum DialContract: Contract {
 }
 
 /// The same shape, worn by nothing here.
-private enum StrayDialContract: Contract {
+private enum StrayDialContract: Tier {
     static let name = "StrayDial"
 
     static let setting = ElementProperty<Self, Double>("setting")
@@ -481,8 +481,8 @@ private enum StrayDialContract: Contract {
 /// An element a host realizes, declared the way an application declares its
 /// own.
 private enum LampContract: ElementContract {
-    static let nodeType: NodeType = "Test.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self, DialContract.self]
+    static let nodeType: NodeType = "Test.RegisteredLamp"
+    static let tiers: [any Tier.Type] = [ViewContract.self, DialContract.self]
 
     static let signal = ElementProperty<Self, Int>("signal")
     static let caption = ElementProperty<Self, String>("caption")

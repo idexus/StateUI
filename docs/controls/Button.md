@@ -13,7 +13,7 @@ Button("Pressed \(count) times")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [LineBreakElement](tiers/LineBreakElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [ShortcutElement](tiers/ShortcutElement.md) · [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [ClickElement](tiers/ClickElement.md) · [HoverElement](tiers/HoverElement.md) · [PressElement](tiers/PressElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ContentModeElement](tiers/ContentModeElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (107)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 39 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 41 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>77 ✅ · 5 ☑️ · 14 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>85 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>Button</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>71 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>GtkButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>82 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;button&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (106)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 38 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>58 ✅ · 2 ☑️ · 40 ✓ · 5 –</td><td><code>UIButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>76 ✅ · 6 ☑️ · 13 ✓ · 5 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>84 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>Button</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>69 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td><code>GtkButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>81 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;button&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract.swift`.
@@ -47,22 +47,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: cannot read icon of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>iconPosition</code></td><td>property</td><td><code>IconPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: cannot read iconPosition of Button - Android's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>iconSpacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: AppKit's button stands its picture at its own gap from the words: it takes no other.<br>Android Views: cannot read iconSpacing of Button - Android's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>lineBreak</code></td><td>property</td><td><code>LineBreak</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ButtonRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ButtonRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android draws no look for the way out or a destructive action, only the main action's colored button.</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)
@@ -91,19 +81,16 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit: AppKit marks a heading, not its level: every level is a heading.<br>UIKit: UIKit marks a heading, not its level: every level is a heading.<br>Android Views: Android marks a heading, not its level: every level is a heading.<br>GTK 4: GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityHint</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>accessibilityLabel</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>accessibilityPresence</code></td><td>property</td><td><code>AccessibilityPresence</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: GTK leaves an accessible out with everything in it: <code>.hidden</code> leaves what the view holds out too.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityRole</code></td><td>property</td><td><code>AccessibilityRole</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: A link: Android names no kind for one, and the view is said as what it is.<br>WinUI 3: A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.<br>GTK 4: GTK fixes a widget's role as it is made, and a widget is the kind its class says.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>accessibilityValue</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Before Android 11 a view says no value of its own words.<br>WinUI 3: A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.<br>GTK 4: GTK says a value only of a range, a role a widget takes as it is made.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">AppKit: AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.<br>GTK 4: A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.<br>Web: A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>hidesChildrenFromAccessibility</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: not realized</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>layoutDirection</code></td><td>property</td><td><code>LayoutDirection</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>maximumHeight</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -127,7 +114,6 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleX of Button: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of Button: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleX of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of Button: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of Button: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
@@ -148,21 +134,21 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>allowsDrop</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>area</code></td><td>property</td><td><code>Area</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDragLeave</code> (<code>dragLeave</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDragEntered</code> (<code>dragEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDragOver</code> (<code>dragOver</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDragExited</code> (<code>dragExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragStarting</code> (<code>dragStarting</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>dragText</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>drop</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDropped</code> (<code>dropped</code>)</td><td>event</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>droppedFileTypes</code></td><td>property</td><td><code>[FileType]</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dropFiles on Button: the window's drop routing told the driver's files, no dragging session<br>UIKit: only through the host's own: dropFiles on Button: the drop interaction's handler told the driver's files, no drag session<br>Android Views: only through the host's own: dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started<br>WinUI 3: only through the host's own: dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began<br>GTK 4: only through the host's own: dropFiles on Button: the drop target's signal told the driver's files, no drag GTK began<br>Web: only through the host's own: dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onDragEnded</code> (<code>dragEnded</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onDrop</code> (<code>filesDropped</code>)</td><td>event</td><td><code>[ChosenFile]</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onDropped</code> (<code>filesDropped</code>)</td><td>event</td><td><code>[ChosenFile]</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dropFiles on Button: the window's drop routing told the driver's files, no dragging session<br>UIKit: only through the host's own: dropFiles on Button: the drop interaction's handler told the driver's files, no drag session<br>Android Views: only through the host's own: dropFiles on Button: the view's drag listener's report told the driver's documents, no drag started<br>WinUI 3: only through the host's own: dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began<br>GTK 4: only through the host's own: dropFiles on Button: the drop target's signal told the driver's files, no drag GTK began<br>Web: only through the host's own: dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>onFrameChanged</code> (<code>frameChanged</code>)</td><td>event</td><td><code>[Double]</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>gridColumn</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -177,8 +163,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>isDraggable</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session<br>UIKit: only through the host's own: dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session<br>Android Views: only through the host's own: dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started<br>WinUI 3: only through the host's own: dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began<br>GTK 4: only through the host's own: dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began<br>Web: only through the host's own: dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>margin</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent<br>Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>panTouchCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit, UIKit, Android Views: The host layer hears a one-finger pan only; any other <code>panTouchCount</code> turns the pan off.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPanUpdated</code> (<code>panUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Point, Point, Point)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>panXChannel</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -188,10 +174,6 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>layoutBody</code></td><td>property</td><td><code>LayoutBody</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on Button: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pinch on Button: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: pinch on Button: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -200,7 +182,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Button: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Button: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Button: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>swipeDirection</code></td><td>property</td><td><code>SwipeDirection</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
@@ -215,12 +197,110 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [TextualElement](tiers/TextualElement.md)
 
-What every element showing words has: the words, and the case they are drawn in.
+What every element drawing its words itself has: the case they are drawn in, their color, and the words.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [LineBreakElement](tiers/LineBreakElement.md)
+
+What happens to words too long for their room: they wrap, or they are cut and say so - a text's, a button's caption.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>lineBreak</code></td><td>property</td><td><code>LineBreak</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [StyledElement](tiers/StyledElement.md)
+
+The keyed style an element wears from the application's style sheet: a view's, a bar item's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [TextElement](tiers/TextElement.md)
+
+The words an element shows: a control's caption, a text's or a field's words, a menu's caption and its items', a bar's label.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [ShortcutElement](tiers/ShortcutElement.md)
+
+The keys that choose an element from the keyboard while its window is in front: a button, a menu's or a toolbar's item.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: only through the host's own: pressKeys on Button: the key event no view took handed to the host as the application's activity hands it</td></tr></tbody>
+</table>
+
+## From [IconElement](tiers/IconElement.md)
+
+The picture an element shows beside or for its words: a button's, a toolbar label's, a menu entry's, a page's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: cannot read icon of Button - Android's driver has no path for it yet<br>GTK 4: only through the host's own: read icon of Button: the file the host's own panel draws: GTK's snapshot holds no picture's name</td></tr></tbody>
+</table>
+
+## From [BackgroundElement](tiers/BackgroundElement.md)
+
+What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">☑️</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">AppKit: AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.<br>Android Views: Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.<br>WinUI 3: An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.<br>GTK 4: A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.<br>Web: A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.</td></tr></tbody>
+</table>
+
+## From [EnabledElement](tiers/EnabledElement.md)
+
+Whether the user's hand reaches an element: a view, a menu, an entry in one, a toolbar's group.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [ClickElement](tiers/ClickElement.md)
+
+What a control the user chooses reports: a button, a link, a menu's entry, a toolbar's button.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [HoverElement](tiers/HoverElement.md)
+
+What an element the pointer comes over and leaves reports: a view, an item on a bar.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+</table>
+
+## From [PressElement](tiers/PressElement.md)
+
+What a control held down and let go of reports: a button, a slider, a bar's button.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPressed</code> (<code>pressed</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onReleased</code> (<code>released</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Button: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 </table>
 
 ## From [TextColorElement](tiers/TextColorElement.md)
@@ -278,9 +358,9 @@ What an element draws of its own box: the shape its background, its outline and 
 <tbody><tr></tr><tr><td><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
-## From [ImageElement](tiers/ImageElement.md)
+## From [ContentModeElement](tiers/ContentModeElement.md)
 
-How a picture fills the room it was given.
+How what an element draws fills the room it was given: a picture, a shape.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
@@ -306,11 +386,11 @@ An element that takes the keyboard focus itself - a field, a button, a list - an
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>focus</code></td><td>act</td><td><code>() -&gt; Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit, Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>isFocusedChanged</code></td><td>event</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit, Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>unfocus</code></td><td>act</td><td><code>() -&gt; Void</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit, Android Views: Button takes no keyboard focus here: it refuses it, and nothing is heard</td></tr></tbody>
 </table>
 

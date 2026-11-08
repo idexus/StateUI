@@ -30,8 +30,8 @@ final class UIKitValueControlsTests: XCTestCase {
         let on = State(wrappedValue: false)
         let host = UIKitRenderer.running {
             VStack {
-                Switch(on.projectedValue).text("Wi-Fi")
-                CheckBox(true).text("agree").textCase(.uppercase)
+                Switch("Wi-Fi", isOn: on.projectedValue)
+                CheckBox("agree", isOn: true).textCase(.uppercase)
             }
         }
         defer { host.finish() }

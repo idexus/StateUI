@@ -16,10 +16,12 @@ import XCTest
 private final class Ran {
     var order: [String] = []
     var elapsed: [String: [Double]] = [:]
+    var seconds: [String: [(now: Double, elapsed: Double)]] = [:]
 
     func note(_ name: String, _ cycle: EngineCycle) {
         order.append(name)
         elapsed[name, default: []].append(cycle.elapsed)
+        seconds[name, default: []].append((cycle.nowSeconds, cycle.elapsedSeconds))
     }
 }
 
@@ -806,7 +808,7 @@ final class CycleTests: XCTestCase {
     }
 
     /// THE HOST'S WRITE IS A SIGNAL TOO, on a state the host carries as the
-    /// value itself - what `.frame($room)` makes of a rectangle. Carrying the
+    /// value itself - what `.frame(into: $room)` makes of a rectangle. Carrying the
     /// state wakes nothing (the image starts at nought and the storage's own
     /// count stops); a report told to the image does.
     func testAHostWriteWakesAnEngineFollowingAPlainState() {
@@ -814,7 +816,7 @@ final class CycleTests: XCTestCase {
         let renders = Renders()
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
-        renders.render(Text("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
+        renders.render(Text("room").frame(into: room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
         }.node)
         board.cycle(now: 0, reducesMotion: false)
@@ -839,7 +841,7 @@ final class CycleTests: XCTestCase {
         let source = State(wrappedValue: 1.0)
         let words = source.projectedValue.convert { "\(Int($0))" }
 
-        renders.render(stack([Slider(source.projectedValue).node, Text().text(words).node]))
+        renders.render(stack([Slider(source.projectedValue).node, Text(words).node]))
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(words.wrappedValue, "1")
@@ -945,8 +947,24 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(ran.elapsed["ticking"], [0, 16, 90])
 
         for elapsed in ran.elapsed["ticking"] ?? [] {
-            XCTAssertLessThanOrEqual(elapsed, EngineCycle.mostElapsed)
+            XCTAssertLessThanOrEqual(elapsed, EngineCycle.mostElapsedMilliseconds)
         }
+    }
+
+    /// An engine is told its clock in seconds, as a journey's velocity is per second: the host's milliseconds
+    /// divided once, here.
+    func testAnEngineIsToldItsClockInSeconds() throws {
+        let ran = Ran()
+        let renders = Renders()
+
+        renders.render(Ticking(ran: ran, stopAfter: 99).node)
+        board.cycle(now: 1000, reducesMotion: false)
+        board.cycle(now: 1050, reducesMotion: false)
+
+        let last = try XCTUnwrap(ran.seconds["ticking"]?.last)
+        XCTAssertEqual(last.now, 1.05, accuracy: 1e-12)
+        XCTAssertEqual(last.elapsed, 0.05, accuracy: 1e-12)
+        XCTAssertEqual(EngineCycle.mostElapsedSeconds, 0.1, accuracy: 1e-12)
     }
 
     /// The same cycle over the same image answers the same bytes, whatever

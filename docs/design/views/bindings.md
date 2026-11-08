@@ -89,10 +89,14 @@ The other modes are stated by whoever knows. A placement and a caption are
 `.out`: there is nothing to report. A frame is `.in`: the host tells the state
 where the layout put the view. A field's text is `.inOut` with nothing
 animating, what the user types landing on the state. An application
-registering a control of its own picks the mode on the public
-`setValue(_:on:mode:kind:)`, because only it knows whether its property is one
-the platform answers; its text form, `setValue(_:on:mode:)`, takes no door,
-since words have one.
+registering a control of its own picks the passage on the public
+`setValue(_:on:as:)`, because only it knows whether its property is one the
+platform answers: a `StatePassage`, whose four ways - a journey, one way,
+two ways, a feed - each name a mode and a door, so a mode and a door that
+make no sense together cannot be written. The passage is generic over the
+state's value: a journey stands only for a value the host can walk, a feed
+only for one of numbers, and words take one way or two through the one door
+they have.
 
 ## A stated value beside a driven one
 
@@ -160,19 +164,21 @@ layer holds it - a day past an end of the range at that end, a time added up
 from midnight round the day (`CalendarArithmetic`) - while the state keeps what
 was written; the user's next choice lands the value shown.
 
-## Both spellings
+## The purpose value is the initializer's
 
-A two-way control whose bound value is its purpose takes its binding in the
-initializer - the short way to say what gives the control its purpose - and in
-a modifier of the same name, the way every other property is written:
-`TextField($name)` and `TextField().text($name)`: `Switch($wifi)` and
-`Switch().isOn($wifi)`. A picker takes its values and the state holding the
-chosen one together, in its initializer alone:
-`Picker(sizes, selection: $size)`. The initializer
-delegates to the modifier, so there is one body and neither is the real one. A
-value modifier written beside the initializer's binding wins for the value,
-while the binding goes on being written back to, which is how the two can then
-disagree.
+A control's purpose value - a switch's state, a slider's value, a field's text,
+a picker's choice - is given in its initializer alone, as a value or as a
+state: `Switch($wifi)`, `TextField($name)`, `Slider(0.5)`,
+`Picker(sizes, selection: $size)`. No modifier writes it a second way, and no
+control is made without it but `Text()` of runs, `Fill()` and `Map()`, which
+have a meaning of their own; `CheckBox($a).isOn($b)` does not compile. The
+initializer of a state builds on an internal modifier, so there is one body.
+A control's caption is its initializer's too - a button's, a switch's, a check
+box's, a link's, a bar's or a menu's item's - from a value or a state
+(`Switch("Wi-Fi", isOn: $wifi)`, `Button($caption)`), so a control says its
+words one way, and a factory of one takes them as an argument
+(`ToolbarButton.debugInspector(window, text:)`). Everything else about a
+control is a modifier.
 
 ## A report lands before its handler
 
@@ -186,7 +192,7 @@ the old value. The payload carries the new value either way.
 ## Feeds
 
 A feed is a value only the platform knows, written into a state:
-`.frame($room)` writes the frame layout gave the view, and `.panX($turn)` and
+`.frame(into: $room)` writes the frame layout gave the view, and `.panX($turn)` and
 `.panY` write how far a drag has moved. Nothing this side writes reaches the
 platform through them. A pan feed writes the state's number onto the view, so
 the platform knows where to report, and reads nothing at build, so a drag

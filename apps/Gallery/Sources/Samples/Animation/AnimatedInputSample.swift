@@ -75,8 +75,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 // A CONVERTED TEXT: an engine works it out from the same image
                 // the thumb is walking, on the display's frames, so the words
                 // keep up with the movement and cost no render.
-                Text()
-                    .text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
+                Text($level.journey.convert { "level · \(Int(($0.value * 100).rounded()))%" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -99,8 +98,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
             VStack {
                 DebugInfoLabel()
 
-                Text()
-                    .text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
+                Text($count.journey.convert { "count · \(Int($0.value.rounded()))" })
                     .fontSize(15)
                     .textColor(Palette.accent)
 
@@ -176,7 +174,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     /// One of the buttons, all of which look the same.
     private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
         Button(caption)
-            .onClicked(.cancelPrevious, act)
+            .onClicked(policy: .cancelPrevious, act)
     }
     // listing: end
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// How far apart the lines of text are.
-public enum LineHeightElementContract: Contract {
+public enum LineHeightElementContract: Tier {
     /// The tier's name.
     public static let name = "LineHeightElement"
 

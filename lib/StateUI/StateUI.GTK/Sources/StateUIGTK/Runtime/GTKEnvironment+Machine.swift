@@ -18,22 +18,52 @@ extension GTKEnvironment {
         return named ?? g_time_zone_new_identifier(nil) ?? g_time_zone_new_local()!
     }
 
-    /// The user's locale: the language and region GLib reads from the environment, the local zone, and the clock,
-    /// the week and the measures of the C library's locale.
+    /// The user's locale: the language and region GLib reads from the environment, the local zone, the clock, the
+    /// week and the measures of the C library's locale, and the user's languages in order.
     static var locale: HostLocaleInfo {
-        let name = g_get_language_names()?.pointee.map { String(cString: $0) } ?? "C"
-        let tag = name.split(whereSeparator: { $0 == "." || $0 == "@" }).first.map(String.init) ?? name
-        let parts = tag.split(separator: "_").map(String.init)
+        let names = languageNames
+        let name = tag(of: names.first ?? "C")
         let zone = localZone()
         defer { g_time_zone_unref(zone) }
         let time = String(cString: nl_langinfo(nl_item(T_FMT)))
+        let zoneName = String(cString: g_time_zone_get_identifier(zone))
         return HostLocaleInfo(
-            language: parts.first ?? "", region: parts.count > 1 ? parts[1] : "",
-            name: parts.joined(separator: "-"), timeZone: String(cString: g_time_zone_get_identifier(zone)),
+            language: name.isEmpty ? nil : LocaleTag(name),
+            timeZone: zoneName.isEmpty ? nil : TimeZoneName(zoneName),
             uses24HourClock: !time.contains("%r") && !time.contains("%I") && !time.contains("%p"),
             firstDayOfWeek: firstDayOfWeek,
             isMetric: nl_langinfo(nl_item(_NL_MEASUREMENT_MEASUREMENT)).pointee != 2,
-            layoutDirection: gtk_get_locale_direction() == GTK_TEXT_DIR_RTL ? .rightToLeft : .leftToRight)
+            writingDirection: gtk_get_locale_direction() == GTK_TEXT_DIR_RTL ? .rightToLeft : .leftToRight,
+            languages: languages(of: names).map { LocaleTag($0) })
+    }
+
+    /// The locale names GLib reads from the environment, most wanted first: `pl_PL.UTF-8`, `pl_PL`, `pl`, `C`.
+    private static var languageNames: [String] {
+        guard var at = g_get_language_names() else { return [] }
+        var names: [String] = []
+        while let name = at.pointee {
+            names.append(String(cString: name))
+            at += 1
+        }
+        return names
+    }
+
+    /// The user's languages as tags, most wanted first, from the locale `names` GLib reads: each said once, without
+    /// its codeset and modifier; the C locale is no language.
+    static func languages(of names: [String]) -> [String] {
+        var tags: [String] = []
+        for name in names {
+            let tag = tag(of: name)
+            guard tag != "C", tag != "POSIX", !tags.contains(tag) else { continue }
+            tags.append(tag)
+        }
+        return tags
+    }
+
+    /// A locale name as a tag: `pl_PL.UTF-8@latin` is `pl-PL`.
+    private static func tag(of name: String) -> String {
+        let bare = name.split(whereSeparator: { $0 == "." || $0 == "@" }).first.map(String.init) ?? name
+        return bare.split(separator: "_").joined(separator: "-")
     }
 
     /// The first day of the week as the C library's locale counts it, from the week's origin - a Sunday or a Monday

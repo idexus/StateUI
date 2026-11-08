@@ -54,7 +54,7 @@ final class HostContractTests: XCTestCase {
     func testProviderSurfaceDoesNotBecomeABaseHostRequirement() {
         XCTAssertEqual(Self.layer(of: NodeType.map), .provider)
         XCTAssertEqual(Self.layer(of: NodeType.marker), .provider)
-        XCTAssertEqual(Self.layer(of: Prop.type), .provider)
+        XCTAssertEqual(Self.layer(of: MarkerContract.kind.token), .provider)
         XCTAssertEqual(Self.layer(of: Prop.region), .provider)
         XCTAssertEqual(Self.layer(of: Event.locationTapped), .provider)
     }
@@ -89,12 +89,15 @@ final class HostContractTests: XCTestCase {
     }
 
     /// The names the library's contracts declare members of one kind under.
+    /// The names of the library's members of `kind` that are each one member's: a name two contracts declare has
+    /// no token of its own in Tokens.swift - each place reading it names its member.
     private static func names(of kind: MemberFacts.Kind) -> Set<String> {
-        Set(LibraryContracts.all.flatMap { contract in
+        let names = LibraryContracts.all.flatMap { contract in
             contract.members.compactMap { member in
                 (member as? any DeclaredMember)?.facts.kind == kind ? member.name : nil
             }
-        })
+        }
+        return Set(Dictionary(grouping: names) { $0 }.filter { $1.count == 1 }.keys)
     }
 
     /// The layer an element's contract declares, by its node type - nil for a
@@ -103,24 +106,22 @@ final class HostContractTests: XCTestCase {
         LibraryContracts.elements.first { $0.nodeType == type }?.layer
     }
 
-    /// The layer the properties of one name declare - the members of one name
-    /// share it (`LibraryContractTests`).
+    /// The layer the property of that key declares.
     private static func layer(of property: Prop) -> ElementLayer? {
-        facts(of: property.name, kind: .property)?.layer
+        facts(of: property.key, kind: .property)?.layer
     }
 
-    /// The layer the events of one name declare.
+    /// The layer the event of that key declares.
     private static func layer(of event: Event) -> ElementLayer? {
-        facts(of: event.name, kind: .event)?.layer
+        facts(of: event.key, kind: .event)?.layer
     }
 
-    /// What the first member of a name and a kind says of itself.
-    private static func facts(of name: String, kind: MemberFacts.Kind) -> MemberFacts? {
+    /// What the member of a key and a kind says of itself.
+    private static func facts(of key: KeyName, kind: MemberFacts.Kind) -> MemberFacts? {
         for contract in LibraryContracts.all {
-            for member in contract.members where member.name == name {
-                if let facts = (member as? any DeclaredMember)?.facts, facts.kind == kind {
-                    return facts
-                }
+            for case let member as any DeclaredMember in contract.members
+            where member.memberKey == key && member.facts.kind == kind {
+                return member.facts
             }
         }
 

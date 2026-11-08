@@ -30,8 +30,8 @@ extension GTKRegistrations {
                 (view as! any GTKChoosing).setWordsClass(
                     GTKStyleSheet.words(TextMembers.look(of: values), placeholder: nil, in: part))
             }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(PickerContract.selectedIndexChanged)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(PickerContract.selectedIndexChanged)
         })
     }
 }

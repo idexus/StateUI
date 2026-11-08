@@ -81,11 +81,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             .lineWidth(over ? 2 : 1)
             .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : .transparent)
-            .onDragOver { over = true }
-            .onDragLeave { over = false }
+            .onDragEntered { over = true }
+            .onDragExited { over = false }
             // A drop is not a leave, so the light comes down here too. Words
             // longer than 1 KB are left out.
-            .onDrop { text in
+            .onDropped { text in
                 basket.append(text.utf8.count <= 1024 ? text : "left out: longer than 1 KB")
                 over = false
             }
@@ -111,10 +111,10 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`onDrop` is what makes a view accept a drop. `onDragOver` puts the "
-                + "basket's light up while a drag is over it, and `onDragLeave` takes it "
+            Text("`onDropped` is what makes a view accept a drop. `onDragEntered` puts the "
+                + "basket's light up while a drag is over it, and `onDragExited` takes it "
                 + "down when the drag goes away without being let go. A drop is not a "
-                + "leave, so `onDrop` takes the light down as well.")
+                + "leave, so `onDropped` takes the light down as well.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

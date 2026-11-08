@@ -99,13 +99,13 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.device.info.model = ""
         StandardEnvironment.device.info.manufacturer = ""
         StandardEnvironment.device.info.name = ""
-        StandardEnvironment.device.info.versionString = ""
+        StandardEnvironment.device.info.platformVersion = ""
         StandardEnvironment.device.info.isVirtual = nil
         StandardEnvironment.application.info.name = ""
         StandardEnvironment.application.info.packageName = ""
-        StandardEnvironment.application.info.versionString = ""
-        StandardEnvironment.application.info.buildString = ""
-        StandardEnvironment.application.info.colorScheme = .system
+        StandardEnvironment.application.info.version = ""
+        StandardEnvironment.application.info.build = ""
+        StandardEnvironment.application.info.colorScheme = .light
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
@@ -122,7 +122,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.locale.uses24HourClock = false
         StandardEnvironment.locale.firstDayOfWeek = .sunday
         StandardEnvironment.locale.isMetric = true
-        StandardEnvironment.locale.layoutDirection = .leftToRight
+        StandardEnvironment.locale.writingDirection = .leftToRight
         Renderer.shared.clearInvalidation()
     }
 
@@ -168,8 +168,8 @@ final class HostEnvironmentTests: XCTestCase {
         let battery = HostBatteryInfo(chargeLevel: 0.5, state: .charging, powerSource: .usb, energySaverStatus: .off)
         let network = HostConnectivityInfo(networkAccess: .internet, connectionProfiles: [.wifi])
         let locale = HostLocaleInfo(
-            language: "ar", region: "EG", name: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
-            firstDayOfWeek: .saturday, isMetric: true, layoutDirection: .rightToLeft)
+            language: "ar-EG", timeZone: "Africa/Cairo", uses24HourClock: false,
+            firstDayOfWeek: .saturday, isMetric: true, writingDirection: .rightToLeft)
         HostBoundary.setBatteryInfo(battery)
         HostBoundary.setConnectivityInfo(network)
         HostBoundary.setLocaleInfo(locale)
@@ -252,6 +252,35 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
+    func testEachFactNamesAndInvalidatesOnlyItsOwnReaders() {
+        let battery = Battery()
+        let (_, chargeReads) = ReadScope.collect { battery.chargeLevel }
+        let (_, stateReads) = ReadScope.collect { battery.state }
+        XCTAssertEqual(chargeReads.count, 1)
+        XCTAssertEqual(stateReads.count, 1)
+        XCTAssertTrue(chargeReads.isDisjoint(with: stateReads))
+        let reads = chargeReads.union(stateReads)
+        Renderer.shared.reading(reads)
+        defer { Renderer.shared.unreading(reads) }
+        Renderer.shared.clearInvalidation()
+
+        battery.chargeLevel = 0.5
+        XCTAssertEqual(Renderer.shared.pendingChanges, chargeReads)
+        XCTAssertEqual(Renderer.shared.pendingWrites.values.map { BuildScope.name(of: $0) }, ["chargeLevel"])
+        Renderer.shared.clearInvalidation()
+
+        battery.state = .charging
+        XCTAssertEqual(Renderer.shared.pendingChanges, stateReads)
+        XCTAssertEqual(Renderer.shared.pendingWrites.values.map { BuildScope.name(of: $0) }, ["state"])
+    }
+
+    func testSamplingTheThemeCreatesNoReader() {
+        let (theme, reads) = ReadScope.collect { ThemeInForce.current }
+        XCTAssertTrue(reads.isEmpty)
+        XCTAssertEqual(theme.scheme, StandardEnvironment.application.info.colorScheme)
+        XCTAssertEqual(theme.accent, StandardEnvironment.application.info.accentColor)
+    }
+
     // MARK: - The provider schema
 
     /// Every report lands whole: each field on the provider's property of the
@@ -291,39 +320,39 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.device.display.refreshRate, 120)
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
+            language: "pl-PL", timeZone: "Europe/Warsaw",
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .rightToLeft))
         XCTAssertEqual(StandardEnvironment.locale.language, "pl-PL")
         XCTAssertEqual(StandardEnvironment.locale.language?.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: "pl", region: "PL", name: "pl-PL", timeZone: "",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
+            language: "pl-PL", timeZone: nil,
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, writingDirection: .rightToLeft))
         XCTAssertNil(StandardEnvironment.locale.timeZone, "a zone the host has not said is none, never an empty name")
         XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)
         XCTAssertEqual(StandardEnvironment.locale.firstDayOfWeek, .monday)
         XCTAssertTrue(StandardEnvironment.locale.isMetric)
-        XCTAssertEqual(StandardEnvironment.locale.layoutDirection, .rightToLeft)
+        XCTAssertEqual(StandardEnvironment.locale.writingDirection, .rightToLeft)
 
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
-            name: "Studio", versionString: "26.0", isVirtual: false))
+            name: "Studio", platformVersion: "26.0", isVirtual: false))
         XCTAssertEqual(StandardEnvironment.device.info.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.info.platform, "macOS")
         XCTAssertEqual(StandardEnvironment.device.info.model, "Mac14,9")
         XCTAssertEqual(StandardEnvironment.device.info.manufacturer, "Apple")
         XCTAssertEqual(StandardEnvironment.device.info.name, "Studio")
-        XCTAssertEqual(StandardEnvironment.device.info.versionString, "26.0")
+        XCTAssertEqual(StandardEnvironment.device.info.platformVersion, "26.0")
         XCTAssertEqual(StandardEnvironment.device.info.isVirtual, false)
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
-            name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
+            name: "Gallery", packageName: "com.example.gallery", version: "1.2", build: "34"))
         HostBoundary.setColorScheme(.dark)
         XCTAssertEqual(StandardEnvironment.application.info.name, "Gallery")
         XCTAssertEqual(StandardEnvironment.application.info.packageName, "com.example.gallery")
-        XCTAssertEqual(StandardEnvironment.application.info.versionString, "1.2")
-        XCTAssertEqual(StandardEnvironment.application.info.buildString, "34")
+        XCTAssertEqual(StandardEnvironment.application.info.version, "1.2")
+        XCTAssertEqual(StandardEnvironment.application.info.build, "34")
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark)
 
         HostBoundary.setApplicationPhase(.inactive)
@@ -336,17 +365,37 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker", "Map"],
             members: [
-                HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen"),
+                HostRealizedMember(element: "Picker", owner: "PopupElement", member: "isOpen"),
                 HostRealizedMember(element: "Map", owner: "Map", member: "moveToRegion"),
             ]))
         defer { HostBoundary.setRealization(HostRealization()) }
         let device = Device()
 
-        XCTAssertTrue(device.honors(PickerContract.isOpen))
-        XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
-        XCTAssertFalse(device.honors(PickerContract.opened), "an event its host raises not")
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen))
+        XCTAssertFalse(device.honors(PlaceholderElementContract.placeholder), "a member its host leaves out")
+        XCTAssertFalse(device.honors(PopupElementContract.opened), "an event its host raises not")
         XCTAssertTrue(device.honors(MapContract.moveToRegion), "an act its host performs")
         XCTAssertFalse(device.honors(WebViewContract.goBack), "and one it does not")
+    }
+
+    /// A tier's member is honored element by element: one wearer realizes it, another's family never has it.
+    func testTheDeviceSaysWhatThePlatformHonorsOnOneElement() {
+        HostBoundary.setRealization(HostRealization(
+            elements: ["Picker", "DatePicker"],
+            members: [HostRealizedMember(element: "Picker", owner: "PopupElement", member: "isOpen")]))
+        HostBoundary.setRegister(HostRegister(records: [
+            .complete(PopupElementContract.isOpen, on: PickerContract.self),
+            .notPlanned(PopupElementContract.isOpen, on: DatePickerContract.self, reason: "no calendar opens"),
+        ]))
+        defer {
+            HostBoundary.setRegister(nil)
+            HostBoundary.setRealization(HostRealization())
+        }
+        let device = Device()
+
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen, on: PickerContract.self))
+        XCTAssertFalse(device.honors(PopupElementContract.isOpen, on: DatePickerContract.self), "never on its family")
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen), "honored by the tier, on one wearer at least")
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
@@ -357,7 +406,7 @@ final class HostEnvironmentTests: XCTestCase {
             members: [HostRealizedMember(element: "Picker", owner: "VisualElement", member: "tooltip")]))
         HostBoundary.setRegister(HostRegister(records: [
             .notPlanned(VisualElementContract.tooltip, reason: "no pointer"),
-            .partial(PickerContract.isOpen, missing: "its closing"),
+            .partial(PopupElementContract.isOpen, missing: "its closing"),
         ]))
         defer {
             HostBoundary.setRegister(nil)
@@ -366,8 +415,8 @@ final class HostEnvironmentTests: XCTestCase {
         let device = Device()
 
         XCTAssertFalse(device.honors(VisualElementContract.tooltip), "never on this family")
-        XCTAssertTrue(device.honors(PickerContract.isOpen), "in part")
-        XCTAssertFalse(device.honors(PickerContract.placeholder), "said nowhere")
+        XCTAssertTrue(device.honors(PopupElementContract.isOpen), "in part")
+        XCTAssertFalse(device.honors(PlaceholderElementContract.placeholder), "said nowhere")
     }
 
     /// A tier's member the register records element by element - realized on one wearer, never on another - is

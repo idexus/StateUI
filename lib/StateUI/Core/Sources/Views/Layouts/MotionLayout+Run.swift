@@ -57,11 +57,11 @@ extension MotionLayout {
         let description: Int
         let mask: Node?
         let path: KeyPath<Items.Element, ID>
-        let activated: ValueHandler<ID>?
+        let activated: [ValueHandler<ID>]
         let named: ((Parameters) -> Void)?
         let itemStart: ItemDragStart?
-        let dragged: (@MainActor (ItemDrag<ID>) throws -> Void)?
-        let dismissal: LayoutDismissal<ID>?
+        let dragged: [ValueHandler<ItemDrag<ID>>]
+        let dismissals: [LayoutDismissal<ID>]
 
         /// The parameters the element wears: the author's, or the layout's own.
         let parameters: Binding<Parameters>
@@ -85,7 +85,7 @@ extension MotionLayout {
         let rebuilt: @MainActor (Int) -> Void
 
         /// What is told once the run comes to rest.
-        let settled: ValueHandler<Parameters>?
+        let settled: [ValueHandler<Parameters>]
 
         /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
         /// it, so a change and a program's write of the parameters travel alike.
@@ -272,13 +272,10 @@ extension MotionLayout {
             guard rests != states.shown.wrappedValue.resting else { return }
 
             states.shown.wrappedValue.resting = rests
-            guard rests, let settled else { return }
+            guard rests, !settled.isEmpty else { return }
 
-            let runs = states.settles
-            libraryTask {
-                settled.gate.runs(for: runs).start(
-                    { try await settled.run(parameters) }, settled.gate.policy, payload: nil, owner: runs)
-            }
+            let start = states.settles.starting(settled.map { $0.given(parameters) })
+            libraryTask { start() }
         }
 
         /// Where the run's motion set out, the run standing at `parameters`: there, where nothing moves it - no hand,
@@ -321,21 +318,25 @@ extension MotionLayout {
         func wrapped(_ slot: Slot) -> AnyView {
             // With no shade and no activation, the holder is a view of its own: a new order carries every one.
             // Design: docs/design/views/motion-layout.md#a-view-in-its-holder
-            if mask == nil, activated == nil {
+            if mask == nil, activated.isEmpty {
                 rebuilt(slot.index)
                 return AnyView(node: holder(slot.item))
             }
 
             let holder = Grid { BuiltViews(nodes: [built(slot)] + (mask.map { [$0] } ?? [])) }
 
-            guard let activated else { return AnyView(holder.letsInputThrough(true)) }
+            guard !activated.isEmpty else { return AnyView(holder.letsInputThrough(true)) }
 
             let id = slot.item[keyPath: path]
-            let tap: EventHandler = { try await activated.run(id) }
-            return switch activated.gate {
-            case .own(let policy): AnyView(holder.onTapped(policy, tap))
-            case .shared(let gate): AnyView(holder.onTapped(gate: gate, tap))
+            var tapped = AnyView(holder)
+            for activated in activated {
+                let tap: EventHandler = { try await activated.run(id) }
+                tapped = switch activated.gate {
+                case .own(let policy): AnyView(tapped.onTapped(policy: policy, tap))
+                case .shared(let gate): AnyView(tapped.onTapped(gate: gate, tap))
+                }
             }
+            return tapped
         }
 
         /// The view of `slot`, built now - again where a state it reads moved, the holder around it standing: its
@@ -599,8 +600,8 @@ extension MotionLayout {
         /// Design: docs/design/views/motion-layout.md#the-hand
         func unit(at value: Double) -> Double? {
             switch travel {
-            case .points(let points):
-                return points
+            case .length(let length):
+                return length
             case .room:
                 let room = states.room.wrappedValue
                 guard room.width > 0, room.height > 0 else { return nil }

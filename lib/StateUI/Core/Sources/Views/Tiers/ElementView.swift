@@ -35,7 +35,7 @@ extension ElementView {
     ///   - property: the member, written with its contract.
     ///   - value: what it holds, asked as the element is described.
     /// - Returns: the element, reading the value then.
-    public func setValue<Owner: Contract, Value: HostRepresentable>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>, whenDescribed value: @escaping @MainActor () -> Value
     ) -> Self {
         modified { $0.readsWhenDescribed { $0.props[property.token] = value().propValue } }

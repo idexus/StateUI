@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 // listing: InteropActsSample.Web.swift
@@ -10,7 +11,7 @@ import StateUIWeb
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
 /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
-/// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `Gallery.Nobody` is
+/// is its control's, registered beside it: `RatingBarElement.register()` performs `flash`. `GalleryContract.nobody` is
 /// registered nowhere on purpose: the "Calling Web" sample calls it to show what a missing registration does.
 enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.

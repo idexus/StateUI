@@ -108,7 +108,7 @@ namespace {
         }
     };
 
-    /// What an instruction may change, kept by saveState and put back by restoreState.
+    /// What an instruction may change, kept by saveGraphics and put back by restoreGraphics.
     struct Pen {
         D2D1_COLOR_F fill = D2D1::ColorF(D2D1::ColorF::Black);
         D2D1_COLOR_F stroke = D2D1::ColorF(D2D1::ColorF::Black);
@@ -309,10 +309,10 @@ namespace {
                 pen.transform = D2D1::Matrix3x2F::Scale(static_cast<float>(at[0]), static_cast<float>(at[1])) * pen.transform;
                 place();
                 break;
-            case StateUIDrawingSaveState:
+            case StateUIDrawingSaveGraphics:
                 kept.push_back(pen);
                 break;
-            case StateUIDrawingRestoreState:
+            case StateUIDrawingRestoreGraphics:
                 if (kept.empty()) break;
                 pen = kept.back();
                 kept.pop_back();

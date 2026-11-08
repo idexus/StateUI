@@ -45,7 +45,11 @@ travels to each new one ([Motion and journeys](motion-and-journeys.md)); and
 what the platform reports lands on the same state. Every property that crosses
 to the host as it is offers both paths, because each has the same shape; one
 the library translates to the host's shape takes the state alone
-([Two words and a part](#two-words-and-a-part-state-binding-statepart)).
+([Two words and a part](#two-words-and-a-part-state-binding-statepart)). The
+value alone stays where no host can be handed it as it is - a brush's
+gradient, a picture - where a change makes the native control anew, and for a
+button's role, which hands the window's Return and Escape to the buttons it
+shows and is said where the button is written.
 
 **Deliberately rejected:** a modifier without an argument that sets one value
 of a property - `.bold()`, `.italic()`, `.center()`, `.leading()` and their
@@ -229,6 +233,15 @@ Going somewhere is writing a state, and the user's own way back writes it too.
 state can be kept, restored, tested and read by any view; a command is gone the
 moment it runs.
 
+A question put to the user is the one exception, and it is one on purpose:
+`window.alert`, `confirm`, `prompt` and `chooseAction` are awaited -
+`let sure = try await window.confirm(…)` - because a question has an answer
+and nothing else: no page stands behind it to keep or restore, the handler
+that asks is the one that acts on the answer, and the platform's own alert
+leaves no state worth holding between the asking and the answer. A sheet or a
+popover the user works in is a page, and so is state
+([Dialogs](../interface/interaction-and-actions.md#dialogs)).
+
 ## A control's method goes through an aim
 
 An action on one control - focusing a field, scrolling a list to an item,
@@ -308,7 +321,7 @@ struct Toolbar: View {
                 .isEnabled(!document.saving.isBusy)
                 .onClicked(gate: document.saving) { await document.save() }
             SearchField($query)
-                .onTextChanged(.cancelPrevious) { text in
+                .onTextChanged(policy: .cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(250))
                     found = text
                 }
@@ -318,14 +331,17 @@ struct Toolbar: View {
 ```
 
 - **The compiler asks the question, and only where there is one.** An
-  awaiting handler without a policy does not compile, and the message says
-  what to write; a handler with no `await` takes none.
+  awaiting handler without a policy does not compile - the compiler says it
+  meets no synchronous handler, the cue to name a policy or a gate - and a
+  handler with no `await` takes none. `onCreated` and `onDestroying` come
+  once in an element's life, so nothing can come again behind them: they
+  take an awaiting handler with no gate.
 - **One gate for everything that touches one thing.** A policy given alone is
   the handler's own gate; a `Gate` is shared by every handler and task written
   with it - two buttons, an autosave - and its `isBusy` is a state a body
-  reads. The label says which kind a handler has: a policy needs none, or
-  `policy:` after the event's own arguments, and a shared gate is always
-  `gate:` - only it has `isBusy`, and only it takes a task.
+  reads. The label says which kind a handler has: a policy is
+  `policy:` and a shared gate `gate:`, after the event's own arguments - only
+  the gate has `isBusy`, and only it takes a task.
 - **One spelling.** Shared work passes its gate written `gate:` wherever it
   starts, an event or the application's code.
 
@@ -410,8 +426,13 @@ public API keeps to these rules:
 - **One road.** A concept has one spelling and one way in: a property its
   member's modifier, several states read together `.multi`, a scroller's
   offset `.scrollOffset($offset)`, the application `NotesApp.register()`. A
-  second road to the same place - an alias, a shortcut, an event repeating a
-  state - is removed, not kept beside the first.
+  second road to the same place - an alias, a shortcut, an event repeating
+  what the application itself wrote - is removed, not kept beside the first;
+  a control's event telling what the user did stands beside the state that
+  holds the value (`onToggled` beside `isOn`). A modifier taking a value in
+  each of the forms its type is made of is one road: whatever takes a
+  `Material` takes a `Color` and a `Brush` too, the same member written the
+  same way.
 - **Through the contract.** A property, an event and an act are written with
   the contract that declares them. What only a host needs - a key made from a
   name, the renderer, the lists of properties the hosts share - stands behind
@@ -420,7 +441,8 @@ public API keeps to these rules:
 - **Typed values.** A value's type says what it is: a color is
   `Color(hex: 0x512BD4)`, and text read as one is `Color(parsing:)`, which may
   fail; insets name their edges `start` and `end`, which follow the reading
-  direction; a button's purpose is an `ActionRole`. No string, number or flag
+  direction; a button's role is a `ButtonRole`, a menu entry's and a bar
+  item's an `ActionRole`. No string, number or flag
   stands for something that has a type of its own.
 - **One shape for one kind.** A modifier gives back `Modified` - a composed
   view's configures the view and gives it back - and names a state it borrows

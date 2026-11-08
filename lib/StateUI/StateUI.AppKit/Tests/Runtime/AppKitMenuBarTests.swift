@@ -24,8 +24,8 @@ final class AppKitMenuBarTests: XCTestCase {
     /// The locale the core hears: `language`, or none.
     private static func speak(_ language: String) {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
-            language: language, region: "", name: language, timeZone: "", uses24HourClock: true,
-            firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
+            language: language.isEmpty ? nil : LocaleTag(language), timeZone: nil, uses24HourClock: true,
+            firstDayOfWeek: .monday, isMetric: true, writingDirection: .leftToRight))
     }
 
     /// The bar's own menus and entries say the library's words in the system's language, as AppKit translates no
@@ -33,7 +33,7 @@ final class AppKitMenuBarTests: XCTestCase {
     @MainActor
     func testTheMenuBarSpeaksTheSystemsLanguage() throws {
         Self.speak("pl")
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         XCTAssertEqual(main.items.map(\.title).dropFirst(), ["Plik", "Edycja", "Okno"])
         XCTAssertEqual(main.item(withTitle: "Plik")?.submenu?.items.map(\.title), ["Nowe okno"])
         XCTAssertEqual(
@@ -56,7 +56,7 @@ final class AppKitMenuBarTests: XCTestCase {
     /// equivalents, so without them a field copies, pastes and undoes nothing.
     @MainActor
     func testTheMenuBarHoldsTheTextCommandsAFieldAnswers() throws {
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        let main = AppKitHost.mainMenu(newWindow: nil)
         XCTAssertEqual(main.items.map(\.title).dropFirst(), ["File", "Edit", "Window"])
 
         let edit = try XCTUnwrap(main.item(withTitle: "Edit")?.submenu)
@@ -78,14 +78,14 @@ final class AppKitMenuBarTests: XCTestCase {
                     MenuItem("Eksportuj").id("export")
                     MenuItem("Zapisz").isEnabled(false).id("save")
                 }
-                .id(StandardMenu.file)
-                Menu("Pomoc") { MenuItem("Podręcznik") }.id(StandardMenu.help)
-                Menu("Widok") { MenuItem("Powiększ") }.id(StandardMenu.view)
+                .joins(.file)
+                Menu("Pomoc") { MenuItem("Podręcznik") }.joins(.help)
+                Menu("Widok") { MenuItem("Powiększ") }.joins(.view)
                 Menu("Format") { MenuItem("Pogrub") }
             }
         }
-        defer { renderer.closeForTesting() }
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        defer { renderer.finish() }
+        let main = AppKitHost.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
         renderer.installPageMenus(controller.pageMenus, into: main)
@@ -109,8 +109,8 @@ final class AppKitMenuBarTests: XCTestCase {
                 Menu("Format") { MenuItem("Save As").keyboardShortcut("s", modifiers: [.primary, .shift]) }
             }
         }
-        defer { renderer.closeForTesting() }
-        let main = StateUIAppKit.mainMenu(newWindow: nil)
+        defer { renderer.finish() }
+        let main = AppKitHost.mainMenu(newWindow: nil)
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
 
         renderer.installPageMenus(controller.pageMenus, into: main)

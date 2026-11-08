@@ -80,6 +80,50 @@ private struct Readout: View {
     }
 }
 
+/// A slider for each factor, each converting one source by its own factor in one ForEach - noting the derived
+/// state each factor was handed.
+private struct Factors: View {
+    let source: Binding<Double>
+    let factors: State<[Double]>
+    let seen: SeenByFactor
+
+    var body: some View {
+        VStack {
+            ForEach(factors.wrappedValue) { factor in
+                let scaled = source.convert({ $0 * factor }, back: { $0 / factor })
+                let _ = seen.note(factor, scaled)
+                Slider(scaled).maximum(100).id(factor)
+            }
+        }
+    }
+}
+
+/// The derived state each factor was handed, last build.
+@MainActor
+private final class SeenByFactor {
+    var storages: [Double: ObjectIdentifier] = [:]
+
+    func note(_ factor: Double, _ binding: Binding<Double>) {
+        storages[factor] = ObjectIdentifier(binding.storage)
+    }
+}
+
+/// One helper making a converted slider, called twice in one body.
+private struct HelperTwice: View {
+    let source: Binding<Double>
+
+    var body: some View {
+        VStack {
+            scaled(10).id("ten")
+            scaled(100).id("hundred")
+        }
+    }
+
+    private func scaled(_ factor: Double) -> some View {
+        Slider(source.convert({ $0 * factor }, back: { $0 / factor })).maximum(100)
+    }
+}
+
 @MainActor
 final class ConversionTests: XCTestCase {
     override func setUp() async throws {
@@ -111,6 +155,57 @@ final class ConversionTests: XCTestCase {
 
         renders.render(tree(false))
         XCTAssertEqual(live(), 1, "the readout that left kept its derived state")
+    }
+
+    /// EACH ROW OF A FOREACH KEEPS ITS OWN CONVERSION: its own derived state, worked out by its own factor, the
+    /// same one across a reorder - one line written, as many uses as rows.
+    func testEachRowOfAForEachKeepsItsOwnConversion() throws {
+        let (source, factors, seen) = (State(0.5), State([10.0, 100.0]), SeenByFactor())
+        let renders = Renders()
+        let patch = renders.render(Factors(source: source.projectedValue, factors: factors, seen: seen).node)
+        let numbers = try patch.subtree.filter { $0.type == .slider }.map { try XCTUnwrap($0.driven?[.value]?.state) }
+        let board = Renderer.shared.board
+
+        XCTAssertEqual(Set(numbers).count, 2, "two rows, two derived states")
+        board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 50])
+
+        source.wrappedValue = 0.7
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(numbers.map { destination(of: $0) }, [7, 70])
+
+        let before = seen.storages
+        factors.wrappedValue = [100, 10]
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(seen.storages, before, "each factor kept its derived state as the rows changed places")
+    }
+
+    /// A ROW'S REPORT COMES BACK THROUGH ITS OWN WAY BACK, not the last row's.
+    func testARowsReportComesBackThroughItsOwnWayBack() throws {
+        let source = State(0.5)
+        let renders = Renders()
+        let patch = renders.render(Factors(source: source.projectedValue, factors: State([10.0, 100.0]), seen: SeenByFactor()).node)
+        let number = try XCTUnwrap(patch.subtree.first { $0.type == .slider }?.driven?[.value]?.state)
+        let board = Renderer.shared.board
+
+        board.cycle(now: 0, reducesMotion: false)
+        dragged(number, to: 8)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(source.wrappedValue, 0.8, accuracy: 1e-9, "the first row's factor, ten")
+    }
+
+    /// A HELPER CALLED TWICE IN ONE BODY MAKES TWO CONVERSIONS: one line, two uses, told apart by which time it ran.
+    func testAHelperCalledTwiceMakesTwoConversions() throws {
+        let source = State(0.5)
+        let renders = Renders()
+        let patch = renders.render(HelperTwice(source: source.projectedValue).node)
+        let numbers = try patch.subtree.filter { $0.type == .slider }.map { try XCTUnwrap($0.driven?[.value]?.state) }
+
+        XCTAssertEqual(Set(numbers).count, 2, "two calls, two derived states")
+        Renderer.shared.board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(numbers.map { destination(of: $0) }, [5, 50])
     }
 
     /// The journey a converted slider walks, read off its image.
@@ -195,8 +290,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Text()
-                .text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
+            Text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
@@ -223,8 +317,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Text()
-                .text(volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" })
+            Text(volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)

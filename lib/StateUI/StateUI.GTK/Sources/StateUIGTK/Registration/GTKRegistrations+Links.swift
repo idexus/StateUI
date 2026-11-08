@@ -10,16 +10,16 @@ extension GTKRegistrations {
     static func links(_ registry: Registry<GTKView>) {
         registry.add(LinkContract.self, create: { reports in
             let link = GTKLinkView()
-            link.onClicked = { reports.raise(LinkContract.clicked) }
+            link.onClicked = { reports.raise(ClickElementContract.clicked) }
             return link
         }, members: { link in
-            link.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            link.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             link.applies(TextMembers.captionMembers) { view, values in
                 view.setCaption(TextMembers.caption(values), look: TextMembers.captionLook(values))
             }
             // The address is the host layer's to open as the link is chosen; the view holds nothing of it.
             link.property(LinkContract.address) { _, _ in }
-            link.raises(LinkContract.clicked)
+            link.declares(ClickElementContract.clicked)
         })
     }
 }

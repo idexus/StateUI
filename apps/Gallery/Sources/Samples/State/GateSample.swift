@@ -37,7 +37,7 @@ private struct OwnGates: ExampleContent {
                 .textColor(Palette.subtle)
 
             row("Ignore while running", ignored)
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     ignored.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     ignored.finished += 1
@@ -47,7 +47,7 @@ private struct OwnGates: ExampleContent {
             // The run a press cancels ends at its sleep: what it would write
             // after is never written.
             row("Cancel previous", cancelled)
-                .onClicked(.cancelPrevious) {
+                .onClicked(policy: .cancelPrevious) {
                     cancelled.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     cancelled.finished += 1
@@ -55,7 +55,7 @@ private struct OwnGates: ExampleContent {
                 .accessibilityIdentifier("gate.cancel")
 
             row("Wait for previous", waited)
-                .onClicked(.waitForPrevious) {
+                .onClicked(policy: .waitForPrevious) {
                     waited.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     waited.finished += 1
@@ -63,7 +63,7 @@ private struct OwnGates: ExampleContent {
                 .accessibilityIdentifier("gate.wait")
 
             row("Run concurrently", unheld)
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     unheld.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     unheld.finished += 1
@@ -233,7 +233,7 @@ private struct AwaitingEvents: ExampleContent {
 
             // Every letter cancels the search under way: only the last one finishes.
             SearchField($query)
-                .onTextChanged(.cancelPrevious) { text in
+                .onTextChanged(policy: .cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(600))
                     found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
                 }

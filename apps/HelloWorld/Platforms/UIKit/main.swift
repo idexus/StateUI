@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import HelloWorldUI
+import StateUI
 import StateUIUIKit
 
 HelloWorldApp.register()
-StateUIUIKit.run()
+UIKitHost.run()

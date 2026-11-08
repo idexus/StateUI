@@ -36,7 +36,7 @@ public enum CubeColor: Int32, CaseIterable, HostRepresentable {
 /// and its members, each with its value's type.
 public enum Cube3DContract: ElementContract {
     public static let nodeType: NodeType = "Gallery.Cube3D"
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// How long the cube's edge is, as a share of the room the view is given,
     /// 0 through 1. A size HAS a half way, so a change travels and a walk of
@@ -86,11 +86,11 @@ public struct Cube3D: ElementView {
     /// same state grows the cube on the host's own frames, and nothing here is
     /// built again for it.
     ///
-    /// `.inOut`, because the host reports where a walk has got to, which is
-    /// what `$size.journey.value` reads - so `$size.journey.move(to: 1)` grows
-    /// the cube the way it moves any other walked value.
+    /// A `.journey`: the host walks it and reports where the walk has got to,
+    /// which is what `$size.journey.value` reads - so `$size.journey.move(to: 1)`
+    /// grows the cube the way it moves any other walked value.
     public func size(_ state: Binding<Double>) -> Modified {
-        setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
+        setValue(Cube3DContract.size, on: state, as: .journey)
     }
 
     /// Which color the cube is painted.
@@ -106,7 +106,7 @@ public struct Cube3D: ElementView {
     /// The same, set by the host from a state as it stands: a switch bound to
     /// the state stops and starts the cube, and nothing here is built again.
     public func isSpinning(_ state: Binding<Bool>) -> Modified {
-        setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
+        setValue(Cube3DContract.isSpinning, on: state, as: .oneWay)
     }
 }
 // listing: end

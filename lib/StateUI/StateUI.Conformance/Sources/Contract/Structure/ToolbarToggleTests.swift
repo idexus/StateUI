@@ -13,8 +13,8 @@
     public static var cases: [ConformanceCase] {
         [
             ConformanceCase("anItemStandsOnAsTheTreeSays", proves: [
-                Covered(ToolbarToggleContract.self), Covered(ToolbarToggleContract.isOn),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ToolbarToggleContract.self),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 s.start {
                     Self.page(beside: [Button("Change").onClicked { on.wrappedValue.toggle() }.id("change")],
@@ -22,47 +22,17 @@
                         [ToolbarToggle("Ruler", isOn: on.wrappedValue).id("ruler")]
                     }
                 }
-                try s.settle { try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")) == false }
-                s.expect(try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")), false, "made off")
+                try s.settle { try s.held(ToggleElementContract.isOn, on: s.element("ruler")) == false }
+                s.expect(try s.held(ToggleElementContract.isOn, on: s.element("ruler")), false, "made off")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")) == true }
-                s.expect(try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")), true, "on as the tree changed it")
+                try s.settle { try s.held(ToggleElementContract.isOn, on: s.element("ruler")) == true }
+                s.expect(try s.held(ToggleElementContract.isOn, on: s.element("ruler")), true, "on as the tree changed it")
             },
-            ConformanceCase("anItemChosenTurnsItsStateOver", proves: [
-                Covered(ToolbarToggleContract.toggled), Covered(ToolbarToggleContract.isOn),
-            ]) { s in
-                let ruler = State(wrappedValue: false)
-                let grid = State(wrappedValue: false)
-                let heard = Received<Bool>()
-                s.start {
-                    Self.page {
-                        [
-                            ToolbarToggle("Ruler", isOn: ruler.projectedValue).onToggled { heard.values.append($0) }
-                                .id("ruler"),
-                            ToolbarToggle("Grid", isOn: grid.projectedValue).placement(at: .overflow).id("grid"),
-                        ]
-                    }
-                }
 
-                try s.perform(.activate, on: s.element("ruler"))
-                s.settle { ruler.wrappedValue }
-                s.expect(ruler.wrappedValue, true, "chosen off, the state turns on")
-                try s.settle { try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")) == true }
-                s.expect(try s.held(ToolbarToggleContract.isOn, on: s.element("ruler")), true, "and the item stands on")
-
-                try s.perform(.activate, on: s.element("ruler"))
-                s.settle { !ruler.wrappedValue }
-                s.expect(ruler.wrappedValue, false, "chosen on, the state turns off")
-                s.expect(heard.values, [true, false], "each turn heard with the way it turned")
-
-                try s.perform(.activate, on: s.element("grid"))
-                s.settle { grid.wrappedValue }
-                s.expect(grid.wrappedValue, true, "one in the overflow turns alike")
-            },
             ConformanceCase("anItemShowsItsOnPictureWhileOn", proves: [
                 Covered(ToolbarToggleContract.onIcon),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let on = State(wrappedValue: false)
                 s.start {
                     Self.page(beside: [Button("Change").onClicked { on.wrappedValue.toggle() }.id("change")],
@@ -70,12 +40,12 @@
                         [ToolbarToggle("Ruler", isOn: on.wrappedValue).icon("test_dot.png", on: "test_wide.png").id("ruler")]
                     }
                 }
-                try s.settle { try s.held(MenuItemElementContract.icon, on: s.element("ruler")) == "test_dot.png" }
-                s.expect(try s.held(MenuItemElementContract.icon, on: s.element("ruler")), "test_dot.png", "off, its own")
+                try s.settle { try s.held(IconElementContract.icon, on: s.element("ruler")) == "test_dot.png" }
+                s.expect(try s.held(IconElementContract.icon, on: s.element("ruler")), "test_dot.png", "off, its own")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(MenuItemElementContract.icon, on: s.element("ruler")) == "test_wide.png" }
-                s.expect(try s.held(MenuItemElementContract.icon, on: s.element("ruler")), "test_wide.png", "on, its on picture")
+                try s.settle { try s.held(IconElementContract.icon, on: s.element("ruler")) == "test_wide.png" }
+                s.expect(try s.held(IconElementContract.icon, on: s.element("ruler")), "test_wide.png", "on, its on picture")
             },
         ]
     }

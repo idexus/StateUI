@@ -58,7 +58,7 @@ again instead:
   where the host puts an item    a toolbar item's placement, a toolbar group's side and order,
                                  whether a toolbar item shows its text, a menu bar's order
   a choice                       selectedIndex, selectedTab: clearing would move it
-  what keeps a platform window   windowType, windowValue, floatsOnTop, hidesWhenInactive
+  what keeps a platform window   windowKind, windowValue, floatsOnTop, hidesWhenInactive
   where a map opens              region
 ```
 
@@ -87,13 +87,11 @@ names one. A width or a height that a measured layout works out arrives at
 once rather than animating: carried through a motion, it would lay the page
 out at sizes nobody chose.
 
-## One name one set of facts
+## One key one set of facts
 
 The differ and the hosts hold a property as a token - a key, a name and its
 number - and read what it says by that key: `Prop.facts` looks it up in
-`LibraryContracts.facts`, where the first member met under a name answers
-for every member of it. So every member of one name says the same of its
-layer, travel, clearing and motion; two that disagreed would each be half
-wrong. `LibraryContractTests` holds every member of one name to one set of
-facts. A name no library contract declares, an application's own, travels,
-is cleared, and says nothing of motion.
+`LibraryContracts.facts`. A key is its member's alone - its owner's name, a
+dot, and its own - so two members of one name, a window's width and a view's,
+are two keys, each with its own facts. A key no library contract declares,
+an application's own, travels, is cleared, and says nothing of motion.

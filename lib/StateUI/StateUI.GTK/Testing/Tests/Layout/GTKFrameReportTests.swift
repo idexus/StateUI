@@ -23,7 +23,7 @@ private struct FramesPage: View {
                 .fill(.steelBlue)
                 .width(wide ? 200 : 120)
                 .height(60)
-                .frame($room)
+                .frame(into: $room)
                 .onFrameChanged { frame in said = "\(Int(frame.width))x\(Int(frame.height))" }
             GeometryReader { frame in Text("reader \(Int(frame.width))") }
                 .width(90)
@@ -63,7 +63,9 @@ final class GTKFrameReportTests: XCTestCase {
     }
 
     /// A view the tree reads says where it stands in the frame's layout that placed it, before the frame is drawn:
-    /// no display frame comes between - a sidebar's slide lays a page out every frame.
+    /// no display frame comes between - a sidebar's slide lays a page out every frame. A frame its readers said in
+    /// hears nothing more, one that laid the window out again moving nothing among them, so the layout widening it
+    /// comes in a frame they said nothing in yet.
     func testAViewSaysWhereItStandsInTheLayoutThatPlacedIt() throws {
         try onUIThread {
             let wide = State(wrappedValue: false)
@@ -80,17 +82,25 @@ final class GTKFrameReportTests: XCTestCase {
                 .verticalAlignment(.start)
             }
             host.settle { heard.values.last == 120 }
-            let window = (host.window ?? GTKTestHost.window).widget
+            let window = host.window ?? GTKTestHost.window
 
-            let clock = try XCTUnwrap(gtk_widget_get_frame_clock(window.of(GtkWidget.self)))
+            let clock = try XCTUnwrap(gtk_widget_get_frame_clock(window.widget))
             gdk_frame_clock_begin_updating(clock)
             defer { gdk_frame_clock_end_updating(clock) }
-            GTKTestHost.pump(0.1)
+            let frame = { Int64(gdk_frame_clock_get_frame_counter(clock)) }
+            let saidIn = { GTKWindow.reportedFrame(of: window.number) ?? -1 }
+            gtk_widget_queue_resize(window.widget)
+            XCTAssertTrue(
+                GTKTestHost.pump(until: { saidIn() == frame() }),
+                "a frame laid the window out again: said in \(saidIn()), frame \(frame())")
+            XCTAssertTrue(
+                GTKTestHost.pump(until: { saidIn() < frame() }),
+                "a frame its readers said nothing in: said in \(saidIn()), frame \(frame())")
 
             wide.wrappedValue = true
             host.runtime.pump.turn()
             GTKTestHost.emit(clock, "layout")
-            XCTAssertEqual(heard.values.last, 200, "said in the layout that widened it")
+            XCTAssertEqual(heard.values.last, 200, "said in the layout that widened it: said in \(saidIn()), frame \(frame())")
 
             // The layout repeats once for what was said, and ends: a frame's readers say once.
             wide.wrappedValue = false

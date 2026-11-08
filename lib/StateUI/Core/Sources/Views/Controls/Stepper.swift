@@ -5,23 +5,6 @@
 public protocol StepperProperties: PropertyContainer {}
 
 extension StepperProperties {
-    /// The number it is showing, between `minimum` and `maximum`. Usually given
-    /// in the initializer.
-    public func value(_ value: Double) -> Modified {
-        setValue(StepperContract.value, value)
-    }
-
-    /// The lowest it goes - the minus button stops here.
-    /// It is 0 until told otherwise.
-    public func minimum(_ value: Double) -> Modified {
-        setValue(StepperContract.minimum, value)
-    }
-
-    /// The highest it goes - the plus button stops here.
-    /// It is 100 until told otherwise.
-    public func maximum(_ value: Double) -> Modified {
-        setValue(StepperContract.maximum, value)
-    }
 
     /// How far one tap moves the value.
     /// It is 1 until told otherwise.
@@ -42,12 +25,12 @@ extension StepperProperties {
 ///
 /// Given a binding it shows the value and writes every step back. Given a number
 /// it shows that, and `.onValueChanged` is how the step gets anywhere.
-public struct Stepper: ElementView, StepperProperties, FocusElement {
+public struct Stepper: ElementView, StepperProperties, FocusElement, RangeElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Stepper>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: StepperContract.self)
     }
 
@@ -55,7 +38,7 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// `.onValueChanged`.
     public init(_ value: Double) {
         node = Node(contract: StepperContract.self)
-        node.write(StepperContract.value, value)
+        node.write(RangeElementContract.value, value)
     }
 
     /// Two-way: shows what the state holds and writes back what is stepped to,
@@ -71,36 +54,14 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
         self = Stepper().value(state)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way value as `Stepper($value)`, written as a modifier.
-    ///
-    ///     Stepper($count)
-    ///     Stepper().value($count)
-    ///
-    /// - Parameter state: the state the stepper shows and writes back into,
-    ///   carried by the host as a journey.
-    /// - Returns: the control, wearing and reporting that value.
-    public func value(_ state: Binding<Double>) -> Modified {
-        journey(StepperContract.value.token, by: state)
+    /// The value it holds.
+    func value(_ value: Double) -> Modified {
+        setValue(RangeElementContract.value, value)
     }
 
-    // MARK: Events
-
-    /// Fires on every tap of either button, with the value stepped to. Runs
-    /// after a binding's write, if there is one.
-    public func onValueChanged(_ handler: @escaping @MainActor (Double) throws -> Void) -> Modified {
-        onEvent(StepperContract.valueChanged, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
-        onEvent(StepperContract.valueChanged, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onValueChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
-        onEvent(StepperContract.valueChanged, gate: gate, handler)
+    /// The value from a state, carried by the host as a journey.
+    func value(_ state: Binding<Double>) -> Modified {
+        journey(RangeElementContract.value.token, by: state)
     }
 }
 
@@ -112,16 +73,3 @@ extension Stepper {
     }
 }
 
-extension Stepper {
-    /// `minimum` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
-    public func minimum(_ state: Binding<Double>) -> Modified {
-        twin(StepperContract.minimum, carrying: state)
-    }
-
-    /// `maximum` from a state, `$x`: the host sets each new value as it stands,
-    /// and no view is rebuilt for it.
-    public func maximum(_ state: Binding<Double>) -> Modified {
-        twin(StepperContract.maximum, carrying: state)
-    }
-}

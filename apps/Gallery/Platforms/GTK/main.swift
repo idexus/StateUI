@@ -3,6 +3,7 @@
 
 // listing: gtk.md.head
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -16,7 +17,7 @@ GalleryActs.register()
 GalleryEventSources.start()
 // listing: end
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-StateUIWebViewGTK.register()
+WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+GTKHost.run(applicationID: "com.stateui.gallery")
 // listing: end

@@ -49,7 +49,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<ScrollView>` is written against.
+    /// A scroll view with no content.
     public init() {
         node = Node(contract: ScrollViewContract.self)
     }
@@ -100,7 +100,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onScrollStopped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onScrollStopped(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ScrollViewContract.scrollStopped, policy: policy, handler)
     }
 

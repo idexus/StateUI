@@ -124,7 +124,7 @@ through those members, never through spelled tokens.
          │
          ├─ Node(contract: TextContract.self)           the control's node type
          ├─ setValue(TextContract.maximumLines, 3)      a property: its token, a typed value
-         ├─ onEvent(ButtonContract.clicked) { … }        an event: a typed payload, or none
+         ├─ onEvent(ClickElementContract.clicked) { … }        an event: a typed payload, or none
          └─ aim.call(MapContract.moveToRegion, …)        an act, called through an aim
          │
          ▼

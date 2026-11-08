@@ -18,7 +18,7 @@ typedef struct WebViewObject *WebViewObjectRef;
 
 /// What the web views tell their Swift halves, each naming its view by the number it was made with.
 typedef struct {
-    /// A page began to be gone to, for the reason the platform says (StateUI's WebNavigationType), at `address`.
+    /// A page began to be gone to, for the reason the platform says (StateUI's WebNavigationKind), at `address`.
     void (*navigating)(int64_t view, int32_t told, char const *address);
 
     /// Its navigation ended (StateUI's WebNavigationResult) at `address`.
@@ -52,6 +52,7 @@ void stateui_webview_winui_release(WebViewObjectRef web, int64_t view);
 void stateui_webview_winui_show(
     WebViewObjectRef web, int64_t view, char const *address, char const *document, char const *agent);
 void stateui_webview_winui_set_agent(WebViewObjectRef web, int64_t view, char const *agent);
+bool stateui_webview_winui_can_step(WebViewObjectRef web, int32_t step);
 void stateui_webview_winui_step(WebViewObjectRef web, int32_t step);
 void stateui_webview_winui_evaluate(WebViewObjectRef web, char const *script, int64_t ticket);
 

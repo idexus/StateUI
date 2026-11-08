@@ -121,7 +121,7 @@ final class PumpTests: XCTestCase {
 
         runtime.pump.dispatch(runtime.addAndAct)
 
-        XCTAssertEqual(runtime.performed, ["hideOnScreenKeyboard on count 1"])
+        XCTAssertEqual(runtime.performed, ["Application.hideOnScreenKeyboard on count 1"])
     }
 
     /// A render about a tree the runtime no longer holds is refused and asked for whole once: the log hears why,
@@ -212,7 +212,7 @@ private struct CountingPage: View {
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     count += 1
                     _ = try? await window.hideOnScreenKeyboard()
                 }

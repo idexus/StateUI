@@ -12,7 +12,7 @@ enum StateImage {
         case .lanes(let lanes):
             return lanes.withUnsafeBytes { Array($0) }
 
-        case .text(let text):
+        case .string(let text):
             let utf8 = Array(text.utf8)
             var bytes: [UInt8] = []
             bytes.reserveCapacity(utf8.count + 4)
@@ -52,7 +52,7 @@ enum StateImage {
         let count = count < 0 ? bytes.count / 8 : count
 
         guard count > 0 else {
-            guard bytes.count >= 4 else { return .text("") }
+            guard bytes.count >= 4 else { return .string("") }
 
             var length = 0
 
@@ -62,7 +62,7 @@ enum StateImage {
 
             let end = min(4 + length, bytes.count)
 
-            return .text(String(decoding: bytes[4..<end], as: UTF8.self))
+            return .string(String(decoding: bytes[4..<end], as: UTF8.self))
         }
 
         var lanes = [Double](repeating: 0, count: count)

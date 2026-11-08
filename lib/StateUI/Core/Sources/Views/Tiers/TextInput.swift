@@ -7,7 +7,7 @@
 public protocol TextInputProperties: ViewProperties {}
 
 /// A view the user types into.
-public protocol TextInput: ElementView, TextInputProperties, FocusElement {}
+public protocol TextInput: ElementView, TextInputProperties, FocusElement, PlaceholderElement {}
 
 extension TextInput {
     /// Fires on every edit, with the whole of the new text. Runs after a
@@ -18,7 +18,7 @@ extension TextInput {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onTextChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         onEvent(TextInputContract.textChanged, policy: policy, handler)
     }
 
@@ -29,24 +29,6 @@ extension TextInput {
 }
 
 extension TextInputProperties {
-    /// Where the caret sits, counted in characters from the start.
-    ///
-    /// Typing moves it by itself; write it to put the caret somewhere else,
-    /// such as the end of text just filled in. A position past the end lands
-    /// at the end.
-    public func cursorPosition(_ value: Int) -> Modified {
-        setValue(TextInputContract.cursorPosition, value)
-    }
-
-    /// How many characters from the caret are selected, 0 being none.
-    ///
-    ///     TextField($name).cursorPosition(0).selectionLength(name.count)
-    ///
-    /// selects the lot, for a field filled in for the user to replace.
-    public func selectionLength(_ value: Int) -> Modified {
-        setValue(TextInputContract.selectionLength, value)
-    }
-
     /// Whether the platform underlines what it thinks is misspelled.
     ///
     /// Worth turning off for anything that is not prose - a code, a name, a
@@ -61,11 +43,6 @@ extension TextInputProperties {
     /// the same fields.
     public func isTextPredictionEnabled(_ value: Bool) -> Modified {
         setValue(TextInputContract.isTextPredictionEnabled, value)
-    }
-
-    /// What the field says while it is empty.
-    public func placeholder(_ value: String) -> Modified {
-        setValue(TextInputContract.placeholder, value)
     }
 
     /// The placeholder's color.
@@ -92,6 +69,15 @@ extension TextInputProperties {
 }
 
 extension TextInput {
+    /// Where the caret sits, counted in characters from the start.
+    ///
+    /// Typing moves it by itself; write it to put the caret somewhere else,
+    /// such as the end of text just filled in. A position past the end lands
+    /// at the end.
+    public func cursorPosition(_ value: Int) -> Modified {
+        setValue(TextInputContract.cursorPosition, value)
+    }
+
     /// `cursorPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
     public func cursorPosition(_ state: Binding<Int>) -> Modified {
@@ -128,16 +114,19 @@ extension TextInput {
         twin(TextInputContract.maximumLength, by: state)
     }
 
-    /// `placeholder` from a state, `$x`: the host writes each new text, and no
-    /// view is rebuilt for it.
-    public func placeholder(_ state: Binding<String>) -> Modified {
-        words(TextInputContract.placeholder, by: state)
-    }
-
     /// `placeholderColor` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func placeholderColor(_ state: Binding<Color>) -> Modified {
         twin(TextInputContract.placeholderColor, by: state)
+    }
+
+    /// How many characters from the caret are selected, 0 being none.
+    ///
+    ///     TextField($name).cursorPosition(0).selectionLength(name.count)
+    ///
+    /// selects the lot, for a field filled in for the user to replace.
+    public func selectionLength(_ value: Int) -> Modified {
+        setValue(TextInputContract.selectionLength, value)
     }
 
     /// `selectionLength` from a state, `$x`: the host sets each new value as it

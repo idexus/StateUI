@@ -120,11 +120,20 @@ What an application can name of the library is recorded:
 `lib/StateUI/exports/api/` holds every public declaration of the
 `StateUI` module, a line each - its kind, its path and its declaration as the
 compiler prints it - and every conformance of its types, sorted, read from the symbol graph the toolchain extracts
-from the module the core's tests just built. `APISurfaceTests` compares the
+from the module the core's tests just built. The compiler's API digest supplies
+public accessor access and synthesized projections that the symbol graph omits.
+The graph remains the public surface's filter, so private and SPI projections
+stay out. `APISurfaceTests` compares the
 module with the record, so a change to the public API stands in its commit's
 diff as lines added and taken away, and passes only once
 `STATEUI_UPDATE_EXPORTS=1` has written it. `@_spi(Host)` declarations are the
 hosts' and stay out; documentation changes nothing there.
+
+Compiled fixtures prove that changing a setter's access, a projection or actor
+isolation changes the record. Public-client checks also prove the boundary:
+reported facts can be read, while application-owned settings lend writable
+bindings. Both use the compiler and module under test, with no handwritten
+projection inventory in the exporter.
 
 The record holds StateUI's declarations and each type's conformances. A
 member another module's protocol lends a StateUI type - `!=` from `Equatable`,
@@ -150,12 +159,21 @@ values. `StateUI.extending.txt` is what an author adding to StateUI writes - an
 element of the application's own, a value a state carries, the application's
 own acts and events: a contract and its members, a node and what is written
 on it by member (`setValue`, `onEvent`, `onHostEvent`, `modified`, `node`), the
-values a host is handed, a value's conversions, `application.call` and
-`HostEvents`. A protocol a control and its style wear - a control's
+values a host is handed, a value's conversions and wire codes (`rawValue`,
+`list(from:)`), what a kept value is handed to the store as, what a contract
+declares of its element (`nodeType`, `layer`, `tiers`, `members`),
+`application.call` and `HostEvents` - so the application's file names no
+`PropValue` and no existential but the key paths the language asks for. A
+protocol a control and its style wear - a control's
 `…Properties`, a tier's `…Element` - stands there as a declaration and as each
 conformance to it, while its members, the modifiers, are the application's.
 `APISurfaceTests` keeps the two lists, `extendingTypes` and `extendingMembers`,
-and every line goes to exactly one file. Both are frozen alike at 1.0: an
+and every line goes to exactly one file. A type of the application's file is
+one an application meets: one it writes itself - a protocol it adopts, an
+object it makes, a view, a scene, an error it catches, a namespace it calls, a
+contract - or one another of its declarations names. A value only a contract's
+member, a host or the store takes - a corner radius, a keyboard shortcut, a
+web view's source - is the extending file's. Both are frozen alike at 1.0: an
 application's own control is an extension of the protocol every library
 control wears, so the plumbing stays on the views and the second file names
 it. The handbook's [Extending StateUI](../interface/extending.md) teaches it.
@@ -163,6 +181,25 @@ Every public type of either file is named on a handbook page - README and
 `docs/`, the design notes left out, the control dictionary in -
 which `APISurfaceTests` holds: what 1.0 freezes is what the handbook
 promised.
+
+## A host's modules
+
+What an application writes for a host is recorded too, a file a module beside
+StateUI's two: each facade (`StateUIAppKit.txt`, `StateUIUIKit.txt`,
+`StateUIAndroid.txt`, `StateUIWinUI.txt`, `StateUIGTK.txt`, `StateUIWeb.txt`),
+each backend (`StateUIWebViewGTK.txt`, `StateUIWebViewWinUI.txt`) and the
+testing module (`StateUITesting.txt`). The core's `APISurfaceTests` stays the
+one reading of a surface: a host's test script, after its build, runs its
+`testTheModuleAHostsScriptNamesIsItsRecord` through `.scripts/API/record.sh`
+(`record.ps1` on Windows), naming the module, the folder its build left the
+modules in, and - for a build for another platform - the triple, the SDK and
+what finds the module's C modules (their maps, pkg-config's flags). The record
+is written under `STATEUI_UPDATE_EXPORTS=1` and held otherwise, as the marks
+are. The script reads it where the module was built: the simulator's, an
+Android device's and the WebAssembly build's tests run where no toolchain is,
+so the test cannot read its own module. The core's own run names no module and
+the test stands skipped, saying so. The handbook names every public type of
+every record, the hosts' included.
 
 ## Where to read next
 

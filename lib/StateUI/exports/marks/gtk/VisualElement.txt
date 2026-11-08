@@ -1,19 +1,16 @@
-# revision 24.1
+# revision 28.1
 Button.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Button.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
 Button.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
+Button.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Button.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Button.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
-Button.hidesChildrenFromAccessibility: ✅
 Button.ignoresInput: ✅
-Button.isAccessibilityHidden: ✅
-Button.isEnabled: ✅
 Button.isVisible: ✅
 Button.layoutDirection: ✅
 Button.maximumHeight: ✅
@@ -29,7 +26,6 @@ Button.rotationY: ✓ read rotationY of Button: the host's own transform: GTK re
 Button.scale: ✓ read scale of Button: the host's own transform: GTK reads back no part of one
 Button.scaleX: ✓ read scaleX of Button: the host's own transform: GTK reads back no part of one
 Button.scaleY: ✓ read scaleY of Button: the host's own transform: GTK reads back no part of one
-Button.style: ✅
 Button.tooltip: ✅
 Button.translationX: ✓ read translationX of Button: the host's own transform: GTK reads back no part of one
 Button.translationY: ✓ read translationY of Button: the host's own transform: GTK reads back no part of one
@@ -41,15 +37,12 @@ Canvas.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 Canvas.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
+Canvas.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Canvas.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Canvas.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Canvas.background: ✓ read background of Canvas: the class of the host's style sheet the widget wears: GTK reads back no background
 Canvas.frame: ✅
 Canvas.height: ✅
-Canvas.hidesChildrenFromAccessibility: ✅
 Canvas.ignoresInput: ✅
-Canvas.isAccessibilityHidden: ✅
-Canvas.isEnabled: ✅
 Canvas.isVisible: ✅
 Canvas.layoutDirection: ✅
 Canvas.maximumHeight: ✅
@@ -65,7 +58,6 @@ Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform: GTK re
 Canvas.scale: ✓ read scale of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.scaleX: ✓ read scaleX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.scaleY: ✓ read scaleY of Canvas: the host's own transform: GTK reads back no part of one
-Canvas.style: ✅
 Canvas.tooltip: ✅
 Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: GTK reads back no part of one
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: GTK reads back no part of one
@@ -77,15 +69,12 @@ Capsule.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 Capsule.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
+Capsule.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Capsule.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Capsule.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Capsule.background: ✓ read background of Capsule: the class of the host's style sheet the widget wears: GTK reads back no background
 Capsule.frame: ✅
 Capsule.height: ✅
-Capsule.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: ✅
-Capsule.isAccessibilityHidden: ✅
-Capsule.isEnabled: ✅
 Capsule.isVisible: ✅
 Capsule.layoutDirection: ✅
 Capsule.maximumHeight: ✅
@@ -101,7 +90,6 @@ Capsule.rotationY: ✓ read rotationY of Capsule: the host's own transform: GTK 
 Capsule.scale: ✓ read scale of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.scaleX: ✓ read scaleX of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.scaleY: ✓ read scaleY of Capsule: the host's own transform: GTK reads back no part of one
-Capsule.style: ✅
 Capsule.tooltip: ✅
 Capsule.translationX: ✓ read translationX of Capsule: the host's own transform: GTK reads back no part of one
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: GTK reads back no part of one
@@ -113,15 +101,12 @@ CheckBox.accessibilityAdjusted: – GTK steps only a range, a role a widget take
 CheckBox.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
+CheckBox.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 CheckBox.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 CheckBox.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-CheckBox.background: ✓ read background of CheckBox: the class of the host's style sheet the widget wears: GTK reads back no background
 CheckBox.frame: ✅
 CheckBox.height: ✅
-CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.ignoresInput: ✅
-CheckBox.isAccessibilityHidden: ✅
-CheckBox.isEnabled: ✅
 CheckBox.isVisible: ✅
 CheckBox.layoutDirection: ✅
 CheckBox.maximumHeight: ✅
@@ -137,7 +122,6 @@ CheckBox.rotationY: ✓ read rotationY of CheckBox: the host's own transform: GT
 CheckBox.scale: ✓ read scale of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.scaleX: ✓ read scaleX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.scaleY: ✓ read scaleY of CheckBox: the host's own transform: GTK reads back no part of one
-CheckBox.style: ✅
 CheckBox.tooltip: ✅
 CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transform: GTK reads back no part of one
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: GTK reads back no part of one
@@ -149,15 +133,12 @@ ColorPicker.accessibilityAdjusted: – GTK steps only a range, a role a widget t
 ColorPicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ColorPicker.accessibilityHint: ✅
 ColorPicker.accessibilityLabel: ✅
+ColorPicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ColorPicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ColorPicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ColorPicker.background: ✓ read background of ColorPicker: the class of the host's style sheet the widget wears: GTK reads back no background
 ColorPicker.frame: ✅
 ColorPicker.height: ✅
-ColorPicker.hidesChildrenFromAccessibility: ✅
 ColorPicker.ignoresInput: ✅
-ColorPicker.isAccessibilityHidden: ✅
-ColorPicker.isEnabled: ✅
 ColorPicker.isVisible: ✅
 ColorPicker.layoutDirection: ✅
 ColorPicker.maximumHeight: ✅
@@ -173,7 +154,6 @@ ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transfo
 ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: GTK reads back no part of one
-ColorPicker.style: ✅
 ColorPicker.tooltip: ✅
 ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: GTK reads back no part of one
 ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: GTK reads back no part of one
@@ -185,15 +165,12 @@ DatePicker.accessibilityAdjusted: – GTK steps only a range, a role a widget ta
 DatePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
+DatePicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 DatePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 DatePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-DatePicker.background: ✓ read background of DatePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 DatePicker.frame: ✅
 DatePicker.height: ✅
-DatePicker.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: ✅
-DatePicker.isAccessibilityHidden: ✅
-DatePicker.isEnabled: ✅
 DatePicker.isVisible: ✅
 DatePicker.layoutDirection: ✅
 DatePicker.maximumHeight: ✅
@@ -209,7 +186,6 @@ DatePicker.rotationY: ✓ read rotationY of DatePicker: the host's own transform
 DatePicker.scale: ✓ read scale of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.scaleX: ✓ read scaleX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform: GTK reads back no part of one
-DatePicker.style: ✅
 DatePicker.tooltip: ✅
 DatePicker.translationX: ✓ read translationX of DatePicker: the host's own transform: GTK reads back no part of one
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: GTK reads back no part of one
@@ -221,15 +197,12 @@ Ellipse.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 Ellipse.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
+Ellipse.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Ellipse.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Ellipse.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Ellipse.background: ✓ read background of Ellipse: the class of the host's style sheet the widget wears: GTK reads back no background
 Ellipse.frame: ✅
 Ellipse.height: ✅
-Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.ignoresInput: ✅
-Ellipse.isAccessibilityHidden: ✅
-Ellipse.isEnabled: ✅
 Ellipse.isVisible: ✅
 Ellipse.layoutDirection: ✅
 Ellipse.maximumHeight: ✅
@@ -245,7 +218,6 @@ Ellipse.rotationY: ✓ read rotationY of Ellipse: the host's own transform: GTK 
 Ellipse.scale: ✓ read scale of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.scaleX: ✓ read scaleX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.scaleY: ✓ read scaleY of Ellipse: the host's own transform: GTK reads back no part of one
-Ellipse.style: ✅
 Ellipse.tooltip: ✅
 Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform: GTK reads back no part of one
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: GTK reads back no part of one
@@ -257,15 +229,12 @@ Fill.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Fill.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Fill.accessibilityHint: ✅
 Fill.accessibilityLabel: ✅
+Fill.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Fill.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Fill.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Fill.background: ✅
 Fill.frame: ✅
 Fill.height: ✅
-Fill.hidesChildrenFromAccessibility: ✅
 Fill.ignoresInput: ✅
-Fill.isAccessibilityHidden: ✅
-Fill.isEnabled: ✅
 Fill.isVisible: ✅
 Fill.layoutDirection: ✅
 Fill.maximumHeight: ✅
@@ -281,7 +250,6 @@ Fill.rotationY: ✓ read rotationY of Fill: the host's own transform: GTK reads 
 Fill.scale: ✓ read scale of Fill: the host's own transform: GTK reads back no part of one
 Fill.scaleX: ✓ read scaleX of Fill: the host's own transform: GTK reads back no part of one
 Fill.scaleY: ✓ read scaleY of Fill: the host's own transform: GTK reads back no part of one
-Fill.style: ✅
 Fill.tooltip: ✅
 Fill.translationX: ✓ read translationX of Fill: the host's own transform: GTK reads back no part of one
 Fill.translationY: ✓ read translationY of Fill: the host's own transform: GTK reads back no part of one
@@ -293,15 +261,12 @@ Grid.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Grid.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
+Grid.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Grid.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Grid.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Grid.background: ✅
 Grid.frame: ✅
 Grid.height: ✅
-Grid.hidesChildrenFromAccessibility: ✅
 Grid.ignoresInput: ✅
-Grid.isAccessibilityHidden: ✅
-Grid.isEnabled: ✅
 Grid.isVisible: ✅
 Grid.layoutDirection: ✅
 Grid.maximumHeight: ✅
@@ -317,7 +282,6 @@ Grid.rotationY: ✓ read rotationY of Grid: the host's own transform: GTK reads 
 Grid.scale: ✓ read scale of Grid: the host's own transform: GTK reads back no part of one
 Grid.scaleX: ✓ read scaleX of Grid: the host's own transform: GTK reads back no part of one
 Grid.scaleY: ✓ read scaleY of Grid: the host's own transform: GTK reads back no part of one
-Grid.style: ✅
 Grid.tooltip: ✅
 Grid.translationX: ✓ read translationX of Grid: the host's own transform: GTK reads back no part of one
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: GTK reads back no part of one
@@ -329,15 +293,12 @@ HStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 HStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
+HStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 HStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 HStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-HStack.background: ✅
 HStack.frame: ✅
 HStack.height: ✅
-HStack.hidesChildrenFromAccessibility: ✅
 HStack.ignoresInput: ✅
-HStack.isAccessibilityHidden: ✅
-HStack.isEnabled: ✅
 HStack.isVisible: ✅
 HStack.layoutDirection: ✅
 HStack.maximumHeight: ✅
@@ -353,7 +314,6 @@ HStack.rotationY: ✓ read rotationY of HStack: the host's own transform: GTK re
 HStack.scale: ✓ read scale of HStack: the host's own transform: GTK reads back no part of one
 HStack.scaleX: ✓ read scaleX of HStack: the host's own transform: GTK reads back no part of one
 HStack.scaleY: ✓ read scaleY of HStack: the host's own transform: GTK reads back no part of one
-HStack.style: ✅
 HStack.tooltip: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform: GTK reads back no part of one
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: GTK reads back no part of one
@@ -365,15 +325,12 @@ Image.accessibilityAdjusted: – GTK steps only a range, a role a widget takes a
 Image.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
+Image.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Image.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Image.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Image.background: ✓ read background of Image: the class of the host's style sheet the widget wears: GTK reads back no background
 Image.frame: ✅
 Image.height: ✅
-Image.hidesChildrenFromAccessibility: ✅
 Image.ignoresInput: ✅
-Image.isAccessibilityHidden: ✅
-Image.isEnabled: ✅
 Image.isVisible: ✅
 Image.layoutDirection: ✅
 Image.maximumHeight: ✅
@@ -389,7 +346,6 @@ Image.rotationY: ✓ read rotationY of Image: the host's own transform: GTK read
 Image.scale: ✓ read scale of Image: the host's own transform: GTK reads back no part of one
 Image.scaleX: ✓ read scaleX of Image: the host's own transform: GTK reads back no part of one
 Image.scaleY: ✓ read scaleY of Image: the host's own transform: GTK reads back no part of one
-Image.style: ✅
 Image.tooltip: ✅
 Image.translationX: ✓ read translationX of Image: the host's own transform: GTK reads back no part of one
 Image.translationY: ✓ read translationY of Image: the host's own transform: GTK reads back no part of one
@@ -401,15 +357,12 @@ ItemsView.accessibilityAdjusted: – GTK steps only a range, a role a widget tak
 ItemsView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
+ItemsView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ItemsView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ItemsView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
 ItemsView.frame: ✅
 ItemsView.height: ✅
-ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.ignoresInput: ✅
-ItemsView.isAccessibilityHidden: ✅
-ItemsView.isEnabled: ✅
 ItemsView.isVisible: ✅
 ItemsView.layoutDirection: ✅
 ItemsView.maximumHeight: ✅
@@ -425,7 +378,6 @@ ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: 
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: GTK reads back no part of one
-ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: GTK reads back no part of one
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: GTK reads back no part of one
@@ -437,15 +389,12 @@ Line.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Line.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
+Line.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Line.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Line.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Line.background: ✓ read background of Line: the class of the host's style sheet the widget wears: GTK reads back no background
 Line.frame: ✅
 Line.height: ✅
-Line.hidesChildrenFromAccessibility: ✅
 Line.ignoresInput: ✅
-Line.isAccessibilityHidden: ✅
-Line.isEnabled: ✅
 Line.isVisible: ✅
 Line.layoutDirection: ✅
 Line.maximumHeight: ✅
@@ -461,7 +410,6 @@ Line.rotationY: ✓ read rotationY of Line: the host's own transform: GTK reads 
 Line.scale: ✓ read scale of Line: the host's own transform: GTK reads back no part of one
 Line.scaleX: ✓ read scaleX of Line: the host's own transform: GTK reads back no part of one
 Line.scaleY: ✓ read scaleY of Line: the host's own transform: GTK reads back no part of one
-Line.style: ✅
 Line.tooltip: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform: GTK reads back no part of one
 Line.translationY: ✓ read translationY of Line: the host's own transform: GTK reads back no part of one
@@ -473,15 +421,12 @@ Link.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Link.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Link.accessibilityHint: ✅
 Link.accessibilityLabel: ✅
+Link.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Link.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Link.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Link.background: ✓ read background of Link: the class of the host's style sheet the widget wears: GTK reads back no background
 Link.frame: ✅
 Link.height: ✅
-Link.hidesChildrenFromAccessibility: ✅
 Link.ignoresInput: ✅
-Link.isAccessibilityHidden: ✅
-Link.isEnabled: ✅
 Link.isVisible: ✅
 Link.layoutDirection: ✅
 Link.maximumHeight: ✅
@@ -497,7 +442,6 @@ Link.rotationY: ✓ read rotationY of Link: the host's own transform: GTK reads 
 Link.scale: ✓ read scale of Link: the host's own transform: GTK reads back no part of one
 Link.scaleX: ✓ read scaleX of Link: the host's own transform: GTK reads back no part of one
 Link.scaleY: ✓ read scaleY of Link: the host's own transform: GTK reads back no part of one
-Link.style: ✅
 Link.tooltip: ✅
 Link.translationX: ✓ read translationX of Link: the host's own transform: GTK reads back no part of one
 Link.translationY: ✓ read translationY of Link: the host's own transform: GTK reads back no part of one
@@ -509,15 +453,12 @@ Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
+Map.accessibilityPresence: 🧩
 Map.accessibilityRole: 🧩
 Map.accessibilityValue: 🧩
-Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
-Map.hidesChildrenFromAccessibility: 🧩
 Map.ignoresInput: 🧩
-Map.isAccessibilityHidden: 🧩
-Map.isEnabled: 🧩
 Map.isVisible: 🧩
 Map.layoutDirection: 🧩
 Map.maximumHeight: 🧩
@@ -533,7 +474,6 @@ Map.rotationY: 🧩
 Map.scale: 🧩
 Map.scaleX: 🧩
 Map.scaleY: 🧩
-Map.style: 🧩
 Map.tooltip: 🧩
 Map.translationX: 🧩
 Map.translationY: 🧩
@@ -545,15 +485,12 @@ MotionLayout.accessibilityAdjusted: – GTK steps only a range, a role a widget 
 MotionLayout.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 MotionLayout.accessibilityHint: ✅
 MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 MotionLayout.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 MotionLayout.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
 MotionLayout.frame: ✅
 MotionLayout.height: ✅
-MotionLayout.hidesChildrenFromAccessibility: ✅
 MotionLayout.ignoresInput: ✅
-MotionLayout.isAccessibilityHidden: ✅
-MotionLayout.isEnabled: ✅
 MotionLayout.isVisible: ✅
 MotionLayout.layoutDirection: ✅
 MotionLayout.maximumHeight: ✅
@@ -569,7 +506,6 @@ MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own trans
 MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: GTK reads back no part of one
-MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: GTK reads back no part of one
 MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: GTK reads back no part of one
@@ -581,15 +517,12 @@ Path.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Path.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
+Path.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Path.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Path.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Path.background: ✓ read background of Path: the class of the host's style sheet the widget wears: GTK reads back no background
 Path.frame: ✅
 Path.height: ✅
-Path.hidesChildrenFromAccessibility: ✅
 Path.ignoresInput: ✅
-Path.isAccessibilityHidden: ✅
-Path.isEnabled: ✅
 Path.isVisible: ✅
 Path.layoutDirection: ✅
 Path.maximumHeight: ✅
@@ -605,7 +538,6 @@ Path.rotationY: ✓ read rotationY of Path: the host's own transform: GTK reads 
 Path.scale: ✓ read scale of Path: the host's own transform: GTK reads back no part of one
 Path.scaleX: ✓ read scaleX of Path: the host's own transform: GTK reads back no part of one
 Path.scaleY: ✓ read scaleY of Path: the host's own transform: GTK reads back no part of one
-Path.style: ✅
 Path.tooltip: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform: GTK reads back no part of one
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
@@ -617,15 +549,12 @@ Picker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 Picker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
+Picker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Picker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Picker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Picker.background: ✓ read background of Picker: the class of the host's style sheet the widget wears: GTK reads back no background
 Picker.frame: ✅
 Picker.height: ✅
-Picker.hidesChildrenFromAccessibility: ✅
 Picker.ignoresInput: ✅
-Picker.isAccessibilityHidden: ✅
-Picker.isEnabled: ✅
 Picker.isVisible: ✅
 Picker.layoutDirection: ✅
 Picker.maximumHeight: ✅
@@ -641,7 +570,6 @@ Picker.rotationY: ✓ read rotationY of Picker: the host's own transform: GTK re
 Picker.scale: ✓ read scale of Picker: the host's own transform: GTK reads back no part of one
 Picker.scaleX: ✓ read scaleX of Picker: the host's own transform: GTK reads back no part of one
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform: GTK reads back no part of one
-Picker.style: ✅
 Picker.tooltip: ✅
 Picker.translationX: ✓ read translationX of Picker: the host's own transform: GTK reads back no part of one
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: GTK reads back no part of one
@@ -653,15 +581,12 @@ Polygon.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 Polygon.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
+Polygon.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Polygon.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Polygon.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Polygon.background: ✓ read background of Polygon: the class of the host's style sheet the widget wears: GTK reads back no background
 Polygon.frame: ✅
 Polygon.height: ✅
-Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: ✅
-Polygon.isAccessibilityHidden: ✅
-Polygon.isEnabled: ✅
 Polygon.isVisible: ✅
 Polygon.layoutDirection: ✅
 Polygon.maximumHeight: ✅
@@ -677,7 +602,6 @@ Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform: GTK 
 Polygon.scale: ✓ read scale of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.scaleX: ✓ read scaleX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform: GTK reads back no part of one
-Polygon.style: ✅
 Polygon.tooltip: ✅
 Polygon.translationX: ✓ read translationX of Polygon: the host's own transform: GTK reads back no part of one
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: GTK reads back no part of one
@@ -689,15 +613,12 @@ Polyline.accessibilityAdjusted: – GTK steps only a range, a role a widget take
 Polyline.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
+Polyline.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Polyline.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Polyline.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Polyline.background: ✓ read background of Polyline: the class of the host's style sheet the widget wears: GTK reads back no background
 Polyline.frame: ✅
 Polyline.height: ✅
-Polyline.hidesChildrenFromAccessibility: ✅
 Polyline.ignoresInput: ✅
-Polyline.isAccessibilityHidden: ✅
-Polyline.isEnabled: ✅
 Polyline.isVisible: ✅
 Polyline.layoutDirection: ✅
 Polyline.maximumHeight: ✅
@@ -713,7 +634,6 @@ Polyline.rotationY: ✓ read rotationY of Polyline: the host's own transform: GT
 Polyline.scale: ✓ read scale of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.scaleX: ✓ read scaleX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.scaleY: ✓ read scaleY of Polyline: the host's own transform: GTK reads back no part of one
-Polyline.style: ✅
 Polyline.tooltip: ✅
 Polyline.translationX: ✓ read translationX of Polyline: the host's own transform: GTK reads back no part of one
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: GTK reads back no part of one
@@ -725,15 +645,12 @@ ProgressBar.accessibilityAdjusted: – GTK steps only a range, a role a widget t
 ProgressBar.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
+ProgressBar.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ProgressBar.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ProgressBar.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ProgressBar.background: ✓ read background of ProgressBar: the class of the host's style sheet the widget wears: GTK reads back no background
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
-ProgressBar.hidesChildrenFromAccessibility: ✅
 ProgressBar.ignoresInput: ✅
-ProgressBar.isAccessibilityHidden: ✅
-ProgressBar.isEnabled: ✅
 ProgressBar.isVisible: ✅
 ProgressBar.layoutDirection: ✅
 ProgressBar.maximumHeight: ✅
@@ -749,7 +666,6 @@ ProgressBar.rotationY: ✓ read rotationY of ProgressBar: the host's own transfo
 ProgressBar.scale: ✓ read scale of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.scaleX: ✓ read scaleX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.scaleY: ✓ read scaleY of ProgressBar: the host's own transform: GTK reads back no part of one
-ProgressBar.style: ✅
 ProgressBar.tooltip: ✅
 ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own transform: GTK reads back no part of one
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: GTK reads back no part of one
@@ -761,15 +677,12 @@ Rectangle.accessibilityAdjusted: – GTK steps only a range, a role a widget tak
 Rectangle.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
+Rectangle.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Rectangle.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Rectangle.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Rectangle.background: ✓ read background of Rectangle: the class of the host's style sheet the widget wears: GTK reads back no background
 Rectangle.frame: ✅
 Rectangle.height: ✅
-Rectangle.hidesChildrenFromAccessibility: ✅
 Rectangle.ignoresInput: ✅
-Rectangle.isAccessibilityHidden: ✅
-Rectangle.isEnabled: ✅
 Rectangle.isVisible: ✅
 Rectangle.layoutDirection: ✅
 Rectangle.maximumHeight: ✅
@@ -785,7 +698,6 @@ Rectangle.rotationY: ✓ read rotationY of Rectangle: the host's own transform: 
 Rectangle.scale: ✓ read scale of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.scaleY: ✓ read scaleY of Rectangle: the host's own transform: GTK reads back no part of one
-Rectangle.style: ✅
 Rectangle.tooltip: ✅
 Rectangle.translationX: ✓ read translationX of Rectangle: the host's own transform: GTK reads back no part of one
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: GTK reads back no part of one
@@ -797,15 +709,12 @@ ScrollView.accessibilityAdjusted: – GTK steps only a range, a role a widget ta
 ScrollView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
+ScrollView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ScrollView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ScrollView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ScrollView.background: ✅
 ScrollView.frame: ✅
 ScrollView.height: ✅
-ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.ignoresInput: ✅
-ScrollView.isAccessibilityHidden: ✅
-ScrollView.isEnabled: ✅
 ScrollView.isVisible: ✅
 ScrollView.layoutDirection: ✅
 ScrollView.maximumHeight: ✅
@@ -821,7 +730,6 @@ ScrollView.rotationY: ✓ read rotationY of ScrollView: the host's own transform
 ScrollView.scale: ✓ read scale of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.scaleX: ✓ read scaleX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.scaleY: ✓ read scaleY of ScrollView: the host's own transform: GTK reads back no part of one
-ScrollView.style: ✅
 ScrollView.tooltip: ✅
 ScrollView.translationX: ✓ read translationX of ScrollView: the host's own transform: GTK reads back no part of one
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: GTK reads back no part of one
@@ -833,15 +741,12 @@ SearchField.accessibilityAdjusted: – GTK steps only a range, a role a widget t
 SearchField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
+SearchField.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 SearchField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 SearchField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-SearchField.background: ✓ read background of SearchField: the class of the host's style sheet the widget wears: GTK reads back no background
 SearchField.frame: ✅
 SearchField.height: ✅
-SearchField.hidesChildrenFromAccessibility: ✅
 SearchField.ignoresInput: ✅
-SearchField.isAccessibilityHidden: ✅
-SearchField.isEnabled: ✅
 SearchField.isVisible: ✅
 SearchField.layoutDirection: ✅
 SearchField.maximumHeight: ✅
@@ -857,7 +762,6 @@ SearchField.rotationY: ✓ read rotationY of SearchField: the host's own transfo
 SearchField.scale: ✓ read scale of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.scaleX: ✓ read scaleX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.scaleY: ✓ read scaleY of SearchField: the host's own transform: GTK reads back no part of one
-SearchField.style: ✅
 SearchField.tooltip: ✅
 SearchField.translationX: ✓ read translationX of SearchField: the host's own transform: GTK reads back no part of one
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: GTK reads back no part of one
@@ -869,15 +773,12 @@ Separator.accessibilityAdjusted: – GTK steps only a range, a role a widget tak
 Separator.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Separator.accessibilityHint: ✅
 Separator.accessibilityLabel: ✅
+Separator.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Separator.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Separator.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Separator.background: ✓ read background of Separator: the class of the host's style sheet the widget wears: GTK reads back no background
 Separator.frame: ✅
 Separator.height: ✅
-Separator.hidesChildrenFromAccessibility: ✅
 Separator.ignoresInput: ✅
-Separator.isAccessibilityHidden: ✅
-Separator.isEnabled: ✅
 Separator.isVisible: ✅
 Separator.layoutDirection: ✅
 Separator.maximumHeight: ✅
@@ -893,7 +794,6 @@ Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: 
 Separator.scale: ✓ read scale of Separator: the host's own transform: GTK reads back no part of one
 Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: GTK reads back no part of one
 Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: GTK reads back no part of one
-Separator.style: ✅
 Separator.tooltip: ✅
 Separator.translationX: ✓ read translationX of Separator: the host's own transform: GTK reads back no part of one
 Separator.translationY: ✓ read translationY of Separator: the host's own transform: GTK reads back no part of one
@@ -905,15 +805,12 @@ Slider.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 Slider.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
+Slider.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Slider.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Slider.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Slider.background: ✓ read background of Slider: the class of the host's style sheet the widget wears: GTK reads back no background
 Slider.frame: ✅
 Slider.height: ✅
-Slider.hidesChildrenFromAccessibility: ✅
 Slider.ignoresInput: ✅
-Slider.isAccessibilityHidden: ✅
-Slider.isEnabled: ✅
 Slider.isVisible: ✅
 Slider.layoutDirection: ✅
 Slider.maximumHeight: ✅
@@ -929,7 +826,6 @@ Slider.rotationY: ✓ read rotationY of Slider: the host's own transform: GTK re
 Slider.scale: ✓ read scale of Slider: the host's own transform: GTK reads back no part of one
 Slider.scaleX: ✓ read scaleX of Slider: the host's own transform: GTK reads back no part of one
 Slider.scaleY: ✓ read scaleY of Slider: the host's own transform: GTK reads back no part of one
-Slider.style: ✅
 Slider.tooltip: ✅
 Slider.translationX: ✓ read translationX of Slider: the host's own transform: GTK reads back no part of one
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: GTK reads back no part of one
@@ -941,15 +837,12 @@ Space.accessibilityAdjusted: – GTK steps only a range, a role a widget takes a
 Space.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Space.accessibilityHint: ✅
 Space.accessibilityLabel: ✅
+Space.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Space.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Space.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Space.background: ✅
 Space.frame: ✅
 Space.height: ✅
-Space.hidesChildrenFromAccessibility: ✅
 Space.ignoresInput: ✅
-Space.isAccessibilityHidden: ✅
-Space.isEnabled: ✅
 Space.isVisible: ✅
 Space.layoutDirection: ✅
 Space.maximumHeight: ✅
@@ -965,7 +858,6 @@ Space.rotationY: ✓ read rotationY of Space: the host's own transform: GTK read
 Space.scale: ✓ read scale of Space: the host's own transform: GTK reads back no part of one
 Space.scaleX: ✓ read scaleX of Space: the host's own transform: GTK reads back no part of one
 Space.scaleY: ✓ read scaleY of Space: the host's own transform: GTK reads back no part of one
-Space.style: ✅
 Space.tooltip: ✅
 Space.translationX: ✓ read translationX of Space: the host's own transform: GTK reads back no part of one
 Space.translationY: ✓ read translationY of Space: the host's own transform: GTK reads back no part of one
@@ -977,15 +869,12 @@ Spinner.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 Spinner.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Spinner.accessibilityHint: ✅
 Spinner.accessibilityLabel: ✅
+Spinner.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Spinner.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Spinner.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Spinner.background: ✓ read background of Spinner: the class of the host's style sheet the widget wears: GTK reads back no background
 Spinner.frame: ✅
 Spinner.height: ✅
-Spinner.hidesChildrenFromAccessibility: ✅
 Spinner.ignoresInput: ✅
-Spinner.isAccessibilityHidden: ✅
-Spinner.isEnabled: ✅
 Spinner.isVisible: ✅
 Spinner.layoutDirection: ✅
 Spinner.maximumHeight: ✅
@@ -1001,7 +890,6 @@ Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: GTK 
 Spinner.scale: ✓ read scale of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: GTK reads back no part of one
-Spinner.style: ✅
 Spinner.tooltip: ✅
 Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: GTK reads back no part of one
 Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: GTK reads back no part of one
@@ -1013,15 +901,12 @@ Stepper.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 Stepper.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
+Stepper.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Stepper.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Stepper.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Stepper.background: ✓ read background of Stepper: the class of the host's style sheet the widget wears: GTK reads back no background
 Stepper.frame: ✅
 Stepper.height: ✅
-Stepper.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: ✅
-Stepper.isAccessibilityHidden: ✅
-Stepper.isEnabled: ✅
 Stepper.isVisible: ✅
 Stepper.layoutDirection: ✅
 Stepper.maximumHeight: ✅
@@ -1037,7 +922,6 @@ Stepper.rotationY: ✓ read rotationY of Stepper: the host's own transform: GTK 
 Stepper.scale: ✓ read scale of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.scaleX: ✓ read scaleX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform: GTK reads back no part of one
-Stepper.style: ✅
 Stepper.tooltip: ✅
 Stepper.translationX: ✓ read translationX of Stepper: the host's own transform: GTK reads back no part of one
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: GTK reads back no part of one
@@ -1049,15 +933,12 @@ Switch.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 Switch.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
+Switch.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Switch.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Switch.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Switch.background: – GTK's switch paints its own box as its track: a color there would recolor the track, not lie under it.
 Switch.frame: ✅
 Switch.height: ✅
-Switch.hidesChildrenFromAccessibility: ✅
 Switch.ignoresInput: ✅
-Switch.isAccessibilityHidden: ✅
-Switch.isEnabled: ✅
 Switch.isVisible: ✅
 Switch.layoutDirection: ✅
 Switch.maximumHeight: ✅
@@ -1073,7 +954,6 @@ Switch.rotationY: ✓ read rotationY of Switch: the host's own transform: GTK re
 Switch.scale: ✓ read scale of Switch: the host's own transform: GTK reads back no part of one
 Switch.scaleX: ✓ read scaleX of Switch: the host's own transform: GTK reads back no part of one
 Switch.scaleY: ✓ read scaleY of Switch: the host's own transform: GTK reads back no part of one
-Switch.style: ✅
 Switch.tooltip: ✅
 Switch.translationX: ✓ read translationX of Switch: the host's own transform: GTK reads back no part of one
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: GTK reads back no part of one
@@ -1085,15 +965,12 @@ Text.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as
 Text.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
+Text.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 Text.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 Text.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-Text.background: ✓ read background of Text: the class of the host's style sheet the widget wears: GTK reads back no background
 Text.frame: ✅
 Text.height: ✅
-Text.hidesChildrenFromAccessibility: ✅
 Text.ignoresInput: ✅
-Text.isAccessibilityHidden: ✅
-Text.isEnabled: ✅
 Text.isVisible: ✅
 Text.layoutDirection: ✅
 Text.maximumHeight: ✅
@@ -1109,7 +986,6 @@ Text.rotationY: ✓ read rotationY of Text: the host's own transform: GTK reads 
 Text.scale: ✓ read scale of Text: the host's own transform: GTK reads back no part of one
 Text.scaleX: ✓ read scaleX of Text: the host's own transform: GTK reads back no part of one
 Text.scaleY: ✓ read scaleY of Text: the host's own transform: GTK reads back no part of one
-Text.style: ✅
 Text.tooltip: ✅
 Text.translationX: ✓ read translationX of Text: the host's own transform: GTK reads back no part of one
 Text.translationY: ✓ read translationY of Text: the host's own transform: GTK reads back no part of one
@@ -1121,15 +997,12 @@ TextEditor.accessibilityAdjusted: – GTK steps only a range, a role a widget ta
 TextEditor.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
+TextEditor.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TextEditor.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TextEditor.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TextEditor.background: ✓ read background of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no background
 TextEditor.frame: ✅
 TextEditor.height: ✅
-TextEditor.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: ✅
-TextEditor.isAccessibilityHidden: ✅
-TextEditor.isEnabled: ✅
 TextEditor.isVisible: ✅
 TextEditor.layoutDirection: ☑️ Its placeholder stands at the left edge whichever way the words are written.
 TextEditor.maximumHeight: ✅
@@ -1145,7 +1018,6 @@ TextEditor.rotationY: ✓ read rotationY of TextEditor: the host's own transform
 TextEditor.scale: ✓ read scale of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.scaleX: ✓ read scaleX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.scaleY: ✓ read scaleY of TextEditor: the host's own transform: GTK reads back no part of one
-TextEditor.style: ✅
 TextEditor.tooltip: ✅
 TextEditor.translationX: ✓ read translationX of TextEditor: the host's own transform: GTK reads back no part of one
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: GTK reads back no part of one
@@ -1157,15 +1029,12 @@ TextField.accessibilityAdjusted: – GTK steps only a range, a role a widget tak
 TextField.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
+TextField.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TextField.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TextField.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TextField.background: ✓ read background of TextField: the class of the host's style sheet the widget wears: GTK reads back no background
 TextField.frame: ✅
 TextField.height: ✅
-TextField.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: ✅
-TextField.isAccessibilityHidden: ✅
-TextField.isEnabled: ✅
 TextField.isVisible: ✅
 TextField.layoutDirection: ✅
 TextField.maximumHeight: ✅
@@ -1181,7 +1050,6 @@ TextField.rotationY: ✓ read rotationY of TextField: the host's own transform: 
 TextField.scale: ✓ read scale of TextField: the host's own transform: GTK reads back no part of one
 TextField.scaleX: ✓ read scaleX of TextField: the host's own transform: GTK reads back no part of one
 TextField.scaleY: ✓ read scaleY of TextField: the host's own transform: GTK reads back no part of one
-TextField.style: ✅
 TextField.tooltip: ✅
 TextField.translationX: ✓ read translationX of TextField: the host's own transform: GTK reads back no part of one
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: GTK reads back no part of one
@@ -1193,15 +1061,12 @@ TimePicker.accessibilityAdjusted: – GTK steps only a range, a role a widget ta
 TimePicker.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
+TimePicker.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 TimePicker.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 TimePicker.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-TimePicker.background: ✓ read background of TimePicker: the class of the host's style sheet the widget wears: GTK reads back no background
 TimePicker.frame: ✅
 TimePicker.height: ✅
-TimePicker.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: ✅
-TimePicker.isAccessibilityHidden: ✅
-TimePicker.isEnabled: ✅
 TimePicker.isVisible: ✅
 TimePicker.layoutDirection: ✅
 TimePicker.maximumHeight: ✅
@@ -1217,7 +1082,6 @@ TimePicker.rotationY: ✓ read rotationY of TimePicker: the host's own transform
 TimePicker.scale: ✓ read scale of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.scaleX: ✓ read scaleX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.scaleY: ✓ read scaleY of TimePicker: the host's own transform: GTK reads back no part of one
-TimePicker.style: ✅
 TimePicker.tooltip: ✅
 TimePicker.translationX: ✓ read translationX of TimePicker: the host's own transform: GTK reads back no part of one
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: GTK reads back no part of one
@@ -1229,15 +1093,12 @@ VStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 VStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
+VStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 VStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 VStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-VStack.background: ✅
 VStack.frame: ✅
 VStack.height: ✅
-VStack.hidesChildrenFromAccessibility: ✅
 VStack.ignoresInput: ✅
-VStack.isAccessibilityHidden: ✅
-VStack.isEnabled: ✅
 VStack.isVisible: ✅
 VStack.layoutDirection: ✅
 VStack.maximumHeight: ✅
@@ -1253,7 +1114,6 @@ VStack.rotationY: ✓ read rotationY of VStack: the host's own transform: GTK re
 VStack.scale: ✓ read scale of VStack: the host's own transform: GTK reads back no part of one
 VStack.scaleX: ✓ read scaleX of VStack: the host's own transform: GTK reads back no part of one
 VStack.scaleY: ✓ read scaleY of VStack: the host's own transform: GTK reads back no part of one
-VStack.style: ✅
 VStack.tooltip: ✅
 VStack.translationX: ✓ read translationX of VStack: the host's own transform: GTK reads back no part of one
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: GTK reads back no part of one
@@ -1265,15 +1125,12 @@ WebView.accessibilityAdjusted: – GTK steps only a range, a role a widget takes
 WebView.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
+WebView.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 WebView.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 WebView.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-WebView.background: ✓ read background of WebView: the class of the host's style sheet the widget wears: GTK reads back no background
 WebView.frame: ✅
 WebView.height: ✅
-WebView.hidesChildrenFromAccessibility: ✅
 WebView.ignoresInput: ✅
-WebView.isAccessibilityHidden: ✅
-WebView.isEnabled: ✅
 WebView.isVisible: ✅
 WebView.layoutDirection: ✅
 WebView.maximumHeight: ✅
@@ -1289,7 +1146,6 @@ WebView.rotationY: ✓ read rotationY of WebView: the host's own transform: GTK 
 WebView.scale: ✓ read scale of WebView: the host's own transform: GTK reads back no part of one
 WebView.scaleX: ✓ read scaleX of WebView: the host's own transform: GTK reads back no part of one
 WebView.scaleY: ✓ read scaleY of WebView: the host's own transform: GTK reads back no part of one
-WebView.style: ✅
 WebView.tooltip: ✅
 WebView.translationX: ✓ read translationX of WebView: the host's own transform: GTK reads back no part of one
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: GTK reads back no part of one
@@ -1301,15 +1157,12 @@ ZStack.accessibilityAdjusted: – GTK steps only a range, a role a widget takes 
 ZStack.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
+ZStack.accessibilityPresence: ☑️ GTK leaves an accessible out with everything in it: `.hidden` leaves what the view holds out too.
 ZStack.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
 ZStack.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-ZStack.background: ✅
 ZStack.frame: ✅
 ZStack.height: ✅
-ZStack.hidesChildrenFromAccessibility: ✅
 ZStack.ignoresInput: ✅
-ZStack.isAccessibilityHidden: ✅
-ZStack.isEnabled: ✅
 ZStack.isVisible: ✅
 ZStack.layoutDirection: ✅
 ZStack.maximumHeight: ✅
@@ -1325,7 +1178,6 @@ ZStack.rotationY: ✓ read rotationY of ZStack: the host's own transform: GTK re
 ZStack.scale: ✓ read scale of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.scaleX: ✓ read scaleX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.scaleY: ✓ read scaleY of ZStack: the host's own transform: GTK reads back no part of one
-ZStack.style: ✅
 ZStack.tooltip: ✅
 ZStack.translationX: ✓ read translationX of ZStack: the host's own transform: GTK reads back no part of one
 ZStack.translationY: ✓ read translationY of ZStack: the host's own transform: GTK reads back no part of one

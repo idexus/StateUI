@@ -9,11 +9,14 @@
 @_spi(Host) public enum ToolbarLabelTests: ConformanceFamily {
     public static let name = "ToolbarLabel"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(ToolbarLabelContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aLabelShowsTheWordsTheTreeSays", proves: [
-                Covered(ToolbarLabelContract.self), Covered(ToolbarLabelContract.text),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                Covered(ToolbarLabelContract.self), Covered(TextElementContract.text, on: ToolbarLabelContract.self),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 3)
                 s.start {
                     Self.page(beside: [Button("Add").onClicked { count.wrappedValue += 1 }.id("add")],
@@ -21,7 +24,7 @@
                         [ToolbarLabel("\(count.wrappedValue) items").id("count")]
                     }
                 }
-                let words = { try s.held(ToolbarLabelContract.text, on: s.element("count")) }
+                let words = { try s.held(TextElementContract.text, on: s.element("count")) }
 
                 try s.settle { try words() == "3 items" }
                 s.expect(try words(), "3 items", "made with its words")
@@ -30,12 +33,6 @@
                 try s.perform(.activate, on: s.element("add"))
                 try s.settle { try words() == "4 items" }
                 s.expect(try words(), "4 items", "and as the tree changed them")
-            },
-            ConformanceCase("aLabelShowsItsPicture", proves: [Covered(ToolbarLabelContract.icon)]) { s in
-                s.start { Self.page { [ToolbarLabel("Saved").icon("test_dot.png").id("saved")] } }
-
-                try s.settle { try s.held(ToolbarLabelContract.icon, on: s.element("saved")) == "test_dot.png" }
-                s.expect(try s.held(ToolbarLabelContract.icon, on: s.element("saved")), "test_dot.png")
             },
             ConformanceCase("aLabelInTheOverflowIsChosenByNobody", proves: [Covered(ToolbarLabelContract.self)]) { s in
                 s.start {

@@ -68,8 +68,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Cube")
                 .horizontalAlignment(.center)
 
-            Text()
-                .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
+            Text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
@@ -85,8 +84,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Color")
                 .placeholder("Color")
 
-            Switch($spinning)
-                .text("Spin")
+            Switch("Spin", isOn: $spinning)
                 .accessibilityIdentifier("cube3D.spin")
                 .tint(Palette.accent)
                 .horizontalAlignment(.center)

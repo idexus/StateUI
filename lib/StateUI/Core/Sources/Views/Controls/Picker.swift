@@ -1,33 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Picker`'s own properties, shared by the control and its `Style<Picker>`.
-public protocol PickerProperties: PropertyContainer {}
-
-extension PickerProperties {
-    /// Shows or dismisses the list of choices. The user may still close it by
-    /// choosing, clicking away or pressing Escape, which `onClosed` reports.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(PickerContract.isOpen, value)
-    }
-
-    /// What the field says while nothing is chosen. A host can also reuse it
-    /// as the heading of a separate native choice surface.
-    public func placeholder(_ value: String) -> Modified {
-        setValue(PickerContract.placeholder, value)
-    }
-
-    /// How the values are offered: `.menu`, the default - a field opening the
-    /// list - `.segmented`, a row of segments, or `.radio`, a radio button
-    /// for each. A list opens only from a menu.
-    ///
-    ///     Picker(Span.allCases, selection: $span) { "\($0)" }
-    ///         .presentation(.segmented)
-    public func presentation(_ value: PickerPresentation) -> Modified {
-        setValue(PickerContract.presentation, value)
-    }
-}
-
 /// One choice out of a list of values.
 ///
 ///     enum Span: CaseIterable, Hashable { case day, week, month }
@@ -43,14 +16,9 @@ extension PickerProperties {
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
 public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties, FocusElement {
+    FocusElement, PopupElement, PlaceholderElement {
     /// The node this control describes.
     public var node: Node
-
-    /// An empty one - what a `Style<Picker>` is written against.
-    public init() {
-        node = Node(contract: PickerContract.self)
-    }
 
     /// A picker offering `items`, each by its `caption`, with the one
     /// `selection` holds chosen; the user's choice is written into it.
@@ -88,9 +56,9 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         _ items: [Item], read: @escaping @MainActor () -> Item?, write: @escaping @MainActor (Item?) -> Void,
         caption: (Item) -> String
     ) {
-        var picker = Picker()
-        picker.node.write(PickerContract.options, items.map(caption))
-        self = picker.described(
+        node = Node(contract: PickerContract.self)
+        node.write(PickerContract.options, items.map(caption))
+        self = described(
             .selectedIndex,
             read: { read().flatMap { items.firstIndex(of: $0) } ?? -1 },
             write: { place in if items.indices.contains(place) { write(items[place]) } },
@@ -99,68 +67,34 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
 
     // MARK: Events
 
-    /// The user has chosen the value at `index` in the list, after the state's
-    /// write. A choice the application makes raises nothing.
-    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, handler)
+    /// The user has chosen another value, after the selection's write: the
+    /// handler reads it there. A choice the application makes raises nothing.
+    public func onSelectionChanged(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged) { (_: Int) in try handler() }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, policy: policy, handler)
+    public func onSelectionChanged(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, policy: policy) { (_: Int) in try await handler() }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
-        onEvent(PickerContract.selectedIndexChanged, gate: gate, handler)
-    }
-
-    /// The user has opened the list of choices. Opening it with `isOpen(true)`
-    /// raises nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(PickerContract.opened, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.opened, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.opened, gate: gate, handler)
-    }
-
-    /// The user has closed it - by a choice, a click outside or the platform's
-    /// own dismissal.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(PickerContract.closed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.closed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(PickerContract.closed, gate: gate, handler)
+    public func onSelectionChanged(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, gate: gate) { (_: Int) in try await handler() }
     }
 }
 
 extension Picker {
-    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the list as the state stands, and the
-    /// user's opening and closing come back into it; no view is rebuilt for it.
-    public func isOpen(_ state: Binding<Bool>) -> Modified {
-        opening(PickerContract.isOpen, by: state, opened: PickerContract.opened, closed: PickerContract.closed)
-    }
-
-    /// `placeholder` from a state, `$x`: the host writes each new text, and no
-    /// view is rebuilt for it.
-    public func placeholder(_ state: Binding<String>) -> Modified {
-        words(PickerContract.placeholder, by: state)
+    /// How the values are offered: `.menu`, the default - a field opening the
+    /// list - `.segmented`, a row of segments, or `.radio`, a radio button
+    /// for each. A list opens only from a menu. Said where the picker is
+    /// written: a style is chosen by it, `Style<Picker>(presentation:)`, and
+    /// gives none.
+    ///
+    ///     Picker(Span.allCases, selection: $span) { "\($0)" }
+    ///         .presentation(.segmented)
+    public func presentation(_ value: PickerPresentation) -> Modified {
+        setValue(PickerContract.presentation, value)
     }
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIGTK
+import StateUI
 
 /// The battery as the desktop knows it: UPower's display device on the system bus, which GNOME's own power status
 /// reads too.

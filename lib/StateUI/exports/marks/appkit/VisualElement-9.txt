@@ -1,57 +1,57 @@
-# revision 24.1
-Button.pivotY: ✓ read pivotY of Button: the host's own transform, checked against the layer it composed itself
-Canvas.accessibilityActionPerformed: ✅
-Canvas.accessibilityActions: ✅
-Capsule.frame: ✅
-Capsule.translationX: ✓ read translationX of Capsule: the host's own transform, checked against the layer it composed itself
-CheckBox.layoutDirection: ✅
-ColorPicker.accessibilityValue: ✅
-DatePicker.ignoresInput: ✅
+# revision 28.1
+Button.maximumHeight: ✅
+Button.maximumWidth: ✅
+Button.minimumHeight: ✅
+Button.minimumWidth: ✅
+Button.translationX: ✓ read translationX of Button: the host's own transform, checked against the layer it composed itself
+Canvas.rotationX: ✓ read rotationX of Canvas: the host's own transform, checked against the layer it composed itself
+Capsule.accessibilityPresence: ✅
+CheckBox.accessibilityActionPerformed: ✅
+CheckBox.accessibilityActions: ✅
+ColorPicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+DatePicker.height: ✅
 DatePicker.scaleY: ✓ read scaleY of DatePicker: the host's own transform, checked against the layer it composed itself
-Ellipse.layoutDirection: ✅
-Fill.accessibilityRole: ✅
-Grid.opacity: ✅
-Grid.rotationX: ✓ read rotationX of Grid: the host's own transform, checked against the layer it composed itself
-HStack.accessibilityRole: ✅
-HStack.background: ✅
-Image.pivotY: ✓ read pivotY of Image: the host's own transform, checked against the layer it composed itself
-ItemsView.accessibilityActionPerformed: ✅
-ItemsView.accessibilityActions: ✅
-Line.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-Link.isVisible: ✅
+DatePicker.width: ✅
+Ellipse.rotation: ✓ read rotation of Ellipse: the host's own transform, checked against the layer it composed itself
+Fill.accessibilityPresence: ✅
+Grid.accessibilityValue: ✅
+HStack.frame: ✅
+HStack.layoutDirection: ✅
+Image.rotationY: ✓ read rotationY of Image: the host's own transform, checked against the layer it composed itself
+ItemsView.layoutDirection: ✅
+Line.height: ✅
+Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
+Line.width: ✅
 Link.rotation: ✓ read rotation of Link: the host's own transform, checked against the layer it composed itself
-Map.tooltip: ✅
-MotionLayout.layoutDirection: ✅
-Path.isVisible: ✅
-Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
-Picker.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-Polygon.style: ✅
-Polygon.translationY: ✓ read translationY of Polygon: the host's own transform, checked against the layer it composed itself
-Polyline.pivotX: ✓ read pivotX of Polyline: the host's own transform, checked against the layer it composed itself
-ProgressBar.accessibilityValue: ✅
-Rectangle.maximumHeight: ✅
-Rectangle.maximumWidth: ✅
-Rectangle.minimumHeight: ✅
-Rectangle.minimumWidth: ✅
-Rectangle.scaleX: ✓ read scaleX of Rectangle: the host's own transform, checked against the layer it composed itself
-ScrollView.hidesChildrenFromAccessibility: ✅
-SearchField.zIndex: ✅
-Separator.zIndex: ✅
-Slider.isVisible: ✅
-Slider.rotation: ✓ read rotation of Slider: the host's own transform, checked against the layer it composed itself
-Space.tooltip: ✅
-Spinner.isEnabled: ✓ tap on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.zIndex: ✅
-Stepper.ignoresInput: ✅
-Stepper.scaleY: ✓ read scaleY of Stepper: the host's own transform, checked against the layer it composed itself
-Switch.layoutDirection: ✅
-Text.frame: ✅
-Text.translationX: ✓ read translationX of Text: the host's own transform, checked against the layer it composed itself
-TextEditor.accessibilityValue: ✅
-TextField.ignoresInput: ✅
-TextField.scaleY: ✓ read scaleY of TextField: the host's own transform, checked against the layer it composed itself
-TimePicker.layoutDirection: ✅
-VStack.accessibilityValue: ✅
-VStack.background: ✅
+Map.accessibilityPresence: ✅
+MotionLayout.accessibilityLabel: ✅
+Path.zIndex: ✅
+Picker.opacity: ✅
+Picker.scaleX: ✓ read scaleX of Picker: the host's own transform, checked against the layer it composed itself
+Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself
+Polyline.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
+ProgressBar.accessibilityRole: ✅
+Rectangle.frame: ✅
+ScrollView.isVisible: ✅
+ScrollView.scale: ✓ read scale of ScrollView: the host's own transform, checked against the layer it composed itself
+SearchField.layoutDirection: ✅
+Separator.accessibilityValue: ✅
+Slider.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+Space.accessibilityLabel: ✅
+Spinner.accessibilityLabel: ✅
+Stepper.maximumHeight: ✅
+Stepper.maximumWidth: ✅
+Stepper.minimumHeight: ✅
+Stepper.minimumWidth: ✅
+Stepper.translationX: ✓ read translationX of Stepper: the host's own transform, checked against the layer it composed itself
+Switch.rotationX: ✓ read rotationX of Switch: the host's own transform, checked against the layer it composed itself
+Text.accessibilityAdjusted: ✅
+TextEditor.accessibilityPresence: ✅
+TextField.accessibilityActionPerformed: ✅
+TextField.accessibilityActions: ✅
+TimePicker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+VStack.height: ✅
+VStack.scaleY: ✓ read scaleY of VStack: the host's own transform, checked against the layer it composed itself
+VStack.width: ✅
 WebView.pivotY: ✓ read pivotY of WebView: the host's own transform, checked against the layer it composed itself
-ZStack.accessibilityAdjusted: ✅
+ZStack.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

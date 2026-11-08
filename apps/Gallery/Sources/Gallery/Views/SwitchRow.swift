@@ -38,8 +38,7 @@ struct SwitchRow: View {
     var body: some View {
         let toggled = toggled
 
-        return Switch(value)
-            .text(text)
+        return Switch(text, isOn: value)
             // The words name the switch; the handle is worked out from them -
             // Handle.swift.
             .accessibilityIdentifier(handle("switch", text))

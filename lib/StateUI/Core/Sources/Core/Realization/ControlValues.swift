@@ -3,6 +3,8 @@
 
 /// The values an application's own control takes together, as a host's registration hands them over whole: each by
 /// its member, as the type its contract declares, and which of them changed.
+/// Live values are read on `MainActor`; checking what changed reads only the patch.
+/// Keeping these values does not own the control. A value is nil once its element leaves the tree.
 ///
 ///     web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
 ///         control.userAgent = values[WebViewContract.userAgent]
@@ -17,12 +19,13 @@ public struct ControlValues<Realized: ElementContract> {
     }
 
     /// The value of `member`, as the type its contract declares - nil where it is not described.
-    public subscript<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
+    @MainActor
+    public subscript<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
         values[member]
     }
 
     /// Whether `member`'s value changed since the control last took them.
-    public func changed<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
+    public func changed<Owner: WornContract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
         values.changed(member)
     }
 }

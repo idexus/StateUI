@@ -13,7 +13,7 @@ final class UIKitDriverTests: XCTestCase {
     /// yet, is read where it goes.
     func testAPlaceIsReadWhereUIKitLaysTheViewOut() throws {
         let driver = UIKitDriver()
-        defer { driver.finish() }
+        defer { driver.close() }
         let clock = TestClock()
         let width = State(wrappedValue: 40.0)
         let tree = driver.start(clock: clock, reducesMotion: false) {

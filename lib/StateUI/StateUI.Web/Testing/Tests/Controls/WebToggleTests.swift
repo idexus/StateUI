@@ -20,8 +20,8 @@ final class WebToggleTests: XCTestCase {
         let on = State(wrappedValue: false)
         let host = WebRenderer.running {
             VStack {
-                Switch(on.projectedValue).text("Wi-Fi").width(300)
-                CheckBox(true).text("agree").textCase(.uppercase).width(300)
+                Switch("Wi-Fi", isOn: on.projectedValue).width(300)
+                CheckBox("agree", isOn: true).textCase(.uppercase).width(300)
             }
             .horizontalAlignment(.start)
         }
@@ -48,7 +48,7 @@ final class WebToggleTests: XCTestCase {
     /// Right to left, a switch's words stand at its start on the right and the switch at its end on the left.
     func testASwitchsWordsMirrorRightToLeft() throws {
         let host = WebRenderer.running {
-            VStack { Switch(false).text("Wi-Fi").width(300) }
+            VStack { Switch("Wi-Fi", isOn: false).width(300) }
                 .layoutDirection(.rightToLeft)
                 .horizontalAlignment(.start)
         }

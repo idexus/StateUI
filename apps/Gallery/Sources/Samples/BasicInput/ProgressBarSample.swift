@@ -34,13 +34,10 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .step(1)
                 .horizontalAlignment(.center)
 
-            SectionTitle("The same property, as a modifier")
+            SectionTitle("What is left")
 
-            // A bar built empty carries no value at all, so `.progress` is
-            // how one reaches it. This one shows what is LEFT, so the two
-            // move opposite ways.
-            ProgressBar()
-                .progress(1 - done / steps)
+            // This one shows what is LEFT, so the two move opposite ways.
+            ProgressBar(1 - done / steps)
                 .tint(Palette.subtle)
                 .height(8)
 
@@ -58,19 +55,10 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`ProgressBar()` carries no value at all, so `.progress` is how one "
-                + "reaches it - and it sets the very property the initializer's argument "
-                + "sets. This one shows what is LEFT to do, so the two bars move opposite "
-                + "ways as the stepper is tapped.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Text("That pairing is the rule, not this control's quirk: wherever a "
-                + "control takes its purpose in the initializer - `Switch($on)`, "
-                + "`Path(\"M 28,0 ...\")`, `Polygon(points)` - there is a "
-                + "modifier beside it - `.isOn`, `.data`, `.points`. The "
-                + "initializer is what a view written in place uses; the MODIFIER is what "
-                + "a `Style` needs, and what a control built empty and filled in later has.")
+            Text("A control's purpose is given in its initializer alone - the fraction here, "
+                + "`Switch($on)`, `Path(\"M 28,0 ...\")`, `Polygon(points)` - as a value or "
+                + "as a state, and no modifier or style gives it again. The second bar shows "
+                + "what is LEFT, so the two move opposite ways as the stepper is tapped.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

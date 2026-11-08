@@ -58,7 +58,7 @@ The host builds on Windows 10 1809 or newer, on arm64 or x64:
 The web view is a backend, `lib/Backends/WebView.WinUI` - WinUI's `WebView2`
 over the system's WebView2 runtime, which WinUI does not ship: an application
 showing a web view depends on it from its WinUI head and calls
-`StateUIWebViewWinUI.register()` before the host runs.
+`WebViewWinUI.register()` before the host runs.
 
 ## Architectures and a deployed head
 
@@ -87,6 +87,7 @@ the code WinUI ended with - a start that failed fails it. The Gallery's head:
 ```swift listing winui.md.head
 // Platforms/WinUI/main.swift
 import GalleryUI
+import StateUI
 import StateUIWebViewWinUI
 import StateUIWinUI
 
@@ -94,14 +95,14 @@ import StateUIWinUI
 // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
 // relay in Relay/. Then hand WinUI this thread until the last window closes.
 GalleryApp.register()
-// Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+// Before WinUIHost.run(): every control - RatingBarControl.register() among them - and every act.
 GalleryControls.register()
 GalleryActs.register()
-// Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+// Before WinUIHost.run(): the pushes this host raises, their source wired.
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebView2.
-StateUIWebViewWinUI.register()
-StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
+WebViewWinUI.register()
+WinUIHost.run(linkSchemes: ["stateui-gallery"])
 ```
 
 `STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
@@ -119,7 +120,7 @@ head, as HelloWorld does.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its WinUI head. Registrations run before
-`StateUIWinUI.run`, on the main thread. Registering a contract or an act again
+`WinUIHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's WinUI halves are in
@@ -139,8 +140,8 @@ contract it realizes:
 ```swift quote
 public static func add<Realized: ElementContract, Made: WinUIControl>(
     _ contract: Realized.Type,
-    create: @escaping (WinUIReports<Realized>) -> Made,
-    members: (WinUIRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (WinUIRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
@@ -149,7 +150,7 @@ public static func add<Realized: ElementContract, Made: WinUIControl>(
   a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the control raises.
+  described, and `declares(_:)` records an event the control raises.
 
 ```swift listing winui.md.control
 // Platforms/WinUI/Host/TrafficLightControl.swift
@@ -167,7 +168,7 @@ extension TrafficLightControl {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -208,7 +209,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarContro
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -218,7 +219,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`WinUIChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 element of its own. The Gallery's [Web](web.md#children-a-control-draws) and
@@ -236,7 +237,7 @@ What the user sees there is the application's own registration. The
 `WebView` is a backend, as [Requirements](#requirements) says: the
 application's manifest depends on the package `lib/Backends/WebView.WinUI` by
 its path and its WinUI head on that package's `StateUIWebViewWinUI`, and the
-head calls `StateUIWebViewWinUI.register()` before `StateUIWinUI.run()`, as
+head calls `WebViewWinUI.register()` before `WinUIHost.run()`, as
 the Gallery's does. Until then the host realizes no web view.
 
 ### An act
@@ -269,7 +270,7 @@ may call Win32 itself through `WinSDK` - the Gallery's log does.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.declares` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
 ```swift listing winui.md.event
@@ -278,7 +279,7 @@ runs, so a handler listening for one no source raises is told so.
 @MainActor
 static func start() {
     // A handler listening for an event nothing declared is told, once, that it will not hear it.
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 
     // The gallery's relay asks Windows for each change of the battery's charge and of the power source
     // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.

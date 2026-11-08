@@ -5,7 +5,7 @@ import StateUI
 struct LocalizationSample: SampleContent, ExampleContent {
     // listing: LocalizationSample
     @State private var localization = Localization(
-        ReportCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+        ReportCatalog.self, language: .polish, formatLocale: "pl-PL")
     @State private var count = 22.0
     private let prepared = CalendarDate(year: 2026, month: 10, day: 11)
     private let recent = [
@@ -23,16 +23,12 @@ struct LocalizationSample: SampleContent, ExampleContent {
     var body: some View {
         VStack {
             HStack {
-                Button("English")
-                    .onClicked {
-                        localization.language = .fixed(.english)
-                        localization.formatLocale = .fixed("en-US")
-                    }
-                Button("Polski")
-                    .onClicked {
-                        localization.language = .fixed(.polish)
-                        localization.formatLocale = .fixed("pl-PL")
-                    }
+                Picker([nil, ReportLanguage.english, .polish], selection: localization.$language) { language in
+                    language.map { $0 == .english ? "English" : "Polski" } ?? "As the system"
+                }
+                Picker([nil, LocaleTag("en-US"), "pl-PL"], selection: localization.$formatLocale) { formats in
+                    formats.map { "Formats \($0)" } ?? "The system's formats"
+                }
             }
             .spacing(8)
 
@@ -68,6 +64,12 @@ struct LocalizationSample: SampleContent, ExampleContent {
             Text("The report has its own localization, held in this view's state and given with "
                 + "`.environment(localization)`. Its words come from `ReportResources`, one file for "
                 + "each language, read with `@Environment private var res: ReportResources`.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Choose the language and the formats apart - English words in Polish formats - each "
+                + "through its binding, `localization.$language` and `localization.$formatLocale`; nil "
+                + "follows the system.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -14,16 +14,16 @@ private enum InteropTestContract: ApplicationTier {
     static let name = "InteropTest"
 
     /// Answers twice what it was given.
-    static let doubled = ElementAct<Self, Int, Int>("InteropTest.Doubled")
+    static let doubled = ElementAct<Self, Int, Int>("doubled")
 
     /// Registered by no test, so a call on it is refused.
-    static let unregistered = ElementAct<Self, Void, Void>("InteropTest.Unregistered")
+    static let unregistered = ElementAct<Self, Void, Void>("unregistered")
 
     /// Raised by the application, with what it said.
-    static let spoke = ElementEvent<Self, String>("InteropTest.Spoke")
+    static let spoke = ElementEvent<Self, String>("spoke")
 
     /// Declared by no test, so a handler listening for it hears nothing.
-    static let unheard = ElementEvent<Self, String>("InteropTest.Unheard")
+    static let unheard = ElementEvent<Self, String>("unheard")
 
     static let members: [any ContractMember] = [doubled, unregistered, spoke, unheard]
 }
@@ -31,7 +31,7 @@ private enum InteropTestContract: ApplicationTier {
 /// An element no registration answers, which the host shows as unsupported.
 private enum DialContract: ElementContract {
     static let nodeType: NodeType = "InteropTest.Dial"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Tier.Type] = [ViewContract.self]
     static let members: [any ContractMember] = []
 }
 
@@ -45,7 +45,7 @@ private struct Calling: View {
     var body: some View {
         VStack {
             Button("Ask")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         let doubled = try await application.call(InteropTestContract.doubled, 21)
                         answer = "\(doubled)"
@@ -55,7 +55,7 @@ private struct Calling: View {
                 }
 
             Button("Ask nobody")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         try await application.call(InteropTestContract.unregistered)
                         answer = "that should have thrown"
@@ -107,9 +107,9 @@ final class AppKitInteropTests: XCTestCase {
 
         StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
         XCTAssertEqual(buttons.count, 2)
 
@@ -124,9 +124,9 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testAnActNobodyRegisteredIsRefusedByName() throws {
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let buttons = renderer.nativeViews(AppKitButtonView.self)
 
         buttons[1].clickForTesting()
@@ -134,7 +134,7 @@ final class AppKitInteropTests: XCTestCase {
 
         let answer = try XCTUnwrap(said(renderer))
         XCTAssertTrue(answer.hasPrefix("thrown:"), answer)
-        XCTAssertTrue(answer.contains("InteropTest.Unregistered"), answer)
+        XCTAssertTrue(answer.contains("InteropTest.unregistered"), answer)
     }
 
     /// An event the application raises reaches every subscription to it, carrying the values its contract
@@ -142,9 +142,9 @@ final class AppKitInteropTests: XCTestCase {
     @MainActor
     func testAnEventTheApplicationRaisesReachesItsSubscriptions() throws {
 
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         XCTAssertEqual(said(renderer), "-")
 
         StateUIEvents.raise(InteropTestContract.spoke, "hello")
@@ -159,17 +159,17 @@ final class AppKitInteropTests: XCTestCase {
     /// source raises is told so.
     @MainActor
     func testARunningHostSaysWhatItRealizesAndWhatTheApplicationRaises() {
-        StateUIEvents.raises(InteropTestContract.spoke)
+        StateUIEvents.declares(InteropTestContract.spoke)
         let renderer = AppKitRenderer.running { Calling() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         XCTAssertTrue(HostBoundary.realizes(TextContract.self))
         XCTAssertTrue(HostBoundary.realizes(ButtonContract.self))
         XCTAssertTrue(HostBoundary.realizes(WebViewContract.self))
         XCTAssertFalse(HostBoundary.realizes(DialContract.self))
         let spoke = InteropTestContract.spoke, unheard = InteropTestContract.unheard
-        XCTAssertNil(HostRealizations.unraised(owner: spoke.owner, event: spoke.token.key))
-        XCTAssertNotNil(HostRealizations.unraised(owner: unheard.owner, event: unheard.token.key))
+        XCTAssertNil(HostRealizations.unraised(spoke.token.key))
+        XCTAssertNotNil(HostRealizations.unraised(unheard.token.key))
     }
 }
 #endif

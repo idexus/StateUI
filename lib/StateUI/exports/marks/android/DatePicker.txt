@@ -1,10 +1,7 @@
-# revision 5.1
+# revision 6.1
 DatePicker: ✅
-DatePicker.closed: ✅
 DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: ✓ read format of DatePicker: the form the relay writes the field in
-DatePicker.isOpen: ✅
-DatePicker.maximumDate: ✓ read maximumDate of DatePicker: the bounds the relay hands its calendar as it opens
-DatePicker.minimumDate: ✓ read minimumDate of DatePicker: the bounds the relay hands its calendar as it opens
-DatePicker.opened: ✅
+DatePicker.maximum: ✓ read maximum of DatePicker: the bounds the relay hands its calendar as it opens
+DatePicker.minimum: ✓ read minimum of DatePicker: the bounds the relay hands its calendar as it opens

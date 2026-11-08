@@ -27,7 +27,7 @@ final class LayoutSwipeTests: XCTestCase {
             handed.phases.append(at)
             return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .axis(\.self, input: .swipe(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .axis(\.self, input: .swipe(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
         .node
     }
 

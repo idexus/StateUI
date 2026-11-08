@@ -51,8 +51,7 @@ struct TooltipSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            Switch($detailed)
-                .text("Detailed")
+            Switch("Detailed", isOn: $detailed)
                 .accessibilityIdentifier("tooltip.detailed")
         }
         .spacing(16)

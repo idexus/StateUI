@@ -40,10 +40,10 @@ extension AppKitElement {
         tabs.setItems(
             element.arrangedChildren.map(\.appKit).compactMap { child in
                 child.layoutItem.map {
-                    AppKitTabItem(layout: $0, title: child.string(.title), image: child.image(.icon))
+                    AppKitTabItem(layout: $0, title: child.string(PageElementContract.title.token), image: child.image(.icon))
                 }
             },
-            requestedIndex: whole(.selectedTab))
+            requestedIndex: element.whole(.selectedTab))
     }
 
     /// The user chose another tab: the host layer tells the pages and the state, and shows the chrome again.

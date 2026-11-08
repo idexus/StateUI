@@ -9,7 +9,7 @@
 ///
 /// A menu shows its toggles' marks as the states hold them, and each choice
 /// turns its state over; an entry that acts is a `MenuItem`.
-public struct MenuToggle: Element, MenuItemElement {
+public struct MenuToggle: Element, MenuItemElement, ToggleElement {
     /// The node this entry describes.
     public var node: Node
 
@@ -17,8 +17,8 @@ public struct MenuToggle: Element, MenuItemElement {
     /// the turn goes nowhere without `.onToggled`.
     public init(_ text: String, isOn: Bool) {
         node = Node(contract: MenuToggleContract.self)
-        node.write(MenuItemElementContract.text, text)
-        node.write(MenuToggleContract.isOn, isOn)
+        node.write(TextElementContract.text, text)
+        node.write(ToggleElementContract.isOn, isOn)
     }
 
     /// An entry captioned `text`, standing checked as the state holds; choosing
@@ -29,27 +29,10 @@ public struct MenuToggle: Element, MenuItemElement {
     /// Design: docs/design/host/pages.md#a-checked-entry
     public init(_ text: String, isOn: Binding<Bool>) {
         self.init(text, isOn: false)
-        node.readsWhenDescribed { $0.write(MenuToggleContract.isOn, isOn.wrappedValue) }
-        node.addHandler(MenuToggleContract.toggled.token) {
+        node.readsWhenDescribed { $0.write(ToggleElementContract.isOn, isOn.wrappedValue) }
+        node.addHandler(ToggleElementContract.toggled.token) {
             if let turned = EventBuffer.current.value()?.bool { isOn.wrappedValue = turned }
         }
-    }
-
-    /// Fires when the user chooses it, with the way it turned to. Runs after
-    /// the state's write.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
-        modified { $0.addHandler(MenuToggleContract.toggled, handler) }
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        modified { $0.addHandler(MenuToggleContract.toggled, policy: policy, handler) }
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
-        modified { $0.addHandler(MenuToggleContract.toggled, gate: gate, handler) }
     }
 
     /// Who this entry is among the menu's others, so it stays matched to itself

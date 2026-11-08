@@ -50,8 +50,8 @@ DatePicker
   fontFamily
   fontSize
   fontWeight
-  maximumDate
-  minimumDate
+  maximum
+  minimum
   textColor
   textStyle
   dateChanged()
@@ -110,16 +110,16 @@ Link
 Map
   isScrollEnabled
   isZoomEnabled
+  kind
   region
   showsTraffic
   showsUserLocation
-  type
   locationTapped()
 Marker
+  kind
   location
   subtitle
   title
-  type
   detailsClicked()
   selected()
 Path
@@ -325,6 +325,7 @@ WebView
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  accessibilityPresence
   accessibilityRole
   accessibilityValue
   allowsDrop
@@ -337,11 +338,9 @@ WebView
   gridRow
   gridRowSpan
   height
-  hidesChildrenFromAccessibility
   holdDuration
   horizontalAlignment
   ignoresInput
-  isAccessibilityHidden
   isDraggable
   isEnabled
   isVisible
@@ -364,7 +363,7 @@ WebView
   scale
   scaleX
   scaleY
-  swipeDirection
+  swipeDirections
   swipeThreshold
   tapCount
   tooltip
@@ -376,10 +375,10 @@ WebView
   accessibilityActionPerformed()
   accessibilityAdjusted()
   dragEnded()
-  dragLeave()
-  dragOver()
+  dragEntered()
+  dragExited()
   dragStarting()
-  drop()
+  dropped()
   filesDropped()
   frameChanged()
   held()

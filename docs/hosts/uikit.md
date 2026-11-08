@@ -29,11 +29,11 @@ apps/<App>/Platforms/UIKit/
 
 ## Requirements
 
-The host builds on macOS with Xcode, for iOS and iPadOS 26 or newer, and runs
+The host builds on macOS with Xcode, for iOS and iPadOS 26.4 or newer, and runs
 on a simulator or on an iPhone or iPad paired with the Mac. `build-app.sh`
 builds with Xcode's Swift against the simulator's SDK, for
-`arm64-apple-ios26.0-simulator`, or against the device's, for
-`arm64-apple-ios26.0`. A device runs with Developer Mode on, and its build is
+`arm64-apple-ios26.4-simulator`, or against the device's, for
+`arm64-apple-ios26.4`. A device runs with Developer Mode on, and its build is
 signed with a development profile of this Mac's that provisions it - one
 Xcode makes for a team once the device is added - and a certificate of the
 keychain's that the profile names: the script picks them as Xcode does, an
@@ -48,6 +48,7 @@ never returns - here the Gallery's:
 ```swift listing uikit.md.head
 // Platforms/UIKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIUIKit
 
 GalleryApp.register()
@@ -59,7 +60,7 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIUIKit.run()
+UIKitHost.run()
 ```
 
 The bundle `build-app.sh` makes carries the application's `Resources/Images`
@@ -120,14 +121,15 @@ with `.menuBar` stand in the iPad's main menu.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its UIKit head. Registrations run before
-`StateUIUIKit.run`, on the main thread. Registering a contract or an act again
+`UIKitHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration.
 
 **A host in the same process registers BY TYPE.** Every registration is
 written against the same `ElementContract` the application's own views are
-written against, so the compiler refuses a property of the wrong type, an
-event of a contract the element does not wear, and a performer whose arguments
-are not the act's. The application's contracts are `public`, for the host's
+written against, so the compiler refuses a property of the wrong type and a
+performer whose arguments are not the act's. A property or an event of a
+contract the element does not wear compiles; the registration refuses it and
+says so once. The application's contracts are `public`, for the host's
 module to see them. The UIKit halves of the Gallery's own are in
 `apps/Gallery/Platforms/UIKit/Host/`.
 
@@ -138,8 +140,8 @@ module to see them. The UIKit halves of the Gallery's own are in
 ```swift quote
 public static func add<Realized: ElementContract, Made: UIView>(
     _ contract: Realized.Type,
-    create: @escaping (UIKitReports<Realized>) -> Made,
-    members: (UIKitRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (UIKitRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the view once per element, and wires what the view
@@ -149,7 +151,7 @@ public static func add<Realized: ElementContract, Made: UIView>(
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
   over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the view raises.
+  described, and `declares(_:)` records an event the view raises.
 
 ```swift listing uikit.md.control
 // Platforms/UIKit/Host/TrafficLightView.swift
@@ -169,7 +171,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -216,7 +218,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
             rating: values[RatingBarContract.rating] ?? 0,
             of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -226,7 +228,7 @@ A view may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the view realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`UIKitChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
 view of its own. The Gallery's [Web](web.md#children-a-control-draws) and
@@ -268,7 +270,7 @@ fail the call with the reason, named. The Swift half is under
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, and `StateUIEvents.raises` declares it where its source is wired -
+element, and `StateUIEvents.declares` declares it where its source is wired -
 here the Gallery's battery:
 
 ```swift listing uikit.md.event
@@ -278,7 +280,7 @@ here the Gallery's battery:
 static func start() {
     // What the host raises, declared where its source is wired: a handler
     // listening for an event nothing raises is told so.
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 
     UIDevice.current.isBatteryMonitoringEnabled = true
     for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {

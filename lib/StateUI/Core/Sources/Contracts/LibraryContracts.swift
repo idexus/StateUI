@@ -7,7 +7,7 @@
 /// Design: docs/design/contracts/README.md#the-contracts-of-the-library
 @_spi(Host) public enum LibraryContracts {
     /// The tiers, in the dictionary's order.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self,
         VisualElementContract.self,
         ViewContract.self,
@@ -18,6 +18,24 @@
         FilledShapeContract.self,
         CorneredShapeContract.self,
         TextualElementContract.self,
+        PointsShapeContract.self,
+        LineBreakElementContract.self,
+        PlaceholderElementContract.self,
+        StyledElementContract.self,
+        TextElementContract.self,
+        ShortcutElementContract.self,
+        IconElementContract.self,
+        BackgroundElementContract.self,
+        EnabledElementContract.self,
+        ClickElementContract.self,
+        RangeElementContract.self,
+        SubmitElementContract.self,
+        SessionElementContract.self,
+        HoverElementContract.self,
+        PressElementContract.self,
+        PresentedElementContract.self,
+        PopupElementContract.self,
+        ToggleElementContract.self,
         TextColorElementContract.self,
         FontElementContract.self,
         TextAlignmentElementContract.self,
@@ -26,15 +44,12 @@
         DecorableTextElementContract.self,
         PaddingElementContract.self,
         BorderElementContract.self,
-        ImageElementContract.self,
+        ContentModeElementContract.self,
         TintElementContract.self,
         KeyboardElementContract.self,
         FocusElementContract.self,
         RefreshElementContract.self,
         BarElementContract.self,
-        BarItemElementContract.self,
-        BarButtonElementContract.self,
-        MenuItemElementContract.self,
         ActionElementContract.self,
         ButtonMenuElementContract.self,
         TextAndIconElementContract.self,
@@ -67,16 +82,15 @@
     /// Every contract.
     static let all: [any Contract.Type] = tiers + elements.map { $0 as any Contract.Type }
 
-    /// Every property's facts, by the name it crosses under - what the differ
-    /// asks of a property it holds only a token for. The first member met
-    /// answers for every member of its name.
-    /// Design: docs/design/contracts/member-facts.md#one-name-one-set-of-facts
+    /// Every property's facts, by the key it crosses under - what the differ
+    /// asks of a property it holds only a token for.
+    /// Design: docs/design/contracts/member-facts.md#one-key-one-set-of-facts
     static let facts: [Prop: MemberFacts] = {
         var facts: [Prop: MemberFacts] = [:]
 
         for contract in all {
-            for case let member as any PropertyMember in contract.members where facts[Prop(member.name)] == nil {
-                facts[Prop(member.name)] = member.facts
+            for case let member as any PropertyMember in contract.members {
+                facts[Prop(key: member.memberKey)] = member.facts
             }
         }
 

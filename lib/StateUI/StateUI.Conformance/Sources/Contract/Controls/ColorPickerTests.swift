@@ -15,7 +15,7 @@
             Aspects.standsAlone("ColorPicker"),
             ConformanceCase("theUsersColorIsHeardAndTheProgramsIsNot", proves: [
                 Covered(ColorPickerContract.color), Covered(ColorPickerContract.colorChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let tint = State(wrappedValue: Color(hex: 0x4682B4))
                 let heard = Received<Color>()
                 s.start {

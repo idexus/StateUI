@@ -27,13 +27,13 @@ public struct ToolbarLabel: PlacedToolbarItem, PropertyContainer {
     /// An item showing `text`.
     public init(_ text: String) {
         node = Node(contract: ToolbarLabelContract.self)
-        node.write(ToolbarLabelContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// The picture before its words, resolved from the application's image
     /// resources.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(ToolbarLabelContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Who this item is among the others of its declaration, so an item

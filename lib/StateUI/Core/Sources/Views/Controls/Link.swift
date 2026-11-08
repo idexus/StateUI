@@ -12,19 +12,14 @@
 /// it a link where the platform's accessibility has the role. An address the
 /// platform will not open opens nothing. It stands at its words' size at the
 /// start of its slot unless an alignment says otherwise.
-public struct Link: ElementView, TextualElement, FocusElement {
+public struct Link: ElementView, TextualElement, FocusElement, ClickElement {
     /// The node this control describes.
     public var node: Node
-
-    /// An empty one - what a `Style<Link>` is written against.
-    public init() {
-        node = Node(contract: LinkContract.self)
-    }
 
     /// A link saying `text` and opening `address`.
     public init(_ text: String, address: String) {
         node = Node(contract: LinkContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
         node.write(LinkContract.address, address)
     }
 
@@ -36,25 +31,8 @@ public struct Link: ElementView, TextualElement, FocusElement {
     ///   - address: the state the address is read from.
     public init(_ text: String, address: Binding<String>) {
         node = Node(contract: LinkContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
         self = words(LinkContract.address, by: address)
     }
 
-    /// Runs as the user chooses the link, its address already on its way to
-    /// the system. A second `.onClicked` runs beside the first, like every
-    /// typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(LinkContract.clicked, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what a click does
-    /// while a run is under way.
-    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(LinkContract.clicked, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(LinkContract.clicked, gate: gate, handler)
-    }
 }

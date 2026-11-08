@@ -83,7 +83,9 @@ extension AppKitRenderer {
         presentFrame(movedChrome: runtime.tree.present(states: valuesByState, properties: [:]).windowChrome)
     }
 
-    func closeForTesting() {
+    /// Ends the host: no presenter answers for it, its windows close, its tree leaves and its clocks stop.
+    func finish() {
+        runtime.presenter = nil
         roster.update(root: nil, make: { _ in fatalError("no window comes while closing") }, close: { $0.closeFromTree() })
         runtime.tree.root?.leave()
         frameClock.stop()

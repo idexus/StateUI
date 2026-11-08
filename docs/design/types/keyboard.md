@@ -68,7 +68,9 @@ does; a text, a picture or a shape wears neither, since none of them can ever
 hold it. The view hears the key with the keys held with it (`KeyPress`,
 the event `keyPressed` carrying both): Shift alone, as below. A key pressed reaches,
 out from the view holding the keyboard, the first view in sight and enabled
-taking it (`KeyPresses`); with nothing holding the keyboard, the content of
+taking it (`KeyPresses`) - the holder found among everything the window
+holds, a sheet an arrangement keeps apart from its pages included; with
+nothing holding the keyboard, the content of
 the page in front and the views holding it. The view takes the key: neither
 the field holding the keyboard nor a shortcut gets it. A key held with the
 platform's own key or Alt is a shortcut's; Shift is the key's. Every host

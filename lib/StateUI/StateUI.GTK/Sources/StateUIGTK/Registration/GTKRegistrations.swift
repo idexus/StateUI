@@ -37,9 +37,9 @@ enum GTKRegistrations {
     static func shared(_ registry: Registry<GTKView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(VisualElementContract.isVisible)
-        registry.everyElementRealizes(VisualElementContract.isEnabled)
+        registry.everyElementRealizes(EnabledElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
-        registry.everyElementRealizes(VisualElementContract.background)
+        registry.everyElementRealizes(BackgroundElementContract.background)
         // GTK 4 identifies no accessible made in code: it is met by its role, its label and its place.
         registry.everyElementMeetsAssistiveTechnology(identifying: false, sayingKinds: false)
         registry.everyElementShowsItsTooltip()

@@ -30,7 +30,7 @@ struct IconSample: SampleContent, ExampleContent {
                 }
             }
             .columns(.fill(count: 4))
-            .rows(.auto(count: 8))
+            .rows(.automatic(count: 8))
             .rowSpacing(12)
 
             SectionTitle("In the button's color")

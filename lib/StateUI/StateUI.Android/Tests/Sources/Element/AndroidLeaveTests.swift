@@ -51,7 +51,7 @@ final class AndroidLeaveTests: XCTestCase {
     func testEveryElementsViewIsLetGoOfEachTimeItLeaves() throws {
         try onMainActor {
             let driver = AndroidDriver()
-            defer { driver.finish() }
+            defer { driver.close() }
             XCTAssertEqual(try Leaving.outlived(on: driver), [])
         }
     }

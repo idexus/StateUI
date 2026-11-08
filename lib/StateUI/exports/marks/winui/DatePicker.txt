@@ -1,10 +1,7 @@
-# revision 5.1
+# revision 6.1
 DatePicker: ✅
-DatePicker.closed: ✅
 DatePicker.date: ✅
 DatePicker.dateChanged: ✅
 DatePicker.format: ☑️ WinUI writes the long and the short day in the user's own way, and the medium as the short.
-DatePicker.isOpen: ✅
-DatePicker.maximumDate: ✅
-DatePicker.minimumDate: ✅
-DatePicker.opened: ✅
+DatePicker.maximum: ✅
+DatePicker.minimum: ✅

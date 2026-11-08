@@ -17,7 +17,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testAWindowSayingNoTitleIsNamedByTheApplication() throws {
         let renderer = AppKitRenderer.running { Text("Untitled") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
 
         XCTAssertFalse(renderer.runtime.core.applicationName.isEmpty)
@@ -30,7 +30,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColors() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(background: nil), menu: menu()))
 
@@ -60,7 +60,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTakingTheBarAwayLeavesThePlainNativeWindowChrome() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu(), line: "Today"))
         renderer.applyForTesting(flyoutTree(
@@ -83,7 +83,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testADeclaredBarColorPaintsTheBandAndColorsTheTitleArea() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 
@@ -102,7 +102,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testTheTitleAreaUpdatesInPlace() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Notes", subtitle: "Personal"), line: "Today"))
 
@@ -127,7 +127,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testADeclaredBarKeepsThePageInsideTheNativeContentLayout() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(tree([:]))
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -151,10 +151,10 @@ final class AppKitBarTests: XCTestCase {
         let under = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content").title("Under")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").title("Under")
             } destination: { _ in Text("Next") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let page = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
@@ -181,7 +181,7 @@ final class AppKitBarTests: XCTestCase {
                     .title("Rows")
             } destination: { _ in Text("Next") }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let scroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
@@ -218,7 +218,7 @@ final class AppKitBarTests: XCTestCase {
             } destination: { _ in Text("Next") }
             .barScrollEdge(edge.wrappedValue)
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let settle = { (done: () -> Bool) in
@@ -250,7 +250,7 @@ final class AppKitBarTests: XCTestCase {
     @MainActor
     func testASplitViewDeclaringTheBarKeepsItsScrollInsideNativeContent() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 
@@ -281,7 +281,7 @@ private extension AppKitBarTests {
         label.properties[.text] = .string("Page")
 
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties[.title] = .string("Page")
+        page.properties[PageElementContract.title.token] = .string("Page")
         page.children = .arranged([label])
 
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
@@ -310,7 +310,7 @@ private extension AppKitBarTests {
 
     /// What a sidebar's page says of itself: its title, the line under it and its picture.
     func menu(title: String = "Notes", subtitle: String = "Personal") -> [Prop: HostValue] {
-        [.title: .string(title), .subtitle: .string(subtitle), .icon: .string("notes.png")]
+        [PageElementContract.title.token: .string(title), PageContract.subtitle.token: .string(subtitle), .icon: .string("notes.png")]
     }
 
     /// A window whose page is a split view declaring `bar`: a menu saying `menu` of itself beside a stack over a long
@@ -322,13 +322,13 @@ private extension AppKitBarTests {
             return row
         }
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.properties[.spacing] = .number(12)
+        stack.properties[StackContract.spacing.token] = .number(12)
         stack.children = .arranged(rows)
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.children = .arranged([stack])
         var page = HostPatch(id: .manual("page"), type: .page)
-        page.properties[.title] = .string("Page")
-        page.properties[.subtitle] = line.map { .string($0) } ?? .nothing
+        page.properties[PageElementContract.title.token] = .string("Page")
+        page.properties[PageContract.subtitle.token] = line.map { .string($0) } ?? .nothing
         page.children = .arranged([scroll])
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])

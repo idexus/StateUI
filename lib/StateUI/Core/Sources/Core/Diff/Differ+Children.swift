@@ -136,7 +136,7 @@ extension Differ {
 
         let candidate = rendered[index]
 
-        guard case .auto = candidate.id, !claimed.contains(candidate.id) else {
+        guard candidate.identity == nil, case .auto = candidate.id, !claimed.contains(candidate.id) else {
             return nil
         }
 
@@ -191,5 +191,5 @@ struct RepeatedIdentity: Hashable, CustomStringConvertible {
     let identity: ElementIdentity
     let occurrence: Int
 
-    var description: String { "\(String(describing: identity.value.base))\u{0}\(occurrence)" }
+    var description: String { "\(String(describing: identity.value.base))\u{1D}\(occurrence)" }
 }

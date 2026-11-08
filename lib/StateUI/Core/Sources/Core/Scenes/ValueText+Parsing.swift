@@ -61,20 +61,41 @@ extension ValueText {
             return tree
         }
 
+        /// A number as JSON writes it: a minus only before, a nought or digits with none leading, then a point
+        /// with digits after it, then an exponent with digits.
         private mutating func number() -> Tree? {
             let start = at
 
-            while at < bytes.count,
-                let scalar = Optional(bytes[at]),
-                (scalar >= UInt8(ascii: "0") && scalar <= UInt8(ascii: "9"))
-                    || [UInt8(ascii: "-"), UInt8(ascii: "+"), UInt8(ascii: "."),
-                        UInt8(ascii: "e"), UInt8(ascii: "E")].contains(scalar) {
+            step(over: UInt8(ascii: "-"))
+            if !step(over: UInt8(ascii: "0")) {
+                guard digits() > 0 else { return nil }
+            }
+            if step(over: UInt8(ascii: ".")) {
+                guard digits() > 0 else { return nil }
+            }
+            if step(over: UInt8(ascii: "e")) || step(over: UInt8(ascii: "E")) {
+                _ = step(over: UInt8(ascii: "+")) || step(over: UInt8(ascii: "-"))
+                guard digits() > 0 else { return nil }
+            }
+            return .number(String(decoding: bytes[start..<at], as: UTF8.self))
+        }
+
+        /// Steps over `byte` where it stands next: whether it did.
+        @discardableResult
+        private mutating func step(over byte: UInt8) -> Bool {
+            guard at < bytes.count, bytes[at] == byte else { return false }
+
+            at += 1
+            return true
+        }
+
+        /// Steps over the digits standing next: how many.
+        private mutating func digits() -> Int {
+            let start = at
+            while at < bytes.count, (UInt8(ascii: "0")...UInt8(ascii: "9")).contains(bytes[at]) {
                 at += 1
             }
-
-            guard at > start else { return nil }
-
-            return .number(String(decoding: bytes[start..<at], as: UTF8.self))
+            return at - start
         }
 
         private mutating func string() -> String? {
@@ -139,6 +160,9 @@ extension ValueText {
                     }
 
                 default:
+                    // JSON writes a control below a space only escaped.
+                    guard byte >= 0x20 else { return nil }
+
                     run.append(byte)
                 }
             }
@@ -146,9 +170,9 @@ extension ValueText {
             return nil
         }
 
-        /// Four hex digits, as a number.
+        /// Four hex digits, as a number - digits alone, no sign.
         private mutating func hex() -> UInt32? {
-            guard at + 4 <= bytes.count,
+            guard at + 4 <= bytes.count, bytes[at..<at + 4].allSatisfy({ Character(Unicode.Scalar($0)).isHexDigit }),
                 let value = UInt32(String(decoding: bytes[at..<at + 4], as: UTF8.self), radix: 16)
             else { return nil }
 

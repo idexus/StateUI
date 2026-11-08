@@ -14,9 +14,9 @@
 ///
 ///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
 ///
-/// `.none` applies a change at once. `.custom` hands the animation to an
-/// engine of your own. `.eased` and `.spring` name a timing law and its
-/// numbers.
+/// `.none` applies a change at once. `.eased`, `.spring` and `.glide` name a
+/// timing law and its numbers. A state an engine of the application's animates
+/// says so at its declaration, `@State(animatedBy: .engine)`.
 ///
 /// Design: docs/design/types/motion.md#two-laws
 public struct Motion: Equatable, Sendable {
@@ -74,35 +74,10 @@ public struct Motion: Equatable, Sendable {
     /// No animation: the change is applied at once.
     public static let none = Motion(kind: .none)
 
-    /// The animation is yours: a write moves only the destination, the host
-    /// animates nothing, and an engine of your own writes where the value is
-    /// and how fast it is going, frame by frame, reading the destination back.
-    ///
-    ///     @State(motion: .custom) private var ball = 0.0
-    ///
-    ///     Rectangle()
-    ///         .translationY($ball)
-    ///         .engine(tracking: $ball) { cycle in
-    ///             let journey = $ball.journey
-    ///             let seconds = cycle.elapsed / 1000
-    ///             // A spring towards the destination, damped by the speed.
-    ///             let pull = (journey.destination - journey.value) * 180 - journey.velocity * 24
-    ///             journey.velocity += pull * seconds
-    ///             journey.value += journey.velocity * seconds
-    ///             let resting = abs(journey.destination - journey.value) < 0.5 && abs(journey.velocity) < 1
-    ///             guard resting else { return .again }
-    ///             journey.value = journey.destination
-    ///             journey.velocity = 0
-    ///             return .wait
-    ///         }
-    ///
-    /// Unlike `.none`, a write changes only where the value is going; where it
-    /// is stays put until the engine moves it. Declare it on the state, since
-    /// which side animates a state is fixed when the state first reaches the
-    /// host.
-    ///
-    /// Design: docs/design/types/motion.md#custom-animates-in-an-engine
-    public static let custom = Motion(kind: .custom)
+    /// The law of a state an engine of the application's animates, as its image
+    /// carries it: the host animates nothing.
+    /// Design: docs/design/types/motion.md#an-engine-animates-a-state-of-its-own
+    @_spi(Host) public static let custom = Motion(kind: .custom)
 
     /// An animation of a stated duration on a stated curve.
     ///

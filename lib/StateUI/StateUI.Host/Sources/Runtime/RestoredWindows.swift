@@ -37,7 +37,7 @@
     /// The window the platform restored for `element`, where one waits: the first of its kind and its value - in the
     /// order they came, which is the order they opened. A kind is one scene's, so it names the scene too.
     public func take(for element: MountedElement) -> Restored? {
-        let kind = element.value(.windowType)?.name
+        let kind = element.value(.windowKind)?.name
         let value = element.value(.windowValue)?.string
         guard let index = waiting.firstIndex(where: { $0.record.kind == kind && $0.record.value == value })
         else { return nil }

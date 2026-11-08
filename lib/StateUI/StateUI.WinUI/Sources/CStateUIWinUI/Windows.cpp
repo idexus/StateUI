@@ -487,19 +487,18 @@ extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_
 
 namespace stateui {
     xaml::ElementTheme elementTheme(int32_t scheme) {
-        switch (static_cast<StateUIColorScheme>(scheme)) {
-        case StateUIColorSchemeSystem: return xaml::ElementTheme::Default;
+        switch (scheme) {
         case StateUIColorSchemeLight: return xaml::ElementTheme::Light;
         case StateUIColorSchemeDark: return xaml::ElementTheme::Dark;
+        default: return xaml::ElementTheme::Default;
         }
-        return xaml::ElementTheme::Default;
     }
 
     int32_t colorScheme(xaml::ElementTheme theme) {
         switch (theme) {
         case xaml::ElementTheme::Light: return StateUIColorSchemeLight;
         case xaml::ElementTheme::Dark: return StateUIColorSchemeDark;
-        default: return StateUIColorSchemeSystem;
+        default: return 0;
         }
     }
 }

@@ -13,9 +13,12 @@ let host = ["AppKit", "UIKit", "Android", "WinUI", "GTK", "Web"]
     .first { $0.lowercased() == Context.environment["STATEUI_HOST"] }
 
 // NonisolatedNonsendingByDefault is the one setting an application must not
-// leave out; see the note in ../../Package.swift.
-let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
-    + (host.map { [.define($0.uppercased())] } ?? [])
+// leave out; see the note in ../../Package.swift. MemberImportVisibility holds
+// each file to the modules it imports itself: a member of StateUI written
+// where no `import StateUI` stands fails on every host.
+let settings: [SwiftSetting] = [
+    .enableUpcomingFeature("NonisolatedNonsendingByDefault"), .enableUpcomingFeature("MemberImportVisibility"),
+] + (host.map { [.define($0.uppercased())] } ?? [])
 
 var products: [Product] = [
     // Dynamic, so a head and its host share one StateUI runtime; on the Web one module holds them all.
@@ -32,8 +35,11 @@ var targets: [Target] = [
 ]
 
 // The head in Platforms/<Host>: an executable its host runs, and on Android a
-// library the platform loads. StateUIHead brings the host.
-let head: [Target.Dependency] = ["HelloWorldUI", .product(name: "StateUIHead", package: "StateUIHead")]
+// library the platform loads, importing StateUI and its host by name.
+// StateUIHead brings the host.
+let head: [Target.Dependency] = [
+    "HelloWorldUI", .product(name: "StateUI", package: "StateUIRoot"), .product(name: "StateUIHead", package: "StateUIHead"),
+]
 switch host {
 case "Android"?:
     products.append(.library(name: "HelloWorldAndroid", type: .dynamic, targets: ["HelloWorldAndroid"]))
@@ -50,9 +56,9 @@ let package = Package(
     name: "HelloWorldUI",
     // StateUI's floor, which an application cannot go below.
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: products,
     // The StateUI checkout: the library at its root, what the tests show its pages through, and a head's host.

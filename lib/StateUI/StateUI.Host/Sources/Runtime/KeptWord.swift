@@ -17,9 +17,9 @@
     /// The value `word` holds, read as `kind`; nil where it reads as none.
     public static func restored(_ word: String, as kind: PersistentKind) -> HostValue? {
         switch kind {
-        case .boolean: .bool(word == "true")
+        case .bool: word == "true" ? .bool(true) : word == "false" ? .bool(false) : nil
         case .integer, .number: Double(word).map(HostValue.number)
-        case .text: .string(word)
+        case .string: .string(word)
         }
     }
 

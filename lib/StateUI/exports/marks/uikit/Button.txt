@@ -1,11 +1,5 @@
-# revision 9.2
+# revision 14.2
 Button: ✅
-Button.clicked: ✅
-Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
-Button.keyboardShortcut: ✅
-Button.lineBreak: ✅
-Button.pressed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
-Button.released: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.role: ✅

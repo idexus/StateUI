@@ -42,8 +42,8 @@
     /// why it could not read them.
     func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void)
 
-    /// Shows the whole application in `theme`: light, dark, or the system's again.
-    func useColorScheme(_ theme: ColorScheme)
+    /// Shows the whole application in `theme`: light, dark, or the system's again where nil.
+    func useColorScheme(_ theme: ColorScheme?)
 
     /// Draws the application's controls in `accent` - the platform's again where nil - where the user chooses no
     /// accent on the platform: whether it took it.

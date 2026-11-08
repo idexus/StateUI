@@ -21,6 +21,11 @@ public final class Renderer {
     /// The registered application, still to be made: it is made at its first need - the first render, or the
     /// host reading the keys it keeps - so after the host has told what the device is.
     private var making: (() -> any Application)?
+
+    /// Identifies the application registration standing now; a host uses it to refuse a stale teardown.
+    public private(set) var applicationRegistration: UInt64 = 0
+
+    private var applicationEnd: HostTeardown?
     private var dirty = true
 
     /// The states written since the last render, by storage identity, each held
@@ -130,26 +135,36 @@ public final class Renderer {
     ///   what an earlier registration wrote into the application's session is
     ///   forgotten and the host has told what the device is.
     public func setApplication(_ application: @escaping @autoclosure () -> any Application) {
-        StandardEnvironment.application.forget()
-
-        // A new application is a new tree: the old one is let go, and every element of
-        // this one arrives.
-        // Design: docs/design/core/render.md#a-new-application
-        if let rendered {
-            differ.forget(rendered)
-            self.rendered = nil
-        }
-
-        unreading(rootReads)
-        rootReads = []
-
-        self.application = nil
+        _ = clearApplication(expected: applicationRegistration)
+        applicationRegistration += 1
+        applicationEnd = nil
         making = application
-
-        // The scene launch opens, its window waiting for the platform's first (OpenScenes.swift).
-        OpenScenes.shared.reset()
-
         setNeedsBuild()
+    }
+
+    /// Removes the application under `registration`, releasing its tree and starting its lifecycle cleanup once.
+    /// A registration no longer standing changes nothing. A repeated call returns the same teardown to await.
+    /// Design: docs/design/core/render.md#ending-an-application
+    public func clearApplication(expected registration: UInt64) -> HostTeardown {
+        guard registration == applicationRegistration else { return HostTeardown() }
+        if let applicationEnd { return applicationEnd }
+        let ending = HostTeardown()
+        applicationEnd = ending
+        ending.collect {
+            StandardEnvironment.application.forget()
+            if let rendered {
+                differ.forget(rendered)
+                self.rendered = nil
+            }
+            unreading(rootReads)
+            rootReads = []
+            application = nil
+            making = nil
+            OpenScenes.shared.reset()
+            clearInvalidation()
+            for handler in differ.takeFired() { run(handler, teardown: ending) }
+        }
+        return ending
     }
 
     /// The registered application, made the first time it is needed.
@@ -455,11 +470,11 @@ public final class Renderer {
     /// Shown until an application registers, in the shape a real one has.
     private static var unregistered: Node {
         var label = Node(contract: TextContract.self)
-        label.write(TextualElementContract.text, "StateUI: no application registered")
+        label.write(TextElementContract.text, "StateUI: no application registered")
 
         let page = Node(contract: PageContract.self, children: [label])
-        let window = Node(contract: WindowContract.self, id: "window 1", children: [page])
-        let scene = Node(contract: SceneContract.self, id: "1", children: [window])
+        let window = Node(contract: WindowContract.self, id: OwnKey.window(kind: nil, serial: 1), children: [page])
+        let scene = Node(contract: SceneContract.self, id: OwnKey.scene("1"), children: [window])
 
         return Node(contract: ApplicationContract.self, children: [scene])
     }

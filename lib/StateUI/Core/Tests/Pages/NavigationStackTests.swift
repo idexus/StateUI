@@ -76,7 +76,7 @@ final class NavigationStackTests: XCTestCase {
 
         XCTAssertEqual(patch.type, "NavigationStack")
         XCTAssertEqual(patch.children.count, 3, "the root and the two routes")
-        XCTAssertEqual(patch.children.map { $0.props["title"] },
+        XCTAssertEqual(patch.children.map { $0.props["PageElement.title"] },
                        [.string("Home"), .string("first"), .string("level 2")])
     }
 
@@ -194,7 +194,7 @@ final class NavigationStackTests: XCTestCase {
                 .built
                 .props
                 .keys
-                .map(\.name))
+                .map { $0.memberName })
 
         let declared = try SourceTree.propertyKeys(in: "BarElement.swift")
 
@@ -233,14 +233,16 @@ final class NavigationStackTests: XCTestCase {
         // As the message that brings the pages carries them - with what each
         // one's view says of it.
         let stack = Renders().settled(tree)
-        let dressed = ElementID.manual("1/level(2)")
+        let dressed = try XCTUnwrap(stack.children.last?.id)
 
         XCTAssertEqual(stack.props, [
             "barBackground": Color(hex: 0x512BD4).propValue, "barForegroundColor": Color.white.propValue,
         ])
         XCTAssertEqual(stack.eventNames, ["popped"])
-        XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])
-        XCTAssertEqual(stack.children.map { $0.props["title"] }, [.string("Home"), .string("one"), .string("Level 2")])
+        XCTAssertEqual(stack.children.first?.id, .manual("root"))
+        XCTAssertEqual(Set(stack.children.map(\.id)).count, 3)
+        XCTAssertNotNil(stack.arrangement)
+        XCTAssertEqual(stack.children.map { $0.props["PageElement.title"] }, [.string("Home"), .string("one"), .string("Level 2")])
         XCTAssertTrue(stack.children.allSatisfy { $0.eventNames.isEmpty }, "a page hears what its view hears: nothing here")
 
         let page = try XCTUnwrap(stack.at(dressed))

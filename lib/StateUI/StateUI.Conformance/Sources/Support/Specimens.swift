@@ -17,41 +17,41 @@
         switch element {
         case "Spinner": return dressing.dress(Spinner(true))
         case "Button": return dressing.dress(Button())
-        case "Canvas": return dressing.dress(Canvas())
+        case "Canvas": return dressing.dress(Bare(contract: CanvasContract.self))
         case "Capsule": return dressing.dress(Capsule())
-        case "CheckBox": return dressing.dress(CheckBox())
+        case "CheckBox": return dressing.dress(Bare(contract: CheckBoxContract.self))
         case "ColorPicker": return dressing.dress(ColorPicker(Color(hex: 0x4682B4)))
-        case "DatePicker": return dressing.dress(DatePicker())
+        case "DatePicker": return dressing.dress(Bare(contract: DatePickerContract.self))
         case "Separator": return dressing.dress(Separator())
         case "Ellipse": return dressing.dress(Ellipse())
         case "Grid": return dressing.dress(Grid())
         case "HStack": return dressing.dress(HStack())
-        case "Image": return dressing.dress(Image())
+        case "Image": return dressing.dress(Bare(contract: ImageContract.self))
         case "ItemsView": return dressing.dress(ItemsView(0..<20) { Text("Item \($0)") }.width(240).height(160))
         case "MotionLayout":
             return dressing.dress(AnyView(MotionLayout([Int](), parameters: State(wrappedValue: 0.0).projectedValue) { _ in Space() } placements: { _, _ in [] }))
         case "Text": return dressing.dress(Text())
-        case "Line": return dressing.dress(Line())
+        case "Line": return dressing.dress(Bare(contract: LineContract.self))
         case "Link": return dressing.dress(Link("Swift", address: "https://www.swift.org"))
         case "Map": return dressing.dress(Map())
-        case "Path": return dressing.dress(Path())
-        case "Picker": return dressing.dress(Picker())
-        case "Polygon": return dressing.dress(Polygon())
-        case "Polyline": return dressing.dress(Polyline())
-        case "ProgressBar": return dressing.dress(ProgressBar())
+        case "Path": return dressing.dress(Bare(contract: PathContract.self))
+        case "Picker": return dressing.dress(Picker(["One"], selection: State(wrappedValue: "One").projectedValue))
+        case "Polygon": return dressing.dress(Bare(contract: PolygonContract.self))
+        case "Polyline": return dressing.dress(Bare(contract: PolylineContract.self))
+        case "ProgressBar": return dressing.dress(Bare(contract: ProgressBarContract.self))
         case "Rectangle": return dressing.dress(Rectangle())
         case "Fill": return dressing.dress(Fill())
         case "ScrollView": return dressing.dress(ScrollView())
-        case "SearchField": return dressing.dress(SearchField())
-        case "Slider": return dressing.dress(Slider())
+        case "SearchField": return dressing.dress(Bare(contract: SearchFieldContract.self))
+        case "Slider": return dressing.dress(Bare(contract: SliderContract.self))
         case "Space": return dressing.dress(Space())
-        case "Stepper": return dressing.dress(Stepper())
-        case "Switch": return dressing.dress(Switch())
-        case "TextEditor": return dressing.dress(TextEditor())
-        case "TextField": return dressing.dress(TextField())
-        case "TimePicker": return dressing.dress(TimePicker())
+        case "Stepper": return dressing.dress(Bare(contract: StepperContract.self))
+        case "Switch": return dressing.dress(Bare(contract: SwitchContract.self))
+        case "TextEditor": return dressing.dress(Bare(contract: TextEditorContract.self))
+        case "TextField": return dressing.dress(Bare(contract: TextFieldContract.self))
+        case "TimePicker": return dressing.dress(Bare(contract: TimePickerContract.self))
         case "VStack": return dressing.dress(VStack())
-        case "WebView": return dressing.dress(WebView())
+        case "WebView": return dressing.dress(Bare(contract: WebViewContract.self))
         case "ZStack": return dressing.dress(ZStack())
         default: return nil
         }
@@ -243,5 +243,15 @@ struct Beside: Views {
 
     init(_ views: [any View]) {
         nodes = views.map(\.node)
+    }
+}
+
+/// A control of a contract holding nothing yet: what a case writes the control's purpose value onto, as it writes
+/// every other member.
+struct Bare: ElementView {
+    var node: Node
+
+    init<Declaration: ElementContract>(contract: Declaration.Type) {
+        node = Node(contract: contract)
     }
 }

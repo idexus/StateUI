@@ -1,4 +1,2 @@
-# revision 2.1
+# revision 3.1
 CheckBox: ✅
-CheckBox.isOn: ✅
-CheckBox.toggled: ✅

@@ -44,20 +44,20 @@ extension UIKitRegistrations {
         }
         registry.add(PolygonContract.self, create: { _ in UIKitShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolygonContract.points] ?? [], closed: true),
-                    evenOdd: (values[PolygonContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: true),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
         registry.add(PolylineContract.self, create: { _ in UIKitShapeView() }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 paint(view, values)
                 view.draw(authored(
-                    ShapeArithmetic.curves(through: values[PolylineContract.points] ?? [], closed: false),
-                    evenOdd: (values[PolylineContract.fillRule] ?? .evenOdd) == .evenOdd, values))
+                    ShapeArithmetic.curves(through: values[PointsShapeContract.points] ?? [], closed: false),
+                    evenOdd: (values[PointsShapeContract.fillRule] ?? .evenOdd) == .evenOdd, values))
             }
         }
     }
@@ -89,7 +89,7 @@ extension UIKitRegistrations {
     private static func authored<Realized: ElementContract>(
         _ curves: [HostCurveCommand], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> UIKitShapeView.Geometry {
-        .authored(curves, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: transform(values))
+        .authored(curves, evenOdd: evenOdd, aspect: values[ContentModeElementContract.contentMode] ?? .fit, transform: transform(values))
     }
 
     /// The shape's own transform's six numbers, where it has one that is all numbers.

@@ -96,7 +96,11 @@ value, which the host reads as a jump. A report naming every lane may change
 the value's length, as a text does.
 
 A Swift host reports a journey by its parts (`HostJourneyUpdate`): a frame is
-value and velocity; aiming, stopping and landing add the destination.
+value and velocity; aiming, stopping and landing add the destination. The
+storage hears the report once the board holds it; a value or a destination
+the state refuses (state.md, kept state) it puts back, and the next cycle
+hands the host the put-back as any write - a frame of value and velocity is
+no new destination and is never refused.
 
 A journey's report leaves every lane written since the host last read it. The
 host speaks of the journey it was handed: a travel landing in the frame after a
@@ -107,6 +111,12 @@ state would read the old destination while the control stood clamped at a new
 range's end. The write stands, the next cycle hands it over, and the travel
 goes on from where the host landed. A text, a plain value or a gesture lays
 what it reports.
+
+A journey an engine animates takes no report. The host was handed the engine's
+frame as a destination under no law (journeys.md, the law on the image), so it
+lands there and says so: laid, that landing would put the frame over the
+destination the author wrote and a still speed over the engine's, and the
+engine, reading both back, would stop where it stands.
 
 ## The per-frame read
 
@@ -123,7 +133,7 @@ law (journeys.md).
 ## A start is a gap
 
 The first cycle, and any cycle after a silence longer than
-`EngineCycle.mostElapsed` (100 ms), is a start. An application that was
+`EngineCycle.mostElapsedSeconds` (a tenth of a second), is a start. An application that was
 asleep has a pile of reports and no elapsed time anybody can act on, and an
 engine handed a gap of minutes would move whatever it moves through the wall.
 The start moves every engine's clock to now, and an engine with a reason to
@@ -264,8 +274,8 @@ that imports Foundation.
                              and sleeping for the interval adds every one up
   one run token              start() retires the previous loop, so returning to
                              a page never leaves two loops counting
-  each property a state      `ticks`, `isRunning`, `limit`, `isRepeating` and the
-                             interval are `@State`s of the ticker, so a tick
+  each property a state      `ticks`, `isRunning`, `limit` and the interval
+                             are `@State`s of the ticker, so a tick
                              rebuilds the views that read the count and no
                              other, and a run superseded writes none of them
   one thread                 the count, the running flag and the run change

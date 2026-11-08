@@ -89,16 +89,17 @@ final class KeyboardShortcutsTests: XCTestCase {
     }
 
     /// A button's role gives it a key unless it states one of its own: Return its window's main action, Escape the
-    /// way out, none an action destroying something.
+    /// way out, none an action destroying something or an ordinary one.
     func testARolesKeyPressesTheButtonUnlessItStatesOne() throws {
         func button(_ id: String, _ role: ButtonRole, _ shortcut: KeyboardShortcut? = nil) -> HostPatch {
             var made = element(id, .button, shortcut)
-            made.properties[.role] = role.propValue
+            made.properties[ButtonContract.role.token] = role.propValue
             return made
         }
         let returnKey = KeyboardShortcut(.return, modifiers: []), escape = KeyboardShortcut(.escape, modifiers: [])
         let runtime = mount([
             button("save", .primary), button("cancel", .cancel), button("delete", .destructive),
+            button("open", .normal),
             button("send", .primary, KeyboardShortcut("s")),
         ])
         let root = try XCTUnwrap(runtime.tree.root)

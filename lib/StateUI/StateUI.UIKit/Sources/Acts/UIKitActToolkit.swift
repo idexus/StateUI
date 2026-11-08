@@ -96,7 +96,7 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// Shows every window in `theme`: each window's own style, unspecified for the system's.
-    func useColorScheme(_ theme: ColorScheme) {
+    func useColorScheme(_ theme: ColorScheme?) {
         for (_, controller) in renderer.roster.windows {
             controller.window?.overrideUserInterfaceStyle = Self.style(theme)
         }
@@ -115,11 +115,11 @@ final class UIKitActToolkit: ActToolkit {
     }
 
     /// UIKit's style for `theme`.
-    static func style(_ theme: ColorScheme) -> UIUserInterfaceStyle {
+    static func style(_ theme: ColorScheme?) -> UIUserInterfaceStyle {
         switch theme {
-        case .light: .light
-        case .dark: .dark
-        case .system: .unspecified
+        case .light?: .light
+        case .dark?: .dark
+        case nil: .unspecified
         }
     }
 

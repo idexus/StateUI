@@ -62,10 +62,10 @@ private struct SummaryPage: View {
             ItemsView(parcels, id: \.self) { Text("Parcel \($0)") }.gridRow(1)
             Text("Parcels: \(parcels.count)").gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .toolbar { ToolbarButton("Report").showsText(true) }
         .title("Summary")
-        .onAppearing(.cancelPrevious) { await load() }
+        .onAppearing(policy: .cancelPrevious) { await load() }
         .onChanged(range, policy: .cancelPrevious) { await load() }
     }
 

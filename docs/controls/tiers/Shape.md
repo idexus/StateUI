@@ -5,15 +5,14 @@
 What every drawn shape has: the line along it, how it fits its room, and a transform of its own drawing.
 
 ```swift
-Line()
-    .to(Point(120, 0))
+Line(from: Point(0, 0), to: Point(120, 0))
     .stroke(.black)
     .lineWidth(2)
     .dash([4, 2])
     .lineCap(.round)
 ```
 
-Wears: [View](View.md)
+Wears: [View](View.md) · [ContentModeElement](ContentModeElement.md)
 
 Worn by: [Capsule](../Capsule.md) · [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)
 
@@ -23,7 +22,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `contentMode` | property | `ContentMode` | native |
 | `geometryTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |
 | `dashPhase` | property | `Double` | stateUI |

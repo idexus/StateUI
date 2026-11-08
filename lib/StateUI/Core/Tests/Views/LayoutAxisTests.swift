@@ -45,7 +45,7 @@ final class LayoutAxisTests: XCTestCase {
                     handed.tables.append(table)
                     return [Placement(Rect(0, 0, 40, 40))]
                 }
-                .motion(motion)
+                .parameterMotion(motion)
             )
             .node
         }
@@ -74,7 +74,7 @@ final class LayoutAxisTests: XCTestCase {
     /// AN AXIS WITH NO SNAPS RESTS WHERE THE HAND LEAVES IT, and is named nothing while the hand holds it.
     func testAnAxisWithNoSnapsRestsWhereTheHandLeavesIt() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -95,7 +95,7 @@ final class LayoutAxisTests: XCTestCase {
             Renderer.shared.clearStates()
             let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
             let built = tree(table, handed, motion: motion) {
-                $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3)
+                $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3)
             }
             _ = bench.laid(renders, built)
 
@@ -123,8 +123,8 @@ final class LayoutAxisTests: XCTestCase {
     func testLetGoEveryAxisIsNamedWhereItRestsAndOneJourneyGoesOnFromTheHands() throws {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed, motion: .spring(response: .milliseconds(420), damping: 0.82)) {
-            $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3)
-                .axis(\.turn, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...3)
+            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3)
+                .axis(\.turn, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...3)
         }
         let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
@@ -148,7 +148,7 @@ final class LayoutAxisTests: XCTestCase {
     func testPastItsEndTheAxisComesBackOntoTheEnd() {
         bench.walks = true
         let (table, handed, renders) = (State(wrappedValue: Table(x: 3)), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -164,7 +164,7 @@ final class LayoutAxisTests: XCTestCase {
     /// A THROW GOES ON TO WHERE IT WOULD END, and no farther than the range's end.
     func testAThrowGoesOnToWhereItWouldEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)
@@ -184,7 +184,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisSnappingToItsLimitsRestsOnTheNearerEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .endpoints)
+            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .endpoints)
         }
         _ = bench.laid(renders, built)
 
@@ -208,7 +208,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisThatComesRoundHasNoEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, periodic: true)
+            $0.axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, periodic: true)
         }
         _ = bench.laid(renders, built)
 
@@ -227,7 +227,7 @@ final class LayoutAxisTests: XCTestCase {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
             $0.axis(
-                \.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(0.25),
+                \.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...1, snaps: .every(0.25),
                 periodic: true)
         }
         _ = bench.laid(renders, built)
@@ -246,8 +246,8 @@ final class LayoutAxisTests: XCTestCase {
     func testOneInputMovesSeveralAxes() throws {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
-                .axis(\.sky, input: .scroll(.horizontal, pointsPerUnit: 200), range: 0...3)
+            $0.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
+                .axis(\.sky, input: .scroll(.horizontal, lengthPerUnit: 200), range: 0...3)
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
         XCTAssertEqual(layout.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
@@ -320,7 +320,7 @@ final class LayoutAxisTests: XCTestCase {
     /// A SWIPE GIVEN NO SNAPS swipes from end to end, and says why.
     func testASwipeGivenNoSnapsSwipesFromEndToEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
-        let built = tree(table, handed) { $0.axis(\.x, input: .swipe(.horizontal, pointsPerUnit: 100), range: 0...3) }
+        let built = tree(table, handed) { $0.axis(\.x, input: .swipe(.horizontal, lengthPerUnit: 100), range: 0...3) }
         _ = bench.laid(renders, built)
 
         bench.hand(renders, built, .began)

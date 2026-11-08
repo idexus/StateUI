@@ -48,7 +48,7 @@ final class LayoutKeyframeTests: XCTestCase {
                 asked.phases.append(at)
                 return Self.poses(at, gap: gap?.wrappedValue ?? 10)
             }
-            .motion(.eased(.milliseconds(160), curve: .linear))
+            .parameterMotion(.eased(.milliseconds(160), curve: .linear))
             return declared(gap.map { layout.following($0.projectedValue) } ?? layout).node
         }
     }
@@ -209,7 +209,7 @@ final class LayoutKeyframeTests: XCTestCase {
                         return Self.poses(at)
                     }
                 return layout
-                    .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, keyframes: .every(1),
+                    .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, keyframes: .every(1),
                           snaps: .every(1))
                     .node
             }

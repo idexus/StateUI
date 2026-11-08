@@ -1,0 +1,81 @@
+# revision 2.1
+Button.pointerEntered: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
+Button.pointerExited: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
+Canvas.pointerEntered: ✓ hover on Canvas: the view's listening handed the recognizer's states, no touch sent
+Canvas.pointerExited: ✓ hover on Canvas: the view's listening handed the recognizer's states, no touch sent
+Capsule.pointerEntered: ✓ hover on Capsule: the view's listening handed the recognizer's states, no touch sent
+Capsule.pointerExited: ✓ hover on Capsule: the view's listening handed the recognizer's states, no touch sent
+CheckBox.pointerEntered: ✓ hover on CheckBox: the view's listening handed the recognizer's states, no touch sent
+CheckBox.pointerExited: ✓ hover on CheckBox: the view's listening handed the recognizer's states, no touch sent
+ColorPicker.pointerEntered: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
+ColorPicker.pointerExited: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
+DatePicker.pointerEntered: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
+DatePicker.pointerExited: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
+Ellipse.pointerEntered: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
+Ellipse.pointerExited: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerEntered: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Fill.pointerExited: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerEntered: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.pointerExited: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
+HStack.pointerEntered: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.pointerExited: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
+Image.pointerEntered: ✓ hover on Image: the view's listening handed the recognizer's states, no touch sent
+Image.pointerExited: ✓ hover on Image: the view's listening handed the recognizer's states, no touch sent
+ItemsView.pointerEntered: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
+ItemsView.pointerExited: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
+Line.pointerEntered: ✓ hover on Line: the view's listening handed the recognizer's states, no touch sent
+Line.pointerExited: ✓ hover on Line: the view's listening handed the recognizer's states, no touch sent
+Link.pointerEntered: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
+Link.pointerExited: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
+Map.pointerEntered: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+Map.pointerExited: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerEntered: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerExited: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+Path.pointerEntered: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
+Path.pointerExited: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
+Picker.pointerEntered: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
+Picker.pointerExited: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
+Polygon.pointerEntered: ✓ hover on Polygon: the view's listening handed the recognizer's states, no touch sent
+Polygon.pointerExited: ✓ hover on Polygon: the view's listening handed the recognizer's states, no touch sent
+Polyline.pointerEntered: ✓ hover on Polyline: the view's listening handed the recognizer's states, no touch sent
+Polyline.pointerExited: ✓ hover on Polyline: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.pointerEntered: ✓ hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+ProgressBar.pointerExited: ✓ hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+Rectangle.pointerEntered: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.pointerExited: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
+ScrollView.pointerEntered: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
+ScrollView.pointerExited: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
+SearchField.pointerEntered: ✓ hover on SearchField: the view's listening handed the recognizer's states, no touch sent
+SearchField.pointerExited: ✓ hover on SearchField: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerEntered: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Separator.pointerExited: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
+Slider.pointerEntered: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
+Slider.pointerExited: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
+Space.pointerEntered: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
+Space.pointerExited: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerEntered: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Spinner.pointerExited: ✓ hover on Spinner: the view's listening handed the recognizer's states, no touch sent
+Stepper.pointerEntered: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
+Stepper.pointerExited: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
+Switch.pointerEntered: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
+Switch.pointerExited: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
+Text.pointerEntered: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+Text.pointerExited: ✓ hover on Text: the view's listening handed the recognizer's states, no touch sent
+TextEditor.pointerEntered: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
+TextEditor.pointerExited: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
+TextField.pointerEntered: ✓ hover on TextField: the view's listening handed the recognizer's states, no touch sent
+TextField.pointerExited: ✓ hover on TextField: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerEntered: ✓ hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+TimePicker.pointerExited: ✓ hover on TimePicker: the view's listening handed the recognizer's states, no touch sent
+ToolbarButton.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarButton.pointerExited: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerExited: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerExited: – A bar's items stand in the system's own look.
+VStack.pointerEntered: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.pointerExited: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerEntered: ✓ hover on WebView: the view's listening handed the recognizer's states, no touch sent
+WebView.pointerExited: ✓ hover on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerEntered: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.pointerExited: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent

@@ -13,47 +13,47 @@ extension AppKitRegistrations {
         registry.add(SliderContract.self, create: { reports in
             let slider = AppKitSliderView()
             slider.onValueChanged = { moved in
-                reports.report(SliderContract.value, moved, as: SliderContract.valueChanged)
+                reports.report(RangeElementContract.value, moved, as: RangeElementContract.valueChanged)
             }
-            slider.onPressed = { reports.raise(SliderContract.pressed) }
-            slider.onReleased = { reports.raise(SliderContract.released) }
+            slider.onPressed = { reports.raise(PressElementContract.pressed) }
+            slider.onReleased = { reports.raise(PressElementContract.released) }
             return slider
         }, members: { slider in
             slider.applies(
-                SliderContract.value, SliderContract.minimum, SliderContract.maximum, TintElementContract.tint,
-                VisualElementContract.isEnabled) { view, values in
+                RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, TintElementContract.tint,
+                EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.written(
-                        SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
+                        RangeElementContract.value, within: [RangeElementContract.minimum, RangeElementContract.maximum],
                         standing: view.doubleValue),
-                    minimum: values[SliderContract.minimum] ?? 0,
-                    maximum: values[SliderContract.maximum] ?? 1,
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
                     tint: values[TintElementContract.tint].flatMap { nsColor($0.propValue) },
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
-            slider.raises(SliderContract.valueChanged)
-            slider.raises(SliderContract.pressed)
-            slider.raises(SliderContract.released)
+            slider.declares(RangeElementContract.valueChanged)
+            slider.declares(PressElementContract.pressed)
+            slider.declares(PressElementContract.released)
         })
 
         registry.add(StepperContract.self, create: { reports in
             let stepper = AppKitStepperView()
             stepper.onValueChanged = { stepped in
-                reports.report(StepperContract.value, stepped, as: StepperContract.valueChanged)
+                reports.report(RangeElementContract.value, stepped, as: RangeElementContract.valueChanged)
             }
             return stepper
         }, members: { stepper in
             stepper.applies(
-                StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
-                VisualElementContract.isEnabled) { view, values in
+                RangeElementContract.value, RangeElementContract.minimum, RangeElementContract.maximum, StepperContract.step,
+                EnabledElementContract.isEnabled) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.doubleValue),
-                    minimum: values[StepperContract.minimum] ?? 0,
-                    maximum: values[StepperContract.maximum] ?? 100,
-                    step: values[StepperContract.step] ?? 1,
-                    enabled: values[VisualElementContract.isEnabled] ?? true)
+                    minimum: values.ends.minimum,
+                    maximum: values.ends.maximum,
+                    step: values.step,
+                    enabled: values[EnabledElementContract.isEnabled] ?? true)
             }
-            stepper.raises(StepperContract.valueChanged)
+            stepper.declares(RangeElementContract.valueChanged)
         })
     }
 }

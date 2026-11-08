@@ -19,7 +19,7 @@ final class DiffTests: XCTestCase {
 
         let patch = renders.render(stack([label("one", id: "a")], id: "root"))
 
-        XCTAssertEqual(patch.props["spacing"], nil)
+        XCTAssertEqual(patch.props["Stack.spacing"], nil)
         XCTAssertTrue(patch.arranged, "a first render says how the children stand")
         XCTAssertEqual(patch.children.count, 1)
         XCTAssertEqual(patch.child("a")?.props["text"], .string("one"))
@@ -176,9 +176,9 @@ final class DiffTests: XCTestCase {
         }.node)
         Renders().render(Grid { Text("in a grid").gridColumn(1) }.node)
 
-        XCTAssertTrue(hasComplained("Text's gridRow places it in a Grid, and it stands in a VStack"))
-        XCTAssertTrue(hasComplained("Text's area places it in a ZStack, and it stands in a VStack"))
-        XCTAssertFalse(hasComplained("Text's gridColumn places it in a Grid, and it stands in a Grid"))
+        XCTAssertTrue(hasComplained("Text's \(Prop.gridRow) places it in a Grid, and it stands in a VStack"))
+        XCTAssertTrue(hasComplained("Text's \(Prop.area) places it in a ZStack, and it stands in a VStack"))
+        XCTAssertFalse(hasComplained("Text's \(Prop.gridColumn) places it in a Grid, and it stands in a Grid"))
     }
 
     func testAChangedTypeReplacesTheControl() {
@@ -502,5 +502,8 @@ extension DiffTests {
         let ids = patch.children.map { $0.id }
         XCTAssertEqual(ids.count, 2)
         XCTAssertNotEqual(ids[0], ids[1], "one identity is not given to two controls")
+        for case .manual(let name) in ids {
+            XCTAssertFalse(name.contains("\u{0}"), "\(name) ends early as a C string")
+        }
     }
 }

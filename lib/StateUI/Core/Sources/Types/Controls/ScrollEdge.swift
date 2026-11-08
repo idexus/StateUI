@@ -17,3 +17,5 @@ public enum ScrollEdge: Int32, Sendable {
 }
 
 extension ScrollEdge: HostRepresentable {}
+
+extension ScrollEdge: StateChoice {}

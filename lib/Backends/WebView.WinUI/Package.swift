@@ -6,7 +6,7 @@ import PackageDescription
 // application's own controls. A package of its own because WebView2 needs a
 // runtime the platform does not ship with WinUI: an application showing a web
 // view on WinUI depends on it from its WinUI head and calls
-// StateUIWebViewWinUI.register() before it runs. The relay includes the
+// WebViewWinUI.register() before it runs. The relay includes the
 // projection the WinUI host generated.
 let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
 

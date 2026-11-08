@@ -10,30 +10,30 @@ extension AndroidRegistrations {
     static func toggles(_ registry: Registry<AndroidView>) {
         registry.add(SwitchContract.self, create: { reports in
             let toggle = AndroidSwitchView()
-            toggle.onToggled = { on in reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled) }
+            toggle.onToggled = { on in reports.report(ToggleElementContract.isOn, on, as: ToggleElementContract.toggled) }
             return toggle
         }, members: { toggle in
-            toggle.property(SwitchContract.isOn) { view, on in view.setOn(on ?? false) }
-            toggle.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            toggle.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
+            toggle.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             toggle.applies(TextMembers.captionMembers) { view, values in
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
             }
-            toggle.raises(SwitchContract.toggled)
+            toggle.declares(ToggleElementContract.toggled)
         })
         registry.add(CheckBoxContract.self, create: { reports in
             let box = AndroidCheckBoxView()
-            box.onToggled = { on in reports.report(CheckBoxContract.isOn, on, as: CheckBoxContract.toggled) }
+            box.onToggled = { on in reports.report(ToggleElementContract.isOn, on, as: ToggleElementContract.toggled) }
             return box
         }, members: { box in
-            box.property(CheckBoxContract.isOn) { view, on in view.setOn(on ?? false) }
-            box.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            box.property(ToggleElementContract.isOn) { view, on in view.setOn(on ?? false) }
+            box.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
             box.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
             box.applies(TextMembers.captionMembers) { view, values in
                 view.setText(TextMembers.caption(values))
                 view.setLook(TextMembers.captionLook(values))
             }
-            box.raises(CheckBoxContract.toggled)
+            box.declares(ToggleElementContract.toggled)
         })
     }
 }

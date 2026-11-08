@@ -41,7 +41,7 @@ extension WebRenderer {
         clock: TestClock? = nil, reducesMotion: Bool = false, keeping: Bool = false,
         application: @escaping @MainActor () -> any Application
     ) -> WebRenderer {
-        shared?.leave()
+        shared?.finish()
         if !keeping { forgetWhatIsKept() }
         Renderer.shared.setApplication(application())
         let renderer = WebRenderer(
@@ -57,11 +57,13 @@ extension WebRenderer {
         try? WebBrowser.run("localStorage.clear()")
     }
 
-    /// The host leaves the page: what it was told late settles into no window of the next host's, and the page's
-    /// listeners are let go of.
-    func leave() {
+    /// Ends the host: it leaves the page, what it was told late settles into no window of the next host's, and the
+    /// page's listeners are let go of.
+    func finish() {
         runtime.tree.root?.leave()
         runtime.presenter = nil
+        frameClock.held = false
+        if Self.shared === self { Self.shared = nil }
         for controller in roster.controllers { controller.close() }
         for listener in pageListeners { WebRelay.forget(listener) }
     }

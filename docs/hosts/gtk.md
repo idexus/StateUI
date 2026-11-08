@@ -22,7 +22,8 @@ is set to.
 ```text
 lib/StateUI/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
-  Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config
+  Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config, and GLib's flags
+                             by names every GLib resolves: the C module a head imports too
   Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
                              and the driver every conformance run on GTK goes through
 .scripts/GTK/
@@ -52,7 +53,7 @@ The host builds on Linux, on arm64 or x64:
 - WebKitGTK 6.0 with its headers - `libwebkitgtk-6.0-dev` on Ubuntu,
   `webkitgtk-6.0` on Arch - for the web view's backend,
   `lib/Backends/WebView.GTK`: an application showing a web view depends on it
-  from its GTK head and calls `StateUIWebViewGTK.register()` before the host
+  from its GTK head and calls `WebViewGTK.register()` before the host
   runs, and the host's own tests register it to prove the web view;
 - a desktop session to show the windows in, the test suite's included.
 
@@ -66,6 +67,7 @@ fails it. The Gallery's head:
 ```swift listing gtk.md.head
 // Platforms/GTK/main.swift
 import GalleryUI
+import StateUI
 import StateUIGTK
 import StateUIWebViewGTK
 
@@ -77,9 +79,9 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
-StateUIWebViewGTK.register()
+WebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
-StateUIGTK.run(applicationID: "com.stateui.gallery")
+GTKHost.run(applicationID: "com.stateui.gallery")
 ```
 
 The name is the one the desktop knows the application by. GTK keeps one
@@ -98,7 +100,7 @@ as HelloWorld does.
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its GTK head. Registrations run before
-`StateUIGTK.run`, on the main thread. Registering a contract or an act again
+`GTKHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration. Every registration is written against the
 application's own contracts, so they are `public`: the host lives in a module
 of its own and must see them. The Gallery's GTK halves are in
@@ -113,8 +115,8 @@ realizes:
 ```swift quote
 public static func add<Realized: ElementContract, Made: GTKControl>(
     _ contract: Realized.Type,
-    create: @escaping (GTKReports<Realized>) -> Made,
-    members: (GTKRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (GTKRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
@@ -123,7 +125,7 @@ public static func add<Realized: ElementContract, Made: GTKControl>(
   a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the control raises.
+  described, and `declares(_:)` records an event the control raises.
 
 ```swift listing gtk.md.control
 // Platforms/GTK/Host/TrafficLightWidget.swift
@@ -141,7 +143,7 @@ extension TrafficLightWidget {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -183,7 +185,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarWidget
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -193,7 +195,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`GTKChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 widget of its own. The Gallery's [Web](web.md#children-a-control-draws) and
@@ -211,8 +213,18 @@ What the user sees there is the application's own registration. The
 `WebView` is a backend, as [Requirements](#requirements) says: the
 application's manifest depends on the package `lib/Backends/WebView.GTK` by
 its path and its GTK head on that package's `StateUIWebViewGTK`, and the head
-calls `StateUIWebViewGTK.register()` before `StateUIGTK.run`, as the
+calls `WebViewGTK.register()` before `GTKHost.run`, as the
 Gallery's does. Until then the host realizes no web view.
+
+### GTK from a head
+
+A head calls GTK through `CStateUIGTK`, the host's C module, imported beside
+`StateUIGTK`: GTK 4's and libadwaita's headers as Swift imports them, and
+GLib's flags under `STATEUI_` names every GLib resolves. From 2.86 GLib marks
+its flags as flag enumerations, which Swift imports as option sets naming their
+members itself, so `G_SIGNAL_MATCH_DATA` is no name a head can count on and
+`STATEUI_SIGNAL_MATCH_DATA` is. The module is part of what the host offers a
+head, and its header says what it holds.
 
 ### An act
 
@@ -245,7 +257,7 @@ refused by name.
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, from any thread; `StateUIEvents.raises` declares it before the host
+element, from any thread; `StateUIEvents.declares` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
 ```swift listing gtk.md.event
@@ -254,7 +266,7 @@ runs, so a handler listening for one no source raises is told so.
 @MainActor
 static func start() {
     // A handler listening for an event nothing declared is told, once, that it will not hear it.
-    StateUIEvents.raises(GalleryContract.batteryChanged)
+    StateUIEvents.declares(GalleryContract.batteryChanged)
 
     // UPower's display device signals each change of its properties, the battery's among them.
     guard let device = GalleryPower.device else { return }

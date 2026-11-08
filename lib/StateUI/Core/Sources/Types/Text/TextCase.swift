@@ -12,9 +12,6 @@ public enum TextCase: Int32, Sendable {
     /// As written.
     case none = 0
 
-    /// As the platform sees fit, which everywhere is as written.
-    case `default` = 1
-
     /// all in lower case.
     case lowercase = 2
 

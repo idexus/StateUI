@@ -3,12 +3,12 @@
 
 /// What every view a layout positions has: where it sits in its layout, the
 /// space kept around it, and the gestures, drags and frame reports it answers.
-public enum ViewContract: Contract {
+public enum ViewContract: Tier {
     /// The tier's name.
     public static let name = "View"
 
     /// Every view is drawn.
-    public static let tiers: [any Contract.Type] = [VisualElementContract.self]
+    public static let tiers: [any Tier.Type] = [VisualElementContract.self, HoverElementContract.self]
 
     /// Whether the view accepts what is dropped on it.
     public static let allowsDrop = ElementProperty<Self, Bool>("allowsDrop", layer: .native, cleared: false)
@@ -16,11 +16,11 @@ public enum ViewContract: Contract {
     /// The part of the enclosing ZStack's room the view stands in.
     public static let area = ElementProperty<Self, Area>("area", layer: .structure, travels: false)
 
-    /// A drag left the view without being let go.
-    public static let dragLeave = ElementEvent<Self, Void>("dragLeave", layer: .native)
+    /// A drag came over the view, not yet let go.
+    public static let dragEntered = ElementEvent<Self, Void>("dragEntered", layer: .native)
 
-    /// A drag is over the view, not yet let go.
-    public static let dragOver = ElementEvent<Self, Void>("dragOver", layer: .native)
+    /// A drag left the view without being let go.
+    public static let dragExited = ElementEvent<Self, Void>("dragExited", layer: .native)
 
     /// A drag of the view is starting.
     public static let dragStarting = ElementEvent<Self, Void>("dragStarting", layer: .native)
@@ -32,7 +32,7 @@ public enum ViewContract: Contract {
     public static let dragText = ElementProperty<Self, String>("dragText", layer: .native, cleared: false)
 
     /// Something was dropped on the view, with the text it carried.
-    public static let drop = ElementEvent<Self, String>("drop", layer: .native)
+    public static let dropped = ElementEvent<Self, String>("dropped", layer: .native)
 
     /// The kinds of file the view takes when the user drops files on it from the system - any file where it lists
     /// none; it takes no files where it says nothing.
@@ -108,12 +108,6 @@ public enum ViewContract: Contract {
     public static let rotationUpdated = ElementEvent<Self, (GesturePhase, Double, Double)>(
         "rotationUpdated", layer: .native)
 
-    /// A pointer entered the view.
-    public static let pointerEntered = ElementEvent<Self, Void>("pointerEntered", layer: .native)
-
-    /// A pointer left the view.
-    public static let pointerExited = ElementEvent<Self, Void>("pointerExited", layer: .native)
-
     /// A pointer moved over the view, where the platform says where.
     public static let pointerMoved = ElementEvent<Self, Point?>("pointerMoved", layer: .native)
 
@@ -124,8 +118,8 @@ public enum ViewContract: Contract {
     public static let pointerReleased = ElementEvent<Self, Point?>("pointerReleased", layer: .native)
 
     /// Which ways a swipe on the view is listened for.
-    public static let swipeDirection = ElementProperty<Self, SwipeDirection>(
-        "swipeDirection", layer: .structure, cleared: false)
+    public static let swipeDirections = ElementProperty<Self, SwipeDirections>(
+        "swipeDirections", layer: .structure, cleared: false)
 
     /// How far a swipe must travel to count, in device units.
     public static let swipeThreshold = ElementProperty<Self, Double>(
@@ -146,12 +140,5 @@ public enum ViewContract: Contract {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        allowsDrop, area, dragLeave,
-        dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
-        gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount,
-        panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
-        pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,
-        tapCount, tapped, verticalAlignment,
-    ]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, isDraggable, margin, panTouchCount, panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, verticalAlignment]
 }

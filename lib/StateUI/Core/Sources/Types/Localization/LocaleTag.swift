@@ -9,14 +9,17 @@
 ///     tag.region      // "RS"
 ///
 /// Written with `-` or `_` and in any case, it is kept in the standard spelling: the language in lower case, the
-/// script capitalized, the region in capitals. Text that is no tag is kept as written, and `isValid` says so.
+/// script capitalized, the region in capitals. It is read as BCP 47 writes it, in ASCII letters and digits: a
+/// language of two or three letters and its extended languages, then a script, a region, variants, extensions and a
+/// private use, each where it stands, a variant and a singleton once. Text that is no tag is kept as written, and
+/// `isValid` says so.
 ///
 /// Design: docs/design/types/localization.md#a-language-is-a-tag
 public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
     /// The tag in its standard spelling: `"zh-Hant-TW"`.
     public let identifier: String
 
-    /// The language, in lower case: `"zh"`; empty where the text is no tag.
+    /// The language, in lower case: `"zh"`; empty where the text is no tag, or a private use alone (`x-…`).
     public let language: String
 
     /// The script, capitalized, where the tag says one: `"Hant"`.
@@ -40,7 +43,7 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
         }
 
         (language, script, region, isValid) = (read.language, read.script, read.region, true)
-        identifier = ([read.language] + [read.script, read.region].compactMap { $0 } + read.rest).joined(separator: "-")
+        identifier = read.spelled.joined(separator: "-")
     }
 
     /// A tag written as a literal: `"pl-PL"`.
@@ -60,28 +63,62 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
     }
 
     /// The way the tag's script is written: right to left for Arabic, Hebrew and their kin.
-    public var direction: LayoutDirection {
+    public var writingDirection: WritingDirection {
         Self.rightToLeft.contains(likelyScript) ? .rightToLeft : .leftToRight
     }
 
-    private static func read(_ parts: [String]) -> (language: String, script: String?, region: String?, rest: [String])? {
-        guard let first = parts.first, (2...3).contains(first.count), first.allSatisfy(\.isLetter),
-              parts.allSatisfy({ !$0.isEmpty && $0.count <= 8 && $0.allSatisfy { $0.isLetter || $0.isNumber } })
-        else { return nil }
+    /// What a tag's parts say, each in its standard spelling and in order; nil where they are no tag.
+    /// Design: docs/design/types/localization.md#a-language-is-a-tag
+    private static func read(
+        _ parts: [String]
+    ) -> (language: String, script: String?, region: String?, spelled: [String])? {
+        // ASCII as written: a letter outside it may lower into it (the Kelvin sign into `k`).
+        guard parts.allSatisfy(isPart) else { return nil }
+        let parts = parts.map { $0.lowercased() }
+        guard let first = parts.first else { return nil }
 
-        var rest = parts.dropFirst()
-        var script: String?
-        var region: String?
-        if let next = rest.first, next.count == 4, next.allSatisfy(\.isLetter) {
-            script = next.prefix(1).uppercased() + next.dropFirst().lowercased()
-            rest = rest.dropFirst()
+        // A private use alone names no language.
+        if first == "x" { return parts.count > 1 ? ("", nil, nil, parts) : nil }
+        guard (2...3).contains(first.count), first.allSatisfy(\.isLetter) else { return nil }
+
+        var at = 1
+        var spelled = [first]
+        func take(_ fits: (String) -> Bool, _ spelling: (String) -> String = { $0 }) -> String? {
+            guard at < parts.count, fits(parts[at]) else { return nil }
+            spelled.append(spelling(parts[at]))
+            at += 1
+            return spelled.last
         }
-        if let next = rest.first,
-           (next.count == 2 && next.allSatisfy(\.isLetter)) || (next.count == 3 && next.allSatisfy(\.isNumber)) {
-            region = next.uppercased()
-            rest = rest.dropFirst()
+        for _ in 0..<3 {
+            guard take({ $0.count == 3 && $0.allSatisfy(\.isLetter) }) != nil else { break }
         }
-        return (first.lowercased(), script, region, rest.map { $0.lowercased() })
+        let script = take({ $0.count == 4 && $0.allSatisfy(\.isLetter) }) { $0.prefix(1).uppercased() + $0.dropFirst() }
+        let region = take(isRegion) { $0.uppercased() }
+        // A variant and an extension's singleton each stand once; a private use's parts as often as written.
+        var said: Set<String> = []
+        while let variant = take({ $0.count >= 5 || ($0.count == 4 && $0.first?.isNumber == true) }) {
+            guard said.insert(variant).inserted else { return nil }
+        }
+        // An extension's singleton, then a private use's `x`, each with a part at least after it.
+        while let singleton = take({ $0.count == 1 && $0 != "x" }) {
+            guard said.insert(singleton).inserted, take({ $0.count >= 2 }) != nil else { return nil }
+            while take({ $0.count >= 2 }) != nil {}
+        }
+        if take({ $0 == "x" }) != nil {
+            guard take({ _ in true }) != nil else { return nil }
+            while take({ _ in true }) != nil {}
+        }
+        return at == parts.count ? (first, script, region, spelled) : nil
+    }
+
+    /// Whether `part` is one to eight ASCII letters and digits.
+    private static func isPart(_ part: String) -> Bool {
+        (1...8).contains(part.count) && part.allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
+    }
+
+    /// Whether `part` names a region: two letters, or three digits.
+    private static func isRegion(_ part: String) -> Bool {
+        (part.count == 2 && part.allSatisfy(\.isLetter)) || (part.count == 3 && part.allSatisfy(\.isNumber))
     }
 
     /// The scripts of languages not written in Latin, where a tag says none.

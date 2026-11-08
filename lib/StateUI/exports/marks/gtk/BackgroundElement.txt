@@ -1,0 +1,47 @@
+# revision 1.1
+Button.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Canvas.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Capsule.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+CheckBox.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+ColorPicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+DatePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Ellipse.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Fill.background: ✅
+Grid.background: ✅
+HStack.background: ✅
+Image.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+ItemsView.background: does not apply - read background of ItemsView - StateUI draws a list's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Line.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Link.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Map.background: 🧩
+MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
+NavigationStack.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Page.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Path.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Picker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Polygon.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Polyline.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+ProgressBar.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Rectangle.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+ScrollView.background: ✅
+SearchField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Separator.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Slider.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Space.background: ✅
+Spinner.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+SplitView.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Stepper.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Switch.background: – GTK's switch paints its own box as its track: a color there would recolor the track, not lie under it.
+TabView.background: does not apply - read background of Page - StateUI draws a page's box on GTK's snapshot, which holds none of its background; its drawing proves it
+Text.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+TextEditor.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+TextField.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+TextSpan.background: ✅
+TimePicker.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+ToolbarButton.background: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.background: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.background: – A header bar's buttons stand in libadwaita's own look.
+VStack.background: ✅
+WebView.background: ☑️ A brush fills the view with its first color alone; GTK blurs nothing behind a widget, so a blur or glass shows the theme's color standing in, its tint over it.
+Window.background: ☑️ GNOME draws its windows opaque: a blur or glass shows its color.
+ZStack.background: ✅

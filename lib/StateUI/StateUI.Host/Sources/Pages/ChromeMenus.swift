@@ -19,15 +19,15 @@
         // A menu joins the one of its id declared further out; the outermost heads it.
         // Design: docs/design/host/pages.md#the-menus-of-a-path
         var joined: [[Placed]] = []
-        var byId: [ElementID: Int] = [:]
+        var byId: [HostMenuKey: Int] = [:]
         for (index, declaration) in declared.enumerated() {
-            let order = Int(declaration.element.value(.order)?.number ?? 0)
+            let order = declaration.element.whole(MenuBarContract.order.token) ?? 0
             for (position, menu) in declaration.element.children.filter({ $0.type == .menu }).enumerated() {
                 let placed = Placed(menu: menu, key: (order, declaration.level, index, position))
-                if menu.id.isManual, let at = byId[menu.id] {
+                if let key = menu.menuKey, let at = byId[key] {
                     joined[at].append(placed)
                 } else {
-                    if menu.id.isManual { byId[menu.id] = joined.count }
+                    if let key = menu.menuKey { byId[key] = joined.count }
                     joined.append([placed])
                 }
             }
@@ -60,11 +60,11 @@
     /// outermost of that id, which the others leave; an entry of no id stands in its own.
     private static func standing(_ members: [Placed]) -> [[MenuEntry]] {
         let sections = members.map { (member: $0, entries: MenuEntry.entries(of: $0.menu)) }
-        var outermost: [ElementID: (Int, Int)] = [:]
-        var innermost: [ElementID: (depth: (Int, Int), entry: MenuEntry)] = [:]
+        var outermost: [HostMenuKey: (Int, Int)] = [:]
+        var innermost: [HostMenuKey: (depth: (Int, Int), entry: MenuEntry)] = [:]
         for (member, entries) in sections {
             for entry in entries {
-                guard let id = entry.element?.id, id.isManual else { continue }
+                guard let id = entry.element?.menuKey else { continue }
                 if outermost[id].map({ member.depth < $0 }) ?? true { outermost[id] = member.depth }
                 if innermost[id].map({ member.depth > $0.depth }) ?? true { innermost[id] = (member.depth, entry) }
             }
@@ -72,7 +72,7 @@
 
         return sections.map { member, entries in
             entries.compactMap { entry in
-                guard let id = entry.element?.id, id.isManual else { return entry }
+                guard let id = entry.element?.menuKey else { return entry }
                 guard outermost[id].map({ $0 == member.depth }) ?? false else { return nil }
                 return innermost[id]?.entry
             }

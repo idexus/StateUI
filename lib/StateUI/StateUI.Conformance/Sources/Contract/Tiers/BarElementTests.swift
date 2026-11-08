@@ -37,7 +37,7 @@
     /// that a toolkit taking an angle reads back - its colors evenly apart.
     static func across(_ colors: Color...) -> Material {
         let stops = colors.enumerated().map { GradientStop($0.element, Double($0.offset) / Double(colors.count - 1)) }
-        return .gradient(.linearGradient(stops, startPoint: Point(0, 0.5), endPoint: Point(1, 0.5)))
+        return .gradient(.linearGradient(stops, from: Point(0, 0.5), to: Point(1, 0.5)))
     }
 
     /// The bar's color `element` declares crosses a sheet a view in it presents: the stack in the sheet wears it, as
@@ -46,7 +46,7 @@
     static func crossesASheet(on element: String) -> ConformanceCase {
         ConformanceCase("\(element).barBackground.crossesASheetItsViewPresents", proves: [
             Covered(BarElementContract.barBackground, on: element),
-        ], needs: [Covered(SheetContract.isPresented)]) { s in
+        ], needs: [Covered(PresentedElementContract.isPresented, on: SheetContract.self)]) { s in
             s.start {
                 declaring(element, [Write(BarElementContract.barBackground, Material.color(.steelBlue))], beside: [
                     Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {

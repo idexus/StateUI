@@ -10,7 +10,7 @@ public enum WebViewContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A web view is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self, FocusElementContract.self]
 
     /// Whether there is a page behind this one changed, to the value it
     /// carries.
@@ -21,27 +21,27 @@ public enum WebViewContract: ElementContract {
     public static let canGoForwardChanged = ElementEvent<Self, Bool>("canGoForwardChanged", layer: .native)
 
     /// Runs JavaScript in the page, answering what it evaluated to, as text.
-    public static let evaluateJavaScript = ElementAct<Self, String, String?>("evaluateJavaScript")
+    public static let evaluateJavaScript = ElementAct<Self, String, String?>("evaluateJavaScript", layer: .native)
 
     /// Steps back through the page's history.
-    public static let goBack = ElementAct<Self, Void, Void>("goBack")
+    public static let goBack = ElementAct<Self, Void, Void>("goBack", layer: .native)
 
     /// Steps forward through the page's history.
-    public static let goForward = ElementAct<Self, Void, Void>("goForward")
+    public static let goForward = ElementAct<Self, Void, Void>("goForward", layer: .native)
 
     /// A navigation finished: how it ended, why it happened, and where it went.
-    public static let navigated = ElementEvent<Self, (WebNavigationResult, WebNavigationType, String)>(
+    public static let navigated = ElementEvent<Self, (WebNavigationResult, WebNavigationKind, String)>(
         "navigated", layer: .native)
 
     /// A navigation started: why, and where it is going.
-    public static let navigating = ElementEvent<Self, (WebNavigationType, String)>(
+    public static let navigating = ElementEvent<Self, (WebNavigationKind, String)>(
         "navigating", layer: .native)
 
     /// The platform's web process died under the view.
     public static let processTerminated = ElementEvent<Self, Void>("processTerminated", layer: .native)
 
     /// Loads the page again.
-    public static let reload = ElementAct<Self, Void, Void>("reload")
+    public static let reload = ElementAct<Self, Void, Void>("reload", layer: .native)
 
     /// The page it shows: fetched from an address, or written here.
     public static let source = ElementProperty<Self, WebViewSource>("source", layer: .native)

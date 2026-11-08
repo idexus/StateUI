@@ -357,6 +357,17 @@ its page and its web process when its element leaves - or its process dies -
 answering every script still waiting that the page went, as Android calls
 nothing back from a web view gone.
 
+`WebReloadSource` keeps the complete source while its native load is pending;
+reloading at that point reissues the new source instead of the preceding
+page Android still holds. The adapter follows the requested page through
+its start and finish callbacks. Once it arrives, a fetched or data address
+uses native reload; authored HTML with a base keeps its bytes, as in
+[the shared reload rule](../../host/web.md#the-source-to-reload).
+A native navigation or an accepted history step takes over from that source.
+The user agent is set before a new source; reissuing it preserves the native
+setting. After the web process dies, the holder's existing recovery still
+restores the page it held.
+
 ## The keyboard's focus
 
 `focus` answers whether the view took the keyboard; a view laid out with no

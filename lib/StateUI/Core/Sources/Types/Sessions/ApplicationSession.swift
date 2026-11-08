@@ -7,8 +7,8 @@
 ///
 ///     @Environment(\.application) private var application
 ///
-///     Button("New window").onClicked(.ignoreWhileRunning) { try await application.openWindow() }
-///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
+///     Button("New window").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow() }
+///     Button("Inspector").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
 ///
 /// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its first window opening to
@@ -23,7 +23,12 @@ public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
     /// lifecycle.
-    @State public internal(set) var phase: SessionPhase = .active
+    public internal(set) var phase: SessionPhase {
+        get { _phase }
+        set { _phase = newValue }
+    }
+
+    @State private var _phase: SessionPhase = .active
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
     /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.
@@ -36,19 +41,18 @@ public final class ApplicationSession {
     ///     Text("\(application.scenes.count) open")
     public var scenes: [SceneSession] { OpenScenes.shared.list.map(\.session) }
 
-    /// The theme the application shows in: `.system` - the default - follows
-    /// the user's setting, `.light` and `.dark` hold it whatever the system
-    /// asks.
+    /// The theme the application shows in: nil - the default - follows the
+    /// user's setting, `.light` and `.dark` hold it whatever the system asks.
     ///
     ///     application.colorScheme = .dark
-    ///     Picker([ColorScheme.system, .light, .dark], selection: application.$colorScheme)
+    ///     Picker([nil, .light, .dark], selection: application.$colorScheme) { $0.map { "\($0)" } ?? "As the system" }
     ///
     /// The host shows every window in it, natively, and reports the theme in
     /// force as `info.colorScheme`, which color pairs resolve against.
-    @State public var colorScheme = ColorScheme.system
+    @State public var colorScheme: ColorScheme? = nil
 
     /// The theme last handed to the host.
-    private var sentColorScheme = ColorScheme.system
+    private var sentColorScheme: ColorScheme?
 
     /// The application's own accent, which its controls and `Color.accent`
     /// take where the user chooses none for the system - the Web, iOS and
@@ -102,16 +106,16 @@ public final class ApplicationSession {
     /// `.environment(...)`. It opens scenes as the application's own does.
     public init() {
         // Whoever writes them - the application, a control the binding is handed to - the host is told.
-        // Design: docs/design/core/state.md#kept-state
-        _colorScheme.storage.keep = { [unowned self] scheme in
-            guard scheme != sentColorScheme else { return }
-            sentColorScheme = scheme
+        // Design: docs/design/core/state.md#bindings
+        _colorScheme.storage.keep = { [weak self] scheme in
+            guard let self, scheme != self.sentColorScheme else { return }
+            self.sentColorScheme = scheme
             tellAct(ApplicationContract.useColorScheme, scheme)
         }
-        _accentColor.storage.keep = { [unowned self] accent in
-            guard accent != sentAccentColor else { return }
-            sentAccentColor = accent
-            sendAccentColor()
+        _accentColor.storage.keep = { [weak self] accent in
+            guard let self, accent != self.sentAccentColor else { return }
+            self.sentAccentColor = accent
+            self.sendAccentColor()
         }
     }
 
@@ -129,49 +133,49 @@ public final class ApplicationSession {
     /// where it does not stand: the one window of a `Window(type)`, or one more
     /// of a `WindowGroup(type)`.
     ///
-    ///     Button("Inspector").onClicked(.ignoreWhileRunning) { try await application.openWindow(.inspector) }
+    ///     Button("Inspector").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.inspector) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where its one window is open,
     ///   `WindowError.undeclared` where no scene declares it, and
     ///   `WindowError.unsupported` where the platform opens no second window - a
     ///   phone.
-    public func openWindow(_ type: WindowType<Void>) async throws {
-        try OpenScenes.shared.open(type.key)
+    public func openWindow(_ kind: WindowKind<Void>) async throws {
+        try OpenScenes.shared.open(kind.key)
     }
 
-    /// Opens the window of `type` for `value` in the scene declaring it, which
+    /// Opens the window of `kind` for `value` in the scene declaring it, which
     /// opens with it where it does not stand.
     ///
-    ///     Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(.document, value: id) }
+    ///     Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.document, value: id) }
     ///
     /// - Throws: `WindowError.alreadyOpen` where a window for that value is
     ///   open, and the rest of `WindowError` where it cannot open.
     public func openWindow<Value: Codable & Hashable>(
-        _ type: WindowType<Value>,
+        _ kind: WindowKind<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.open(type.key, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
+        try OpenScenes.shared.open(kind.key, value: AnyHashable(value), text: try ValueText.write(value), of: Value.self)
     }
 
-    /// Closes the window of `type` - every window of a `WindowGroup(type)` -
+    /// Closes the window of `kind` - every window of a `WindowGroup(kind)` -
     /// its scene ending with its last window.
     ///
     /// - Throws: `WindowError.notOpen` where none is open, and
     ///   `WindowError.undeclared` where no scene declares it.
-    public func closeWindow(_ type: WindowType<Void>) async throws {
-        try OpenScenes.shared.close(type.key)
+    public func closeWindow(_ kind: WindowKind<Void>) async throws {
+        try OpenScenes.shared.close(kind.key)
     }
 
-    /// Closes the window of `type` for `value`, its scene ending with its last
+    /// Closes the window of `kind` for `value`, its scene ending with its last
     /// window.
     ///
     /// - Throws: `WindowError.notOpen` where no window for that value is open,
     ///   and the rest of `WindowError` where it cannot close.
     public func closeWindow<Value: Codable & Hashable>(
-        _ type: WindowType<Value>,
+        _ kind: WindowKind<Value>,
         value: Value
     ) async throws {
-        try OpenScenes.shared.close(type.key, value: AnyHashable(value), of: Value.self)
+        try OpenScenes.shared.close(kind.key, value: AnyHashable(value), of: Value.self)
     }
 
     /// Forgets what an application wrote - what a registration starts from, so

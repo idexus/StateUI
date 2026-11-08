@@ -16,7 +16,7 @@
 ///             if window.phase == .background { try await save() }
 ///         }
 ///
-///     Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
+///     Button("Close").onClicked(policy: .ignoreWhileRunning) { try await window.close() }
 ///
 /// Every window offers its own, so a view acts on the window it is in, and
 /// what the window is told stands until it is told otherwise. See
@@ -31,7 +31,12 @@
 public final class WindowSession {
     /// Where the window stands right now: in use, showing behind another, or out of sight - going away included.
     /// Starts `.background`, before the platform has made it.
-    @State public internal(set) var phase: SessionPhase = .background
+    public internal(set) var phase: SessionPhase {
+        get { _phase }
+        set { _phase = newValue }
+    }
+
+    @State private var _phase: SessionPhase = .background
 
     /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil
@@ -128,11 +133,16 @@ public final class WindowSession {
     /// The window as an act aimed at it names it: its scene's key and its own - both empty for a session of no
     /// scene, whose acts ask in the window the user is in.
     ///
-    /// - Throws: `WindowError.noScene` for a window whose scene ended, and `WindowError.notOpen` for one closed.
+    /// - Throws: `WindowError.noScene` for a window whose scene ended - whether its record still stands or is
+    ///   gone - and `WindowError.notOpen` for one closed.
     /// Design: docs/design/core/acts.md#a-windows-acts
     var address: (scene: Name, window: Name) {
         get throws {
-            guard let record else { return (Name(""), Name("")) }
+            guard let record else {
+                // A window's session has its key; the session of no scene has none.
+                guard key.isEmpty else { throw WindowError.noScene }
+                return (Name(""), Name(""))
+            }
             guard OpenScenes.shared.record(id: record.id) === record else { throw WindowError.noScene }
             guard record.windows.contains(where: { $0.key == key }) else { throw WindowError.notOpen }
             return (Name(record.id), Name(key))
@@ -151,7 +161,7 @@ public final class WindowSession {
         props.describe(WindowContract.height, height)
         props.describe(WindowContract.isMaximizable, isMaximizable)
         props.describe(WindowContract.isMinimizable, isMinimizable)
-        props.describe(WindowContract.background, background)
+        props.describe(BackgroundElementContract.background, background)
         props.describe(WindowContract.minimumWidth, minimumWidth)
         props.describe(WindowContract.minimumHeight, minimumHeight)
         props.describe(WindowContract.maximumWidth, maximumWidth)

@@ -88,8 +88,11 @@ extension VisualState where Target == Switch {
     public static var off: Self { Self(VisualStateName.off) }
 }
 
-/// A CheckBox has one state of its own - the Switch's word for it.
+/// A CheckBox says which way it is - the Switch's words for it.
 extension VisualState where Target == CheckBox {
-    /// While `isOn` is true. A CheckBox that is not on is in `.normal`.
+    /// While `isOn` is true.
     public static var on: Self { Self(VisualStateName.on) }
+
+    /// While `isOn` is false.
+    public static var off: Self { Self(VisualStateName.off) }
 }

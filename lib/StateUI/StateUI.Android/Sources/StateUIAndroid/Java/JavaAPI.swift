@@ -256,11 +256,12 @@ enum JavaAPI {
 
     static let webView = Java.findClass("stateui/android/StateUIWebView")
     static let newWebView = Java.method(webView, "<init>", "(Landroid/content/Context;J)V")
-    static let loadWeb = Java.method(webView, "load", "(Ljava/lang/String;Ljava/lang/String;)V")
-    static let showWeb = Java.method(webView, "show", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
+    static let loadWeb = Java.method(webView, "load", "(Ljava/lang/String;)V")
+    static let showWeb = Java.method(webView, "show", "(Ljava/lang/String;Ljava/lang/String;)V")
     static let setWebUserAgent = Java.method(webView, "setUserAgent", "(Ljava/lang/String;)V")
     static let webGoBack = Java.method(webView, "goBack", "()Z")
     static let webGoForward = Java.method(webView, "goForward", "()Z")
+    static let webCanReload = Java.method(webView, "canReload", "()Z")
     static let webReload = Java.method(webView, "reload", "()V")
     static let watchWeb = Java.method(webView, "watch", "(Lstateui/android/StateUIListener;)V")
     static let webEvaluate = Java.method(webView, "evaluate", "(Ljava/lang/String;J)V")
@@ -634,7 +635,9 @@ enum ViewConstants {
     static func size(_ spec: Int32) -> Int32 { spec & 0x3FFF_FFFF }
 
     /// A spec of `mode` and `size`.
-    static func spec(_ mode: Int32, _ size: Int32) -> Int32 { mode | (max(0, size) & 0x3FFF_FFFF) }
+    static func spec(_ mode: Int32, _ size: Int32) -> Int32 {
+        mode | (size >= 0 && size <= 0x3FFF_FFFF ? size : 0)
+    }
 
     /// `spec` where it is exact, else unspecified: a plain view takes all the room a spec offers at most, so one
     /// that asks for none is offered none.

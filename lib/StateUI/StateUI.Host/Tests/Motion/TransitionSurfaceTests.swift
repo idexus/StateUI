@@ -12,7 +12,7 @@ final class TransitionSurfaceTests: XCTestCase {
     /// window's place and an arrangement's bar colors do; a stepper's value, a map's opacity and a property no host
     /// knows arrive at once.
     func testTheSurfaceIsClosedAroundWhatAViewPresents() {
-        for property: Prop in [.fill, .width, .height, .cornerRadius] {
+        for property: Prop in [.fill, VisualElementContract.width.token, VisualElementContract.height.token, .cornerRadius] {
             XCTAssertTrue(TransitionSurface.presents(property, on: .rectangle), "\(property)")
         }
         XCTAssertTrue(TransitionSurface.presents(.opacity, on: .text))
@@ -31,7 +31,10 @@ final class TransitionSurfaceTests: XCTestCase {
     /// and it holds no padding to move.
     func testASpacesAndAFillsBoxTravelAsALayoutsDoes() {
         for type: NodeType in [.space, .fill] {
-            for property: Prop in [.background, .stroke, .lineWidth, .shape, .opacity, .width, .rotation] {
+            for property: Prop in [
+                .background, BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape, .opacity,
+                VisualElementContract.width.token, .rotation,
+            ] {
                 XCTAssertTrue(TransitionSurface.presents(property, on: type), "\(type) \(property.name)")
             }
             XCTAssertFalse(TransitionSurface.presents(.padding, on: type), "\(type)")

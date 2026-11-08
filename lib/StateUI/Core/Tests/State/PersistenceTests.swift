@@ -116,7 +116,7 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(preferences.name, "Ada")
         XCTAssertEqual(preferences.appearance, .dark)
         XCTAssertEqual(store.asked, [
-            "test.count integer", "test.name text", "test.loud boolean", "test.level number", "test.appearance text",
+            "test.count integer", "test.name string", "test.loud bool", "test.level number", "test.appearance string",
         ])
     }
 
@@ -124,7 +124,7 @@ final class PersistenceTests: XCTestCase {
     /// conformance one line and keeps the store readable by anything else that
     /// opens it.
     func testAnEnumIsKeptAsItsRawValue() {
-        XCTAssertEqual(Appearance.persistentKind, .text)
+        XCTAssertEqual(Appearance.persistentKind, .string)
         XCTAssertEqual(Appearance.dark.persistentValue, .string("dark"))
         XCTAssertEqual(Appearance(persistentValue: .string("light")), .light)
 
@@ -179,7 +179,7 @@ final class PersistenceTests: XCTestCase {
         let acts = drainedActs()
 
         XCTAssertEqual(acts.count, 1)
-        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.name, "Application.persistValue")
         XCTAssertEqual(acts.first?.arguments, [.name("test.count"), .number(3)])
     }
 
@@ -235,7 +235,7 @@ final class PersistenceTests: XCTestCase {
         let acts = drainedActs()
 
         XCTAssertEqual(acts.count, 1)
-        XCTAssertEqual(acts.first?.name, "persistValue")
+        XCTAssertEqual(acts.first?.name, "Application.persistValue")
         XCTAssertEqual(acts.first?.arguments, [.name("test.name"), .string("Grace")])
 
         // Nothing is waiting on a save: the value is already in state, and the
@@ -258,7 +258,7 @@ final class PersistenceTests: XCTestCase {
         guard case .replace(let driven)? = patch.driven else { return XCTFail("expected the field's state") }
         _ = drainedActs()
 
-        XCTAssertTrue(HostBoundary.report(.text("Grace"), through: try XCTUnwrap(driven[.text])))
+        XCTAssertTrue(HostBoundary.report(.string("Grace"), through: try XCTUnwrap(driven[.text])))
 
         XCTAssertEqual(drainedActs().first?.arguments, [.name("test.name"), .string("Grace")])
     }
@@ -302,7 +302,7 @@ final class PersistenceTests: XCTestCase {
         Renderer.shared.send(.hideOnScreenKeyboard, [], completion: nil)
         Sidebar().count = 3
 
-        XCTAssertEqual(drainedActs().map(\.name), ["hideOnScreenKeyboard", "persistValue"])
+        XCTAssertEqual(drainedActs().map(\.name), ["Application.hideOnScreenKeyboard", "Application.persistValue"])
     }
 
     /// Assigning the same value still saves. The state is unchanged and the

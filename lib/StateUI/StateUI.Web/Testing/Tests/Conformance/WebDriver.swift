@@ -65,7 +65,7 @@ final class WebDriver: HostDriver {
         "restore": "the notice the browser gives as the page's tab shows, told by the driver: a page shows no tab",
         "close on Window": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
-        "read windowType of Window": "the scenes the host keeps for the next start",
+        "read windowKind of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "read a file dialog": "the dialog the relay holds on a page a test drives, which the browser never shows",
         "read what was launched": "the relay's own record of what it would open, which a test holds back",
@@ -91,6 +91,7 @@ final class WebDriver: HostDriver {
     ) -> MountedTree {
         written.listen()
         emptyFiles()
+        park()
         let renderer = WebRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -99,6 +100,7 @@ final class WebDriver: HostDriver {
     func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         written.listen()
         emptyFiles()
+        park()
         let renderer = WebRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -109,7 +111,16 @@ final class WebDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            WebBrowser.pause()
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        renderer?.finish()
+        renderer = nil
     }
 
     func turn() {
@@ -127,9 +138,10 @@ final class WebDriver: HostDriver {
         }
         if element.type == .toolbarGroup, let group = try barView(of: element) {
             switch property {
-            case .background, .stroke, .lineWidth, .shape: if let value = try boxHolds(property, group) { return value }
+            case .background, BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape:
+                if let value = try boxHolds(property, group) { return value }
             case .padding: if let value = try wordsHolds(property, group.node) { return value }
-            case .spacing: return try WebBrowser.number("parseFloat(getComputedStyle(e).columnGap) || 0", on: group.node)?.propValue
+            case ToolbarGroupContract.spacing.token: return try WebBrowser.number("parseFloat(getComputedStyle(e).columnGap) || 0", on: group.node)?.propValue
             default: break
             }
         }

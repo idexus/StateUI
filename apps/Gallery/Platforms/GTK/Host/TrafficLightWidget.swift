@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 // listing: InteropControlSample.GTK.swift
@@ -126,7 +127,7 @@ extension TrafficLightWidget {
             light.property(TrafficLightContract.signal) { control, signal in
                 control.signal = signal ?? .stop
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }

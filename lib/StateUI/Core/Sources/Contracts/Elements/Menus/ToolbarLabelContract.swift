@@ -9,12 +9,9 @@ public enum ToolbarLabelContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// The words it shows.
-    public static let text = ElementProperty<Self, String>("text", layer: .native)
-
-    /// The picture before its words.
-    public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [IconElementContract.self, TextElementContract.self]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [icon, text]
+    public static let members: [any ContractMember] = []
 }

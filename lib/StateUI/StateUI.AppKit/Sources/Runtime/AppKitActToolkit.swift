@@ -106,11 +106,11 @@ final class AppKitActToolkit: ActToolkit {
     }
 
     /// Shows every window in `theme`: AppKit's application appearance, none for the system's.
-    func useColorScheme(_ theme: ColorScheme) {
+    func useColorScheme(_ theme: ColorScheme?) {
         NSApplication.shared.appearance = switch theme {
-        case .light: NSAppearance(named: .aqua)
-        case .dark: NSAppearance(named: .darkAqua)
-        case .system: nil
+        case .light?: NSAppearance(named: .aqua)
+        case .dark?: NSAppearance(named: .darkAqua)
+        case nil: nil
         }
     }
 

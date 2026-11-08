@@ -8,21 +8,25 @@
 /// Design: docs/design/host/web.md#why-a-navigation-began
 @_spi(Host) public struct WebNavigationCause {
     /// The step the program asked for and no navigation has begun for yet.
-    private var asked: WebNavigationType?
+    private var asked: WebNavigationKind?
 
     /// Why the navigation under way began.
-    public private(set) var current = WebNavigationType.unknown
+    public private(set) var current = WebNavigationKind.unknown
 
     /// No step asked, and no navigation under way.
     public init() {}
 
-    /// The program asked the view for `step`: the next navigation to begin is its.
-    public mutating func ask(_ step: WebNavigationType) {
+    /// Records `step` only where the toolkit can take it. A refused step leaves an earlier request intact.
+    /// Call this between reading the native capability and invoking a toolkit that may report synchronously.
+    @discardableResult
+    public mutating func ask(_ step: WebNavigationKind, if possible: Bool) -> Bool {
+        guard possible else { return false }
         asked = step
+        return true
     }
 
     /// A navigation began, which the platform tells as `told`: why it began.
-    public mutating func begin(told: WebNavigationType) -> WebNavigationType {
+    public mutating func begin(told: WebNavigationKind) -> WebNavigationKind {
         current = asked ?? told
         asked = nil
         return current

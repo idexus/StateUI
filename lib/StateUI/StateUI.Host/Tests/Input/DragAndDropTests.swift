@@ -100,14 +100,14 @@ private struct BasketPage: View {
                 .onDragEnded { @MainActor in said.append("ended") }
                 .id("source")
             Text("Basket")
-                .onDrop { @MainActor words in said.append("drop \(words)") }
-                .onDragOver { @MainActor in said.append("over") }
-                .onDragLeave { @MainActor in said.append("left") }
+                .onDropped { @MainActor words in said.append("drop \(words)") }
+                .onDragEntered { @MainActor in said.append("over") }
+                .onDragExited { @MainActor in said.append("left") }
                 .id("basket")
             Text("Still").id("still")
             Text("Held").dragText("Held").isDraggable(false).id("held")
             Text("Shelf")
-                .onDrop(files: [FileType("Text", extensions: ["txt"])]) { @MainActor files in
+                .onDropped(files: [FileType("Text", extensions: ["txt"])]) { @MainActor files in
                     said.append("files " + files.map(\.name).joined(separator: " "))
                 }
                 .id("shelf")

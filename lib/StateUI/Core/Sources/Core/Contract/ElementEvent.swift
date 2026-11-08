@@ -26,11 +26,12 @@ public struct ElementEvent<Owner: Contract, Payload>: ContractMember {
     public init(_ name: String, layer: ElementLayer = .provider) {
         self.name = name
         self.layer = layer
-        token = Event(name)
+        token = Event("\(Owner.name).\(name)")
         owner = KeyName(Owner.name)
+        ContractNames.claim(Owner.self, named: owner)
     }
 
-    /// The key the event crosses the boundary under, made once.
+    /// The key the event crosses the boundary under, made once: its owner's name, a dot, and its own.
     @_spi(Host) public let token: Event
 
     /// The key of the contract declaring it, made once.

@@ -122,15 +122,30 @@ final class WinUIConformanceTests: XCTestCase {
     func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     func testPaddingElement() { conform(PaddingElementTests.self) }
     func testBorderElement() { conform(BorderElementTests.self) }
-    func testImageElement() { conform(ImageElementTests.self) }
+    func testContentModeElement() { conform(ContentModeElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testPointsShape() { conform(PointsShapeTests.self) }
+    func testLineBreakElement() { conform(LineBreakElementTests.self) }
+    func testPlaceholderElement() { conform(PlaceholderElementTests.self) }
+    func testStyledElement() { conform(StyledElementTests.self) }
+    func testTextElement() { conform(TextElementTests.self) }
+    func testShortcutElement() { conform(ShortcutElementTests.self) }
+    func testIconElement() { conform(IconElementTests.self) }
+    func testBackgroundElement() { conform(BackgroundElementTests.self) }
+    func testEnabledElement() { conform(EnabledElementTests.self) }
+    func testClickElement() { conform(ClickElementTests.self) }
+    func testRangeElement() { conform(RangeElementTests.self) }
+    func testSubmitElement() { conform(SubmitElementTests.self) }
+    func testSessionElement() { conform(SessionElementTests.self) }
+    func testHoverElement() { conform(HoverElementTests.self) }
+    func testPressElement() { conform(PressElementTests.self) }
+    func testPresentedElement() { conform(PresentedElementTests.self) }
+    func testPopupElement() { conform(PopupElementTests.self) }
+    func testToggleElement() { conform(ToggleElementTests.self) }
     func testKeyboardElement() { conform(KeyboardElementTests.self) }
     func testFocusElement() { conform(FocusElementTests.self) }
     func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
-    func testBarItemElement() { conform(BarItemElementTests.self) }
-    func testBarButtonElement() { conform(BarButtonElementTests.self) }
-    func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
     func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     func testLink() { conform(LinkTests.self) }

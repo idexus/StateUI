@@ -15,7 +15,7 @@
             Aspects.standsAlone("TimePicker"),
             ConformanceCase("theUsersTimeIsHeardAndTheProgramsIsNot", proves: [
                 Covered(TimePickerContract.time), Covered(TimePickerContract.timeChanged),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let alarm = State(wrappedValue: ClockTime(hour: 7, minute: 30))
                 let heard = Received<ClockTime>()
                 s.start {
@@ -39,7 +39,7 @@
             },
             ConformanceCase("aTimePastTheDayStandsInTheNext", proves: [
                 Covered(TimePickerContract.time),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 0))
                 s.start {
                     VStack {
@@ -55,59 +55,7 @@
                     try s.held(TimePickerContract.time, on: picker), ClockTime(hour: 1, minute: 30),
                     "added up from midnight")
             },
-            ConformanceCase("theClockTheUserOpensAndClosesIsHeard", proves: [
-                Covered(TimePickerContract.isOpen), Covered(TimePickerContract.opened), Covered(TimePickerContract.closed),
-            ]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        TimePicker(ClockTime(hour: 7, minute: 30))
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed { heard.values.append("closed") }
-                            .id("picker")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.open, on: picker)
-                s.settle { heard.values == ["opened"] }
-                s.expect(try s.held(TimePickerContract.isOpen, on: picker), true)
-                try s.perform(.close, on: picker)
-                s.settle { heard.values.count == 2 }
-
-                s.expect(heard.values, ["opened", "closed"])
-                s.expect(try s.held(TimePickerContract.isOpen, on: picker), false)
-            },
-            ConformanceCase("theClockTheProgramOpensIsHeardOnlyAsTheUserClosesIt", proves: [
-                Covered(TimePickerContract.isOpen), Covered(TimePickerContract.closed),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let showing = State(wrappedValue: false)
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        TimePicker(ClockTime(hour: 7, minute: 30))
-                            .isOpen(showing.wrappedValue)
-                            .onOpened { heard.values.append("opened") }
-                            .onClosed {
-                                heard.values.append("closed")
-                                showing.wrappedValue = false
-                            }
-                            .id("picker")
-                        Button("Open").onClicked { showing.wrappedValue = true }.id("open")
-                    }
-                }
-                let picker = try s.element("picker")
-
-                try s.perform(.activate, on: s.element("open"))
-                try s.settle { try s.held(TimePickerContract.isOpen, on: picker) == true }
-                s.turn()
-                s.expect(heard.values, [], "the program's opening heard by nobody")
-
-                try s.perform(.close, on: picker)
-                s.settle { heard.values == ["closed"] }
-                s.expect(heard.values, ["closed"], "the user closing what the program opened")
-            },
-            Aspects.holds(TimePickerContract.format, on: "TimePicker", "HH:mm", then: "h:mm tt",
+            Aspects.holds(TimePickerContract.format, on: "TimePicker", TimeFormat.short, then: .medium,
                           with: [Write(TimePickerContract.time, ClockTime(hour: 7, minute: 30))]),
         ]
     }

@@ -130,6 +130,21 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(turned?.props["background"], green)
     }
 
+    /// A check box says which way it is as a switch does: Off while it is not on, On once it is.
+    func testACheckBoxIsOffUntilItIsOn() {
+        let on = State(wrappedValue: false)
+        let renders = Renders()
+        let first = render(renders, CheckBox("Remember", isOn: on.projectedValue)
+            .visualState(.off) { $0.background(.gray) }
+            .visualState(.on) { $0.background(.green) }
+            .id("c").node)
+        XCTAssertEqual(first?.props["background"], gray)
+
+        Renderer.shared.clearInvalidation()
+        on.wrappedValue = true
+        XCTAssertEqual(renders.revisit(changed: Renderer.shared.pendingChanges).child("c")?.props["background"], green)
+    }
+
     /// The user's turn of a bound switch, as the host reports it, enters On the same way.
     func testTheUsersTurnEntersTheStateItFollows() throws {
         let on = State(wrappedValue: false)
@@ -270,5 +285,119 @@ final class VisualStateTests: XCTestCase {
         let pressed = renders.revisit(changed: Renderer.shared.pendingChanges).child("c")
         XCTAssertEqual(pressed?.props["background"], green)
         XCTAssertEqual(heard, ["Pressed"])
+    }
+    // MARK: - The facts a state follows, as the host shows them
+
+    /// A control whose enablement is bound is in Disabled while the state says so - at its arrival and as the state
+    /// is written - as the host shows it disabled.
+    func testABoundEnablementPutsTheControlInDisabled() {
+        let enabled = State(wrappedValue: false)
+        let renders = Renders()
+        let first = render(renders, Button("Save").isEnabled(enabled.projectedValue)
+            .visualState(.disabled) { $0.background(.gray) }.id("c").node)
+        XCTAssertEqual(first?.props["background"], gray, "disabled at its arrival")
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = true
+        XCTAssertEqual(renders.revisit(changed: Renderer.shared.pendingChanges).child("c")?.clearedProperties.contains("background"), true)
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = false
+        XCTAssertEqual(renders.revisit(changed: Renderer.shared.pendingChanges).child("c")?.props["background"], gray)
+    }
+
+    /// A bound value wins over one stated beside it on the control for the state it decides, as the host shows the
+    /// bound one: the stated value stands only where no state is bound.
+    func testABoundValueWinsOverAStatedOneForItsState() {
+        let on = State(wrappedValue: true)
+        let stated = render(Renders(), Switch(on.projectedValue).isOn(false)
+            .visualState(.on) { $0.background(.green) }.id("c").node)
+        XCTAssertEqual(stated?.props["background"], green, "the bound value, not the stated one")
+    }
+
+    /// A control in a disabled branch is in Disabled, as the host shows it: at its arrival, and as the branch turns
+    /// - a view of its own carried whole inside it included.
+    func testADisabledBranchPutsItsControlsInDisabled() {
+        let arrived = Renders().render(VStack {
+            Button("Save").visualState(.disabled) { $0.background(.gray) }.id("c")
+        }.isEnabled(false).node)
+        XCTAssertEqual(arrived.child("c")?.props["background"], gray, "disabled by the branch at its arrival")
+
+        let enabled = State(wrappedValue: true)
+        let renders = Renders()
+        let button = { (patch: HostPatch) in patch.subtree.first { $0.type == .button } }
+        let first = renders.render(Branch(enabled: enabled).node)
+        XCTAssertNil(button(first)?.props["background"])
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = false
+        XCTAssertEqual(button(renders.revisit(changed: Renderer.shared.pendingChanges))?.props["background"], gray)
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = true
+        XCTAssertEqual(button(renders.revisit(changed: Renderer.shared.pendingChanges))?.clearedProperties.contains("background"), true)
+    }
+
+    /// A branch whose enablement is bound puts its controls in Disabled as the state is written.
+    func testABoundBranchPutsItsControlsInDisabled() {
+        let enabled = State(wrappedValue: true)
+        let renders = Renders()
+        _ = renders.render(VStack {
+            Button("Save").visualState(.disabled) { $0.background(.gray) }.id("c")
+        }.isEnabled(enabled.projectedValue).node)
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = false
+        let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(patch.subtree.first { $0.type == .button }?.props["background"], gray)
+    }
+
+    /// A branch bound to another state is described again with it: its controls follow the state bound now - in
+    /// the render that changed it, and as it is written after - a view carried whole inside included.
+    func testABranchBoundToAnotherStateFollowsThatState() {
+        let button = { (patch: HostPatch) in patch.subtree.first { $0.type == .button } }
+        let branch = { (enabled: State<Bool>) in VStack { LockedRow().id("row") }.isEnabled(enabled.projectedValue).node }
+
+        let (a, off) = (State(wrappedValue: true), State(wrappedValue: false))
+        let renders = Renders()
+        renders.render(branch(a))
+        XCTAssertEqual(button(renders.render(branch(off)))?.props["background"], gray, "the state bound now says off")
+
+        let (b, c) = (State(wrappedValue: true), State(wrappedValue: true))
+        let again = Renders()
+        again.render(branch(b))
+        again.render(branch(c))
+        Renderer.shared.clearInvalidation()
+        c.wrappedValue = false
+        XCTAssertEqual(button(again.revisit(changed: Renderer.shared.pendingChanges))?.props["background"], gray,
+                       "a write to the state bound now")
+    }
+
+    /// A control with no state that follows its enablement reads nothing of a bound one: a write to it is the
+    /// host's alone, and nothing is described again.
+    func testABoundEnablementNoStateFollowsIsReadByNobody() {
+        let enabled = State(wrappedValue: true)
+        _ = render(Renders(), Button("Save").isEnabled(enabled.projectedValue)
+            .visualState(.pressed) { $0.background(.gray) }.id("c").node)
+
+        Renderer.shared.clearInvalidation()
+        enabled.wrappedValue = false
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it")
+    }
+}
+
+/// A branch whose enablement a state decides, holding a view of its own whose inputs never change.
+private struct Branch: View {
+    let enabled: State<Bool>
+
+    var body: some View {
+        VStack { LockedRow().id("row") }.isEnabled(enabled.wrappedValue)
+    }
+}
+
+/// A button with a look of its own while disabled, and no inputs: carried whole while nothing it reads moves.
+private struct LockedRow: View {
+    var body: some View {
+        Button("Save").visualState(.disabled) { $0.background(.gray) }.id("c")
     }
 }

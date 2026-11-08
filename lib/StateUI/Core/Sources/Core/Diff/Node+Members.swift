@@ -4,7 +4,7 @@
 extension [Prop: PropValue] {
     /// Writes one member's value into this map - a node's properties, or what
     /// a session keeps for the node it describes.
-    mutating func write<Owner: Contract, Held: HostRepresentable>(
+    mutating func write<Owner: WornContract, Held: HostRepresentable>(
         _ property: ElementProperty<Owner, Held>,
         _ value: Held
     ) {
@@ -14,7 +14,7 @@ extension [Prop: PropValue] {
     /// Writes one member's value into this map, or leaves the member
     /// undescribed where there is none - a setting taken as optional, whose
     /// absence the host reads as its own default.
-    mutating func describe<Owner: Contract, Held: HostRepresentable>(
+    mutating func describe<Owner: WornContract, Held: HostRepresentable>(
         _ property: ElementProperty<Owner, Held>,
         _ value: Held?
     ) {
@@ -32,17 +32,18 @@ extension Node {
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - value: what it holds.
-    public mutating func write<Owner: Contract, Value: HostRepresentable>(
+    public mutating func write<Owner: WornContract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) {
+        Wearing.takes(declaration, property)
         props.write(property, value)
     }
 
     /// Writes one member's value into this node, or leaves the member
     /// undescribed where there is none - a setting a modifier takes as
     /// optional, whose absence the host reads as its own default.
-    mutating func describe<Owner: Contract, Value: HostRepresentable>(
+    mutating func describe<Owner: WornContract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         _ value: Value?
     ) {

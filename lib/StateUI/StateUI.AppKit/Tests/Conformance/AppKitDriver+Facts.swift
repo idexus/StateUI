@@ -108,20 +108,20 @@ extension AppKitDriver {
         let chrome = window.frame.height - window.contentLayoutRect.height
         let screen = window.screen ?? NSScreen.main
         switch property {
-        case .title: return window.title.propValue
+        case WindowContract.title.token: return window.title.propValue
         case .x: return screen.map { Double(window.frame.minX - $0.visibleFrame.minX).rounded().propValue }
         case .y: return screen.map { Double($0.visibleFrame.maxY - window.frame.maxY).rounded().propValue }
-        case .width: return Double(window.contentLayoutRect.width).rounded().propValue
-        case .height: return Double(window.contentLayoutRect.height).rounded().propValue
-        case .minimumWidth: return Double(window.contentMinSize.width).propValue
-        case .minimumHeight: return Double(window.contentMinSize.height - chrome).rounded().propValue
-        case .maximumWidth: return Double(window.contentMaxSize.width).propValue
-        case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
+        case WindowContract.width.token: return Double(window.contentLayoutRect.width).rounded().propValue
+        case WindowContract.height.token: return Double(window.contentLayoutRect.height).rounded().propValue
+        case WindowContract.minimumWidth.token: return Double(window.contentMinSize.width).propValue
+        case WindowContract.minimumHeight.token: return Double(window.contentMinSize.height - chrome).rounded().propValue
+        case WindowContract.maximumWidth.token: return Double(window.contentMaxSize.width).propValue
+        case WindowContract.maximumHeight.token: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
         case .background: return Self.ground(of: window)
         case .floatsOnTop: return (window.level == .floating).propValue
-        case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
+        case .windowKind: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
         default: throw DriverCannot(reading: property, of: element)
         }

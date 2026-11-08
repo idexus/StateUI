@@ -44,6 +44,23 @@ import StateUIFoundation
         return ((x * m11 + y * m21 + m41) / w, (x * m12 + y * m22 + m42) / w)
     }
 
+    /// The point of the view's plane the matrix draws at `x`, `y`; nil where it draws the plane as a line or a point.
+    public func unapplied(to x: Double, _ y: Double) -> (x: Double, y: Double)? {
+        // The plane's own mapping, [x y 1] -> [X Y W], is three by three: inverted by its adjugate.
+        let (a, b, c, d, e, f, g, h, i) = (m11, m12, m14, m21, m22, m24, m41, m42, m44)
+        let determinant = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+        guard abs(determinant) > 1e-12 else { return nil }
+        let adjugate = [
+            (e * i - f * h, c * h - b * i, b * f - c * e),
+            (f * g - d * i, a * i - c * g, c * d - a * f),
+            (d * h - e * g, b * g - a * h, a * e - b * d),
+        ]
+        let w = x * adjugate[0].2 + y * adjugate[1].2 + adjugate[2].2
+        guard w != 0 else { return nil }
+        return ((x * adjugate[0].0 + y * adjugate[1].0 + adjugate[2].0) / w,
+                (x * adjugate[0].1 + y * adjugate[1].1 + adjugate[2].1) / w)
+    }
+
     enum Axis { case x, y, z }
 
     static func translation(_ x: Double, _ y: Double) -> HostMatrix {

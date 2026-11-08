@@ -9,12 +9,9 @@ public enum PopoverContract: ElementContract {
     /// Every base host presents it with its native popover.
     public static let layer: ElementLayer = .native
 
-    /// Whether the popover shows: the application presents it, and the user's dismissal writes false.
-    public static let isPresented = ElementProperty<Self, Bool>("isPresented", layer: .adaptive)
-
-    /// The user dismissed the popover - a tap beside it, Escape, the way back.
-    public static let isPresentedChanged = ElementEvent<Self, Bool>("isPresentedChanged", layer: .adaptive)
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [PresentedElementContract.self]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [isPresented, isPresentedChanged]
+    public static let members: [any ContractMember] = []
 }

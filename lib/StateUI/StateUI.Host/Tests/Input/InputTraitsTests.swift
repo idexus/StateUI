@@ -12,7 +12,7 @@ final class InputTraitsTests: XCTestCase {
     func testTheDefaultIsThePlatformsOwn() {
         let traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
 
-        XCTAssertEqual(traits, InputTraits(spellChecked: true, predicted: true, purpose: .default))
+        XCTAssertEqual(traits, InputTraits(spellChecked: true, predicted: true, purpose: .automatic))
         XCTAssertEqual(traits.keys, .words)
         XCTAssertEqual(traits.capitals, .platform)
         XCTAssertTrue(traits.checksSpelling && traits.corrects && traits.predicts)
@@ -54,7 +54,7 @@ final class InputTraitsTests: XCTestCase {
         XCTAssertEqual(
             [traits(.username).content, traits(.newPassword).content, traits(.oneTimeCode).content],
             [.username, .newPassword, .oneTimeCode])
-        XCTAssertEqual([traits(.default).content, traits(.text).content, traits(.numeric).content], [nil, nil, nil])
+        XCTAssertEqual([traits(.automatic).content, traits(.text).content, traits(.numeric).content], [nil, nil, nil])
 
         for purpose in [InputPurpose.username, .newPassword, .oneTimeCode] {
             XCTAssertFalse(traits(purpose).checksSpelling || traits(purpose).corrects || traits(purpose).predicts)
@@ -75,7 +75,7 @@ final class InputTraitsTests: XCTestCase {
     /// A field's return key is the tree's, else a search's for a search field and the platform's own for another.
     func testAReturnKeyUnwrittenIsTheFieldsOwn() {
         XCTAssertEqual(InputTraits.submitLabel(nil, searching: true), .search)
-        XCTAssertEqual(InputTraits.submitLabel(nil, searching: false), .default)
+        XCTAssertEqual(InputTraits.submitLabel(nil, searching: false), .automatic)
         XCTAssertEqual(InputTraits.submitLabel(.go, searching: true), .go)
         XCTAssertEqual(InputTraits.submitLabel(.done, searching: false), .done)
     }

@@ -1,0 +1,10 @@
+# revision 1.1
+DatePicker.closed: ✅
+DatePicker.isOpen: ✅
+DatePicker.opened: ✅
+Picker.closed: ✅
+Picker.isOpen: ✅
+Picker.opened: ✅
+TimePicker.closed: not realized
+TimePicker.isOpen: not realized
+TimePicker.opened: not realized

@@ -128,7 +128,7 @@ final class ActCallTests: XCTestCase {
         let navigation = Self.begin { try await WindowSession().alert("//list", message: "saved") }
 
         let acts = drain()
-        XCTAssertEqual(acts.first?.name, "alert")
+        XCTAssertEqual(acts.first?.name, "Application.alert")
         XCTAssertEqual(acts.first?.arguments.dropFirst(2).first, .string("//list"))
 
         await report(try completionId(in: acts), .finished([]))
@@ -145,7 +145,7 @@ final class ActCallTests: XCTestCase {
         let said = Self.begin { try await StandardEnvironment.application.announce("Row deleted") }
 
         let acts = drain()
-        XCTAssertEqual(acts.first?.name, "announce")
+        XCTAssertEqual(acts.first?.name, "Application.announce")
         XCTAssertEqual(acts.first?.arguments, [.string("Row deleted")])
 
         await report(try completionId(in: acts), .finished([]))
@@ -172,7 +172,7 @@ final class ActCallTests: XCTestCase {
         StandardEnvironment.application.tell(TestActs.copy, "note")
 
         let acts = drain()
-        XCTAssertEqual(acts.first?.name, "Test.Copy")
+        XCTAssertEqual(acts.first?.name, "TestActs.copy")
         XCTAssertNil(acts.first?.completion,
                      "nothing is waiting, so there is no id to quote back")
     }
@@ -261,7 +261,7 @@ final class ActCallTests: XCTestCase {
             _ = try await beyond.value
             XCTFail("a place no action stands at is the host's mistake")
         } catch let error as StateUIError {
-            XCTAssertEqual(error, .unreadableAnswer(act: "chooseAction", answered: "action 4", declared: "one of the 1 offered"))
+            XCTAssertEqual(error, .unreadableAnswer(act: "Application.chooseAction", answered: "action 4", declared: "one of the 1 offered"))
         }
 
         let accepted = Self.begin { try await WindowSession().prompt("Rename") }
@@ -299,7 +299,7 @@ final class ActCallTests: XCTestCase {
             try await navigation.value
             XCTFail("a failed act should throw")
         } catch let error as StateUIError {
-            XCTAssertEqual(error, .notPerformed(act: "alert", reason: "there is no page to show a dialog on"))
+            XCTAssertEqual(error, .notPerformed(act: "Application.alert", reason: "there is no page to show a dialog on"))
         }
     }
 
@@ -392,7 +392,7 @@ final class ActCallTests: XCTestCase {
         let call = try XCTUnwrap(HostBoundary.takeActCalls().first)
         let id = try XCTUnwrap(call.completion)
 
-        XCTAssertEqual(call.act, "Test.Choose")
+        XCTAssertEqual(call.act, "TestActs.choose")
         XCTAssertEqual(call.arguments, [.string("Delete?")])
         XCTAssertTrue(HostBoundary.reply(id, with: [.string("Delete")]))
         await settle()
@@ -417,7 +417,7 @@ final class ActCallTests: XCTestCase {
             try await navigation.value
             XCTFail("a failed act should throw")
         } catch let error as StateUIError {
-            XCTAssertEqual(error, .notPerformed(act: "alert", reason: "there is no page to show a dialog on"))
+            XCTAssertEqual(error, .notPerformed(act: "Application.alert", reason: "there is no page to show a dialog on"))
         }
     }
 
@@ -432,13 +432,13 @@ final class ActCallTests: XCTestCase {
 /// Acts of an application's own, declared the way an application declares
 /// them - what the tests of a call's round trip perform.
 private enum TestActs: ApplicationTier {
-    static let name = "Test"
+    static let name = "TestActs"
 
-    static let choose = ElementAct<Self, String, String>("Test.Choose")
-    static let copy = ElementAct<Self, String, Void>("Test.Copy")
-    static let numbers = ElementAct<Self, (Double, Double, Double, Double), Void>("Test.Numbers")
-    static let nothing = ElementAct<Self, Void, Void>("Test.Nothing")
-    static let old = ElementAct<Self, Void, Void>("Test.Old")
+    static let choose = ElementAct<Self, String, String>("choose")
+    static let copy = ElementAct<Self, String, Void>("copy")
+    static let numbers = ElementAct<Self, (Double, Double, Double, Double), Void>("numbers")
+    static let nothing = ElementAct<Self, Void, Void>("nothing")
+    static let old = ElementAct<Self, Void, Void>("old")
 
     static let members: [any ContractMember] = [choose, copy, numbers, nothing, old]
 }

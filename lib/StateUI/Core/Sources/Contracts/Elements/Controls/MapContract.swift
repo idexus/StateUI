@@ -10,7 +10,7 @@ public enum MapContract: ElementContract {
     public static let layer: ElementLayer = .provider
 
     /// A map is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self]
+    public static let tiers: [any Tier.Type] = [ViewContract.self]
 
     /// Whether a drag pans it.
     public static let isScrollEnabled = ElementProperty<Self, Bool>("isScrollEnabled", layer: .native)
@@ -25,7 +25,7 @@ public enum MapContract: ElementContract {
     public static let locationTapped = ElementEvent<Self, Location>("locationTapped", layer: .provider)
 
     /// Slides the map until it shows a region.
-    public static let moveToRegion = ElementAct<Self, MapRegion, Void>("moveToRegion")
+    public static let moveToRegion = ElementAct<Self, MapRegion, Void>("moveToRegion", layer: .provider)
 
     /// The region the map opens on.
     public static let region = ElementProperty<Self, MapRegion>(
@@ -35,11 +35,11 @@ public enum MapContract: ElementContract {
     public static let showsUserLocation = ElementProperty<Self, Bool>("showsUserLocation", layer: .provider)
 
     /// How the world is drawn - streets, photography from above, or both.
-    public static let type = ElementProperty<Self, MapType>("type", layer: .provider)
+    public static let kind = ElementProperty<Self, MapKind>("kind", layer: .provider)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
         isScrollEnabled, showsTraffic, isZoomEnabled, locationTapped, moveToRegion, region,
-        showsUserLocation, type,
+        showsUserLocation, kind,
     ]
 }

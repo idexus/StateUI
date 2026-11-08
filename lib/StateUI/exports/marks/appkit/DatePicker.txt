@@ -1,10 +1,7 @@
-# revision 5.1
+# revision 6.1
 DatePicker: ✅
-DatePicker.closed: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
 DatePicker.date: ✅
 DatePicker.dateChanged: ✓ pickDate on DatePicker: the host's change handler called, not the picker's action
 DatePicker.format: – AppKit's date picker writes its day and time in the user's own way, whatever form is asked.
-DatePicker.isOpen: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
-DatePicker.maximumDate: ✅
-DatePicker.minimumDate: ✅
-DatePicker.opened: – AppKit's date picker opens no calendar for the program, nor says when the user opens one.
+DatePicker.maximum: ✅
+DatePicker.minimum: ✅

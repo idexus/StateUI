@@ -1,5 +1,3 @@
-# revision 1.1
-MenuItem.clicked: ✅
+# revision 2.1
 MenuItem.role: – GNOME's menus mark no entry as destroying something.
-ToolbarButton.clicked: ✅
 ToolbarButton.role: ✅

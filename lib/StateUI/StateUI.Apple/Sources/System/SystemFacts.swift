@@ -11,20 +11,21 @@ import Network
 /// Design: docs/design/platforms/apple/system.md#the-systems-facts
 @_spi(Host) @MainActor
 public enum SystemFacts {
-    /// The user's locale as it stands: the language and region, the time zone, the clock, the week, the measures and
-    /// the direction words read in.
+    /// The user's locale as it stands: the language and region, the time zone, the clock, the week, the measures,
+    /// the direction words read in, and the user's languages in order.
     public static var locale: HostLocaleInfo {
         let locale = Locale.current
         let hourCycle = locale.hourCycle
+        let language = locale.identifier(.bcp47)
+        let zone = TimeZone.current.identifier
         return HostLocaleInfo(
-            language: locale.language.languageCode?.identifier ?? "",
-            region: locale.region?.identifier ?? "",
-            name: locale.identifier(.bcp47),
-            timeZone: TimeZone.current.identifier,
+            language: language.isEmpty ? nil : LocaleTag(language),
+            timeZone: zone.isEmpty ? nil : TimeZoneName(zone),
             uses24HourClock: hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour,
             firstDayOfWeek: Weekday(rawValue: Int32(Calendar.current.firstWeekday - 1)) ?? .sunday,
             isMetric: locale.measurementSystem != .us,
-            layoutDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
+            writingDirection: locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
+            languages: Locale.preferredLanguages.map { LocaleTag($0) })
     }
 
     /// What `path` reaches - the internet, only what is near, nothing - and through what.
@@ -52,7 +53,7 @@ public enum SystemFacts {
                 ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
                 ?? ProcessInfo.processInfo.processName,
             packageName: bundle.bundleIdentifier ?? "",
-            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
-            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
+            version: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+            build: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
     }
 }

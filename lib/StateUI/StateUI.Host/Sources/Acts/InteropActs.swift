@@ -30,11 +30,12 @@
     }
 
     /// Performs an act of the application's own with `perform`, handed the values its contract declares; a second
-    /// registration replaces the first.
+    /// registration replaces the first, and is said.
     public func add<Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable>(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         _ perform: @escaping @MainActor (repeat each Argument) async throws -> (repeat each Answer)
     ) {
+        sayTwice(act.token)
         performers[act.token] = .application { values in
             guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
                 throw Self.miscalled(act.name, values, declaring: MemberValues.describe(repeat (each Argument).self))
@@ -45,14 +46,16 @@
     }
 
     /// Performs an act aimed at an element with `perform`, handed the control `control` finds in the element's
-    /// view and the values its contract declares; an element shown otherwise fails the call.
+    /// view and the values its contract declares; an element shown otherwise fails the call. A second
+    /// registration replaces the first, and is said.
     public func add<
-        Owner: Contract, Made, each Argument: HostRepresentable, each Answer: HostRepresentable
+        Owner: WornContract, Made, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
         control: @escaping @MainActor (View) -> Made?,
         _ perform: @escaping @MainActor (Made, repeat each Argument) async throws -> (repeat each Answer)
     ) {
+        sayTwice(act.token)
         performers[act.token] = .aimed { view, values in
             guard let made = control(view) else {
                 throw ActFailure("`\(act.name)` is aimed at an element this host shows otherwise, "
@@ -66,35 +69,48 @@
         }
     }
 
+    /// Says that `act` already has a performer, which the one registered now replaces.
+    private func sayTwice(_ act: Act) {
+        if performers[act] != nil {
+            Complaints.say("`\(act)` was registered twice: the second performer replaces the first.")
+        }
+    }
+
     /// Performs `call` where the application registered its act - an aimed one handed the view `view` finds for
     /// the element it names - answering it through `core` once the performer returns, or failing it with why;
     /// whether the application registered the act.
     public func perform(
-        _ call: HostActCall, in tree: MountedTree, core: CoreLink, view: (MountedElement) -> View?,
+        _ call: HostActCall, in tree: MountedTree, core: CoreLink, view: @escaping (MountedElement) -> View?,
         log: @escaping (String) -> Void
     ) -> Bool {
         guard let performer = performers[call.act] else { return false }
 
-        var aimed: View?
+        var aimed: (id: ElementID, mount: UInt64)?
         if case .aimed = performer {
             do {
                 let element = try tree.aimed(call)
-                guard let found = view(element) else {
+                guard view(element) != nil else {
                     core.fail(call, "\(element.id) has no view", log: log)
                     return true
                 }
-                aimed = found
+                aimed = (element.id, element.mount)
             } catch {
                 core.fail(call, error.reason, log: log)
                 return true
             }
         }
-        // A performer may await; the call is answered once it returns.
+        // A performer may await; the call is answered once it returns. An aimed one is handed its control as it
+        // begins, the element found again by its number: the queue holds no control, and one that left fails.
+        // Design: docs/design/host/runtime.md#an-applications-own-acts
         Task { @MainActor in
             do {
                 switch performer {
                 case .application(let perform): core.reply(call, try await perform(call.arguments))
-                case .aimed(let perform): core.reply(call, try await perform(aimed!, Array(call.arguments.dropFirst())))
+                case .aimed(let perform):
+                    guard let aimed, let element = tree.root?.first(mount: aimed.mount), let control = view(element) else {
+                        return core.fail(call, "\(aimed.map { "\($0.id)" } ?? "the view") left before its act began", log: log)
+                    }
+                    core.reply(call, try await perform(control, Array(call.arguments.dropFirst())))
                 }
             } catch {
                 core.fail(call, "\(error)", log: log)

@@ -58,7 +58,7 @@ extension VisualElement {
     /// The same, with a handler that awaits: its `policy` says what a step does when it comes again while a run is
     /// under way.
     public func onAccessibilityAdjusted(
-        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>
+        policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>
     ) -> Modified {
         modified { $0.addHandler(VisualElementContract.accessibilityAdjusted, policy: policy, handler) }
     }

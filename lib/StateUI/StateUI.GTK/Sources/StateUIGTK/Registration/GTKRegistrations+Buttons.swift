@@ -10,9 +10,9 @@ extension GTKRegistrations {
         registry.add(ButtonContract.self, create: { reports in
             // A button holding a menu is GTK's menu button or libadwaita's split button, made so from the first.
             let button = GTKButtonView(menu: ButtonMenu.opening(made: reports.made))
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
-            button.onPressed = { reports.raise(ButtonContract.pressed) }
-            button.onReleased = { reports.raise(ButtonContract.released) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
+            button.onPressed = { reports.raise(PressElementContract.pressed) }
+            button.onReleased = { reports.raise(PressElementContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
@@ -20,38 +20,38 @@ extension GTKRegistrations {
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies(
-                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BackgroundElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
                 BorderElementContract.lineWidth) { view, values in
                 view.setBox(
-                    fill: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
+                    fill: HostMaterial(values[BackgroundElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
-                let picture = HostPicture(values[ButtonContract.icon], dark: false)
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                ContentModeElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                let picture = HostPicture(values[IconElementContract.icon], dark: false)
                 view.setPicture(
                     picture, position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ContentModeElementContract.contentMode] ?? .fit,
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }
-            button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
+            button.property(LineBreakElementContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
             // suggested action and a destructive one.
-            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
+            button.applies(ShortcutElementContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
-                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
+                view.setShortcut(KeyboardShortcuts.pressing(stated: values[ShortcutElementContract.keyboardShortcut], role: role))
                 view.setRole(role)
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in
+            button.property(EnabledElementContract.isEnabled) { view, enabled in
                 view.setEnabled(enabled ?? true)
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ClickElementContract.clicked)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 }

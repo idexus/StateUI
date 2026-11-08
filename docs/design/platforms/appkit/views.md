@@ -173,8 +173,10 @@ image view as pixels of the size it is shown at (`AppKitImageView`), by
 the host layer's rule (`PictureArithmetic.vectorPixels`, `drawsAgain`):
 made again only for more pixels, so a size in motion does not draw it
 every frame. They are made away from the main thread, the picture
-standing as it is meanwhile; pixels, icons and pictures drawn by code
-stand as they are given. The trap: AppKit draws an image view again
+standing as it is meanwhile; the work holds the drawing and never the view,
+so a view the tree drops while its drawing is still being made goes with
+the tree, and the pixels come to nobody. Pixels, icons and pictures drawn
+by code stand as they are given. The trap: AppKit draws an image view again
 whenever a transform above it moves - a photo turning as a throw slows, a
 card of a ring - and its drawing view, a private part of the control,
 draws a drawing anew from its source each time: a light table's turned

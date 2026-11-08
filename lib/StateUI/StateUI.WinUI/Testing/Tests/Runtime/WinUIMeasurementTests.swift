@@ -21,8 +21,8 @@ private func nest(_ depth: Int, _ words: String) -> AnyView {
         }
         .gridColumn(1)
     }
-    .rows(.auto, .auto)
-    .columns(.auto, .fill)
+    .rows(.automatic, .automatic)
+    .columns(.automatic, .fill)
     .margin(2))
 }
 

@@ -32,7 +32,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "Path", owner: "Path", member: "data")))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "Polygon", owner: "Polygon", member: "fillRule")))
+            HostRealizedMember(element: "Polygon", owner: "PointsShape", member: "fillRule")))
     }
 
     /// What the shapes SHARE is recorded on every one of them, from the single
@@ -62,13 +62,13 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     @MainActor
     func testAFigureMadeOfABlurStandsAppKitsEffectUnderItsOutline() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var capsule = HostPatch(id: .manual("capsule"), type: .capsule)
         capsule.properties[.fill] = Material.blur(.thin).propValue
-        capsule.properties[.stroke] = Brush.solidColor(Color(hex: 0xFFFFFF)).propValue
-        capsule.properties[.width] = .number(80)
-        capsule.properties[.height] = .number(30)
+        capsule.properties[ShapeContract.stroke.token] = Brush.solidColor(Color(hex: 0xFFFFFF)).propValue
+        capsule.properties[VisualElementContract.width.token] = .number(80)
+        capsule.properties[VisualElementContract.height.token] = .number(30)
         renderer.applyForTesting(tree(capsule))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("capsule")) as? AppKitShapeView)
         native.setFrameSize(NSSize(width: 80, height: 30))
@@ -88,12 +88,12 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     @MainActor
     func testAnEllipseIsMadeAndDrawnFromItsTierAlone() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)
         ellipse.properties[.fill] = Material.color(Color(red: 51, green: 102, blue: 153)).propValue
-        ellipse.properties[.stroke] = Brush.solidColor(Color(hex: 0x000000)).propValue
-        ellipse.properties[.lineWidth] = .number(3)
+        ellipse.properties[ShapeContract.stroke.token] = Brush.solidColor(Color(hex: 0x000000)).propValue
+        ellipse.properties[ShapeContract.lineWidth.token] = .number(3)
         ellipse.properties[.dash] = .numbers([2, 1])
         renderer.applyForTesting(tree(ellipse))
 

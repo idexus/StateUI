@@ -24,11 +24,12 @@ apps/<App>/Platforms/AppKit/
 
 ## Requirements
 
-The host builds on macOS 26 or newer, with Xcode 27 or newer and its Swift
-6.4. macOS 26 is the floor of the host's package and of the library, which an
-application's manifest cannot go below. A Debug launch runs Xcode's
-`lldb-dap`. Nothing else is installed: the `Map` and the `WebView` stand on
-MapKit and WebKit, which macOS ships. [Tested setups](../tested-setups.md)
+The host builds on macOS 26.4 or newer, with Xcode 27 or newer and its Swift
+6.4. macOS 26.4 is the floor of the host's package and of the library, which an
+application's manifest cannot go below
+([the floor](../design/core/concurrency.md#the-floor)). A Debug launch runs
+Xcode's `lldb-dap`. Nothing else is installed: the `Map` and the `WebView`
+stand on MapKit and WebKit, which macOS ships. [Tested setups](../tested-setups.md)
 names the versions the host's suite passes on.
 
 ## The head
@@ -40,6 +41,7 @@ the Gallery's:
 ```swift listing appkit.md.head
 // Platforms/AppKit/main.swift
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 GalleryApp.register()
@@ -51,16 +53,15 @@ GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
 
-StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+AppKitHost.run()
 ```
 
 `run` shows the artwork the program carries - the `Images` in its bundle, or
-in the `Resources` that `.scripts/AppKit/deploy.sh` lays beside it, with the
-icon there - and ends the process as the application ends. A head run from
-the build carries nothing, so it hands the host the artwork the application
-keeps, found from its own source file, `#filePath`
-(`run(resourceDirectory:applicationIcon:)`): it runs the same whether a
-debugger, a task or a terminal starts it. The icon a head hands the host is
+in the `Resources` beside it, with the icon there - and ends the process as
+the application ends. `.scripts/AppKit/run-app.sh` and `deploy.sh` lay the
+application's `Resources/Images` and `Resources/AppIcon` beside the program
+they build, so a head runs the same whether a debugger, a task or a terminal
+starts it; `run(resourceDirectory:applicationIcon:)` names other places. The icon a head hands the host is
 `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
 1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside
@@ -73,14 +74,14 @@ condition; Swift written for this host alone stands under `#if APPKIT`. See
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its AppKit head. Registrations run before
-`StateUIAppKit.run`, on the main thread. Registering a contract or an act again
+`AppKitHost.run`, on the main thread. Registering a contract or an act again
 replaces the earlier registration.
 
 **A host in the same process registers BY TYPE.** Every registration is written
 against the same `ElementContract` the application's own views are written
-against, so the compiler refuses a property of the wrong type, an event of a
-contract the element does not wear, and a performer whose arguments are not the
-act's.
+against, so the compiler refuses a property of the wrong type and a performer
+whose arguments are not the act's. A property or an event of a contract the
+element does not wear compiles; the registration refuses it and says so once.
 
 Because the registration names the contract's types, the application's
 contracts are `public`: the host lives in a module of its own and must see
@@ -94,8 +95,8 @@ them. The Swift half itself is the same for every host - one contract, one
 ```swift quote
 public static func add<Realized: ElementContract, Made: NSView>(
     _ contract: Realized.Type,
-    create: @escaping (AppKitReports<Realized>) -> Made,
-    members: (AppKitRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (AppKitRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the view once per element, and wires what the view
@@ -105,7 +106,7 @@ public static func add<Realized: ElementContract, Made: NSView>(
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
   over as the type its contract declares, `nil` where it is no longer
-  described, and `raises(_:)` records an event the view raises.
+  described, and `declares(_:)` records an event the view raises.
 
 Name the view's own class where the closure makes it - `create: { reports ->
 TrafficLightView in … }` - so every applier is handed that class rather than a
@@ -131,7 +132,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }
@@ -170,7 +171,7 @@ A Swift `Style` can target the control once its Swift struct conforms to
 `StyleTarget`. Styles resolve on the Swift side, so the control arrives with
 the style's values already among its own; the registration needs nothing for
 it. A value handed over as a state - `.rating($stars)` over
-`setValue(_:on:mode:kind:)` - reaches the same applier on the host's own
+`setValue(_:on:as:)` - reaches the same applier on the host's own
 frames; see [Motion and journeys](../concepts/motion-and-journeys.md). A state
 the host cannot carry, or one the control translates - an enumeration, a choice
 by its place - is read by the element as it is described: `.signal($signal)`
@@ -231,7 +232,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
             rating: values[RatingBarContract.rating] ?? 0,
             of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -241,7 +242,7 @@ A view may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the view realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is an
-`AppKitChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
 view of its own. The Gallery's [Web](web.md#children-a-control-draws) and
@@ -343,51 +344,46 @@ than a failure, so an application wires its sources unconditionally. The Swift s
 [Host-extension events](../interface/interaction-and-actions.md#host-extension-events).
 
 The head declares each event it raises where it wires the source, before
-`StateUIAppKit.run(resourceDirectory:applicationIcon:)`:
+`AppKitHost.run(resourceDirectory:applicationIcon:)`:
 
-```swift listing appkit.md.raises
+```swift listing appkit.md.declares
 // Platforms/AppKit/Host/GalleryEventSources.swift
 // Declared where the source is wired: a handler listening for an
 // event nothing declared is told, once, that it will not hear it.
-StateUIEvents.raises(GalleryContract.batteryChanged)
+StateUIEvents.declares(GalleryContract.batteryChanged)
 ```
 
 The host tells the core what it realizes when it starts: every element of the
 library's it shows, the controls the application added, and the events
 declared. A `HostEvents.on` for an event nothing declared is then said once -
-*the host raises no `Gallery.BatteryChanged`: the handler will not hear it* -
+*the host raises no `Gallery.batteryChanged`: the handler will not hear it* -
 with the declared names nearest to it; so is an element the host shows none
 of, the first time it is described.
 
 ## Running
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
-open apps/Gallery/.build/appkit/debug/GalleryAppKit.app
+.scripts/AppKit/run-app.sh apps/HelloWorld debug
+.scripts/AppKit/run-app.sh apps/Gallery debug
 ```
 
-`build-gallery-appkit.sh` builds the Gallery's head, `debug` or `release`, and
-makes it an application bundle, `apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`:
-the head, the StateUI libraries it links, the Gallery's pictures, its icon
-drawn from `Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an
-ad-hoc signature. It prints where the bundle is. An application with no
-bundling script of its own is built by SwiftPM, and runs as the executable it
-makes:
-
-```bash
-STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
-  --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
-apps/HelloWorld/.build/appkit/debug/HelloWorldAppKit
-```
+`run-app.sh` builds an application's head, `debug` or `release`, and starts
+it; `--build-only` builds it and says where it is. An application with no
+bundling script of its own is built by SwiftPM, its `Resources/Images` and
+`Resources/AppIcon` laid in `Resources` beside the executable. The Gallery's,
+`build-gallery-appkit.sh`, makes it an application bundle,
+`apps/Gallery/.build/appkit/<configuration>/GalleryAppKit.app`: the head, the
+StateUI libraries it links, the Gallery's pictures, its icon drawn from
+`Resources/AppIcon/appicon_macos.svg`, an `Info.plist` and an ad-hoc
+signature.
 
 Everything an AppKit build writes stays in the application's `.build/appkit/`.
 
 In VS Code, choose **AppKit** as the host and press **F5**. **StateUI: Debug**
-builds the head - with the application's bundling script,
-`.scripts/AppKit/build-<application>-appkit.sh`, where the checkout's own
-`apps/<application>` has one, else with SwiftPM - and starts it under `lldb-dap`, so a breakpoint in the application,
-in StateUI or in the host holds from the first line. **StateUI: Release**
-builds and starts the optimized head the same way.
+builds the head with `run-app.sh --build-only` and starts it under
+`lldb-dap`, so a breakpoint in the application, in StateUI or in the host
+holds from the first line. **StateUI: Release** builds and starts the
+optimized head the same way.
 
 ## Deploying
 

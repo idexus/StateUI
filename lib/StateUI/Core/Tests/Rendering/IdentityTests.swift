@@ -47,6 +47,11 @@ private struct Converting: View {
     }
 }
 
+/// An application whose one window shows a view named as its scene is.
+private struct OneNamedApplication: Application {
+    var body: some Scene { WindowGroup { Text("One").id("1") } }
+}
+
 /// Who a view is: the value an identity was written from, compared as that value, and its name in the patch.
 @MainActor
 final class IdentityTests: XCTestCase {
@@ -77,20 +82,19 @@ final class IdentityTests: XCTestCase {
         XCTAssertEqual(Renderer.shared.texts, texts, "a second render, no element born: no text")
     }
 
-    /// AN IDENTITY WHOSE DESCRIPTION CHANGES KEEPS ITS ELEMENT: it is matched as the value it is, its description
-    /// asked once, as the element is born.
+    /// An identity is matched as its value; a changing description is never needed to allocate or retain its key.
     func testAnIdentityWhoseDescriptionChangesKeepsItsElement() {
         let renders = Renders()
         func list() -> Node {
             VStack { ForEach([Restless(number: 1), Restless(number: 2)], id: \.self) { Text("\($0.number)") } }.node
         }
 
-        let first = renders.render(list()).children.map(\.id)
         let asked = Restless.asked
+        let first = renders.render(list()).children.map(\.id)
         let second = renders.render(list())
 
         XCTAssertNil(second.arrangement, "the same elements, in the same order")
-        XCTAssertEqual(Restless.asked, asked, "described once each, as they were born")
+        XCTAssertEqual(Restless.asked, asked, "descriptions are diagnostics, not runtime keys")
         XCTAssertEqual(first.count, 2)
     }
 
@@ -121,6 +125,46 @@ final class IdentityTests: XCTestCase {
         XCTAssertNotEqual(first[0], first[1], "two elements")
         XCTAssertEqual(second, [first[1], first[0]], "each followed its own ticket")
         XCTAssertFalse(hasComplained("Ticket"), "nothing to say")
+    }
+
+    /// One name under two parents is two elements - an id is distinct among siblings, no further - each keyed by
+    /// the name, and each aim names its own by where it stands: the keys from the root down, apart at the parents;
+    /// both keep their places through a render, and nothing is said.
+    func testAnAimNamesItsViewByWhereItStands() throws {
+        let renders = Renders()
+        let left = Aim(TextField.self), right = Aim(TextField.self)
+        func page() -> Node {
+            HStack {
+                VStack { TextField("left").id("editor").aim(left) }
+                VStack { TextField("right").id("editor").aim(right) }
+            }.node
+        }
+
+        let fields = renders.render(page()).subtree.filter { $0.type == .textField }.map(\.id)
+        XCTAssertEqual(fields, [.manual("editor"), .manual("editor")], "each keyed by its name")
+        let (one, other) = (try XCTUnwrap(left.place), try XCTUnwrap(right.place))
+        XCTAssertEqual(one.last, .manual("editor"))
+        XCTAssertEqual(other.last, .manual("editor"))
+        XCTAssertEqual(one.count, 3, "the stack, the column, the field")
+        XCTAssertNotEqual(one, other, "apart at the columns")
+        XCTAssertEqual(one.dropLast(2), other.dropLast(2), "under one stack")
+        XCTAssertNil(renders.render(page()).arrangement, "the same elements again, in the same order")
+        XCTAssertEqual(left.place, one, "kept")
+        XCTAssertEqual(right.place, other, "kept")
+        XCTAssertFalse(hasComplained("editor"), "nothing to say: the ids are distinct among their siblings")
+    }
+
+    /// A scene's name is StateUI's, a window's too, apart from the views': a view named `1` beside the scene `1`
+    /// keeps its name, and the scene its own.
+    func testAViewNamedAsASceneKeepsItsName() throws {
+        Renderer.shared.setApplication(OneNamedApplication())
+        defer { OpenScenes.shared.reset() }
+        HostBoundary.connectWindow()
+
+        let tree = Renders().render(OpenScenes.shared.tree(of: try XCTUnwrap(Renderer.shared.madeApplication())))
+
+        XCTAssertEqual(tree.children.first?.id, .scene("1"), "the scene, behind its own separator")
+        XCTAssertTrue(tree.subtree.contains { $0.type == .text && $0.id == .manual("1") }, "the view named 1 too")
     }
 
     /// A marker written with an id stays itself when another is put before it: matched by its id, not by its place

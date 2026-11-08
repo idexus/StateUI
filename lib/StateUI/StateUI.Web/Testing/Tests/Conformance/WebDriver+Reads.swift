@@ -27,7 +27,7 @@ extension WebDriver {
         case (.showsText, is WebButtonView):
             let shown = "((s) => !!s && getComputedStyle(s).display !== 'none')(e.querySelector(':scope > span'))"
             return try WebBrowser.truth(shown, on: e).propValue
-        case (.role, _):
+        case (ButtonContract.role.token, _):
             let roles: [String: ButtonRole] = ["primary": .primary, "cancel": .cancel, "destructive": .destructive]
             return try WebBrowser.evaluate("e.dataset.role ?? null", on: e).flatMap { roles[$0] }?.propValue
         case (.isEnabled, _):
@@ -40,19 +40,19 @@ extension WebDriver {
             return (rightToLeft ? LayoutDirection.rightToLeft : .leftToRight).propValue
         case (.isOn, is WebSwitchView): return try WebBrowser.truth("e.querySelector('input').checked", on: e).propValue
         case (.value, is WebSliderView): return try WebBrowser.number("Number(e.value)", on: e)?.propValue
-        case (.minimum, is WebSliderView): return try WebBrowser.number("Number(e.min)", on: e)?.propValue
-        case (.maximum, is WebSliderView): return try WebBrowser.number("Number(e.max)", on: e)?.propValue
+        case (RangeElementContract.minimum.token, is WebSliderView): return try WebBrowser.number("Number(e.min)", on: e)?.propValue
+        case (RangeElementContract.maximum.token, is WebSliderView): return try WebBrowser.number("Number(e.max)", on: e)?.propValue
         case (.value, is WebStepperView): return try WebBrowser.number("Number(e.querySelector('input').value)", on: e)?.propValue
         case (.step, let stepper as WebStepperView): return stepper.step.propValue
-        case (.minimum, is WebStepperView):
+        case (RangeElementContract.minimum.token, is WebStepperView):
             return try WebBrowser.number("Number(e.querySelector('input').getAttribute('aria-valuemin'))", on: e)?.propValue
-        case (.maximum, is WebStepperView):
+        case (RangeElementContract.maximum.token, is WebStepperView):
             return try WebBrowser.number("Number(e.querySelector('input').getAttribute('aria-valuemax'))", on: e)?.propValue
         case (.date, is WebDatePickerView): return .some(try day("e.value", on: e)?.propValue)
         case (.color, is WebColorPickerView):
             return .some(try WebBrowser.evaluate("e.value", on: e).flatMap { Color(parsing: $0) }?.propValue)
-        case (.minimumDate, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
-        case (.maximumDate, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
+        case (DatePickerContract.minimum.token, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
+        case (DatePickerContract.maximum.token, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
         case (.time, is WebTimePickerView):
             let parts = (try WebBrowser.evaluate("e.value", on: e) ?? "").split(separator: ":").compactMap { Int($0) }
             return .some(parts.count >= 2 ? ClockTime(hour: parts[0], minute: parts[1], second: parts.count > 2 ? parts[2] : 0).propValue : nil)
@@ -61,12 +61,12 @@ extension WebDriver {
             return .some(try WebBrowser.evaluate(painted, on: e) == nil ? nil : try color(painted, on: e)?.propValue)
         case (.verticalScrollIndicator, is WebScrollView): return try bars("overflowY", on: e)
         case (.horizontalScrollIndicator, is WebScrollView): return try bars("overflowX", on: e)
-        case (.source, let frame as WebFrameView): return .some(try source(of: frame))
+        case (WebViewContract.source.token, let frame as WebFrameView): return .some(try source(of: frame))
         case (.selectedItems, let items as WebItemsView): return .strings(items.cells.selected)
         case (.progress, is WebProgressView):
             let bar = view.named.node
             return .some(try WebBrowser.evaluate("e.hasAttribute('value') ? e.value : null", on: bar).flatMap(Double.init)?.propValue)
-        case (.isAnimating, is WebActivityView): return try WebBrowser.truth("!!e.querySelector('[data-running]')", on: e).propValue
+        case (SpinnerContract.isAnimating.token, is WebActivityView): return try WebBrowser.truth("!!e.querySelector('[data-running]')", on: e).propValue
         // The title's option stands first: it is no choice.
         case (.selectedIndex, is WebPickerView):
             return .some(try WebBrowser.number("e.selectedIndex - 1", on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
@@ -76,7 +76,7 @@ extension WebDriver {
             let checked = "[...e.children].findIndex((c) => c.getAttribute('aria-checked') === 'true' || !!c.querySelector('input:checked'))"
             return .some(try WebBrowser.number(checked, on: e).flatMap { $0 < 0 ? nil : Int($0).propValue })
         case (.placeholder, is WebPickerView): return .some(try WebBrowser.evaluate("e.options[0].text || null", on: e)?.propValue)
-        case (.source, let image as WebImageView): return .some(try source(of: image))
+        case (ImageContract.source.token, let image as WebImageView): return .some(try source(of: image))
         case (.contentMode, is WebImageView): return try contentMode(of: e)
         case (.icon, is WebButtonView), (.iconPosition, is WebButtonView), (.iconSpacing, is WebButtonView),
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
@@ -124,7 +124,7 @@ extension WebDriver {
     /// place on a tab.
     func structureHolds(_ property: Prop, on element: MountedElement) throws -> HostValue?? {
         switch (element.type, property) {
-        case (.window, .title): return try WebBrowser.evaluate("document.title", on: 0)?.propValue
+        case (.window, WindowContract.title.token): return try WebBrowser.evaluate("document.title", on: 0)?.propValue
         case (.window, .background):
             guard let frame = renderer?.roster.controllers.first?.window.frame else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)
@@ -138,7 +138,7 @@ extension WebDriver {
         case (_, .holdDuration):
             guard let view = (element.native as? WebElement)?.view else { return nil }
             return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
-        case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
+        case (.page, PageContract.subtitle.token): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .toolbarSpacing):
             // The room between the groups at the bar's end.
@@ -167,7 +167,7 @@ extension WebDriver {
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("!e.hidden && !e.querySelector('button:has(> [data-glyph=back])').hidden", on: bar).propValue
-        case (_, .title) where tab(of: element) != nil:
+        case (_, PageElementContract.title.token) where tab(of: element) != nil:
             guard let (tabs, place) = tab(of: element), let view = (tabs.native as? WebElement)?.view else { return nil }
             let strip = ":scope > .stateui-tab-strip > [role=tab]"
             return .some(try WebBrowser.evaluate("e.querySelectorAll('\(strip)')[\(place)]?.textContent ?? null", on: view.node)?.propValue)
@@ -278,9 +278,10 @@ extension WebDriver {
         case .accessibilityHeading:
             let level = try WebBrowser.number("e.getAttribute('role') === 'heading' ? Number(e.ariaLevel) : 0", on: e) ?? 0
             return AccessibilityHeadingLevel(rawValue: Int32(level))?.propValue ?? AccessibilityHeadingLevel.none.propValue
-        case .isAccessibilityHidden:
-            return try WebBrowser.truth("e.getAttribute('role') === 'none' || e.ariaHidden === 'true'", on: e).propValue
-        case .hidesChildrenFromAccessibility: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
+        case .accessibilityPresence:
+            if try WebBrowser.truth("e.ariaHidden === 'true'", on: e) { return AccessibilityPresence.hiddenWithContents.propValue }
+            let hidden = try WebBrowser.truth("e.getAttribute('role') === 'none'", on: e)
+            return (hidden ? AccessibilityPresence.hidden : .element).propValue
         default: return nil
         }
     }
@@ -332,7 +333,7 @@ extension WebDriver {
         case .fontWeight:
             return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            var attributes = FontAttributes.none
+            var attributes: FontAttributes = []
             if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
             if try WebBrowser.truth("\(style).fontVariantNumeric.includes('tabular-nums')", on: e) {
                 attributes.insert(.monospacedDigits)
@@ -388,7 +389,8 @@ extension WebDriver {
     private func fieldHolds(_ property: Prop, _ field: WebTextInputView) throws -> HostValue?? {
         let e = field.node
         switch property {
-        case .stroke, .lineWidth, .shape: return try boxHolds(property, field)
+        case BorderElementContract.stroke.token, BorderElementContract.lineWidth.token, .shape:
+            return try boxHolds(property, field)
         case .text: return try WebBrowser.evaluate("e.value", on: e)?.propValue ?? "".propValue
         case .placeholder: return .some(try WebBrowser.evaluate("e.placeholder || null", on: e)?.propValue)
         case .isReadOnly: return try WebBrowser.truth("e.readOnly", on: e).propValue
@@ -405,7 +407,7 @@ extension WebDriver {
             case "next": .next
             case "search": .search
             case "send": .send
-            default: .default
+            default: .automatic
             }
             return label.propValue
         case .inputPurpose:
@@ -419,7 +421,7 @@ extension WebDriver {
             case "url": .url
             case "tel": .telephone
             case "decimal", "numeric": .numeric
-            default: .default
+            default: .automatic
             }
             return purpose.propValue
         case .growsWithText: return try WebBrowser.truth("e.hasAttribute('data-grows')", on: e).propValue
@@ -451,11 +453,11 @@ extension WebDriver {
             let painted = try attribute("fill") ?? "none"
             guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
             return .some(try color("\(path).getAttribute('fill')", on: shape.node).map { Material.color($0).propValue })
-        case .stroke:
+        case ShapeContract.stroke.token:
             let painted = try attribute("stroke") ?? "none"
             guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
             return .some(try color("\(path).getAttribute('stroke')", on: shape.node).map { Brush.solidColor($0).propValue })
-        case .lineWidth: return width.propValue
+        case ShapeContract.lineWidth.token: return width.propValue
         case .miterLimit: return (Double(try attribute("stroke-miterlimit") ?? "") ?? 4).propValue
         case .lineCap:
             let cap = try attribute("stroke-linecap")
@@ -516,10 +518,10 @@ extension WebDriver {
                 return .some(Material.blur(Blur(thickness)).propValue)
             }
             return .some(try color("\(style).backgroundColor", on: e, unlessClear: true).map { Material.color($0).propValue })
-        case .stroke:
+        case BorderElementContract.stroke.token:
             let drawn = try WebBrowser.truth("\(style).borderTopStyle !== 'none' && parseFloat(\(style).borderTopWidth) > 0", on: e)
             return .some(drawn ? try color("\(style).borderTopColor", on: e, unlessClear: true).map { Brush.solidColor($0).propValue } : nil)
-        case .lineWidth:
+        case BorderElementContract.lineWidth.token:
             return try WebBrowser.number("\(style).borderTopStyle === 'none' ? 0 : parseFloat(\(style).borderTopWidth)", on: e)?.propValue
         case .shape:
             if try WebBrowser.truth("\(style).borderTopLeftRadius.endsWith('%')", on: e) { return ContainerShape.ellipse.propValue }

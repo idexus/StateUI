@@ -140,7 +140,7 @@ final class WinUIActsTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Text(outcome.wrappedValue)
-                    Button("Ask").onClicked(.ignoreWhileRunning) {
+                    Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                         do {
                             outcome.wrappedValue = "answered \(try await WindowSession().confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
                         } catch {
@@ -199,7 +199,7 @@ private struct AskingApplication: Application {
 private struct AskingScene: Scene {
     var body: some Scene {
         WindowGroup { AskingOpeningPage() }
-        Window(WindowType("acts.tool")) { AskingToolPage() }
+        Window(WindowKind("acts.tool")) { AskingToolPage() }
     }
 }
 
@@ -212,7 +212,7 @@ private struct ClosingApplication: Application {
 private struct ClosingScene: Scene {
     var body: some Scene {
         WindowGroup { ClosingOpeningPage() }
-        Window(WindowType("acts.closed")) { ClosedToolPage() }
+        Window(WindowKind("acts.closed")) { ClosedToolPage() }
     }
 }
 
@@ -221,7 +221,7 @@ private struct ClosingOpeningPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Tool").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("acts.closed")) }
+        return Button("Tool").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("acts.closed")) }
     }
 }
 
@@ -233,7 +233,7 @@ private struct ClosedToolPage: View {
         let application = self.application
         return VStack {
             Text("Tool")
-            Button("Close").onClicked(.ignoreWhileRunning) { try await application.closeWindow(WindowType("acts.closed")) }
+            Button("Close").onClicked(policy: .ignoreWhileRunning) { try await application.closeWindow(WindowKind("acts.closed")) }
         }
         .onCreated { try await window.alert("Saved", message: "The draft is safe") }
     }
@@ -244,7 +244,7 @@ private struct AskingOpeningPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Tool").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("acts.tool")) }
+        return Button("Tool").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("acts.tool")) }
     }
 }
 
@@ -254,6 +254,6 @@ private struct AskingToolPage: View {
 
     var body: some View {
         let window = self.window
-        return Button("Ask").onClicked(.ignoreWhileRunning) { try await window.alert("Saved", message: "The draft is safe") }
+        return Button("Ask").onClicked(policy: .ignoreWhileRunning) { try await window.alert("Saved", message: "The draft is safe") }
     }
 }

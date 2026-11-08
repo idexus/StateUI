@@ -17,7 +17,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0.25)
@@ -54,7 +54,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(HostPatch(id: .manual("label"), type: .text))
 
@@ -79,7 +79,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(HostPatch(id: .manual("label"), type: .text))
 
@@ -110,15 +110,15 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(HostPatch(id: .manual("stack"), type: .vStack))
 
         var changed = HostPatch(id: .manual("stack"), type: .vStack)
         changed.properties[.padding] = .numbers([20, 40, 60, 80])
-        changed.properties[.spacing] = .number(10)
+        changed.properties[StackContract.spacing.token] = .number(10)
         changed.transitions[.padding] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
-        changed.transitions[.spacing] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
+        changed.transitions[StackContract.spacing.token] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(changed)
 
         let stack = try XCTUnwrap(
@@ -146,14 +146,14 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.opacity] = .number(0)
         label.properties[.translationX] = .number(0)
         var initial = HostPatch(id: .manual("stack"), type: .vStack)
         initial.properties[.padding] = .numbers([0, 0, 0, 0])
-        initial.properties[.spacing] = .number(0)
+        initial.properties[StackContract.spacing.token] = .number(0)
         initial.children = .arranged([label])
         renderer.applyForTesting(initial)
 
@@ -165,9 +165,9 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(.milliseconds(200), curve: .linear))
         var moving = HostPatch(id: .manual("stack"), type: .vStack)
         moving.properties[.padding] = .numbers([20, 40, 60, 80])
-        moving.properties[.spacing] = .number(10)
+        moving.properties[StackContract.spacing.token] = .number(10)
         moving.transitions[.padding] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
-        moving.transitions[.spacing] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
+        moving.transitions[StackContract.spacing.token] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         moving.children = .changed([movingLabel])
         renderer.applyForTesting(moving)
 
@@ -200,7 +200,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func tree(children: HostChildrenUpdate) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -213,12 +213,12 @@ final class AppKitMotionTests: XCTestCase {
         }
 
         var initialBox = HostPatch(id: .manual("box"), type: .rectangle)
-        initialBox.properties[.width] = .number(120)
+        initialBox.properties[VisualElementContract.width.token] = .number(120)
         renderer.applyForTesting(tree(children: .arranged([initialBox])))
 
         var changedBox = HostPatch(id: .manual("box"), type: .rectangle)
-        changedBox.properties[.width] = .number(300)
-        changedBox.transitions[.width] = HostTransition(
+        changedBox.properties[VisualElementContract.width.token] = .number(300)
+        changedBox.transitions[VisualElementContract.width.token] = HostTransition(
             motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(tree(children: .changed([changedBox])))
         let synchronizationsBeforeFrame = renderer.windowSynchronizationCountForTesting
@@ -239,15 +239,15 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("box"), type: .rectangle)
-        initial.properties[.width] = .number(120)
+        initial.properties[VisualElementContract.width.token] = .number(120)
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("box"), type: .rectangle)
-        changed.properties[.width] = .number(300)
-        changed.transitions[.width] = HostTransition(
+        changed.properties[VisualElementContract.width.token] = .number(300)
+        changed.transitions[VisualElementContract.width.token] = HostTransition(
             motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(changed)
 
@@ -270,13 +270,13 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testDrivenStatesFromOneFrameArrangeTheirCommonAncestorOnce() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func child(_ id: String, state: Int32) -> HostPatch {
             var child = HostPatch(id: .manual(id), type: .rectangle)
-            child.properties[.height] = .number(40)
+            child.properties[VisualElementContract.height.token] = .number(40)
             child.driven = .replace([
-                .height: HostStateBinding(
+                VisualElementContract.height.token: HostStateBinding(
                     state: state, mode: .inOut, kind: .property, laneKind: .number),
             ])
             return child
@@ -317,7 +317,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
@@ -351,11 +351,11 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var content = HostPatch(id: .manual("content"), type: .rectangle)
-        content.properties[.width] = .number(100)
-        content.properties[.height] = .number(500)
+        content.properties[VisualElementContract.width.token] = .number(100)
+        content.properties[VisualElementContract.height.token] = .number(500)
         var initial = HostPatch(id: .manual("scroll"), type: .scrollView)
         initial.properties[.axes] = .enumeration(ScrollAxes.vertical.rawValue)
         initial.properties[.scrollOffset] = .numbers([0, 0])
@@ -391,7 +391,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { 0 },
             reducesMotion: { true })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("label"), type: .text)
@@ -413,7 +413,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { reduced })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
@@ -445,7 +445,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
@@ -480,7 +480,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0.2)
@@ -515,7 +515,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
@@ -555,7 +555,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func label(opacity: Double) -> HostPatch {
             var label = HostPatch(id: .manual("same"), type: .text)
@@ -611,7 +611,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { 0 },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var label = HostPatch(id: .manual("label"), type: .text)
         label.properties[.opacity] = .number(0)
@@ -640,7 +640,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { 0 },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("label"), type: .text)
         initial.properties[.opacity] = .number(0)
@@ -672,7 +672,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("box"), type: .rectangle)
         initial.properties[.cornerRadius] = .numbers([0, 10, 20, 30])
@@ -698,7 +698,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(HostPatch(id: .manual("box"), type: .rectangle))
 
@@ -724,7 +724,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("slider"), type: .slider)
         initial.properties[.value] = .number(0)
@@ -753,7 +753,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("progress"), type: .progressBar)
         initial.properties[.progress] = .number(-1)
@@ -781,19 +781,19 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = testWindow()
-        initial.properties[.width] = .number(600)
-        initial.properties[.height] = .number(400)
+        initial.properties[WindowContract.width.token] = .number(600)
+        initial.properties[WindowContract.height.token] = .number(400)
         renderer.applyForTesting(windowTree(initial))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         window.setContentSize(NSSize(width: 800, height: 500))
 
         var changed = HostPatch(id: .manual("window"), type: .window)
-        changed.properties[.width] = .number(1_000)
-        changed.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
+        changed.properties[WindowContract.width.token] = .number(1_000)
+        changed.transitions[WindowContract.width.token] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(windowChange(changed))
 
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 800, accuracy: 0.001)
@@ -815,17 +815,17 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = testWindow()
-        initial.properties[.width] = .number(600)
-        initial.properties[.height] = .number(400)
+        initial.properties[WindowContract.width.token] = .number(600)
+        initial.properties[WindowContract.height.token] = .number(400)
         renderer.applyForTesting(windowTree(initial))
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
 
         var changed = HostPatch(id: .manual("window"), type: .window)
-        changed.properties[.width] = .number(800)
-        changed.transitions[.width] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
+        changed.properties[WindowContract.width.token] = .number(800)
+        changed.transitions[WindowContract.width.token] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         renderer.applyForTesting(windowChange(changed))
         let synchronizations = renderer.windowSynchronizationCountForTesting
 
@@ -844,7 +844,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         renderer.applyForTesting(windowTree(testWindow()))
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
@@ -872,7 +872,7 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         func transform(x: Double, y: Double) -> HostValue {
             .values([
@@ -917,21 +917,21 @@ final class AppKitMotionTests: XCTestCase {
             presentsWindows: false,
             clock: { now },
             reducesMotion: { false })
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
 
         var initial = HostPatch(id: .manual("line"), type: .line)
         initial.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
-        initial.properties[.stroke] = Brush.solidColor(Color(hex: 0x000000)).propValue
+        initial.properties[ShapeContract.stroke.token] = Brush.solidColor(Color(hex: 0x000000)).propValue
         initial.properties[.dash] = .numbers([1, 1])
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
         changed.properties[.to] = .numbers([20, 10])
-        changed.properties[.lineWidth] = .number(3)
+        changed.properties[ShapeContract.lineWidth.token] = .number(3)
         changed.properties[.dashPhase] = .number(3)
         changed.properties[.miterLimit] = .number(4)
         for property in [
-            Prop.to, .lineWidth, .dashPhase, .miterLimit,
+            Prop.to, ShapeContract.lineWidth.token, .dashPhase, .miterLimit,
         ] {
             changed.transitions[property] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         }

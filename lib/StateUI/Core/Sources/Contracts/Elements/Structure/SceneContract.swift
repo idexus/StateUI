@@ -10,20 +10,12 @@ public enum SceneContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// The scene came to the front.
-    public static let activated = ElementEvent<Self, Void>("activated", layer: .adaptive)
-
-    /// The scene is showing behind another.
-    public static let deactivated = ElementEvent<Self, Void>("deactivated", layer: .adaptive)
-
-    /// The scene went out of sight.
-    public static let stopped = ElementEvent<Self, Void>("stopped", layer: .adaptive)
-
     /// The user closed one of the scene's windows, which the key names.
     public static let windowClosed = ElementEvent<Self, String>("windowClosed", layer: .adaptive)
 
+    /// The tiers it wears.
+    public static let tiers: [any Tier.Type] = [SessionElementContract.self]
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        activated, deactivated, stopped, windowClosed,
-    ]
+    public static let members: [any ContractMember] = [windowClosed]
 }

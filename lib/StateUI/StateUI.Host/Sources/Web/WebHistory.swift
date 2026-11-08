@@ -15,7 +15,7 @@
 
     /// Whether a step through the history the page takes goes back or forward: back where it lands on a page of the
     /// way back, `behind`, as the addresses there stand, else forward.
-    public static func step(landingOn address: String, behind: [String]) -> WebNavigationType {
+    public static func step(landingOn address: String, behind: [String]) -> WebNavigationKind {
         behind.contains(address) ? .back : .forward
     }
 

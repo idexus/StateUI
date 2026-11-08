@@ -101,7 +101,7 @@ view's navigation, history and lost process; a question's answer, a document
 picker's, a document read and a launch taken; a layout's measure and
 arrangement, and what an ItemsView's recycler does with its cells
 ([items](items.md)). The host registers them by name in
-`StateUIAndroid.load(_:)`, which the head's `JNI_OnLoad` calls, so the host's
+`AndroidHost.load(_:)`, which the head's `JNI_OnLoad` calls, so the host's
 library exports no other symbol. A name Swift registers that Java does not
 declare fails at load; a native Java declares that Swift leaves out fails only
 at its first call. `NativeProjectTests` holds the two lists equal.

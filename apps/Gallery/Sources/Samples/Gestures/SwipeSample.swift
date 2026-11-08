@@ -34,7 +34,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             .lineWidth(1)
             .shape(.roundedRectangle(10))
             // A recognizer that listens for nothing recognizes nothing, so
-            // `direction` defaults to every way.
+            // `directions` defaults to every way.
             .onSwiped { direction in
                 swipe = Self.name(of: direction)
             }
@@ -55,7 +55,7 @@ struct SwipeSample: SampleContent, ExampleContent {
             .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
             // 150 device units before anything fires.
-            .onSwiped(direction: [.left, .right], threshold: 150) { direction in
+            .onSwiped(directions: [.left, .right], threshold: 150) { direction in
                 narrowed = Self.name(of: direction)
             }
 
@@ -68,7 +68,7 @@ struct SwipeSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("The first box says nothing about `direction`, and a recognizer that "
+        Text("The first box says nothing about `directions`, and a recognizer that "
             + "listens for nothing recognizes nothing - so it hears every way. The "
             + "second is narrowed to `.left` and `.right` with the threshold raised "
             + "to 150 device units: swipe up on it, or flick it short, and nothing "
@@ -84,7 +84,6 @@ struct SwipeSample: SampleContent, ExampleContent {
         case .right: return "right"
         case .up: return "up"
         case .down: return "down"
-        default: return "somewhere"
         }
     }
     // listing: end

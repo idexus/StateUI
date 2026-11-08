@@ -5,18 +5,19 @@
 /// properties its view takes, one at a time or the element whole, and the
 /// events of its own the view raises. `Made` is the view the registration
 /// makes, so every applier takes the host's own class for it.
+@MainActor
 @_spi(Host) public final class Registration<Realized: ElementContract, Made: AnyObject> {
     /// How each property registered alone reaches the view, by its key.
-    var appliers: [Prop: (Made, HostValue?) -> Void] = [:]
+    var appliers: [Prop: @MainActor (Made, HostValue?) -> Void] = [:]
 
     /// The appliers taking the element whole, each with the keys it reads.
-    var wholes: [(keys: Set<Prop>, apply: (Made, ElementValues<Realized>) -> Void)] = []
+    var wholes: [(keys: Set<Prop>, apply: @MainActor (Made, ElementValues<Realized>) -> Void)] = []
 
     /// Every member registered.
     var members: Set<HostRealizedMember> = []
 
     /// How the children the view draws itself reach it, each with the node type it is registered for.
-    var childAppliers: [(type: NodeType, apply: (Made, [HostChild]) -> Void)] = []
+    var childAppliers: [(type: NodeType, apply: @MainActor (Made, [HostChild]) -> Void)] = []
 
     /// Made by `Registry.add` alone.
     init() {}
@@ -35,9 +36,9 @@
     /// - Parameters:
     ///   - member: the property, written with its contract.
     ///   - apply: puts the value on the view.
-    public func property<Owner: Contract, Value: HostRepresentable>(
+    public func property<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
-        _ apply: @escaping (Made, Value?) -> Void
+        _ apply: @escaping @MainActor (Made, Value?) -> Void
     ) {
         guard Self.wears(Owner.self, for: member.name) else { return }
 
@@ -62,9 +63,9 @@
     /// a tier it wears - any other is left out, and said once - and the view
     /// is applied once whenever any of them changes.
     ///
-    ///     registration.applies(SwitchContract.isOn, VisualElementContract.isEnabled) { toggle, values in
-    ///         toggle.apply(toggled: values[SwitchContract.isOn] ?? false,
-    ///                      enabled: values[VisualElementContract.isEnabled] ?? true)
+    ///     registration.applies(ToggleElementContract.isOn, EnabledElementContract.isEnabled) { toggle, values in
+    ///         toggle.apply(toggled: values[ToggleElementContract.isOn] ?? false,
+    ///                      enabled: values[EnabledElementContract.isEnabled] ?? true)
     ///     }
     ///
     /// A `PropertyList` hosts share stands among the properties as one.
@@ -74,7 +75,7 @@
     ///   - apply: puts the element's values on the view.
     public func applies<each Applied: AppliedProperties>(
         _ properties: repeat each Applied,
-        apply: @escaping (Made, ElementValues<Realized>) -> Void
+        apply: @escaping @MainActor (Made, ElementValues<Realized>) -> Void
     ) {
         var keys: Set<Prop> = []
 
@@ -105,13 +106,13 @@
     ///   - events: the children's events the view raises, written with their contracts.
     ///   - apply: hands the view every child of the contract.
     public func children<
-        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
-        each EventOwner: Contract, each Payload
+        Child: ElementContract, each PropertyOwner: WornContract, each Value: HostRepresentable,
+        each EventOwner: WornContract, each Payload
     >(
         _ contract: Child.Type,
         properties: repeat ElementProperty<each PropertyOwner, each Value>,
         events: repeat ElementEvent<each EventOwner, each Payload>,
-        apply: @escaping (Made, [ChildElement<Child>]) -> Void
+        apply: @escaping @MainActor (Made, [ControlChild<Child>]) -> Void
     ) {
         for property in repeat each properties {
             realizes(property, of: contract)
@@ -120,7 +121,7 @@
             realizes(event, of: contract)
         }
 
-        childAppliers.append((type: Child.nodeType, apply: { made, children in apply(made, children.map(ChildElement.init)) }))
+        childAppliers.append((type: Child.nodeType, apply: { made, children in apply(made, children.map(ControlChild.init)) }))
     }
 
     /// A member the view realizes of each child of a contract - one the child wears; any other is said once.
@@ -133,13 +134,13 @@
         members.insert(HostRealizedMember(element: Child.name, owner: member.ownerType.name, member: member.name))
     }
 
-    /// An event the view raises through its `Reports` - its own, or one a tier
+    /// An event the view raises through its `ControlReports` - its own, or one a tier
     /// it wears declares, as a field's text change is. Recorded, so the core
     /// knows the host reports it; an event of a contract the element does not
     /// wear is refused, and said once.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+    public func declares<Owner: WornContract, Payload>(_ event: ElementEvent<Owner, Payload>) {
         guard Self.wears(Owner.self, for: event.name) else { return }
 
         members.insert(HostRealizedMember(element: Realized.name, owner: Owner.name, member: event.name))

@@ -85,7 +85,7 @@ struct SheetElement: ElementView {
     ) {
         node = Node(contract: SheetContract.self)
         self = described(
-            SheetContract.isPresented.token, read: read, write: write, on: SheetContract.isPresentedChanged.token)
+            PresentedElementContract.isPresented.token, read: read, write: write, on: PresentedElementContract.isPresentedChanged.token)
         // The page, made as the sheet is described: the sheet reads its state, never the body that presents it.
         node.readsWhenDescribed { $0.children.insert(contentsOf: page().map { [$0] } ?? [], at: 0) }
         node.destroying.append { if read() { write(false) } }

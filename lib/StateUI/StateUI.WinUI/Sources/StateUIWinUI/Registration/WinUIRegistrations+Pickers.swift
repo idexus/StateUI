@@ -14,26 +14,26 @@ extension WinUIRegistrations {
             picker.onChosen = { index in
                 reports.report(PickerContract.selectedIndex, index, as: PickerContract.selectedIndexChanged)
             }
-            picker.onOpened = { reports.raise(PickerContract.opened) }
-            picker.onClosed = { reports.raise(PickerContract.closed) }
+            picker.onOpened = { reports.raise(PopupElementContract.opened) }
+            picker.onClosed = { reports.raise(PopupElementContract.closed) }
             return picker
         }, members: { picker in
-            picker.applies(PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) {
+            picker.applies(PickerContract.options, PickerContract.selectedIndex, PlaceholderElementContract.placeholder) {
                 view, values in
                 view.setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
-                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder] ?? "")
+                    writeChosen: values.changed(PickerContract.selectedIndex), title: values[PlaceholderElementContract.placeholder] ?? "")
             }
-            picker.property(PickerContract.isOpen) { view, open in view.setOpen(open ?? false) }
+            picker.property(PopupElementContract.isOpen) { view, open in view.setOpen(open ?? false) }
             picker.applies(TextMembers.lookMembers) { view, values in view.setLook(TextMembers.look(of: values)) }
             picker.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
             }
             picker.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
-            picker.property(VisualElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
-            picker.raises(PickerContract.selectedIndexChanged)
-            picker.raises(PickerContract.opened)
-            picker.raises(PickerContract.closed)
+            picker.property(EnabledElementContract.isEnabled) { view, enabled in view.setEnabled(enabled ?? true) }
+            picker.declares(PickerContract.selectedIndexChanged)
+            picker.declares(PopupElementContract.opened)
+            picker.declares(PopupElementContract.closed)
         })
     }
 }

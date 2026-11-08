@@ -7,7 +7,7 @@
 /// Where a view sits in the space its layout gives it - what
 /// `.horizontalAlignment` and `.verticalAlignment` take.
 public enum Alignment: Int32, Sendable {
-    /// At the near edge - the left, or the top - taking only the room it needs.
+    /// At the near edge - where a line of words starts, or the top - taking only the room it needs.
     case start = 0
 
     /// In the middle, taking only the room it needs.
@@ -20,8 +20,8 @@ public enum Alignment: Int32, Sendable {
     case fill = 3
 
     /// In a row, standing so its first line of words rests on the line the others aligned so rest on - a label and
-    /// a value of other sizes reading as one line; a view with no words rests its foot there. Anywhere else, at the
-    /// near edge.
+    /// a value of other sizes reading as one line; a view with no words rests its foot there. Across a column, and
+    /// anywhere else, at the near edge, as `.start`.
     case firstBaseline = 4
 }
 

@@ -77,8 +77,11 @@ value, not as the implicit style, and the sheet lays each over the implicit
 style of its type once it is built - after `basedOn` is flattened, whichever
 was written first - so a variant states what it changes and a control finds
 one style in one look-up. A control saying nothing of the member holds the
-value its member means unsaid where there is one - a picker saying none is a
-menu - and none where there is not - a button with no role. A key asked for
+value its member means unsaid - a picker saying none is a menu, a button
+saying no role an ordinary one, `.normal`. The value is the control's own,
+said where it is written and never by a style: a variant reads only what the
+control said, so a style giving it would choose a look no variant follows
+(`Style<Picker>().presentation(_:)` does not compile). A key asked for
 wins over the variant, as it wins over the implicit style, and `.platform`
 wears neither. The sheet's sameness reads the variant, or two sheets styling
 two roles alike would be one.
@@ -110,10 +113,18 @@ Focused, On, Off. The control is in the first of
 its declared states that holds, and in Normal, written or not, where none
 does; that is the state `.onVisualStateChanged` hears. What each follows:
 
-- Disabled: `isEnabled` false.
+- Disabled: `isEnabled` false - the control's own, or any element's holding
+  it, since a disabled branch disables everything in it.
 - Pressed: a button held down; PointerOver: a pointer over the control;
   Focused: the keyboard in it ([what the user does](#what-the-user-does)).
-- On, Off: `isOn`, written or bound.
+- On, Off: `isOn`.
+
+A fact is read as the host shows it: a bound state's value while the state is
+carried, the value stated on the control only where no state is bound - a
+style states no switch's position, what a control is for being its own ([a stated value beside a driven one](bindings.md#a-stated-value-beside-a-driven-one)).
+The walk carries down what each element says of its enablement (`Enablement`),
+and the clean walk carries it again from the elements it passes, so a control
+deep in a branch hears the branch.
 
 What the control shows lays the values of every state that holds over its
 own, the first in that order winning a value two set: a disabled switch that
@@ -126,7 +137,14 @@ changes them at once.
 
 A bound value is read as the element is described, which makes the element
 that value's reader: the user turning a switch describes that switch again,
-and no body.
+and no body - a bound enablement of the branch the same, each control in it
+that declares Disabled its reader. A fact is read only where a declared state
+follows it: a control with no Disabled reads nothing of a bound `isEnabled`,
+which stays the host's alone. A branch stated disabled with no state bound,
+or bound to another state than before, describes the views in it again, a
+view carried whole included: a carry compares what the branch says of its
+enablement by key (`Enablement.Key` - stated off, or the state bound), so a
+view inside reads the state bound now.
 
 ## What the user does
 

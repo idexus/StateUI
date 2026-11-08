@@ -182,9 +182,10 @@ final class PlacedRunTests: XCTestCase {
 
         let patch = renders.render(
             MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
-                .shade(
+                .shade {
                     Rectangle()
-                        .fill(.black))
+                        .fill(.black)
+                }
                 .id("run")
                 .node)
 
@@ -214,7 +215,7 @@ final class PlacedRunTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
         let renders = Renders()
 
-        let patch = renders.render(Rectangle().frame(room.projectedValue).id("box").node)
+        let patch = renders.render(Rectangle().frame(into: room.projectedValue).id("box").node)
 
         XCTAssertEqual(
             patch.driven?[.frame],

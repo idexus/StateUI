@@ -30,7 +30,7 @@
         update(device, \.model, info.model)
         update(device, \.manufacturer, info.manufacturer)
         update(device, \.name, info.name)
-        update(device, \.versionString, info.versionString)
+        update(device, \.platformVersion, info.platformVersion)
         update(device, \.isVirtual, info.isVirtual)
     }
 
@@ -57,8 +57,8 @@
         let app = StandardEnvironment.application.info
         update(app, \.name, info.name)
         update(app, \.packageName, info.packageName)
-        update(app, \.versionString, info.versionString)
-        update(app, \.buildString, info.buildString)
+        update(app, \.version, info.version)
+        update(app, \.build, info.build)
     }
 
     /// Replaces the standard battery report.
@@ -104,24 +104,24 @@
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
-        update(locale, \.language, info.tag)
-        update(locale, \.timeZone, info.timeZone.isEmpty ? nil : TimeZoneName(info.timeZone))
+        update(locale, \.language, info.language)
+        update(locale, \.timeZone, info.timeZone)
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)
-        update(locale, \.layoutDirection, info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight)
-        update(locale, \.languages, info.languages.map { LocaleTag($0) })
+        update(locale, \.writingDirection, info.writingDirection)
+        update(locale, \.languages, info.languages)
     }
 
     /// The way the user's language is written, as the host last reported it.
     public static var languageDirection: LayoutDirection {
-        StandardEnvironment.locale.layoutDirection
+        StandardEnvironment.locale.writingDirection == .rightToLeft ? .rightToLeft : .leftToRight
     }
 
     /// Hands StateUI a window the platform made, before its first render.
     ///
     /// The platform's first window is the one launch opens. A window it kept
-    /// comes as the `windowType` and the `windowValue` it carried, with its
+    /// comes as the `windowKind` and the `windowValue` it carried, with its
     /// scene's kept values, which land before that scene builds where it opens
     /// with this window - so `@State(sceneKey:)` never briefly exposes its
     /// declared default. A new window of no kind is one more of the group with
@@ -302,6 +302,14 @@
     /// Whether any state or engine is waiting for a host cycle.
     public static var cyclesPending: Bool { Renderer.shared.cycleAwake() }
 
+    /// How many runs have begun so far - a handler's, a task's through a gate: the mark a test takes before an act,
+    /// to wait on the runs the act began alone.
+    public static var runsBegun: Int { HandlerRun.begun }
+
+    /// How many runs under way or waiting their turn descend from one begun after `mark`, a count `runsBegun` gave:
+    /// the handlers an act after the mark raised and what they began; what a run begun before began is left out.
+    public static func runsUnderWay(since mark: Int) -> Int { RunSlot.underWay(since: mark) }
+
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {
         let renderer = Renderer.shared
@@ -335,7 +343,7 @@
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
-        RaisedEvents.shared.raise(EventMember(event), MemberValues.encode(repeat each value))
+        RaisedEvents.shared.raise(event.token, MemberValues.encode(repeat each value))
     }
 
     /// Tells the core what this host realizes - its `Registry.realization` -

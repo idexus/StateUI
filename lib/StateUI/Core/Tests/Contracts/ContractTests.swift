@@ -26,13 +26,13 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(LampContract.layer, .provider)
         XCTAssertTrue(LampContract.tiers.isEmpty)
         XCTAssertEqual(LampContract.members.map(\.name), [
-            "signal", "brightness", "caption", "count", "tapped", "dimmed", "poked", "Test.Flash",
+            "signal", "brightness", "caption", "count", "tapped", "dimmed", "poked", "flash",
         ])
 
-        XCTAssertEqual(TestDevice.name, "Test")
-        XCTAssertEqual(LampContract.signal.token, "signal")
-        XCTAssertEqual(LampContract.tapped.token, "tapped")
-        XCTAssertEqual(LampContract.flash.token, "Test.Flash")
+        XCTAssertEqual(TestDevice.name, "TestDevice")
+        XCTAssertEqual(LampContract.signal.token, "Test.Lamp.signal")
+        XCTAssertEqual(LampContract.tapped.token, "Test.Lamp.tapped")
+        XCTAssertEqual(LampContract.flash.token, "Test.Lamp.flash")
     }
 
     // MARK: - A property
@@ -48,10 +48,10 @@ final class ContractTests: XCTestCase {
             .setValue(LampContract.count, 3)
 
         XCTAssertEqual(lamp.node.type, "Test.Lamp")
-        XCTAssertEqual(lamp.node.props["signal"], .enumeration(2))
-        XCTAssertEqual(lamp.node.props["brightness"], .number(0.5))
-        XCTAssertEqual(lamp.node.props["caption"], .nothing)
-        XCTAssertEqual(lamp.node.props["count"], .number(3))
+        XCTAssertEqual(lamp.node.props[LampContract.signal.token], .enumeration(2))
+        XCTAssertEqual(lamp.node.props[LampContract.brightness.token], .number(0.5))
+        XCTAssertEqual(lamp.node.props[LampContract.caption.token], .nothing)
+        XCTAssertEqual(lamp.node.props[LampContract.count.token], .number(3))
     }
 
     /// A property is kept only where the contract declares a property of that name: an event of the same name is
@@ -61,8 +61,8 @@ final class ContractTests: XCTestCase {
 
         let patch = Renders().render(button.id("save").node)
 
-        XCTAssertNil(patch.props["clicked"])
-        XCTAssertTrue(hasComplained("Button takes no clicked - its contract does not wear it"))
+        XCTAssertNil(patch.props[EchoContract.clicked.token])
+        XCTAssertTrue(hasComplained("Button takes no \(EchoContract.clicked.token) - its contract does not wear it"))
     }
 
     /// A library element keeps only what its contract wears: a member another contract declares, written on it by
@@ -70,16 +70,16 @@ final class ContractTests: XCTestCase {
     func testALibraryElementLeavesOutWhatItsContractDoesNotWear() {
         let text = Text("Save")
             .setValue(ButtonContract.role, .primary)
-            .onEvent(SliderContract.valueChanged) { _ in }
+            .onEvent(RangeElementContract.valueChanged) { _ in }
             .setValue(FontElementContract.fontSize, 20)
 
         let patch = Renders().render(text.id("label").node)
 
-        XCTAssertNil(patch.props["role"])
-        XCTAssertFalse(patch.eventNames.contains("valueChanged"))
+        XCTAssertNil(patch.props["Button.role"])
+        XCTAssertFalse(patch.eventNames.contains("RangeElement.valueChanged"))
         XCTAssertEqual(patch.props["fontSize"], .number(20))
-        XCTAssertTrue(hasComplained("Text takes no role - its contract does not wear it"))
-        XCTAssertTrue(hasComplained("Text takes no valueChanged - its contract does not wear it"))
+        XCTAssertTrue(hasComplained("Text takes no Button.role - its contract does not wear it"))
+        XCTAssertTrue(hasComplained("Text takes no RangeElement.valueChanged - its contract does not wear it"))
     }
 
     /// What comes back from a host is the declared kind or no value at all -
@@ -113,7 +113,7 @@ final class ContractTests: XCTestCase {
     /// A name crosses as a name, never as prose - the type decides: a style
     /// key, a font family, a window's kind, a kept value's key alike.
     func testANameCrossesAsAName() {
-        let lamp = Lamp().setValue(VisualElementContract.style, "Card")
+        let lamp = Lamp().setValue(StyledElementContract.style, "Card")
 
         XCTAssertEqual(lamp.node.props["style"], .name("Card"))
         XCTAssertEqual(Name("Menlo").propValue, .name("Menlo"))
@@ -129,7 +129,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(ContainerShape.ellipse.propValue, .values([.enumeration(2)]))
         XCTAssertEqual(ContainerShape.capsule.propValue, .values([.enumeration(3)]))
         XCTAssertEqual(
-            [GridLength.auto, .fixed(100)].propValue,
+            [GridLength.automatic, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
         XCTAssertEqual(
             WebViewSource.address("https://example.com").propValue,
@@ -162,7 +162,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
         XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a color state's fill")
 
-        XCTAssertEqual(SafeAreaEdges.none.propValue, .enumeration(0))
+        XCTAssertEqual(([] as SafeAreaEdges).propValue, .enumeration(0))
         XCTAssertEqual(SafeAreaEdges([.start, .top]).propValue, .enumeration(3))
         XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(15)), .all)
     }
@@ -197,22 +197,24 @@ final class ContractTests: XCTestCase {
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
             ContainerShape.capsule,
-            [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
+            [GridLength.automatic, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
             ButtonMenuKind.held, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
-            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirection.all,
-            Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
+            Area.absolute(Rect(0, 0, 120, 40)), Area.proportional(Rect(0.5, 0, 0.5, 1)), SwipeDirections.all,
+            Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase.uppercase,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollAxes.horizontal,
-            MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
-            AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,
+            MarkerKind(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
+            AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, AccessibilityPresence.hiddenWithContents,
+            ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
             FillRule(rawValue: 1)!, DotShape(rawValue: 1)!, ToolbarPosition.overflow, ToolbarPart.sidebar,
-            SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
-            [Key.escape, "a"], MapType(rawValue: 1)!,
-            WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
+            SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateFormat.medium,
+            TimeFormat.medium,
+            [Key.escape, "a"], MapKind(rawValue: 1)!,
+            WebNavigationKind(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
             Orientation.vertical,
             ItemDragStart.longPress,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
@@ -279,9 +281,9 @@ final class ContractTests: XCTestCase {
             .onEvent(LampContract.poked) { heard.lines.append("poked") }
             .node)
 
-        renders.fire(try XCTUnwrap(patch.events?["tapped"]), with: [.number(2)])
-        renders.fire(try XCTUnwrap(patch.events?["dimmed"]), with: [.number(0.5), .bool(true)])
-        renders.fire(try XCTUnwrap(patch.events?["poked"]))
+        renders.fire(try XCTUnwrap(patch.events?[LampContract.tapped.token]), with: [.number(2)])
+        renders.fire(try XCTUnwrap(patch.events?[LampContract.dimmed.token]), with: [.number(0.5), .bool(true)])
+        renders.fire(try XCTUnwrap(patch.events?[LampContract.poked.token]))
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["tapped 2", "dimmed 0.5 true", "poked"])
@@ -297,7 +299,7 @@ final class ContractTests: XCTestCase {
             .onEvent(LampContract.tapped) { index in heard.lines.append("tapped \(index)") }
             .node)
 
-        let id = try XCTUnwrap(patch.events?["tapped"])
+        let id = try XCTUnwrap(patch.events?[LampContract.tapped.token])
         renders.fire(id, with: [.string("2")])
         renders.fire(id, with: [.number(2), .number(3)])
         renders.fire(id, with: [])
@@ -315,7 +317,7 @@ final class ContractTests: XCTestCase {
 
         let asked = Self.begin { try await StandardEnvironment.application.call(TestDevice.battery) }
         let acts = drainedActs()
-        XCTAssertEqual(acts.first?.name, "Test.Battery")
+        XCTAssertEqual(acts.first?.name, "TestDevice.battery")
         XCTAssertEqual(acts.first?.arguments, [])
 
         await report(try completionId(in: acts), .finished([.number(0.5), .bool(true)]))
@@ -325,7 +327,7 @@ final class ContractTests: XCTestCase {
 
         let copied = Self.begin { try await StandardEnvironment.application.call(TestDevice.copy, "note") }
         let copy = drainedActs()
-        XCTAssertEqual(copy.first?.name, "Test.Copy")
+        XCTAssertEqual(copy.first?.name, "TestDevice.copy")
         XCTAssertEqual(copy.first?.arguments, [.string("note")])
 
         await report(try completionId(in: copy), .finished([]))
@@ -344,7 +346,7 @@ final class ContractTests: XCTestCase {
             _ = try await asked.value
             XCTFail("an answer of another shape was taken")
         } catch StateUIError.unreadableAnswer(let act, _, let declared) {
-            XCTAssertEqual(act, "Test.Battery")
+            XCTAssertEqual(act, "TestDevice.battery")
             XCTAssertEqual(declared, "(Double, Bool)")
         }
     }
@@ -360,8 +362,8 @@ final class ContractTests: XCTestCase {
 
         let asked = Self.begin { try await lamp.call(LampContract.flash, 3) }
         let acts = drainedActs()
-        XCTAssertEqual(acts.first?.name, "Test.Flash")
-        XCTAssertEqual(acts.first?.arguments, [.number(1), .number(3)], "the element it was put on, then the times")
+        XCTAssertEqual(acts.first?.name, "Test.Lamp.flash")
+        XCTAssertEqual(acts.first?.arguments, [.values([.string("root"), .number(1)]), .number(3)], "the element it was put on, then the times")
 
         await report(try completionId(in: acts), .finished([.bool(true)]))
         let flashed = try await asked.value
@@ -379,8 +381,8 @@ final class ContractTests: XCTestCase {
         }
         defer { subscription.cancel() }
 
-        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87), .bool(true)]), 1)
-        XCTAssertEqual(HostEvents.dispatch(EventMember(TestDevice.batteryChanged), [.number(0.87)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(TestDevice.batteryChanged.token, [.number(0.87), .bool(true)]), 1)
+        XCTAssertEqual(HostEvents.dispatch(TestDevice.batteryChanged.token, [.number(0.87)]), 1)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["battery 0.87 true"])
@@ -396,7 +398,7 @@ final class ContractTests: XCTestCase {
             theirs.cancel()
         }
 
-        HostEvents.dispatch(EventMember(TestDevice.changed), [])
+        HostEvents.dispatch(TestDevice.changed.token, [])
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["device"])
@@ -442,7 +444,7 @@ private enum LampContract: ElementContract {
     static let tapped = ElementEvent<Self, Int>("tapped")
     static let dimmed = ElementEvent<Self, (Double, Bool)>("dimmed")
     static let poked = ElementEvent<Self, Void>("poked")
-    static let flash = ElementAct<Self, Int, Bool>("Test.Flash")
+    static let flash = ElementAct<Self, Int, Bool>("flash")
 
     static let members: [any ContractMember] = [
         signal, brightness, caption, count, tapped, dimmed, poked, flash,
@@ -456,18 +458,18 @@ private enum LampSignal: Int32, HostRepresentable {
 
 /// The application's own acts and events with no control behind them.
 private enum TestDevice: ApplicationTier {
-    static let name = "Test"
+    static let name = "TestDevice"
 
-    static let battery = ElementAct<Self, Void, (Double, Bool)>("Test.Battery")
-    static let copy = ElementAct<Self, String, Void>("Test.Copy")
-    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
+    static let battery = ElementAct<Self, Void, (Double, Bool)>("battery")
+    static let copy = ElementAct<Self, String, Void>("copy")
+    static let batteryChanged = ElementEvent<Self, (Double, Bool)>("batteryChanged")
     static let changed = ElementEvent<Self, Void>("changed")
 
     static let members: [any ContractMember] = [battery, copy, batteryChanged, changed]
 }
 
 /// A contract declaring a property under the name a button's event has.
-private enum EchoContract: Contract {
+private enum EchoContract: Tier {
     static let name = "TestEcho"
 
     static let clicked = ElementProperty<Self, Bool>("clicked")

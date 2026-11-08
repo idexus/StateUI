@@ -172,7 +172,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(4)
         }
-        .rows(.fill, .auto, .auto, .auto, .auto)
+        .rows(.fill, .automatic, .automatic, .automatic, .automatic)
         .rowSpacing(8)
     }
 
@@ -211,10 +211,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // corners, which is why the view is the application's to give.
         // A quarter of the fade is left beside it, unless `.fade(_:)` says
         // otherwise.
-        return run.shade(
+        return run.shade {
             Rectangle()
                 .fill(Color(hex: 0x000000))
-                .cornerRadius(16))
+                .cornerRadius(16)
+        }
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -262,7 +263,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Shaded` is `.shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade { Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16) }`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded, so what is behind a far card stays hidden. "
                 + "`.onItemActivated` is handed the card in the MIDDLE.")

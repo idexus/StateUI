@@ -3,6 +3,7 @@
 
 import AppKit
 import GalleryUI
+import StateUI
 import StateUIAppKit
 
 // listing: InteropControlSample.AppKit.swift
@@ -128,7 +129,7 @@ extension TrafficLightView {
             light.property(TrafficLightContract.signal) { view, signal in
                 view.signal = (signal ?? .stop).rawValue
             }
-            light.raises(TrafficLightContract.lampTapped)
+            light.declares(TrafficLightContract.lampTapped)
         }
     }
 }

@@ -9,9 +9,9 @@ extension MountedElement {
     /// The properties a parent reads into its child's place: a change arranges the parent again.
     public static let arrangedProperties: Set<Prop> = [
         .margin, .horizontalAlignment, .verticalAlignment,
-        .width, .height,
-        .minimumWidth, .minimumHeight,
-        .maximumWidth, .maximumHeight,
+        VisualElementContract.width.token, VisualElementContract.height.token,
+        VisualElementContract.minimumWidth.token, VisualElementContract.minimumHeight.token,
+        VisualElementContract.maximumWidth.token, VisualElementContract.maximumHeight.token,
         .isVisible,
         .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
         .area,
@@ -20,8 +20,10 @@ extension MountedElement {
     /// The properties drawn without changing any measurement; any other one measures the element again.
     public static let unmeasuredProperties = Set<Prop>([
         .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
-        .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
-        .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
+        .isOn, .value, RangeElementContract.minimum.token, RangeElementContract.maximum.token,
+        DatePickerContract.minimum.token, DatePickerContract.maximum.token, .progress, .cursorPosition, .selectionLength,
+        ShapeContract.stroke.token, BorderElementContract.stroke.token, .fill, ShapeContract.lineWidth.token,
+        BorderElementContract.lineWidth.token, .dash, .dashPhase, .lineCap, .lineJoin,
         .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackground, .barForegroundColor,
         .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough, .parameters,
     ]).union(transformProperties).union(accessibilityProperties)

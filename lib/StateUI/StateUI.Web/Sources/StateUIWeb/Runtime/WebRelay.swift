@@ -524,8 +524,9 @@ enum WebRelay {
 
     /// Shows the page in `theme`: the root's color scheme, which the browser's controls and the host's colors
     /// follow; none for the system's.
-    static func useColorScheme(_ theme: ColorScheme) {
-        stateui_web_use_color_scheme(theme.rawValue)
+    static func useColorScheme(_ theme: ColorScheme?) {
+        // The relay takes the theme's number, 0 for the system's.
+        stateui_web_use_color_scheme(theme?.rawValue ?? 0)
     }
 
     /// Draws a canvas's `numbers` and `words` (WebCanvasStroke) on the `<canvas>` element.

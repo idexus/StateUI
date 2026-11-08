@@ -14,7 +14,7 @@ Button("Send")
     .accessibilityHint("Sends the message")
 ```
 
-Wears: [AutomationElement](AutomationElement.md)
+Wears: [AutomationElement](AutomationElement.md) · [EnabledElement](EnabledElement.md) · [BackgroundElement](BackgroundElement.md) · [StyledElement](StyledElement.md)
 
 Worn by: [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [ColorPicker](../ColorPicker.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Link](../Link.md) · [Map](../Map.md) · [MotionLayout](../MotionLayout.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Separator](../Separator.md) · [Slider](../Slider.md) · [Space](../Space.md) · [Spinner](../Spinner.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 
@@ -30,15 +30,12 @@ How each of them realizes these members is on its own page.
 | `accessibilityHeading` | property | `AccessibilityHeadingLevel` | native |
 | `accessibilityHint` | property | `String` | native |
 | `accessibilityLabel` | property | `String` | native |
+| `accessibilityPresence` | property | `AccessibilityPresence` | native |
 | `accessibilityRole` | property | `AccessibilityRole` | native |
 | `accessibilityValue` | property | `String` | native |
-| `background` | property | `Material` | adaptive |
 | `frame` | property | `Rect` | structure |
 | `height` | property | `Double` | native |
-| `hidesChildrenFromAccessibility` | property | `Bool` | native |
 | `ignoresInput` | property | `Bool` | native |
-| `isAccessibilityHidden` | property | `Bool` | native |
-| `isEnabled` | property | `Bool` | native |
 | `isVisible` | property | `Bool` | native |
 | `layoutDirection` | property | `LayoutDirection` | native |
 | `maximumHeight` | property | `Double` | native |
@@ -54,7 +51,6 @@ How each of them realizes these members is on its own page.
 | `scale` | property | `Double` | native |
 | `scaleX` | property | `Double` | native |
 | `scaleY` | property | `Double` | native |
-| `style` | property | `Name` | structure |
 | `tooltip` | property | `String` | native |
 | `translationX` | property | `Double` | native |
 | `translationY` | property | `Double` | native |

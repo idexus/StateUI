@@ -6,21 +6,19 @@ import PackageDescription
 // dynamic StateUI runtime is linked rather than copied.
 let package = Package(
     name: "StateUITesting",
-    platforms: [.iOS(.v26), .macOS(.v26)],
+    platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUITesting", targets: ["StateUITesting"]),
     ],
     dependencies: [
         .package(name: "StateUIRoot", path: "../../.."),
         .package(name: "StateUIHost", path: "../StateUI.Host"),
-        .package(name: "StateUIConformance", path: "../StateUI.Conformance"),
     ],
     targets: [
         .target(
             name: "StateUITesting",
             dependencies: [.product(name: "StateUI", package: "StateUIRoot"),
-                .product(name: "StateUIHost", package: "StateUIHost"),
-                .product(name: "StateUIConformance", package: "StateUIConformance")],
+                .product(name: "StateUIHost", package: "StateUIHost")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

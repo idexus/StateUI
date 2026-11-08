@@ -3,6 +3,7 @@
 
 // listing: web.md.head
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 // Name the application to the host, then say what this host answers for it
@@ -14,6 +15,6 @@ GalleryControls.register()
 GalleryActs.register()
 // listing: InteropEventsSample.Web.swift
 GalleryEventSources.start()
-StateUIWeb.run(name: "Gallery")
+WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
 // listing: end
 // listing: end

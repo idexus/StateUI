@@ -11,10 +11,10 @@
 @MainActor
 final class AndroidWebView: AndroidView {
     /// What the view does when a navigation starts: why, and where it goes.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
 
     /// What the view does when a navigation ends: how, why, and where it went.
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
 
     /// What the view does when there comes to be, or stops being, a page behind it and ahead of it.
     var onCanGoBack: ((Bool) -> Void)?
@@ -25,6 +25,9 @@ final class AndroidWebView: AndroidView {
 
     /// Why the navigation under way began, and why the next begins where the program said so.
     private var cause = WebNavigationCause()
+
+    private var reloadSource = WebReloadSource()
+    private var requestedAddress: String?
 
     /// The way back and forward as last said.
     private var history = WebHistory()
@@ -45,20 +48,26 @@ final class AndroidWebView: AndroidView {
     /// is gone to as a `data:` address (`WebDocument`).
     /// Design: docs/design/platforms/android/controls.md#a-web-view
     func show(_ source: WebViewSource?, userAgent agent: String?) {
+        setUserAgent(agent)
+        if let source { request(source) }
+    }
+
+    private func request(_ source: WebViewSource) {
+        reloadSource.requested(source)
         Java.frame {
-            let agent = agent.flatMap(Java.string)
             switch source {
-            case .address(let address)?:
-                Java.call(reference, JavaAPI.loadWeb, .object(agent), .object(Java.string(address)))
-            case .html(let document, nil)?:
+            case .address(let address):
+                requestedAddress = address
+                Java.call(reference, JavaAPI.loadWeb, .object(Java.string(address)))
+            case .html(let document, nil):
+                let address = WebDocument.address(of: document)
+                requestedAddress = address
+                Java.call(reference, JavaAPI.loadWeb, .object(Java.string(address)))
+            case .html(let document, let base?):
+                requestedAddress = base
                 Java.call(
-                    reference, JavaAPI.loadWeb, .object(agent), .object(Java.string(WebDocument.address(of: document))))
-            case .html(let document, let base?)?:
-                Java.call(
-                    reference, JavaAPI.showWeb, .object(agent), .object(Java.string(document)),
+                    reference, JavaAPI.showWeb, .object(Java.string(document)),
                     .object(Java.string(base)))
-            case nil:
-                Java.call(reference, JavaAPI.setWebUserAgent, .object(agent))
             }
         }
     }
@@ -71,16 +80,22 @@ final class AndroidWebView: AndroidView {
     /// Steps back, forward, or loads the page again - the navigation's cause the program's. Android tells a
     /// navigation after the call returns.
     func goBack() {
-        if Java.callBool(reference, JavaAPI.webGoBack) { cause.ask(.back) }
+        let taken = Java.callBool(reference, JavaAPI.webGoBack)
+        cause.ask(.back, if: taken)
+        if taken { nativeTookOver() }
     }
 
     func goForward() {
-        if Java.callBool(reference, JavaAPI.webGoForward) { cause.ask(.forward) }
+        let taken = Java.callBool(reference, JavaAPI.webGoForward)
+        cause.ask(.forward, if: taken)
+        if taken { nativeTookOver() }
     }
 
     func reload() {
-        cause.ask(.reload)
-        Java.call(reference, JavaAPI.webReload)
+        let possible = reloadSource.value != nil || Java.callBool(reference, JavaAPI.webCanReload)
+        guard cause.ask(.reload, if: possible) else { return }
+        if let source = reloadSource.value { request(source) }
+        else { Java.call(reference, JavaAPI.webReload) }
     }
 
     /// Runs `script` in the page; what it evaluated to answers the act waiting under `ticket`.
@@ -90,11 +105,22 @@ final class AndroidWebView: AndroidView {
 
     /// A navigation began: Android tells no reason, so one the program did not ask for is a new page.
     func navigating(to address: String) {
+        if requestedAddress == nil { reloadSource.takenOver() }
+        else { requestedAddress = address }
         onNavigating?(cause.begin(told: .newPage), address)
     }
 
     func navigated(result: Int32, to address: String) {
+        if requestedAddress == address {
+            requestedAddress = nil
+            reloadSource.committed()
+        }
         onNavigated?(WebNavigationResult(rawValue: result) ?? .unknown, cause.current, address)
+    }
+
+    private func nativeTookOver() {
+        requestedAddress = nil
+        reloadSource.takenOver()
     }
 
     /// The history as it stands: a way that changed is said - the way back before the way forward.

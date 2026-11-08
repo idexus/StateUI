@@ -4,12 +4,15 @@
 /// What every drawn element has: its size and its bounds, how it is shown and
 /// turned, whether it answers input and holds the keyboard focus, the visual
 /// states it enters, and what a screen reader says about it.
-public enum VisualElementContract: Contract {
+public enum VisualElementContract: Tier {
     /// The tier's name.
     public static let name = "VisualElement"
 
     /// Every drawn element is found by automation.
-    public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
+    public static let tiers: [any Tier.Type] = [
+        AutomationElementContract.self, EnabledElementContract.self, BackgroundElementContract.self,
+        StyledElementContract.self,
+    ]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
     public static let accessibilityActionPerformed = ElementEvent<Self, String>(
@@ -43,15 +46,9 @@ public enum VisualElementContract: Contract {
     public static let accessibilityValue = ElementProperty<Self, String>(
         "accessibilityValue", layer: .native)
 
-    /// Whether the element and everything in it are left out of what a screen
-    /// reader reads.
-    public static let hidesChildrenFromAccessibility = ElementProperty<Self, Bool>(
-        "hidesChildrenFromAccessibility", layer: .native)
-
-    /// What the element's surface is made of: a color, a gradient, a blur of
-    /// what lies behind it, or the platform's glass.
-    public static let background = ElementProperty<Self, Material>(
-        "background", layer: .adaptive)
+    /// Whether a screen reader meets the element, and what is inside it.
+    public static let accessibilityPresence = ElementProperty<Self, AccessibilityPresence>(
+        "accessibilityPresence", layer: .native)
 
     /// The frame the element settled on, fed by the host into a state.
     public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
@@ -62,13 +59,6 @@ public enum VisualElementContract: Contract {
 
     /// Whether input passes through the element to what is under it.
     public static let ignoresInput = ElementProperty<Self, Bool>("ignoresInput", layer: .native)
-
-    /// Whether a screen reader skips the element.
-    public static let isAccessibilityHidden = ElementProperty<Self, Bool>(
-        "isAccessibilityHidden", layer: .native)
-
-    /// Whether the element answers input.
-    public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
 
     /// Whether the element is shown.
     public static let isVisible = ElementProperty<Self, Bool>("isVisible", layer: .native)
@@ -129,9 +119,6 @@ public enum VisualElementContract: Contract {
     public static let scaleY = ElementProperty<Self, Double>(
         "scaleY", layer: .native, moves: .transform)
 
-    /// The keyed style the element wears, by its key.
-    public static let style = ElementProperty<Self, Name>("style", layer: .structure)
-
     /// How far the element is moved across from where its layout put it.
     public static let translationX = ElementProperty<Self, Double>(
         "translationX", layer: .native, moves: .place)
@@ -151,13 +138,5 @@ public enum VisualElementContract: Contract {
     public static let zIndex = ElementProperty<Self, Int>("zIndex", layer: .native, travels: false)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted,
-        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityRole, accessibilityValue,
-        background, frame, height, hidesChildrenFromAccessibility, ignoresInput,
-        isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
-        maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
-        rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,
-        translationY, width, zIndex,
-    ]
+    public static let members: [any ContractMember] = [accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted, accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityPresence, accessibilityRole, accessibilityValue, frame, height, ignoresInput, isVisible, layoutDirection, maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY, rotation, rotationX, rotationY, scale, scaleX, scaleY, tooltip, translationX, translationY, width, zIndex]
 }

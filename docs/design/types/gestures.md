@@ -28,10 +28,11 @@ drag (`DragRecognition`).
 
 ## Swipe directions
 
-`SwipeDirection` is a flag set, one bit per direction: a view listens for a
-set of directions, and a swipe reports one. Every host reports the one
-dominant direction bit, so a report carrying several bits, or none, is no
-answer to "which way did it go?" and is not read as a swipe.
+A view listens for `SwipeDirections`, a flag set, one bit per direction; a
+swipe reports one `SwipeDirection`, an enumeration whose members are
+numbered as their bits. The type says the rule: a handler switches over four
+directions with no `default`, and a report carrying several bits, or none,
+reads as no direction and is not read as a swipe.
 
 ## Points
 

@@ -3,7 +3,7 @@
 
 /// What an arrangement declares of the bar while it stands on the visible
 /// path: its look.
-public enum BarElementContract: Contract {
+public enum BarElementContract: Tier {
     /// The tier's name.
     public static let name = "BarElement"
 

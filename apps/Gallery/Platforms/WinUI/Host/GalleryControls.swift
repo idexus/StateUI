@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 /// The gallery's own controls, as this host realizes them.

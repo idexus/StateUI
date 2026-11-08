@@ -1,0 +1,4 @@
+module CStateUIWinUI {
+    umbrella header "CStateUIWinUI.h"
+    export *
+}

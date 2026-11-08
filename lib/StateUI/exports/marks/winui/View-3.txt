@@ -1,4 +1,4 @@
-# revision 21.1
+# revision 23.1
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -16,8 +16,6 @@ Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.verticalAlignment: ✅
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
@@ -25,13 +23,13 @@ CheckBox.tapped: ✅
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumn: ✅
 ColorPicker.gridRow: ✅
-ColorPicker.swipeDirection: ✅
+ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-DatePicker.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+DatePicker.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 DatePicker.frameChanged: ✅
 DatePicker.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 DatePicker.margin: ✅
@@ -59,8 +57,6 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.verticalAlignment: ✅
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
@@ -78,9 +74,9 @@ Map.dragText: 🧩
 Map.held: 🧩
 Map.isDraggable: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.frameChanged: ✅
 MotionLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 MotionLayout.margin: ✅
@@ -92,8 +88,6 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.verticalAlignment: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
@@ -101,13 +95,13 @@ Picker.tapped: ✅
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridRow: ✅
-Polygon.swipeDirection: ✅
+Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polyline.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polyline.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Polyline.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Polyline.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Polyline.frameChanged: ✅
 Polyline.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Polyline.margin: ✅
@@ -139,8 +133,6 @@ Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.verticalAlignment: ✅
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
@@ -152,20 +144,20 @@ Spinner.panYChannel: ✅
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Stepper.swipeDirection: ✅
+Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Switch.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Switch.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Switch.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Switch.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Switch.frameChanged: ✅
 Switch.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Switch.margin: ✅
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridRow: ✅
-Text.swipeDirection: ✅
+Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.verticalAlignment: ✅
@@ -193,8 +185,6 @@ WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened 
 WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.verticalAlignment: ✅
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅

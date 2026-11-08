@@ -11,16 +11,14 @@ public enum ToolbarGroupContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// Where its host draws the bar itself, the background its items share is the application's to say.
-    public static let tiers: [any Contract.Type] = [
-        BarItemElementContract.self, BorderElementContract.self, PaddingElementContract.self,
+    public static let tiers: [any Tier.Type] = [
+        HoverElementContract.self, BackgroundElementContract.self, StyledElementContract.self,
+        BorderElementContract.self, PaddingElementContract.self, EnabledElementContract.self,
     ]
 
     /// Whether it hides with its split view's sidebar rather than move over the detail while the sidebar is not shown.
     public static let hidesWithSidebar = ElementProperty<Self, Bool>(
         "hidesWithSidebar", layer: .stateUI, travels: false, cleared: false, unsaid: false)
-
-    /// Whether its items can be chosen: false leaves every one out of reach, as a disabled view does what it holds.
-    public static let isEnabled = ElementProperty<Self, Bool>("isEnabled", layer: .native)
 
     /// Where the group stands among the others at its edge: lower earlier in reading order.
     public static let order = ElementProperty<Self, Int>(
@@ -46,7 +44,5 @@ public enum ToolbarGroupContract: ElementContract {
         "position", layer: .adaptive, travels: false, cleared: false, unsaid: .end)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        barEdge, hidesWithSidebar, isEnabled, order, part, position, spacing, standsAlone,
-    ]
+    public static let members: [any ContractMember] = [barEdge, hidesWithSidebar, order, part, position, spacing, standsAlone]
 }

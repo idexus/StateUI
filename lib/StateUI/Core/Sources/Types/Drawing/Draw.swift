@@ -246,46 +246,53 @@ public enum Draw {
 
     // MARK: - Where the canvas draws
 
-    /// Moves everything drawn after it.
+    /// Moves everything drawn after it, as a view's `ViewTransform.translate` moves the view.
     ///
     /// - Parameters:
     ///   - x: how far across.
     ///   - y: how far down.
-    public static func translateBy(x: Double, y: Double) -> DrawCommand {
+    public static func translate(_ x: Double, _ y: Double) -> DrawCommand {
         DrawCommand(.translate, [.number(x), .number(y)])
     }
 
     /// Turns everything drawn after it, in degrees clockwise about the origin.
-    public static func rotate(by degrees: Double) -> DrawCommand {
+    public static func rotate(_ degrees: Double) -> DrawCommand {
         DrawCommand(.rotate, [.number(degrees)])
     }
 
-    /// Resizes everything drawn after it.
-    ///
-    /// - Parameters:
-    ///   - x: how much across, 1 being unchanged.
-    ///   - y: how much down.
-    public static func scaleBy(x: Double, y: Double) -> DrawCommand {
-        DrawCommand(.scale, [.number(x), .number(y)])
+    /// Resizes everything drawn after it by `factor` both ways, 1 being unchanged, as a view's
+    /// `ViewTransform.scale` resizes the view.
+    public static func scale(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(factor), .number(factor)])
     }
 
-    /// Remembers the colors, sizes and transforms in force, for a later
-    /// `restoreState` to put back.
+    /// Resizes everything drawn after it across, 1 being unchanged.
+    public static func scaleX(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(factor), .number(1)])
+    }
+
+    /// Resizes everything drawn after it down, 1 being unchanged.
+    public static func scaleY(_ factor: Double) -> DrawCommand {
+        DrawCommand(.scale, [.number(1), .number(factor)])
+    }
+
+    /// Remembers the colors, sizes and transforms in force - the graphics, not a
+    /// state of the application - for a later `restoreGraphics` to put back.
     ///
-    ///     Draw.saveState()
-    ///     Draw.translateBy(x: 40, y: 0)
-    ///     Draw.rotate(by: 45)
+    ///     Draw.saveGraphics()
+    ///     Draw.translate(40, 0)
+    ///     Draw.rotate(45)
     ///     Draw.fillRectangle(x: 0, y: 0, width: 20, height: 20)
-    ///     Draw.restoreState()
+    ///     Draw.restoreGraphics()
     ///
     /// Everything after this line inherits what was in force, so the pair is
     /// what keeps one rotated shape from turning the rest of the drawing.
-    public static func saveState() -> DrawCommand {
-        DrawCommand(.saveState)
+    public static func saveGraphics() -> DrawCommand {
+        DrawCommand(.saveGraphics)
     }
 
-    /// Puts back what the last `saveState` remembered.
-    public static func restoreState() -> DrawCommand {
-        DrawCommand(.restoreState)
+    /// Puts back what the last `saveGraphics` remembered.
+    public static func restoreGraphics() -> DrawCommand {
+        DrawCommand(.restoreGraphics)
     }
 }

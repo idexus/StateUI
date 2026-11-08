@@ -19,7 +19,7 @@ carries values, one parameter each:
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked(.ignoreWhileRunning) {
+Button("Load").onClicked(policy: .ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -62,14 +62,14 @@ TextField($query)
     }
 ```
 
-The policy stands first where the modifier takes nothing else -
-`.onClicked(.ignoreWhileRunning)` - and as `policy:` after the event's own
-arguments - `.onChanged(query, policy: .cancelPrevious)`. A policy gives the
+The policy is written `policy:`, as a gate is `gate:`, after the event's own
+arguments - `.onClicked(policy: .ignoreWhileRunning)`,
+`.onChanged(query, policy: .cancelPrevious)`. A policy gives the
 handler a gate of its own: two buttons written with `.ignoreWhileRunning` never
 hold each other back. Where several actions touch one thing - a save and a
 delete of one document - they pass through one `Gate`, kept in a state or a
 model and given as `gate:`, and its `isBusy` says whether a run is under way
-through it:
+through it. This is a read-only fact; starting and completing work update it:
 
 ```swift
 @MainActor
@@ -197,7 +197,7 @@ struct OpenButton: View {
     @State private var currentDocument = ""
 
     var body: some View {
-        Button("Open").onClicked(.ignoreWhileRunning) { try await loadDocument() }
+        Button("Open").onClicked(policy: .ignoreWhileRunning) { try await loadDocument() }
     }
 
     @MainActor
@@ -242,7 +242,7 @@ elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 ```swift
 @State var total = 0
 
-Button("Count").onClicked(.ignoreWhileRunning) {
+Button("Count").onClicked(policy: .ignoreWhileRunning) {
     let counter = $total
     await withTaskGroup(of: Void.self) { group in
         for _ in 0..<4 {
@@ -276,7 +276,7 @@ Use `await` to express a dependency:
 @Environment(\.window) private var window
 @State private var title = "Draft"
 
-Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
+Button("Rename and confirm").onClicked(policy: .ignoreWhileRunning) {
     guard let name = try await window.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }
@@ -316,10 +316,13 @@ struct Countdown: View {
 ```
 
 Hold a ticker in `@State` so the same instance survives view rebuilds. Reading
-`ticks`, `isRunning`, `isFinished`, `interval`, `limit`, or `isRepeating`
-subscribes the current description to that ticker. A tick, and each change
-to `interval`, `limit` or `isRepeating`, requests a render; setting `onTick`
-does not.
+`ticks`, `isRunning`, `isFinished`, `interval` or `limit` subscribes the
+current description to that ticker. A tick, and each change to `interval` or
+`limit`, requests a render; setting `onTick` does not.
+
+`ticks` and `isRunning` are read-only facts. Use `start()`, `stop()` and
+`reset()` to control them; the writable settings `interval` and `limit` also
+offer bindings for controls, `ticker.$interval` and `ticker.$limit`.
 
 `start()` returns immediately and does nothing while the same run is already
 active. A completed limited ticker starts again from zero. `stop()` keeps the
@@ -331,8 +334,9 @@ among it, so such a ticker is stopped in `.onDestroying`, as the poll below. A
 ticker a handler starts belongs to no run: it goes on after that run is
 superseded, until it is stopped or nobody holds it.
 
-Intervals shorter than one millisecond are clamped to one millisecond. The
-platform scheduler may have a coarser practical resolution.
+An interval shorter than one millisecond sleeps one millisecond; the
+interval itself holds what was written. The platform scheduler may have a
+coarser practical resolution.
 
 ## Work on each tick
 
@@ -341,8 +345,8 @@ the next waits for the current closure to finish and falls due one interval
 after the last deadline; if the work outlasts a whole interval, the next
 deadline starts from completion instead of releasing a burst of missed ticks.
 
-A nonrepeating ticker is a reusable delay. It is useful for polling that must
-not overlap:
+A ticker of `limit: 1` is a reusable delay: started again, it counts from
+none. It is useful for polling that must not overlap:
 
 ```swift
 struct StatusService {
@@ -351,7 +355,7 @@ struct StatusService {
 
 let service = StatusService()
 @State private var status = "Waiting"
-@State private var poll = Ticker(every: .seconds(30), isRepeating: false)
+@State private var poll = Ticker(every: .seconds(30), limit: 1)
 
 VStack { Text(status) }
     .onCreated {

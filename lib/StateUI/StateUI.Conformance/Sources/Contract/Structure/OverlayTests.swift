@@ -14,7 +14,7 @@
         [
             ConformanceCase("anOverlayStandsOverThePageAndLetsAPressBesideItThrough", proves: [
                 Covered(OverlayContract.self),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let notice = State(wrappedValue: false)
                 s.start { OverlaidPage(notice: notice) }
                 let beneath = try s.element("beneath")

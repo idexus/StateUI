@@ -11,7 +11,8 @@
 ///     Grid { … }.ignoresSafeArea([.start, .top])
 ///
 /// The start and the end are the layout's own: right to left, the start is the
-/// right edge.
+/// right edge. `[]`, no edge, is what a layout does when nothing is said: it
+/// stands clear of everything over its page.
 public struct SafeAreaEdges: OptionSet, Sendable {
     /// The edge bits.
     public let rawValue: Int32
@@ -21,10 +22,6 @@ public struct SafeAreaEdges: OptionSet, Sendable {
     public init(rawValue: Int32) {
         self.rawValue = rawValue
     }
-
-    /// No edge: the layout stands clear of everything over its page - what it
-    /// does when nothing is said.
-    public static let none = SafeAreaEdges([])
 
     /// The edge a line of words starts from.
     public static let start = SafeAreaEdges(rawValue: 1 << 0)

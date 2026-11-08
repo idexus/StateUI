@@ -85,7 +85,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
     @MainActor
     func testATextEditorsFontFamilyComesThroughTheHost() throws {
         let renderer = AppKitRenderer.running { TextEditor("Ada").fontFamily("Menlo") }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let editor = try XCTUnwrap(renderer.nativeViews(AppKitTextEditorView.self).first)
 
         XCTAssertEqual(editor.textView.font?.familyName, "Menlo")
@@ -105,7 +105,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
                     .isTextPredictionEnabled(false)
             }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let texts = renderer.nativeViews(AppKitTextEditorView.self).map { $0.textView }
 
         XCTAssertEqual(texts.map { $0.isEditable }, [true, false])
@@ -121,7 +121,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             TextEditor("").onTextChanged { texts.values.append($0) }
         }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let editor = try XCTUnwrap(renderer.nativeViews(AppKitTextEditorView.self).first)
 
         editor.typeForTesting("a")

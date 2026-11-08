@@ -57,7 +57,7 @@ private struct OpeningAtTheEnd: View {
     var body: some View {
         ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
             .aim(list)
-            .onCreated { try await list.scrollTo(99, anchor: .end) }
+            .onCreated { try await list.scroll(to: 99, anchor: .end) }
             .width(300).height(400)
     }
 }
@@ -129,7 +129,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let days = State(wrappedValue: ["Yesterday"])
         let host = UIKitRenderer.running(reducesMotion: true) {
             ItemsView(sections: days.wrappedValue.map { day in
-                Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
+                Section([day + " note"]) { Text($0) }.id(day).header { Text(day) }
             })
             .width(300).height(400)
         }
@@ -170,6 +170,7 @@ final class UIKitItemsViewTests: XCTestCase {
                 && collection.visibleCells.allSatisfy { ($0 as? UIKitItemCell)?.holding.shown != nil }
         }
 
+        let lastIdentity = try XCTUnwrap(items.cells.entries.sections.first?.items.last)
         let renders = host.runtime.core.tally.renders
         numbers.wrappedValue = [999] + Array(0..<999)
         collection.setContentOffset(CGPoint(x: 0, y: 600), animated: false)
@@ -180,11 +181,11 @@ final class UIKitItemsViewTests: XCTestCase {
         collection.setContentOffset(.zero, animated: false)
         host.settle {
             collection.layoutIfNeeded()
-            return (collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell)?.holding.identity == "999"
+            return (collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell)?.holding.identity == lastIdentity
         }
 
         let first = collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell
-        XCTAssertEqual(first?.holding.identity, "999", "the change stands once the cell is returned")
+        XCTAssertEqual(first?.holding.identity, lastIdentity, "the change stands once the cell is returned")
     }
 
     /// A scroll the program asks for stands its item though the bars over the list change what it keeps clear while
@@ -204,7 +205,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
         host.settle { items.collection.visibleCells.count > 5 }
 
-        items.scroll(to: "99", anchor: .end)
+        items.scroll(to: try XCTUnwrap(items.cells.entries.sections.first?.items.last), anchor: .end)
         items.keepClear(Clearance(top: 50, left: 0, bottom: 60, right: 0))
         let collection = items.collection
         let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 99, section: 0))?.frame.maxY ?? 0)
@@ -243,7 +244,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
         let collection = items.collection
         host.settle { collection.visibleCells.count == 15 }
-        items.scroll(to: "14", anchor: .end)
+        items.scroll(to: try XCTUnwrap(items.cells.entries.sections.first?.items.last), anchor: .end)
         host.settle { collection.contentOffset.y == 0 }
 
         tall.wrappedValue = 300
@@ -274,7 +275,7 @@ final class UIKitItemsViewTests: XCTestCase {
 
         numbers.wrappedValue.append(30)
         host.runtime.pump.turn()
-        items.scroll(to: "30", anchor: .end)
+        items.scroll(to: try XCTUnwrap(items.cells.entries.sections.first?.items.last), anchor: .end)
         items.keepClear(Clearance(top: 0, left: 0, bottom: 40, right: 0))
         collection.layoutIfNeeded()
         // The end as the cells measure it: the layout's estimates give way as the cells take their entries.
@@ -292,7 +293,7 @@ final class UIKitItemsViewTests: XCTestCase {
         let numbers = State(wrappedValue: Array(0..<1_000))
         let host = UIKitRenderer.running {
             ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
-                .header(Text("Rows").fontSize(11).padding(8))
+                .header { Text("Rows").fontSize(11).padding(8) }
                 .width(300).height(500)
         }
         defer { host.finish() }
@@ -311,7 +312,11 @@ final class UIKitItemsViewTests: XCTestCase {
                 && collection.visibleCells.allSatisfy { ($0 as? UIKitItemCell)?.holding.shown != nil }
         }
         collection.layoutIfNeeded()
-        let stood = drawn().filter { Int($0.key)! < 6 }
+        let ids = Array(items.cells.entries.sections.flatMap(\.items).prefix(6))
+        XCTAssertEqual(ids.count, 6)
+        guard ids.count == 6 else { return }
+        let firstRows = Set(ids)
+        let stood = drawn().filter { firstRows.contains($0.key) }
 
         numbers.wrappedValue = [999] + Array(0..<999)
         var astray: [String] = []
@@ -326,7 +331,7 @@ final class UIKitItemsViewTests: XCTestCase {
         }
 
         XCTAssertEqual(astray, [])
-        host.settle { drawn()["0"] == stood["1"] }
-        XCTAssertEqual(drawn()["0"], stood["1"], "row 0 ends where row 1 stood")
+        host.settle { drawn()[ids[0]] == stood[ids[1]] }
+        XCTAssertEqual(drawn()[ids[0]], stood[ids[1]], "row 0 ends where row 1 stood")
     }
 }

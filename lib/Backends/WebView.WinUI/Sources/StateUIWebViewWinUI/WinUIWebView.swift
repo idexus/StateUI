@@ -15,25 +15,27 @@ final class WinUIWebView: WinUIControl {
 
     /// What the view tells: a navigation beginning, one ending, the ways back and forward as they change, and its
     /// web process gone.
-    var onNavigating: ((WebNavigationType, String) -> Void)?
-    var onNavigated: ((WebNavigationResult, WebNavigationType, String) -> Void)?
+    var onNavigating: ((WebNavigationKind, String) -> Void)?
+    var onNavigated: ((WebNavigationResult, WebNavigationKind, String) -> Void)?
     var onCanGoBack: ((Bool) -> Void)?
     var onCanGoForward: ((Bool) -> Void)?
     var onProcessGone: (() -> Void)?
 
     private var cause = WebNavigationCause()
     private var history = WebHistory()
+    private var reloadSource = WebReloadSource()
     private let number: Int64
 
     /// How many documents with no address of their own it was given: each is shown at an address of its own.
     private var written = 0
 
     /// What the view calls itself; the page last asked for - its address, and the document written in place there -
-    /// and whether a navigation is under way; and the source loaded last, which `shownSource` answers while the view
-    /// shows its document.
+    /// whether the next navigation to begin is that page, and whether the one under way is; and the source loaded
+    /// last, which `shownSource` answers while the view shows its document.
     private var agent = ""
     private var asked: (address: String, document: String?)?
-    private var loading = false
+    private var requestedLoad = false
+    private var requestedUnderWay = false
     private var loaded: WebViewSource?
 
     init() {
@@ -60,6 +62,13 @@ final class WinUIWebView: WinUIControl {
     /// gives it - the agent it is handed with already the view's (`applies`); no source leaves the page as it is.
     func show(_ source: WebViewSource?) {
         guard let source else { return }
+        request(source)
+    }
+
+    /// Loads `source` whole; the complete source stands for a reload until it arrives (`WebReloadSource`).
+    private func request(_ source: WebViewSource) {
+        reloadSource.requested(source)
+        requestedLoad = true
         loaded = source
         switch source {
         case .address(let address): go((address, nil))
@@ -103,12 +112,21 @@ final class WinUIWebView: WinUIControl {
 
     // MARK: - Its acts
 
-    /// Steps back or forward, or loads the page again - the navigation's cause the program's step. A page still
-    /// coming WebView2 does not load again: it is asked for again instead.
-    func step(_ step: WebNavigationType) {
-        cause.ask(step)
-        if step == .reload, loading, let asked { return go(asked) }
+    /// Steps back or forward, or loads the page again - the navigation's cause the program's step. The page again
+    /// asks for the source the reload rule still holds, else is WebView2's own.
+    func step(_ step: WebNavigationKind) {
+        let source = step == .reload ? reloadSource.value : nil
+        guard cause.ask(step, if: source != nil || stateui_webview_winui_can_step(element, step.rawValue)) else { return }
+        if let source { return request(source) }
+        if step != .reload { tookOver() }
         stateui_webview_winui_step(element, step.rawValue)
+    }
+
+    /// A navigation the view did not ask for gives the page again to WebView2's own history.
+    private func tookOver() {
+        requestedLoad = false
+        requestedUnderWay = false
+        reloadSource.takenOver()
     }
 
     /// Runs `script` in the page, answering what it evaluated to as text (`ScriptAnswer`); throws where it did not
@@ -146,13 +164,19 @@ final class WinUIWebView: WinUIControl {
 
     // MARK: - What the page does
 
-    func navigating(told: WebNavigationType, to address: String) {
-        loading = true
+    func navigating(told: WebNavigationKind, to address: String) {
+        if requestedLoad {
+            requestedLoad = false
+            requestedUnderWay = true
+        } else {
+            tookOver()
+        }
         onNavigating?(cause.begin(told: told), address)
     }
 
     func navigated(_ result: WebNavigationResult, at address: String) {
-        loading = false
+        if requestedUnderWay, result == .success { reloadSource.committed() }
+        requestedUnderWay = false
         onNavigated?(result, cause.current, address)
     }
 
@@ -168,7 +192,7 @@ final class WinUIWebView: WinUIControl {
 
     /// WebView2 did not start: the page asked for failed, and no other comes.
     func unstarted() {
-        loading = false
+        requestedUnderWay = false
         onNavigated?(.failure, cause.begin(told: .newPage), asked?.address ?? "")
     }
 }

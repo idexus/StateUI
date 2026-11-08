@@ -36,7 +36,8 @@ extension WinUIElement {
             return registered
         }
         switch type {
-        case .page, .overlay: return WinUISingleChildView()
+        case .page: return WinUIPageView()
+        case .overlay: return WinUISingleChildView()
         case .popover: return WinUIPopoverView()
         case .navigationStack:
             return WinUINavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })

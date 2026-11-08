@@ -8,7 +8,7 @@ struct InspectorPanel: View {
     let scene: String
 
     /// Where it docks.
-    let place: Inspector.Place
+    let place: DebugInspector.Place
 
     @Environment(\.device) private var device
 
@@ -43,7 +43,7 @@ struct InspectorPanel: View {
         if collapsed {
             // One line along the bottom, as tall as what it says.
             return Grid { panel.gridRow(1) }
-                .rows(.fill, .auto)
+                .rows(.fill, .automatic)
                 .letsInputThrough(true)
         }
 

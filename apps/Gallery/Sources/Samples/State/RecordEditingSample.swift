@@ -29,7 +29,7 @@ private struct TodoRow: View {
                 .accessibilityLabel("Todo")
                 .gridColumn(1)
         }
-        .columns(.auto, .fill)
+        .columns(.automatic, .fill)
         .columnSpacing(8)
     }
 }
@@ -81,7 +81,7 @@ private struct KeptChores: View {
             }
             .selection($chosen)
             .isRefreshing($refreshing)
-            .onRefreshRequested(.ignoreWhileRunning) {
+            .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
             }
@@ -93,15 +93,14 @@ private struct KeptChores: View {
                         .accessibilityLabel("Chore")
                         .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                    CheckBox(chore.done)
-                        .text("Done")
+                    CheckBox("Done", isOn: chore.done)
                         .onToggled { done in edit(chore.id) { $0.done = done } }
                 }
             }
             .spacing(8)
             .gridRow(2)
         }
-        .rows(.auto, .fill, .auto)
+        .rows(.automatic, .fill, .automatic)
         .rowSpacing(10)
     }
 
@@ -134,7 +133,7 @@ struct RecordEditingSample: SampleContent, ExampleContent {
             KeptChores()
                 .gridRow(1)
         }
-        .rows(.auto, .fill)
+        .rows(.automatic, .fill)
         .rowSpacing(16)
     }
     // listing: end

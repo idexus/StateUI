@@ -11,17 +11,16 @@ public enum ButtonContract: ElementContract {
 
     /// A button is a view with a caption in a font, padded, bordered, with a
     /// picture fitted, and a menu it may open.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TrackingElementContract.self, FontElementContract.self,
-        PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
+        PaddingElementContract.self, BorderElementContract.self, ContentModeElementContract.self, FocusElementContract.self,
         ButtonMenuElementContract.self, TextAndIconElementContract.self,
+        PressElementContract.self,
+        ClickElementContract.self,
+        IconElementContract.self,
+        ShortcutElementContract.self,
+        LineBreakElementContract.self,
     ]
-
-    /// The button was pressed and released on it.
-    public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
-
-    /// The picture beside the caption.
-    public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
 
     /// Which side of the caption the icon stands on.
     public static let iconPosition = ElementProperty<Self, IconPosition>("iconPosition", layer: .adaptive)
@@ -29,24 +28,10 @@ public enum ButtonContract: ElementContract {
     /// The gap between the icon and the caption, in device units.
     public static let iconSpacing = ElementProperty<Self, Double>("iconSpacing", layer: .adaptive)
 
-    /// Keys that press the button from the keyboard while its window is in front.
-    public static let keyboardShortcut = ElementProperty<Self, KeyboardShortcut>("keyboardShortcut", layer: .native)
-
-    /// What happens to a caption too long for the button.
-    public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
-
-    /// A press began on the button: a finger, a pen or a mouse button went down.
-    public static let pressed = ElementEvent<Self, Void>("pressed", layer: .native)
-
-    /// The press ended, wherever the pointer ended up.
-    public static let released = ElementEvent<Self, Void>("released", layer: .native)
-
     /// What the button stands for in its window - its main action, the way out, or one destroying something - drawn
     /// as each platform draws it; Return presses the main action and Escape the way out.
     public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [
-        clicked, icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, pressed, released, role,
-    ]
+    public static let members: [any ContractMember] = [iconPosition, iconSpacing, role]
 }

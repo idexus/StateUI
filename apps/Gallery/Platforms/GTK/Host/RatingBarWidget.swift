@@ -3,6 +3,7 @@
 
 import CStateUIGTK
 import GalleryUI
+import StateUI
 import StateUIGTK
 
 /// Stars in a row, as many lit as the rating - a `GtkBox` of labels that knows nothing of StateUI.
@@ -120,7 +121,7 @@ extension RatingBarWidget {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         // listing: end
 

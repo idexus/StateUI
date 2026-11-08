@@ -131,7 +131,7 @@ final class AndroidTextFieldView: AndroidTextualView {
     func setReturnKey(_ key: SubmitLabel?) {
         // EditorInfo.IME_ACTION_UNSPECIFIED, _GO, _SEARCH, _SEND, _NEXT and _DONE.
         let action: Int32 = switch InputTraits.submitLabel(key, searching: kind == .search) {
-        case .default: 0
+        case .automatic: 0
         case .go: 2
         case .search: 3
         case .send: 4
@@ -211,7 +211,7 @@ final class AndroidTextFieldView: AndroidTextualView {
                 + Java.callInt(reference, JavaAPI.getCompoundPaddingRight)
             return (measured, Double(padding))
         }
-        let least = Int32(FieldWidth.width(own: Double(own), measured: measured, chrome: chrome).rounded(.up))
+        let least = AndroidPixels.size(FieldWidth.width(own: Double(own), measured: measured, chrome: chrome), rounding: .up)
         return ViewConstants.mode(width) == ViewConstants.atMost ? min(least, ViewConstants.size(width)) : least
     }
 

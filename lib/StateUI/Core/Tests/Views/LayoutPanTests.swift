@@ -39,14 +39,14 @@ final class LayoutPanTests: XCTestCase {
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
         let across = { (layout: MotionLayout<[Int], Int, Board>) in
-            layout.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            layout.axis(\.x, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
         }
         let down = { (layout: MotionLayout<[Int], Int, Board>) in
-            layout.axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+            layout.axis(\.y, input: .scroll(.vertical, lengthPerUnit: 100), range: 0...2, snaps: .every(1))
         }
         return (downFirst ? across(down(layout)) : down(across(layout)))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .motion(.eased(.milliseconds(160), curve: .linear))
+        .parameterMotion(.eased(.milliseconds(160), curve: .linear))
         .node
     }
 

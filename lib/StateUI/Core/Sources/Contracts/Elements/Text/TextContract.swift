@@ -11,15 +11,12 @@ public enum TextContract: ElementContract {
 
     /// Text is a view of words in a font - aligned, spaced, decorated and
     /// padded.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, LineHeightElementContract.self, TrackingElementContract.self,
         DecorableTextElementContract.self, PaddingElementContract.self,
+        LineBreakElementContract.self,
     ]
-
-    /// What happens to text too long for the space: it wraps, or it is cut and
-    /// says so.
-    public static let lineBreak = ElementProperty<Self, LineBreak>("lineBreak", layer: .native)
 
     /// How many lines show before the text is cut; -1 for no limit.
     public static let maximumLines = ElementProperty<Self, Int>(
@@ -36,5 +33,5 @@ public enum TextContract: ElementContract {
     public static let isSelectable = ElementProperty<Self, Bool>("isSelectable", layer: .native, remakes: true)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [lineBreak, maximumLines, verticalTextAlignment, isSelectable]
+    public static let members: [any ContractMember] = [maximumLines, verticalTextAlignment, isSelectable]
 }

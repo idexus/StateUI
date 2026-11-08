@@ -3,6 +3,7 @@
 
 import CGalleryWinUI
 import GalleryUI
+import StateUI
 import StateUIWinUI
 
 /// Stars the user picks from - WinUI's own RatingControl, made by the gallery's relay - and a flash an aimed act asks
@@ -68,7 +69,7 @@ extension RatingBarControl {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         // listing: end
 

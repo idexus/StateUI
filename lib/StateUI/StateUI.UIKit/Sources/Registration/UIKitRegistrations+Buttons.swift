@@ -12,9 +12,9 @@ extension UIKitRegistrations {
     static func buttons(_ registry: Registry<UIView>) {
         registry.add(ButtonContract.self, create: { reports in
             let button = UIKitButtonView()
-            button.onClicked = { reports.raise(ButtonContract.clicked) }
-            button.onPressed = { reports.raise(ButtonContract.pressed) }
-            button.onReleased = { reports.raise(ButtonContract.released) }
+            button.onClicked = { reports.raise(ClickElementContract.clicked) }
+            button.onPressed = { reports.raise(PressElementContract.pressed) }
+            button.onReleased = { reports.raise(PressElementContract.released) }
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in
@@ -26,14 +26,14 @@ extension UIKitRegistrations {
                     view.setPadding(values[PaddingElementContract.padding])
                 }
             }
-            button.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            button.property(EnabledElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 TextAndIconElementContract.showsText) { view, values in
-                let icon = HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image)
+                let icon = HostPicture(values[IconElementContract.icon], dark: false).flatMap(UIKitRenderer.image)
                 view.setIcon(
                     icon, position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing],
@@ -43,9 +43,9 @@ extension UIKitRegistrations {
             // The box, and the role's look where the tree draws nothing of its own: the main action filled in the
             // tint, a destructive one's words in the system's red.
             button.applies(
-                VisualElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
+                BackgroundElementContract.background, BorderElementContract.stroke, BorderElementContract.lineWidth,
                 BorderElementContract.shape, ButtonContract.role, TextColorElementContract.textColor) { view, values in
-                let background = HostMaterial(values[VisualElementContract.background]?.propValue).painted
+                let background = HostMaterial(values[BackgroundElementContract.background]?.propValue).painted
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
                     colorsWords: values[TextColorElementContract.textColor] != nil)
@@ -57,19 +57,19 @@ extension UIKitRegistrations {
                     accent: look.fillsInAccent)
                 view.setCriticalWords(look.wordsInCritical)
             }
-            button.property(ButtonContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
+            button.property(LineBreakElementContract.lineBreak) { view, breaking in view.setLineBreak(breaking ?? .wordWrap) }
             // UIKit's own role; its key is the window root's (`KeyboardShortcuts.pressing`).
             button.property(ButtonContract.role) { view, role in
                 view.role = switch role {
                 case .primary: .primary
                 case .cancel: .cancel
                 case .destructive: .destructive
-                case nil: .normal
+                case .normal, nil: .normal
                 }
             }
-            button.raises(ButtonContract.clicked)
-            button.raises(ButtonContract.pressed)
-            button.raises(ButtonContract.released)
+            button.declares(ClickElementContract.clicked)
+            button.declares(PressElementContract.pressed)
+            button.declares(PressElementContract.released)
         })
     }
 }

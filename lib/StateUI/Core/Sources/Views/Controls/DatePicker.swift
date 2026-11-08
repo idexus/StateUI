@@ -6,40 +6,27 @@
 public protocol DatePickerProperties: PropertyContainer {}
 
 extension DatePickerProperties {
-    /// Whether the calendar is showing.
-    ///
-    /// Settable, so a button elsewhere on the page can open it - and the
-    /// platform closes it by itself, which is what `onClosed` is for.
-    public func isOpen(_ value: Bool) -> Modified {
-        setValue(DatePickerContract.isOpen, value)
-    }
-
-    /// The day the field shows. Usually given in the initializer.
-    public func date(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.date, value)
-    }
-
     /// The earliest day the calendar offers - everything before it is refused.
-    public func minimumDate(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.minimumDate, value)
+    public func minimum(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.minimum, value)
     }
 
     /// The latest day the calendar offers - everything after it is refused.
     ///
     ///     DatePicker($birthday)
-    ///         .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+    ///         .maximum(CalendarDate(year: 2026, month: 12, day: 31))
     ///
     /// There is no `today` to hand: a page whose limit is the current day
     /// holds that day in state.
-    public func maximumDate(_ value: CalendarDate) -> Modified {
-        setValue(DatePickerContract.maximumDate, value)
+    public func maximum(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.maximum, value)
     }
 
     /// How much of the day is written out in the field - `.long`
     /// "September 30, 2026", `.medium` "Sep 30, 2026", `.short` "9/30/26" -
     /// each in the order and the words of the user's language and region.
-    public func format(_ style: DateStyle) -> Modified {
-        setValue(DatePickerContract.format, style)
+    public func format(_ format: DateFormat) -> Modified {
+        setValue(DatePickerContract.format, format)
     }
 }
 
@@ -48,17 +35,17 @@ extension DatePickerProperties {
 ///     @State private var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 ///     …
 ///     DatePicker($birthday)
-///         .minimumDate(CalendarDate(year: 1900, month: 1, day: 1))
+///         .minimum(CalendarDate(year: 1900, month: 1, day: 1))
 ///         .format(.long)
 ///
 /// The date is a `CalendarDate`: a year, a month and a day. The picker takes
 /// `.textColor` but has no `.text`, the field showing the formatted date.
-public struct DatePicker: ElementView, TextColorElement, FontElement, DatePickerProperties, FocusElement {
+public struct DatePicker: ElementView, TextColorElement, FontElement, DatePickerProperties, FocusElement, PopupElement {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<DatePicker>` is written against.
-    public init() {
+    /// Empty, for an initializer to fill.
+    init() {
         node = Node(contract: DatePickerContract.self)
     }
 
@@ -74,21 +61,13 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
         self = DatePicker().date(state)
     }
 
-    // Design: docs/design/views/bindings.md#two-way-controls
-    /// The same two-way date as `DatePicker($due)`, written as a modifier.
-    ///
-    ///     DatePicker($due)
-    ///     DatePicker().date($due)
-    ///
-    /// The host shows the state's day and writes back the one the user
-    /// chooses, with no view rebuilt for it. A day outside
-    /// `minimumDate`…`maximumDate` is shown clamped while the state keeps the
-    /// day written.
-    ///
-    /// - Parameter state: the state shown, and written back into when a day is
-    ///   chosen.
-    /// - Returns: the control, wearing and reporting that day.
-    public func date(_ state: Binding<CalendarDate>) -> Modified {
+    /// The day it shows.
+    func date(_ value: CalendarDate) -> Modified {
+        setValue(DatePickerContract.date, value)
+    }
+
+    /// The day from a state carried both ways.
+    func date(_ state: Binding<CalendarDate>) -> Modified {
         plain(.date, by: state, mode: .inOut)
     }
 
@@ -102,7 +81,7 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Modified {
+    public func onDateChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Modified {
         onEvent(DatePickerContract.dateChanged, policy: policy, handler)
     }
 
@@ -111,44 +90,22 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
         onEvent(DatePickerContract.dateChanged, gate: gate, handler)
     }
 
-    /// The user has opened the calendar. Opening it with `isOpen(true)` raises
-    /// nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(DatePickerContract.opened, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.opened, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.opened, gate: gate, handler)
-    }
-
-    /// It has closed - by a choice, by a tap outside, or by the platform.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
-        onEvent(DatePickerContract.closed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.closed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
-        onEvent(DatePickerContract.closed, gate: gate, handler)
-    }
 }
 
 extension DatePicker {
-    /// `isOpen` from a state, `$x`, both ways: the host opens and closes the calendar as the state stands, and
-    /// the user's opening and closing come back into it; no view is rebuilt for it.
-    public func isOpen(_ state: Binding<Bool>) -> Modified {
-        opening(DatePickerContract.isOpen, by: state, opened: DatePickerContract.opened, closed: DatePickerContract.closed)
+    /// `minimum` from a state, `$x`: the host sets each new earliest day as it stands.
+    public func minimum(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.minimum, by: state)
     }
+
+    /// `maximum` from a state, `$x`: the host sets each new latest day as it stands.
+    public func maximum(_ state: Binding<CalendarDate>) -> Modified {
+        twin(DatePickerContract.maximum, by: state)
+    }
+
+    /// `format` from a state, `$x`: the host writes the day each new way as it stands.
+    public func format(_ state: Binding<DateFormat>) -> Modified {
+        twin(DatePickerContract.format, by: state)
+    }
+
 }

@@ -85,19 +85,19 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             Button("Close swatch 2")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
+                .onClicked(policy: .ignoreWhileRunning) { await closeSwatch(2) }
 
             SectionTitle("More gallery windows")
 
             Button("New gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
-                .onClicked(.ignoreWhileRunning) { await openAnother() }
+                .onClicked(policy: .ignoreWhileRunning) { await openAnother() }
 
             Button("Close every gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
-                .onClicked(.ignoreWhileRunning) { await closeThis() }
+                .onClicked(policy: .ignoreWhileRunning) { await closeThis() }
         }
         .spacing(12)
     }
@@ -124,23 +124,23 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// The button that opens one of the scene's windows.
-    private func opens(_ caption: String, _ type: WindowType<Void>) -> some View {
+    private func opens(_ caption: String, _ kind: WindowKind<Void>) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.open", caption))
-            .onClicked(.ignoreWhileRunning) { await open(type, caption) }
+            .onClicked(policy: .ignoreWhileRunning) { await open(kind, caption) }
     }
 
     /// The button that closes it.
-    private func closes(_ caption: String, _ type: WindowType<Void>) -> some View {
+    private func closes(_ caption: String, _ kind: WindowKind<Void>) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.close", caption))
-            .onClicked(.ignoreWhileRunning) { await close(type, caption) }
+            .onClicked(policy: .ignoreWhileRunning) { await close(kind, caption) }
     }
 
     /// Opens a window of the scene, and says what came of it.
-    private func open(_ type: WindowType<Void>, _ caption: String) async {
+    private func open(_ kind: WindowKind<Void>, _ caption: String) async {
         do {
-            try await application.openWindow(type)
+            try await application.openWindow(kind)
             said = "\(caption): opened."
         } catch WindowError.alreadyOpen {
             said = "\(caption): WindowError.alreadyOpen - it is open already."
@@ -150,9 +150,9 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// Closes one, and says what came of it.
-    private func close(_ type: WindowType<Void>, _ caption: String) async {
+    private func close(_ kind: WindowKind<Void>, _ caption: String) async {
         do {
-            try await application.closeWindow(type)
+            try await application.closeWindow(kind)
             said = "\(caption): closed."
         } catch WindowError.notOpen {
             said = "\(caption): WindowError.notOpen - it is not open."
@@ -178,7 +178,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .textColor(.white)
             .shape(.roundedRectangle(8))
             .accessibilityIdentifier("window.open.swatch.\(number)")
-            .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
+            .onClicked(policy: .ignoreWhileRunning) { await openSwatch(number) }
     }
 
     /// Opens a swatch's window, and says what came of it.

@@ -43,8 +43,8 @@ struct TextStyleSample: SampleContent, ExampleContent {
 
             // With digits of their own width, the words after the number move as it counts.
             HStack {
-                Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : .none)
-                Button("Count down").onClicked(.cancelPrevious) {
+                Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : [])
+                Button("Count down").onClicked(policy: .cancelPrevious) {
                     seconds = 20
                     while seconds > 0 {
                         try await Task.sleep(for: .milliseconds(300))
@@ -54,7 +54,7 @@ struct TextStyleSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            Switch($monospaced).text("Digits of one width")
+            Switch("Digits of one width", isOn: $monospaced)
         }
         .spacing(8)
     }

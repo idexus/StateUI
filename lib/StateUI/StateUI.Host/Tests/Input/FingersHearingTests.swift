@@ -149,9 +149,9 @@ private struct FingersPage: View {
             handed.append(dial)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .axis(\.turn, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...4, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .motion(.eased(.milliseconds(200), curve: .linear))
+        .parameterMotion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 

@@ -336,21 +336,29 @@ buttons](../platforms/winui/pages.md#a-bars-buttons)).
 ## A bar's items in the application's look
 
 A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
-the look of a control where a host draws its bar itself: their own tiers,
-`BarItemElement` (a style, a background, the pointer over it) and
-`BarButtonElement` (a press), the room between a group's buttons
-(`spacing`) and between the bar's groups (`toolbarSpacing`), and on each item
-the box and the words they share with controls - `BorderElement`,
-`PaddingElement`, `TextColorElement` and `FontElement`.
+the look of a control where a host draws its bar itself: a style, a
+background and the pointer over it (`StyledElement`, `BackgroundElement`,
+`HoverElement`), a press on a button (`PressElement`), the room between a group's buttons (`spacing`) and
+between the bar's groups (`toolbarSpacing`), and the box and the words they
+share with controls - `BorderElement`, `PaddingElement`, `TextColorElement`
+and `FontElement`.
 Which members those are is said once (`BarItemLook`): a host judges them all
 alike, realized where it draws the bar (the Web), not planned where the bar is
-the platform's own. The style and the states are resolved by StateUI before
+the platform's own. Each is judged on the items, never on its tier: a view
+wears the pointer's and the background's tiers too, and keeps its own
+judgment (`BarItemLookTests`). The style and the states are resolved by StateUI before
 the patch, as a control's are; a host shows the values an item holds and tells
 its element the pointer and the press. Every group on the bar wears the group
 style - a lone item's own too - so a button standing alone stands in the same
 box a declared group gives its buttons.
 
 ## The menus of a path
+
+A menu's `HostMenuKey` carries its authored identity across page levels,
+independently of its scoped runtime `ElementID`. Literal names, standard menu
+roles and allocated value keys are separate cases; a description is never a
+lookup key. The core supplies the key on complete patches, and the mounted
+element keeps it through sparse updates.
 
 The menu bar a page's window shows is composed from the menu bars its path
 declares (`ChromeMenus`). A menu whose `.id`
@@ -361,8 +369,8 @@ outer first, then as declared: a page's entries come after the window's as
 a section of their own, parted by a line, and a page's own menus after the
 window's. An entry whose `.id` an entry further out has stands in that
 entry's place - its words, whether it can be chosen, its element - which the
-others of that id leave; a section left with nothing is none. A menu whose
-`.id` is a `StandardMenu` names the platform's menu of that identity
+others of that id leave; a section left with nothing is none. A menu that
+`.joins(_:)` a `StandardMenu` names the platform's menu of that kind
 (`standard`), which the host joins by it, never by its caption.
 
 ## The bar a path declares
@@ -528,7 +536,7 @@ the entry acts. A window with no such field does nothing.
 ## A checked entry
 
 A setting's entry - a `MenuToggle` - stands checked or not
-(`MenuToggleContract.isOn`), which each host shows as its toolkit marks a
+(`ToggleElementContract.isOn`), which each host shows as its toolkit marks a
 setting: a check beside it. Choosing an entry is one rule on every host
 (`MountedElement.chosen`): a setting's turns the other way - `toggled` with
 the way it turned to, written through a binding - and a `MenuItem`, which

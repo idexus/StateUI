@@ -1,0 +1,10 @@
+# revision 2.1
+Button.contentMode: ✓ read contentMode of Button: how the host's own panel fills its room: GTK's snapshot holds no aspect
+Capsule.contentMode: ✅
+Ellipse.contentMode: ✅
+Image.contentMode: ✅
+Line.contentMode: ✅
+Path.contentMode: ✅
+Polygon.contentMode: ✅
+Polyline.contentMode: ✅
+Rectangle.contentMode: ✅

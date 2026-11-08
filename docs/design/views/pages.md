@@ -71,7 +71,7 @@ Window* one more, `openWindow` one of a kind - and ends with its last
   hide while another scene is in front, and closes with its scene.
 - What the system restores is what was open: each window comes back as its
   kind for its value, and its scene with the values its `@State(sceneKey:)`
-  held. A group's value is `Codable` for that reason, and a `WindowType` name
+  held. A group's value is `Codable` for that reason, and a `WindowKind` name
   is written down with every window, so it should not change between
   versions.
 
@@ -148,7 +148,7 @@ built with its parent and the view is compared on its own.
 
 What a screen is - its title and icon, its background, whether the navigation
 bar and the way back show, the back button's words, the phases it hears - is
-said by modifiers on the view a page shows: `.title`, `.icon`,
+said by modifiers on the view a page shows: `.title`, `.pageIcon`,
 `.pageBackground`, `.showsNavigationBar`, `.showsTitle`, `.showsBackButton`,
 `.backButtonTitle`, `.onAppearing`, `.onDisappearing`, `.onNavigatedTo`,
 `.onNavigatingFrom`, `.onNavigatedFrom`. A phase modifier takes a handler and

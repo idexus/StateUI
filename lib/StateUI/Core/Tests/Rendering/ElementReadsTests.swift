@@ -115,13 +115,22 @@ final class ElementReadsTests: XCTestCase {
                               write: { shows.wrappedValue = false })
     }
 
-    func testAListReadsItsSelection() {
+    func testAListReadsItsSelection() throws {
         let chosen = State<Int?>(wrappedValue: 1)
-        assertTheElementReads("ItemsView", type: "ItemsView", prop: "selectedItems", becomes: .strings(["2"]),
-                              root: { Handing(builds: $0) {
-                                  AnyView(ItemsView(0..<3) { Text("\($0)") }.selection(chosen.projectedValue))
-                              } },
-                              write: { chosen.wrappedValue = 2 })
+        let builds = Builds()
+        let renders = Renders()
+        let first = renders.render(Node.page(Handing(builds: builds) {
+            AnyView(ItemsView(0..<3) { Text("\($0)") }.selection(chosen.projectedValue))
+        }))
+        let list = try XCTUnwrap(first.subtree.first { $0.type == .itemsView })
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        let target = try XCTUnwrap(entries.sections.first?.items.dropFirst(2).first)
+        XCTAssertEqual(builds.count, 1)
+
+        chosen.wrappedValue = 2
+        let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(builds.count, 1, "handing the selection over makes no parent reader")
+        XCTAssertEqual(patch.subtree.first { $0.type == .itemsView }?.props[.selectedItems], .strings([target]))
     }
 
     func testAMenuToggleReadsItsState() {
@@ -183,8 +192,8 @@ final class ElementReadsTests: XCTestCase {
         let place = State(wrappedValue: 0)
         assertTheElementReads("setValue(_:whenDescribed:)", type: "Picker", prop: "selectedIndex", becomes: .number(1),
                               root: { Handing(builds: $0) {
-                                  AnyView(Picker().setValue(
-                                      PickerContract.selectedIndex, whenDescribed: { place.wrappedValue }))
+                                  AnyView(node: Node(contract: PickerContract.self)).setValue(
+                                      PickerContract.selectedIndex, whenDescribed: { place.wrappedValue })
                               } },
                               write: { place.wrappedValue = 1 })
     }

@@ -41,11 +41,12 @@ extension PropertyContainer {
     ///   - property: the member, written with its contract.
     ///   - value: what it holds.
     /// - Returns: the element, with the value on it.
-    public func setValue<Owner: Contract, Value: HostRepresentable>(
+    public func setValue<Owner: WornContract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) -> Modified {
-        setValue(property.token, value.propValue)
+        Wearing.takes(node.declaration, property)
+        return setValue(property.token, value.propValue)
     }
 }
 

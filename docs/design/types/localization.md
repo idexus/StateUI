@@ -20,8 +20,16 @@ right to left.
 
 A tag is kept in its standard spelling (`pl-PL`, `zh-Hant-TW`), so two
 spellings of one tag compare equal. A POSIX locale such as `pl_PL.UTF-8@euro`
-reads as its language and region. Text that is no tag is kept as written and
-says so with `isValid`; a match never takes it.
+reads as its language and region. A tag is read as BCP 47 (RFC 5646) writes it,
+in ASCII letters and digits, each part where it stands: a language of two or
+three letters and up to three extended languages (`zh-cmn-Hant-TW` keeps its
+script and region), a script, a region, variants, extensions - a singleton and
+a part at least - and a private use (`x-…`), which alone names no language. A
+variant and a singleton stand once; a private use's parts as often as written.
+ASCII is checked as written, before any case changes: the Kelvin sign lowers
+into an ASCII `k`.
+Text that is no tag is kept as written and says so with `isValid`; a match
+never takes it.
 
 ## A catalog and its parts
 
@@ -55,8 +63,10 @@ may read an English interface with Polish numbers in Warsaw's zone. Text size,
 contrast and motion are the user's settings and styles' work, not localization:
 a part chooses a base typeface, and the system's scaling still applies to it.
 
-Each choice is a `LocaleChoice`: `.system`, which follows the host's facts and
-their changes, or `.fixed(value)`.
+Each choice is optional: nil follows the host's facts and their changes, and
+a value holds whatever they say - the one spelling every request of StateUI
+gives the system's choice (`colorScheme`, a window's size). Each is a public
+`@State`, so a picker takes it by its binding (`localization.$language`).
 
 ## One object in state
 
@@ -69,7 +79,9 @@ document gives its own and everything in its branch speaks the document's
 language, while the interface around it speaks the user's.
 
 `speaking(_:)` makes a fragment in another language: an object whose language
-is fixed and whose formats and zone follow its base until it is given its own.
+is fixed and whose formats and zone follow its base while its own are nil - on
+a fragment nil is "no choice here", the base's standing, as the system's
+stands for a base.
 The base keeps one for each language, held weakly - what renders it keeps it
 alive - so a branch given `localization.speaking(.english)` on every render is
 given the same object and is not rebuilt for nothing.
@@ -125,6 +137,16 @@ for it. No engine of the platform is asked, so the text is the same on every
 host; the price is that a language is work in StateUI, and a user's own
 patterns in the system's settings are not read - only the facts the host
 reports (the 24-hour clock where the formats are the system's).
+
+A number with a fraction is written from the digits Swift writes for it - the
+shortest that read back as the same number, `String(Double)` - split at the
+point and rounded there in decimal, half away from zero, carrying into the
+whole (`MessageContext.number`): one path for every size, so a number past
+what an `Int` holds is written in full and grouped like any other, as the
+user wrote it - `1e23` is `100,000,000,000,000,000,000,000`, not the binary
+value's `99,999,999,999,999,991,611,392` - and no product of a whole and a
+fraction ever outgrows a number. Infinity and not-a-number keep Swift's
+spelling.
 
 The words of a format follow the sentence's language; the digits, separators,
 the order of a day's parts and the clock follow the formats' region. An English

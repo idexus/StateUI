@@ -22,7 +22,7 @@ extension AppKitRegistrations {
         registry.everyElementDragsAndDrops()
         registry.everyElementTakesDroppedFiles()
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
-        registry.everyElementRealizes(VisualElementContract.isEnabled)
+        registry.everyElementRealizes(EnabledElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.opacity)
         registry.everyElementRealizes(LayoutContract.letsInputThrough)

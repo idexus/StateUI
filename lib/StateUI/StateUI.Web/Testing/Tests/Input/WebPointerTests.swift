@@ -15,7 +15,7 @@ final class WebPointerTests: XCTestCase {
     }
 
     func testAFingerHoversOverNothing() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var heard: [String] = []
         let host = WebRenderer.running {
             Text("Over")
@@ -40,7 +40,7 @@ final class WebPointerTests: XCTestCase {
     /// back over the view before it lets go taps; the view is pressed while the press stands over it. The page's
     /// click of a press is no second tap; a click no pointer made - the keyboard's, a screen reader's - taps.
     func testAPressTapsAsAButtonDoes() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var taps = 0
         let host = WebRenderer.running {
             VStack {
@@ -104,7 +104,7 @@ final class WebPointerTests: XCTestCase {
     /// A SCROLL UNDER A PRESS TAKES IT: a row the finger pressed and the list scrolled under it taps nothing as the
     /// finger lets go over it, as iOS's WebKit tells the page no cancel of the press.
     func testAScrollUnderAPressTakesIt() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var taps = 0
         let host = WebRenderer.running {
             ScrollView {
@@ -137,12 +137,12 @@ final class WebPointerTests: XCTestCase {
         for _ in 0..<3 { host.step() }
 
         XCTAssertEqual(taps, 0, "the list scrolled under the press: no tap")
-        host.leave()
+        host.finish()
     }
 
     /// A list's item is tapped by the same press: let go away from it, nothing opens.
     func testAnItemIsTappedByThePress() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         var opened: [String] = []
         let host = WebRenderer.running {
             ItemsView(["one", "two"]) { Text($0) }.onItemActivated { opened.append($0) }.height(200)

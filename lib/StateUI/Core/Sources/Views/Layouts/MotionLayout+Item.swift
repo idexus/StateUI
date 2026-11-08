@@ -7,8 +7,8 @@
 
 /// Which ways letting a view go dismisses it, how far the hand must take it first, and what is told of its item.
 struct LayoutDismissal<Item> {
-    let directions: SwipeDirection
-    let beyond: Double
+    let directions: SwipeDirections
+    let threshold: Double
     let handler: ValueHandler<Item>
 }
 
@@ -17,7 +17,7 @@ extension MotionLayout.Run {
     /// second, having stood still `still` milliseconds: taken where it presses, told as it moves and stands, let go
     /// back or dismissed.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) throws {
+    func item(_ gesture: GesturePhase, at point: Point, velocity: Point, still: Double) {
         switch gesture {
         case .began:
             guard states.item.wrappedValue?.velocity != nil || states.item.wrappedValue == nil,
@@ -26,14 +26,14 @@ extension MotionLayout.Run {
 
             let hand = LayoutItemHand(identity: identity, taken: placement, from: point, at: point)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
+            tell(hand, gesture, still: still, velocity: Point(x: 0, y: 0))
 
         case .changed:
             guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
 
             hand.at = point
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: still, velocity: velocity)
+            tell(hand, gesture, still: still, velocity: velocity)
 
         case .ended, .cancelled:
             guard var hand = states.item.wrappedValue, hand.velocity == nil else { return }
@@ -42,7 +42,7 @@ extension MotionLayout.Run {
             hand.velocity = gesture == .ended ? velocity : Point(x: 0, y: 0)
             hand.dismissed = gesture == .ended && dismisses(hand)
             states.item.wrappedValue = hand
-            try tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
+            tell(hand, gesture, still: 0, velocity: hand.velocity ?? Point(x: 0, y: 0))
         }
     }
 
@@ -81,18 +81,19 @@ extension MotionLayout.Run {
 
     /// Tells the application the view `hand` holds at the parameters, having stood still `still` milliseconds, the hand
     /// going at `speed` - and the item whose place stands under it: where a view rests, not where it is drawn on its
-    /// way, so a view travelling off from under the hand after it made room answers no second time.
+    /// way, so a view traveling off from under the hand after it made room answers no second time.
     /// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
-    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) throws {
-        guard let dragged, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
+    func tell(_ hand: LayoutItemHand, _ gesture: GesturePhase, still: Double, velocity: Point) {
+        guard !dragged.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
         let room = states.room.wrappedValue
         let over = view(at: hand.at, among: places(), passing: hand.identity).flatMap { under in
             slots.first { $0.identity == under.0 }?.item[keyPath: path]
         }
-        try dragged(ItemDrag(
+        let drag = ItemDrag(
             phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(0, 0, room.width, room.height),
-            still: .milliseconds(still), velocity: velocity, over: over))
+            still: .milliseconds(still), velocity: velocity, over: over)
+        states.drags.starting(dragged.map { $0.given(drag) })()
     }
 
     /// Where each view rests by this description, at the parameters the run last showed: the arithmetic asked again, so
@@ -105,15 +106,22 @@ extension MotionLayout.Run {
         return Dictionary(zip(slots.map(\.identity), poses), uniquingKeysWith: { first, _ in first })
     }
 
-    /// Whether letting `hand` go dismisses its view: where the hand took it, and where a throw at its speed would
-    /// carry it, stands past the dismissal one of its ways.
+    /// Whether letting `hand` go dismisses its view: it passes one of the dismissals.
     func dismisses(_ hand: LayoutItemHand) -> Bool {
-        guard let dismissal, let velocity = hand.velocity else { return false }
+        !passed(by: hand).isEmpty
+    }
+
+    /// The places, in the order written, of the dismissals `hand`'s view passes: where the hand took it, and where
+    /// a throw at its speed would carry it, stands past the dismissal one of its ways.
+    private func passed(by hand: LayoutItemHand) -> Set<Int> {
+        guard let velocity = hand.velocity else { return [] }
 
         let across = hand.at.x - hand.from.x + Self.carried(velocity.x, by: throwing)
         let down = hand.at.y - hand.from.y + Self.carried(velocity.y, by: throwing)
         let ways: [(SwipeDirection, Double)] = [(.up, -down), (.down, down), (.left, -across), (.right, across)]
-        return ways.contains { dismissal.directions.contains($0.0) && $0.1 > dismissal.beyond }
+        return Set(dismissals.indices.filter { place in
+            ways.contains { dismissals[place].directions.contains($0.0) && $0.1 > dismissals[place].threshold }
+        })
     }
 
     /// The held view in `shown`, as the hand holds it - `poses` worked out at `now` in `room` - and the bodies of
@@ -147,7 +155,7 @@ extension MotionLayout.Run {
             hand.flew = flew
             if !hand.gone, Self.outside(placement, room) {
                 hand.gone = true
-                dismissed(hand.identity)
+                dismissed(hand)
             }
             if hand != states.item.wrappedValue { states.item.wrappedValue = hand }
         }
@@ -176,14 +184,14 @@ extension MotionLayout.Run {
             || bounds.x >= room.width || bounds.y >= room.height
     }
 
-    /// Tells the application the item whose view `identity` shows has been dismissed, after the frame.
-    func dismissed(_ identity: Int) {
-        guard let dismissal, let slot = slots.first(where: { $0.identity == identity }) else { return }
+    /// Tells the application, through every dismissal `hand`'s view passed - each through its own gate - that its
+    /// item has been dismissed, after the frame.
+    func dismissed(_ hand: LayoutItemHand) {
+        let passed = passed(by: hand)
+        guard !passed.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
-        let (handler, id, runs) = (dismissal.handler, slot.item[keyPath: path], states.dismissals)
-        libraryTask {
-            handler.gate.runs(for: runs).start(
-                { try await handler.run(id) }, handler.gate.policy, payload: nil, owner: runs)
-        }
+        let id = slot.item[keyPath: path]
+        let start = states.dismissals.starting(dismissals.map { $0.handler.given(id) }) { passed.contains($0) }
+        libraryTask { start() }
     }
 }

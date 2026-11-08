@@ -61,8 +61,8 @@
         and(Self.records(of: declaration))
     }
 
-    /// What the host's records say of `member` on `element`: the element's own record, else the record of the tier
-    /// the member comes from; nil where the host does not realize it.
+    /// What the host's records say of `member` on `element`: the element's own record, else the record of a tier it
+    /// wears - the nearest first, the tier the member comes from last; nil where the host does not realize it.
     public func judgment(of member: String, on element: String, from tier: String?) -> HostRecord.Judgment? {
         switch judgment(ofElement: element) {
         case nil: return nil
@@ -71,7 +71,8 @@
         default: break
         }
 
-        let owners = [element] + (Self.viewless.contains { $0.name == element } ? [] : [tier].compactMap { $0 })
+        let worn = (Self.wornBy[element] ?? []).map { $0.name }
+        let owners = [element] + (Self.viewless.contains { $0.name == element } ? [] : worn + [tier].compactMap { $0 })
         for owner in owners {
             if let record = records.first(where: { $0.owner == owner && $0.member == member }) { return record.judgment }
         }
@@ -146,7 +147,7 @@
         let realization = declaration.realization
         var realizedOn: [Pair: Set<String>] = [:]
         for member in realization.members {
-            realizedOn[Pair(owner: member.owner.name, member: member.member.name), default: []]
+            realizedOn[Pair(owner: member.owner.name, member: member.name), default: []]
                 .insert(member.element.name)
         }
 
@@ -172,13 +173,16 @@
     /// The records of what a runtime realizes of the elements backends register - `contracts` - each on the element
     /// itself: every member their registrations take or raise, and every act of their contracts among `performed`.
     public static func records(
-        ofBackends contracts: [any ElementContract.Type], in realization: HostRealization, performed: Set<String>
+        ofBackends contracts: [any ElementContract.Type], in realization: HostRealization, performed: Set<Act>
     ) -> [HostRecord] {
         let elements = Set(contracts.map { $0.nodeType })
         let realized = realization.members.filter { elements.contains($0.element) }
-            .map { HostRecord(owner: $0.element.name, member: $0.member.name, judgment: .complete) }
+            .map { HostRecord(owner: $0.element.name, member: $0.name, judgment: .complete) }
+        let performed = Set(performed.map(\.key))
         let acts = contracts.flatMap { contract in
-            contract.members.filter { performed.contains($0.name) }.map { HostRecord.complete($0, on: contract) }
+            contract.members.filter { member in
+                (member as? any KeyedMember).map { performed.contains($0.memberKey) } ?? false
+            }.map { HostRecord.complete($0, on: contract) }
         }
         return (realized + acts).sorted { ($0.owner, $0.member) < ($1.owner, $1.member) }
     }

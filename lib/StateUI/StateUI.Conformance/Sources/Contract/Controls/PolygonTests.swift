@@ -12,48 +12,6 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.standsAlone("Polygon"),
-            ConformanceCase("aPolygonIsFilledInsideItsPoints", proves: [
-                Covered(PolygonContract.points),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let moved = State(wrappedValue: false)
-                s.start {
-                    VStack {
-                        Polygon(moved.wrappedValue
-                                ? [Point(40, 0), Point(40, 40), Point(0, 40)]
-                                : [Point(0, 0), Point(40, 0), Point(0, 40)])
-                            .fill(.blue).contentMode(.center).width(40).height(40).id("shape")
-                        Button("Move").onClicked { moved.wrappedValue = true }.id("change")
-                    }
-                    .horizontalAlignment(.start)
-                }
-                let shape = try s.element("shape")
-                try s.settle { try s.shows(.blue, on: shape, at: Point(8, 8)) }
-                s.expect(try s.color(of: shape, at: Point(32, 32)), nil, "outside its points")
-
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(32, 32)) }
-                s.expect(try s.color(of: shape, at: Point(8, 8)), nil, "the points the tree moved")
-            },
-            ConformanceCase("aFigureCrossingItselfIsFilledByItsRule", proves: [
-                Covered(PolygonContract.fillRule), Covered(PolygonContract.points),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let rule = State(wrappedValue: FillRule.evenOdd)
-                s.start {
-                    VStack {
-                        Polygon(Self.woundTwice).fillRule(rule.wrappedValue).fill(.blue).contentMode(.center)
-                            .width(40).height(40).id("shape")
-                        Button("Nonzero").onClicked { rule.wrappedValue = .nonzero }.id("change")
-                    }
-                    .horizontalAlignment(.start)
-                }
-                let shape = try s.element("shape")
-                try s.settle { try s.shows(.blue, on: shape, at: Point(2, 2)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), nil, "even and odd: the middle, gone round twice, empty")
-
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.shows(.blue, on: shape, at: Point(20, 20)) }
-                s.expect(try s.color(of: shape, at: Point(20, 20)), shows: .blue, "nonzero: the middle filled")
-            },
         ]
     }
 

@@ -20,7 +20,7 @@ extension GTKElement {
             return arrangeRuns(of: label)
         }
         let arranged = element.arrangedChildren.map(\.gtk)
-        (view as? GTKNavigationView)?.titles = arranged.map { $0.element.visiblePage?.value(.title)?.string ?? "" }
+        (view as? GTKNavigationView)?.titles = arranged.map { $0.element.visiblePage?.value(PageElementContract.title.token)?.string ?? "" }
         (view as? GTKSplitView)?.framedPanes = arranged.map { Self.framedTypes.contains($0.type) }
         let layout = view as? GTKLayoutView
         layout?.direction = element.layoutDirection

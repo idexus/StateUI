@@ -25,7 +25,7 @@ final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     func testASavePanelOffersEachKindUnderItsCaptionAndWritesWhereTheUserSays() throws {
         let renderer = AppKitRenderer.running { Saving() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         let answer = { renderer.nativeViews(AppKitTextView.self).last?.textForTesting.string }
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
         settle(renderer) { renderer.fileToolkit.showing != nil }
@@ -52,7 +52,7 @@ final class AppKitFileDialogTests: XCTestCase {
     @MainActor
     func testAnOpenPanelOffersEveryKindsFilesSeveralWhereAsked() throws {
         let renderer = AppKitRenderer.running { Opening() }
-        defer { renderer.closeForTesting() }
+        defer { renderer.finish() }
         try XCTUnwrap(renderer.nativeViews(AppKitButtonView.self).first).clickForTesting()
         settle(renderer) { renderer.fileToolkit.showing != nil }
         let panel = try XCTUnwrap(renderer.fileToolkit.showing?.panel as? NSOpenPanel)
@@ -71,7 +71,7 @@ private struct Saving: View {
 
     var body: some View {
         VStack {
-            Button("Save").onClicked(.ignoreWhileRunning) {
+            Button("Save").onClicked(policy: .ignoreWhileRunning) {
                 let kinds = [FileType("Web page", extensions: ["html", "htm"]), FileType("Text", extensions: ["txt"])]
                 let saved = try await window.saveFile(Array("<p>Kept</p>".utf8), name: "Report", types: kinds)
                 answer = saved?.name ?? "nothing"
@@ -86,7 +86,7 @@ private struct Opening: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Button("Open").onClicked(.ignoreWhileRunning) {
+        Button("Open").onClicked(policy: .ignoreWhileRunning) {
             _ = try await window.openFiles(types: [
                 FileType("Text", extensions: ["txt", "md"]), FileType("Web page", extensions: ["html"]),
             ])

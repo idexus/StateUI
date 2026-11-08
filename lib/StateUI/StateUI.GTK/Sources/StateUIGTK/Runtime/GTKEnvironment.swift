@@ -20,10 +20,10 @@ enum GTKEnvironment {
         core.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "Linux", model: model, manufacturer: maker,
             name: g_get_host_name().map { String(cString: $0) } ?? "",
-            versionString: osInfo("VERSION_ID"), isVirtual: virtual))
+            platformVersion: osInfo("VERSION_ID"), isVirtual: virtual))
         core.setApplicationInfo(HostApplicationInfo(
             name: g_get_application_name().map { String(cString: $0) } ?? "", packageName: applicationID,
-            versionString: "", buildString: ""))
+            version: "", build: ""))
         reportChanging(to: core)
     }
 

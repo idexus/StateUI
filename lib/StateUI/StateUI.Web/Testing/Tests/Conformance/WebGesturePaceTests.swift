@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIConformance
+@_spi(Host) import StateUIHost
 import XCTest
 
 /// A gesture a conformance case performs on the Web lifts at the speed it went, however slowly the machine takes the

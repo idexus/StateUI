@@ -6,15 +6,19 @@
 /// What a host reads of the machine it stands on, turned into what the core is told the same way on every host.
 /// Design: docs/design/host/runtime.md#the-environment
 extension HostLocaleInfo {
-    /// The locale as eight words: its language, its region, its name, its time zone, "1" for a 24-hour clock, the
+    /// The locale as six words - its full language tag, its time zone, "1" for a 24-hour clock, the
     /// first day of the week as a number from Sunday's 0, "1" for metric measures and "1" for a language written
-    /// right to left; nil for any other count of words.
+    /// right to left - and then the user's languages as tags, most wanted first; nil for fewer words.
+    /// Empty tag, zone and language fields are unavailable; nonempty invalid tags remain values.
     public init?(words: [String]) {
-        guard words.count == 8 else { return nil }
+        guard words.count >= 6 else { return nil }
+        let day = Double(words[3]).flatMap { Int32(exactly: $0.rounded(.towardZero)) } ?? 0
         self.init(
-            language: words[0], region: words[1], name: words[2], timeZone: words[3], uses24HourClock: words[4] == "1",
-            firstDayOfWeek: Weekday(rawValue: Int32(Double(words[5]) ?? 0)) ?? .sunday,
-            isMetric: words[6] == "1", layoutDirection: words[7] == "1" ? .rightToLeft : .leftToRight)
+            language: words[0].isEmpty ? nil : LocaleTag(words[0]),
+            timeZone: words[1].isEmpty ? nil : TimeZoneName(words[1]), uses24HourClock: words[2] == "1",
+            firstDayOfWeek: Weekday(rawValue: day) ?? .sunday,
+            isMetric: words[4] == "1", writingDirection: words[5] == "1" ? .rightToLeft : .leftToRight,
+            languages: words.dropFirst(6).filter { !$0.isEmpty }.map { LocaleTag($0) })
     }
 }
 
@@ -32,7 +36,7 @@ extension HostDeviceInfo {
         guard words.count == 5 else { return nil }
         self.init(
             formFactor: formFactor, platform: platform, model: words[0], manufacturer: words[1], name: words[2],
-            versionString: words[3], isVirtual: words[4] == "1")
+            platformVersion: words[3], isVirtual: words[4] == "1")
     }
 }
 

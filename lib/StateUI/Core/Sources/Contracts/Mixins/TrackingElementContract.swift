@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The space between the letters of words an element draws as written - a text, a button's caption, a run.
-public enum TrackingElementContract: Contract {
+public enum TrackingElementContract: Tier {
     /// The tier's name.
     public static let name = "TrackingElement"
 

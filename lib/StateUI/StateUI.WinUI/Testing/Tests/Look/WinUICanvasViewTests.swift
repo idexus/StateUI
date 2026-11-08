@@ -69,16 +69,16 @@ final class WinUICanvasViewTests: XCTestCase {
         XCTAssertEqual(colors, [Self.red, Self.blue, 0])
     }
 
-    /// A transform moves what is drawn after it, and restoreState puts back what saveState kept: the color and
+    /// A transform moves what is drawn after it, and restoreGraphics puts back what saveGraphics kept: the color and
     /// the transform alike.
-    func testRestoreStatePutsBackTheColorAndTheTransform() throws {
+    func testRestoreGraphicsPutsBackTheColorAndTheTransform() throws {
         let colors = try drawn(width: 100, height: 20, at: [(5, 10), (45, 10), (85, 10), (25, 10)]) {
             Draw.fillColor(Color(hex: 0xFF0000))
-            Draw.saveState()
-            Draw.translateBy(x: 40, y: 0)
+            Draw.saveGraphics()
+            Draw.translate(40, 0)
             Draw.fillColor(Color(hex: 0x0000FF))
             Draw.fillRectangle(x: 0, y: 0, width: 10, height: 20)
-            Draw.restoreState()
+            Draw.restoreGraphics()
             Draw.fillRectangle(x: 0, y: 0, width: 10, height: 20)
             Draw.fillRectangle(x: 80, y: 0, width: 10, height: 20)
         }

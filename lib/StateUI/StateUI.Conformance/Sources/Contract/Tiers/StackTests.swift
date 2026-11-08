@@ -20,7 +20,7 @@
     static func spaced(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).keepsItsChildrenItsSpacingApart", proves: [
             Covered(StackContract.spacing, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let wide = State(wrappedValue: false)
             let second = Received<[Double]>()
             s.start {

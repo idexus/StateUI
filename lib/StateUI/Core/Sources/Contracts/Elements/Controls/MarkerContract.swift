@@ -26,10 +26,10 @@ public enum MarkerContract: ElementContract {
 
     /// What the marker stands for, which decides the icon the platform draws for
     /// it.
-    public static let type = ElementProperty<Self, MarkerType>("type", layer: .provider)
+    public static let kind = ElementProperty<Self, MarkerKind>("kind", layer: .provider)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        detailsClicked, location, selected, subtitle, title, type,
+        detailsClicked, kind, location, selected, subtitle, title,
     ]
 }

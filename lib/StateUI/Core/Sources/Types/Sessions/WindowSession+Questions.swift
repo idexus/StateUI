@@ -9,7 +9,7 @@ extension WindowSession {
     ///
     ///     @Environment(\.window) private var window
     ///
-    ///     Button("Save").onClicked(.ignoreWhileRunning) {
+    ///     Button("Save").onClicked(policy: .ignoreWhileRunning) {
     ///         try await window.alert("Saved", message: "The draft is safe")
     ///     }
     ///
@@ -87,7 +87,7 @@ extension WindowSession {
         guard let chosen else { return nil }
         guard choices.indices.contains(chosen) else {
             throw StateUIError.unreadableAnswer(
-                act: ApplicationContract.chooseAction.name, answered: "action \(chosen)",
+                act: ApplicationContract.chooseAction.token.name, answered: "action \(chosen)",
                 declared: "one of the \(choices.count) offered")
         }
         return choices[chosen]
@@ -117,7 +117,7 @@ extension WindowSession {
         _ title: String, message: String = "",
         accept: String? = nil, cancel: String? = nil,
         placeholder: String? = nil, initialValue: String = "",
-        maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
+        maximumLength: Int? = nil, inputPurpose: InputPurpose = .automatic
     ) async throws -> String? {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage

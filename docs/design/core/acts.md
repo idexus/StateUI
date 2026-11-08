@@ -114,8 +114,9 @@ the same way, as an ordinary act the host logs.
 ## Aims
 
 An act aimed at a control has to say which control, and a description rebuilt
-every render has no object to point at. What survives a render is the
-element's key, and an `Aim` is that key, declared where the view declares its
+every render has no object to point at. What survives a render is where the
+element stands - the keys from the root down to it, each distinct among its
+siblings - and an `Aim` is that place, declared where the view declares its
 state:
 
 ```text
@@ -123,9 +124,10 @@ state:
   WebView(address).aim(browser)                  put on a view
   try await browser.goBack()                     an act the control's type offers
 
-  the differ, reaching the element, writes its key into the aim's box
-  the act sends it as argument 0: a number, or the .id() name as text
-  the host resolves either back to its control
+  the differ, reaching the element, writes where it stands into the aim's box
+  the act sends it as argument 0: the keys from the root down, each a number
+  or the .id() name as text
+  the host walks them from its root back to the control
 ```
 
 What an author holds is declared one way for each kind: a value with `@State`,
@@ -142,8 +144,12 @@ because this side has an engine to move it with.
 it offers `goBack()` on a web view's aim and nowhere else. A fresh aim adopts
 its predecessor's box by the path the walk found it at, as a fresh `@State`
 adopts storage, so a handler captured three renders ago aims where one captured
-now does. The differ refills the box on every walk that visits the element; the
-key is stable, so the write is idempotent.
+now does. Every walk attaches the aim of every element standing in it: one
+built again through its description, one carried or left as it stands through
+what it keeps - the aim its parent wrote on it, its placeholder's, and the one
+on its content's root (`RenderedNode.contentAim`). The key is stable, so the
+writes are idempotent; and a conflict is two elements in one walk whichever of
+them was built, ending as one of them leaves.
 
 An aim takes no part in matching: a view carrying only an aim is identified by
 its builder path or position, as if nothing were written on it. A named row
@@ -155,6 +161,11 @@ An aim put on two views in one walk is a conflict; the next act reports it and
 the next walk's first attachment clears it. An act on an aim that reached no view
 throws. An aim whose view left the tree keeps its last key, and the act reports
 that no such view is on screen.
+
+An aim identifies its control without owning it. A list's resolver borrows
+the live item source weakly; the element's producer owns that source while
+the list stands. Keeping an aim after the list leaves therefore keeps no
+item content, including content that captures the aim itself.
 
 ## An aim a view is handed
 
@@ -192,7 +203,9 @@ A window's act names the window by its first two arguments: its scene's key
 and its own, as the tree keys both. A session of no scene - the one a view
 outside every window reads - names none, and its act asks in the window the
 user is in; a session whose scene ended, or whose window closed, throws
-`WindowError` before anything is sent. The host finds the window by the two
+`WindowError` before anything is sent - the scene's record standing or gone,
+as a window's session holds its key and the session of no scene none, which
+is what tells them apart once the record it holds weakly has left. The host finds the window by the two
 keys once, in the host layer; a window that closed while the act waited its
 turn is answered as the user dismissing it does.
 
@@ -255,9 +268,20 @@ an answer: a 404 is the server's word, not a failure, and what throws is no
 answer at all. The request crosses as its address, its method's name, its
 headers as names and values in turn, sorted by name, and its body as bytes;
 the answer comes back as its status, its headers the same way and its body.
-What every host does alike - the header names in lowercase, a header said
-twice joined with a comma, an address with no scheme refused but where a
-page stands to read it against - is the host layer's (`HostRequest`).
+The method token keeps the author's case in the public value, typed call and
+host request; the named standard methods supply uppercase tokens.
+
+Response headers are the provider's combined view. A provider can combine
+or filter fields, and its session owns cookie handling; the browser filters
+`Set-Cookie`. `HostResponse` lowers field names and joins repeated names in
+the order the provider supplied, preserving existing values and their commas.
+It sorts only the resulting unique names for the typed answer. The public
+synthetic `HTTPResponse` initializer receives a dictionary, so it orders the
+original names by UTF-8 before combining case variants. A dictionary carries
+no field-line order to recover.
+
+Common request validation is the host layer's too: `HostActPerformer` refuses
+an address with no scheme except where the toolkit reads it against a page.
 
 ## Announcements
 

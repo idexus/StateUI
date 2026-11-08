@@ -1,0 +1,47 @@
+# revision 1.1
+Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Map.background: 🧩
+MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+NavigationStack.background: ✅
+Page.background: ✅
+Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+SplitView.background: ✅
+Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+TabView.background: ✅
+Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+TextSpan.background: ✅
+TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+ToolbarButton.background: – A toolbar's actions stand in Android's own look.
+ToolbarGroup.background: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.background: – A toolbar's actions stand in Android's own look.
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Window.background: ☑️ An activity is opaque by the theme it starts in: a blur or glass shows its color.
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.

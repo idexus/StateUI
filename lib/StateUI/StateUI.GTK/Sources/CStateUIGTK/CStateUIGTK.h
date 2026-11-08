@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// GTK 4 and libadwaita, as Swift imports them - and GLib's watch of a file descriptor.
+// GTK 4 and libadwaita, as Swift imports them - and GLib's watch of a file descriptor: the C module of the host and
+// of an application's GTK head.
 #include <adwaita.h>
 #include <glib-unix.h>
 

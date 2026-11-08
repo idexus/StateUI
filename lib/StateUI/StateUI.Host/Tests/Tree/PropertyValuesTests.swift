@@ -15,7 +15,7 @@ final class PropertyValuesTests: XCTestCase {
     func testABoundStatesLanesAreTheValueItsPropertyCarries() throws {
         let runtime = HostRuntime.still()
         let plain: [Prop: (Int32, HostLaneKind)] = [
-            .background: (811, .color), .isEnabled: (812, .boolean), .isVisible: (813, .boolean),
+            .background: (811, .color), .isEnabled: (812, .bool), .isVisible: (813, .bool),
             .horizontalAlignment: (814, .choice), .opacity: (815, .number), .margin: (816, .number),
         ]
         var bindings = plain.mapValues { HostStateBinding(state: $0.0, mode: .out, kind: .plain, laneKind: $0.1) }

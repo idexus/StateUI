@@ -47,19 +47,19 @@ extension AppKitRegistrations {
 
         registry.add(PolygonContract.self, create: { _ in AppKitShapeView(kind: .polygon) }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolygonContract.points, PolygonContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 Self.draw(view, values, .points(
-                    values[PolygonContract.points]?.propValue.numbers ?? [],
-                    fillRule: values[PolygonContract.fillRule]?.rawValue ?? 0))
+                    values[PointsShapeContract.points]?.propValue.numbers ?? [],
+                    fillRule: values[PointsShapeContract.fillRule]?.rawValue ?? 0))
             }
         }
 
         registry.add(PolylineContract.self, create: { _ in AppKitShapeView(kind: .polyline) }) { shape in
             shape.applies(
-                ShapeMembers.corneredMembers, PolylineContract.points, PolylineContract.fillRule) { view, values in
+                ShapeMembers.corneredMembers, PointsShapeContract.points, PointsShapeContract.fillRule) { view, values in
                 Self.draw(view, values, .points(
-                    values[PolylineContract.points]?.propValue.numbers ?? [],
-                    fillRule: values[PolylineContract.fillRule]?.rawValue ?? 0))
+                    values[PointsShapeContract.points]?.propValue.numbers ?? [],
+                    fillRule: values[PointsShapeContract.fillRule]?.rawValue ?? 0))
             }
         }
     }
@@ -83,7 +83,7 @@ extension AppKitRegistrations {
             lineCap: values[ShapeContract.lineCap]?.rawValue ?? 0,
             lineJoin: values[CorneredShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[CorneredShapeContract.miterLimit] ?? 10,
-            aspect: values[ShapeContract.contentMode] ?? .fit,
+            aspect: values[ContentModeElementContract.contentMode] ?? .fit,
             geometryTransform: Self.transform(values),
             geometry: geometry)
     }

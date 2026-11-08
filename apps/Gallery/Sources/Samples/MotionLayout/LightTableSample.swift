@@ -70,7 +70,7 @@ struct LightTableSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .gridRow(2)
         }
-        .rows(.fill, .auto, .auto)
+        .rows(.fill, .automatic, .automatic)
         .rowSpacing(10)
     }
 
@@ -95,7 +95,7 @@ struct LightTableSample: SampleContent, ExampleContent {
         .axis(
             \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
             periodic: true)
-        .motion(.spring(response: .milliseconds(420), damping: 0.82))
+        .parameterMotion(.spring(response: .milliseconds(420), damping: 0.82))
     }
 
     /// Where the photo at `index` lies: its square of the table, a photo's

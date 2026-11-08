@@ -9,7 +9,7 @@ extension WebRegistrations {
     static func links(_ registry: Registry<WebDOMView>) {
         registry.add(LinkContract.self, create: { reports in
             let link = WebLinkView()
-            link.onClicked = { reports.raise(LinkContract.clicked) }
+            link.onClicked = { reports.raise(ClickElementContract.clicked) }
             return link
         }, members: { link in
             link.applies(TextMembers.captionMembers) { view, values in
@@ -17,7 +17,7 @@ extension WebRegistrations {
                 view.setColor(values[TextColorElementContract.textColor]?.propValue)
             }
             link.property(LinkContract.address) { view, address in view.setDestination(address) }
-            link.raises(LinkContract.clicked)
+            link.declares(ClickElementContract.clicked)
         })
     }
 }

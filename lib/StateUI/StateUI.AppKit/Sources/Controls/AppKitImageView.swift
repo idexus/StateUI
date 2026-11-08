@@ -134,9 +134,10 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         let size = NSSize(width: pixels.width / Double(scale), height: pixels.height / Double(scale))
         pixelsComing = (image, pixels)
         let drawing = SendableDrawing(image: image)
-        Task.detached(priority: .userInitiated) {
+        // The work holds the drawing, never the view: one the tree dropped meanwhile goes, and the pixels to nobody.
+        Task.detached(priority: .userInitiated) { [weak self] in
             let made = SendableDrawing(image: Self.pixels(of: drawing.image, size: size, pixels: pixels))
-            await self.take(made.image, of: drawing.image, pixels: pixels)
+            await self?.take(made.image, of: drawing.image, pixels: pixels)
         }
     }
 

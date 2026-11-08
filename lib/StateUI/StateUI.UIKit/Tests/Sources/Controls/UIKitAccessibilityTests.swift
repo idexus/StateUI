@@ -17,9 +17,9 @@ final class UIKitAccessibilityTests: XCTestCase {
         let host = UIKitRenderer.running {
             VStack {
                 DatePicker(State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 28)).projectedValue)
-                    .isAccessibilityHidden(true)
-                Spinner().isAnimating(true).isAccessibilityHidden(true)
-                VStack { Text("Met") }.isAccessibilityHidden(true)
+                    .accessibilityPresence(.hidden)
+                Spinner(true).accessibilityPresence(.hidden)
+                VStack { Text("Met") }.accessibilityPresence(.hidden)
             }
         }
         defer { host.finish() }
@@ -54,7 +54,7 @@ final class UIKitAccessibilityTests: XCTestCase {
         let view = UIView()
         let own = view.isAccessibilityElement
         view.accessibility(
-            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: .met),
+            AccessibilityWords(identifier: nil, label: nil, hint: nil, headingLevel: 0, presence: .element),
             holdingNoChildren: false, standing: own)
         XCTAssertTrue(view.isAccessibilityElement)
 

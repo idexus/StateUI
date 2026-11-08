@@ -39,7 +39,7 @@ final class LayoutPinchTests: XCTestCase {
         }
         .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
         .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
-        .motion(.eased(.milliseconds(160), curve: .linear))
+        .parameterMotion(.eased(.milliseconds(160), curve: .linear))
         if itemDrag { layout = layout.itemDrag(begins: .longPress) }
         return layout.node
     }

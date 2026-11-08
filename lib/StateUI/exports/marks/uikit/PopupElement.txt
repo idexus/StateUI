@@ -1,0 +1,10 @@
+# revision 1.1
+DatePicker.closed: not realized
+DatePicker.isOpen: not realized
+DatePicker.opened: not realized
+Picker.closed: waits on Picker.isOpen
+Picker.isOpen: not realized
+Picker.opened: waits on Picker.isOpen
+TimePicker.closed: not realized
+TimePicker.isOpen: not realized
+TimePicker.opened: not realized

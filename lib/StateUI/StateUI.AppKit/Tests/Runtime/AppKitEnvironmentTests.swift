@@ -73,21 +73,22 @@ final class AppKitEnvironmentTests: XCTestCase {
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(
-            language: locale.language?.language ?? "", region: locale.language?.region ?? "",
-            name: locale.language?.identifier ?? "", timeZone: locale.timeZone?.identifier ?? "",
+            language: locale.language, timeZone: locale.timeZone,
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
-            isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
         defer { HostBoundary.setLocaleInfo(before) }
         locale.language = nil
-        locale.layoutDirection = .rightToLeft
+        locale.writingDirection = .rightToLeft
 
         AppKitEnvironment(core: CoreLink()).reportLocale()
 
         XCTAssertEqual(locale.language, LocaleTag(Locale.current.identifier(.bcp47)))
         XCTAssertEqual(locale.language?.language, Locale.current.language.languageCode?.identifier)
+        XCTAssertEqual(locale.languages, Locale.preferredLanguages.map { LocaleTag($0) }, "the user's languages, in order")
+        XCTAssertFalse(locale.languages.isEmpty)
         XCTAssertEqual(locale.timeZone?.identifier, TimeZone.current.identifier)
         XCTAssertEqual(
-            locale.layoutDirection,
+            locale.writingDirection,
             Locale.current.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)
     }
 

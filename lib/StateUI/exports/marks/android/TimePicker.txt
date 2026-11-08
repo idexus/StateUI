@@ -1,8 +1,5 @@
-# revision 4.1
+# revision 6.1
 TimePicker: ✅
-TimePicker.closed: ✅
 TimePicker.format: ✓ read format of TimePicker: the pattern the relay writes the field in
-TimePicker.isOpen: ✅
-TimePicker.opened: ✅
 TimePicker.time: ✅
 TimePicker.timeChanged: ✅

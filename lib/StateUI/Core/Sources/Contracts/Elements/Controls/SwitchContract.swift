@@ -10,16 +10,11 @@ public enum SwitchContract: ElementContract {
     public static let layer: ElementLayer = .native
 
     /// A switch is a view, tinted, with the words it says beside it.
-    public static let tiers: [any Contract.Type] = [
+    public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
+        ToggleElementContract.self,
     ]
 
-    /// Which way it is thrown - true for on.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
-
-    /// It was flipped, to the value it carries.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, toggled]
+    public static let members: [any ContractMember] = []
 }

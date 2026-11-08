@@ -44,13 +44,15 @@ millisecond is there for `application.clock.now()`.
 
 `text` writes one fixed shape, `2026-08-02` or `09:30:00`, for text an
 application composes itself. How a picker writes a day for the user is its
-`.format(_:)` - a `DateStyle`, short, medium or long - which the host
+`.format(_:)` - a `DateFormat`, short, medium or long - which the host
 applies in the user's language and region; a time picker's is its own.
 
 Reading text is strict. A day reads from `2026-08-02`, with or without the
 leading zeros, each part digits alone - an empty part, a plus or a letter is
 no day - and a year before the first carries a minus before its digits,
-`-0005-03-01`, as `text` writes it, so every day reads back; a time from `09:30`, `09:30:05` or `09:30:05.123`, the
+`-0005-03-01`, as `text` writes it, read with its sign as one number, so
+every day reads back, the year furthest before the first included, whose
+magnitude no `Int` holds; a time from `09:30`, `09:30:05` or `09:30:05.123`, the
 fraction exactly three digits. `05.12` would be 120 milliseconds wearing a
 12, and refusing it keeps a truncated value visible. Any other shape reads as
 nil, so text that is not a date shows up where it is read rather than

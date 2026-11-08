@@ -72,6 +72,7 @@ the user acts and as the display draws. The Gallery's head:
 ```swift listing web.md.head
 // Platforms/Web/main.swift
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 // Name the application to the host, then say what this host answers for it
@@ -82,8 +83,12 @@ GalleryApp.register()
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
-StateUIWeb.run(name: "Gallery")
+WebHost.run(name: "Gallery", applicationID: "com.stateui.gallery")
 ```
+
+`name:` is what `app.info.name` tells the application, and `applicationID:`
+what `app.info.packageName` tells: a page has no identity of its own, so a
+head that names none leaves it empty.
 
 `STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
 reads it, declares its `Platforms/Web` head and the module it makes, links the
@@ -130,15 +135,15 @@ the head gives none. The Gallery's describes StateUI at stateui.dev:
 ## Controls, acts, and events registered in Swift
 
 An application extends the host from its Web head: registrations run before
-`StateUIWeb.run`. A control of the application's own is an object that makes
+`WebHost.run`. A control of the application's own is an object that makes
 and holds the page's element it shows, a `WebControl`; `StateUIControls.add`
 says which contract it realizes, as on every host:
 
 ```swift quote
 public static func add<Realized: ElementContract, Made: WebControl>(
     _ contract: Realized.Type,
-    create: @escaping (WebReports<Realized>) -> Made,
-    members: (WebRegistration<Realized, Made>) -> Void = { _ in })
+    create: @escaping @MainActor (ControlReports<Realized>) -> Made,
+    members: @MainActor (WebRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 The element a control shows is a `WebPageElement`: one of the browser's own,
@@ -222,7 +227,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarElemen
         control.show(
             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
     }
-    bar.raises(RatingBarContract.ratingChanged)
+    bar.declares(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -232,7 +237,7 @@ A control may draw the children of one contract itself - a map draws its markers
 `children` names their contract and what of each the control realizes, and hands
 it every such child, in the tree's order, whenever the element's children
 change: one added, moved, taken away, or given another value. A child is a
-`WebChild` - its values read as the types its contract declares, and its own
+`ControlChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
 element of its own on the page.
@@ -241,15 +246,15 @@ element of its own on the page.
 // Platforms/Web/Host/GoogleMapElement.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.type) { control, type in control.show(type) }
+    map.property(MapContract.kind) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
     map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-    map.raises(MapContract.locationTapped)
+    map.declares(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.kind,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)
@@ -275,7 +280,7 @@ Without a key the map draws no tiles, and the Gallery says so under it.
 An act of the application's own is performed with `StateUIActs.add`, and an
 act aimed at one of its controls with `StateUIActs.add(_:on:_:)`, which hands
 the performer that control. An event of the application's own is declared
-with `StateUIEvents.raises` and raised with `StateUIEvents.raise`; every
+with `StateUIEvents.declares` and raised with `StateUIEvents.raise`; every
 `HostEvents.on` subscription hears it.
 
 What only a page's JavaScript reaches - its console, its battery - the

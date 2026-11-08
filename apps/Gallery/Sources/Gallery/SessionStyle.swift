@@ -3,17 +3,17 @@ import StateUI
 // listing: Gallery.SessionStyle
 /// The kinds of window the galleries' scene opens beside its gallery windows -
 /// each a window of that scene. See `GalleryScene`.
-extension WindowType where Value == Void {
+extension WindowKind where Value == Void {
     /// The window that chooses the gallery's font.
-    static let fonts = WindowType("gallery.fonts")
+    static let fonts = WindowKind("gallery.fonts")
 
     /// The window that chooses the gallery's accent.
-    static let colors = WindowType("gallery.colors")
+    static let colors = WindowKind("gallery.colors")
 }
 
-extension WindowType where Value == Int {
+extension WindowKind where Value == Int {
     /// A window per swatch number - one kind, a window for each value.
-    static let swatch = WindowType("gallery.swatch")
+    static let swatch = WindowKind("gallery.swatch")
 }
 // listing: end
 
@@ -302,7 +302,7 @@ final class SessionStyle {
         #if WEB
         .glass
         #else
-        .system
+        .automatic
         #endif
     }
 

@@ -143,7 +143,7 @@ follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
 the transform's five drawn numbers apart - its move, its turn the short way,
-its width and its height - each travelling on its own, as a view's own
+its width and its height - each traveling on its own, as a view's own
 transform does: a blend of the matrices would squash a turned view, and a
 slant no view draws would be carried for nothing (types/transforms.md, the
 shear limit). A shift at nought is the pose itself. The order is the pose's
@@ -169,12 +169,12 @@ slow as an animation counts arrived leaves the world.
 
 A body of the world's own is at its place but where a change shifted it: the
 parameters and the hand carry it exactly. A body following its layout
-(`.followsLayout(response:damping:)`) is carried by its place's moves too: the place moving
+(`.layoutBody(.followsLayout(response:damping:))`) is carried by its place's moves too: the place moving
 under it since the last frame, it keeps where it was shown and its spring
 pulls it after - a card lagging while the run scrolls and settling back,
 flying past where a throw stops at the end and coming back. The view the hand
 lets go goes back onto its place as a body setting out at the hand's speed.
-`.motion` is the parameters' law alone: how a change, a join or a hand's let go
+`.parameterMotion` is the parameters' law alone: how a change, a join or a hand's let go
 comes onto a place is the world's. Under less motion, and in a world of none,
 no body stands: every view at its place.
 
@@ -399,7 +399,7 @@ still answer a tap.
 - Let go with speed, it is thrown ([a throw](#a-throw)).
 
 The unit is how far the hand travels for one unit of its axis - the input's
-`travel`: so many points (`pointsPerUnit`), the room's length along the
+`travel`: so many device units (`lengthPerUnit`), the room's length along the
 axis (`.pages`), or, unless the input says, how far the view drawn in front
 goes for one unit where the run stands - of the views the parameters move, the
 highest, then the one nearest the middle - measured by the arithmetic a
@@ -572,7 +572,7 @@ finger. The core tells which item that is (`ItemDrag.over`): the one whose
 place stands under the hand, on top there, the held view passed over - the
 places the arithmetic gives by the description as it stands, at the parameters
 the run last showed, not where the views are drawn on their way, so the view
-that made room, still travelling off from under the hand, never answers a
+that made room, still traveling off from under the hand, never answers a
 second time and swings the order back. An application reorders by the item
 it is over and never works its own arithmetic backwards to a slot.
 
@@ -582,8 +582,10 @@ settles into its slot as a changed order would. With `.onItemDismissed`, a
 view the hand took far enough one of its ways - or threw far enough, as a
 throw of the input would carry it - flies on at the hand's speed, no slower
 than the room's length a motion's length, and its item is told once it has
-left the room; the application removes the item then. The handler runs after
-the frame, as a job of the UI thread, never inside the cycle.
+left the room; the application removes the item then. Every dismissal written
+is a way out: the view leaves when it passed one, and each one it passed is
+told, in the order written. The handler runs after the frame, as a job of the
+UI thread, never inside the cycle.
 
 ## A wheel's notch
 

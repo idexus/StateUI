@@ -62,7 +62,7 @@
             },
             ConformanceCase("theProgramsHidingIsShown", proves: [
                 Covered(SplitViewContract.showsSidebar),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
                     SplitView {
@@ -104,7 +104,7 @@
     @MainActor
     private static func offersItsToggle(fromAState: Bool, _ name: String) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(SplitViewContract.showsSidebarToggle)], needs: [
-            Covered(ButtonContract.clicked),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let offered = State(wrappedValue: false)
             s.start {
@@ -134,7 +134,7 @@
     @MainActor
     private static func placeIsHeard(startingOver first: Bool, _ name: String) -> ConformanceCase {
         ConformanceCase(name, proves: [Covered(SplitViewContract.sidebarOverlays)], needs: [
-            Covered(ButtonContract.clicked),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let over = State(wrappedValue: first)
             s.start {
@@ -144,7 +144,7 @@
                     WideDetail(NarrowingButton())
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
-                .sidebarOverlays(over.projectedValue)
+                .sidebarOverlays(into: over.projectedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
             try s.settle { try s.held(SplitViewContract.sidebarOverlays, on: split) == over.wrappedValue }
@@ -165,7 +165,7 @@
         _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
         _ write: @escaping @MainActor (SplitView, Binding<Material>) -> SplitView.Modified
     ) -> ConformanceCase {
-        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
+        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
@@ -192,7 +192,7 @@
     private static var overlayUnsaid: ConformanceCase {
         ConformanceCase("theSidebarOverTheDetailStandsOnTheWindowsBackgroundUnsaid", proves: [
             Covered(SplitViewContract.sidebarOverlayBackground),
-        ], needs: [Covered(ButtonContract.clicked), Covered(WindowContract.background)]) { s in
+        ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(BackgroundElementContract.background, on: WindowContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             s.start {
                 SplitView {
@@ -219,7 +219,7 @@
         _ member: ElementProperty<SplitViewContract, Material>, _ name: String,
         _ write: @escaping @MainActor (SplitView, Material) -> SplitView.Modified
     ) -> ConformanceCase {
-        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ButtonContract.clicked)]) { s in
+        ConformanceCase(name, proves: [Covered(member)], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {

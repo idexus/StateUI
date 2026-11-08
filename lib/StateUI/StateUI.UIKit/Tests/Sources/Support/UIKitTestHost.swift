@@ -97,8 +97,10 @@ extension UIKitRenderer {
 
     /// Ends the host: its windows leave the tests' scene, which stays for the next, and its tree leaves. A sheet still
     /// moving in the scene would stop the next window's own from coming: every sheet goes first, and UIKit is let
-    /// finish. A field still focused would keep the keyboard over the next window's page: it lets go first.
+    /// finish. A field still focused would keep the keyboard over the next window's page: it lets go first. A
+    /// document picker still asking is answered with nothing.
     func finish() {
+        fileToolkit.showing?.chooseForTesting([])
         for (_, controller) in roster.windows { controller.window?.endEditing(true) }
         for (_, controller) in roster.windows {
             guard let root = controller.window?.rootViewController, root.presentedViewController != nil else { continue }

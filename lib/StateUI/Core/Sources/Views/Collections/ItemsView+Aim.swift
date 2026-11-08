@@ -5,29 +5,16 @@ extension Aim {
     /// Scrolls the list until `item` stands where `anchor` says, as the
     /// platform scrolls.
     ///
-    /// The list finds the item itself - in a list of sections, the first section holding it - and throws where it
-    /// holds no such item.
-    public func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws
+    /// The list finds the item itself, whatever section holds it, and throws where it holds no such item.
+    public func scroll<ID>(to item: ID, anchor: ScrollAnchor = .nearest) async throws
     where Target == ItemsView<ID> {
-        try await call(ItemsViewContract.scrollTo, try identity(of: item, unbuilt: "\(item)", where: { _ in true }), anchor)
+        try await call(ItemsViewContract.scrollTo, try identity(of: item), anchor)
     }
 
-    /// Scrolls a list of sections until `item` of the section named `section` stands
-    /// where `anchor` says.
-    public func scrollTo<ID>(
-        _ item: ID, inSection section: some Hashable, anchor: ScrollAnchor = .nearest
-    ) async throws where Target == ItemsView<ID> {
-        try await call(
-            ItemsViewContract.scrollTo,
-            try identity(of: item, unbuilt: "\(section)\u{1F}\(item)", where: { $0.hasPrefix("\(section)\u{1F}") }),
-            anchor)
-    }
-
-    /// The identity the list wrote for `item` that `matches`; before the list is built, `unbuilt`.
-    private func identity<ID>(of item: ID, unbuilt: String, where matches: (String) -> Bool) throws -> String
-    where Target == ItemsView<ID> {
-        guard let resolves = box.resolves else { return unbuilt }
-        guard let identity = resolves(item).first(where: matches) else {
+    /// The token the live list wrote for `item`; no described identity is a substitute for a missing target.
+    private func identity<ID>(of item: ID) throws -> String where Target == ItemsView<ID> {
+        guard let resolves = box.resolves else { throw StateUIError.aimOnNoView }
+        guard let identity = resolves(item).first else {
             throw StateUIError.noItem("\(item)")
         }
         return identity

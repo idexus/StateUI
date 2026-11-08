@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import GalleryUI
+import StateUI
 import StateUIWeb
 
 /// Stars in a row, as many lit as the rating: the gallery's own element, `<gallery-rating-bar>` of
@@ -56,7 +57,7 @@ extension RatingBarElement {
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
-            bar.raises(RatingBarContract.ratingChanged)
+            bar.declares(RatingBarContract.ratingChanged)
         }
         // listing: end
 

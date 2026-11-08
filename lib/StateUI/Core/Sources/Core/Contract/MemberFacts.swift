@@ -14,7 +14,7 @@ struct MemberFacts: Equatable {
     /// Which of the three it is: a property, an event or an act.
     let kind: Kind
 
-    /// Which layer realizes it; nil for an act.
+    /// Which layer realizes it; nil for a member no contract declares.
     let layer: ElementLayer?
 
     /// Whether a change animates to the new value.
@@ -40,7 +40,7 @@ struct MemberFacts: Equatable {
 }
 
 /// A member whose facts the library can read out of a list of members.
-protocol DeclaredMember: ContractMember {
+protocol DeclaredMember: KeyedMember {
     /// What it says about itself.
     var facts: MemberFacts { get }
 }
@@ -69,8 +69,8 @@ extension ElementEvent: DeclaredMember {
 }
 
 extension ElementAct: DeclaredMember {
-    /// An act's facts: none a layer or a value says.
+    /// An act's facts: its layer, and nothing a property's value says.
     var facts: MemberFacts {
-        MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: [])
+        MemberFacts(kind: .act, layer: layer, travels: true, cleared: true, moves: [])
     }
 }

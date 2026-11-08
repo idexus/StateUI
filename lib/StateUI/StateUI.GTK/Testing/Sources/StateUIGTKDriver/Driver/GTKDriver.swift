@@ -135,13 +135,13 @@ final class GTKDriver: HostDriver {
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "minimize": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "restore": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
-        "read windowType of Window": "the scenes the host keeps for the next start",
+        "read windowKind of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "pinch": "the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down",
         "rotate": "the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down",
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
-        "read minimumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
-        "read maximumDate of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+        "read minimum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+        "read maximum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
     ]
 
     var renderer: GTKRenderer?
@@ -166,7 +166,16 @@ final class GTKDriver: HostDriver {
     }
 
     func step() {
-        renderer?.step()
+        if let renderer { renderer.step() }
+        else {
+            GTKTestHost.pump(0.002)
+            _ = HostBoundary.runJobs()
+        }
+    }
+
+    func close() {
+        renderer?.finish()
+        renderer = nil
     }
 
     func turn() {
@@ -296,7 +305,7 @@ final class GTKDriver: HostDriver {
             return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
         }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
-        if [.barBackground, .barForegroundColor].contains(property) || property == .subtitle && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) || property == PageContract.subtitle.token && element.type == .page {
             return try barHolds(property, element)
         }
         if let value = backendHolds(property, on: element) { return value }
@@ -322,20 +331,20 @@ final class GTKDriver: HostDriver {
         case (.choosesOpacity, let picker as GTKColorPickerView): return picker.choosesOpacity.propValue
         case (.isPresented, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
-        case (.minimum, let slider as GTKSliderView):
+        case (RangeElementContract.minimum.token, let slider as GTKSliderView):
             return gtk_adjustment_get_lower(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
-        case (.maximum, let slider as GTKSliderView):
+        case (RangeElementContract.maximum.token, let slider as GTKSliderView):
             return gtk_adjustment_get_upper(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
-        case (.isAnimating, let spinner as GTKSpinnerView): return spinner.isAnimating.propValue
+        case (SpinnerContract.isAnimating.token, let spinner as GTKSpinnerView): return spinner.isAnimating.propValue
         case (.text, let label as GTKTextualView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
         case (.showsMenuArrow, let button as GTKButtonView): return button.showsArrow.propValue
         case (.showsText, let button as GTKButtonView): return (button.captionLabel != nil).propValue
-        case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
+        case (.icon, let button as GTKButtonView), (ImageContract.source.token, let button as GTKButtonView):
             return button.picture.flatMap { $0.found ? $0.picture?.value : nil }
         case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue
         case (.iconSpacing, let button as GTKButtonView):
@@ -344,7 +353,7 @@ final class GTKDriver: HostDriver {
         case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
         case (.tint, let spinner as GTKSpinnerView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
-        case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
+        case (ImageContract.source.token, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
         case (.text, let link as GTKLinkView): return link.text.propValue

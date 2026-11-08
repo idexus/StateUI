@@ -11,14 +11,8 @@ public enum PolygonContract: ElementContract {
     public static let layer: ElementLayer = .stateUI
 
     /// A polygon is a shape.
-    public static let tiers: [any Contract.Type] = [FilledShapeContract.self, CorneredShapeContract.self]
+    public static let tiers: [any Tier.Type] = [FilledShapeContract.self, CorneredShapeContract.self, PointsShapeContract.self]
 
-    /// Which parts of a self-crossing outline count as inside it.
-    public static let fillRule = ElementProperty<Self, FillRule>("fillRule", layer: .stateUI)
-
-    /// The corners, in order, joined last back to first.
-    public static let points = ElementProperty<Self, [Point]>("points", layer: .stateUI, travels: false)
-
-    /// The element's own members.
-    public static let members: [any ContractMember] = [fillRule, points]
+    /// The element's own members: none beyond its tiers'.
+    public static let members: [any ContractMember] = []
 }

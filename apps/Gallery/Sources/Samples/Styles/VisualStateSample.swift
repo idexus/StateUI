@@ -36,7 +36,6 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 // the dot are the ones a Button actually enters: .pressed is there,
                 // and .on - which is a Switch's - does not compile.
                 Button(enabled ? "Hold me" : "Disabled")
-                    .isEnabled(enabled)
                     .scale($press)
                     .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0
@@ -56,7 +55,6 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 // side: a visual state travels under the control's own motion, and
                 // `.motion(.none)` is what none of it looks like.
                 Button(enabled ? "Hold me too" : "Disabled")
-                    .isEnabled(enabled)
                     .motion(.none)
                     .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0
@@ -65,11 +63,13 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     }
                     .onClicked { presses += 1 }
             }
+            // The switch below enables the pair as one branch, through its
+            // state: each button takes its disabled look from the branch.
+            .isEnabled($enabled)
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Switch($enabled)
-                .text("Enabled")
+            Switch("Enabled", isOn: $enabled)
                 .accessibilityIdentifier("visual-states.enabled")
                 .horizontalAlignment(.center)
 

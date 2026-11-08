@@ -86,6 +86,13 @@ closures - so every binding a control is handed is a storage the host
 carries. A part of a state, `$record.field`, reaches no control
 ([Two words and a part](../concepts/why.md#two-words-and-a-part-state-binding-statepart)).
 
+A state only the platform writes is handed with `into:`: the frame a layout
+settled on, `.frame(into: $room)`; whether a control has the focus,
+`.isFocused(into: $focused)`; whether a web view can go back or forward,
+`.canGoBack(into: $back)`; whether a sidebar lies over the page,
+`.sidebarOverlays(into: $over)`. The label gives the direction: writing such
+a state moves nothing on screen, and the platform's next report replaces it.
+
 ## Two-way input and event ordering
 
 Controls with an editable purpose value that crosses to the host as it is
@@ -292,6 +299,7 @@ of its own:
 
 ```swift
 @State var code = ""
+@State var password = ""
 @State var email = ""
 @State var hidden = true
 @State var done = 0
@@ -303,7 +311,7 @@ VStack {
         .isSpellCheckEnabled(false)
         .isTextPredictionEnabled(false)
 
-    TextField()
+    TextField($password)
         .placeholder("a password")
         .isPassword(hidden)
         .submitLabel(.done)
@@ -365,7 +373,7 @@ answer and not a failure:
 @State var said = ""
 
 Button("Close keyboard")
-    .onClicked(.ignoreWhileRunning) {
+    .onClicked(policy: .ignoreWhileRunning) {
         said = try await window.hideOnScreenKeyboard()
             ? "Focus released"
             : "Nothing was focused"
@@ -373,6 +381,9 @@ Button("Close keyboard")
 ```
 
 ## Choices and ranges
+
+A picker requires its choices and selection when it is created. Its style
+is written as `Style<Picker>()` without constructing a picker.
 
 Choice controls follow the same binding rule:
 
@@ -382,8 +393,7 @@ Choice controls follow the same binding rule:
 @State var size = "Medium"
 
 VStack {
-    CheckBox($accepted)
-        .text("I accept the terms")
+    CheckBox("I accept the terms", isOn: $accepted)
 
     Slider($level)
         .minimum(0)
@@ -393,9 +403,11 @@ VStack {
 }
 ```
 
-A check box and a switch say the words they stand for with `.text`, and the
-words belong to the control: a tap on them turns it, and assistive technology
-calls the control by them. A check box's words stand after its box; a
+A check box and a switch say the words they stand for in their initializer -
+`Switch("Wi-Fi", isOn: $wifi)`, or `Switch($label, isOn: $wifi)` where the
+words come from a state - and the words belong to the control: a tap on them
+turns it, and assistive technology calls the control by them. A control's
+caption, a button's too, is said there and nowhere else. A check box's words stand after its box; a
 switch's stand at its start and the switch at its end, mirrored right to left.
 
 A picker chooses a value, not a place in its list: the state holds one of
@@ -425,7 +437,8 @@ VStack {
 
 The application owns the selected value: one choice of several is a picker,
 offered as radio buttons where `.radio` says so, and the one state holding its
-selection. Range bounds are semantic constraints and are not
+selection. `.onSelectionChanged` hears the user's choice after the state's
+write, and its handler reads the value from the state. Range bounds are semantic constraints and are not
 animated presentation values.
 
 ## Activity and progress
@@ -441,8 +454,7 @@ VStack {
     Spinner($loading)
         .height(48)
 
-    Switch($loading)
-        .text("Working")
+    Switch("Working", isOn: $loading)
 
     ProgressBar(done / 5)
         .height(8)
@@ -459,7 +471,7 @@ spinner is invisible on most platforms, so `Spinner($loading)` shows it only
 while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
-same property as the modifier: `ProgressBar().progress(0.4)` sets what
+same property as the modifier: `ProgressBar(0.4)` sets what
 `ProgressBar(0.4)` sets, `ProgressBar($done)` carries a state the host animates
 to each new value, and `Spinner($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
@@ -594,6 +606,9 @@ composition, it takes no `Style`.
 
 ## Links
 
+A link requires its words and address when it is created. Its style is
+written as `Style<Link>()` without constructing a link.
+
 A `Link` is words that open an address - a page, a mail, a call - in the
 application the system gives it, as `application.launch` does:
 
@@ -633,7 +648,7 @@ A document written in place shows without the network. Its relative links
 resolve against the address given beside it, where one is:
 
 ```swift
-WebView().source(html: "<h1>Offline</h1><p>Written in place.</p>")
+WebView(html: "<h1>Offline</h1><p>Written in place.</p>")
 ```
 
 A document given no address travels as an address of its own, which on
@@ -654,18 +669,18 @@ Grid {
     HStack {
         Button("Back")
             .isEnabled(canGoBack)
-            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+            .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
         Button("Reload")
-            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
+            .onClicked(policy: .ignoreWhileRunning) { try await browser.reload() }
         Button("Title?")
-            .onClicked(.ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
+            .onClicked(policy: .ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
     }
     WebView("https://example.com")
-        .canGoBack($canGoBack)
+        .canGoBack(into: $canGoBack)
         .aim(browser)
         .gridRow(1)
 }
-.rows(.auto, .fill)
+.rows(.automatic, .fill)
 ```
 
 A script answers what it evaluated to as text: words as they are, a number as
@@ -706,7 +721,7 @@ Package.swift
   the head:      .product(name: "StateUIWebView<Host>", package: "StateUIWebView<Host>")
 
 Platforms/<Host>/main.swift
-  StateUIWebView<Host>.register()         before the host runs
+  WebView<Host>.register()                before the host runs
 ```
 
 ## Maps
@@ -727,12 +742,12 @@ or on a marker's details:
 @State var said = "tap the map or a marker"
 
 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
-    .type(.hybrid)
+    .kind(.hybrid)
     .markers {
         Marker(at: Location(latitude: 50.0540, longitude: 19.9354))
             .title("Wawel Castle")
             .subtitle("Wawel 5")
-            .type(.place)
+            .kind(.place)
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }
@@ -754,8 +769,8 @@ aim, which slides the map there:
 @Aim(Map.self) var map
 
 Button("Kraków")
-    .onClicked(.cancelPrevious) {
-        try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
+    .onClicked(policy: .cancelPrevious) {
+        try await map.show(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
     }
 ```
 
@@ -800,23 +815,23 @@ struct ContactsPage: View {
             .gridRow(0)
 
             Button("Back to the top")
-                .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .onClicked(policy: .cancelPrevious) { try await list.scroll(to: contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .automatic)
     }
 }
 ```
 
-An item is known by its value, which the list names by its words; each value
+An item is known by its value, independently of its description. Each value
 stands once in a list, and two values that describe alike are still two
-items. Each item is a view of its own: a state it reads
+items. The list keeps the host token assigned to each value while it stays. Each item is a view of its own: a state it reads
 builds that item alone, and a state it declares lives while the item stays
 near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
 reported to nobody. `.onSelectionChanged` hears the user's choice after the
-write, handed the ids chosen - a set in either mode. `.onItemActivated` hears an item opened: a tap on a
+write, and its handler reads the choice from the state. `.onItemActivated` hears an item opened: a tap on a
 phone, a double-click or Return on a desktop. An aim at the list,
 `Aim<ItemsView<ID>>`, scrolls it to an item by an identity of the list's
 own type.
@@ -828,11 +843,16 @@ An item is as tall as it asks in a list and as wide as it asks in a row; a
 size written on its view is kept. A list has no height of its own: give it
 one, or a row of a grid that fills.
 
-`ItemsView(sections:)` takes `Section`s, each named with `.id` - so two
-sections may hold equal items - and each with a `.header` and a `.footer`;
-`.header` and `.footer` on the list stand before and after everything.
+`ItemsView(sections:)` takes `Section`s, each known by its `.id` and each
+with a `.header` and a `.footer`; `.header` and `.footer` on the list stand
+before and after everything. An item's value stands once in the whole list,
+whatever section holds it: a choice, an activation and `scroll(to:)` name the
+item alone, and an item moved to another section is the same item. Where one
+thing shows in two sections - a favorite among all the contacts - give each
+row its own id, the section's and the thing's together.
 `.onEndReached(within:)` hears the user come within so many items of the
-end - once, until they scroll away or the number of items changes - and
+end - once, until they scroll away or items come or go; written
+more than once, every handler hears it within the farthest distance named - and
 `.emptyView` stands in the list's place while it has no items.
 
 ### Pull to refresh
@@ -848,7 +868,7 @@ struct InboxPage: View {
     var body: some View {
         ItemsView(mail, id: \.self) { Text($0).padding(12) }
             .isRefreshing($refreshing)
-            .onRefreshRequested(.ignoreWhileRunning) {
+            .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
                 mail.insert("Fresh", at: 0)

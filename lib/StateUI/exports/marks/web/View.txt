@@ -1,12 +1,12 @@
-# revision 21.1
+# revision 23.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.dragEnded: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
-Button.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Button.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.dragStarting: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.dragText: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
-Button.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Button.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.droppedFileTypes: ✓ dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Button.filesDropped: ✓ dropFiles on Button: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Button.frameChanged: ✅
@@ -25,13 +25,11 @@ Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
 Button.pinchUpdated: ✅
-Button.pointerEntered: ✅
-Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
 Button.rotationUpdated: ✅
-Button.swipeDirection: ✅
+Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
@@ -40,11 +38,11 @@ Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.area: ✅
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
-Canvas.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Canvas.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.dragText: ✓ dragAndDrop on Canvas: the DOM's drag events dispatched by the driver, no drag the browser began
-Canvas.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Canvas.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Canvas.filesDropped: ✓ dropFiles on Canvas: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Canvas.frameChanged: ✅
@@ -63,13 +61,11 @@ Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
 Canvas.pinchUpdated: ✅
-Canvas.pointerEntered: ✅
-Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
 Canvas.rotationUpdated: ✅
-Canvas.swipeDirection: ✅
+Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
@@ -78,11 +74,11 @@ Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.area: ✅
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
-Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Capsule.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.dragStarting: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.dragText: ✓ dragAndDrop on Capsule: the DOM's drag events dispatched by the driver, no drag the browser began
-Capsule.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Capsule.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Capsule.filesDropped: ✓ dropFiles on Capsule: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Capsule.frameChanged: ✅
@@ -101,13 +97,11 @@ Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.panYChannel: ✅
 Capsule.pinchUpdated: ✅
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
 Capsule.rotationUpdated: ✅
-Capsule.swipeDirection: ✅
+Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
@@ -116,11 +110,11 @@ Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.area: ✅
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
-CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.dragText: ✓ dragAndDrop on CheckBox: the DOM's drag events dispatched by the driver, no drag the browser began
-CheckBox.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+CheckBox.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 CheckBox.droppedFileTypes: ✓ dropFiles on CheckBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 CheckBox.filesDropped: ✓ dropFiles on CheckBox: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 CheckBox.frameChanged: ✅
@@ -139,13 +133,11 @@ CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
 CheckBox.pinchUpdated: ✅
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
 CheckBox.rotationUpdated: ✅
-CheckBox.swipeDirection: ✅
+CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
@@ -154,11 +146,11 @@ CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.area: ✅
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
-ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
-ColorPicker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ColorPicker.frameChanged: ✅
@@ -177,13 +169,11 @@ ColorPicker.panUpdated: ✅
 ColorPicker.panXChannel: ✅
 ColorPicker.panYChannel: ✅
 ColorPicker.pinchUpdated: ✅
-ColorPicker.pointerEntered: ✅
-ColorPicker.pointerExited: ✅
 ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
 ColorPicker.pointerReleased: ✅
 ColorPicker.rotationUpdated: ✅
-ColorPicker.swipeDirection: ✅
+ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
@@ -192,11 +182,11 @@ ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
-DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
-DatePicker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+DatePicker.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.droppedFileTypes: ✓ dropFiles on DatePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 DatePicker.filesDropped: ✓ dropFiles on DatePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 DatePicker.frameChanged: ✅
@@ -215,13 +205,11 @@ DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
 DatePicker.pinchUpdated: ✅
-DatePicker.pointerEntered: ✅
-DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
 DatePicker.rotationUpdated: ✅
-DatePicker.swipeDirection: ✅
+DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
@@ -230,11 +218,11 @@ DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
-Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
-Ellipse.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Ellipse.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.droppedFileTypes: ✓ dropFiles on Ellipse: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Ellipse.filesDropped: ✓ dropFiles on Ellipse: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Ellipse.frameChanged: ✅
@@ -253,13 +241,11 @@ Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
 Ellipse.pinchUpdated: ✅
-Ellipse.pointerEntered: ✅
-Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
 Ellipse.rotationUpdated: ✅
-Ellipse.swipeDirection: ✅
+Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
@@ -268,11 +254,11 @@ Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.area: ✅
 Fill.dragEnded: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
-Fill.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Fill.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.dragStarting: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.dragText: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
-Fill.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Fill.droppedFileTypes: ✓ dropFiles on Fill: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Fill.filesDropped: ✓ dropFiles on Fill: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Fill.frameChanged: ✅
@@ -291,13 +277,11 @@ Fill.panUpdated: ✅
 Fill.panXChannel: ✅
 Fill.panYChannel: ✅
 Fill.pinchUpdated: ✅
-Fill.pointerEntered: ✅
-Fill.pointerExited: ✅
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
 Fill.rotationUpdated: ✅
-Fill.swipeDirection: ✅
+Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
@@ -306,11 +290,11 @@ Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
 Grid.dragEnded: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
-Grid.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Grid.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.dragText: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
-Grid.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Grid.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.droppedFileTypes: ✓ dropFiles on Grid: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Grid.filesDropped: ✓ dropFiles on Grid: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Grid.frameChanged: ✅
@@ -329,13 +313,11 @@ Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
 Grid.pinchUpdated: ✅
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
 Grid.rotationUpdated: ✅
-Grid.swipeDirection: ✅
+Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
@@ -344,11 +326,11 @@ Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.area: ✅
 HStack.dragEnded: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
-HStack.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-HStack.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.dragStarting: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.dragText: ✓ dragAndDrop on HStack: the DOM's drag events dispatched by the driver, no drag the browser began
-HStack.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+HStack.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 HStack.filesDropped: ✓ dropFiles on HStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 HStack.frameChanged: ✅
@@ -367,13 +349,11 @@ HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
 HStack.pinchUpdated: ✅
-HStack.pointerEntered: ✅
-HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
 HStack.rotationUpdated: ✅
-HStack.swipeDirection: ✅
+HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
@@ -382,11 +362,11 @@ HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.area: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
-Image.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Image.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.dragStarting: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.dragText: ✓ dragAndDrop on Image: the DOM's drag events dispatched by the driver, no drag the browser began
-Image.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Image.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Image.droppedFileTypes: ✓ dropFiles on Image: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Image.filesDropped: ✓ dropFiles on Image: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Image.frameChanged: ✅
@@ -405,13 +385,11 @@ Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
 Image.pinchUpdated: ✅
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
 Image.rotationUpdated: ✅
-Image.swipeDirection: ✅
+Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
@@ -420,11 +398,11 @@ Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.area: ✅
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
-ItemsView.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ItemsView.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.dragText: ✓ dragAndDrop on ItemsView: the DOM's drag events dispatched by the driver, no drag the browser began
-ItemsView.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ItemsView.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ItemsView.frameChanged: ✅
@@ -443,13 +421,11 @@ ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
 ItemsView.pinchUpdated: ✅
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
 ItemsView.rotationUpdated: ✅
-ItemsView.swipeDirection: ✅
+ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
@@ -458,11 +434,11 @@ ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
 Line.dragEnded: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
-Line.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Line.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.dragStarting: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.dragText: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
-Line.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Line.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.droppedFileTypes: ✓ dropFiles on Line: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Line.filesDropped: ✓ dropFiles on Line: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Line.frameChanged: ✅
@@ -481,13 +457,11 @@ Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
 Line.pinchUpdated: ✅
-Line.pointerEntered: ✅
-Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
 Line.rotationUpdated: ✅
-Line.swipeDirection: ✅
+Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
@@ -496,11 +470,11 @@ Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.area: ✅
 Link.dragEnded: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
-Link.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Link.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.dragStarting: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.dragText: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
-Link.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Link.droppedFileTypes: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Link.filesDropped: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Link.frameChanged: ✅
@@ -519,13 +493,11 @@ Link.panUpdated: ✅
 Link.panXChannel: ✅
 Link.panYChannel: ✅
 Link.pinchUpdated: ✅
-Link.pointerEntered: ✅
-Link.pointerExited: ✅
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
 Link.rotationUpdated: ✅
-Link.swipeDirection: ✅
+Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
@@ -534,11 +506,11 @@ Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.dragEnded: 🧩
-Map.dragLeave: 🧩
-Map.dragOver: 🧩
+Map.dragEntered: 🧩
+Map.dragExited: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
-Map.drop: 🧩
+Map.dropped: 🧩
 Map.droppedFileTypes: 🧩
 Map.filesDropped: 🧩
 Map.frameChanged: 🧩
@@ -557,13 +529,11 @@ Map.panUpdated: 🧩
 Map.panXChannel: 🧩
 Map.panYChannel: 🧩
 Map.pinchUpdated: 🧩
-Map.pointerEntered: 🧩
-Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 Map.rotationUpdated: 🧩
-Map.swipeDirection: 🧩
+Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
@@ -572,11 +542,11 @@ Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.area: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
-MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
-MotionLayout.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 MotionLayout.frameChanged: ✅
@@ -595,13 +565,11 @@ MotionLayout.panUpdated: ✅
 MotionLayout.panXChannel: ✅
 MotionLayout.panYChannel: ✅
 MotionLayout.pinchUpdated: ✅
-MotionLayout.pointerEntered: ✅
-MotionLayout.pointerExited: ✅
 MotionLayout.pointerMoved: ✅
 MotionLayout.pointerPressed: ✅
 MotionLayout.pointerReleased: ✅
 MotionLayout.rotationUpdated: ✅
-MotionLayout.swipeDirection: ✅
+MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
@@ -610,11 +578,11 @@ MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.area: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
-Path.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Path.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.dragStarting: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.dragText: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
-Path.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Path.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.droppedFileTypes: ✓ dropFiles on Path: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Path.filesDropped: ✓ dropFiles on Path: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Path.frameChanged: ✅
@@ -633,13 +601,11 @@ Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
 Path.pinchUpdated: ✅
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.rotationUpdated: ✅
-Path.swipeDirection: ✅
+Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
@@ -648,11 +614,11 @@ Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.area: ✅
 Picker.dragEnded: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
-Picker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Picker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragStarting: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.dragText: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
-Picker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Picker.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Picker.filesDropped: ✓ dropFiles on Picker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Picker.frameChanged: ✅
@@ -660,37 +626,35 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
-Picker.held: ✅
-Picker.holdDuration: ✓ read holdDuration of Picker: the relay's own wait: a page holds no hold of the browser's
+Picker.held: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.holdDuration: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.horizontalAlignment: ✅
 Picker.isDraggable: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.layoutBody: ✅
 Picker.margin: ✅
-Picker.panTouchCount: ✅
-Picker.panUpdated: ✅
-Picker.panXChannel: ✅
-Picker.panYChannel: ✅
+Picker.panTouchCount: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panUpdated: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panXChannel: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.panYChannel: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.pinchUpdated: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
-Picker.pointerMoved: ✅
-Picker.pointerPressed: ✅
-Picker.pointerReleased: ✅
+Picker.pointerMoved: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerPressed: does not apply - its case covers Picker.pointerReleased too, which this host never has
+Picker.pointerReleased: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.rotationUpdated: ✅
-Picker.swipeDirection: ✅
-Picker.swipeThreshold: ✅
-Picker.swiped: ✅
-Picker.tapCount: ✅
-Picker.tapped: ✅
+Picker.swipeDirections: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.swipeThreshold: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.swiped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
+Picker.tapCount: does not apply - its case covers Picker.tapped too, which this host never has
+Picker.tapped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no hold, drag or swipe of it, and its release only where it was pressed.
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.area: ✅
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
-Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Polygon.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.dragStarting: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.dragText: ✓ dragAndDrop on Polygon: the DOM's drag events dispatched by the driver, no drag the browser began
-Polygon.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polygon.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polygon.filesDropped: ✓ dropFiles on Polygon: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polygon.frameChanged: ✅
@@ -709,13 +673,11 @@ Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
 Polygon.pinchUpdated: ✅
-Polygon.pointerEntered: ✅
-Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
 Polygon.rotationUpdated: ✅
-Polygon.swipeDirection: ✅
+Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
@@ -724,11 +686,11 @@ Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.area: ✅
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
-Polyline.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Polyline.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.dragStarting: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.dragText: ✓ dragAndDrop on Polyline: the DOM's drag events dispatched by the driver, no drag the browser began
-Polyline.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Polyline.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polyline.filesDropped: ✓ dropFiles on Polyline: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Polyline.frameChanged: ✅
@@ -747,13 +709,11 @@ Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
 Polyline.pinchUpdated: ✅
-Polyline.pointerEntered: ✅
-Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
 Polyline.rotationUpdated: ✅
-Polyline.swipeDirection: ✅
+Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
@@ -762,11 +722,11 @@ Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.area: ✅
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
-ProgressBar.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ProgressBar.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.dragText: ✓ dragAndDrop on ProgressBar: the DOM's drag events dispatched by the driver, no drag the browser began
-ProgressBar.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ProgressBar.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ProgressBar.frameChanged: ✅
@@ -785,13 +745,11 @@ ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
 ProgressBar.pinchUpdated: ✅
-ProgressBar.pointerEntered: ✅
-ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
 ProgressBar.rotationUpdated: ✅
-ProgressBar.swipeDirection: ✅
+ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
@@ -800,11 +758,11 @@ ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Rectangle.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Rectangle.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Rectangle.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Rectangle.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Rectangle.frameChanged: ✅
@@ -823,13 +781,11 @@ Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
 Rectangle.pinchUpdated: ✅
-Rectangle.pointerEntered: ✅
-Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
 Rectangle.rotationUpdated: ✅
-Rectangle.swipeDirection: ✅
+Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
@@ -838,11 +794,11 @@ Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.area: ✅
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
-ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.dragText: ✓ dragAndDrop on ScrollView: the DOM's drag events dispatched by the driver, no drag the browser began
-ScrollView.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ScrollView.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ScrollView.frameChanged: ✅
@@ -861,13 +817,11 @@ ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
 ScrollView.pinchUpdated: ✅
-ScrollView.pointerEntered: ✅
-ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
 ScrollView.rotationUpdated: ✅
-ScrollView.swipeDirection: ✅
+ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
@@ -876,11 +830,11 @@ ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.area: ✅
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
-SearchField.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-SearchField.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragStarting: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.dragText: ✓ dragAndDrop on SearchField: the DOM's drag events dispatched by the driver, no drag the browser began
-SearchField.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+SearchField.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 SearchField.filesDropped: ✓ dropFiles on SearchField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 SearchField.frameChanged: ✅
@@ -899,13 +853,11 @@ SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
 SearchField.pinchUpdated: ✅
-SearchField.pointerEntered: ✅
-SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
 SearchField.rotationUpdated: ✅
-SearchField.swipeDirection: ✅
+SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
@@ -914,11 +866,11 @@ SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.area: ✅
 Separator.dragEnded: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
-Separator.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Separator.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.dragStarting: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.dragText: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
-Separator.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Separator.droppedFileTypes: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Separator.filesDropped: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Separator.frameChanged: ✅
@@ -937,13 +889,11 @@ Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.panYChannel: ✅
 Separator.pinchUpdated: ✅
-Separator.pointerEntered: ✅
-Separator.pointerExited: ✅
 Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
 Separator.pointerReleased: ✅
 Separator.rotationUpdated: ✅
-Separator.swipeDirection: ✅
+Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
@@ -952,11 +902,11 @@ Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.area: ✅
 Slider.dragEnded: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
-Slider.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Slider.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.dragStarting: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.dragText: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
-Slider.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Slider.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.droppedFileTypes: ✓ dropFiles on Slider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Slider.filesDropped: ✓ dropFiles on Slider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Slider.frameChanged: ✅
@@ -975,13 +925,11 @@ Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
 Slider.pinchUpdated: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
 Slider.rotationUpdated: ✅
-Slider.swipeDirection: ✅
+Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
@@ -990,11 +938,11 @@ Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.area: ✅
 Space.dragEnded: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
-Space.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Space.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.dragStarting: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.dragText: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
-Space.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Space.droppedFileTypes: ✓ dropFiles on Space: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Space.filesDropped: ✓ dropFiles on Space: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Space.frameChanged: ✅
@@ -1013,13 +961,11 @@ Space.panUpdated: ✅
 Space.panXChannel: ✅
 Space.panYChannel: ✅
 Space.pinchUpdated: ✅
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
 Space.rotationUpdated: ✅
-Space.swipeDirection: ✅
+Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
@@ -1028,11 +974,11 @@ Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.area: ✅
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
-Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Spinner.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.dragStarting: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.dragText: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
-Spinner.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Spinner.filesDropped: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Spinner.frameChanged: ✅
@@ -1051,13 +997,11 @@ Spinner.panUpdated: ✅
 Spinner.panXChannel: ✅
 Spinner.panYChannel: ✅
 Spinner.pinchUpdated: ✅
-Spinner.pointerEntered: ✅
-Spinner.pointerExited: ✅
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
 Spinner.rotationUpdated: ✅
-Spinner.swipeDirection: ✅
+Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
@@ -1066,11 +1010,11 @@ Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
-Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Stepper.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.dragText: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
-Stepper.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Stepper.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Stepper.filesDropped: ✓ dropFiles on Stepper: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Stepper.frameChanged: ✅
@@ -1089,13 +1033,11 @@ Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
 Stepper.pinchUpdated: ✅
-Stepper.pointerEntered: ✅
-Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
 Stepper.rotationUpdated: ✅
-Stepper.swipeDirection: ✅
+Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
@@ -1104,11 +1046,11 @@ Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.area: ✅
 Switch.dragEnded: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
-Switch.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Switch.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.dragStarting: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.dragText: ✓ dragAndDrop on Switch: the DOM's drag events dispatched by the driver, no drag the browser began
-Switch.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Switch.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Switch.droppedFileTypes: ✓ dropFiles on Switch: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Switch.filesDropped: ✓ dropFiles on Switch: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Switch.frameChanged: ✅
@@ -1127,13 +1069,11 @@ Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
 Switch.pinchUpdated: ✅
-Switch.pointerEntered: ✅
-Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
 Switch.rotationUpdated: ✅
-Switch.swipeDirection: ✅
+Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
@@ -1142,11 +1082,11 @@ Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.area: ✅
 Text.dragEnded: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
-Text.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Text.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.dragStarting: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.dragText: ✓ dragAndDrop on Text: the DOM's drag events dispatched by the driver, no drag the browser began
-Text.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Text.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Text.droppedFileTypes: ✓ dropFiles on Text: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Text.filesDropped: ✓ dropFiles on Text: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 Text.frameChanged: ✅
@@ -1165,13 +1105,11 @@ Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
 Text.pinchUpdated: ✅
-Text.pointerEntered: ✅
-Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
 Text.rotationUpdated: ✅
-Text.swipeDirection: ✅
+Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
@@ -1180,11 +1118,11 @@ Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.area: ✅
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
-TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.dragText: ✓ dragAndDrop on TextEditor: the DOM's drag events dispatched by the driver, no drag the browser began
-TextEditor.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextEditor.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TextEditor.frameChanged: ✅
@@ -1203,13 +1141,11 @@ TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
 TextEditor.pinchUpdated: ✅
-TextEditor.pointerEntered: ✅
-TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
 TextEditor.rotationUpdated: ✅
-TextEditor.swipeDirection: ✅
+TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
@@ -1218,11 +1154,11 @@ TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.area: ✅
 TextField.dragEnded: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
-TextField.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-TextField.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.dragStarting: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.dragText: ✓ dragAndDrop on TextField: the DOM's drag events dispatched by the driver, no drag the browser began
-TextField.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TextField.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TextField.filesDropped: ✓ dropFiles on TextField: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TextField.frameChanged: ✅
@@ -1241,13 +1177,11 @@ TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
 TextField.pinchUpdated: ✅
-TextField.pointerEntered: ✅
-TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
 TextField.rotationUpdated: ✅
-TextField.swipeDirection: ✅
+TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
@@ -1256,11 +1190,11 @@ TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.area: ✅
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
-TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the DOM's drag events dispatched by the driver, no drag the browser began
-TimePicker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+TimePicker.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 TimePicker.frameChanged: ✅
@@ -1279,13 +1213,11 @@ TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
 TimePicker.pinchUpdated: ✅
-TimePicker.pointerEntered: ✅
-TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
 TimePicker.rotationUpdated: ✅
-TimePicker.swipeDirection: ✅
+TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
@@ -1294,11 +1226,11 @@ TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.area: ✅
 VStack.dragEnded: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
-VStack.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-VStack.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.dragStarting: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.dragText: ✓ dragAndDrop on VStack: the DOM's drag events dispatched by the driver, no drag the browser began
-VStack.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+VStack.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 VStack.filesDropped: ✓ dropFiles on VStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 VStack.frameChanged: ✅
@@ -1317,13 +1249,11 @@ VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
 VStack.pinchUpdated: ✅
-VStack.pointerEntered: ✅
-VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
 VStack.rotationUpdated: ✅
-VStack.swipeDirection: ✅
+VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
@@ -1332,11 +1262,11 @@ VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.area: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
-WebView.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-WebView.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.dragStarting: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.dragText: ✓ dragAndDrop on WebView: the DOM's drag events dispatched by the driver, no drag the browser began
-WebView.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+WebView.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 WebView.filesDropped: ✓ dropFiles on WebView: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 WebView.frameChanged: ✅
@@ -1355,13 +1285,11 @@ WebView.panUpdated: ✅
 WebView.panXChannel: ✅
 WebView.panYChannel: ✅
 WebView.pinchUpdated: ✅
-WebView.pointerEntered: ✅
-WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
 WebView.rotationUpdated: ✅
-WebView.swipeDirection: ✅
+WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
@@ -1370,11 +1298,11 @@ WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.area: ✅
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
-ZStack.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ZStack.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragEntered: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dragExited: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.dragStarting: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.dragText: ✓ dragAndDrop on ZStack: the DOM's drag events dispatched by the driver, no drag the browser began
-ZStack.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ZStack.dropped: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ZStack.filesDropped: ✓ dropFiles on ZStack: the DOM's drag events dispatched by the driver with its files, no drag the browser began
 ZStack.frameChanged: ✅
@@ -1393,13 +1321,11 @@ ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
 ZStack.pinchUpdated: ✅
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
 ZStack.rotationUpdated: ✅
-ZStack.swipeDirection: ✅
+ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅

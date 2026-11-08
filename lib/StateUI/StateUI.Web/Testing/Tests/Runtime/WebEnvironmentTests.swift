@@ -42,7 +42,7 @@ final class WebEnvironmentTests: XCTestCase {
         defer { WebBrowser.ask([("languages", .words(""))]) }
         _ = try locale(languages: "pl-PL", zone: "Europe/Warsaw")
         let host = WebRenderer.running { Text("Zone") }
-        defer { host.leave() }
+        defer { host.finish() }
         host.step()
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
 
@@ -56,12 +56,12 @@ final class WebEnvironmentTests: XCTestCase {
     /// What the user asked of motion and contrast is the browser's: its media queries; a page is told of no screen
     /// reader and no scale of the system's words.
     func testThePageTellsWhatTheUserAskedOfMotionAndContrast() throws {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
             reducesMotion: true, prefersHigherContrast: true, isScreenReaderOn: true, textScale: 0))
         let host = WebRenderer.running { Text("Shown") }
         host.step()
-        defer { host.leave() }
+        defer { host.finish() }
         let settings = StandardEnvironment.device.accessibility
 
         let still = try WebBrowser.truth("matchMedia('(prefers-reduced-motion: reduce)').matches", on: 0)
@@ -76,11 +76,11 @@ final class WebEnvironmentTests: XCTestCase {
     /// the way back, a sheet's close and the overflow.
     func testTheChromesButtonsSayTheLibrarysWords() throws {
         defer { WebBrowser.ask([("languages", .words(""))]) }
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         WebBrowser.ask([("languages", .words("pl-PL")), ("zone", .words("Europe/Warsaw"))])
         let host = WebRenderer.running { Text("Shown") }
         host.step()
-        defer { host.leave() }
+        defer { host.finish() }
 
         let words = CoreLink().chromeWords
         XCTAssertEqual(words.sidebar, "Pasek boczny", "the user reads Polish")
@@ -92,11 +92,11 @@ final class WebEnvironmentTests: XCTestCase {
 
     /// The locale the core holds once a host starts on a page whose user reads `languages` in `zone`.
     private func locale(languages: String, zone: String) throws -> LocaleInfo {
-        WebRenderer.shared?.leave()
+        WebRenderer.shared?.finish()
         WebBrowser.ask([("languages", .words(languages)), ("zone", .words(zone))])
         let host = WebRenderer.running { Text("Shown") }
         host.step()
-        defer { host.leave() }
+        defer { host.finish() }
         return StandardEnvironment.locale
     }
 }

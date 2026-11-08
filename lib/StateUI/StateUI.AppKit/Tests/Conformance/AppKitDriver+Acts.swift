@@ -392,7 +392,7 @@ extension AppKitDriver {
         else { throw DriverCannot(.pressKeys(shortcut), on: element) }
         // The window in front: its page's menus on the menu bar, as AppKit puts them there for the key window - and
         // off it again, so no later window finds them.
-        if NSApp.mainMenu == nil { NSApp.mainMenu = StateUIAppKit.mainMenu(newWindow: nil) }
+        if NSApp.mainMenu == nil { NSApp.mainMenu = AppKitHost.mainMenu(newWindow: nil) }
         controller?.host?.installPageMenus(controller?.pageMenus ?? [])
         defer { controller?.host?.installPageMenus([]) }
         // The application's key monitor first, as AppKit hands it every key: one a view takes ends there.

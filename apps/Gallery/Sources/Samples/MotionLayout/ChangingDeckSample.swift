@@ -86,7 +86,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(2)
         }
-        .rows(.fill, .auto, .auto)
+        .rows(.fill, .automatic, .automatic)
         .rowSpacing(10)
     }
 
@@ -133,11 +133,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)
-        .onItemDismissed(.up, beyond: 120) { name in remove(name) }
-        // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
+        .onItemDismissed(directions: .up, threshold: 120) { name in remove(name) }
+        // `.parameterMotion` DRIVES MOVING BETWEEN CARDS, the turn and every change
         // where the parameters stand; `.dynamics` THE CARDS reaching their new
         // places after a card joins, leaves or the order changes.
-        .motion(.eased(.milliseconds(400), curve: .cubicOut))
+        .parameterMotion(.eased(.milliseconds(400), curve: .cubicOut))
         .dynamics(.spring(response: .milliseconds(300), damping: 1))
     }
 
@@ -224,7 +224,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         VStack {
             Text("Add, insert, remove, reverse or spread the cards while the deck stands - or while it "
                 + "still turns. Nothing here animates a card: a change of the layout's description "
-                + "where its parameters stand travels under its `.motion`, each card from where it "
+                + "where its parameters stand travels under its `.parameterMotion`, each card from where it "
                 + "was shown to where the new arithmetic puts it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
