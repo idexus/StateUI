@@ -18,6 +18,22 @@ message is refused and the whole tree is asked for once, with
 applied inside another is computed against a tree half written, so the outer
 one claims nothing and the next render is complete.
 
+## A complete message
+
+A complete message - the first, and every one after a drift - says everything
+of each element it carries. The core says it against the host's own defaults,
+as to a host holding nothing: a property, a handler, a tie to a state or a
+motion at its default goes unsaid, and `clearedProperties` names only what
+the core's own last render had. A host that keeps an element may hold more -
+whatever a message that never went in whole left on it. So an element a
+complete message keeps holds only what the message names: a property, a
+handler or a tie it does not name goes, and a motion it does not say is the
+inherited one (`MountedElement.completed`). A sparse message leaves what it
+does not name as it stands. The mounted tree knows which a message is from
+`apply(_:complete:)`; a test host applying patches of its own says a message
+is complete only where it describes another root than the one standing
+(`holdsRoot(of:)`).
+
 ## Program write
 
 While the program writes a native control - a patch applied, a display frame

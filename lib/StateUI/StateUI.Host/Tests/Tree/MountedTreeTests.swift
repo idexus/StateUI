@@ -73,6 +73,54 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.intake.baseline, 3)
     }
 
+    /// A complete message names everything of an element it keeps - its properties, handlers, ties and motion - so
+    /// what it leaves out goes though it clears nothing: the core cleared it against its own tree, which this host
+    /// may never have held whole.
+    @MainActor
+    func testACompleteMessageTakesAwayWhatItDoesNotName() {
+        let (tree, log) = Self.tree()
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties = [.zIndex: .number(1), .background: .string("left over")]
+        label.events = .replace([.clicked: 5])
+        label.driven = .replace([.value: HostStateBinding(state: 700, mode: .inOut, kind: .property, laneKind: .number)])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.motion = HostLayoutMotion(motion: .none, lanes: .all)
+        stack.children = .arranged([label])
+        tree.apply(stack, complete: true)
+        let kept = tree.root?.children.first
+        log.changed = [:]
+
+        var named = HostPatch(id: .manual("label"), type: .text)
+        named.properties = [.zIndex: .number(1)]
+        var again = HostPatch(id: .manual("stack"), type: .vStack)
+        again.children = .arranged([named])
+        tree.apply(again, complete: true)
+
+        XCTAssertTrue(tree.root?.children.first === kept, "the element is kept")
+        XCTAssertEqual(kept?.properties, [.zIndex: .number(1)])
+        XCTAssertEqual(kept?.events, [:])
+        XCTAssertEqual(kept?.driven.isEmpty, true)
+        XCTAssertNil(tree.root?.motion, "the inherited motion")
+        XCTAssertEqual(log.changed["label"]?.contains(.background), true, "its native half hears the value go")
+    }
+
+    /// A sparse message leaves what it does not name as it stands.
+    @MainActor
+    func testASparseMessageKeepsWhatItDoesNotName() {
+        let (tree, _) = Self.tree()
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties = [.zIndex: .number(1), .background: .string("kept")]
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([label])
+        tree.apply(stack, complete: true)
+
+        label.properties = [.zIndex: .number(2)]
+        stack.children = .changed([label])
+        tree.apply(stack, complete: false)
+
+        XCTAssertEqual(tree.root?.children.first?.properties, [.zIndex: .number(2), .background: .string("kept")])
+    }
+
     /// An element that leaves takes everything under it along, native halves and worn states included.
     @MainActor
     func testALeavingElementDetachesItsSubtree() {

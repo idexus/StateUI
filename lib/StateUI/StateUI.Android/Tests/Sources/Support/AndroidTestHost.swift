@@ -251,9 +251,12 @@ extension AndroidRenderer {
         if AndroidRenderer.shared === self { AndroidRenderer.shared = nil }
     }
 
-    /// Applies `patch` as one whole message, as a render does.
+    /// Applies `patch` as one message, as a render does: complete where it describes another root than the one
+    /// standing, a change of that root otherwise.
     func apply(_ patch: HostPatch) {
-        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) {
+            runtime.tree.apply($0, complete: !runtime.tree.holdsRoot(of: $0))
+        }
     }
 
     /// The view of the element keyed `id`.

@@ -175,11 +175,24 @@
     public func apply(_ patch: HostPatch) {
         guard let tree else { return }
 
+        let patch = tree.appliesCompleteMessage ? completed(patch) : patch
         let applying = received(patch, tree: tree)
         if case .unchanged = patch.children {} else { willShowAnew() }
         childrenApplied(patch.children, tree: tree)
         settled(patch, applying, tree: tree)
         if childrenChanged { showsAnew() }
+    }
+
+    /// `patch`, of a complete message, as this element takes it: a property, a handler or a tie it does not name is
+    /// one the element no longer has.
+    /// Design: docs/design/host/patches.md#a-complete-message
+    private func completed(_ patch: HostPatch) -> HostPatch {
+        var whole = patch
+        whole.clearedProperties = Set(patch.clearedProperties)
+            .union(properties.keys.filter { patch.properties[$0] == nil }).sorted()
+        if patch.events == nil, !events.isEmpty { whole.events = .replace([:]) }
+        if patch.driven == nil, !driven.isEmpty { whole.driven = .replace([:]) }
+        return whole
     }
 
     /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,
@@ -268,6 +281,9 @@
             self.motion = motion
             // The application says its motion once; every layout that says none animates under it.
             if type == .application { tree.layoutMotion.applicationMotion = motion.motion }
+        } else if tree.appliesCompleteMessage {
+            // A complete message that says no motion says the inherited one.
+            self.motion = nil
         }
 
         if case .unchanged = patch.children { childrenChanged = false } else { childrenChanged = true }

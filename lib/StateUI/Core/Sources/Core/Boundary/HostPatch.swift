@@ -45,7 +45,8 @@
     /// The host clears each one, so what the modifier stood for goes back to
     /// that native control's default. Without this a property that has gone
     /// away has nothing arriving to overwrite it, and the only honest answer
-    /// left is to build the control again.
+    /// left is to build the control again. In a complete message the host
+    /// clears as well every property it holds that `properties` does not name.
     public var clearedProperties: [Prop] = []
 
     /// The properties among `properties` the host is to move to rather than
@@ -58,15 +59,18 @@
 
     /// The properties driven to a state, sent whole whenever the set changed.
     ///
-    /// Nil means unchanged; `.replace([:])` means forget every attachment.
+    /// Nil means unchanged - none, in a complete message; `.replace([:])` means
+    /// forget every attachment.
     public var driven: HostDrivenUpdate?
 
     /// The complete event map, sent only when the set of handled events changed.
-    /// Nil means unchanged; `.replace([:])` removes every handler.
+    /// Nil means unchanged - none, in a complete message; `.replace([:])` removes
+    /// every handler.
     public var events: HostEventUpdate?
 
     /// How this element's children animate when it puts them somewhere new, sent when
     /// it changed - by the application, a layout placing children, or a `.motion(_:)`.
+    /// Nil means unchanged - the inherited motion, in a complete message.
     public var motion: HostLayoutMotion?
 
     /// The sparse or complete change to this element's children.

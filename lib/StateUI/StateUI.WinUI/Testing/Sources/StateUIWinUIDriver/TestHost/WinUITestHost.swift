@@ -131,9 +131,12 @@ extension WinUIRenderer {
         for controller in windows.reversed() { controller.window.close() }
     }
 
-    /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
+    /// Applies `patch` as one message, as a render does - complete where it describes another root than the one
+    /// standing, a change of that root otherwise - and stands the root in the test's window.
     func apply(_ patch: HostPatch) {
-        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) { runtime.tree.apply($0, complete: true) }
+        runtime.intake.take(patch, generation: runtime.intake.baseline &+ 1) {
+            runtime.tree.apply($0, complete: !runtime.tree.holdsRoot(of: $0))
+        }
         let root = (runtime.tree.root?.native as? WinUIElement)?.view
         guard WinUITestHost.window.content !== root else { return }
         WinUITestHost.window.show(root)
