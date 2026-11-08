@@ -94,7 +94,7 @@ final class AppKitSplitView: AppKitHitTestView {
             accessory.view = row
             // The row stands over the page rather than on a band of its own:
             // a soft edge lets the page show beneath the tabs.
-            if #available(macOS 26.1, *) { accessory.preferredScrollEdgeEffectStyle = .soft }
+            accessory.preferredScrollEdgeEffectStyle = .soft
             detailItem.addTopAlignedAccessoryViewController(accessory)
         }
 

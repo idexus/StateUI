@@ -49,7 +49,7 @@ export const hosts: readonly HostDescription[] = [
     {
         id: "uikit", label: "UIKit", detail: "iOS and iPadOS on a simulator, in the application's own process",
         indexPath: ".build/uikit/index-build", platforms: ["darwin"],
-        target: { triple: "arm64-apple-ios26.0-simulator", xcodeSDK: "iphonesimulator" },
+        target: { triple: "arm64-apple-ios26.4-simulator", xcodeSDK: "iphonesimulator" },
     },
     {
         id: "android", label: "Android", detail: "Android Views, in the application's own process",

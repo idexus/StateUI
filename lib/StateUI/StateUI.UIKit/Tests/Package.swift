@@ -6,7 +6,7 @@ import PackageDescription
 // .scripts/UIKit/test-uikit.sh builds, installs and runs it on a simulator.
 let package = Package(
     name: "StateUIUIKitTests",
-    platforms: [.iOS(.v26)],
+    platforms: [.iOS("26.4")],
     products: [
         .executable(name: "StateUIUIKitTests", targets: ["StateUIUIKitTests"]),
     ],

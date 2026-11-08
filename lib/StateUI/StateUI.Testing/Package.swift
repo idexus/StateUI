@@ -6,7 +6,7 @@ import PackageDescription
 // dynamic StateUI runtime is linked rather than copied.
 let package = Package(
     name: "StateUITesting",
-    platforms: [.iOS(.v26), .macOS(.v26)],
+    platforms: [.iOS("26.4"), .macOS("26.4")],
     products: [
         .library(name: "StateUITesting", targets: ["StateUITesting"]),
     ],

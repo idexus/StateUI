@@ -29,11 +29,11 @@ apps/<App>/Platforms/UIKit/
 
 ## Requirements
 
-The host builds on macOS with Xcode, for iOS and iPadOS 26 or newer, and runs
+The host builds on macOS with Xcode, for iOS and iPadOS 26.4 or newer, and runs
 on a simulator or on an iPhone or iPad paired with the Mac. `build-app.sh`
 builds with Xcode's Swift against the simulator's SDK, for
-`arm64-apple-ios26.0-simulator`, or against the device's, for
-`arm64-apple-ios26.0`. A device runs with Developer Mode on, and its build is
+`arm64-apple-ios26.4-simulator`, or against the device's, for
+`arm64-apple-ios26.4`. A device runs with Developer Mode on, and its build is
 signed with a development profile of this Mac's that provisions it - one
 Xcode makes for a team once the device is added - and a certificate of the
 keychain's that the profile names: the script picks them as Xcode does, an

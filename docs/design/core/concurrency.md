@@ -186,6 +186,18 @@ after `withLock` returns, and a wake only signals outside it. No body holds
 two: a post books its entry under the mailroom's one lock and starts the job
 after letting it go.
 
+## The floor
+
+StateUI runs on iOS, Mac Catalyst and macOS 26.4 or newer, as their Swift
+runtime is the system's, and two of its parts decide the floor.
+`Task.immediate`, which starts a handler inside its event, comes with 26.0.
+And a rendered node's `isolated deinit` releases its children, each with an
+`isolated deinit` of its own, while a task-local value is bound - a window's
+teardown, a handler's run: the runtime of 26.0 to 26.2 frees a pointer it
+never took there and stops the process. 26.4 is the oldest release proven to
+run it, on its simulator. `ToolchainTests` holds every manifest, script,
+editor and handbook page to one floor.
+
 ## What the compiler checks
 
 The core makes no promise the compiler cannot check: it has no `@unchecked

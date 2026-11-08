@@ -167,7 +167,7 @@ extension AppKitWindowController {
             let accessory = NSTitlebarAccessoryViewController()
             accessory.layoutAttribute = .bottom
             accessory.view = tabRow
-            if #available(macOS 26.1, *) { accessory.preferredScrollEdgeEffectStyle = .soft }
+            accessory.preferredScrollEdgeEffectStyle = .soft
             window.addTitlebarAccessoryViewController(accessory)
             tabRowAccessory = accessory
         }

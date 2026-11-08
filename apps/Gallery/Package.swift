@@ -110,9 +110,9 @@ let package = Package(
     name: "GalleryUI",
     // StateUI's floor, which an application cannot go below.
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: products,
     // The StateUI checkout: the library at its root, the host layer the tests walk the gallery over, the testing

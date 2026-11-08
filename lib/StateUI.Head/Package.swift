@@ -16,9 +16,9 @@ let package = Package(
     name: "StateUIHead",
     // StateUI's floor; see the note in ../../Package.swift.
     platforms: [
-        .iOS(.v26),
-        .macCatalyst(.v26),
-        .macOS(.v26),
+        .iOS("26.4"),
+        .macCatalyst("26.4"),
+        .macOS("26.4"),
     ],
     products: [
         .library(name: "StateUIHead", targets: ["StateUIHead"]),

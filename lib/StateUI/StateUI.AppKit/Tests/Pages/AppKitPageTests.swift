@@ -525,9 +525,7 @@ final class AppKitPageTests: XCTestCase {
         let row = controller.tabRowForTesting
         let control = row.controlForTesting
         XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
-        if #available(macOS 26.1, *) {
-            XCTAssertEqual(controller.tabRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
-        }
+        XCTAssertEqual(controller.tabRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
         XCTAssertEqual(control.trackingMode, .selectOne)
         XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(
@@ -649,9 +647,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
         XCTAssertTrue(controller.tabRowSplitForTesting === split)
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
-        if #available(macOS 26.1, *) {
-            XCTAssertEqual(split.detailRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
-        }
+        XCTAssertEqual(split.detailRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
 
         renderer.applyForTesting(tree(flyout(
             presented: true,

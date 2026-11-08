@@ -56,6 +56,9 @@ export function compareVersions(a: string, b: string): number {
     return 0;
 }
 
+/** The oldest release of Apple's systems StateUI runs on - iOS, Mac Catalyst and macOS alike: the manifests' floor. */
+export const appleFloor = "26.4";
+
 /** Whether `version` is `minimum` or newer: "6.4.1" is at least "6.4", "26.0" at least "26". */
 export function atLeast(version: string, minimum: string): boolean {
     return compareVersions(version, minimum) >= 0;
@@ -324,8 +327,8 @@ function ndkTheBuildTakes(sdk: string | undefined): string | undefined {
 function macChecks(): Check[] {
     return [
         {
-            component: "macOS 26 or newer", neededBy: "AppKit", advice: "Update macOS to 26 or newer.",
-            look: async () => served((await run("sw_vers", ["-productVersion"]))?.trim(), "26"),
+            component: `macOS ${appleFloor} or newer`, neededBy: "AppKit", advice: `Update macOS to ${appleFloor} or newer.`,
+            look: async () => served((await run("sw_vers", ["-productVersion"]))?.trim(), appleFloor),
         },
         {
             component: "Xcode 27 or newer", neededBy: "AppKit, UIKit",
@@ -333,9 +336,9 @@ function macChecks(): Check[] {
             look: async () => served(xcodeVersion((await run("xcodebuild", ["-version"])) ?? ""), "27"),
         },
         {
-            component: "an iOS 26 or newer simulator runtime", neededBy: "UIKit",
+            component: `an iOS ${appleFloor} or newer simulator runtime`, neededBy: "UIKit",
             advice: "Install the iOS platform in Xcode's Settings, Components.",
-            look: async () => served(newestIOSRuntime((await run("xcrun", ["simctl", "list", "runtimes", "available", "-j"])) ?? ""), "26"),
+            look: async () => served(newestIOSRuntime((await run("xcrun", ["simctl", "list", "runtimes", "available", "-j"])) ?? ""), appleFloor),
         },
         {
             component: "an Apple Development certificate", neededBy: "UIKit on an iPhone or iPad",

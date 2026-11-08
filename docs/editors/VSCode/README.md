@@ -96,7 +96,7 @@ says **no host**, a launch says why it runs nothing, and the editor and
   compiles for WebAssembly - the Swift SDK for WebAssembly of the toolchain's
   release, `wasm32-unknown-wasip1` - so code under `#if WEB` and
   `Platforms/Web` resolve. As UIKit it
-  compiles for the iOS simulator - `arm64-apple-ios26.0-simulator` against
+  compiles for the iOS simulator - `arm64-apple-ios26.4-simulator` against
   Xcode's simulator SDK - so code under `#if UIKIT` and `Platforms/UIKit`
   resolve.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit
@@ -140,7 +140,7 @@ tests asks only when none is chosen or the one chosen is no longer attached.
 While the host is UIKit, the third status bar item shows the iPhone or iPad a
 launch runs on - click it, or run **StateUI: Select UIKit Device**. It offers
 the devices paired with this Mac, over USB or Wi-Fi, and the simulators, each
-of iOS 26 or later, the newest runtime first. It is remembered for the
+of iOS 26.4 or later, the newest runtime first. It is remembered for the
 workspace, so a launch asks only when none is chosen or the one chosen is
 gone. A device runs with Developer Mode on, and its build is signed with a
 development profile of this Mac's that provisions it - Xcode makes one for a
@@ -326,9 +326,9 @@ launch file at all:
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode),
   installed with StateUI.
-- For AppKit: macOS 26 or newer and the `lldb-dap` extension.
+- For AppKit: macOS 26.4 or newer and the `lldb-dap` extension.
 - For UIKit: macOS with Xcode, a StateUI checkout, whose `.scripts/UIKit`
-  builds and runs the head, the `lldb-dap` extension, and an iOS 26 or newer
+  builds and runs the head, the `lldb-dap` extension, and an iOS 26.4 or newer
   simulator or device - a device with Developer Mode on and a development
   profile of this Mac's that provisions it.
 - For Android: macOS and a StateUI checkout, whose `.scripts/Android` builds

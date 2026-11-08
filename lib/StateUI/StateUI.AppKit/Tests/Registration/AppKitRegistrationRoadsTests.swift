@@ -123,11 +123,23 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
         "import AppKit\nimport StateUI\nimport StateUIAppKit\n\n\(declarations)\n\n@MainActor\nfunc road() {\n    \(listing)\n}\n"
     }
 
+    /// This Mac's triple at its own version: the compiler's default stands below the module's floor, which no Mac
+    /// running this test stands below.
+    private nonisolated static let target: String = {
+        let system = ProcessInfo.processInfo.operatingSystemVersion
+        #if arch(arm64)
+        let architecture = "arm64"
+        #else
+        let architecture = "x86_64"
+        #endif
+        return "\(architecture)-apple-macosx\(system.majorVersion).\(system.minorVersion)"
+    }()
+
     /// Type-checks one file: the compiler's errors where it failed, nil where it passed.
     private nonisolated static func typecheck(_ file: URL, modules: URL) -> String? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-        process.arguments = ["swiftc", "-typecheck", "-parse-as-library", "-I", modules.path, file.path]
+        process.arguments = ["swiftc", "-typecheck", "-parse-as-library", "-target", target, "-I", modules.path, file.path]
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe

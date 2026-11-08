@@ -523,12 +523,20 @@ final class APISurfaceTests: XCTestCase {
         return nil
     }
 
-    /// The triple the toolchain builds for here, with the system's version - the one the module was built for.
+    /// The triple the toolchain builds for here, at this system's own version on Apple's: the compiler's default
+    /// stands below the manifests' floor, which no system running this test stands below.
     static func triple() throws -> String {
         let info = try JSONSerialization.jsonObject(with: Data(try run("swiftc", ["-print-target-info"]).utf8))
-        guard let triple = ((info as? [String: Any])?["target"] as? [String: Any])?["triple"] as? String else {
+        guard let target = (info as? [String: Any])?["target"] as? [String: Any],
+              let triple = target["triple"] as? String else {
             throw CocoaError(.propertyListReadCorrupt)
         }
+        #if os(macOS)
+        if let unversioned = target["unversionedTriple"] as? String {
+            let system = ProcessInfo.processInfo.operatingSystemVersion
+            return "\(unversioned)\(system.majorVersion).\(system.minorVersion)"
+        }
+        #endif
         return triple
     }
 

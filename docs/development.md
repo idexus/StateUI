@@ -156,7 +156,7 @@ contract.
 
 ## Build
 
-The AppKit host requires macOS 26 or newer and Xcode 27, with its Swift 6.4.
+The AppKit host requires macOS 26.4 or newer and Xcode 27, with its Swift 6.4.
 
 Build the runnable Gallery bundle:
 
@@ -175,8 +175,8 @@ application chosen in the StateUI extension's status bar, on the host chosen
 there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
 build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
-The UIKit host builds on macOS with the same Xcode and its iOS 26 or newer
-simulator runtime, for iOS and iPadOS 26 or newer. An application's UIKit
+The UIKit host builds on macOS with the same Xcode and its iOS 26.4 or
+newer simulator runtime, for iOS and iPadOS 26.4 or newer. An application's UIKit
 head is built as an application bundle, installed on an iOS simulator -
 booted first where it is not - or on an iPhone or iPad of this Mac's, and
 started by one script:
