@@ -306,10 +306,10 @@ extension Set: WrittenInOrder where Element: Encodable {
 }
 
 extension Dictionary: WrittenInOrder where Key: Encodable, Value: Encodable {
-    /// Words and whole numbers key an object, written sorted by its keys; any other key, the pairs a dictionary
-    /// reads back, sorted by the key's text.
+    /// Words, whole numbers and a key that says itself as one (`CodingKeyRepresentable`) key an object, written sorted
+    /// by its keys - as a dictionary reads them back; any other key, the pairs, sorted by the key's text.
     func write(into written: ValueText.Written, codingPath: [CodingKey]) throws {
-        if Key.self == String.self || Key.self == Int.self {
+        if Key.self == String.self || Key.self == Int.self || Key.self is any CodingKeyRepresentable.Type {
             try encode(to: ValueText.Writing(into: written, codingPath: codingPath))
             return
         }
