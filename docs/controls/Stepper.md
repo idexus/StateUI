@@ -36,8 +36,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSStepper</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>33 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIStepper</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>56 ✅ · 5 ☑️ · 12 ✓ · 5 –</td><td>custom <code>LinearLayout</code> of two <code>Button</code>s</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>33 ✅ · 3 ☑️ · 36 ✓ · 5 –</td><td><code>UIStepper</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>54 ✅ · 5 ☑️ · 12 ✓ · 5 –</td><td>custom <code>LinearLayout</code> of two <code>Button</code>s</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>6 ✅</td><td><code>NumberBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>3 ✅ · 2 ✓ · 1 –</td><td><code>GtkSpinButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>6 ✅</td><td><code>&lt;input role=spinbutton&gt;</code> between two <code>&lt;button&gt;</code>s</td></tr></tbody>
@@ -234,10 +234,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Stepper: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on Stepper: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

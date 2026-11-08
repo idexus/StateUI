@@ -37,8 +37,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 3 ☑️ · 40 ✓ · 4 –</td><td><code>NSCollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 42 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 5 ☑️ · 13 ✓ · 2 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 40 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 13 ✓ · 2 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>16 ✅ · 3 –</td><td><code>ItemsView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>13 ✅ · 2 ✓ · 4 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>15 ✅ · 1 ✓ · 3 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
@@ -236,10 +236,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

@@ -108,3 +108,4 @@ Menu 3
 ToolbarLabel 3
 ContentModeElement 2
 RangeElement 2
+HoverElement 2

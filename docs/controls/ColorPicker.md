@@ -33,8 +33,8 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSColorWell</code> opening the color panel</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>82 –</td><td>no honest native counterpart</td></tr>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 3 ☑️ · 36 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>80 –</td><td>no honest native counterpart</td></tr>
 <tr><td colspan="3">Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 2 ✓ · 1 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
@@ -253,10 +253,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)
