@@ -91,6 +91,7 @@ final class WebDriver: HostDriver {
     ) -> MountedTree {
         written.listen()
         emptyFiles()
+        park()
         let renderer = WebRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         self.renderer = renderer
         return renderer.runtime.tree
@@ -99,6 +100,7 @@ final class WebDriver: HostDriver {
     func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         written.listen()
         emptyFiles()
+        park()
         let renderer = WebRenderer.running(clock: clock, keeping: true, application: application)
         self.renderer = renderer
         return renderer.runtime.tree

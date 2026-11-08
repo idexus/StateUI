@@ -1,4 +1,4 @@
-# revision 25.1
+# revision 28.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
