@@ -35,7 +35,7 @@ ConverterSample.swift 6416f68a5bddf4e8
 Cube3DSample.swift 6463aa5e6f297e04
 DatePickerSample.swift 82ff486bed5d3d98
 DeviceDisplaySample.swift 9a655416aa476cd0
-DeviceInfoSample.swift cb6c33fedbd844cf
+DeviceInfoSample.swift 9c7798fed7a4e8e5
 DialogsSample.swift 9bf9ea34d83c5136
 DragAndDropSample.swift b3705c71085ccf60
 DrawnAwaySample.swift 7b9524abf7e874ab

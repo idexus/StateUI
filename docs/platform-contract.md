@@ -313,9 +313,9 @@ claimed for any host.
 - `device.battery`: `chargeLevel`, `state`, `powerSource`, `energySaverStatus`
 - `device.connectivity`: `networkAccess`, `connectionProfiles`
 - `device.display`: `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate`
-- `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual`
-- `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection`
-- `application.info`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor`
+- `device.info`: `formFactor`, `platform`, `model`, `manufacturer`, `name`, `platformVersion`, `isVirtual`
+- `locale`: `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `writingDirection`
+- `application.info`: `name`, `packageName`, `version`, `build`, `colorScheme`, `accentColor`
 - `application`: `phase`
 
 The public provider and its fallback values exist whatever a host supplies.

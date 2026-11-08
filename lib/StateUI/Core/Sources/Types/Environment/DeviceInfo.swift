@@ -58,12 +58,12 @@ public final class DeviceInfo {
     @State private var _name = ""
 
     /// The operating system version as displayable text.
-    public internal(set) var versionString: String {
-        get { _versionString }
-        set { _versionString = newValue }
+    public internal(set) var platformVersion: String {
+        get { _platformVersion }
+        set { _platformVersion = newValue }
     }
 
-    @State private var _versionString = ""
+    @State private var _platformVersion = ""
 
     /// Whether this is an emulator, a simulator or a virtual machine; nil where the host has not said.
     public internal(set) var isVirtual: Bool? {
@@ -80,14 +80,14 @@ public final class DeviceInfo {
     /// A device as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(
         formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "",
-        name: String = "", versionString: String = "", isVirtual: Bool? = nil
+        name: String = "", platformVersion: String = "", isVirtual: Bool? = nil
     ) {
         self.formFactor = formFactor
         self.platform = platform
         self.model = model
         self.manufacturer = manufacturer
         self.name = name
-        self.versionString = versionString
+        self.platformVersion = platformVersion
         self.isVirtual = isVirtual
     }
 }

@@ -1516,7 +1516,7 @@ swift.init AccessibilitySettings.init(reducesMotion:prefersHigherContrast:isScre
 swift.init Aim.init(_:): @MainActor init(_ target: Target.Type)
 swift.init AnyView.init(_:): @MainActor init<Held>(_ view: Held) where Held : View
 swift.init Application.init(): @MainActor init()
-swift.init ApplicationInfo.init(name:packageName:versionString:buildString:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", versionString: String = "", buildString: String = "", colorScheme: ColorScheme = .light, accentColor: Color? = nil)
+swift.init ApplicationInfo.init(name:packageName:version:build:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", version: String = "", build: String = "", colorScheme: ColorScheme = .light, accentColor: Color? = nil)
 swift.init ApplicationSession.init(): @MainActor init()
 swift.init AxisValues.init(arrayLiteral:): init(arrayLiteral values: Double...)
 swift.init Battery.init(chargeLevel:state:powerSource:energySaverStatus:): @MainActor init(chargeLevel: Double? = nil, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown, energySaverStatus: EnergySaverStatus = .unknown)
@@ -1550,7 +1550,7 @@ swift.init DebugInspector.init(): @MainActor init()
 swift.init DebugInspectorButton.init(): @MainActor init()
 swift.init Device.init(info:display:battery:connectivity:accessibility:): @MainActor init(info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(), connectivity: Connectivity = Connectivity(), accessibility: AccessibilitySettings = AccessibilitySettings())
 swift.init DeviceDisplay.init(width:height:density:orientation:rotation:refreshRate:): @MainActor init(width: Double? = nil, height: Double? = nil, density: Double? = nil, orientation: DisplayOrientation = .unknown, rotation: DisplayRotation = .unknown, refreshRate: Double? = nil)
-swift.init DeviceInfo.init(formFactor:platform:model:manufacturer:name:versionString:isVirtual:): @MainActor init(formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "", name: String = "", versionString: String = "", isVirtual: Bool? = nil)
+swift.init DeviceInfo.init(formFactor:platform:model:manufacturer:name:platformVersion:isVirtual:): @MainActor init(formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "", name: String = "", platformVersion: String = "", isVirtual: Bool? = nil)
 swift.init Ellipse.init(): @MainActor init()
 swift.init Environment.init(): @MainActor init() where Value : AnyObject
 swift.init Environment.init(): @MainActor init() where Value : LocalizedResources
@@ -12981,12 +12981,12 @@ swift.property Aim.wrappedValue: @MainActor var wrappedValue: Aim<Target> { get 
 swift.property AnyView.body: @MainActor var body: Never { get }
 swift.property Application.body: @ApplicationBuilder @MainActor var body: Self.Body { get }
 swift.property ApplicationInfo.accentColor: @MainActor var accentColor: Color { get }
-swift.property ApplicationInfo.buildString: @MainActor var buildString: String { get }
+swift.property ApplicationInfo.build: @MainActor var build: String { get }
 swift.property ApplicationInfo.colorScheme: @MainActor var colorScheme: ColorScheme { get }
 swift.property ApplicationInfo.libraryVersion: @MainActor let libraryVersion: String
 swift.property ApplicationInfo.name: @MainActor var name: String { get }
 swift.property ApplicationInfo.packageName: @MainActor var packageName: String { get }
-swift.property ApplicationInfo.versionString: @MainActor var versionString: String { get }
+swift.property ApplicationInfo.version: @MainActor var version: String { get }
 swift.property ApplicationSession.$accentColor: @MainActor var $accentColor: Binding<Color?> { get }
 swift.property ApplicationSession.$colorScheme: @MainActor var $colorScheme: Binding<ColorScheme?> { get }
 swift.property ApplicationSession.$motion: @MainActor var $motion: Binding<Motion> { get }
@@ -13047,7 +13047,7 @@ swift.property DeviceInfo.manufacturer: @MainActor var manufacturer: String { ge
 swift.property DeviceInfo.model: @MainActor var model: String { get }
 swift.property DeviceInfo.name: @MainActor var name: String { get }
 swift.property DeviceInfo.platform: @MainActor var platform: String { get }
-swift.property DeviceInfo.versionString: @MainActor var versionString: String { get }
+swift.property DeviceInfo.platformVersion: @MainActor var platformVersion: String { get }
 swift.property Either.body: @MainActor var body: Never { get }
 swift.property ElementView.body: @MainActor var body: Never { get }
 swift.property Ellipse.body: @MainActor var body: Never { get }

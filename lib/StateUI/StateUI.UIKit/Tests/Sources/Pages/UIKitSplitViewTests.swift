@@ -71,7 +71,7 @@ final class UIKitSplitViewTests: XCTestCase {
     @MainActor
     func testAnUntitledSidebarIsNamedByTheApplication() throws {
         // The tests' host reports no application; one does as it starts.
-        HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", versionString: "", buildString: ""))
+        HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", version: "", build: ""))
         let host = UIKitRenderer.running(reducesMotion: true) {
             SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
         }

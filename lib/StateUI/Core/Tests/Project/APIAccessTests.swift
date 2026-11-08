@@ -7,12 +7,12 @@ import XCTest
 final class APIAccessTests: XCTestCase {
     private static let facts: [(make: String, names: [String])] = [
         ("AccessibilitySettings()", ["reducesMotion", "prefersHigherContrast", "isScreenReaderOn", "textScale"]),
-        ("ApplicationInfo()", ["name", "packageName", "versionString", "buildString", "colorScheme", "accentColor"]),
+        ("ApplicationInfo()", ["name", "packageName", "version", "build", "colorScheme", "accentColor"]),
         ("ApplicationSession()", ["phase"]),
         ("Battery()", ["chargeLevel", "state", "powerSource", "energySaverStatus"]),
         ("Connectivity()", ["networkAccess", "connectionProfiles"]),
         ("DeviceDisplay()", ["width", "height", "density", "orientation", "rotation", "refreshRate"]),
-        ("DeviceInfo()", ["formFactor", "platform", "model", "manufacturer", "name", "versionString", "isVirtual"]),
+        ("DeviceInfo()", ["formFactor", "platform", "model", "manufacturer", "name", "platformVersion", "isVirtual"]),
         ("Gate(.ignoreWhileRunning)", ["isBusy"]),
         ("LocaleInfo()", ["language", "languages", "timeZone", "uses24HourClock", "firstDayOfWeek", "isMetric", "writingDirection"]),
         ("SceneSession()", ["phase"]),

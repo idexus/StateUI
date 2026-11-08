@@ -113,7 +113,7 @@ final class AppKitRenderer {
             model: machineModel(),
             manufacturer: "Apple",
             name: Host.current().localizedName ?? "",
-            versionString: process.operatingSystemVersionString,
+            platformVersion: process.operatingSystemVersionString,
             isVirtual: false))
 
         if let screen = NSScreen.main {

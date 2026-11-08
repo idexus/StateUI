@@ -19,8 +19,8 @@ enum WinUIEnvironment {
         let application = facts(.application)
         if application.count == 4 {
             core.setApplicationInfo(HostApplicationInfo(
-                name: application[0], packageName: application[1], versionString: application[2],
-                buildString: application[3]))
+                name: application[0], packageName: application[1], version: application[2],
+                build: application[3]))
         }
         reportChanging(to: core)
     }

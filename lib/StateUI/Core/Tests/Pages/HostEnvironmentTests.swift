@@ -99,12 +99,12 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.device.info.model = ""
         StandardEnvironment.device.info.manufacturer = ""
         StandardEnvironment.device.info.name = ""
-        StandardEnvironment.device.info.versionString = ""
+        StandardEnvironment.device.info.platformVersion = ""
         StandardEnvironment.device.info.isVirtual = nil
         StandardEnvironment.application.info.name = ""
         StandardEnvironment.application.info.packageName = ""
-        StandardEnvironment.application.info.versionString = ""
-        StandardEnvironment.application.info.buildString = ""
+        StandardEnvironment.application.info.version = ""
+        StandardEnvironment.application.info.build = ""
         StandardEnvironment.application.info.colorScheme = .light
         StandardEnvironment.application.phase = .active
 
@@ -337,22 +337,22 @@ final class HostEnvironmentTests: XCTestCase {
 
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
-            name: "Studio", versionString: "26.0", isVirtual: false))
+            name: "Studio", platformVersion: "26.0", isVirtual: false))
         XCTAssertEqual(StandardEnvironment.device.info.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.info.platform, "macOS")
         XCTAssertEqual(StandardEnvironment.device.info.model, "Mac14,9")
         XCTAssertEqual(StandardEnvironment.device.info.manufacturer, "Apple")
         XCTAssertEqual(StandardEnvironment.device.info.name, "Studio")
-        XCTAssertEqual(StandardEnvironment.device.info.versionString, "26.0")
+        XCTAssertEqual(StandardEnvironment.device.info.platformVersion, "26.0")
         XCTAssertEqual(StandardEnvironment.device.info.isVirtual, false)
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
-            name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
+            name: "Gallery", packageName: "com.example.gallery", version: "1.2", build: "34"))
         HostBoundary.setColorScheme(.dark)
         XCTAssertEqual(StandardEnvironment.application.info.name, "Gallery")
         XCTAssertEqual(StandardEnvironment.application.info.packageName, "com.example.gallery")
-        XCTAssertEqual(StandardEnvironment.application.info.versionString, "1.2")
-        XCTAssertEqual(StandardEnvironment.application.info.buildString, "34")
+        XCTAssertEqual(StandardEnvironment.application.info.version, "1.2")
+        XCTAssertEqual(StandardEnvironment.application.info.build, "34")
         XCTAssertEqual(StandardEnvironment.application.info.colorScheme, .dark)
 
         HostBoundary.setApplicationPhase(.inactive)

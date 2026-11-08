@@ -19,7 +19,7 @@
     public let name: String
 
     /// The operating-system version.
-    public let versionString: String
+    public let platformVersion: String
 
     /// Whether the application runs on an emulator, a simulator or a virtual machine; nil where the platform does
     /// not say.
@@ -32,7 +32,7 @@
         model: String,
         manufacturer: String,
         name: String,
-        versionString: String,
+        platformVersion: String,
         isVirtual: Bool?
     ) {
         self.formFactor = formFactor
@@ -40,7 +40,7 @@
         self.model = model
         self.manufacturer = manufacturer
         self.name = name
-        self.versionString = versionString
+        self.platformVersion = platformVersion
         self.isVirtual = isVirtual
     }
 }

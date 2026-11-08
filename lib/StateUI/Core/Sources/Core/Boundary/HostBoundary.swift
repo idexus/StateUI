@@ -30,7 +30,7 @@
         update(device, \.model, info.model)
         update(device, \.manufacturer, info.manufacturer)
         update(device, \.name, info.name)
-        update(device, \.versionString, info.versionString)
+        update(device, \.platformVersion, info.platformVersion)
         update(device, \.isVirtual, info.isVirtual)
     }
 
@@ -57,8 +57,8 @@
         let app = StandardEnvironment.application.info
         update(app, \.name, info.name)
         update(app, \.packageName, info.packageName)
-        update(app, \.versionString, info.versionString)
-        update(app, \.buildString, info.buildString)
+        update(app, \.version, info.version)
+        update(app, \.build, info.build)
     }
 
     /// Replaces the standard battery report.

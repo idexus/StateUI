@@ -14,9 +14,9 @@ enum WebEnvironment {
         let touch = WebRelay.touchScreen
         core.setDeviceInfo(HostDeviceInfo(
             formFactor: touch > 0 ? .touchScreen(smallestWidth: touch) : .desktop, platform: "Web", model: "",
-            manufacturer: "", name: "", versionString: "", isVirtual: nil))
+            manufacturer: "", name: "", platformVersion: "", isVirtual: nil))
         core.setApplicationInfo(HostApplicationInfo(
-            name: applicationName, packageName: applicationID ?? "", versionString: "", buildString: ""))
+            name: applicationName, packageName: applicationID ?? "", version: "", build: ""))
         reportChanging(to: core)
     }
 

@@ -24,20 +24,20 @@ public final class ApplicationInfo {
     @State private var _packageName = ""
 
     /// The version people read, such as "1.0".
-    public internal(set) var versionString: String {
-        get { _versionString }
-        set { _versionString = newValue }
+    public internal(set) var version: String {
+        get { _version }
+        set { _version = newValue }
     }
 
-    @State private var _versionString = ""
+    @State private var _version = ""
 
     /// The build number behind it.
-    public internal(set) var buildString: String {
-        get { _buildString }
-        set { _buildString = newValue }
+    public internal(set) var build: String {
+        get { _build }
+        set { _build = newValue }
     }
 
-    @State private var _buildString = ""
+    @State private var _build = ""
 
     /// The StateUI release the application runs on, as its tag names it - compiled in, never from a host.
     public let libraryVersion = "0.8.1"
@@ -75,13 +75,13 @@ public final class ApplicationInfo {
 
     /// An application as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(
-        name: String = "", packageName: String = "", versionString: String = "", buildString: String = "",
+        name: String = "", packageName: String = "", version: String = "", build: String = "",
         colorScheme: ColorScheme = .light, accentColor: Color? = nil
     ) {
         self.name = name
         self.packageName = packageName
-        self.versionString = versionString
-        self.buildString = buildString
+        self.version = version
+        self.build = build
         self.colorScheme = colorScheme
         self.accentColor = accentColor ?? ApplicationInfo.standardAccent
     }

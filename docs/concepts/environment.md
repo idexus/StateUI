@@ -137,9 +137,9 @@ contract:
 | `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numbers are nil and enums `.unknown` until reported, the rate nil where the platform does not say |
-| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `architecture`, `model`, `manufacturer`, `name`, `platformVersion`, `isVirtual` | form factor, open platform name, the processor architecture the application was compiled for, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil, the architecture compiled in |
 | `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `writingDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written (a `WritingDirection`, left to right or right to left); the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, the theme in force and the user's accent, live; text starts empty, theme `.light` and accent `#0A84FF` until reported, the release compiled in |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `version`, `build`, `libraryVersion`, `colorScheme`, `accentColor` | manifest identity, the StateUI release it runs on, the theme in force and the user's accent, live; text starts empty, theme `.light` and accent `#0A84FF` until reported, the release compiled in |
 | `application.phase` - `SessionPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
@@ -185,7 +185,7 @@ struct RuntimeSummary: View {
 
     var body: some View {
         VStack {
-            Text("\(app.info.name) \(app.info.versionString)")
+            Text("\(app.info.name) \(app.info.version)")
             Text("StateUI \(app.info.libraryVersion)")
             Text("\(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)")
             Text("\(Int((device.display.width ?? 0) / (device.display.density ?? 1))) points wide")

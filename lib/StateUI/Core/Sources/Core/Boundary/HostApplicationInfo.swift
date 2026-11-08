@@ -10,21 +10,21 @@
     public let packageName: String
 
     /// The user-visible release version.
-    public let versionString: String
+    public let version: String
 
     /// The build identifier behind the release version.
-    public let buildString: String
+    public let build: String
 
     /// A complete application report.
     public init(
         name: String,
         packageName: String,
-        versionString: String,
-        buildString: String
+        version: String,
+        build: String
     ) {
         self.name = name
         self.packageName = packageName
-        self.versionString = versionString
-        self.buildString = buildString
+        self.version = version
+        self.build = build
     }
 }

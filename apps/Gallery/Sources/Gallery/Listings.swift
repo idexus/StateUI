@@ -2804,13 +2804,13 @@ enum Listings {
                 // These facts stand still, so this closure stands at one build.
                 DebugInfoLabel()
 
-                Text("\(app.info.name) \(app.info.versionString) (\(app.info.buildString))")
+                Text("\(app.info.name) \(app.info.version) (\(app.info.build))")
                     .fontWeight(.bold)
 
                 Text(app.info.packageName)
 
                 Text("device · \(device.info.manufacturer) \(device.info.model)")
-                Text("system · \(device.info.platform) \(device.info.versionString)")
+                Text("system · \(device.info.platform) \(device.info.platformVersion)")
                 Text("formFactor · \(device.info.formFactor)")
                 Text("virtual · \(device.info.isVirtual.map { $0 ? "yes" : "no" } ?? "not said")")
                 Text("name · \(device.info.name.isEmpty ? "not said" : device.info.name)")

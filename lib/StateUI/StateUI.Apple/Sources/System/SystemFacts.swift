@@ -53,7 +53,7 @@ public enum SystemFacts {
                 ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
                 ?? ProcessInfo.processInfo.processName,
             packageName: bundle.bundleIdentifier ?? "",
-            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
-            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
+            version: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+            build: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "")
     }
 }

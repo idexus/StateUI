@@ -10,7 +10,7 @@ every view the way an object an ancestor provides is, and read by its name.
 
 ```text
   \.device        Device
-                     info          formFactor, platform, architecture, model, manufacturer, name, versionString,
+                     info          formFactor, platform, architecture, model, manufacturer, name, platformVersion,
                                    isVirtual
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
@@ -19,7 +19,7 @@ every view the way an object an ancestor provides is, and read by its name.
   \.locale        LocaleInfo      language (a tag: its region too), languages, timeZone, uses24HourClock,
                                   firstDayOfWeek, isMetric, layoutDirection
   \.application   ApplicationSession
-                     info          name, packageName, versionString, buildString, libraryVersion, colorScheme,
+                     info          name, packageName, version, build, libraryVersion, colorScheme,
                                    accentColor
                      phase, scenes, and what the application writes: color scheme, styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
