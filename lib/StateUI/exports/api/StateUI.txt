@@ -1531,6 +1531,8 @@ swift.init Canvas.init(drawing:): @MainActor init(@DrawingBuilder drawing: () ->
 swift.init Capsule.init(): @MainActor init()
 swift.init CheckBox.init(_:): @MainActor init(_ isOn: Bool)
 swift.init CheckBox.init(_:): @MainActor init(_ state: Binding<Bool>)
+swift.init CheckBox.init(_:isOn:): @MainActor init(_ state: Binding<String>, isOn: Binding<Bool>)
+swift.init CheckBox.init(_:isOn:): @MainActor init(_ state: Binding<String>, isOn: Bool)
 swift.init CheckBox.init(_:isOn:): @MainActor init(_ text: String, isOn state: Binding<Bool>)
 swift.init CheckBox.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
 swift.init ClockTime.init(_:): init?(_ text: String)
@@ -1669,6 +1671,8 @@ swift.init Styling.init(role:): @MainActor init(role: ButtonRole)
 swift.init SwipeDirections.init(_:): init(_ direction: SwipeDirection)
 swift.init Switch.init(_:): @MainActor init(_ isOn: Bool)
 swift.init Switch.init(_:): @MainActor init(_ state: Binding<Bool>)
+swift.init Switch.init(_:isOn:): @MainActor init(_ state: Binding<String>, isOn: Binding<Bool>)
+swift.init Switch.init(_:isOn:): @MainActor init(_ state: Binding<String>, isOn: Bool)
 swift.init Switch.init(_:isOn:): @MainActor init(_ text: String, isOn state: Binding<Bool>)
 swift.init Switch.init(_:isOn:): @MainActor init(_ text: String, isOn: Bool)
 swift.init TabView.init(_:destination:): @MainActor init<Tabs, Destination>(_ tabs: Tabs, @ViewBuilder destination: (Tab) -> Destination) where Tab == Tabs.Element, Tabs : RandomAccessCollection, Destination : View
@@ -2350,8 +2354,6 @@ swift.method Button.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) 
 swift.method Button.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Button.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Button.text(_:): @MainActor func text(_ state: Binding<String>) -> Button
-swift.method Button.text(_:): @MainActor func text(_ value: String) -> Button
 swift.method Button.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Button.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Button.textStyle(_:): @MainActor func textStyle(_ state: Binding<TextStyle>) -> Self.Modified
@@ -2971,8 +2973,6 @@ swift.method CheckBox.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) 
 swift.method CheckBox.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method CheckBox.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method CheckBox.text(_:): @MainActor func text(_ state: Binding<String>) -> CheckBox
-swift.method CheckBox.text(_:): @MainActor func text(_ value: String) -> CheckBox
 swift.method CheckBox.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method CheckBox.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method CheckBox.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
@@ -6336,7 +6336,6 @@ swift.method Link.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> S
 swift.method Link.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Link.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Link.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Link.text(_:): @MainActor func text(_ value: String) -> Link.Modified
 swift.method Link.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Link.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Link.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
@@ -6598,10 +6597,8 @@ swift.method MenuItem.onClicked(_:): @MainActor func onClicked(_ handler: @escap
 swift.method MenuItem.onClicked(_:_:): @MainActor func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MenuItem.onClicked(gate:_:): @MainActor func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MenuItem.role(_:): @MainActor func role(_ role: ActionRole) -> Self.Modified
-swift.method MenuItem.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MenuItemElement.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
 swift.method MenuItemElement.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
-swift.method MenuItemElement.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MenuSeparator.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MenuSeparator.id(_:): @MainActor func id(_ value: some Hashable) -> MenuSeparator
 swift.method MenuToggle.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
@@ -6613,7 +6610,6 @@ swift.method MenuToggle.keyboardShortcut(_:modifiers:): @MainActor func keyboard
 swift.method MenuToggle.onToggled(_:): @MainActor func onToggled(_ handler: @escaping @MainActor @Sendable (Bool) throws -> Void) -> Self.Modified
 swift.method MenuToggle.onToggled(_:_:): @MainActor func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
 swift.method MenuToggle.onToggled(gate:_:): @MainActor func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self.Modified
-swift.method MenuToggle.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method MessageContext.date(_:format:): func date(_ day: CalendarDate, format: DateFormat = .short) -> String
 swift.method MessageContext.isolated(_:): func isolated(_ text: String) -> String
 swift.method MessageContext.list(_:): func list(_ items: [String]) -> String
@@ -7654,7 +7650,7 @@ swift.method Picker.pivotY(_:): @MainActor func pivotY(_ state: Binding<Double>)
 swift.method Picker.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method Picker.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method Picker.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
-swift.method Picker.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
+swift.method Picker.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Picker.Modified
 swift.method Picker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
@@ -7691,7 +7687,6 @@ swift.method Picker.visualState(_:): @MainActor func visualState(_ state: Visual
 swift.method Picker.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Picker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method PickerProperties.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
 swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ state: Binding<String>) -> Self.Modified
 swift.method PlaceholderElement.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method PointsShape.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Self.Modified
@@ -10572,7 +10567,6 @@ swift.method Styling.pivotX(_:): @MainActor func pivotX(_ value: Double) -> Self
 swift.method Styling.pivotY(_:): @MainActor func pivotY(_ value: Double) -> Self.Modified
 swift.method Styling.placeholder(_:): @MainActor func placeholder(_ value: String) -> Self.Modified
 swift.method Styling.placeholderColor(_:): @MainActor func placeholderColor(_ value: Color) -> Self.Modified
-swift.method Styling.presentation(_:): @MainActor func presentation(_ value: PickerPresentation) -> Self.Modified
 swift.method Styling.rotation(_:): @MainActor func rotation(_ value: Double) -> Self.Modified
 swift.method Styling.rotationX(_:): @MainActor func rotationX(_ value: Double) -> Self.Modified
 swift.method Styling.rotationY(_:): @MainActor func rotationY(_ value: Double) -> Self.Modified
@@ -10808,8 +10802,6 @@ swift.method Switch.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) ->
 swift.method Switch.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method Switch.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method Switch.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
-swift.method Switch.text(_:): @MainActor func text(_ state: Binding<String>) -> Switch
-swift.method Switch.text(_:): @MainActor func text(_ value: String) -> Switch
 swift.method Switch.textCase(_:): @MainActor func textCase(_ state: Binding<TextCase>) -> Self.Modified
 swift.method Switch.textColor(_:): @MainActor func textColor(_ state: Binding<Color>) -> Self.Modified
 swift.method Switch.tint(_:): @MainActor func tint(_ state: Binding<Color>) -> Self.Modified
@@ -12028,7 +12020,6 @@ swift.method ToolbarButton.showsText(_:): @MainActor func showsText(_ value: Boo
 swift.method ToolbarButton.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
 swift.method ToolbarButton.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
 swift.method ToolbarButton.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ToolbarButton.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method ToolbarButton.textColor(_:): @MainActor func textColor(_ value: Color) -> Self.Modified
 swift.method ToolbarButton.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
 swift.method ToolbarButton.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
@@ -12094,7 +12085,6 @@ swift.method ToolbarToggle.showsText(_:): @MainActor func showsText(_ value: Boo
 swift.method ToolbarToggle.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
 swift.method ToolbarToggle.stroke(_:): @MainActor func stroke(_ value: Color) -> Self.Modified
 swift.method ToolbarToggle.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
-swift.method ToolbarToggle.text(_:): @MainActor func text(_ value: String) -> Self.Modified
 swift.method ToolbarToggle.textColor(_:): @MainActor func textColor(_ value: Color) -> Self.Modified
 swift.method ToolbarToggle.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
 swift.method ToolbarToggle.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
@@ -13545,7 +13535,7 @@ swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func bui
 swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [some ToolbarItem]) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: some ToolbarItem) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: ToolbarContent?) -> ToolbarContent
-swift.type.method ToolbarButton.debugInspector(_:): @MainActor static func debugInspector(_ window: WindowSession) -> ToolbarButton
+swift.type.method ToolbarButton.debugInspector(_:text:): @MainActor static func debugInspector(_ window: WindowSession, text: String = "ⓘ") -> ToolbarButton
 swift.type.method ToolbarGroupBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarGroupContent...) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarGroupContent) -> ToolbarGroupContent
 swift.type.method ToolbarGroupBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarGroupContent) -> ToolbarGroupContent

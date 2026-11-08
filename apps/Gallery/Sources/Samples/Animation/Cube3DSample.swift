@@ -84,8 +84,7 @@ struct Cube3DSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Color")
                 .placeholder("Color")
 
-            Switch($spinning)
-                .text("Spin")
+            Switch("Spin", isOn: $spinning)
                 .accessibilityIdentifier("cube3D.spin")
                 .tint(Palette.accent)
                 .horizontalAlignment(.center)

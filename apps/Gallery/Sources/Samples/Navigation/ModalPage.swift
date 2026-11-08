@@ -86,7 +86,7 @@ struct StackSheet: View {
     var body: some View {
         NavigationStack($path) {
             VStack {
-                Switch($offersClose).text("Close button")
+                Switch("Close button", isOn: $offersClose)
                 Button("Push").onClicked { path.append(path.count + 1) }
                 Button("Close").onClicked { shown = false }
             }

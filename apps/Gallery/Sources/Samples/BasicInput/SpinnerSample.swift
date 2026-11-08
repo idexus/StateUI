@@ -21,8 +21,7 @@ struct SpinnerSample: SampleContent, ExampleContent {
                 .tint(Palette.accent)
                 .height(48)
 
-            Switch($loading)
-                .text("Working")
+            Switch("Working", isOn: $loading)
                 .accessibilityIdentifier("spinner.loading")
                 .tint(Palette.accent)
                 .horizontalAlignment(.center)

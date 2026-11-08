@@ -25,23 +25,3 @@ extension TextualElement where Self: VisualElement {
         twin(TextualElementContract.textCase, by: state)
     }
 }
-
-extension Button {
-    /// What the button says, beside or instead of its picture.
-    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
-}
-
-extension CheckBox {
-    /// What the check box says, after its box: a tap on the words checks it too.
-    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
-}
-
-extension Switch {
-    /// What the switch says, at its start: a tap on the words turns it too.
-    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
-}
-
-extension Link {
-    /// What the link says.
-    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
-}

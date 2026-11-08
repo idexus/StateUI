@@ -198,14 +198,13 @@ final class APISurfaceTests: XCTestCase {
         let methods = Set(lines.compactMap { line in
             line.firstMatch(of: #/^swift\.method (\w+)\.(\w+)\(/#).map { "\($0.1).\($0.2)" }
         })
-        let pending: Set = ["Button.text", "MenuItem.text", "Styling.presentation", "ToolbarButton.text"]
         let doubled = purposes.filter { purpose in
             let parts = purpose.split(separator: ".")
             return methods.contains(purpose) || methods.contains("\(parts[0])Properties.\(parts[1])")
         }
 
         XCTAssertGreaterThan(purposes.count, 40, "the record holds almost no initializer")
-        XCTAssertEqual(Set(doubled).subtracting(pending).sorted(), [], "a control takes its purpose value twice")
+        XCTAssertEqual(doubled.sorted(), [], "a control takes its purpose value twice")
     }
 
     /// Every type of the application surface is one an application meets: one it writes itself - a protocol it

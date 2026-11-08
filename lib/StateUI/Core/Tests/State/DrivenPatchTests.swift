@@ -230,7 +230,7 @@ final class DrivenPatchTests: XCTestCase {
     func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        let page = try page(VStack { Text(caption.projectedValue); Button().text(caption.projectedValue) }.node)
+        let page = try page(VStack { Text(caption.projectedValue); Button(caption.projectedValue) }.node)
 
         XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
@@ -521,14 +521,19 @@ final class DrivenPatchTests: XCTestCase {
         }
     }
 
-    /// A TOGGLE'S WORDS IN ITS INITIALIZER ARE ITS CAPTION, AS `.text` SAYS IT.
-    func testAToggleSaysItsWordsEitherWay() {
-        let flag = State(wrappedValue: true)
+    /// A TOGGLE'S WORDS FROM A STATE CROSS AS A LABEL'S DO, through the text door one way, whichever way its value
+    /// goes.
+    func testAToggleCarriesItsWordsFromAState() throws {
+        let caption = State(wrappedValue: "Sound")
 
-        XCTAssertEqual(
-            Switch("Sound", isOn: flag.projectedValue).node.props,
-            Switch(flag.projectedValue).text("Sound").node.props, "Switch's words")
-        XCTAssertEqual(CheckBox("Agree", isOn: true).node.props, CheckBox(true).text("Agree").node.props, "CheckBox's words")
+        let page = try page(VStack {
+            Switch(caption.projectedValue, isOn: true)
+            CheckBox(caption.projectedValue, isOn: false)
+        }.node)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text, nil))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text, nil))
+        XCTAssertNil(page.at(.auto(3), .auto(4))?.props["text"], "and no value beside it")
     }
 
     /// A PROPERTY CROSSING AS IT IS TAKES A STATE: a map's settings, a picker's range and form, a bar's look and an

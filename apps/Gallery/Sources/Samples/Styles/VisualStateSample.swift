@@ -69,8 +69,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Switch($enabled)
-                .text("Enabled")
+            Switch("Enabled", isOn: $enabled)
                 .accessibilityIdentifier("visual-states.enabled")
                 .horizontalAlignment(.center)
 

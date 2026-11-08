@@ -7,7 +7,7 @@ A box that is ticked or not.
 ```swift
 @State var agreed = false
 
-CheckBox($agreed).text("I agree to the terms")
+CheckBox("I agree to the terms", isOn: $agreed)
 ```
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.

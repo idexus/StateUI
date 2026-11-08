@@ -52,9 +52,8 @@ struct AimSample: SampleContent, ExampleContent {
                 .placeholder("The second field")
                 .aim(both ? field : note)
 
-            Switch($both)
+            Switch("The first aim on the second field too", isOn: $both)
                 .accessibilityIdentifier("aim.both")
-                .text("The first aim on the second field too")
 
             HStack {
                 // Printing an aim says where it is: the element identity the

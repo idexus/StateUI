@@ -78,7 +78,10 @@ style of its type once it is built - after `basedOn` is flattened, whichever
 was written first - so a variant states what it changes and a control finds
 one style in one look-up. A control saying nothing of the member holds the
 value its member means unsaid - a picker saying none is a menu, a button
-saying no role an ordinary one, `.normal`. A key asked for
+saying no role an ordinary one, `.normal`. The value is the control's own,
+said where it is written and never by a style: a variant reads only what the
+control said, so a style giving it would choose a look no variant follows
+(`Style<Picker>().presentation(_:)` does not compile). A key asked for
 wins over the variant, as it wins over the implicit style, and `.platform`
 wears neither. The sheet's sameness reads the variant, or two sheets styling
 two roles alike would be one.

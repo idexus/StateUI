@@ -7,7 +7,7 @@ An on/off toggle.
 ```swift
 @State var soundOn = true
 
-Switch($soundOn).text("Sound")
+Switch("Sound", isOn: $soundOn)
     .tint(.green)
 ```
 

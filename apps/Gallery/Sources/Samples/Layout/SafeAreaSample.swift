@@ -22,7 +22,7 @@ struct SafeAreaSample: SampleContent, ExampleContent {
                     Grid {
                         ScrollView {
                             VStack {
-                                Switch($under).text("Under the bars")
+                                Switch("Under the bars", isOn: $under)
                                 ForEach(Array(1...40), id: \.self) { row in
                                     Text("Row \(row)")
                                 }

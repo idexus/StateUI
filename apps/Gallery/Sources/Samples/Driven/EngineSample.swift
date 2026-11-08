@@ -67,8 +67,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             HStack {
-                Button()
-                    .text($caption)
+                Button($caption)
                     .onClicked {
                         running.toggle()
                         caption = running ? "Stop" : "Start"

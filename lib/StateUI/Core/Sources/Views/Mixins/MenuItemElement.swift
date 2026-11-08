@@ -13,8 +13,8 @@
 public protocol MenuItemElement: AutomationElement, ShortcutElement {}
 
 extension MenuItemElement {
-    /// What the item says. Usually given in the initializer instead.
-    public func text(_ value: String) -> Modified {
+    /// What the item says - what its initializer writes.
+    func text(_ value: String) -> Modified {
         setValue(TextElementContract.text, value)
     }
 

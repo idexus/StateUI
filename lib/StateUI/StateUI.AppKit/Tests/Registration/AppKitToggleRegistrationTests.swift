@@ -67,8 +67,8 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let on = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             VStack {
-                Switch(on.projectedValue).text("Wi-Fi")
-                CheckBox(true).text("agree").textCase(.uppercase)
+                Switch("Wi-Fi", isOn: on.projectedValue)
+                CheckBox("agree", isOn: true).textCase(.uppercase)
             }
         }
         defer { renderer.finish() }
@@ -93,7 +93,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let words = State(wrappedValue: "Wi-Fi")
         let renderer = AppKitRenderer.running {
             VStack {
-                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+                Switch(words.wrappedValue, isOn: true).horizontalAlignment(.start)
             }
             .motion(.none)
         }
@@ -119,7 +119,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let words = State(wrappedValue: "Wi-Fi")
         Renderer.shared.setApplication(OneWindowApplication {
             VStack {
-                Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
+                Switch(words.wrappedValue, isOn: true).horizontalAlignment(.start)
             }
             .motion(.eased(.milliseconds(1000), curve: .linear))
         })
@@ -148,7 +148,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     @MainActor
     func testATintedCheckBoxsWordsKeepThePlatformsColor() throws {
         let renderer = AppKitRenderer.running {
-            VStack { CheckBox(false).text("WWWWWW").tint(Color(hex: 0xFF0000)) }
+            VStack { CheckBox("WWWWWW", isOn: false).tint(Color(hex: 0xFF0000)) }
         }
         defer { renderer.finish() }
         let box = try XCTUnwrap(renderer.nativeViews(AppKitCheckBoxView.self).first)

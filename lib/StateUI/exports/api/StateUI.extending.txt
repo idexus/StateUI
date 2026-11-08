@@ -688,7 +688,6 @@ swift.conformance Picker: StateUI.FocusElement
 swift.conformance Picker: StateUI.FontElement
 swift.conformance Picker: StateUI.KeyboardElement
 swift.conformance Picker: StateUI.ModifiableElement
-swift.conformance Picker: StateUI.PickerProperties
 swift.conformance Picker: StateUI.PlaceholderElement
 swift.conformance Picker: StateUI.PopupElement
 swift.conformance Picker: StateUI.PropertyContainer
@@ -702,7 +701,6 @@ swift.conformance Picker: StateUI.VisualElementProperties
 swift.conformance PickerContract: StateUI.Contract
 swift.conformance PickerContract: StateUI.ElementContract
 swift.conformance PickerPresentation: StateUI.HostRepresentable
-swift.conformance PickerProperties: StateUI.PropertyContainer
 swift.conformance PlaceholderElement: StateUI.PropertyContainer
 swift.conformance PlaceholderElementContract: StateUI.Contract
 swift.conformance Placement: StateUI.LaneValue
@@ -1023,7 +1021,6 @@ swift.conformance Styling: StateUI.LineBreakElement where Target : LineBreakElem
 swift.conformance Styling: StateUI.LineHeightElement where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.MapProperties where Target == Map
 swift.conformance Styling: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
-swift.conformance Styling: StateUI.PickerProperties where Target == Picker
 swift.conformance Styling: StateUI.PlaceholderElement where Target : PlaceholderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : BorderElement, Target : StyleTarget
@@ -1060,7 +1057,6 @@ swift.conformance Styling: StateUI.PropertyContainer where Target == Grid
 swift.conformance Styling: StateUI.PropertyContainer where Target == HStack
 swift.conformance Styling: StateUI.PropertyContainer where Target == Image
 swift.conformance Styling: StateUI.PropertyContainer where Target == Map
-swift.conformance Styling: StateUI.PropertyContainer where Target == Picker
 swift.conformance Styling: StateUI.PropertyContainer where Target == Rectangle
 swift.conformance Styling: StateUI.PropertyContainer where Target == ScrollView
 swift.conformance Styling: StateUI.PropertyContainer where Target == Stepper
@@ -2611,7 +2607,6 @@ swift.protocol MapProperties: @MainActor protocol MapProperties : PropertyContai
 swift.protocol MenuItemElement: @MainActor protocol MenuItemElement : AutomationElement, ShortcutElement
 swift.protocol ModifiableElement: @MainActor protocol ModifiableElement : Element, PropertyContainer where Self.Modified : Element
 swift.protocol PaddingElement: @MainActor protocol PaddingElement : PropertyContainer
-swift.protocol PickerProperties: @MainActor protocol PickerProperties : PropertyContainer
 swift.protocol PlaceholderElement: @MainActor protocol PlaceholderElement : PropertyContainer
 swift.protocol PopupElement: @MainActor protocol PopupElement : ElementView
 swift.protocol PressElement: @MainActor protocol PressElement : ModifiableElement

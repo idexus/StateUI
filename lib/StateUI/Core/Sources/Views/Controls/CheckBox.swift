@@ -46,6 +46,20 @@ public struct CheckBox: ElementView, TextualElement, TintElement, FocusElement, 
         self = CheckBox(state).text(text)
     }
 
+    /// A box whose words are carried from a state, written by the host as they change, at no render; ticked or not.
+    /// One-way: what is ticked goes nowhere without `.onToggled`.
+    public init(_ state: Binding<String>, isOn: Bool) {
+        self = CheckBox(isOn).text(state)
+    }
+
+    /// A box whose words are carried from a state, two-way: shows what the binding holds, and writes back what is
+    /// ticked.
+    ///
+    ///     CheckBox($terms, isOn: $agreed)
+    public init(_ state: Binding<String>, isOn: Binding<Bool>) {
+        self = CheckBox(isOn).text(state)
+    }
+
     /// Whether it is checked.
     func isOn(_ value: Bool) -> Modified {
         setValue(ToggleElementContract.isOn, value)

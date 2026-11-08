@@ -63,8 +63,8 @@ final class AndroidSwitchViewTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Switch(false).text("Wi-Fi")
-                    CheckBox(true).text("agree").textCase(.uppercase).textColor(Color(hex: 0xFF0000))
+                    Switch("Wi-Fi", isOn: false)
+                    CheckBox("agree", isOn: true).textCase(.uppercase).textColor(Color(hex: 0xFF0000))
                 }
             }
             XCTAssertEqual(try XCTUnwrap(host.views(AndroidSwitchView.self).first).text, "Wi-Fi")

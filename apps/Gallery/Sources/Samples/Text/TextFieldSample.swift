@@ -86,8 +86,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .isPassword(hidden)
                 .submitLabel(.done)
 
-            Switch($hidden)
-                .text("Hidden")
+            Switch("Hidden", isOn: $hidden)
                 .accessibilityIdentifier("entry.hidden")
                 .horizontalAlignment(.center)
 

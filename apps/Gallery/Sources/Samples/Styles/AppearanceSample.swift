@@ -72,8 +72,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Buttons")
             // The application's own look for them: a style for every group and
             // every button on a bar, its states included (AppStyles.bars).
-            Switch(style.$barsInOwnLook)
-                .text("In the gallery's own look")
+            Switch("In the gallery's own look", isOn: style.$barsInOwnLook)
                 .accessibilityIdentifier("appearance.barsInOwnLook")
                 .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
             #endif

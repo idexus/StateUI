@@ -340,6 +340,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = Canvas().drawing { Draw.lineWidth(2) }"#,
             open: #"_ = Canvas { Draw.lineWidth(2) }"#),
         Road(
+            name: "a variant's member given by a style",
+            closed: #"_ = Style<Picker>().presentation(.segmented)"#,
+            open: #"_ = Style<Picker>(presentation: .segmented)"#),
+        Road(
             name: "a state handed to a style by setValue(_:on:)",
             closed: #"_ = Style<Slider>().setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#,
             open: #"_ = Slider(0.5).setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#),
@@ -362,7 +366,21 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "a control's words given by a style",
             closed: #"_ = Style<Button>().text("Save")"#,
-            open: #"_ = Button().text("Save")"#),
+            open: #"_ = Button("Save")"#),
+        Road(
+            name: "a control's words given beside its initializer",
+            closed: #"_ = Switch(true).text("Sound")"#,
+            open: #"_ = Switch("Sound", isOn: true)"#),
+        Road(
+            name: "a control's words from a state beside its initializer",
+            closed: """
+                @State var caption = "Save"
+                _ = Button().text($caption)
+                """,
+            open: """
+                @State var caption = "Save"
+                _ = Button($caption)
+                """),
         Road(
             name: "a field's cursor placed by a style",
             closed: #"_ = Style<TextField>().cursorPosition(3)"#,
@@ -385,7 +403,7 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = CheckBox(true).tint(.red)"#),
         Road(
             name: "an outline around a check box",
-            closed: #"_ = CheckBox(true).text("Small").stroke(.gray)"#,
+            closed: #"_ = CheckBox("Small", isOn: true).stroke(.gray)"#,
             open: #"_ = Button("Small").stroke(.gray)"#),
         Road(
             name: "a stack's line in a menu",

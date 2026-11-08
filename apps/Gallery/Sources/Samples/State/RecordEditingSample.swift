@@ -93,8 +93,7 @@ private struct KeptChores: View {
                         .accessibilityLabel("Chore")
                         .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                    CheckBox(chore.done)
-                        .text("Done")
+                    CheckBox("Done", isOn: chore.done)
                         .onToggled { done in edit(chore.id) { $0.done = done } }
                 }
             }

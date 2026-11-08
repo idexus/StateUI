@@ -35,8 +35,7 @@ struct WindowBarSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Subtitle for the window")
                 .placeholder("Window subtitle")
 
-            Switch(bar.$showsSurprise)
-                .text("Surprise me on every page")
+            Switch("Surprise me on every page", isOn: bar.$showsSurprise)
                 .accessibilityIdentifier("windowBar.surprise")
         }
         .spacing(12)

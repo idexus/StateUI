@@ -105,8 +105,7 @@ struct WindowSample: SampleContent, ExampleContent {
 
     /// A native boolean window capability.
     private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-        Switch(value)
-            .text(title)
+        Switch(title, isOn: value)
             .accessibilityIdentifier(id)
     }
     // listing: end

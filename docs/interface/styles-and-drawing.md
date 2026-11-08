@@ -132,7 +132,9 @@ of its role's style.
 
 A picker's presentation chooses one the same way: `Style<Picker>(presentation:)`
 is the style every picker of that presentation wears - a picker saying none is
-a menu - over the implicit picker style.
+a menu - over the implicit picker style. The presentation is the picker's
+own, said where it is written, as a role is a button's: a style is chosen by
+it and gives none.
 
 ```swift
 @MainActor

@@ -173,8 +173,12 @@ state: `Switch($wifi)`, `TextField($name)`, `Slider(0.5)`,
 control is made without it but `Text()` of runs, `Fill()` and `Map()`, which
 have a meaning of their own; `CheckBox($a).isOn($b)` does not compile. The
 initializer of a state builds on an internal modifier, so there is one body.
-Everything else about a control is a modifier - a switch's or a button's
-caption among them.
+A control's caption is its initializer's too - a button's, a switch's, a check
+box's, a link's, a bar's or a menu's item's - from a value or a state
+(`Switch("Wi-Fi", isOn: $wifi)`, `Button($caption)`), so a control says its
+words one way, and a factory of one takes them as an argument
+(`ToolbarButton.debugInspector(window, text:)`). Everything else about a
+control is a modifier.
 
 ## A report lands before its handler
 

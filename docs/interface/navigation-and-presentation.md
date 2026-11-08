@@ -392,7 +392,7 @@ struct FiltersButton: View {
             .onClicked { filtering = true }
             .popover(isPresented: $filtering) {
                 VStack {
-                    Switch($unreadOnly).text("Unread only")
+                    Switch("Unread only", isOn: $unreadOnly)
                     Button("Done").onClicked { filtering = false }
                 }
                 .spacing(12)

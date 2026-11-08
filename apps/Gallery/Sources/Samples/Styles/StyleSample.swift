@@ -41,13 +41,11 @@ struct StyleSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked {}
 
-            Switch($enabled)
-                .text("Enabled")
+            Switch("Enabled", isOn: $enabled)
                 .accessibilityIdentifier("styles.enabled")
                 .horizontalAlignment(.center)
 
-            Switch($platformLook)
-                .text("Platform look")
+            Switch("Platform look", isOn: $platformLook)
                 .horizontalAlignment(.center)
 
             SectionTitle("A style for a role")

@@ -48,6 +48,20 @@ public struct Switch: ElementView, TextualElement, TintElement, FocusElement, To
         self = Switch(state).text(text)
     }
 
+    /// A switch whose words are carried from a state, written by the host as they change, at no render; on or off.
+    /// One-way: the flip goes nowhere without `.onToggled`.
+    public init(_ state: Binding<String>, isOn: Bool) {
+        self = Switch(isOn).text(state)
+    }
+
+    /// A switch whose words are carried from a state, two-way: shows what the binding holds, and writes back what is
+    /// flipped.
+    ///
+    ///     Switch($label, isOn: $wifi)
+    public init(_ state: Binding<String>, isOn: Binding<Bool>) {
+        self = Switch(isOn).text(state)
+    }
+
     /// Whether it is on.
     func isOn(_ value: Bool) -> Modified {
         setValue(ToggleElementContract.isOn, value)

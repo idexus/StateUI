@@ -100,8 +100,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
             // A key whose value is an enum - kept as the word it is spelled
             // with, so anything else that opens the store can read it.
-            Switch(shade == .bold)
-                .text("Bold shade")
+            Switch("Bold shade", isOn: shade == .bold)
                 .onToggled { on in shade = on ? .bold : .quiet }
 
             Rectangle()

@@ -54,7 +54,7 @@ struct TextStyleSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            Switch($monospaced).text("Digits of one width")
+            Switch("Digits of one width", isOn: $monospaced)
         }
         .spacing(8)
     }

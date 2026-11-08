@@ -14,8 +14,8 @@ private struct MailFilters: ExampleContent {
                 .onClicked { filtering = true }
                 .popover(isPresented: $filtering) {
                     VStack {
-                        Switch($unreadOnly).text("Unread only")
-                        Switch($flaggedOnly).text("Flagged only")
+                        Switch("Unread only", isOn: $unreadOnly)
+                        Switch("Flagged only", isOn: $flaggedOnly)
                         Button("Done").onClicked { filtering = false }
                     }
                     .spacing(12)

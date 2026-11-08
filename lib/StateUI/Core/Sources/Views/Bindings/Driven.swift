@@ -14,31 +14,23 @@ extension Text {
 }
 
 extension Button {
-    /// What the button says, carried from a state: the host writes the text as it changes, with no view rebuilt.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the button, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> Button {
+    /// What the button says, carried from a state: the host writes the text as it changes, with no view rebuilt -
+    /// what `Button(_:)` of a state writes.
+    func text(_ state: Binding<String>) -> Button {
         setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
 extension CheckBox {
-    /// What the check box says beside its box, carried from a state.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the check box, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> CheckBox {
+    /// What the check box says beside its box, carried from a state - what `CheckBox(_:isOn:)` of a state writes.
+    func text(_ state: Binding<String>) -> CheckBox {
         setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }
 
 extension Switch {
-    /// What the switch says beside it, carried from a state.
-    ///
-    /// - Parameter state: the state the caption is read from.
-    /// - Returns: the switch, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> Switch {
+    /// What the switch says beside it, carried from a state - what `Switch(_:isOn:)` of a state writes.
+    func text(_ state: Binding<String>) -> Switch {
         setValue(TextElementContract.text, on: state, as: .oneWay)
     }
 }

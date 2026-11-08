@@ -37,8 +37,7 @@ struct SliderSample: SampleContent, ExampleContent {
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
-            Switch($soundOn)
-                .text("Sound")
+            Switch("Sound", isOn: $soundOn)
                 .accessibilityIdentifier("slider.sound")
                 .tint(Palette.accent)
                 .horizontalAlignment(.center)

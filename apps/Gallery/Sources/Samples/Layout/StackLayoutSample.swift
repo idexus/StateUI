@@ -73,8 +73,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Switch($onBaseline)
-                .text("On one baseline")
+            Switch("On one baseline", isOn: $onBaseline)
                 .accessibilityIdentifier("stackLayout.baseline")
 
             SectionTitle("Space")
@@ -87,8 +86,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Switch($spaced)
-                .text("Space")
+            Switch("Space", isOn: $spaced)
                 .accessibilityIdentifier("stackLayout.spaced")
 
             SectionTitle("Short of room")
@@ -121,8 +119,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             .spacing(8)
             .rowSpacing(8)
 
-            Switch($wraps)
-                .text("Wraps")
+            Switch("Wraps", isOn: $wraps)
                 .accessibilityIdentifier("stackLayout.wraps")
 
             // Where a line shorter than the row stands.

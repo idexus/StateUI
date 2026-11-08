@@ -403,9 +403,11 @@ VStack {
 }
 ```
 
-A check box and a switch say the words they stand for with `.text`, and the
-words belong to the control: a tap on them turns it, and assistive technology
-calls the control by them. A check box's words stand after its box; a
+A check box and a switch say the words they stand for in their initializer -
+`Switch("Wi-Fi", isOn: $wifi)`, or `Switch($label, isOn: $wifi)` where the
+words come from a state - and the words belong to the control: a tap on them
+turns it, and assistive technology calls the control by them. A control's
+caption, a button's too, is said there and nowhere else. A check box's words stand after its box; a
 switch's stand at its start and the switch at its end, mirrored right to left.
 
 A picker chooses a value, not a place in its list: the state holds one of

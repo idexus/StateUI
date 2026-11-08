@@ -75,9 +75,8 @@ struct GeometryReaderSample: SampleContent, ExampleContent {
                 .minimum(140)
                 .maximum(340)
 
-            Switch($feedsSecond)
+            Switch("Feed the rectangle into the second state", isOn: $feedsSecond)
                 .accessibilityIdentifier("frameReader.second")
-                .text("Feed the rectangle into the second state")
 
             Text("first · \(Int(first.width)) × \(Int(first.height))     second · \(Int(second.width)) × \(Int(second.height))")
                 .fontSize(13)

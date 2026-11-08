@@ -1,21 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// `Picker`'s own properties, shared by the control and its `Style<Picker>`.
-public protocol PickerProperties: PropertyContainer {}
-
-extension PickerProperties {
-    /// How the values are offered: `.menu`, the default - a field opening the
-    /// list - `.segmented`, a row of segments, or `.radio`, a radio button
-    /// for each. A list opens only from a menu.
-    ///
-    ///     Picker(Span.allCases, selection: $span) { "\($0)" }
-    ///         .presentation(.segmented)
-    public func presentation(_ value: PickerPresentation) -> Modified {
-        setValue(PickerContract.presentation, value)
-    }
-}
-
 /// One choice out of a list of values.
 ///
 ///     enum Span: CaseIterable, Hashable { case day, week, month }
@@ -31,7 +16,7 @@ extension PickerProperties {
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
 public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
-    PickerProperties, FocusElement, PopupElement, PlaceholderElement {
+    FocusElement, PopupElement, PlaceholderElement {
     /// The node this control describes.
     public var node: Node
 
@@ -97,5 +82,19 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onSelectionChanged(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.selectedIndexChanged, gate: gate) { (_: Int) in try await handler() }
+    }
+}
+
+extension Picker {
+    /// How the values are offered: `.menu`, the default - a field opening the
+    /// list - `.segmented`, a row of segments, or `.radio`, a radio button
+    /// for each. A list opens only from a menu. Said where the picker is
+    /// written: a style is chosen by it, `Style<Picker>(presentation:)`, and
+    /// gives none.
+    ///
+    ///     Picker(Span.allCases, selection: $span) { "\($0)" }
+    ///         .presentation(.segmented)
+    public func presentation(_ value: PickerPresentation) -> Modified {
+        setValue(PickerContract.presentation, value)
     }
 }

@@ -120,8 +120,7 @@ enum Listings {
                     .placeholder("The second field")
                     .aim(both ? field : note)
 
-                Switch($both)
-                    .text("The first aim on the second field too")
+                Switch("The first aim on the second field too", isOn: $both)
 
                 HStack {
                     // Printing an aim says where it is: the element identity the
@@ -964,8 +963,7 @@ enum Listings {
                 }
                 // The application's own look for them: a style for every group and
                 // every button on a bar, its states included (AppStyles.bars).
-                Switch(style.$barsInOwnLook)
-                    .text("In the gallery's own look")
+                Switch("In the gallery's own look", isOn: style.$barsInOwnLook)
                     .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
                 #endif
 
@@ -1627,8 +1625,7 @@ enum Listings {
                 // the closure a flip or a pick builds again.
                 DebugInfoLabel()
 
-                Switch($signedIn)
-                    .text("Signed in")
+                Switch("Signed in", isOn: $signedIn)
 
                 // An `if` with no `else`. The TextField below it is child 2 in one
                 // state and child 3 in the other - and it is the same control
@@ -1729,8 +1726,7 @@ enum Listings {
                         .verticalAlignment(.center)
                 }
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Platform look", isOn: $platformLook)
 
                 Text("Last: \(last)")
             }
@@ -1776,8 +1772,7 @@ enum Listings {
 
                 Switch("Save is the main action", isOn: $saveIsMain)
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Platform look", isOn: $platformLook)
 
                 Text("Last: \(last)")
             }
@@ -1842,8 +1837,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Switch($signedIn)
-                    .text("Signed in")
+                Switch("Signed in", isOn: $signedIn)
 
                 // Written on the group holding the `if/else`: it watches whichever
                 // branch shows. The group adds no view of its own.
@@ -2077,8 +2071,7 @@ enum Listings {
 
                 ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                     let (index, name) = pair
-                    return CheckBox(extras[index])
-                        .text(name)
+                    return CheckBox(name, isOn: extras[index])
                         .onToggled { ticked in extras[index] = ticked }
                         .id(name)
                 }
@@ -2732,8 +2725,7 @@ enum Listings {
                 Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
-                Switch($spinning)
-                    .text("Spin")
+                Switch("Spin", isOn: $spinning)
                     .horizontalAlignment(.center)
             }
         }
@@ -3242,8 +3234,7 @@ enum Listings {
                     .horizontalAlignment(.center)
 
                 HStack {
-                    Button()
-                        .text($caption)
+                    Button($caption)
                         .onClicked {
                             running.toggle()
                             caption = running ? "Stop" : "Start"
@@ -3455,8 +3446,7 @@ enum Listings {
                 .spacing(8)
                 .height(160)
 
-                Switch($spaced)
-                    .text("A space, not a fill")
+                Switch("A space, not a fill", isOn: $spaced)
 
                 SectionTitle("Across")
 
@@ -4647,8 +4637,7 @@ enum Listings {
                     .minimum(140)
                     .maximum(340)
 
-                Switch($feedsSecond)
-                    .text("Feed the rectangle into the second state")
+                Switch("Feed the rectangle into the second state", isOn: $feedsSecond)
 
                 Text("first · \(Int(first.width)) × \(Int(first.height))     second · \(Int(second.width)) × \(Int(second.height))")
 
@@ -6967,8 +6956,8 @@ enum Listings {
                     .onClicked { filtering = true }
                     .popover(isPresented: $filtering) {
                         VStack {
-                            Switch($unreadOnly).text("Unread only")
-                            Switch($flaggedOnly).text("Flagged only")
+                            Switch("Unread only", isOn: $unreadOnly)
+                            Switch("Flagged only", isOn: $flaggedOnly)
                             Button("Done").onClicked { filtering = false }
                         }
                     }
@@ -7014,8 +7003,7 @@ enum Listings {
         // for accessibility and for bars that show words.
         .toolbar {
             ToolbarGroup {
-                ToolbarButton.debugInspector(window)
-                    .text("Inspector")
+                ToolbarButton.debugInspector(window, text: "Inspector")
                     .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
                 if !nav.showing(.home) {
@@ -7447,8 +7435,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
         """#,
         "MenuPage": #"""
@@ -7644,7 +7631,7 @@ enum Listings {
             var body: some View {
                 NavigationStack($path) {
                     VStack {
-                        Switch($offersClose).text("Close button")
+                        Switch("Close button", isOn: $offersClose)
                         Button("Push").onClicked { path.append(path.count + 1) }
                         Button("Close").onClicked { shown = false }
                     }
@@ -8982,8 +8969,7 @@ enum Listings {
 
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
-                Switch(shade == .bold)
-                    .text("Bold shade")
+                Switch("Bold shade", isOn: shade == .bold)
                     .onToggled { on in shade = on ? .bold : .quiet }
 
                 Rectangle()
@@ -9800,8 +9786,7 @@ enum Listings {
                             TextField(chore.title)
                                 .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                            CheckBox(chore.done)
-                                .text("Done")
+                            CheckBox("Done", isOn: chore.done)
                                 .onToggled { done in edit(chore.id) { $0.done = done } }
                         }
                     }
@@ -10003,7 +9988,7 @@ enum Listings {
                         Grid {
                             ScrollView {
                                 VStack {
-                                    Switch($under).text("Under the bars")
+                                    Switch("Under the bars", isOn: $under)
                                     ForEach(Array(1...40), id: \.self) { row in
                                         Text("Row \(row)")
                                     }
@@ -10370,8 +10355,7 @@ enum Listings {
                 Text("A caption the user only reads.")
                     .textStyle(.caption)
 
-                Switch($selectable)
-                    .text("Selectable")
+                Switch("Selectable", isOn: $selectable)
             }
         }
         """#,
@@ -10957,8 +10941,7 @@ enum Listings {
 
                 Text(dragging ? "Dragging..." : "At rest")
 
-                Switch($soundOn)
-                    .text("Sound")
+                Switch("Sound", isOn: $soundOn)
                     .horizontalAlignment(.center)
             }
         }
@@ -10976,8 +10959,7 @@ enum Listings {
                 Spinner($loading)
                     .height(48)
 
-                Switch($loading)
-                    .text("Working")
+                Switch("Working", isOn: $loading)
                     .horizontalAlignment(.center)
 
             }
@@ -11167,8 +11149,7 @@ enum Listings {
                         .verticalAlignment(onBaseline ? .firstBaseline : .center)
                 }
 
-                Switch($onBaseline)
-                    .text("On one baseline")
+                Switch("On one baseline", isOn: $onBaseline)
 
                 SectionTitle("Space")
 
@@ -11179,8 +11160,7 @@ enum Listings {
                     StackCell(text: "Send")
                 }
 
-                Switch($spaced)
-                    .text("Space")
+                Switch("Space", isOn: $spaced)
 
                 SectionTitle("Short of room")
 
@@ -11208,8 +11188,7 @@ enum Listings {
                 .wraps(wraps)
                 .lineAlignment(lines)
 
-                Switch($wraps)
-                    .text("Wraps")
+                Switch("Wraps", isOn: $wraps)
 
                 // Where a line shorter than the row stands.
                 Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
@@ -11437,12 +11416,10 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked {}
 
-                Switch($enabled)
-                    .text("Enabled")
+                Switch("Enabled", isOn: $enabled)
                     .horizontalAlignment(.center)
 
-                Switch($platformLook)
-                    .text("Platform look")
+                Switch("Platform look", isOn: $platformLook)
                     .horizontalAlignment(.center)
 
                 SectionTitle("A style for a role")
@@ -11892,8 +11869,7 @@ enum Listings {
                     .isPassword(hidden)
                     .submitLabel(.done)
 
-                Switch($hidden)
-                    .text("Hidden")
+                Switch("Hidden", isOn: $hidden)
                     .horizontalAlignment(.center)
 
                 // The keyboard the platform brings up, a cap on the length, and
@@ -12113,7 +12089,7 @@ enum Listings {
                     }
                 }
 
-                Switch($monospaced).text("Digits of one width")
+                Switch("Digits of one width", isOn: $monospaced)
             }
         }
         """#,
@@ -12459,8 +12435,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
         """#,
         "TooltipSample": #"""
@@ -12500,8 +12475,7 @@ enum Listings {
                         .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
                 }
 
-                Switch($detailed)
-                    .text("Detailed")
+                Switch("Detailed", isOn: $detailed)
             }
         }
         """#,
@@ -12877,8 +12851,7 @@ enum Listings {
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                Switch($enabled)
-                    .text("Enabled")
+                Switch("Enabled", isOn: $enabled)
                     .horizontalAlignment(.center)
 
                 Text("entered \(entered) · pressed \(presses) times")
@@ -12979,8 +12952,7 @@ enum Listings {
                 TextField(bar.$subtitle)
                     .placeholder("Window subtitle")
 
-                Switch(bar.$showsSurprise)
-                    .text("Surprise me on every page")
+                Switch("Surprise me on every page", isOn: bar.$showsSurprise)
             }
             // The line under the page's title, wherever its title shows.
             .subtitle(bar.$subtitle)
@@ -13058,8 +13030,7 @@ enum Listings {
 
         /// A switch and what it says, told apart for scripts by `id`.
         private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
-            Switch(value)
-                .text(words)
+            Switch(words, isOn: value)
         }
 
         /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
@@ -13216,8 +13187,7 @@ enum Listings {
 
         /// A native boolean window capability.
         private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-            Switch(value)
-                .text(title)
+            Switch(title, isOn: value)
         }
         """#,
         "WorkFromCode": #"""

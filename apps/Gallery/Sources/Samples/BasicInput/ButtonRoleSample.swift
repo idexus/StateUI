@@ -49,8 +49,7 @@ struct ButtonRoleSample: SampleContent, ExampleContent {
 
             Switch("Save is the main action", isOn: $saveIsMain)
 
-            Switch($platformLook)
-                .text("Platform look")
+            Switch("Platform look", isOn: $platformLook)
 
             Text("Last: \(last)")
                 .fontSize(13)

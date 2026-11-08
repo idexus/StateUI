@@ -68,7 +68,7 @@ extension ControlDictionary {
         (CheckBoxContract.self, #"""
             @State var agreed = false
 
-            CheckBox($agreed).text("I agree to the terms")
+            CheckBox("I agree to the terms", isOn: $agreed)
             """#),
 
         (ButtonMenuContract.self, #"""
@@ -483,7 +483,7 @@ extension ControlDictionary {
         (SwitchContract.self, #"""
             @State var soundOn = true
 
-            Switch($soundOn).text("Sound")
+            Switch("Sound", isOn: $soundOn)
                 .tint(.green)
             """#),
 
