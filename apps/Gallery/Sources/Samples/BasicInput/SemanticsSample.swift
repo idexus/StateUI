@@ -149,7 +149,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .horizontalAlignment(.center)
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                     try await application.announce(words)
                     said = words

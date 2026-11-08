@@ -72,7 +72,7 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onColorChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Color>) -> Modified {
+    public func onColorChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Color>) -> Modified {
         onEvent(ColorPickerContract.colorChanged, policy: policy, handler)
     }
 

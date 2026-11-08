@@ -380,6 +380,6 @@ private struct OpeningSecondPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowKind("frames.second")) }
+        return Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("frames.second")) }
     }
 }

@@ -51,7 +51,7 @@ does while a run is under way through it:
 ```
 
 A gate is a handler's own or shared, and the argument's label says which. A
-`GatePolicy` given alone - `.onClicked(.ignoreWhileRunning)`, or
+`GatePolicy` given alone - `.onClicked(policy: .ignoreWhileRunning)`, or
 `policy: .cancelPrevious` after the event's own arguments, as in
 `.onChanged(query, policy: .cancelPrevious)` - gives the handler a gate of its
 own: its runs stand in its owner's slot, so two buttons written with
@@ -81,15 +81,15 @@ parent. So a test acting from a task through a gate still waits on the
 handlers its act raised, and a run superseded around the call refuses nothing
 they write.
 
-The policy stands first and unlabeled where the modifier takes nothing else,
-and `policy:` follows the event's own arguments, which keep the step
-overload's spelling: a parameter after a variadic - `.onKeyPressed`'s keys -
-needs a label, and a parameter's label is fixed, so a modifier whose own
-arguments have defaults - `.onEndReached(within:)`, `.onSwiped(directions:
-threshold:)` - has one overload with none of them, the policy first, and
-others that name them, the policy after: one call, one spelling.
-`ModifierShapeTests` holds it: no argument that may be left out stands before
-`policy:`.
+The policy is written `policy:`, as a shared gate is `gate:`, after the
+event's own arguments, which keep the step overload's spelling and its
+defaults: `.onClicked(policy: .ignoreWhileRunning)`,
+`.onEndReached(within: 5, policy: .ignoreWhileRunning)`,
+`.onSwiped(directions: [.left], policy: .cancelPrevious)`. An argument that may
+be left out stands before `policy:` with its default, so each event is heard
+three ways - plainly, with a policy, through a gate - and never two ways with
+a policy. `ModifierShapeTests` holds it: no policy stands unlabeled, and an
+event has as many policy forms as plain ones and gate ones.
 
 There is no default. Each event modifier comes as a step, `() throws ->
 Void`, which Swift picks for a closure with no `await`, and the same with a

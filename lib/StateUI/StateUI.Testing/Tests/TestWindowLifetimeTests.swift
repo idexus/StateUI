@@ -183,7 +183,7 @@ final class TestWindowLifetimeTests: XCTestCase {
         var order: [String] = []
         let window = try await TestWindow(motion: .none) {
             Text("page")
-                .onDisappearing(.runConcurrently) {
+                .onDisappearing(policy: .runConcurrently) {
                     order.append("disappearing")
                     await disappearing.wait()
                     order.append("disappeared")

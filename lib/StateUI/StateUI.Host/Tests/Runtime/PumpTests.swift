@@ -212,7 +212,7 @@ private struct CountingPage: View {
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     count += 1
                     _ = try? await window.hideOnScreenKeyboard()
                 }

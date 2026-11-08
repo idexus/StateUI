@@ -30,7 +30,7 @@ struct SwatchPage: View {
                     .onClicked { number += 1 }
 
                 Button("Done")
-                    .onClicked(.ignoreWhileRunning) { try await window.close() }
+                    .onClicked(policy: .ignoreWhileRunning) { try await window.close() }
             }
             .spacing(10)
             .horizontalAlignment(.center)

@@ -29,10 +29,10 @@ final class GTKWebViewTests: XCTestCase {
                         .onNavigating { heard.values.append("\($0.kind)") }
                         .onNavigated { _ in arrived.values.append(true) }
                         .height(200)
-                    Button("Back").onClicked(.ignoreWhileRunning) {
+                    Button("Back").onClicked(policy: .ignoreWhileRunning) {
                         _ = try await web.evaluateJavaScript("history.back()")
                     }
-                    Button("Forward").onClicked(.ignoreWhileRunning) {
+                    Button("Forward").onClicked(policy: .ignoreWhileRunning) {
                         _ = try await web.evaluateJavaScript("history.forward()")
                     }
                 }

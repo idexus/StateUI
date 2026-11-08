@@ -124,11 +124,11 @@ struct AskingPage: View {
     var body: some View {
         let (application, window, said) = (self.application, self.window, self.said)
         return VStack {
-            Button("Ask").onClicked(.ignoreWhileRunning) {
+            Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                 said.values.append(try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
             }.id("ask")
-            Button("Open").onClicked(.ignoreWhileRunning) {
+            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                 try await application.openWindow(AskingApplication.draft)
             }.id("open")
         }
@@ -143,7 +143,7 @@ struct DraftPage: View {
     var body: some View {
         let (window, said) = (self.window, self.said)
         return VStack {
-            Button("Ask again").onClicked(.ignoreWhileRunning) {
+            Button("Ask again").onClicked(policy: .ignoreWhileRunning) {
                 said.values.append(try await window.confirm(
                     "Close draft?", message: "It is kept", accept: "Close", cancel: "Stay"))
             }.id("ask again")

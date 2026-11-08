@@ -45,13 +45,13 @@ struct MapSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Old Town")
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(policy: .cancelPrevious) {
                         try await map.show(
                             MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     }
 
                 Button("Poland")
-                    .onClicked(.cancelPrevious) {
+                    .onClicked(policy: .cancelPrevious) {
                         try await map.show(
                             MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                     }

@@ -31,7 +31,7 @@ extension SubmitElement where Self: ModifiableElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onSubmitted(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SubmitElementContract.submitted, policy: policy, handler)
     }
 

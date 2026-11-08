@@ -332,7 +332,7 @@ extension MotionLayout {
             for activated in activated {
                 let tap: EventHandler = { try await activated.run(id) }
                 tapped = switch activated.gate {
-                case .own(let policy): AnyView(tapped.onTapped(policy, tap))
+                case .own(let policy): AnyView(tapped.onTapped(policy: policy, tap))
                 case .shared(let gate): AnyView(tapped.onTapped(gate: gate, tap))
                 }
             }

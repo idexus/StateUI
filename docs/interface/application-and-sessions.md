@@ -228,8 +228,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
-            Button("About").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
+            Button("New editor").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -240,8 +240,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
-            Button("Close every editor").onClicked(.ignoreWhileRunning) { try await scene.close() }
+            Button("Close").onClicked(policy: .ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(policy: .ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -446,7 +446,7 @@ page and arrangement of it that hears links hears it, the outermost first. A
 link that comes before any such window waits for the first. A view reaches its
 scene's state by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
 finished in the browser exchanging its code - takes a policy,
-`.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
+`.onLinkOpened(policy: .waitForPrevious) { address in … }`. A window of a kind for a
 value is how a link opens a window of its own:
 `try await application.openWindow(.document, value: id)`.
 

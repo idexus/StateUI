@@ -305,7 +305,7 @@ struct ExportPage: View {
 
     var body: some View {
         VStack {
-            Button("Export").onClicked(.ignoreWhileRunning) {
+            Button("Export").onClicked(policy: .ignoreWhileRunning) {
                 said = try await application.call(NotesContract.exportDocument, "draft-7")
             }
             Text(said)

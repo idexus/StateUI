@@ -20,12 +20,12 @@ final class GateSourceTests: XCTestCase {
         XCTAssertEqual(found, [], "a step is kept with no gate - Handler(step:), ValueHandler(step:), a step overload")
     }
 
-    /// The reading finds a step forwarded through a gate - the policy first or after the event's arguments - and leaves
-    /// a body that awaits, and a shared gate made, alone.
+    /// The reading finds a step forwarded through a gate - the policy alone or after the event's arguments - and
+    /// leaves a body that awaits, and a shared gate made, alone.
     func testTheReadingFindsAStepForwardedThroughAGate() {
-        let forwarded = "func a() {\n    onTapped(.runConcurrently) { try handler() }\n}\n"
+        let forwarded = "func a() {\n    onTapped(policy: .runConcurrently) { try handler() }\n}\n"
         let after = "func a() {\n    onChanged(x, policy: .runConcurrently) { try handler() }\n}\n"
-        let awaiting = "func a() {\n    onTapped(.runConcurrently) {\n        try await save()\n    }\n}\n"
+        let awaiting = "func a() {\n    onTapped(policy: .runConcurrently) {\n        try await save()\n    }\n}\n"
         let made = "let uploads = Gate(.runConcurrently)\nfunc a() { try handler() }\n"
 
         XCTAssertEqual(Self.gatesWithNoAwait(in: forwarded), [2])
@@ -34,13 +34,11 @@ final class GateSourceTests: XCTestCase {
         XCTAssertEqual(Self.gatesWithNoAwait(in: made), [])
     }
 
-    /// The lines of `text` whose policy `.runConcurrently` - `policy: .runConcurrently`, or `(.runConcurrently)` before
-    /// a trailing closure - stands before a body with no `await`: the body from the first brace after it to the brace
-    /// that closes it.
+    /// The lines of `text` whose policy `.runConcurrently` - `policy: .runConcurrently` - stands before a body with no
+    /// `await`: the body from the first brace after it to the brace that closes it.
     static func gatesWithNoAwait(in text: String) -> [Int] {
         let bytes = Array(text.utf8)
         let labeled = Array("policy: .runConcurrently".utf8)
-        let first = Array("(.runConcurrently)".utf8)
         var lines: [Int] = []
         var line = 1
         var index = 0
@@ -48,8 +46,7 @@ final class GateSourceTests: XCTestCase {
         while index < bytes.count {
             if bytes[index] == UInt8(ascii: "\n") { line += 1 }
 
-            let length = bytes[index...].starts(with: labeled) ? labeled.count
-                : bytes[index...].starts(with: first) && closure(after: index + first.count, in: bytes) ? first.count : 0
+            let length = bytes[index...].starts(with: labeled) ? labeled.count : 0
             if length > 0 {
                 if let body = body(after: index + length, in: bytes),
                    !String(decoding: body, as: UTF8.self).contains("await") {
@@ -62,11 +59,6 @@ final class GateSourceTests: XCTestCase {
         }
 
         return lines
-    }
-
-    /// Whether a trailing closure opens at `start`, past spaces.
-    private static func closure(after start: Int, in bytes: [UInt8]) -> Bool {
-        bytes[start...].first { $0 != UInt8(ascii: " ") } == UInt8(ascii: "{")
     }
 
     /// The braced body that opens first at or after `start`, braces inside it matched.

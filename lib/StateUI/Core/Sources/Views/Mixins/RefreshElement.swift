@@ -20,11 +20,11 @@ extension RefreshElement {
     ///
     ///     ItemsView(mail) { MailRow($0) }
     ///         .isRefreshing($refreshing)
-    ///         .onRefreshRequested(.ignoreWhileRunning) {
+    ///         .onRefreshRequested(policy: .ignoreWhileRunning) {
     ///             defer { refreshing = false }
     ///             try await inbox.reload()
     ///         }
-    public func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onRefreshRequested(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(RefreshElementContract.refreshRequested, policy: policy, handler)
     }
 

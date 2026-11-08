@@ -64,21 +64,14 @@ extension StyleTarget {
     }
 
     /// The same, with a handler that awaits: its `policy` says what entering a
-    /// state does while a run is under way. Every state the control declares is heard.
-    public func onVisualStateChanged(
-        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>
-    ) -> Modified {
-        listening([], ValueHandler(run: { try await handler(VisualState<Self>($0)) }, gate: .own(policy)))
-    }
-
-    /// The same, hearing `states` alone.
+    /// state does while a run is under way.
     ///
     /// - Parameters:
-    ///   - states: the states to hear.
+    ///   - states: the states to hear; none hears every state.
     ///   - policy: what the handler passes through: what entering a state does while a run is under way.
     ///   - handler: what to run, given the state entered.
     public func onVisualStateChanged(
-        _ states: [VisualState<Self>],
+        _ states: [VisualState<Self>] = [],
         policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<VisualState<Self>>
     ) -> Modified {

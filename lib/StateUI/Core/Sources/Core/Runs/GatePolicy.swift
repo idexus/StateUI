@@ -14,7 +14,7 @@ public struct GatePolicy: Equatable, Sendable {
 
     /// The event is let go while a run is under way - a save, an order, a sign-in.
     ///
-    ///     Button("Save").onClicked(.ignoreWhileRunning) { try await model.save() }
+    ///     Button("Save").onClicked(policy: .ignoreWhileRunning) { try await model.save() }
     public static var ignoreWhileRunning: GatePolicy { GatePolicy(kind: .ignoreWhileRunning) }
 
     /// The run under way is cancelled and this one starts - a search, a movement to a new place.

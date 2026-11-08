@@ -81,7 +81,7 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDateChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Modified {
+    public func onDateChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<CalendarDate>) -> Modified {
         onEvent(DatePickerContract.dateChanged, policy: policy, handler)
     }
 

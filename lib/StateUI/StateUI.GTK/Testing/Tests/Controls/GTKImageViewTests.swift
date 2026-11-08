@@ -247,7 +247,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowKind("pictures.again")) }
+                Button("Open").onClicked(policy: .ignoreWhileRunning) { try await application.openWindow(WindowKind("pictures.again")) }
             }
             ForEach(Array(0..<17)) { _ in
                 Image("test_wide.svg").width(177).height(248)

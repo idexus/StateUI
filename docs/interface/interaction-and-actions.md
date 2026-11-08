@@ -36,7 +36,7 @@ its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
 A handler may throw. One that awaits says what its event does when it comes
-again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
+again while it runs - `.onClicked(policy: .ignoreWhileRunning) { … }` - and continues on
 StateUI's UI isolation domain after each suspension. An uncaught error is
 reported through the host rather than being discarded.
 [Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
@@ -258,8 +258,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
-            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
+            Button("Edit").onClicked(policy: .ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(policy: .ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -289,7 +289,7 @@ a view stands in - the session it reads with `@Environment(\.window)`:
 @Environment(\.window) private var window
 @State private var drafts = ["Plans"]
 
-Button("Delete").onClicked(.ignoreWhileRunning) {
+Button("Delete").onClicked(policy: .ignoreWhileRunning) {
     let confirmed = try await window.confirm(
         "Delete draft?",
         message: "This cannot be undone",
@@ -350,17 +350,17 @@ struct ReportPage: View {
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked(.ignoreWhileRunning) {
+            Button("Save report…").onClicked(policy: .ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
                 let saved = try await window.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked(.ignoreWhileRunning) {
+            Button("Open…").onClicked(policy: .ignoreWhileRunning) {
                 guard let file = try await window.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked(.ignoreWhileRunning) {
+            Button("Help").onClicked(policy: .ignoreWhileRunning) {
                 try await application.launch("https://www.swift.org")
             }
         }
@@ -396,7 +396,7 @@ struct NotePage: View {
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked(.ignoreWhileRunning) {
+        Button("Open a note…").onClicked(policy: .ignoreWhileRunning) {
             guard let file = try await window.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
@@ -421,7 +421,7 @@ struct LinkRow: View {
     var body: some View {
         HStack {
             Text(link)
-            Button("Copy").onClicked(.ignoreWhileRunning) {
+            Button("Copy").onClicked(policy: .ignoreWhileRunning) {
                 try await application.clipboard.write(link)
             }
         }
@@ -446,7 +446,7 @@ struct TalkPage: View {
     let talk = "https://www.swift.org"
 
     var body: some View {
-        Button("Share the talk").onClicked(.ignoreWhileRunning) {
+        Button("Share the talk").onClicked(policy: .ignoreWhileRunning) {
             try await window.share(text: "The talk I mentioned", address: talk)
         }
     }
@@ -470,7 +470,7 @@ struct WeatherPage: View {
 
     var body: some View {
         VStack {
-            Button("Weather").onClicked(.cancelPrevious) {
+            Button("Weather").onClicked(policy: .cancelPrevious) {
                 let response = try await application.send(HTTPRequest(
                     "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
                 said = response.status == 200 ? response.text : "The server answered \(response.status)"
@@ -530,7 +530,7 @@ enum NotesContract: ApplicationTier {
 @Environment(\.application) var application
 @State var location = ""
 
-Button("Export").onClicked(.ignoreWhileRunning) {
+Button("Export").onClicked(policy: .ignoreWhileRunning) {
     location = try await application.call(NotesContract.exportDocument, "draft-7")
 }
 ```

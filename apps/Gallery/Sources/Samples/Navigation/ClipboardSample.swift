@@ -21,7 +21,7 @@ struct ClipboardSample: SampleContent, ExampleContent {
 
             Button("Copy")
                 .accessibilityIdentifier("clipboard.copy")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     try await application.clipboard.write(words)
                     answer = "copied"
                 }
@@ -29,7 +29,7 @@ struct ClipboardSample: SampleContent, ExampleContent {
             // What another application copied pastes here too; nil is an empty clipboard.
             Button("Paste")
                 .accessibilityIdentifier("clipboard.paste")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     guard let pasted = try await application.clipboard.read() else { return answer = "the clipboard is empty" }
                     words = pasted
                     answer = "pasted"

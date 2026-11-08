@@ -132,8 +132,8 @@ private struct BrowsingPage: View {
                 .onNavigated { heard.values.append("navigated \($0.result) \($0.kind) \($0.address)") }
                 .onProcessTerminated { heard.values.append("gone") }
                 .height(200)
-            Button("Reload").onClicked(.ignoreWhileRunning) { try await browser.reload() }
-            Button("Title?").onClicked(.ignoreWhileRunning) {
+            Button("Reload").onClicked(policy: .ignoreWhileRunning) { try await browser.reload() }
+            Button("Title?").onClicked(policy: .ignoreWhileRunning) {
                 do {
                     heard.values.append("title \(try await browser.evaluateJavaScript("document.title"))")
                 } catch {

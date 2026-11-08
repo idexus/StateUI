@@ -16,7 +16,7 @@
 ///             if window.phase == .background { try await save() }
 ///         }
 ///
-///     Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
+///     Button("Close").onClicked(policy: .ignoreWhileRunning) { try await window.close() }
 ///
 /// Every window offers its own, so a view acts on the window it is in, and
 /// what the window is told stands until it is told otherwise. See

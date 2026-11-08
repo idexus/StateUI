@@ -581,7 +581,7 @@ final class MotionLayoutTests: XCTestCase {
         let patch = renders.render(
             MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .onItemActivated { heard.append("\($0) first") }
-                .onItemActivated(.runConcurrently) { heard.append("\($0) second") }
+                .onItemActivated(policy: .runConcurrently) { heard.append("\($0) second") }
                 .node)
         let tap = try XCTUnwrap(patch.first(.motionLayout)?.children[1].events?[.tapped])
 

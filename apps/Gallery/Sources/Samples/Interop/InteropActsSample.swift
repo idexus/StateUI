@@ -46,13 +46,13 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 .accessibilityLabel("A line for the log")
 
             Button("Write it to the system's log")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     try await application.call(GalleryContract.log, line)
                     status = "logged"
                 }
 
             Button("Ask about the battery")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     let (level, charging) = try await application.call(GalleryContract.batteryLevel)
 
                     // A desktop without a battery answers 0, so only a level
@@ -63,7 +63,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 }
 
             Button("Call something nobody registered")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     do {
                         try await application.call(GalleryContract.nobody)
                         status = "that should have thrown"
@@ -81,7 +81,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
             SwitchRow("Ten stars", $tenStars)
 
             Button("Flash the bar")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     try await stars.flash()
                     status = "flashed \(stars)"
                 }

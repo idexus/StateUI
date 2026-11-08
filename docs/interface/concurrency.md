@@ -19,7 +19,7 @@ carries values, one parameter each:
 ```swift
 @State var status = "Idle"
 
-Button("Load").onClicked(.ignoreWhileRunning) {
+Button("Load").onClicked(policy: .ignoreWhileRunning) {
     status = "Loading"
     try await Task.sleep(for: .milliseconds(100))
     status = "Ready"
@@ -62,9 +62,9 @@ TextField($query)
     }
 ```
 
-The policy stands first where the modifier takes nothing else -
-`.onClicked(.ignoreWhileRunning)` - and as `policy:` after the event's own
-arguments - `.onChanged(query, policy: .cancelPrevious)`. A policy gives the
+The policy is written `policy:`, as a gate is `gate:`, after the event's own
+arguments - `.onClicked(policy: .ignoreWhileRunning)`,
+`.onChanged(query, policy: .cancelPrevious)`. A policy gives the
 handler a gate of its own: two buttons written with `.ignoreWhileRunning` never
 hold each other back. Where several actions touch one thing - a save and a
 delete of one document - they pass through one `Gate`, kept in a state or a
@@ -197,7 +197,7 @@ struct OpenButton: View {
     @State private var currentDocument = ""
 
     var body: some View {
-        Button("Open").onClicked(.ignoreWhileRunning) { try await loadDocument() }
+        Button("Open").onClicked(policy: .ignoreWhileRunning) { try await loadDocument() }
     }
 
     @MainActor
@@ -242,7 +242,7 @@ elsewhere cannot touch it - the compiler refuses - and posts to it instead:
 ```swift
 @State var total = 0
 
-Button("Count").onClicked(.ignoreWhileRunning) {
+Button("Count").onClicked(policy: .ignoreWhileRunning) {
     let counter = $total
     await withTaskGroup(of: Void.self) { group in
         for _ in 0..<4 {
@@ -276,7 +276,7 @@ Use `await` to express a dependency:
 @Environment(\.window) private var window
 @State private var title = "Draft"
 
-Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
+Button("Rename and confirm").onClicked(policy: .ignoreWhileRunning) {
     guard let name = try await window.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }

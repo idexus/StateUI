@@ -65,7 +65,7 @@ private struct SummaryPage: View {
         .rows(.automatic, .fill, .automatic)
         .toolbar { ToolbarButton("Report").showsText(true) }
         .title("Summary")
-        .onAppearing(.cancelPrevious) { await load() }
+        .onAppearing(policy: .cancelPrevious) { await load() }
         .onChanged(range, policy: .cancelPrevious) { await load() }
     }
 

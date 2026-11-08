@@ -62,7 +62,7 @@ struct AimSample: SampleContent, ExampleContent {
                 // that describes the view was built. On two views, the act
                 // throws before anything is sent.
                 Button("Focus the first")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         do {
                             try await field.focus()
                             says = "focused \(field)"
@@ -72,7 +72,7 @@ struct AimSample: SampleContent, ExampleContent {
                     }
 
                 Button("Focus the second")
-                    .onClicked(.ignoreWhileRunning) {
+                    .onClicked(policy: .ignoreWhileRunning) {
                         try await note.focus()
                         says = "focused \(note)"
                     }
@@ -81,7 +81,7 @@ struct AimSample: SampleContent, ExampleContent {
 
             // Each aim reaches its own field: letting go of both is two acts.
             Button("Let go")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     try await field.unfocus()
                     try await note.unfocus()
                     says = "let go of \(field) and \(note)"

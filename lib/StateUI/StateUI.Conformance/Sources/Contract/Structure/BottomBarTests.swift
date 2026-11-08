@@ -92,7 +92,7 @@
                     .ignoresSafeArea(.all)
                     .title("Foot")
                     .bottomBar {
-                        Button("To the end").onClicked(.ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
+                        Button("To the end").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
                             .height(tall.wrappedValue)
                             .id("go")
                     }
@@ -122,7 +122,7 @@
                     .ignoresSafeArea(.all)
                     .title("Foot")
                     .bottomBar {
-                        Button("To the end").onClicked(.ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
+                        Button("To the end").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
                             .id("go")
                     }
                 }

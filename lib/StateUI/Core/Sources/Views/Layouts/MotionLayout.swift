@@ -459,7 +459,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     }
 
     /// The same, with a handler that awaits: its `policy` says what an activation does while a run is under way.
-    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
         copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
@@ -483,7 +483,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     }
 
     /// The same, with a handler that awaits: its `policy` says what a rest does while a run is under way.
-    public func onSettled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
+    public func onSettled(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Parameters>) -> Self {
         var copy = self
         copy.settled.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
@@ -525,7 +525,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     }
 
     /// The same, with a handler that awaits: its `policy` says what a move of the hand does while a run is under way.
-    public func onItemDragged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
+    public func onItemDragged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ItemDrag<ID>>) -> Self {
         var copy = self
         copy.dragged.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy

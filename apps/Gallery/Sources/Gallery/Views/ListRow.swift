@@ -117,6 +117,6 @@ struct ListRow: View {
         .accessibilityHint(summary)
         // Pressed as a button: lit by its style while the press stands over
         // it, tapped where it lets go over it.
-        .onTapped(.ignoreWhileRunning) { try await action() }
+        .onTapped(policy: .ignoreWhileRunning) { try await action() }
     }
 }

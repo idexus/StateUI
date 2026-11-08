@@ -826,10 +826,10 @@ private struct SheetedOpeningPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(.ignoreWhileRunning) {
+            Button("Open").onClicked(policy: .ignoreWhileRunning) {
                 try await application.openWindow(WindowKind("pages.sheeted"))
             }
-            Button("Close").onClicked(.ignoreWhileRunning) {
+            Button("Close").onClicked(policy: .ignoreWhileRunning) {
                 try await application.closeWindow(WindowKind("pages.sheeted"))
             }
         }

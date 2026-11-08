@@ -133,7 +133,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onAppearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onAppearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.appearing, policy: policy, handler) } }
     }
 
@@ -149,7 +149,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDisappearing(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onDisappearing(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.disappearing, policy: policy, handler) } }
     }
 
@@ -174,7 +174,7 @@ extension View {
 
     /// The same, with a handler that awaits - a sign-in finished in a browser exchanging its code: its `policy`
     /// says what a link does when it comes again while a run is under way.
-    public func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onLinkOpened(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageElementContract.linkOpened, policy: policy, handler) } }
     }
 
@@ -190,7 +190,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedTo(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedTo(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedTo, policy: policy, handler) } }
     }
 
@@ -206,7 +206,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatingFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatingFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatingFrom, policy: policy, handler) } }
     }
 
@@ -222,7 +222,7 @@ extension View {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onNavigatedFrom(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         pageSays { $0.modified { $0.addHandler(PageContract.navigatedFrom, policy: policy, handler) } }
     }
 

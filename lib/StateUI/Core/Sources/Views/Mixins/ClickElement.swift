@@ -16,7 +16,7 @@ extension ClickElement where Modified == Self {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onClicked(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified { $0.addHandler(ClickElementContract.clicked.token, gate: .own(policy), handler) }
     }
 

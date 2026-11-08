@@ -25,7 +25,7 @@ private struct SheetAndQuestion: View {
 
     var body: some View {
         Button("Ask")
-            .onClicked(.ignoreWhileRunning) {
+            .onClicked(policy: .ignoreWhileRunning) {
                 first = true
                 _ = try await window.confirm("Sure?", message: "Both come", accept: "Yes", cancel: "No")
                 second = true

@@ -18,7 +18,7 @@ extension PopupElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onOpened(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PopupElementContract.opened, policy: policy, handler)
     }
 
@@ -34,7 +34,7 @@ extension PopupElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onClosed(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PopupElementContract.closed, policy: policy, handler)
     }
 

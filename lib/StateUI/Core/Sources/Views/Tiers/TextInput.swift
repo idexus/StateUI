@@ -18,7 +18,7 @@ extension TextInput {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onTextChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         onEvent(TextInputContract.textChanged, policy: policy, handler)
     }
 

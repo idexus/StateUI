@@ -16,7 +16,7 @@ extension PressElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onPressed(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PressElementContract.pressed, policy: policy, handler)
     }
 
@@ -33,7 +33,7 @@ extension PressElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onReleased(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PressElementContract.released, policy: policy, handler)
     }
 

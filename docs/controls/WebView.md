@@ -11,7 +11,7 @@ A view showing web content - a page fetched by URL, or HTML written here.
 Grid {
     Button("Back")
         .isEnabled(canGoBack)
-        .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+        .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
     WebView("https://example.com")
         .canGoBack(into: $canGoBack)
         .aim(browser)

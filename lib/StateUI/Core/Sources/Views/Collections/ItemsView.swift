@@ -216,7 +216,7 @@ extension ItemsView {
 
     /// The same, with a handler that awaits: its `policy` says what another
     /// choice does while a run is under way.
-    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onSelectionChanged(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.selected.append(Handler(run: handler, gate: .own(policy)))
         return copy
@@ -239,7 +239,7 @@ extension ItemsView {
 
     /// The same, with a handler that awaits - opening a page does: its `policy`
     /// says what opening another item does while a run is under way.
-    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
         copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
@@ -266,18 +266,8 @@ extension ItemsView {
     /// load under way at a time.
     ///
     ///     ItemsView(rows) { … }
-    ///         .onEndReached(.ignoreWhileRunning) { rows += try await nextPage() }
-    public func onEndReached(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
-        var copy = self
-        copy.endReached = copy.reaching(0, Handler(run: handler, gate: .own(policy)))
-        return copy
-    }
-
-    /// The same, heard within `within` items of the end.
-    ///
-    ///     ItemsView(rows) { … }
     ///         .onEndReached(within: 5, policy: .ignoreWhileRunning) { rows += try await nextPage() }
-    public func onEndReached(within: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onEndReached(within: Int = 0, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.endReached = copy.reaching(within, Handler(run: handler, gate: .own(policy)))
         return copy
@@ -324,7 +314,7 @@ extension ItemsView {
     ///     @Aim(ItemsView<Int>.self) private var list
     ///
     ///     ItemsView(0..<500) { Text("Row \($0)") }.aim(list)
-    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
+    ///     Button("Top").onClicked(policy: .cancelPrevious) { try await list.scroll(to: 0, anchor: .start) }
     public func aim(_ aim: Aim<Self>) -> Self {
         var copy = self
         copy.aimed = aim
@@ -348,11 +338,11 @@ extension ItemsView {
     ///
     ///     ItemsView(mail) { MailRow($0) }
     ///         .isRefreshing($refreshing)
-    ///         .onRefreshRequested(.ignoreWhileRunning) {
+    ///         .onRefreshRequested(policy: .ignoreWhileRunning) {
     ///             defer { refreshing = false }
     ///             try await inbox.reload()
     ///         }
-    public func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onRefreshRequested(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         wearing(.awaited(.own(policy), handler))
     }
 

@@ -81,7 +81,7 @@ private struct KeptChores: View {
             }
             .selection($chosen)
             .isRefreshing($refreshing)
-            .onRefreshRequested(.ignoreWhileRunning) {
+            .onRefreshRequested(policy: .ignoreWhileRunning) {
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
             }

@@ -205,10 +205,10 @@ private struct OnwardPage: View {
 
     var body: some View {
         Button("Go").accessibilityIdentifier("onward.go")
-            .onClicked(.runConcurrently) {
+            .onClicked(policy: .runConcurrently) {
                 await withCheckedContinuation { held.release = $0; held.entered = true }
             }
-            .onAppearing(.runConcurrently) {
+            .onAppearing(policy: .runConcurrently) {
                 await withCheckedContinuation { held.service = $0 }
                 await Task(gate: held.gate) {
                     await withCheckedContinuation { held.ownWork = $0; held.ownWorkBegan = true }
@@ -242,11 +242,11 @@ private struct WaitingPage: View {
 
     var body: some View {
         Button(label).accessibilityIdentifier("waiting.go")
-            .onClicked(.runConcurrently) {
+            .onClicked(policy: .runConcurrently) {
                 await withCheckedContinuation { held.release = $0; held.entered = true }
                 label = "done"
             }
-            .onAppearing(.runConcurrently) {
+            .onAppearing(policy: .runConcurrently) {
                 held.serviceBegan = true
                 await withCheckedContinuation { held.service = $0 }
             }

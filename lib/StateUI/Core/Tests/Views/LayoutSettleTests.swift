@@ -46,11 +46,11 @@ final class LayoutSettleTests: XCTestCase {
             }
             .axis(\.self, input: .scroll(.horizontal, lengthPerUnit: 100), range: 0...3, snaps: .every(1))
             .parameterMotion(.eased(.milliseconds(160)))
-            .onSettled(.ignoreWhileRunning) { _ in
+            .onSettled(policy: .ignoreWhileRunning) { _ in
                 heard.append(1)
                 try await Task.sleep(for: .seconds(60))
             }
-            .onSettled(.ignoreWhileRunning) { _ in heard.append(2) }
+            .onSettled(policy: .ignoreWhileRunning) { _ in heard.append(2) }
             .node
         }
         _ = bench.laid(renders, built)

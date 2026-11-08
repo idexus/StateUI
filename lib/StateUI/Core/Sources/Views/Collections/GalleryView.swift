@@ -172,7 +172,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// The same, with a handler that awaits: its `policy` says what another card coming to the middle does while
     /// a run is under way.
-    public func onPositionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
         copy.moved.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
@@ -204,7 +204,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// The same, with a handler that awaits - opening a page does: its `policy` says what opening the card again
     /// does while a run is under way.
-    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
         copy.activated.append(ValueHandler(run: handler, gate: .own(policy)))
         return copy
@@ -425,7 +425,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // before the activation's own work - each handler's, in the order written, through its own gate.
         if !activated.isEmpty {
             let (activated, activationRuns) = (activated, activationRuns)
-            layout = layout.onItemActivated(.runConcurrently) { id in
+            layout = layout.onItemActivated(policy: .runConcurrently) { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard id == front[keyPath: path] else { return }

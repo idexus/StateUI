@@ -199,7 +199,7 @@ extension [PropValue] {
 /// What a handler that awaits runs - through a gate, or once by `.onCreated`
 /// and `.onDestroying`:
 ///
-///     Button("Save").onClicked(.ignoreWhileRunning) { try await model.save() }
+///     Button("Save").onClicked(policy: .ignoreWhileRunning) { try await model.save() }
 ///
 /// It runs on `@MainActor`, up to its first `await` inside its event; what it
 /// throws is reported to the host.
@@ -208,7 +208,7 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged(.cancelPrevious) { text in try await model.search(text) }
+///     TextField("").onTextChanged(policy: .cancelPrevious) { text in try await model.search(text) }
 ///     let heard = HostEvents.on(NotesContract.batteryChanged, policy: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 

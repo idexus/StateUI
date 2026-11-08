@@ -321,7 +321,7 @@ struct Toolbar: View {
                 .isEnabled(!document.saving.isBusy)
                 .onClicked(gate: document.saving) { await document.save() }
             SearchField($query)
-                .onTextChanged(.cancelPrevious) { text in
+                .onTextChanged(policy: .cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(250))
                     found = text
                 }
@@ -339,9 +339,9 @@ struct Toolbar: View {
 - **One gate for everything that touches one thing.** A policy given alone is
   the handler's own gate; a `Gate` is shared by every handler and task written
   with it - two buttons, an autosave - and its `isBusy` is a state a body
-  reads. The label says which kind a handler has: a policy needs none, or
-  `policy:` after the event's own arguments, and a shared gate is always
-  `gate:` - only it has `isBusy`, and only it takes a task.
+  reads. The label says which kind a handler has: a policy is
+  `policy:` and a shared gate `gate:`, after the event's own arguments - only
+  the gate has `isBusy`, and only it takes a task.
 - **One spelling.** Shared work passes its gate written `gate:` wherever it
   starts, an event or the application's code.
 

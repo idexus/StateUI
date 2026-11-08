@@ -203,7 +203,7 @@ final class LayoutItemDragTests: XCTestCase {
             }
             .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
-            .onItemDragged(.ignoreWhileRunning) { drag in
+            .onItemDragged(policy: .ignoreWhileRunning) { drag in
                 awaited.append(drag.phase)
                 try await Task.sleep(for: .seconds(60))
             }

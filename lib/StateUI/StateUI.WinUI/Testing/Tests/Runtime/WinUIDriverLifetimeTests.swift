@@ -49,7 +49,7 @@ private struct AskingFilePage: View {
     }
 
     var body: some View {
-        Button("Open").onClicked(.ignoreWhileRunning) {
+        Button("Open").onClicked(policy: .ignoreWhileRunning) {
             answered(try await window.openFile())
         }
     }

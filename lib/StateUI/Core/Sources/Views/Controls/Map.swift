@@ -106,7 +106,7 @@ public struct Map: ElementView, MapProperties {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onLocationTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+    public func onLocationTapped(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
         onEvent(MapContract.locationTapped, policy: policy, handler)
     }
 
@@ -181,7 +181,7 @@ public struct Marker: Element {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelected(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onSelected(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.selected, policy: policy, handler)
         return copy
@@ -204,7 +204,7 @@ public struct Marker: Element {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.detailsClicked, policy: policy, handler)
         return copy
@@ -337,7 +337,7 @@ extension Aim where Target == Map {
     ///     Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked(.cancelPrevious) {
+    ///     Button("Old Town").onClicked(policy: .cancelPrevious) {
     ///         try await map.show(
     ///             MapRegion(center: Location(latitude: 52.2497, longitude: 21.0135), radiusMeters: 800))
     ///     }

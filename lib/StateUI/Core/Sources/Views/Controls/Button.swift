@@ -44,7 +44,7 @@ extension ButtonProperties {
 ///
 /// A handler runs on the main actor. One that awaits passes through a gate,
 /// which says what a click does while it runs -
-/// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
+/// `.onClicked(policy: .ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
     ContentModeElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement,

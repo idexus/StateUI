@@ -30,7 +30,7 @@ extension RangeElement where Self: ModifiableElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onValueChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
+    public func onValueChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Double>) -> Modified {
         onEvent(RangeElementContract.valueChanged, policy: policy, handler)
     }
 

@@ -729,9 +729,9 @@ final class GalleryViewTests: XCTestCase {
         func tree() -> Node {
             gallery(5).position(position.projectedValue)
                 .onItemActivated { heard.append("opened \($0) first") }
-                .onItemActivated(.runConcurrently) { heard.append("opened \($0) second") }
+                .onItemActivated(policy: .runConcurrently) { heard.append("opened \($0) second") }
                 .onPositionChanged { heard.append("at \($0) first") }
-                .onPositionChanged(.runConcurrently) { heard.append("at \($0) second") }
+                .onPositionChanged(policy: .runConcurrently) { heard.append("at \($0) second") }
                 .node
         }
         let shown = laid(renders, tree)
@@ -760,11 +760,11 @@ final class GalleryViewTests: XCTestCase {
         func tree() -> Node {
             GalleryView(0..<3) { Text("\($0)") }
                 .position(position.projectedValue)
-                .onPositionChanged(.ignoreWhileRunning) { _ in
+                .onPositionChanged(policy: .ignoreWhileRunning) { _ in
                     heard.append(1)
                     try await Task.sleep(for: .seconds(60))
                 }
-                .onPositionChanged(.ignoreWhileRunning) { _ in heard.append(2) }
+                .onPositionChanged(policy: .ignoreWhileRunning) { _ in heard.append(2) }
                 .node
         }
         _ = renders.render(tree())

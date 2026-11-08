@@ -92,7 +92,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
+    public func onNavigating(policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
         onEvent(WebViewContract.navigating, policy: policy) { kind, address in
             try await handler(WebNavigation(kind: kind, address: address))
         }
@@ -115,7 +115,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
+    public func onNavigated(policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
         onEvent(WebViewContract.navigated, policy: policy) { result, kind, address in
             try await handler(WebNavigated(result: result, kind: kind, address: address))
         }
@@ -136,7 +136,7 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onProcessTerminated(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onProcessTerminated(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(WebViewContract.processTerminated, policy: policy, handler)
     }
 
@@ -298,7 +298,7 @@ extension Aim where Target == WebView {
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)
-    ///         .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
+    ///         .onClicked(policy: .ignoreWhileRunning) { try await browser.goBack() }
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.

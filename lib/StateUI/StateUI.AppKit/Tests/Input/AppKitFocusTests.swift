@@ -113,8 +113,8 @@ private struct Watching: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isFocused(into: $editing)
-            Button("Focus").onClicked(.ignoreWhileRunning) { try await field.focus() }
-            Button("Unfocus").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
+            Button("Focus").onClicked(policy: .ignoreWhileRunning) { try await field.focus() }
+            Button("Unfocus").onClicked(policy: .ignoreWhileRunning) { try await field.unfocus() }
             Text(editing ? "editing" : "idle")
         }
     }

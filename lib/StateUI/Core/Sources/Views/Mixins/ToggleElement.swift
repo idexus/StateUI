@@ -16,7 +16,7 @@ extension ToggleElement where Modified == Self {
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
+    public func onToggled(policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
         modified { $0.addHandler(ToggleElementContract.toggled, policy: policy, handler) }
     }
 

@@ -75,7 +75,7 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+    public func onSelectionChanged(policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.selectedIndexChanged, policy: policy) { (_: Int) in try await handler() }
     }
 

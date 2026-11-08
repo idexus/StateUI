@@ -41,7 +41,7 @@
                     VStack {
                         WebView(html: Self.page("First")).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Ask").onClicked(.ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
+                        Button("Ask").onClicked(policy: .ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
                     }
                 }
                 s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
@@ -60,7 +60,7 @@
                     VStack {
                         WebView(html: Self.page("First")).userAgent("StateUI conformance").aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Ask").onClicked(.ignoreWhileRunning) {
+                        Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("navigator.userAgent"))
                         }.id("ask")
                     }
@@ -88,8 +88,8 @@
                             .onNavigated { _ in arrived.values.append(true) }
                             .height(200).id("web")
                         Button("Second").onClicked { second.wrappedValue = true }.id("second")
-                        Button("Back").onClicked(.ignoreWhileRunning) { try await web.goBack() }.id("back")
-                        Button("Forward").onClicked(.ignoreWhileRunning) { try await web.goForward() }.id("forward")
+                        Button("Back").onClicked(policy: .ignoreWhileRunning) { try await web.goBack() }.id("back")
+                        Button("Forward").onClicked(policy: .ignoreWhileRunning) { try await web.goForward() }.id("forward")
                     }
                 }
                 // Each page arrives before the next is asked for: one asked for while another still loads takes its
@@ -125,7 +125,7 @@
                         WebView(html: Self.page("First")).aim(web)
                             .onNavigating { heard.values.append($0.kind) }
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Reload").onClicked(.ignoreWhileRunning) { try await web.reload() }.id("reload")
+                        Button("Reload").onClicked(policy: .ignoreWhileRunning) { try await web.reload() }.id("reload")
                     }
                 }
                 // The first page arrived: a reload asked while it still loads would be no load of its own.
@@ -152,11 +152,11 @@
                             .aim(web).onNavigated { result in
                                 if result.result == .success { arrived.values.append(true) }
                             }.height(200).id("web")
-                        Button("Replace and reload").onClicked(.ignoreWhileRunning) {
+                        Button("Replace and reload").onClicked(policy: .ignoreWhileRunning) {
                             second.wrappedValue = true
                             try await web.reload()
                         }.id("replace")
-                        Button("Read").onClicked(.ignoreWhileRunning) {
+                        Button("Read").onClicked(policy: .ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
                         }.id("read")
                     }
@@ -188,7 +188,7 @@
                                 .onNavigated { result in
                                     if result.result == .success { arrived.values.append(result.kind) }
                                 }.height(200).id("web")
-                            Button("Step").onClicked(.ignoreWhileRunning) {
+                            Button("Step").onClicked(policy: .ignoreWhileRunning) {
                                 switch step {
                                 case .back: try await web.goBack()
                                 case .forward: try await web.goForward()
@@ -196,7 +196,7 @@
                                 }
                             }.id("step")
                             Button("Show").onClicked { given.wrappedValue = true }.id("show")
-                            Button("Read").onClicked(.ignoreWhileRunning) {
+                            Button("Read").onClicked(policy: .ignoreWhileRunning) {
                                 said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
                             }.id("read")
                         }
@@ -237,10 +237,10 @@
                     VStack {
                         (given.wrappedValue ? WebView(html: Self.page("First")) : WebView()).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Change").onClicked(.ignoreWhileRunning) {
+                        Button("Change").onClicked(policy: .ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText = 'Changed'"))
                         }.id("change")
-                        Button("Ask").onClicked(.ignoreWhileRunning) {
+                        Button("Ask").onClicked(policy: .ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
                         }.id("ask")
                     }

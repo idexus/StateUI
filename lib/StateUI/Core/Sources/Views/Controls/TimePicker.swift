@@ -72,7 +72,7 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTimeChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
+    public func onTimeChanged(policy: GatePolicy, _ handler: @escaping ValueEventHandler<ClockTime>) -> Modified {
         onEvent(TimePickerContract.timeChanged, policy: policy, handler)
     }
 

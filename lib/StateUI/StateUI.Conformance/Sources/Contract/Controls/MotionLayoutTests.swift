@@ -156,7 +156,7 @@
                         }
                         .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
-                        Button("Go").onClicked(.ignoreWhileRunning) {
+                        Button("Go").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: 4).arrived())
                         }
                         .id("go")
@@ -195,7 +195,7 @@
                         }
                         .parameterMotion(.eased(.milliseconds(400), curve: .linear))
                         .width(100).height(40)
-                        Button("Turn").onClicked(.ignoreWhileRunning) {
+                        Button("Turn").onClicked(policy: .ignoreWhileRunning) {
                             arrived.values.append(try await phase.projectedValue.journey.move(to: Orbit(turn: 4)).arrived())
                         }
                         .id("turn")

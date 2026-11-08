@@ -43,7 +43,7 @@ final class GateTests: XCTestCase {
         var heard: [Bool] = []
         let renders = Renders()
         let patch = renders.render(
-            MenuToggle("Sync", isOn: false).onToggled(.ignoreWhileRunning) { on in
+            MenuToggle("Sync", isOn: false).onToggled(policy: .ignoreWhileRunning) { on in
                 heard.append(on)
                 await latch.wait()
             }.node)
@@ -81,8 +81,8 @@ final class GateTests: XCTestCase {
         let latch = Latch()
         var first = 0, second = 0
         let (renders, a, b) = twoButtons(
-            Button("A").onClicked(.ignoreWhileRunning) { first += 1; await latch.wait() },
-            Button("B").onClicked(.ignoreWhileRunning) { second += 1; await latch.wait() })
+            Button("A").onClicked(policy: .ignoreWhileRunning) { first += 1; await latch.wait() },
+            Button("B").onClicked(policy: .ignoreWhileRunning) { second += 1; await latch.wait() })
 
         renders.fire(a)
         renders.fire(b)
@@ -499,11 +499,11 @@ final class GateTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             Button("Go")
-                .onClicked(.ignoreWhileRunning) {
+                .onClicked(policy: .ignoreWhileRunning) {
                     ignoring += 1
                     await latch.wait()
                 }
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     overlapping += 1
                     await latch.wait()
                 }
@@ -887,7 +887,7 @@ final class GateTests: XCTestCase {
         let latch = Latch()
         let counts = Counts()
         func tree(_ value: Int) -> Node {
-            VStack { Button("Go").onClicked(.runConcurrently) { await latch.wait() } }
+            VStack { Button("Go").onClicked(policy: .runConcurrently) { await latch.wait() } }
                 .onChanged(value, policy: .runConcurrently) { await latch.wait() }
                 .node
         }
@@ -930,7 +930,7 @@ final class GateTests: XCTestCase {
 
     /// A button whose click runs `handler` under its own `policy`, rendered, and its click's id.
     private func button(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> (Renders, Int) {
-        rendered(Button("Go").onClicked(policy, handler))
+        rendered(Button("Go").onClicked(policy: policy, handler))
     }
 
     /// A button whose click runs `handler` through `gate`, rendered, and its click's id.

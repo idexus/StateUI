@@ -61,7 +61,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Nap")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     try await Task.sleep(nanoseconds: 30_000_000)
                     woke = true
                 }
@@ -383,7 +383,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(.runConcurrently) {
+                .onClicked(policy: .runConcurrently) {
                     try await WindowSession().alert("//list", message: "saved")
                     reached = true
                 }

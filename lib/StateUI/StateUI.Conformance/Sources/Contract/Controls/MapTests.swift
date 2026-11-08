@@ -29,7 +29,7 @@
                 s.start {
                     VStack {
                         Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).aim(map).height(300).id("map")
-                        Button("Kraków").onClicked(.ignoreWhileRunning) {
+                        Button("Kraków").onClicked(policy: .ignoreWhileRunning) {
                             try await map.show(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000))
                             moved.values.append("moved")
                         }.id("move")
