@@ -121,6 +121,26 @@ final class TickerTests: XCTestCase {
         XCTAssertTrue(ticker.isFinished)
     }
 
+    /// A limit is how many ticks run: none for a limit of nought, and none more once the count stands at a limit
+    /// written lower while it runs.
+    func testATickerTicksNoFurtherThanItsLimit() {
+        var ran = 0
+        let none = Ticker(every: .milliseconds(5), limit: 0) { ran += 1 }
+        none.start()
+        drain(until: { false }, within: 0.1)
+        XCTAssertEqual(none.ticks, 0)
+        XCTAssertEqual(ran, 0, "a limit of nought ticked")
+        XCTAssertFalse(none.isRunning)
+
+        let lowered = Ticker(every: .milliseconds(5))
+        lowered.start()
+        XCTAssertTrue(drain(until: { lowered.ticks >= 3 }))
+        lowered.limit = 1
+        let counted = lowered.ticks
+        XCTAssertTrue(drain(until: { !lowered.isRunning }), "a ticker past its limit kept running")
+        XCTAssertEqual(lowered.ticks, counted, "a ticker past its limit ticked again")
+    }
+
     /// Starting a finished ticker is starting over - what a Start button does
     /// after a countdown has run out.
     func testAFinishedTickerStartsOver() {
