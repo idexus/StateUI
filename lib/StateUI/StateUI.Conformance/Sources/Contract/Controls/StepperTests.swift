@@ -9,18 +9,19 @@
 @_spi(Host) public enum StepperTests: ConformanceFamily {
     public static let name = "Stepper"
 
-    public static var cases: [ConformanceCase] {
+    public static var cases: [ConformanceCase] { written.proving(StepperContract.self) }
+
+    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    @MainActor static var written: [ConformanceCase] {
         [
             Aspects.standsAlone("Stepper"),
             ConformanceCase("aUsersStepIsHeardAndTheProgramsIsNot", proves: [
-                Covered(StepperContract.step),
-            ], needs: [
                 Covered(RangeElementContract.value, on: StepperContract.self),
                 Covered(RangeElementContract.valueChanged, on: StepperContract.self),
                 Covered(RangeElementContract.minimum, on: StepperContract.self),
                 Covered(RangeElementContract.maximum, on: StepperContract.self),
-                Covered(ClickElementContract.clicked, on: ButtonContract.self),
-            ]) { s in
+                Covered(StepperContract.step),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 2.0)
                 let heard = Received<Double>()
                 s.start {
@@ -44,9 +45,7 @@
                 s.expect(heard.values, [3], "and nobody heard the program")
             },
             ConformanceCase("aFractionalStepLandsOnItsDecimals", proves: [
-                Covered(StepperContract.step),
-            ], needs: [
-                Covered(RangeElementContract.value, on: StepperContract.self),
+                Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
             ]) { s in
                 let level = State(wrappedValue: 0.2)
                 let heard = Received<Double>()
@@ -62,11 +61,8 @@
                 s.expect(heard.values, [0.3])
             },
             ConformanceCase("itShowsItsStepsAlone", proves: [
-                Covered(StepperContract.step),
-            ], needs: [
-                Covered(RangeElementContract.value, on: StepperContract.self),
-                Covered(ClickElementContract.clicked, on: ButtonContract.self),
-            ]) { s in
+                Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let count = State(wrappedValue: 2.0)
                 s.start {
                     VStack {
@@ -87,9 +83,7 @@
                 s.expect(shown.last, 9.2, "the value it was given, at rest")
             },
             ConformanceCase("aStepIsAsLongAsTheTreeSays", proves: [
-                Covered(StepperContract.step),
-            ], needs: [
-                Covered(RangeElementContract.value, on: StepperContract.self),
+                Covered(RangeElementContract.value, on: StepperContract.self), Covered(StepperContract.step),
             ]) { s in
                 let count = State(wrappedValue: 1.0)
                 s.start { VStack { Stepper(count.projectedValue).minimum(0).maximum(10).step(2.5).id("stepper") } }

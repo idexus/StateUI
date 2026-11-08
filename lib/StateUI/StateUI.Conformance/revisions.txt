@@ -53,7 +53,7 @@ TextSpan 5
 Separator 4
 Canvas 4
 Rectangle 3
-Stepper 6
+Stepper 7
 KeyboardElement 7
 LineHeightElement 2
 TextAlignmentElement 2
@@ -107,3 +107,4 @@ ActionElement 2
 Menu 3
 ToolbarLabel 3
 ContentModeElement 2
+RangeElement 2

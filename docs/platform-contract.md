@@ -137,7 +137,7 @@ of its members each meets, and why a cell is empty.
 | [Space](controls/Space.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Spinner](controls/Spinner.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SplitView](controls/SplitView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Stepper](controls/Stepper.md) | native | ✅ | ✅ | ✅ | ⌛ | ⌛ | ⌛ |
+| [Stepper](controls/Stepper.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Switch](controls/Switch.md) | native | ✅ | ✅ | ✅ | ⌛ | ⌛ | ⌛ |
 | [TabView](controls/TabView.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Text](controls/Text.md) | native | ✅ | ✅ | ✅ | ⌛ | ⌛ | ⌛ |
@@ -496,10 +496,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ScrollView](controls/ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 44 ✅ · 3 ☑️ · 38 ✓ · 4 – | 67 ✅ · 5 ☑️ · 13 ✓ · 5 – | 15 ✅ · 3 – | 12 ✅ · 2 ✓ · 4 – | 12 ✅ · 6 – |
 | [SearchField](controls/SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 61 ✅ · 3 ☑️ · 38 ✓ · 2 – | 83 ✅ · 5 ☑️ · 12 ✓ · 2 – | 16 ✅ · 1 ☑️ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [Separator](controls/Separator.md) | 74 | 34 ✅ · 3 ☑️ · 36 ✓ · 1 – | 33 ✅ · 3 ☑️ · 36 ✓ · 2 – | 57 ✅ · 5 ☑️ · 10 ✓ · 1 – | 1 ✅ | 1 – | 1 ✅ |
-| [Slider](controls/Slider.md) | 86 | 43 ✅ · 3 ☑️ · 36 ✓ · 2 – | 38 ✅ · 3 ☑️ · 40 ✓ · 5 – | 63 ✅ · 5 ☑️ · 12 ✓ · 5 – | 7 ✅ | 3 ✅ · 3 ✓ · 1 – | 7 ✅ |
+| [Slider](controls/Slider.md) | 86 | 43 ✅ · 3 ☑️ · 36 ✓ · 2 – | 34 ✅ · 3 ☑️ · 40 ✓ · 5 – | 59 ✅ · 5 ☑️ · 12 ✓ · 5 – | 7 ✅ | 3 ✅ · 3 ✓ · 1 – | 7 ✅ |
 | [Space](controls/Space.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 37 ✅ · 3 ☑️ · 36 ✓ · 1 – | 61 ✅ · 5 ☑️ · 10 ✓ · 1 – | 4 ✅ | 3 ✅ · 1 – | 4 ✅ |
 | [Spinner](controls/Spinner.md) | 76 | 34 ✅ · 3 ☑️ · 37 ✓ · 2 – | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 3 ✅ | 2 ✅ · 1 – | 3 ✅ |
-| [Stepper](controls/Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 38 ✅ · 3 ☑️ · 38 ✓ · 5 – | 59 ✅ · 5 ☑️ · 13 ✓ · 5 – | 6 ✅ | 3 ✅ · 2 ✓ · 1 – | 6 ✅ |
+| [Stepper](controls/Stepper.md) | 84 | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 33 ✅ · 3 ☑️ · 38 ✓ · 5 – | 56 ✅ · 5 ☑️ · 12 ✓ · 5 – | 6 ✅ | 3 ✅ · 2 ✓ · 1 – | 6 ✅ |
 | [Switch](controls/Switch.md) | 85 | 44 ✅ · 3 ☑️ · 36 ✓ · 2 – | 39 ✅ · 3 ☑️ · 38 ✓ · 5 – | 62 ✅ · 5 ☑️ · 12 ✓ · 4 – | 8 ✅ | 4 ✅ · 3 ✓ · 1 – | 8 ✅ |
 | [Text](controls/Text.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 52 ✅ · 2 ☑️ · 36 ✓ · 1 – | 74 ✅ · 5 ☑️ · 10 ✓ · 1 – | 13 ✅ | 11 ✅ · 1 ✓ · 1 – | 13 ✅ |
 | [TextEditor](controls/TextEditor.md) | 103 | 61 ✅ · 4 ☑️ · 36 ✓ · 2 – | 60 ✅ · 3 ☑️ · 38 ✓ · 2 – | 82 ✅ · 5 ☑️ · 12 ✓ · 2 – | 18 ✅ | 12 ✅ · 5 ✓ · 1 – | 18 ✅ |
@@ -508,10 +508,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 4 ☑️ · 37 ✓ · 1 – | 67 ✅ · 5 ☑️ · 11 ✓ · 1 – | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](controls/WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 46 ✅ · 3 ☑️ · 39 ✓ · 2 – | 68 ✅ · 5 ☑️ · 12 ✓ · 4 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](controls/ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 39 ✅ · 4 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 1 – | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 1566 | 2331 | 304 | 218 | 309 |
-| ✓ |  | 1355 | 1397 | 403 | 8 | 63 | 5 |
+| ✅ |  | 1665 | 1557 | 2324 | 304 | 218 | 309 |
+| ✓ |  | 1355 | 1397 | 402 | 8 | 63 | 5 |
 | – |  | 57 | 106 | 161 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **3069** | **2895** | **328** | **331** | **328** |
+| **Met** | 3210 | **3077** | **3060** | **2887** | **328** | **331** | **328** |
 | 🧩 |  | 0 | 0 | 82 | 9 | 9 | 9 |
 
 ### Application structure
@@ -643,7 +643,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ScrollView](controls/ScrollView.md) | `axes`, `horizontalScrollIndicator`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ | 3 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [Spinner](controls/Spinner.md) | `isAnimating` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [SplitView](controls/SplitView.md) | `showsSidebar`, `showsSidebarToggle`, `showsSidebarChanged`, `sidebarBackground`, `sidebarOverlayBackground`, `sidebarOverlays` | 6 | 5 ✅ · 1 – | 4 ✅ · 2 ✓ | 1 ✅ · 2 ☑️ · 3 ✓ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ | 4 ✅ · 2 ☑️ |
-| [Stepper](controls/Stepper.md) | `step` | 1 | 1 ✅ | 1 ✅ | 1 ✅ |  |  |  |
+| [Stepper](controls/Stepper.md) | `step` | 1 | 1 ✅ |  |  |  |  |  |
 | [TabView](controls/TabView.md) | `selectedTab`, `selectedTabChanged` | 2 | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Text](controls/Text.md) | `maximumLines`, `verticalTextAlignment`, `isSelectable` | 3 | 2 ✅ | 2 ✅ | 3 ✅ |  |  |  |
 | [TextEditor](controls/TextEditor.md) | `growsWithText` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |

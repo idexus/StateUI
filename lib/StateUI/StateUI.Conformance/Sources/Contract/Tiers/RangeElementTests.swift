@@ -262,6 +262,6 @@
             },
             Aspects.holds(RangeElementContract.minimum, on: "Stepper", 0, then: -5, with: [Write(RangeElementContract.value, 2)]),
             Aspects.holds(RangeElementContract.maximum, on: "Stepper", 10, then: 20, with: [Write(RangeElementContract.value, 2)]),
-        ]
+        ] + StepperTests.written.proving(RangeElementContract.self)
     }
 }
