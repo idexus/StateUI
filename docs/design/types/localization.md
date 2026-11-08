@@ -63,8 +63,10 @@ may read an English interface with Polish numbers in Warsaw's zone. Text size,
 contrast and motion are the user's settings and styles' work, not localization:
 a part chooses a base typeface, and the system's scaling still applies to it.
 
-Each choice is a `LocaleChoice`: `.system`, which follows the host's facts and
-their changes, or `.fixed(value)`.
+Each choice is optional: nil follows the host's facts and their changes, and
+a value holds whatever they say - the one spelling every request of StateUI
+gives the system's choice (`colorScheme`, a window's size). Each is a public
+`@State`, so a picker takes it by its binding (`localization.$language`).
 
 ## One object in state
 
@@ -77,7 +79,9 @@ document gives its own and everything in its branch speaks the document's
 language, while the interface around it speaks the user's.
 
 `speaking(_:)` makes a fragment in another language: an object whose language
-is fixed and whose formats and zone follow its base until it is given its own.
+is fixed and whose formats and zone follow its base while its own are nil - on
+a fragment nil is "no choice here", the base's standing, as the system's
+stands for a base.
 The base keeps one for each language, held weakly - what renders it keeps it
 alive - so a branch given `localization.speaking(.english)` on every render is
 given the same object and is not rebuilt for nothing.

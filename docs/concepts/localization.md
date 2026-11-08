@@ -254,13 +254,8 @@ struct LanguageSettings: View {
     var body: some View {
         VStack {
             Text(res.interfaceLanguage)
-            HStack {
-                Button(res.sameAsSystem)
-                    .onClicked { localization.language = .system }
-                Button("English")
-                    .onClicked { localization.language = .fixed(.english) }
-                Button("Polski")
-                    .onClicked { localization.language = .fixed(.polish) }
+            Picker([nil, AppLanguage.english, .polish], selection: localization.$language) { language in
+                language.map { $0 == .english ? "English" : "Polski" } ?? res.sameAsSystem
             }
         }
     }
@@ -329,8 +324,7 @@ extension ReportResources {
 /// The report's page: its buttons speak the interface's language, the document its own.
 struct ReportPage: View {
     @Environment private var res: FilesResources
-    @State private var report = Localization(
-        AppCatalog.self, language: .fixed(.polish), formatLocale: .fixed("pl-PL"))
+    @State private var report = Localization(AppCatalog.self, language: .polish, formatLocale: "pl-PL")
     let files: [FileItem]
 
     var body: some View {
@@ -338,12 +332,12 @@ struct ReportPage: View {
             Text(res.reportLanguage)
             HStack {
                 Button("English").onClicked {
-                    report.language = .fixed(.english)
-                    report.formatLocale = .fixed("en-US")
+                    report.language = .english
+                    report.formatLocale = "en-US"
                 }
                 Button("Polski").onClicked {
-                    report.language = .fixed(.polish)
-                    report.formatLocale = .fixed("pl-PL")
+                    report.language = .polish
+                    report.formatLocale = "pl-PL"
                 }
             }
 
@@ -474,7 +468,7 @@ not to the window.
 ## A fragment in another language
 
 `report.speaking(.english)` is the same localization speaking English: its
-formats and zone follow the report's until it is given its own. It answers
+formats and zone follow the report's while its own are nil. It answers
 the same object for the same language, so a branch given it on every render
 is not built again for nothing. The pair under the report shows one
 document in two languages side by side, in two equal columns, so each wraps
@@ -514,7 +508,7 @@ enum ShopCatalog: LocalizationCatalog {
 
 @MainActor
 func written() -> [String] {
-    let localization = Localization(ShopCatalog.self, language: .fixed(.english), formatLocale: .fixed("pl-PL"))
+    let localization = Localization(ShopCatalog.self, language: .english, formatLocale: "pl-PL")
     let day = CalendarDate(year: 2026, month: 9, day: 30)
 
     return [
@@ -549,14 +543,17 @@ States' formats.
 
 ## Which language is in effect
 
-Each choice of a `Localization` is a `LocaleChoice`, `.system` or `.fixed(value)`:
+Each choice of a `Localization` is optional: nil follows the system, its
+changes included, and a value holds whatever the system says. Each is a state,
+so a picker takes it by its binding - `localization.$language`, as the
+settings page above does:
 
-- `language` - with `.system`, the first of the user's languages the catalog
+- `language` - with nil, the first of the user's languages the catalog
   speaks: the same tag, then the same language in the same script (the script
   a language is written in where the tag says none: `sr` is Cyrillic), then the
   language alone where the catalog has it bare; the catalog's
   `defaultLanguage` where none matches;
-- `formatLocale` - with `.system`, the language in effect with the system's
+- `formatLocale` - with nil, the language in effect with the system's
   region and clock;
 - `timeZone` - the zone the host's zone acts are asked about,
   `resolvedTimeZone`.

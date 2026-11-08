@@ -78,7 +78,7 @@ LinksSample.swift a814ef4ed2f59b1d
 LivingLayoutSample.swift 9027b77224ed6a31
 LoadingItemsSample.swift d137ae58c27e7004
 LocaleInfoSample.swift feb36c49b5e60da9
-LocalizationSample.swift 4bd61aa25f66a699
+LocalizationSample.swift 8514df1092939a92
 MainQueueSample.swift 142b7947497fae78
 MapSample.swift b0149a1c0e7157c6
 MaterialsSample.swift 0074507d1ab40b46

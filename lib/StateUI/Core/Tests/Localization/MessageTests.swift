@@ -13,7 +13,7 @@ final class MessageTests: XCTestCase {
     }
 
     private func forms(_ language: TestLanguage, _ counts: [Int]) -> [String] {
-        let localization = Localization(TestCatalog.self, language: .fixed(language))
+        let localization = Localization(TestCatalog.self, language: language)
         return counts.map { localization.text(category, $0) }
     }
 
@@ -29,7 +29,7 @@ final class MessageTests: XCTestCase {
     }
 
     func testAMissingFormSaysWhichAndFallsBackToOther() {
-        let polish = Localization(TestCatalog.self, language: .fixed(.polish))
+        let polish = Localization(TestCatalog.self, language: .polish)
         let unfinished = Message<Int> { count, context in
             context.plural(count, one: "\(count) plik", other: "\(count) pliku")
         }

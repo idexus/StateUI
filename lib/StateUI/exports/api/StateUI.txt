@@ -487,9 +487,6 @@ swift.conformance Link: StateUI.Views
 swift.conformance Link: Swift.Sendable
 swift.conformance LinkContract: StateUI.WornContract
 swift.conformance LinkContract: Swift.Sendable
-swift.conformance LocaleChoice: Swift.Equatable
-swift.conformance LocaleChoice: Swift.Hashable
-swift.conformance LocaleChoice: Swift.Sendable
 swift.conformance LocaleInfo: Swift.Sendable
 swift.conformance LocaleTag: Swift.CustomStringConvertible
 swift.conformance LocaleTag: Swift.Equatable
@@ -1102,7 +1099,6 @@ swift.enum LineContract: enum LineContract
 swift.enum LineHeightElementContract: enum LineHeightElementContract
 swift.enum LineJoin: enum LineJoin
 swift.enum LinkContract: enum LinkContract
-swift.enum LocaleChoice: enum LocaleChoice<Value> where Value : Hashable, Value : Sendable
 swift.enum MapContract: enum MapContract
 swift.enum MapKind: enum MapKind
 swift.enum MarkerBuilder: @resultBuilder enum MarkerBuilder
@@ -1412,8 +1408,6 @@ swift.enum.case LineCap.square: case square
 swift.enum.case LineJoin.bevel: case bevel
 swift.enum.case LineJoin.miter: case miter
 swift.enum.case LineJoin.round: case round
-swift.enum.case LocaleChoice.fixed(_:): case fixed(Value)
-swift.enum.case LocaleChoice.system: case system
 swift.enum.case MapKind.hybrid: case hybrid
 swift.enum.case MapKind.satellite: case satellite
 swift.enum.case MapKind.standard: case standard
@@ -1607,7 +1601,7 @@ swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Strin
 swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:writingDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, writingDirection: WritingDirection = .leftToRight, languages: [LocaleTag] = [])
 swift.init LocaleTag.init(_:): init(_ text: String)
 swift.init LocaleTag.init(stringLiteral:): init(stringLiteral value: String)
-swift.init Localization.init(_:language:formatLocale:timeZone:): @MainActor init(_ catalog: Catalog.Type, language: LocaleChoice<Catalog.CatalogLanguage> = .system, formatLocale: LocaleChoice<LocaleTag> = .system, timeZone: LocaleChoice<TimeZoneName> = .system)
+swift.init Localization.init(_:language:formatLocale:timeZone:): @MainActor init(_ catalog: Catalog.Type, language: Catalog.CatalogLanguage? = nil, formatLocale: LocaleTag? = nil, timeZone: TimeZoneName? = nil)
 swift.init Location.init(latitude:longitude:): init(latitude: Double, longitude: Double)
 swift.init Map.init(): @MainActor init()
 swift.init Map.init(region:): @MainActor init(region: MapRegion)
@@ -13144,11 +13138,14 @@ swift.property LocaleTag.likelyScript: var likelyScript: String { get }
 swift.property LocaleTag.region: let region: String?
 swift.property LocaleTag.script: let script: String?
 swift.property LocaleTag.writingDirection: var writingDirection: WritingDirection { get }
-swift.property Localization.formatLocale: @MainActor var formatLocale: LocaleChoice<LocaleTag> { get set }
-swift.property Localization.language: @MainActor var language: LocaleChoice<Catalog.CatalogLanguage> { get set }
+swift.property Localization.$formatLocale: @MainActor var $formatLocale: Binding<LocaleTag?> { get }
+swift.property Localization.$language: @MainActor var $language: Binding<Catalog.CatalogLanguage?> { get }
+swift.property Localization.$timeZone: @MainActor var $timeZone: Binding<TimeZoneName?> { get }
+swift.property Localization.formatLocale: @State @MainActor var formatLocale: LocaleTag? { get set }
+swift.property Localization.language: @State @MainActor var language: Catalog.CatalogLanguage? { get set }
 swift.property Localization.resolvedLanguage: @MainActor var resolvedLanguage: Catalog.CatalogLanguage { get }
 swift.property Localization.resolvedTimeZone: @MainActor var resolvedTimeZone: TimeZoneName? { get }
-swift.property Localization.timeZone: @MainActor var timeZone: LocaleChoice<TimeZoneName> { get set }
+swift.property Localization.timeZone: @State @MainActor var timeZone: TimeZoneName? { get set }
 swift.property Location.latitude: var latitude: Double
 swift.property Location.longitude: var longitude: Double
 swift.property Map.body: @MainActor var body: Never { get }

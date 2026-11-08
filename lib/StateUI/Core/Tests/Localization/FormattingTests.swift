@@ -10,7 +10,7 @@ final class FormattingTests: XCTestCase {
     private let day = CalendarDate(year: 2026, month: 9, day: 30)
 
     private func localization(_ language: TestLanguage, _ formats: LocaleTag) -> Localization<TestCatalog> {
-        Localization(TestCatalog.self, language: .fixed(language), formatLocale: .fixed(formats))
+        Localization(TestCatalog.self, language: language, formatLocale: formats)
     }
 
     func testWholeNumbers() {
