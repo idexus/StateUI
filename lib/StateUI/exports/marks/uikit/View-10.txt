@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.horizontalAlignment: ✅
 Button.pinchUpdated: ✓ pinch on Button: the view's listening handed the recognizer's states, no touch sent
@@ -31,8 +31,6 @@ Fill.swiped: ✓ pan on Fill: the view's listening handed the recognizer's state
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
-Grid.pointerEntered: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.pointerExited: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerMoved: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerPressed: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.pointerReleased: ✓ hover on Grid: the view's listening handed the recognizer's states, no touch sent
@@ -66,8 +64,6 @@ Path.swiped: ✓ pan on Path: the view's listening handed the recognizer's state
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Picker.pointerEntered: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
-Picker.pointerExited: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.pointerMoved: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.pointerPressed: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.pointerReleased: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent
@@ -120,8 +116,6 @@ Text.isDraggable: ✓ dragAndDrop on Text: the drag and drop interactions' handl
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
-TextEditor.pointerEntered: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
-TextEditor.pointerExited: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.pointerMoved: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.pointerPressed: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.pointerReleased: ✓ hover on TextEditor: the view's listening handed the recognizer's states, no touch sent

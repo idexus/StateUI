@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.area: ✅
 Canvas.frameChanged: ✅
@@ -18,8 +18,6 @@ ColorPicker.swiped: ✓ pan on ColorPicker: the view's listening handed the reco
 DatePicker.frameChanged: ✅
 DatePicker.gridColumn: ✅
 DatePicker.gridRow: ✅
-DatePicker.pointerEntered: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
-DatePicker.pointerExited: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerMoved: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerPressed: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.pointerReleased: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -52,8 +50,6 @@ Link.swiped: ✓ pan on Link: the view's listening handed the recognizer's state
 Map.frameChanged: ✅
 Map.gridColumn: ✅
 Map.gridRow: ✅
-Map.pointerEntered: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
-Map.pointerExited: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
@@ -101,8 +97,6 @@ Slider.swiped: ✓ pan on Slider: the view's listening handed the recognizer's s
 Space.frameChanged: ✅
 Space.gridColumn: ✅
 Space.gridRow: ✅
-Space.pointerEntered: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
-Space.pointerExited: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerMoved: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerPressed: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerReleased: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent

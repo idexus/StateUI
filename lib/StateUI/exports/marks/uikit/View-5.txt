@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.held: ✓ hold on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutBody: ✅
 Canvas.panYChannel: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
@@ -20,8 +20,6 @@ DatePicker.swiped: ✓ pan on DatePicker: the view's listening handed the recogn
 Ellipse.frameChanged: ✅
 Ellipse.gridColumn: ✅
 Ellipse.gridRow: ✅
-Ellipse.pointerEntered: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Ellipse.pointerExited: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerMoved: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerPressed: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Ellipse.pointerReleased: ✓ hover on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -91,8 +89,6 @@ SearchField.tapped: ✓ tap on SearchField: the view's listening handed the reco
 Separator.frameChanged: ✅
 Separator.gridColumn: ✅
 Separator.gridRow: ✅
-Separator.pointerEntered: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
-Separator.pointerExited: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.pointerMoved: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.pointerPressed: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.pointerReleased: ✓ hover on Separator: the view's listening handed the recognizer's states, no touch sent
@@ -112,8 +108,6 @@ Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag and drop interactions'
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
-Stepper.pointerEntered: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
-Stepper.pointerExited: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerMoved: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerPressed: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent
 Stepper.pointerReleased: ✓ hover on Stepper: the view's listening handed the recognizer's states, no touch sent

@@ -1,26 +1,24 @@
-# revision 5.1
+# revision 6.1
 Capsule.dash: ✅
+Capsule.geometryTransform: ✅
 Capsule.lineCap: ✅
-Capsule.lineWidth: ✅
+Ellipse.dash: ✅
 Ellipse.dashPhase: ✅
-Ellipse.geometryTransform: does not apply - read geometryTransform of Ellipse - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Ellipse.lineCap: ✅
-Ellipse.lineWidth: ✅
 Ellipse.stroke: ✅
-Line.dash: ✅
 Line.dashPhase: ✅
-Line.geometryTransform: ✅
+Line.lineCap: ✅
+Line.lineWidth: ✅
+Line.stroke: ✅
 Path.dash: ✅
+Path.geometryTransform: ✅
 Path.lineCap: ✅
-Path.lineWidth: ✅
+Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - StateUI places and moves a shape's figure into its layer's path, which holds no geometryTransform; its drawing proves it
-Polygon.lineCap: ✅
-Polygon.lineWidth: ✅
 Polygon.stroke: ✅
-Polyline.dash: ✅
 Polyline.dashPhase: ✅
-Polyline.geometryTransform: ✅
+Polyline.lineCap: ✅
+Polyline.lineWidth: ✅
+Polyline.stroke: ✅
 Rectangle.dash: ✅
+Rectangle.geometryTransform: ✅
 Rectangle.lineCap: ✅
-Rectangle.lineWidth: ✅

@@ -1,4 +1,4 @@
-# revision 0.0
+# revision 1.1
 Button.keyboardShortcut: ✅
 MenuItem.keyboardShortcut: ☑️ UIKit shows a shortcut in the main menu alone, none in a context menu.
 MenuToggle.keyboardShortcut: ☑️ UIKit shows a shortcut in the main menu alone, none in a context menu.

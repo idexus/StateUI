@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.dragEnded: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragText: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
@@ -27,8 +27,6 @@ Ellipse.swiped: ✓ pan on Ellipse: the view's listening handed the recognizer's
 Fill.frameChanged: ✅
 Fill.gridColumn: ✅
 Fill.gridRow: ✅
-Fill.pointerEntered: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
-Fill.pointerExited: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.pointerMoved: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.pointerPressed: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
 Fill.pointerReleased: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
@@ -63,8 +61,6 @@ MotionLayout.panYChannel: ✓ pan on MotionLayout: the view's listening handed t
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
-Path.pointerEntered: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
-Path.pointerExited: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerMoved: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerPressed: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerReleased: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
@@ -116,8 +112,6 @@ Stepper.swiped: ✓ pan on Stepper: the view's listening handed the recognizer's
 Switch.frameChanged: ✅
 Switch.gridColumn: ✅
 Switch.gridRow: ✅
-Switch.pointerEntered: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
-Switch.pointerExited: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerMoved: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerPressed: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerReleased: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent

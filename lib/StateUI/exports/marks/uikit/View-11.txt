@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the recognizer's states, no touch sent
@@ -17,8 +17,6 @@ CheckBox.swiped: ✓ pan on CheckBox: the view's listening handed the recognizer
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumn: ✅
 ColorPicker.gridRow: ✅
-ColorPicker.pointerEntered: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
-ColorPicker.pointerExited: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.pointerMoved: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.pointerPressed: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.pointerReleased: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
@@ -53,8 +51,6 @@ Line.swiped: ✓ pan on Line: the view's listening handed the recognizer's state
 Link.frameChanged: ✅
 Link.gridColumn: ✅
 Link.gridRow: ✅
-Link.pointerEntered: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
-Link.pointerExited: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
 Link.pointerMoved: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
 Link.pointerPressed: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
 Link.pointerReleased: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
@@ -98,8 +94,6 @@ Separator.panXChannel: ✓ pan on Separator: the view's listening handed the rec
 Slider.frameChanged: ✅
 Slider.gridColumn: ✅
 Slider.gridRow: ✅
-Slider.pointerEntered: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.pointerExited: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerMoved: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerPressed: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
 Slider.pointerReleased: ✓ hover on Slider: the view's listening handed the recognizer's states, no touch sent
