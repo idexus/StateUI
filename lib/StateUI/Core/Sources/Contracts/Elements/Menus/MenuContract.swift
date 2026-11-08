@@ -10,12 +10,9 @@ public enum MenuContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// The caption.
-    public static let text = ElementProperty<Self, String>("text", layer: .native)
-
     /// The tiers it wears.
-    public static let tiers: [any Tier.Type] = [EnabledElementContract.self]
+    public static let tiers: [any Tier.Type] = [EnabledElementContract.self, TextElementContract.self]
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [text]
+    public static let members: [any ContractMember] = []
 }

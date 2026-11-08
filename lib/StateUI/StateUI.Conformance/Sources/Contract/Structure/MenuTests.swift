@@ -15,14 +15,15 @@
     @MainActor static var written: [ConformanceCase] {
         [
             ConformanceCase("aSubmenuStandsUnderItsCaptionHoldingItsEntries", proves: [
-                Covered(MenuContract.self), Covered(MenuContract.text),
+                Covered(MenuContract.self), Covered(TextElementContract.text, on: MenuContract.self),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }
 
                 s.expect(try s.menu(of: s.element("row")).hasSuffix("Share[Mail]"), true)
             },
             ConformanceCase("aSubmenusCaptionAndReachFollowTheTree", proves: [
-                Covered(MenuContract.text), Covered(EnabledElementContract.isEnabled, on: MenuContract.self),
+                Covered(TextElementContract.text, on: MenuContract.self),
+                Covered(EnabledElementContract.isEnabled, on: MenuContract.self),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let changed = State(wrappedValue: false)
                 s.start {

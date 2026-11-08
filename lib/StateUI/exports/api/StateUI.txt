@@ -531,9 +531,6 @@ swift.conformance MenuEntries: Swift.Sendable
 swift.conformance MenuItem: Swift.Sendable
 swift.conformance MenuItemContract: StateUI.WornContract
 swift.conformance MenuItemContract: Swift.Sendable
-swift.conformance MenuItemElementContract: StateUI.Tier
-swift.conformance MenuItemElementContract: StateUI.WornContract
-swift.conformance MenuItemElementContract: Swift.Sendable
 swift.conformance MenuSeparator: Swift.Sendable
 swift.conformance MenuSeparatorContract: StateUI.WornContract
 swift.conformance MenuSeparatorContract: Swift.Sendable
@@ -846,6 +843,9 @@ swift.conformance TextEditor: StateUI.Views
 swift.conformance TextEditor: Swift.Sendable
 swift.conformance TextEditorContract: StateUI.WornContract
 swift.conformance TextEditorContract: Swift.Sendable
+swift.conformance TextElementContract: StateUI.Tier
+swift.conformance TextElementContract: StateUI.WornContract
+swift.conformance TextElementContract: Swift.Sendable
 swift.conformance TextField: StateUI.TextInput
 swift.conformance TextField: StateUI.View
 swift.conformance TextField: StateUI.Views
@@ -1101,7 +1101,6 @@ swift.enum MenuBarContract: enum MenuBarContract
 swift.enum MenuBuilder: @MainActor @resultBuilder enum MenuBuilder
 swift.enum MenuContract: enum MenuContract
 swift.enum MenuItemContract: enum MenuItemContract
-swift.enum MenuItemElementContract: enum MenuItemElementContract
 swift.enum MenuSeparatorContract: enum MenuSeparatorContract
 swift.enum MenuToggleContract: enum MenuToggleContract
 swift.enum MotionLayoutContract: enum MotionLayoutContract
@@ -1162,6 +1161,7 @@ swift.enum TextCase: enum TextCase
 swift.enum TextColorElementContract: enum TextColorElementContract
 swift.enum TextContract: enum TextContract
 swift.enum TextEditorContract: enum TextEditorContract
+swift.enum TextElementContract: enum TextElementContract
 swift.enum TextFieldContract: enum TextFieldContract
 swift.enum TextInputContract: enum TextInputContract
 swift.enum TextSpanBuilder: @resultBuilder enum TextSpanBuilder
@@ -13787,10 +13787,7 @@ swift.type.property MarkerContract.title: static let title: ElementProperty<Mark
 swift.type.property MenuBarContract.name: static var name: String { get }
 swift.type.property MenuBarContract.order: static let order: ElementProperty<MenuBarContract, Int>
 swift.type.property MenuContract.name: static var name: String { get }
-swift.type.property MenuContract.text: static let text: ElementProperty<MenuContract, String>
 swift.type.property MenuItemContract.name: static var name: String { get }
-swift.type.property MenuItemElementContract.name: static let name: String
-swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
 swift.type.property MenuSeparatorContract.name: static var name: String { get }
 swift.type.property MenuToggleContract.name: static var name: String { get }
 swift.type.property Motion.inherited: static let inherited: Motion
@@ -13957,6 +13954,8 @@ swift.type.property TextDecorations.strikethrough: static let strikethrough: Tex
 swift.type.property TextDecorations.underline: static let underline: TextDecorations
 swift.type.property TextEditorContract.growsWithText: static let growsWithText: ElementProperty<TextEditorContract, Bool>
 swift.type.property TextEditorContract.name: static var name: String { get }
+swift.type.property TextElementContract.name: static let name: String
+swift.type.property TextElementContract.text: static let text: ElementProperty<TextElementContract, String>
 swift.type.property TextFieldContract.isPassword: static let isPassword: ElementProperty<TextFieldContract, Bool>
 swift.type.property TextFieldContract.name: static var name: String { get }
 swift.type.property TextFieldContract.showsClearButton: static let showsClearButton: ElementProperty<TextFieldContract, Bool>
@@ -13974,7 +13973,6 @@ swift.type.property TextInputContract.textChanged: static let textChanged: Eleme
 swift.type.property TextSpanContract.name: static var name: String { get }
 swift.type.property TextSpansContract.name: static var name: String { get }
 swift.type.property TextualElementContract.name: static let name: String
-swift.type.property TextualElementContract.text: static let text: ElementProperty<TextualElementContract, String>
 swift.type.property TextualElementContract.textCase: static let textCase: ElementProperty<TextualElementContract, TextCase>
 swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, TimeFormat>
 swift.type.property TimePickerContract.name: static var name: String { get }
@@ -13996,7 +13994,6 @@ swift.type.property ToolbarGroupContract.position: static let position: ElementP
 swift.type.property ToolbarGroupContract.spacing: static let spacing: ElementProperty<ToolbarGroupContract, Double>
 swift.type.property ToolbarGroupContract.standsAlone: static let standsAlone: ElementProperty<ToolbarGroupContract, Bool>
 swift.type.property ToolbarLabelContract.name: static var name: String { get }
-swift.type.property ToolbarLabelContract.text: static let text: ElementProperty<ToolbarLabelContract, String>
 swift.type.property ToolbarToggleContract.name: static var name: String { get }
 swift.type.property ToolbarToggleContract.onIcon: static let onIcon: ElementProperty<ToolbarToggleContract, ImageSource>
 swift.type.property TrackingElementContract.name: static let name: String

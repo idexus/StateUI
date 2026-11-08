@@ -59,6 +59,6 @@
                 s.turn()
                 s.expect(heard.values, [], "the key is the field's, the button stays as it was")
             },
-        ] + (ButtonTests.written + MenuItemElementTests.written).proving(ShortcutElementContract.self)
+        ] + (ButtonTests.written + MenuItemElementCases.written).proving(ShortcutElementContract.self)
     }
 }

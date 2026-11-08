@@ -267,7 +267,7 @@ extension NodeType {
     static let swipeDirections = ViewContract.swipeDirections.token
     static let swipeThreshold = ViewContract.swipeThreshold.token
     static let tapCount = ViewContract.tapCount.token
-    static let text = TextualElementContract.text.token
+    static let text = TextElementContract.text.token
     static let textColor = TextColorElementContract.textColor.token
     static let textDecorations = DecorableTextElementContract.textDecorations.token
     static let textCase = TextualElementContract.textCase.token

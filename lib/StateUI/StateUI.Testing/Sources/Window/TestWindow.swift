@@ -15,7 +15,7 @@
 ///
 ///         try await button.perform(.activate)
 ///
-///         XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 1 time")
+///         XCTAssertEqual(try button.value(TextElementContract.text), "Clicked 1 time")
 ///     }
 ///
 /// The page stands over StateUI's core with no platform's toolkit, where `swift test` runs. One window stands at a

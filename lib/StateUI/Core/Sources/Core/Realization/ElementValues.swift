@@ -58,9 +58,9 @@
     /// the platform, a frame a layout reports. What the tree describes beside
     /// such a value is not put on the control: the control is the source.
     ///
-    ///     let words = values.carriedIn(TextualElementContract.text)
+    ///     let words = values.carriedIn(TextElementContract.text)
     ///         ? nil
-    ///         : values[TextualElementContract.text]
+    ///         : values[TextElementContract.text]
     ///
     /// - Parameter member: the property, written with its contract.
     @MainActor

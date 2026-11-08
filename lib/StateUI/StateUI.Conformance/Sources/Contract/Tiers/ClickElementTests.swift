@@ -12,7 +12,7 @@
         [
             ConformanceCase("Button.eachClickIsHeardOnceAndRendersWhatItsHandlerChanged", proves: [
                 Covered(ClickElementContract.clicked, on: ButtonContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(TextElementContract.text, on: TextContract.self)]) { s in
                 let count = State(wrappedValue: 0)
                 let heard = Received<Int>()
                 s.start {
@@ -27,12 +27,12 @@
                 let button = try s.element("button")
 
                 try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 1" }
+                try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "count 1" }
                 try s.perform(.activate, on: button)
-                try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "count 2" }
+                try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "count 2" }
 
                 s.expect(heard.values, [1, 2], "each click heard once")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "count 2")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "count 2")
             },
             ConformanceCase("Link.aChosenLinkIsHeardOnce", proves: [Covered(ClickElementContract.clicked, on: LinkContract.self)]) { s in
                 let heard = Received<Bool>()

@@ -74,7 +74,7 @@ public struct ControlReports<Realized: ElementContract> {
     ///     }
     ///
     /// The two members need not come from one contract: a field's words are
-    /// `TextualElementContract.text` and the change it reports is
+    /// `TextElementContract.text` and the change it reports is
     /// `TextInputContract.textChanged`, and the element wears both. A member of
     /// a contract it does not wear is refused, and said once.
     ///

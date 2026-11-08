@@ -10,7 +10,7 @@ final class ControlIsolationTests: XCTestCase {
         let operations = [
             """
             func callback(_ values: ControlValues<TextContract>) {
-                _ = values[TextualElementContract.text]
+                _ = values[TextElementContract.text]
             }
             """,
             """
@@ -47,7 +47,7 @@ final class ControlIsolationTests: XCTestCase {
                 Set([left]).contains(right)
             }
             func changed(_ values: ControlValues<TextContract>) -> Bool {
-                values.changed(TextualElementContract.text)
+                values.changed(TextElementContract.text)
             }
             """, name: "identity"))
     }

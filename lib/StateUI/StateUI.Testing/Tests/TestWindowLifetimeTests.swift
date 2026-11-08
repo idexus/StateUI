@@ -59,7 +59,7 @@ final class TestWindowLifetimeTests: XCTestCase {
         for _ in 0..<1000 { if farewell.began { break }; await Task.yield() }
         XCTAssertTrue(farewell.began)
         XCTAssertFalse(returned, "close waits for the lifecycle handler")
-        XCTAssertThrowsError(try element.value(TextualElementContract.text), "the view is gone while its cleanup waits")
+        XCTAssertThrowsError(try element.value(TextElementContract.text), "the view is gone while its cleanup waits")
         farewell.release?.resume()
         farewell.release = nil
         try await closing.value
@@ -83,7 +83,7 @@ final class TestWindowLifetimeTests: XCTestCase {
         old = nil
         XCTAssertNil(released)
         try await next.element("counter.add").perform(.activate)
-        XCTAssertEqual(try next.element("counter.add").value(TextualElementContract.text), "Clicked 1 time")
+        XCTAssertEqual(try next.element("counter.add").value(TextElementContract.text), "Clicked 1 time")
         XCTAssertEqual(destroyed, 1)
         try await next.close()
     }
@@ -171,7 +171,7 @@ final class TestWindowLifetimeTests: XCTestCase {
         let next = try XCTUnwrap(successor)
         XCTAssertTrue(service.isBusy, "the successor's work belongs to its own page")
         try await next.element("counter.add").perform(.activate)
-        XCTAssertEqual(try next.element("counter.add").value(TextualElementContract.text), "Clicked 1 time")
+        XCTAssertEqual(try next.element("counter.add").value(TextElementContract.text), "Clicked 1 time")
         work.release?.resume()
         work.release = nil
         try await next.close()

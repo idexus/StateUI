@@ -26,6 +26,6 @@ enum Words {
             return [Write(PickerContract.options, ["Some words"]), Write(PickerContract.selectedIndex, 0)]
         }
         guard Specimens.wearing(TextualElementContract.self).contains(element) else { return [] }
-        return [Write(TextualElementContract.text, "Some words")]
+        return [Write(TextElementContract.text, "Some words")]
     }
 }

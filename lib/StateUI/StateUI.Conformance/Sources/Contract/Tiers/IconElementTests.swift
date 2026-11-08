@@ -11,13 +11,13 @@
     public static var cases: [ConformanceCase] {
         [
             Aspects.holds(IconElementContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
-                          with: [Write(TextualElementContract.text, "Go")]),
+                          with: [Write(TextElementContract.text, "Go")]),
             ConformanceCase("ToolbarLabel.aLabelShowsItsPicture", proves: [Covered(IconElementContract.icon, on: ToolbarLabelContract.self)]) { s in
                 s.start { ToolbarLabelTests.page { [ToolbarLabel("Saved").icon("test_dot.png").id("saved")] } }
 
                 try s.settle { try s.held(IconElementContract.icon, on: s.element("saved")) == "test_dot.png" }
                 s.expect(try s.held(IconElementContract.icon, on: s.element("saved")), "test_dot.png")
             },
-        ] + (ButtonTests.written + MenuItemElementTests.written + PageElementTests.written).proving(IconElementContract.self)
+        ] + (ButtonTests.written + MenuItemElementCases.written + PageElementTests.written).proving(IconElementContract.self)
     }
 }

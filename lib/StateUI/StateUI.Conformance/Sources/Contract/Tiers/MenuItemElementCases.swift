@@ -4,21 +4,21 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `MenuItemElementContract` on a host: an item - a menu's, a toolbar's, an action or a setting - out of reach itself
-/// or with its branch is chosen by nothing, its shortcut chooses it, and it stands with the words and icon the tree
-/// gives it; each case made for every element wearing the tier.
-@_spi(Host) public enum MenuItemElementTests: ConformanceFamily {
-    public static let name = "MenuItemElement"
+/// The cases every item a user chooses from is held to - a menu's, a toolbar's, an action or a setting: out of reach
+/// itself or with its branch it is chosen by nothing, its shortcut chooses it, and it stands with the words and icon
+/// the tree gives it. The families of the tiers it wears take up the cases proving their members.
+enum MenuItemElementCases {
+    /// The items: every element `MenuItemElement` describes.
+    static let items: [String] = [MenuItemContract.nodeType, MenuToggleContract.nodeType, ToolbarButtonContract.nodeType,
+        ToolbarToggleContract.nodeType].map { $0.name }
 
-    public static var cases: [ConformanceCase] { written.proving(MenuItemElementContract.self) }
-
-    /// Every case written for the contract: its own members, and a tier's its family takes up.
+    /// Every case written for the items, each made for every item.
     @MainActor static var written: [ConformanceCase] {
-        Specimens.wearing(MenuItemElementContract.self).flatMap { element in
+        items.flatMap { element in
             [
                 chosen(element),
                 outOfReachWithItsBranch(element),
-                Aspects.holds(MenuItemElementContract.text, on: element, "Copy", then: "Duplicate"),
+                Aspects.holds(TextElementContract.text, on: element, "Copy", then: "Duplicate"),
                 Aspects.holds(IconElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
                 Aspects.holds(EnabledElementContract.isEnabled, on: element, true, then: false),
                 Aspects.holds(
@@ -90,7 +90,7 @@
     }
 }
 
-extension MenuItemElementTests {
+extension MenuItemElementCases {
     /// A shortcut chooses the item stating it while its window is in front - a bar's item, a menu bar's entry - and
     /// one out of reach nothing; a context menu's entry only shows its shortcut, and a press chooses nothing.
     @MainActor

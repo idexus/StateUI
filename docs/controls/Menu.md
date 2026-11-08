@@ -20,7 +20,7 @@ Text("Sorted by \(order)")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [EnabledElement](tiers/EnabledElement.md)
+Inherits: [TextElement](tiers/TextElement.md) · [EnabledElement](tiers/EnabledElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -51,6 +51,12 @@ See [the dictionary](README.md) for how a mark is given.
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 ## Menu's own members
+
+Menu declares no members of its own.
+
+## From [TextElement](tiers/TextElement.md)
+
+The words an element shows: a control's caption, a text's or a field's words, a menu's caption and its items', a bar's label.
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>

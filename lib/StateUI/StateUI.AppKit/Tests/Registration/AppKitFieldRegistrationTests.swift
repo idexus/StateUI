@@ -25,7 +25,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
 
         XCTAssertTrue(realization.elements.isSuperset(of: ["TextField", "TextEditor", "SearchField"]))
         XCTAssertTrue(realization.members.contains(
-            HostRealizedMember(element: "TextField", owner: "TextualElement", member: "text")))
+            HostRealizedMember(element: "TextField", owner: "TextElement", member: "text")))
         XCTAssertTrue(realization.members.contains(
             HostRealizedMember(element: "TextField", owner: "TextInput", member: "textChanged")))
         XCTAssertTrue(realization.members.contains(

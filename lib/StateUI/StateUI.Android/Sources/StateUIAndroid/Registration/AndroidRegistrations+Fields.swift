@@ -5,14 +5,14 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// A TextField, a SearchField and a TextEditor: their words are `TextualElementContract.text` and the change
+    /// A TextField, a SearchField and a TextEditor: their words are `TextElementContract.text` and the change
     /// they report is `TextInputContract.textChanged`. Each member reaches the field only where the tree
     /// changed it, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<AndroidView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let field = AndroidTextFieldView(.field)
             field.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             field.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return field
@@ -27,7 +27,7 @@ extension AndroidRegistrations {
         registry.add(SearchFieldContract.self, create: { reports in
             let search = AndroidTextFieldView(.search)
             search.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
@@ -42,7 +42,7 @@ extension AndroidRegistrations {
         registry.add(TextEditorContract.self, create: { reports in
             let editor = AndroidTextFieldView(.editor)
             editor.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             return editor
         }, members: { editor in
@@ -66,7 +66,7 @@ extension AndroidRegistrations {
     }
 
     /// What every field takes whole.
-    private static let inputMembers = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+    private static let inputMembers = PropertyList(TextElementContract.text, TextualElementContract.textCase)
         + TextMembers.lookMembers
         + PropertyList(
             TextInputContract.placeholder, TextInputContract.placeholderColor,
@@ -82,7 +82,7 @@ extension AndroidRegistrations {
             view.setPassword(values[TextFieldContract.isPassword] ?? false)
         }
         if values.changed(TextualElementContract.textCase) { view.textCase = values[TextualElementContract.textCase] }
-        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase),
+        if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase),
            let words = words(values) {
             view.setText(words)
         }
@@ -117,7 +117,7 @@ extension AndroidRegistrations {
     /// The words to put on a field, in their case: none where the host carries them in, since the field is their
     /// source.
     private static func words<Realized: ElementContract>(_ values: ElementValues<Realized>) -> String? {
-        guard !values.carriedIn(TextualElementContract.text) else { return nil }
-        return (values[TextualElementContract.textCase] ?? .none).applied(to: values[TextualElementContract.text] ?? "")
+        guard !values.carriedIn(TextElementContract.text) else { return nil }
+        return (values[TextualElementContract.textCase] ?? .none).applied(to: values[TextElementContract.text] ?? "")
     }
 }

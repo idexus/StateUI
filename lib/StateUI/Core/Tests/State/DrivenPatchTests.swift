@@ -500,9 +500,9 @@ final class DrivenPatchTests: XCTestCase {
             (Stepper(number.projectedValue).node, RangeElementContract.value.token, "Stepper"),
             (Switch(flag.projectedValue).node, ToggleElementContract.isOn.token, "Switch"),
             (CheckBox(flag.projectedValue).node, ToggleElementContract.isOn.token, "CheckBox"),
-            (TextField(text.projectedValue).node, TextualElementContract.text.token, "TextField"),
-            (TextEditor(text.projectedValue).node, TextualElementContract.text.token, "TextEditor"),
-            (SearchField(text.projectedValue).node, TextualElementContract.text.token, "SearchField"),
+            (TextField(text.projectedValue).node, TextElementContract.text.token, "TextField"),
+            (TextEditor(text.projectedValue).node, TextElementContract.text.token, "TextEditor"),
+            (SearchField(text.projectedValue).node, TextElementContract.text.token, "SearchField"),
             (DatePicker(due.projectedValue).node, DatePickerContract.date.token, "DatePicker"),
             (TimePicker(alarm.projectedValue).node, TimePickerContract.time.token, "TimePicker"),
         ]

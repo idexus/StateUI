@@ -15,7 +15,7 @@ public struct MenuItem: Element, MenuItemElement, ActionElement {
     /// nothing is one that looks broken.
     public init(_ text: String) {
         node = Node(contract: MenuItemContract.self)
-        node.write(MenuItemElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// Who this entry is among the menu's others, so it stays matched to itself

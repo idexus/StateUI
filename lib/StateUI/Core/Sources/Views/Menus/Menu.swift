@@ -34,7 +34,7 @@ public struct Menu: Element {
     /// - Parameter items: the entries, in the order they are written.
     public init(_ text: String, @MenuBuilder items: () -> MenuEntries) {
         node = Node(contract: MenuContract.self, children: items().nodes)
-        node.write(MenuContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// Who this menu is among the others, so it stays matched to itself when

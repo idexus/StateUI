@@ -14,9 +14,9 @@
             ConformanceCase("aViewOffersItsMenuAsTheTreeSaysIt", proves: [
                 Covered(ContextMenuContract.self),
             ], needs: [
-                Covered(MenuContract.text),
+                Covered(TextElementContract.text, on: MenuContract.self),
                 Covered(MenuSeparatorContract.self),
-                Covered(MenuItemElementContract.text, on: "MenuItem"),
+                Covered(TextElementContract.text, on: "MenuItem"),
                 Covered(EnabledElementContract.isEnabled, on: "MenuItem"),
             ]) { s in
                 s.start { MenuPage(heard: Received()) }

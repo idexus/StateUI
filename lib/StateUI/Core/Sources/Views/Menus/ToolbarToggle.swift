@@ -24,7 +24,7 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, ToggleElement, 
     /// turn goes nowhere without `.onToggled`.
     public init(_ text: String, isOn: Bool) {
         node = Node(contract: ToolbarToggleContract.self)
-        node.write(MenuItemElementContract.text, text)
+        node.write(TextElementContract.text, text)
         node.write(ToggleElementContract.isOn, isOn)
     }
 

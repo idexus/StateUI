@@ -860,6 +860,13 @@ extension ControlDictionary {
                 .onClicked { saved = true }
             """#),
 
+        (TextElementContract.self, #"""
+            @State var count = 0
+
+            Button("Clicked \(count) times")
+                .onClicked { count += 1 }
+            """#),
+
         (ShortcutElementContract.self, #"""
             Button("Save")
                 .keyboardShortcut("s")
@@ -994,18 +1001,6 @@ extension ControlDictionary {
             Button("Delete")
                 .icon("trash.png")
                 .showsText($wordsShown)
-            """#),
-
-        (MenuItemElementContract.self, #"""
-            @State var saved = false
-
-            Text(saved ? "Saved" : "Draft")
-                .toolbar {
-                    ToolbarButton("Save")
-                        .icon("save.png")
-                        .isEnabled(!saved)
-                        .onClicked { saved = true }
-                }
             """#),
 
         (PageElementContract.self, #"""

@@ -24,13 +24,13 @@
                     }
                 }
                 s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), false, "words not to select")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
 
                 // Another value makes the text anew: it is looked for again.
                 try s.perform(.activate, on: s.element("change"))
                 try s.settle { try s.held(TextContract.isSelectable, on: s.element("label")) == true }
                 s.expect(try s.held(TextContract.isSelectable, on: s.element("label")), true, "words to select")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words",
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words",
                          "the same words, selectable")
 
                 try s.perform(.activate, on: s.element("change"))
@@ -39,10 +39,10 @@
             },
             ConformanceCase("aTextShowsItsWords", proves: [
                 Covered(TextContract.self),
-            ], needs: [Covered(TextualElementContract.text, on: "Text")]) { s in
+            ], needs: [Covered(TextElementContract.text, on: "Text")]) { s in
                 s.start { VStack { Text("Some words").id("label") } }
 
-                s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "Some words")
+                s.expect(try s.held(TextElementContract.text, on: s.element("label")), "Some words")
             },
             ConformanceCase("noMoreLinesStandThanItsMaximum", proves: [
                 Covered(TextContract.maximumLines), Covered(TextContract.lineBreak),
@@ -88,9 +88,9 @@
                 s.expect((frames.values.last.map(FrameReport.size)?[1] ?? 0) > one * 2, true, "wrapped over lines")
             },
             Aspects.holds(TextContract.lineBreak, on: "Text", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextualElementContract.text, Self.long)]),
+                          with: [Write(TextElementContract.text, Self.long)]),
             Aspects.holds(TextContract.maximumLines, on: "Text", 2, then: 1,
-                          with: [Write(TextualElementContract.text, Self.long)]),
+                          with: [Write(TextElementContract.text, Self.long)]),
         ]
     }
 

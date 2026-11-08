@@ -462,11 +462,11 @@
             },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
-            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextElementContract.text, on: TextContract.self)]) { s in
                 s.start { ThemeChoices() }
 
                 @MainActor func inForce() throws -> String? {
-                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                    try s.held(TextElementContract.text, on: s.element("inForce"))
                 }
                 try s.perform(.activate, on: s.element("dark"))
                 try s.settle { try s.theme() == .dark && inForce() == "dark" }
@@ -488,11 +488,11 @@
             },
             ConformanceCase("theApplicationDrawsInTheAccentItHolds", proves: [
                 Covered(ApplicationContract.useAccentColor),
-            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self), Covered(TextElementContract.text, on: TextContract.self)]) { s in
                 s.start { AccentChoices() }
 
                 @MainActor func inForce() throws -> String? {
-                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                    try s.held(TextElementContract.text, on: s.element("inForce"))
                 }
                 let own = try s.accent()
                 try s.perform(.activate, on: s.element("brick"))

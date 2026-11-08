@@ -17,7 +17,7 @@ public struct MenuToggle: Element, MenuItemElement, ToggleElement {
     /// the turn goes nowhere without `.onToggled`.
     public init(_ text: String, isOn: Bool) {
         node = Node(contract: MenuToggleContract.self)
-        node.write(MenuItemElementContract.text, text)
+        node.write(TextElementContract.text, text)
         node.write(ToggleElementContract.isOn, isOn)
     }
 

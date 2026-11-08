@@ -19,7 +19,7 @@
                 s.start { VStack { numbers().width(300).height(400).id("list") } }
 
                 s.settle { (try? item(0, in: s)) != nil }
-                s.expect(try s.held(TextualElementContract.text, on: item(0, in: s)), "Item 0")
+                s.expect(try s.held(TextElementContract.text, on: item(0, in: s)), "Item 0")
                 s.expect((try? item(999, in: s)) == nil, true, "an item far out of view is not built")
             },
             ConformanceCase("aListLaysItsItemsDown", proves: [Covered(ItemsViewContract.itemsLayout)]) { s in

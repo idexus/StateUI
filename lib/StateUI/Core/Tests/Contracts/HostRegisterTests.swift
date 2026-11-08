@@ -35,7 +35,7 @@ final class HostRegisterTests: XCTestCase {
     /// its reason, and an element realized none of judges nothing and runs nothing.
     func testNeverComesFromTheRegister() {
         let register = HostRegister(
-            records: [.complete(TextualElementContract.text, on: ButtonContract.self), .notPlanned(ImageElementContract.contentMode, on: ButtonContract.self, reason: "No such screen.")],
+            records: [.complete(TextElementContract.text, on: ButtonContract.self), .notPlanned(ImageElementContract.contentMode, on: ButtonContract.self, reason: "No such screen.")],
             unrealized: [MapContract.self], notPlanned: [(MenuBarContract.self, "No bar on a phone.")])
 
         XCTAssertEqual(register.judgment(of: "contentMode", on: "Button", from: nil), .notPlanned(reason: "No such screen."))
@@ -57,15 +57,15 @@ final class HostRegisterTests: XCTestCase {
         XCTAssertEqual(register.judgment(of: "region", on: "Map", from: nil), .byApplication)
         XCTAssertEqual(register.judgment(of: "opacity", on: "Map", from: "VisualElement"), .byApplication)
         XCTAssertFalse(register.realizes("region", on: "Map", from: nil))
-        XCTAssertEqual(register.and([.complete(TextualElementContract.text, on: ButtonContract.self)]).byApplication, [MapContract.nodeType], "kept with the runtime's")
+        XCTAssertEqual(register.and([.complete(TextElementContract.text, on: ButtonContract.self)]).byApplication, [MapContract.nodeType], "kept with the runtime's")
     }
 
     /// A tier's record reaches every wearer, and each wearer's test is its own.
     func testATiersRecordReachesEveryWearer() {
-        let register = HostRegister(records: [.complete(TextualElementContract.text)])
+        let register = HostRegister(records: [.complete(TextElementContract.text)])
 
-        XCTAssertTrue(register.realizes("text", on: "Text", from: "TextualElement"))
-        XCTAssertTrue(register.realizes("text", on: "Button", from: "TextualElement"))
+        XCTAssertTrue(register.realizes("text", on: "Text", from: "TextElement"))
+        XCTAssertTrue(register.realizes("text", on: "Button", from: "TextElement"))
     }
 
     /// A viewless element - a text span - takes only its own records: no tier's reaches it.
@@ -101,7 +101,7 @@ final class HostRegisterTests: XCTestCase {
         ])
         let records = Set(HostRegister.records(of: declaration).map { "\($0.owner).\($0.member)" })
 
-        XCTAssertTrue(records.contains("TextualElement.text"), "\(records.sorted())")
+        XCTAssertTrue(records.contains("TextElement.text"), "\(records.sorted())")
         XCTAssertTrue(records.contains("Text.textCase"), "\(records.sorted())")
         XCTAssertFalse(records.contains("TextualElement.textCase"), "\(records.sorted())")
     }
@@ -111,7 +111,7 @@ final class HostRegisterTests: XCTestCase {
     func testABackendsElementIsRecordedAsItsRegistrationRealizesIt() {
         let realization = HostRealization(elements: ["WebView", "Text"], members: [
             HostRealizedMember(element: "WebView", owner: "WebView", member: "navigated"),
-            HostRealizedMember(element: "Text", owner: "TextualElement", member: "text"),
+            HostRealizedMember(element: "Text", owner: "TextElement", member: "text"),
         ])
         let records = HostRegister.records(
             ofBackends: [WebViewContract.self], in: realization, performed: ["goBack", "scrollTo"])
@@ -125,7 +125,7 @@ final class HostRegisterTests: XCTestCase {
     func testTheProblemsOfWhatAHostWroteAreNamed() {
         let register = HostRegister(
             records: [
-                .complete(TextualElementContract.text, on: ButtonContract.self), .complete(TextualElementContract.text, on: ButtonContract.self), .complete(ToggleElementContract.isOn, on: ButtonContract.self),
+                .complete(TextElementContract.text, on: ButtonContract.self), .complete(TextElementContract.text, on: ButtonContract.self), .complete(ToggleElementContract.isOn, on: ButtonContract.self),
                 .complete(TextualElementContract.textCase), .partial(TextContract.maximumLines, missing: ""),
                 .notPlanned(TextContract.lineBreak,
                     reason: ""), .unrealized(TextualElementContract.textCase, on: TextContract.self, why: ""),

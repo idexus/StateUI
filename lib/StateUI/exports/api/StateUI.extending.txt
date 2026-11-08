@@ -586,7 +586,6 @@ swift.conformance MenuItemContract: StateUI.ElementContract
 swift.conformance MenuItemElement: StateUI.AutomationElement
 swift.conformance MenuItemElement: StateUI.PropertyContainer
 swift.conformance MenuItemElement: StateUI.ShortcutElement
-swift.conformance MenuItemElementContract: StateUI.Contract
 swift.conformance MenuSeparator: StateUI.Element
 swift.conformance MenuSeparatorContract: StateUI.Contract
 swift.conformance MenuSeparatorContract: StateUI.ElementContract
@@ -1196,6 +1195,7 @@ swift.conformance TextEditor: StateUI.VisualElementProperties
 swift.conformance TextEditorContract: StateUI.Contract
 swift.conformance TextEditorContract: StateUI.ElementContract
 swift.conformance TextEditorProperties: StateUI.PropertyContainer
+swift.conformance TextElementContract: StateUI.Contract
 swift.conformance TextField: StateUI.AutomationElement
 swift.conformance TextField: StateUI.BorderElement
 swift.conformance TextField: StateUI.Element
@@ -3080,9 +3080,6 @@ swift.type.property MenuItemContract.members: static let members: [any ContractM
 swift.type.property MenuItemContract.nodeType: static let nodeType: NodeType
 swift.type.property MenuItemContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property MenuItemContract.tiers: static var tiers: [any Tier.Type] { get }
-swift.type.property MenuItemElementContract.members: static let members: [any ContractMember]
-swift.type.property MenuItemElementContract.tiers: static let tiers: [any Tier.Type]
-swift.type.property MenuItemElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property MenuSeparatorContract.layer: static let layer: ElementLayer
 swift.type.property MenuSeparatorContract.layer: static var layer: ElementLayer { get }
 swift.type.property MenuSeparatorContract.members: static let members: [any ContractMember]
@@ -3334,6 +3331,8 @@ swift.type.property TextEditorContract.members: static let members: [any Contrac
 swift.type.property TextEditorContract.nodeType: static let nodeType: NodeType
 swift.type.property TextEditorContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property TextEditorContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property TextElementContract.members: static let members: [any ContractMember]
+swift.type.property TextElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property TextField.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextFieldContract.layer: static let layer: ElementLayer
 swift.type.property TextFieldContract.layer: static var layer: ElementLayer { get }

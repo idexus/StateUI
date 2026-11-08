@@ -574,6 +574,9 @@ VStack { … }
     }
 ```
 
+A bar's item and a menu's entry are each a `MenuItemElement`: its words, its
+`.icon`, `.isEnabled` and `.keyboardShortcut` are said the same way on both.
+
 The items are built with the body declaring them, so an item follows the state
 it reads - Save enables itself as `hasChanges` moves, with nothing written by
 hand. They stand on the bar while their page is shown, and when the page goes

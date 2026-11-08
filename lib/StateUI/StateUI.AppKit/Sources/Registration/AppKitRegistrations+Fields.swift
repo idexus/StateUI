@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 extension AppKitRegistrations {
-    /// The fields a user types in. Their words are `TextualElementContract.text`
+    /// The fields a user types in. Their words are `TextElementContract.text`
     /// and the change they report is `TextInputContract.textChanged` - two
     /// tiers, both worn. A text the host CARRIES IN is the host's to write, so
     /// the tree's words are not put over it; anything else the tree describes
@@ -17,7 +17,7 @@ extension AppKitRegistrations {
         registry.add(TextFieldContract.self, create: { reports in
             let entry = AppKitTextFieldView()
             entry.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             entry.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return entry
@@ -28,7 +28,7 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
@@ -60,7 +60,7 @@ extension AppKitRegistrations {
         registry.add(TextEditorContract.self, create: { reports in
             let editor = AppKitTextEditorView()
             editor.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             return editor
         }, members: { editor in
@@ -70,7 +70,7 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
@@ -101,7 +101,7 @@ extension AppKitRegistrations {
         registry.add(SearchFieldContract.self, create: { reports in
             let search = AppKitSearchFieldView()
             search.onTextChanged = { typed in
-                reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+                reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
             }
             search.onSubmitted = { reports.raise(SubmitElementContract.submitted) }
             return search
@@ -112,7 +112,7 @@ extension AppKitRegistrations {
 
                 view.apply(
                     text: words,
-                    writeText: (values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase))
+                    writeText: (values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase))
                         && words != nil,
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
@@ -141,7 +141,7 @@ extension AppKitRegistrations {
 
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.placeholderColor, TextColorElementContract.textColor, BackgroundElementContract.background,
         FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
         FontElementContract.fontWeight, FontElementContract.textStyle,

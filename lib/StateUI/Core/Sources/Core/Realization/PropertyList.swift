@@ -6,7 +6,7 @@
 /// alone, so no event or act stands in one; joined with `+`.
 ///
 ///     static let look = PropertyList(FontElementContract.fontSize, TextColorElementContract.textColor)
-///     registration.applies(TextualElementContract.text, look) { view, values in … }
+///     registration.applies(TextElementContract.text, look) { view, values in … }
 @_spi(Host) public struct PropertyList: AppliedProperties, Sendable {
     /// The properties, in their order.
     let properties: [any RegisteredProperty]

@@ -29,7 +29,7 @@
                 try s.settle { try bar() == "|[!bold !italic]|" }
                 s.expect(try bar(), "|[!bold !italic]|")
             },
-        ] + (VisualElementTests.written + MenuItemElementTests.written + MenuTests.written + ToolbarGroupTests.written)
+        ] + (VisualElementTests.written + MenuItemElementCases.written + MenuTests.written + ToolbarGroupTests.written)
             .proving(EnabledElementContract.self)
     }
 }

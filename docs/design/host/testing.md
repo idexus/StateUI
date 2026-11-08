@@ -81,7 +81,7 @@ the default motion animates as the application's does.
 
 ## What a view holds
 
-A read names a contract member - `TextualElementContract.text`,
+A read names a contract member - `TextElementContract.text`,
 `ToggleElementContract.isOn` - and answers the member's own type: what the view
 holds as the window shows it, the branch's `isEnabled` included, and nil
 where it holds none.

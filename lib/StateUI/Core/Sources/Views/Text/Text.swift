@@ -52,7 +52,7 @@ public struct Text: ElementView, TextualElement, FontElement, TextAlignmentEleme
     /// Words showing `text`.
     public init(_ text: String) {
         node = Node(contract: TextContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// Words carried from a state, written by the host as it
@@ -109,7 +109,7 @@ public struct TextSpan: ModifiableElement, TextualElement, FontElement, Tracking
     /// A run showing `text`.
     public init(_ text: String) {
         node = Node(contract: TextSpanContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// What is drawn behind this run - a highlight over part of a line; a blur

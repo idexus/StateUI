@@ -52,7 +52,7 @@ public struct TestElement {
     /// nil where it holds none. It fails where no view, or two, is the one it names, as `perform` does, and where
     /// the view wears no contract of the member's.
     ///
-    ///     XCTAssertEqual(try button.value(TextualElementContract.text), "Clicked 1 time")
+    ///     XCTAssertEqual(try button.value(TextElementContract.text), "Clicked 1 time")
     public func value<Owner: WornContract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>
     ) throws -> Value? {

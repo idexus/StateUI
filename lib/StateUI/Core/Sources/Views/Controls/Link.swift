@@ -19,7 +19,7 @@ public struct Link: ElementView, TextualElement, FocusElement, ClickElement {
     /// A link saying `text` and opening `address`.
     public init(_ text: String, address: String) {
         node = Node(contract: LinkContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
         node.write(LinkContract.address, address)
     }
 
@@ -31,7 +31,7 @@ public struct Link: ElementView, TextualElement, FocusElement, ClickElement {
     ///   - address: the state the address is read from.
     public init(_ text: String, address: Binding<String>) {
         node = Node(contract: LinkContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
         self = words(LinkContract.address, by: address)
     }
 

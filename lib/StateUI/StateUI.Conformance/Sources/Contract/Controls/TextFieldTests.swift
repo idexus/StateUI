@@ -15,8 +15,8 @@
             ConformanceCase("eachKeystrokeReachesTheStateAndTheGreeting", proves: [
                 Covered(TextFieldContract.self),
             ], needs: [
-                Covered(TextualElementContract.text, on: TextFieldContract.self),
-                Covered(TextualElementContract.text, on: TextContract.self),
+                Covered(TextElementContract.text, on: TextFieldContract.self),
+                Covered(TextElementContract.text, on: TextContract.self),
             ]) { s in
                 let name = State(wrappedValue: "")
                 s.start {
@@ -33,12 +33,12 @@
                 }
 
                 s.expect(name.wrappedValue, "Ada")
-                s.expect(try s.held(TextualElementContract.text, on: field), "Ada")
-                s.expect(try s.held(TextualElementContract.text, on: s.element("greeting")), "Hello, Ada!")
+                s.expect(try s.held(TextElementContract.text, on: field), "Ada")
+                s.expect(try s.held(TextElementContract.text, on: s.element("greeting")), "Hello, Ada!")
             },
             ConformanceCase("aPasswordsWordsAreHeardAsTyped", proves: [
                 Covered(TextFieldContract.isPassword),
-            ], needs: [Covered(TextualElementContract.text, on: "TextField")]) { s in
+            ], needs: [Covered(TextElementContract.text, on: "TextField")]) { s in
                 let secret = State(wrappedValue: "")
                 s.start { VStack { TextField(secret.projectedValue).isPassword(true).id("field") } }
                 let field = try s.element("field")

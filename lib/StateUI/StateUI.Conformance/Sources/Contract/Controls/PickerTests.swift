@@ -26,7 +26,7 @@
             ConformanceCase("aUsersChoiceLandsOnceAndTheProgramsComesBackFromNobody", proves: [
                 Covered(PickerContract.selectedIndex),
                 Covered(PickerContract.selectedIndexChanged),
-            ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+            ], needs: [Covered(TextElementContract.text, on: TextContract.self), Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
                 let sizes = ["S", "M", "L"]
@@ -43,9 +43,9 @@
                 let label = try s.element("label")
 
                 try s.perform(.choose(2), on: picker)
-                try s.settle { try written.values == ["L"] && s.held(TextualElementContract.text, on: label) == "size L" }
+                try s.settle { try written.values == ["L"] && s.held(TextElementContract.text, on: label) == "size L" }
                 s.expect(written.values, ["L"])
-                s.expect(try s.held(TextualElementContract.text, on: label), "size L", "the state took the user's choice")
+                s.expect(try s.held(TextElementContract.text, on: label), "size L", "the state took the user's choice")
 
                 try s.perform(.activate, on: s.element("small"))
                 try s.settle { try s.held(PickerContract.selectedIndex, on: picker) == 0 }
@@ -125,7 +125,7 @@
     @MainActor static func takesTheUsersChoice(as presentation: PickerPresentation) -> ConformanceCase {
         ConformanceCase("\(presentation)TakesTheUsersChoice", proves: [
             Covered(PickerContract.presentation), Covered(PickerContract.selectedIndexChanged),
-        ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+        ], needs: [Covered(TextElementContract.text, on: TextContract.self)]) { s in
             let size = State(wrappedValue: "M")
             let written = Received<String>()
             let sizes = ["S", "M", "L"]
@@ -139,8 +139,8 @@
                 }
             }
             try s.perform(.choose(2), on: s.element("picker"))
-            try s.settle { try s.held(TextualElementContract.text, on: s.element("label")) == "size L" }
-            s.expect(try s.held(TextualElementContract.text, on: s.element("label")), "size L")
+            try s.settle { try s.held(TextElementContract.text, on: s.element("label")) == "size L" }
+            s.expect(try s.held(TextElementContract.text, on: s.element("label")), "size L")
             s.expect(written.values, ["L"], "the user's choice landed once")
         }
     }

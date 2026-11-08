@@ -96,6 +96,7 @@ final class WebConformanceTests: XCTestCase {
     func testBorderElement() { conform(BorderElementTests.self) }
     func testImageElement() { conform(ImageElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
+    func testTextElement() { conform(TextElementTests.self) }
     func testShortcutElement() { conform(ShortcutElementTests.self) }
     func testIconElement() { conform(IconElementTests.self) }
     func testBackgroundElement() { conform(BackgroundElementTests.self) }
@@ -114,7 +115,6 @@ final class WebConformanceTests: XCTestCase {
     func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
     func testBarItemElement() { conform(BarItemElementTests.self) }
-    func testMenuItemElement() { conform(MenuItemElementTests.self) }
     func testActionElement() { conform(ActionElementTests.self) }
     func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     func testLink() { conform(LinkTests.self) }

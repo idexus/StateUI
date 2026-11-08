@@ -20,12 +20,12 @@
             let button = try counter.element("counter.add")
             try button.performNow(.activate)
             try button.performNow(.activate)
-            expect(try button.value(TextualElementContract.text), "Clicked 2 times", "a click counted")
+            expect(try button.value(TextElementContract.text), "Clicked 2 times", "a click counted")
 
             let form = TestWindow(driver: driver, motion: .none) { FormPage() }
             try form.element("form.name").performNow(.type("Ada"))
             try form.element("form.lamp").performNow(.toggle)
-            expect(try form.element("form.greeting").value(TextualElementContract.text), "Hello, Ada - lit",
+            expect(try form.element("form.greeting").value(TextElementContract.text), "Hello, Ada - lit",
                    "words typed and a switch turned")
 
             let page = AimedPage()
@@ -36,13 +36,13 @@
             }
             let field = try aimed.element(page.name)
             try field.performNow(.type("Grace"))
-            expect(try field.value(TextualElementContract.text), "Grace", "a view found by its aim")
+            expect(try field.value(TextElementContract.text), "Grace", "a view found by its aim")
 
             try aimed.closeNow()
             try aimed.closeNow()
             expect(disappeared, true, "the page heard its window closed")
             expect(destroyed, 1, "the page was destroyed once")
-            if (try? field.value(TextualElementContract.text)) != nil { failures.append("a closed window still held a view") }
+            if (try? field.value(TextElementContract.text)) != nil { failures.append("a closed window still held a view") }
         } catch {
             failures.append("\(error)")
         }

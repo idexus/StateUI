@@ -15,7 +15,7 @@ public protocol MenuItemElement: AutomationElement, ShortcutElement {}
 extension MenuItemElement {
     /// What the item says. Usually given in the initializer instead.
     public func text(_ value: String) -> Modified {
-        setValue(MenuItemElementContract.text, value)
+        setValue(TextElementContract.text, value)
     }
 
     /// The picture on it, resolved from the application's image resources.

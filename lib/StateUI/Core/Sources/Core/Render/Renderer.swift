@@ -470,7 +470,7 @@ public final class Renderer {
     /// Shown until an application registers, in the shape a real one has.
     private static var unregistered: Node {
         var label = Node(contract: TextContract.self)
-        label.write(TextualElementContract.text, "StateUI: no application registered")
+        label.write(TextElementContract.text, "StateUI: no application registered")
 
         let page = Node(contract: PageContract.self, children: [label])
         let window = Node(contract: WindowContract.self, id: OwnKey.window(kind: nil, serial: 1), children: [page])

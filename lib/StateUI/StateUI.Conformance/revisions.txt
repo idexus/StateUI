@@ -35,9 +35,7 @@ ButtonMenu 2
 appkit Button 2
 uikit Button 2
 winui Button 3
-MenuItemElement 9
 FontElement 5
-winui MenuItemElement 2
 winui PageElement 2
 DatePicker 6
 TimePicker 6
@@ -95,7 +93,7 @@ VStack 3
 WebView 4
 ZStack 2
 Popover 6
-TextualElement 2
+TextualElement 3
 Link 3
 TextAndIconElement 2
 BottomBar 5
@@ -107,5 +105,5 @@ MenuToggle 2
 Sheet 2
 BarItemElement 3
 ActionElement 2
-Menu 2
-ToolbarLabel 2
+Menu 3
+ToolbarLabel 3

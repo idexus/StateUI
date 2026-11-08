@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension GTKRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
     /// report is `TextInputContract.textChanged`. Each member reaches the view only where the tree changed it,
     /// which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<GTKView>) {
@@ -55,13 +55,13 @@ extension GTKRegistrations {
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: any GTKTextInputView, _ reports: ControlReports<Realized>) {
-        view.onTextChanged = { typed in reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged) }
+        view.onTextChanged = { typed in reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged) }
     }
 
     /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)
@@ -75,9 +75,9 @@ extension GTKRegistrations {
             view.setMaximumLength(values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil })
         }
         if values.changed(TextualElementContract.textCase) { view.setTextCase(values[TextualElementContract.textCase]) }
-        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) {
+        if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) {
             let textCase = values[TextualElementContract.textCase] ?? .none
-            view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
+            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
         if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
         if values.changed(EnabledElementContract.isEnabled) {

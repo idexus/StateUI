@@ -12,10 +12,11 @@ public enum ToolbarButtonContract: ElementContract {
     /// A toolbar button is an item a user chooses, and it acts, opens a menu, or both; where its host draws the bar
     /// itself, its look is the application's to say.
     public static let tiers: [any Tier.Type] = [
-        MenuItemElementContract.self, ActionElementContract.self, ButtonMenuElementContract.self,
-        TextAndIconElementContract.self, BarItemElementContract.self, BorderElementContract.self,
-        TextColorElementContract.self, FontElementContract.self, PaddingElementContract.self,
-        PressElementContract.self,
+        AutomationElementContract.self, EnabledElementContract.self, IconElementContract.self,
+        ShortcutElementContract.self, TextElementContract.self, ActionElementContract.self,
+        ButtonMenuElementContract.self, TextAndIconElementContract.self, BarItemElementContract.self,
+        BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
+        PaddingElementContract.self, PressElementContract.self,
     ]
 
     /// The element's own members.

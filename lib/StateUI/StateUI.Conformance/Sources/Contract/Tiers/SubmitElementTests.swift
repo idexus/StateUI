@@ -13,7 +13,7 @@
             ConformanceCase("SearchField.theUsersSearchIsHeardAndTheProgramsIsNot", proves: [
                 Covered(SubmitElementContract.submitted, on: SearchFieldContract.self),
             ], needs: [
-                Covered(TextualElementContract.text, on: SearchFieldContract.self),
+                Covered(TextElementContract.text, on: SearchFieldContract.self),
                 Covered(TextInputContract.textChanged, on: SearchFieldContract.self),
                 Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
@@ -36,8 +36,8 @@
                 s.expect(heard.values, ["coffee", "submitted"])
 
                 try s.perform(.activate, on: s.element("tea"))
-                try s.settle { try s.held(TextualElementContract.text, on: search) == "tea" }
-                s.expect(try s.held(TextualElementContract.text, on: search), "tea")
+                try s.settle { try s.held(TextElementContract.text, on: search) == "tea" }
+                s.expect(try s.held(TextElementContract.text, on: search), "tea")
                 s.expect(heard.values, ["coffee", "submitted"], "the program's words heard by nobody")
             },
             ConformanceCase("SearchField.eachSubmissionIsHeardOnce", proves: [Covered(SubmitElementContract.submitted, on: SearchFieldContract.self)]) { s in

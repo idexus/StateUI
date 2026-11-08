@@ -130,6 +130,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testBorderElement() { conform(BorderElementTests.self) }
     @MainActor func testImageElement() { conform(ImageElementTests.self) }
     @MainActor func testTintElement() { conform(TintElementTests.self) }
+    @MainActor func testTextElement() { conform(TextElementTests.self) }
     @MainActor func testShortcutElement() { conform(ShortcutElementTests.self) }
     @MainActor func testIconElement() { conform(IconElementTests.self) }
     @MainActor func testBackgroundElement() { conform(BackgroundElementTests.self) }
@@ -148,7 +149,6 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
     @MainActor func testBarItemElement() { conform(BarItemElementTests.self) }
-    @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testActionElement() { conform(ActionElementTests.self) }
     @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
     @MainActor func testLink() { conform(LinkTests.self) }

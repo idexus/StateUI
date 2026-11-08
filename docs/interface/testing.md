@@ -25,7 +25,7 @@ let button = try window.element("counter.add")
 
 try await button.perform(.activate)
 
-let words = try button.value(TextualElementContract.text)
+let words = try button.value(TextElementContract.text)
 assert(words == "Clicked 1 times")
 try await window.close()
 ```
@@ -75,7 +75,7 @@ acts as the user can: an act on a disabled view, or words typed into a
 read-only field, fails and says why, and words typed are held as the field
 holds them - in its case, within its bound.
 
-`value(_:)` reads a contract member - `TextualElementContract.text`,
+`value(_:)` reads a contract member - `TextElementContract.text`,
 `ToggleElementContract.isOn`, `VisualElementContract.accessibilityValue` - as the
 member's own type, nil where the view holds none. Like `perform(_:)`, it
 fails where no view, or two, is the one it names - a view gone with its

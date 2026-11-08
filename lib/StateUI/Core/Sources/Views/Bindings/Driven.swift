@@ -9,7 +9,7 @@
 extension Text {
     /// The words carried from a state - what `Text(_:)` of a state writes.
     func text(_ state: Binding<String>) -> Text {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+        setValue(TextElementContract.text, on: state, mode: .out)
     }
 }
 
@@ -19,7 +19,7 @@ extension Button {
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption carried from that state.
     public func text(_ state: Binding<String>) -> Button {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+        setValue(TextElementContract.text, on: state, mode: .out)
     }
 }
 
@@ -29,7 +29,7 @@ extension CheckBox {
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the check box, with its caption carried from that state.
     public func text(_ state: Binding<String>) -> CheckBox {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+        setValue(TextElementContract.text, on: state, mode: .out)
     }
 }
 
@@ -39,7 +39,7 @@ extension Switch {
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the switch, with its caption carried from that state.
     public func text(_ state: Binding<String>) -> Switch {
-        setValue(TextualElementContract.text, on: state, mode: .out)
+        setValue(TextElementContract.text, on: state, mode: .out)
     }
 }
 

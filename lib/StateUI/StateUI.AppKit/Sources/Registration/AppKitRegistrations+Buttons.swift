@@ -26,7 +26,7 @@ extension AppKitRegistrations {
             return button
         }, members: { button in
             button.applies(
-                TextualElementContract.text, TextualElementContract.textCase, IconElementContract.icon,
+                TextElementContract.text, TextualElementContract.textCase, IconElementContract.icon,
                 ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
                 TextColorElementContract.textColor, BackgroundElementContract.background, BorderElementContract.shape,
                 BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
@@ -37,7 +37,7 @@ extension AppKitRegistrations {
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
                 let caption = (values[TextualElementContract.textCase] ?? .none)
-                    .applied(to: values[TextualElementContract.text] ?? "")
+                    .applied(to: values[TextElementContract.text] ?? "")
                 let source = values[IconElementContract.icon].flatMap { HostPicture($0.propValue) }
                 let icon: NSImage? = source.flatMap { view.picture?($0) }
                 // Words left out of sight stay the title, which names the button to assistive technology.

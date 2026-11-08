@@ -112,7 +112,7 @@ final class ConformanceRunnerTests: XCTestCase {
     /// served is ✅.
     func testWhatACaseReachedOnlyThroughTheHostIsTheHostsOwn() {
         let driver = RegisterOnly(realizing: [
-            .complete(ToggleElementContract.isOn), .complete(ToggleElementContract.toggled), .complete(TextualElementContract.text, on: TextContract.self),
+            .complete(ToggleElementContract.isOn), .complete(ToggleElementContract.toggled), .complete(TextElementContract.text, on: TextContract.self),
         ])
         driver.own = ["read isOn of Switch": "a copy the host keeps", "tap on Text": "handed to the recognizer"]
         let verdicts = run([

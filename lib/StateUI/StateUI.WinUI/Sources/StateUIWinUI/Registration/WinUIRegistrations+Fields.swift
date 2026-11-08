@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
     /// report is `TextInputContract.textChanged`. Their words and caret reach the view only where the tree changed
     /// them, which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<WinUIView>) {
@@ -65,13 +65,13 @@ extension WinUIRegistrations {
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: ControlReports<Realized>) {
-        view.onTextChanged = { typed in reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged) }
+        view.onTextChanged = { typed in reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged) }
     }
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
     /// many it holds, whether it takes them, and their font and color.
     private static let wordMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled)
         + TextMembers.lookMembers
 
@@ -79,8 +79,8 @@ extension WinUIRegistrations {
         view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
         let textCase = values[TextualElementContract.textCase] ?? .none
         if values.changed(TextualElementContract.textCase) { view.setCasing(textCase) }
-        if values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) {
-            view.setText(textCase.applied(to: values[TextualElementContract.text] ?? ""))
+        if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) {
+            view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
         }
         if values.changed(TextInputContract.placeholder) { view.setPlaceholder(values[TextInputContract.placeholder]) }
         if values.changed(EnabledElementContract.isEnabled) {

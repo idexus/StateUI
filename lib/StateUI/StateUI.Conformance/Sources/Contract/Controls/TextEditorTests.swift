@@ -15,7 +15,7 @@
             ConformanceCase("anEditorsLinesAreHeardWithinTheirBound", proves: [
                 Covered(TextEditorContract.self),
             ], needs: [
-                Covered(TextualElementContract.text, on: TextEditorContract.self),
+                Covered(TextElementContract.text, on: TextEditorContract.self),
                 Covered(TextInputContract.textChanged, on: TextEditorContract.self),
                 Covered(TextInputContract.maximumLength, on: TextEditorContract.self),
             ]) { s in
@@ -34,7 +34,7 @@
                 s.turn()
 
                 s.expect(words.wrappedValue, "one\nt")
-                s.expect(try s.held(TextualElementContract.text, on: editor), "one\nt")
+                s.expect(try s.held(TextElementContract.text, on: editor), "one\nt")
                 s.expect(heard.values, ["one\nt"], "heard once, as the bound left the words")
             },
             ConformanceCase("anEditorGrowsWithItsWordsOnlyWhereItIsToldTo", proves: [

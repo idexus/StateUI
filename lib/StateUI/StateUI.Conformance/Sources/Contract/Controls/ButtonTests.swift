@@ -17,13 +17,13 @@
         [
             Aspects.standsAlone("Button"),
             Aspects.holds(ButtonContract.iconPosition, on: "Button", .start, then: .top, with: [
-                Write(TextualElementContract.text, "Go"), Write(IconElementContract.icon, "test_dot.png"),
+                Write(TextElementContract.text, "Go"), Write(IconElementContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.iconSpacing, on: "Button", 4, then: 12, with: [
-                Write(TextualElementContract.text, "Go"), Write(IconElementContract.icon, "test_dot.png"),
+                Write(TextElementContract.text, "Go"), Write(IconElementContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.role, on: "Button", .primary, then: .destructive,
-                          with: [Write(TextualElementContract.text, "Go")]),
+                          with: [Write(TextElementContract.text, "Go")]),
             ConformanceCase("aRolesKeyPressesTheButtonUnlessItStatesOne", proves: [
                 Covered(ButtonContract.role), Covered(ShortcutElementContract.keyboardShortcut, on: ButtonContract.self),
             ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
@@ -68,7 +68,7 @@
                 s.expect(heard.values, [], "Return ends what was typed, the button stays as it was")
             },
             Aspects.holds(ButtonContract.lineBreak, on: "Button", .wordWrap, then: .tailTruncation,
-                          with: [Write(TextualElementContract.text, "Words enough to break across more than one line")]),
+                          with: [Write(TextElementContract.text, "Words enough to break across more than one line")]),
             ConformanceCase("aStyleThatLeavesTakesItsLookWithIt", proves: [
                 Covered(ButtonContract.self),
             ], needs: [Covered(VisualElementContract.style, on: "Button")]) { s in

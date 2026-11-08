@@ -1,5 +1,0 @@
-# revision 6.1
-MenuItem.text: ✅
-MenuToggle.text: ✅
-ToolbarButton.text: ✅
-ToolbarToggle.text: ✅

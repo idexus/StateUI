@@ -8,13 +8,13 @@
 /// Design: docs/design/host/tree.md#runs-of-words
 @_spi(Host) public enum TextMembers {
     /// What every element showing words takes: the words in their case, their look, and the room around them.
-    public static let members = PropertyList(TextualElementContract.text, TextualElementContract.textCase)
+    public static let members = PropertyList(TextElementContract.text, TextualElementContract.textCase)
         + lookMembers + PropertyList(PaddingElementContract.padding)
 
     /// What a toggle takes for the words beside it - a check box's, a switch's: the words in their case and their
     /// color, in the platform's own font.
     public static let captionMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
+        TextElementContract.text, TextualElementContract.textCase, TextColorElementContract.textColor)
 
     /// What the words' look is made of, which `look` reads: the font, whether it follows the user's text size, and
     /// the words' color.
@@ -29,7 +29,7 @@
     /// A toggle's words beside it in their case, whether or not they changed; empty where it says none.
     @MainActor
     public static func caption<Realized>(_ values: ElementValues<Realized>) -> String {
-        let text = values[TextualElementContract.text] ?? ""
+        let text = values[TextElementContract.text] ?? ""
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 
@@ -44,10 +44,10 @@
     /// The words in their case, where the words or their case changed; nil where neither did.
     @MainActor
     public static func words<Realized>(_ values: ElementValues<Realized>) -> String? {
-        guard values.changed(TextualElementContract.text) || values.changed(TextualElementContract.textCase) else {
+        guard values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) else {
             return nil
         }
-        let text = values[TextualElementContract.text] ?? ""
+        let text = values[TextElementContract.text] ?? ""
         return values[TextualElementContract.textCase]?.applied(to: text) ?? text
     }
 

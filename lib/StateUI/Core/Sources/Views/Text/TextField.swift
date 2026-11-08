@@ -50,7 +50,7 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
         node = Node(contract: TextFieldContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -60,7 +60,7 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
 
     /// Its text from a state carried both ways.
     func text(_ state: Binding<String>) -> Modified {
-        words(TextualElementContract.text.token, by: state, mode: .inOut)
+        words(TextElementContract.text.token, by: state, mode: .inOut)
     }
 }
 

@@ -17,7 +17,7 @@ extension TextualElement {
 extension TextualElement where Self: VisualElement {
     /// What the control says - its caption on a button, a switch, a check box or a link; the words of a text or a
     /// field are what it is made with.
-    func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+    func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 
     /// `textCase` from a state, `$x`: the host sets each new value as it stands,
     /// and no view is rebuilt for it.
@@ -28,20 +28,20 @@ extension TextualElement where Self: VisualElement {
 
 extension Button {
     /// What the button says, beside or instead of its picture.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 }
 
 extension CheckBox {
     /// What the check box says, after its box: a tap on the words checks it too.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 }
 
 extension Switch {
     /// What the switch says, at its start: a tap on the words turns it too.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 }
 
 extension Link {
     /// What the link says.
-    public func text(_ value: String) -> Modified { setValue(TextualElementContract.text, value) }
+    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 }

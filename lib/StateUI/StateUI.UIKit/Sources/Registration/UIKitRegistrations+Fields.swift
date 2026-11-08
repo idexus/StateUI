@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A TextField, a TextEditor and a SearchField: their words are `TextualElementContract.text` and the change they
+    /// A TextField, a TextEditor and a SearchField: their words are `TextElementContract.text` and the change they
     /// report is `TextInputContract.textChanged`. Each member reaches the view only where the tree changed it,
     /// which keeps the user's typing and caret their own.
     static func fields(_ registry: Registry<UIView>) {
@@ -70,14 +70,14 @@ extension UIKitRegistrations {
 
     private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: ControlReports<Realized>) {
         view.typing.onTextChanged = { typed in
-            reports.report(TextualElementContract.text, typed, as: TextInputContract.textChanged)
+            reports.report(TextElementContract.text, typed, as: TextInputContract.textChanged)
         }
     }
 
     /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
     private static let inputMembers = PropertyList(
-        TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
+        TextElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
         TextInputContract.maximumLength, EnabledElementContract.isEnabled, TextInputContract.isReadOnly,
         TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose)

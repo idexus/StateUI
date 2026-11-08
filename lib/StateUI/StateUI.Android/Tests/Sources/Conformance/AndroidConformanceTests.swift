@@ -96,6 +96,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testBorderElement", testBorderElement),
             ("testImageElement", testImageElement),
             ("testTintElement", testTintElement),
+            ("testTextElement", testTextElement),
             ("testShortcutElement", testShortcutElement),
             ("testIconElement", testIconElement),
             ("testBackgroundElement", testBackgroundElement),
@@ -114,7 +115,6 @@ final class AndroidConformanceTests: XCTestCase {
             ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
             ("testBarItemElement", testBarItemElement),
-            ("testMenuItemElement", testMenuItemElement),
             ("testActionElement", testActionElement),
             ("testButtonMenuElement", testButtonMenuElement),
             ("testLink", testLink),
@@ -207,6 +207,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testBorderElement() throws { try conform(BorderElementTests.self) }
     func testImageElement() throws { try conform(ImageElementTests.self) }
     func testTintElement() throws { try conform(TintElementTests.self) }
+    func testTextElement() throws { try conform(TextElementTests.self) }
     func testShortcutElement() throws { try conform(ShortcutElementTests.self) }
     func testIconElement() throws { try conform(IconElementTests.self) }
     func testBackgroundElement() throws { try conform(BackgroundElementTests.self) }
@@ -225,7 +226,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
     func testBarItemElement() throws { try conform(BarItemElementTests.self) }
-    func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
     func testActionElement() throws { try conform(ActionElementTests.self) }
     func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
     func testLink() throws { try conform(LinkTests.self) }

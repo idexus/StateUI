@@ -211,6 +211,12 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(twice, [])
     }
 
+    /// A tier owns a member: one declaring none promises nothing, and its
+    /// wearers wear the tiers it wore.
+    func testEveryTierDeclaresAMemberOfItsOwn() {
+        XCTAssertEqual(LibraryContracts.tiers.filter { $0.members.isEmpty }.map { $0.name }, [])
+    }
+
     /// A tier wears the tiers its Swift protocol refines, so an element
     /// listing the protocol-level tier gets the chain: View wears
     /// VisualElement, which wears AutomationElement.

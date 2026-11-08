@@ -65,7 +65,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// A button captioned `text`.
     public init(_ text: String) {
         node = Node(contract: ButtonContract.self)
-        node.write(TextualElementContract.text, text)
+        node.write(TextElementContract.text, text)
     }
 
     /// A button whose caption is carried from a state, written by the host as
