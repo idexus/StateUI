@@ -76,7 +76,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - Input: what began on a view ends as it is disabled, a gesture taken away stays away to its end, and on the Mac
   input meets a view where it is drawn and a flattened view takes none.
 - Hosts: the keyboard is found in a sheet over a stack, a hidden element says nothing of its own, a drawing's pixels
-  keep no view that left, an arc of any angle is drawn at once, and a web view reloads its current source.
+  keep no view that left, an arc of any angle is drawn at once, a web view reloads its current source, and on WinUI
+  a list's rows and a popover draw no line along their top.
 
 ### Tooling
 
