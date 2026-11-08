@@ -18,7 +18,8 @@ let package = Package(
         .package(name: "StateUIHost", path: "../StateUI.Host"),
     ],
     targets: [
-        // GTK's and libadwaita's headers and libraries, and nothing else; libsoup's, GNOME's HTTP, beside them.
+        // GTK's and libadwaita's headers and libraries, and GLib's flags by names every GLib resolves - the C module
+        // an application's GTK head imports too; libsoup's, GNOME's HTTP, beside them.
         .systemLibrary(name: "CStateUIGTK", path: "Sources/CStateUIGTK", pkgConfig: "libadwaita-1"),
         .systemLibrary(name: "CStateUISoup", path: "Sources/CStateUISoup", pkgConfig: "libsoup-3.0"),
         .target(

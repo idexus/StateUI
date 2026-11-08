@@ -22,7 +22,8 @@ is set to.
 ```text
 lib/StateUI/StateUI.GTK/
   Sources/StateUIGTK/        the host: its runtime, elements, registrations, layout and window
-  Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config
+  Sources/CStateUIGTK/       GTK's and libadwaita's headers, found by pkg-config, and GLib's flags
+                             by names every GLib resolves: the C module a head imports too
   Testing/                   a package of its own: the host's suite, run by swift test, in Tests/,
                              and the driver every conformance run on GTK goes through
 .scripts/GTK/
@@ -214,6 +215,16 @@ application's manifest depends on the package `lib/Backends/WebView.GTK` by
 its path and its GTK head on that package's `StateUIWebViewGTK`, and the head
 calls `WebViewGTK.register()` before `GTKHost.run`, as the
 Gallery's does. Until then the host realizes no web view.
+
+### GTK from a head
+
+A head calls GTK through `CStateUIGTK`, the host's C module, imported beside
+`StateUIGTK`: GTK 4's and libadwaita's headers as Swift imports them, and
+GLib's flags under `STATEUI_` names every GLib resolves. From 2.86 GLib marks
+its flags as flag enumerations, which Swift imports as option sets naming their
+members itself, so `G_SIGNAL_MATCH_DATA` is no name a head can count on and
+`STATEUI_SIGNAL_MATCH_DATA` is. The module is part of what the host offers a
+head, and its header says what it holds.
 
 ### An act
 
