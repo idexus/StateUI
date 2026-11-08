@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -36,8 +36,6 @@ Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.verticalAlignment: ✅
-Fill.pointerEntered: ✅
-Fill.pointerExited: ✅
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
@@ -70,8 +68,6 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.verticalAlignment: ✅
-Link.pointerEntered: ✅
-Link.pointerExited: ✅
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
@@ -110,8 +106,6 @@ ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.verticalAlignment: ✅
-Rectangle.pointerEntered: ✅
-Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
@@ -143,8 +137,6 @@ Space.area: ✅
 Space.frameChanged: ✅
 Space.layoutBody: ✅
 Space.panYChannel: ✅
-Spinner.pointerEntered: ✅
-Spinner.pointerExited: ✅
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
@@ -171,8 +163,6 @@ TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.verticalAlignment: ✅
-TextField.pointerEntered: ✅
-TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅

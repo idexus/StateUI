@@ -1,39 +1,25 @@
-# revision 5.1
-Capsule.dash: ✅
+# revision 6.1
 Capsule.dashPhase: ✅
-Capsule.geometryTransform: does not apply - read geometryTransform of Capsule - WinUI folds a shape's transform into its figure; its drawing proves it
-Capsule.lineCap: ✅
-Capsule.stroke: ✅
+Capsule.geometryTransform: ✅
+Capsule.lineWidth: ✅
 Ellipse.dash: ✅
-Ellipse.dashPhase: ✅
-Ellipse.geometryTransform: ✅
 Ellipse.lineCap: ✅
 Ellipse.lineWidth: ✅
 Ellipse.stroke: ✅
-Line.dash: ✅
 Line.dashPhase: ✅
-Line.geometryTransform: does not apply - read geometryTransform of Line - WinUI folds a shape's transform into its figure; its drawing proves it
-Line.lineCap: ✅
-Line.stroke: ✅
+Line.geometryTransform: ✅
+Line.lineWidth: ✅
 Path.dash: ✅
-Path.dashPhase: ✅
-Path.geometryTransform: ✅
 Path.lineCap: ✅
 Path.lineWidth: ✅
 Path.stroke: ✅
-Polygon.dash: ✅
 Polygon.dashPhase: ✅
-Polygon.geometryTransform: does not apply - read geometryTransform of Polygon - WinUI folds a shape's transform into its figure; its drawing proves it
-Polygon.lineCap: ✅
-Polygon.stroke: ✅
+Polygon.geometryTransform: ✅
+Polygon.lineWidth: ✅
 Polyline.dash: ✅
-Polyline.dashPhase: ✅
-Polyline.geometryTransform: ✅
 Polyline.lineCap: ✅
 Polyline.lineWidth: ✅
 Polyline.stroke: ✅
-Rectangle.dash: ✅
 Rectangle.dashPhase: ✅
-Rectangle.geometryTransform: does not apply - read geometryTransform of Rectangle - WinUI folds a shape's transform into its figure; its drawing proves it
-Rectangle.lineCap: ✅
-Rectangle.stroke: ✅
+Rectangle.geometryTransform: ✅
+Rectangle.lineWidth: ✅

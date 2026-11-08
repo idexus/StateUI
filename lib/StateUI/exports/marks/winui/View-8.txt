@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
@@ -11,8 +11,6 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.verticalAlignment: ✅
-Capsule.pointerEntered: ✅
-Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
@@ -54,8 +52,6 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.verticalAlignment: ✅
-Image.pointerEntered: ✅
-Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
@@ -82,8 +78,6 @@ Map.pinchUpdated: 🧩
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
 MotionLayout.tapCount: ✅
 MotionLayout.tapped: ✅
-Path.pointerEntered: ✅
-Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
@@ -134,8 +128,6 @@ Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.verticalAlignment: ✅
-Slider.pointerEntered: ✅
-Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
@@ -189,8 +181,6 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.verticalAlignment: ✅
-WebView.pointerEntered: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.pointerExited: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerMoved: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).

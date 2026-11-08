@@ -40,7 +40,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️</td><td><code>NSMenu</code> / <code>NSMenuItem</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️</td><td><code>UIMenu</code> / <code>UIAction</code>; <code>UIContextMenuInteraction</code>; <code>UIMenuBuilder</code> menu bar</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 2 –</td><td><code>ContextMenu</code> / <code>SubMenu</code> / <code>MenuItem</code>; a menu bar's menus in the <code>Toolbar</code> overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>2 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>7 ✅</td><td><code>MenuFlyout</code> / <code>MenuBar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>4 ✅ · 3 –</td><td><code>GMenu</code> in a <code>GtkPopoverMenu</code>; a menu bar as a <code>GtkMenuButton</code> main menu</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>7 ✅</td><td>ARIA <code>menu</code> in a <code>popover</code>; a menu bar's menus under the bar's More button</td></tr></tbody>
 </table>
@@ -76,7 +76,7 @@ The keys that choose an element from the keyboard while its window is in front: 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>keyboardShortcut</code></td><td>property</td><td><code>KeyboardShortcut</code></td><td>native</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit shows a shortcut in the main menu alone, none in a context menu.</td></tr></tbody>
 </table>
 
@@ -86,7 +86,7 @@ The picture an element shows beside or for its words: a button's, a toolbar labe
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">⌛</td><td align="center">–</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.<br>GTK 4: GNOME's menus show words alone, no picture beside them.</td></tr></tbody>
 </table>
 
@@ -96,7 +96,7 @@ Whether the user's hand reaches an element: a view, a menu, an entry in one, a t
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [ClickElement](tiers/ClickElement.md)
@@ -105,7 +105,7 @@ What a control the user chooses reports: a button, a link, a menu's entry, a too
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [ActionElement](tiers/ActionElement.md)
@@ -114,6 +114,6 @@ What an item that acts has - a menu's entry, a toolbar's button: what choosing i
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ActionRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">–</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>role</code></td><td>property</td><td><code>ActionRole</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: GNOME's menus mark no entry as destroying something.</td></tr></tbody>
 </table>

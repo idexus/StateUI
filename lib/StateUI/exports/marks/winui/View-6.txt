@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.layoutBody: ✅
@@ -20,8 +20,6 @@ CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.verticalAlignment: ✅
-ColorPicker.pointerEntered: ✅
-ColorPicker.pointerExited: ✅
 ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
 ColorPicker.pointerReleased: ✅
@@ -95,8 +93,6 @@ Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.verticalAlignment: ✅
-Polygon.pointerEntered: ✅
-Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
@@ -146,8 +142,6 @@ Space.verticalAlignment: ✅
 Spinner.rotationUpdated: ✓ rotate on Spinner: the relay's report of the manipulation handed to the host, no touch sent
 Spinner.tapCount: ✅
 Spinner.tapped: ✅
-Stepper.pointerEntered: ✅
-Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
@@ -158,8 +152,6 @@ Switch.gridRow: ✅
 Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
-Text.pointerEntered: ✅
-Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅

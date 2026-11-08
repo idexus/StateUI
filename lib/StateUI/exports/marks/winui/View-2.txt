@@ -1,6 +1,4 @@
-# revision 22.1
-Button.pointerEntered: ✅
-Button.pointerExited: ✅
+# revision 23.1
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
@@ -42,8 +40,6 @@ Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
 Fill.panXChannel: ✅
 Fill.verticalAlignment: ✅
-Grid.pointerEntered: ✅
-Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
@@ -76,8 +72,6 @@ Link.panTouchCount: ✅
 Link.panUpdated: ✅
 Link.panXChannel: ✅
 Link.verticalAlignment: ✅
-Map.pointerEntered: 🧩
-Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
@@ -118,8 +112,6 @@ Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.verticalAlignment: ✅
-ScrollView.pointerEntered: ✅
-ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
@@ -179,8 +171,6 @@ TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.verticalAlignment: ✅
-TimePicker.pointerEntered: ✅
-TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅

@@ -1,17 +1,10 @@
-# revision 1.1
+# revision 2.1
 Button.contentMode: ✅
-Capsule.contentMode: does not apply - read contentMode of Capsule - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Capsule.contentMode: ✅
-Ellipse.contentMode: does not apply - read contentMode of Ellipse - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Ellipse.contentMode: ✅
 Image.contentMode: ✅
-Line.contentMode: does not apply - read contentMode of Line - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Line.contentMode: ✅
-Path.contentMode: does not apply - read contentMode of Path - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Path.contentMode: ✅
-Polygon.contentMode: does not apply - read contentMode of Polygon - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polygon.contentMode: ✅
-Polyline.contentMode: does not apply - read contentMode of Polyline - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Polyline.contentMode: ✅
-Rectangle.contentMode: does not apply - read contentMode of Rectangle - WinUI places a shape's figure itself, and holds no aspect; its drawing proves it
 Rectangle.contentMode: ✅

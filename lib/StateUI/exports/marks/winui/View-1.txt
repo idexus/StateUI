@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapCount: ✅
 Button.tapped: ✅
@@ -23,8 +23,6 @@ ColorPicker.panTouchCount: ✅
 ColorPicker.panUpdated: ✅
 ColorPicker.panXChannel: ✅
 ColorPicker.verticalAlignment: ✅
-DatePicker.pointerEntered: ✅
-DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
@@ -74,8 +72,6 @@ Link.margin: ✅
 Map.rotationUpdated: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
-MotionLayout.pointerEntered: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
-MotionLayout.pointerExited: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 MotionLayout.pointerMoved: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 MotionLayout.pointerPressed: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 MotionLayout.pointerReleased: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
@@ -97,8 +93,6 @@ Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.verticalAlignment: ✅
-Polyline.pointerEntered: ✅
-Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
@@ -151,8 +145,6 @@ Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.verticalAlignment: ✅
-Switch.pointerEntered: ✅
-Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅

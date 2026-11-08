@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 23.1
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -16,8 +16,6 @@ Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.verticalAlignment: ✅
-CheckBox.pointerEntered: ✅
-CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
@@ -59,8 +57,6 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.verticalAlignment: ✅
-ItemsView.pointerEntered: ✅
-ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
@@ -92,8 +88,6 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.verticalAlignment: ✅
-Picker.pointerEntered: ✅
-Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
@@ -139,8 +133,6 @@ Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.verticalAlignment: ✅
-Space.pointerEntered: ✅
-Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
@@ -193,8 +185,6 @@ WebView.panTouchCount: – WebView2 gives the user's hand to its page: listened 
 WebView.panUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.panXChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.verticalAlignment: ✅
-ZStack.pointerEntered: ✅
-ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
