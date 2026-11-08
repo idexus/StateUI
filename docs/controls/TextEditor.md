@@ -37,7 +37,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>61 ✅ · 4 ☑️ · 36 ✓ · 2 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>82 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>18 ✅</td><td>multi-line <code>TextBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>19 ✅</td><td>multi-line <code>TextBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 6 ☑️ · 28 ✓ · 6 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>78 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
@@ -244,7 +244,7 @@ The words an element shows: a control's caption, a text's or a field's words, a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [BackgroundElement](tiers/BackgroundElement.md)

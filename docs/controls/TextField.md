@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>59 ✅ · 5 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextField</code> / <code>NSSecureTextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextField</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>84 ✅ · 5 ☑️ · 12 ✓ · 3 –</td><td><code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>17 ✅</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>18 ✅</td><td><code>TextBox</code> / <code>PasswordBox</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>65 ✅ · 6 ☑️ · 28 ✓ · 7 –</td><td><code>GtkEntry</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>80 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=text&gt;</code> / <code>&lt;input type=password&gt;</code></td></tr></tbody>
 </table>
@@ -249,7 +249,7 @@ The words an element shows: a control's caption, a text's or a field's words, a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [BackgroundElement](tiers/BackgroundElement.md)
