@@ -30,12 +30,12 @@ NavigationStack 3
 uikit WebView 2
 android WebView 3
 winui WebView 2
-Button 11
+Button 12
 ButtonMenu 2
 appkit Button 2
 uikit Button 2
 winui Button 3
-MenuItemElement 7
+MenuItemElement 8
 FontElement 5
 winui MenuItemElement 2
 winui PageElement 2
@@ -44,7 +44,7 @@ TimePicker 6
 Picker 5
 Image 3
 Page 9
-PageElement 5
+PageElement 6
 View 23
 VisualElement 27
 Shape 5
@@ -108,3 +108,4 @@ Sheet 2
 BarItemElement 3
 ActionElement 2
 Menu 2
+ToolbarLabel 2

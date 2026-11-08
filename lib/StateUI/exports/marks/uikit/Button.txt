@@ -1,6 +1,5 @@
 # revision 9.2
 Button: ✅
-Button.icon: ✅
 Button.iconPosition: ✅
 Button.iconSpacing: ✅
 Button.keyboardShortcut: ✅

@@ -1,13 +1,9 @@
 # revision 4.1
-NavigationStack.icon: ✅
 NavigationStack.linkOpened: ✓ openLink on NavigationStack: the host's entry the scene's delegate calls, as no URL context can be made
 NavigationStack.title: ✅
-Page.icon: ✅
 Page.linkOpened: ✓ openLink on Page: the host's entry the scene's delegate calls, as no URL context can be made
 Page.title: ✅
-SplitView.icon: ✅
 SplitView.linkOpened: ✓ openLink on SplitView: the host's entry the scene's delegate calls, as no URL context can be made
 SplitView.title: ✅
-TabView.icon: ✅
 TabView.linkOpened: ✓ openLink on TabView: the host's entry the scene's delegate calls, as no URL context can be made
 TabView.title: ✅

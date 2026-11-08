@@ -2,9 +2,9 @@
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
-Button.pointerMoved: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.pointerPressed: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.pointerReleased: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
+Button.pointerMoved: waits on Button.pointerEntered
+Button.pointerPressed: waits on Button.pointerEntered
+Button.pointerReleased: waits on Button.pointerEntered
 Canvas.droppedFileTypes: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
 Canvas.filesDropped: ✓ dropFiles on Canvas: the window's drop routing told the driver's files, no dragging session
 Canvas.tapped: ✓ pressDown on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -43,9 +43,9 @@ Image.swiped: ✓ pan on Image: handed to the host's recognizer or handler, no N
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-ItemsView.pointerMoved: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.pointerPressed: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.pointerReleased: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
+ItemsView.pointerMoved: waits on ItemsView.pointerEntered
+ItemsView.pointerPressed: waits on ItemsView.pointerEntered
+ItemsView.pointerReleased: waits on ItemsView.pointerEntered
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.pinchUpdated: ✓ pinch on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -80,9 +80,9 @@ Polyline.swiped: ✓ pan on Polyline: handed to the host's recognizer or handler
 ProgressBar.frameChanged: ✅
 ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
-ProgressBar.pointerMoved: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-ProgressBar.pointerPressed: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-ProgressBar.pointerReleased: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+ProgressBar.pointerMoved: waits on ProgressBar.pointerEntered
+ProgressBar.pointerPressed: waits on ProgressBar.pointerEntered
+ProgressBar.pointerReleased: waits on ProgressBar.pointerEntered
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.frameChanged: ✅
@@ -131,9 +131,9 @@ TimePicker.swiped: ✓ pan on TimePicker: handed to the host's recognizer or han
 VStack.frameChanged: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅
-VStack.pointerMoved: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.pointerPressed: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.pointerReleased: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.pointerMoved: waits on VStack.pointerEntered
+VStack.pointerPressed: waits on VStack.pointerEntered
+VStack.pointerReleased: waits on VStack.pointerEntered
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
 WebView.filesDropped: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
 WebView.tapped: ✓ pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent

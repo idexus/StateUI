@@ -41,7 +41,7 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, ToggleElement, 
     /// Its picture while off, and `on` while on - each resolved from the
     /// application's image resources.
     public func icon(_ value: ImageSource, on: ImageSource) -> Modified {
-        setValue(MenuItemElementContract.icon, value).setValue(ToolbarToggleContract.onIcon, on)
+        setValue(IconElementContract.icon, value).setValue(ToolbarToggleContract.onIcon, on)
     }
 
     /// Who this item is among the others of its declaration, so an item

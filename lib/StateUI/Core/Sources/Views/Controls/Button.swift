@@ -17,7 +17,7 @@ extension ButtonProperties {
     ///     Button("Surprise me").icon("nav_surprise.png")
     ///     Button("Delete").icon("trash.png").showsText(false)
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(ButtonContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Which side of the caption the icon stands on. `.start`, the default,

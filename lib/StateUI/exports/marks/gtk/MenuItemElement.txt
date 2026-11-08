@@ -1,13 +1,9 @@
 # revision 6.1
-MenuItem.icon: – GNOME's menus show words alone, no picture beside them.
 MenuItem.keyboardShortcut: ✅
 MenuItem.text: ✅
-MenuToggle.icon: – GNOME's menus show words alone, no picture beside them.
 MenuToggle.keyboardShortcut: ✅
 MenuToggle.text: ✅
-ToolbarButton.icon: ✅
 ToolbarButton.keyboardShortcut: ✓ pressKeys on ToolbarButton: the shortcut controller's action run, no key event
 ToolbarButton.text: ✅
-ToolbarToggle.icon: ✅
 ToolbarToggle.keyboardShortcut: ✅
 ToolbarToggle.text: ✅

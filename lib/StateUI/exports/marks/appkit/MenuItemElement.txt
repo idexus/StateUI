@@ -1,13 +1,9 @@
-# revision 7.1
-MenuItem.icon: ✅
+# revision 8.1
 MenuItem.keyboardShortcut: ✅
 MenuItem.text: ✅
-MenuToggle.icon: ✅
 MenuToggle.keyboardShortcut: ✅
 MenuToggle.text: ✅
-ToolbarButton.icon: ✅
 ToolbarButton.keyboardShortcut: ✅
 ToolbarButton.text: ✅
-ToolbarToggle.icon: ✅
 ToolbarToggle.keyboardShortcut: ✅
 ToolbarToggle.text: ✅

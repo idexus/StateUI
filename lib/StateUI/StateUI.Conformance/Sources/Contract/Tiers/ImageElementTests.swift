@@ -29,7 +29,7 @@
     @MainActor
     static func picture(_ element: String) -> [any Worn] {
         element == "Button"
-            ? [Write(ButtonContract.icon, ImageSource("test_wide.svg"))]
+            ? [Write(IconElementContract.icon, ImageSource("test_wide.svg"))]
             : [Write(ImageContract.source, ImageSource("test_wide.svg"))]
     }
 

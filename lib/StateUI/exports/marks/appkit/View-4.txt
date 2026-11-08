@@ -37,9 +37,9 @@ HStack.swiped: ✓ pan on HStack: handed to the host's recognizer or handler, no
 Image.frameChanged: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
-Image.pointerMoved: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
-Image.pointerPressed: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
-Image.pointerReleased: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
+Image.pointerMoved: waits on Image.pointerEntered
+Image.pointerPressed: waits on Image.pointerEntered
+Image.pointerReleased: waits on Image.pointerEntered
 ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the window's drop routing told the driver's files, no dragging session
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the window's drop routing told the driver's files, no dragging session
 ItemsView.tapped: ✓ pressDown on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
@@ -72,9 +72,9 @@ Polygon.swiped: ✓ pan on Polygon: handed to the host's recognizer or handler, 
 Polyline.frameChanged: ✅
 Polyline.gridColumn: ✅
 Polyline.gridRow: ✅
-Polyline.pointerMoved: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.pointerPressed: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.pointerReleased: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
+Polyline.pointerMoved: waits on Polyline.pointerEntered
+Polyline.pointerPressed: waits on Polyline.pointerEntered
+Polyline.pointerReleased: waits on Polyline.pointerEntered
 ProgressBar.droppedFileTypes: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
 ProgressBar.filesDropped: ✓ dropFiles on ProgressBar: the window's drop routing told the driver's files, no dragging session
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
@@ -101,9 +101,9 @@ Space.panYChannel: ✓ pan on Space: handed to the host's recognizer or handler,
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅
 Spinner.gridRow: ✅
-Spinner.pointerMoved: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.pointerPressed: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.pointerReleased: ✓ hover on Spinner: handed to the host's recognizer or handler, no NSEvent sent
+Spinner.pointerMoved: waits on Spinner.pointerEntered
+Spinner.pointerPressed: waits on Spinner.pointerEntered
+Spinner.pointerReleased: waits on Spinner.pointerEntered
 Stepper.area: ✅
 Stepper.frameChanged: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: handed to the host's recognizer or handler, no NSEvent sent
@@ -125,9 +125,9 @@ TextField.swiped: ✓ pan on TextField: handed to the host's recognizer or handl
 TimePicker.frameChanged: ✅
 TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
-TimePicker.pointerMoved: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.pointerPressed: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.pointerReleased: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
+TimePicker.pointerMoved: waits on TimePicker.pointerEntered
+TimePicker.pointerPressed: waits on TimePicker.pointerEntered
+TimePicker.pointerReleased: waits on TimePicker.pointerEntered
 VStack.droppedFileTypes: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
 VStack.filesDropped: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
 VStack.tapped: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent

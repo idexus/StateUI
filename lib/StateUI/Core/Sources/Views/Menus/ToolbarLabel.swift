@@ -33,7 +33,7 @@ public struct ToolbarLabel: PlacedToolbarItem, PropertyContainer {
     /// The picture before its words, resolved from the application's image
     /// resources.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(ToolbarLabelContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Who this item is among the others of its declaration, so an item

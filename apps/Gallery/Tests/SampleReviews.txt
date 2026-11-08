@@ -96,7 +96,7 @@ PanSample.swift 2caac445cc49d841
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PickerSample.swift 171ebf39a3a84de4
 PinchSample.swift e56e5f964acfbeee
-PlatformSupportSample.swift a86e64db729f3a30
+PlatformSupportSample.swift 6403f0592307424a
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift 76ecb0076e0aa5e7
 PopoverSample.swift 9066bd443c9189ec

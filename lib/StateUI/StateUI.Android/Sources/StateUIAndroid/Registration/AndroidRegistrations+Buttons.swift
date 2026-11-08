@@ -17,9 +17,9 @@ extension AndroidRegistrations {
             button.applies(TextMembers.members) { view, values in applyText(view, values) }
             button.property(TrackingElementContract.tracking) { view, spacing in view.setLetterSpacing(spacing ?? 0) }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
-                let icon = HostPicture(values[ButtonContract.icon], dark: false)
+                let icon = HostPicture(values[IconElementContract.icon], dark: false)
                 view.setIcon(
                     icon, position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,

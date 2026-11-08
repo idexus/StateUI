@@ -34,9 +34,9 @@ Grid.swiped: ✓ pan on Grid: handed to the host's recognizer or handler, no NSE
 HStack.frameChanged: ✅
 HStack.gridColumn: ✅
 HStack.gridRow: ✅
-HStack.pointerMoved: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
-HStack.pointerPressed: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
-HStack.pointerReleased: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.pointerMoved: waits on HStack.pointerEntered
+HStack.pointerPressed: waits on HStack.pointerEntered
+HStack.pointerReleased: waits on HStack.pointerEntered
 Image.droppedFileTypes: ✓ dropFiles on Image: the window's drop routing told the driver's files, no dragging session
 Image.filesDropped: ✓ dropFiles on Image: the window's drop routing told the driver's files, no dragging session
 Image.tapped: ✓ pressDown on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -65,9 +65,9 @@ Picker.swiped: ✓ pan on Picker: handed to the host's recognizer or handler, no
 Polygon.frameChanged: ✅
 Polygon.gridColumn: ✅
 Polygon.gridRow: ✅
-Polygon.pointerMoved: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerPressed: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.pointerReleased: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
+Polygon.pointerMoved: waits on Polygon.pointerEntered
+Polygon.pointerPressed: waits on Polygon.pointerEntered
+Polygon.pointerReleased: waits on Polygon.pointerEntered
 Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the window's drop routing told the driver's files, no dragging session
 Polyline.filesDropped: ✓ dropFiles on Polyline: the window's drop routing told the driver's files, no dragging session
 Polyline.tapped: ✓ pressDown on Polyline: handed to the host's recognizer or handler, no NSEvent sent
@@ -119,9 +119,9 @@ TextEditor.swiped: ✓ pan on TextEditor: handed to the host's recognizer or han
 TextField.frameChanged: ✅
 TextField.gridColumn: ✅
 TextField.gridRow: ✅
-TextField.pointerMoved: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.pointerPressed: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.pointerReleased: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent
+TextField.pointerMoved: waits on TextField.pointerEntered
+TextField.pointerPressed: waits on TextField.pointerEntered
+TextField.pointerReleased: waits on TextField.pointerEntered
 TimePicker.droppedFileTypes: ✓ dropFiles on TimePicker: the window's drop routing told the driver's files, no dragging session
 TimePicker.filesDropped: ✓ dropFiles on TimePicker: the window's drop routing told the driver's files, no dragging session
 TimePicker.tapped: ✓ pressDown on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

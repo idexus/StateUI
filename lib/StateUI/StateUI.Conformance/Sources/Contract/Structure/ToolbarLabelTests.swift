@@ -31,12 +31,6 @@
                 try s.settle { try words() == "4 items" }
                 s.expect(try words(), "4 items", "and as the tree changed them")
             },
-            ConformanceCase("aLabelShowsItsPicture", proves: [Covered(ToolbarLabelContract.icon)]) { s in
-                s.start { Self.page { [ToolbarLabel("Saved").icon("test_dot.png").id("saved")] } }
-
-                try s.settle { try s.held(ToolbarLabelContract.icon, on: s.element("saved")) == "test_dot.png" }
-                s.expect(try s.held(ToolbarLabelContract.icon, on: s.element("saved")), "test_dot.png")
-            },
             ConformanceCase("aLabelInTheOverflowIsChosenByNobody", proves: [Covered(ToolbarLabelContract.self)]) { s in
                 s.start {
                     Self.page {

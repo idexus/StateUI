@@ -7,9 +7,9 @@ Button.swiped: ✓ pan on Button: handed to the host's recognizer or handler, no
 Canvas.frameChanged: ✅
 Canvas.gridColumn: ✅
 Canvas.gridRow: ✅
-Canvas.pointerMoved: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
-Canvas.pointerPressed: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
-Canvas.pointerReleased: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
+Canvas.pointerMoved: waits on Canvas.pointerEntered
+Canvas.pointerPressed: waits on Canvas.pointerEntered
+Canvas.pointerReleased: waits on Canvas.pointerEntered
 Capsule.droppedFileTypes: ✓ dropFiles on Capsule: the window's drop routing told the driver's files, no dragging session
 Capsule.filesDropped: ✓ dropFiles on Capsule: the window's drop routing told the driver's files, no dragging session
 Capsule.tapped: ✓ pressDown on Capsule: handed to the host's recognizer or handler, no NSEvent sent
@@ -81,9 +81,9 @@ ProgressBar.swiped: ✓ pan on ProgressBar: handed to the host's recognizer or h
 Rectangle.frameChanged: ✅
 Rectangle.gridColumn: ✅
 Rectangle.gridRow: ✅
-Rectangle.pointerMoved: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.pointerPressed: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.pointerReleased: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.pointerMoved: waits on Rectangle.pointerEntered
+Rectangle.pointerPressed: waits on Rectangle.pointerEntered
+Rectangle.pointerReleased: waits on Rectangle.pointerEntered
 ScrollView.droppedFileTypes: ✓ dropFiles on ScrollView: the window's drop routing told the driver's files, no dragging session
 ScrollView.filesDropped: ✓ dropFiles on ScrollView: the window's drop routing told the driver's files, no dragging session
 ScrollView.tapped: ✓ pressDown on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
@@ -110,9 +110,9 @@ Switch.panYChannel: ✓ pan on Switch: handed to the host's recognizer or handle
 Text.frameChanged: ✅
 Text.gridColumn: ✅
 Text.gridRow: ✅
-Text.pointerMoved: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
-Text.pointerPressed: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
-Text.pointerReleased: ✓ hover on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.pointerMoved: waits on Text.pointerEntered
+Text.pointerPressed: waits on Text.pointerEntered
+Text.pointerReleased: waits on Text.pointerEntered
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
 TextEditor.rotationUpdated: ✓ rotate on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
@@ -131,9 +131,9 @@ VStack.swiped: ✓ pan on VStack: handed to the host's recognizer or handler, no
 WebView.frameChanged: ✅
 WebView.gridColumn: ✅
 WebView.gridRow: ✅
-WebView.pointerMoved: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
-WebView.pointerPressed: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
-WebView.pointerReleased: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
+WebView.pointerMoved: waits on WebView.pointerEntered
+WebView.pointerPressed: waits on WebView.pointerEntered
+WebView.pointerReleased: waits on WebView.pointerEntered
 ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
 ZStack.filesDropped: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
 ZStack.tapped: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent

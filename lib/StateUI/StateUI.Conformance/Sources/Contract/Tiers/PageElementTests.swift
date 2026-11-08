@@ -18,7 +18,7 @@
         Specimens.wearing(PageElementContract.self).flatMap { element in
             [
                 inTab(PageElementContract.title, of: element, "Notes", then: "Drafts"),
-                inTab(PageElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
+                inTab(IconElementContract.icon, of: element, "test_dot.png", then: "test_wide.png"),
             ] + (element == PageContract.nodeType.name ? [] : [groundsItsPages(element)]) + [linked(element)]
         } + [titled, titledByState, groundHolds, groundFollowsColor, followsAMaterial]
     }
@@ -259,7 +259,7 @@ enum Presented {
         default:
             let words = VStack { Beside([Text("Page")] + others) }
             if let title = value as? String, member.name == PageElementContract.title.name { return words.title(title) }
-            if let icon = value as? ImageSource, member.name == PageElementContract.icon.name { return words.pageIcon(icon) }
+            if let icon = value as? ImageSource, member.name == IconElementContract.icon.name { return words.pageIcon(icon) }
             return words
         }
     }

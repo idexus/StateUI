@@ -31,9 +31,9 @@ extension UIKitRegistrations {
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 TextAndIconElementContract.showsText) { view, values in
-                let icon = HostPicture(values[ButtonContract.icon], dark: false).flatMap(UIKitRenderer.image)
+                let icon = HostPicture(values[IconElementContract.icon], dark: false).flatMap(UIKitRenderer.image)
                 view.setIcon(
                     icon, position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing],

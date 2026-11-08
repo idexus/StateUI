@@ -46,7 +46,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (16)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 7 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow; at the page's foot a strip of native controls</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>6 ✅ · 10 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow; at the page's foot a strip of native controls</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>4 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code>; at the page's foot the navigation controller's <code>UIToolbar</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>4 –</td><td><code>Toolbar</code> <code>MenuItem</code>; at the page's foot a <code>Toolbar</code> of its own</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>4 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More; at the page's foot a <code>CommandBar</code> of its own</td></tr></tbody>
@@ -77,8 +77,8 @@ What an element is painted on: a view's, a page's, a window's, a bar item's and 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center"></td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>background</code></td><td>property</td><td><code>Material</code></td><td>adaptive</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
 </table>
 
 ## From [EnabledElement](tiers/EnabledElement.md)
@@ -96,10 +96,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: waits on ToolbarGroup.background, not realized yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: waits on ToolbarGroup.background, not realized yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
 </table>
 
 ## From [PaddingElement](tiers/PaddingElement.md)

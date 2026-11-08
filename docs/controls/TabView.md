@@ -20,7 +20,7 @@ TabView(["Today", "Archive"]) { name in Tab(name: name) }.selection($shown)
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [BarElement](tiers/BarElement.md) · [PageElement](tiers/PageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -69,6 +69,16 @@ What an element the platform's automation meets has - a drawn element, a menu's 
 <tr><td colspan="9">GTK 4: GTK 4 tells assistive technology no identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget made in code.</td></tr></tbody>
 </table>
 
+## From [IconElement](tiers/IconElement.md)
+
+The picture an element shows beside or for its words: a button's, a toolbar label's, a menu entry's, a page's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: cannot read icon of TabView - AppKit's driver has no path for it yet</td></tr></tbody>
+</table>
+
 ## From [BackgroundElement](tiers/BackgroundElement.md)
 
 What an element is painted on: a view's, a page's, a window's, a bar item's and a run of text's background.
@@ -102,8 +112,6 @@ What a page shows about itself - a title and a picture where another container p
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">·</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: cannot read icon of TabView - AppKit's driver has no path for it yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onLinkOpened</code> (<code>linkOpened</code>)</td><td>event</td><td><code>String</code></td><td>adaptive</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: openLink on TabView: the host's entry the application's delegate calls, no Apple event sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>title</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>

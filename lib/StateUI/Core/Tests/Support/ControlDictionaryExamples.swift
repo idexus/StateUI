@@ -873,6 +873,11 @@ extension ControlDictionary {
                 .background(.cornflowerBlue)
             """#),
 
+        (IconElementContract.self, #"""
+            Button("Share")
+                .icon("square.and.arrow.up")
+            """#),
+
         (FocusElementContract.self, #"""
             @State var editing = false
 

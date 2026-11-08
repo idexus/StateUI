@@ -1,13 +1,9 @@
 # revision 6.1
-MenuItem.icon: – Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.
 MenuItem.keyboardShortcut: ✅
 MenuItem.text: ✅
-MenuToggle.icon: – Android's menus - a view's context menu, a bar's overflow and its submenus - draw their entries' words alone.
 MenuToggle.keyboardShortcut: ✅
 MenuToggle.text: ✅
-ToolbarButton.icon: ✅
 ToolbarButton.keyboardShortcut: ✅
 ToolbarButton.text: ✅
-ToolbarToggle.icon: ✅
 ToolbarToggle.keyboardShortcut: ✅
 ToolbarToggle.text: ✅

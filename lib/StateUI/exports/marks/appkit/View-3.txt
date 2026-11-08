@@ -14,9 +14,9 @@ Capsule.swiped: ✓ pan on Capsule: handed to the host's recognizer or handler, 
 CheckBox.frameChanged: ✅
 CheckBox.gridColumn: ✅
 CheckBox.gridRow: ✅
-CheckBox.pointerMoved: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerPressed: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.pointerReleased: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
+CheckBox.pointerMoved: waits on CheckBox.pointerEntered
+CheckBox.pointerPressed: waits on CheckBox.pointerEntered
+CheckBox.pointerReleased: waits on CheckBox.pointerEntered
 ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the window's drop routing told the driver's files, no dragging session
 ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the window's drop routing told the driver's files, no dragging session
 ColorPicker.tapped: ✓ pressDown on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -49,9 +49,9 @@ ItemsView.tapped: ✓ tap on ItemsView: handed to the host's recognizer or handl
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
-Line.pointerMoved: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.pointerPressed: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.pointerReleased: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
+Line.pointerMoved: waits on Line.pointerEntered
+Line.pointerPressed: waits on Line.pointerEntered
+Line.pointerReleased: waits on Line.pointerEntered
 Link.droppedFileTypes: ✓ dropFiles on Link: the window's drop routing told the driver's files, no dragging session
 Link.filesDropped: ✓ dropFiles on Link: the window's drop routing told the driver's files, no dragging session
 Link.tapped: ✓ pressDown on Link: handed to the host's recognizer or handler, no NSEvent sent
@@ -91,9 +91,9 @@ ScrollView.swiped: ✓ pan on ScrollView: handed to the host's recognizer or han
 SearchField.frameChanged: ✅
 SearchField.gridColumn: ✅
 SearchField.gridRow: ✅
-SearchField.pointerMoved: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.pointerPressed: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.pointerReleased: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
+SearchField.pointerMoved: waits on SearchField.pointerEntered
+SearchField.pointerPressed: waits on SearchField.pointerEntered
+SearchField.pointerReleased: waits on SearchField.pointerEntered
 Separator.frameChanged: ✅
 Separator.horizontalAlignment: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: handed to the host's recognizer or handler, no NSEvent sent

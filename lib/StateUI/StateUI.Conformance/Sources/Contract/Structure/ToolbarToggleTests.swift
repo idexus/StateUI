@@ -40,12 +40,12 @@
                         [ToolbarToggle("Ruler", isOn: on.wrappedValue).icon("test_dot.png", on: "test_wide.png").id("ruler")]
                     }
                 }
-                try s.settle { try s.held(MenuItemElementContract.icon, on: s.element("ruler")) == "test_dot.png" }
-                s.expect(try s.held(MenuItemElementContract.icon, on: s.element("ruler")), "test_dot.png", "off, its own")
+                try s.settle { try s.held(IconElementContract.icon, on: s.element("ruler")) == "test_dot.png" }
+                s.expect(try s.held(IconElementContract.icon, on: s.element("ruler")), "test_dot.png", "off, its own")
 
                 try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(MenuItemElementContract.icon, on: s.element("ruler")) == "test_wide.png" }
-                s.expect(try s.held(MenuItemElementContract.icon, on: s.element("ruler")), "test_wide.png", "on, its on picture")
+                try s.settle { try s.held(IconElementContract.icon, on: s.element("ruler")) == "test_wide.png" }
+                s.expect(try s.held(IconElementContract.icon, on: s.element("ruler")), "test_wide.png", "on, its on picture")
             },
         ]
     }

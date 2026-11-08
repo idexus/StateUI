@@ -17,10 +17,8 @@ public enum ButtonContract: ElementContract {
         ButtonMenuElementContract.self, TextAndIconElementContract.self,
         PressElementContract.self,
         ClickElementContract.self,
+        IconElementContract.self,
     ]
-
-    /// The picture beside the caption.
-    public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
 
     /// Which side of the caption the icon stands on.
     public static let iconPosition = ElementProperty<Self, IconPosition>("iconPosition", layer: .adaptive)
@@ -39,5 +37,5 @@ public enum ButtonContract: ElementContract {
     public static let role = ElementProperty<Self, ButtonRole>("role", layer: .adaptive)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [icon, iconPosition, iconSpacing, keyboardShortcut, lineBreak, role]
+    public static let members: [any ContractMember] = [iconPosition, iconSpacing, keyboardShortcut, lineBreak, role]
 }

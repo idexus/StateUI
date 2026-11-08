@@ -30,9 +30,9 @@ extension WinUIRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue)
             }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
-                let picture = HostPicture(values[ButtonContract.icon], dark: false)
+                let picture = HostPicture(values[IconElementContract.icon], dark: false)
                 view.setIcon(
                     WinUIPictures.lines(picture), position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,

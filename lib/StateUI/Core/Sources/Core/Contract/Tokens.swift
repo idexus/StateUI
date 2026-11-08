@@ -169,7 +169,7 @@ extension NodeType {
     static let horizontalAlignment = ViewContract.horizontalAlignment.token
     static let horizontalScrollIndicator = ScrollViewContract.horizontalScrollIndicator.token
     static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
-    static let icon = MenuItemElementContract.icon.token
+    static let icon = IconElementContract.icon.token
     static let onIcon = ToolbarToggleContract.onIcon.token
     static let step = StepperContract.step.token
     static let ignoresInput = VisualElementContract.ignoresInput.token

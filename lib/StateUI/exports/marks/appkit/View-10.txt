@@ -31,9 +31,9 @@ Fill.swiped: ✓ pan on Fill: handed to the host's recognizer or handler, no NSE
 Grid.frameChanged: ✅
 Grid.gridColumn: ✅
 Grid.gridRow: ✅
-Grid.pointerMoved: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
-Grid.pointerPressed: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
-Grid.pointerReleased: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.pointerMoved: waits on Grid.pointerEntered
+Grid.pointerPressed: waits on Grid.pointerEntered
+Grid.pointerReleased: waits on Grid.pointerEntered
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the window's drop routing told the driver's files, no dragging session
 HStack.filesDropped: ✓ dropFiles on HStack: the window's drop routing told the driver's files, no dragging session
 HStack.tapped: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
@@ -64,9 +64,9 @@ Path.swiped: ✓ pan on Path: handed to the host's recognizer or handler, no NSE
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅
-Picker.pointerMoved: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerPressed: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.pointerReleased: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
+Picker.pointerMoved: waits on Picker.pointerEntered
+Picker.pointerPressed: waits on Picker.pointerEntered
+Picker.pointerReleased: waits on Picker.pointerEntered
 Polygon.droppedFileTypes: ✓ dropFiles on Polygon: the window's drop routing told the driver's files, no dragging session
 Polygon.filesDropped: ✓ dropFiles on Polygon: the window's drop routing told the driver's files, no dragging session
 Polygon.tapped: ✓ pressDown on Polygon: handed to the host's recognizer or handler, no NSEvent sent
@@ -116,9 +116,9 @@ Text.isDraggable: ✓ dragAndDrop on Text: the drag source and the window's drop
 TextEditor.frameChanged: ✅
 TextEditor.gridColumn: ✅
 TextEditor.gridRow: ✅
-TextEditor.pointerMoved: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerPressed: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.pointerReleased: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
+TextEditor.pointerMoved: waits on TextEditor.pointerEntered
+TextEditor.pointerPressed: waits on TextEditor.pointerEntered
+TextEditor.pointerReleased: waits on TextEditor.pointerEntered
 TextField.droppedFileTypes: ✓ dropFiles on TextField: the window's drop routing told the driver's files, no dragging session
 TextField.filesDropped: ✓ dropFiles on TextField: the window's drop routing told the driver's files, no dragging session
 TextField.tapped: ✓ pressDown on TextField: handed to the host's recognizer or handler, no NSEvent sent

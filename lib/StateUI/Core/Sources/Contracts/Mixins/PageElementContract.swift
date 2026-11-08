@@ -14,15 +14,12 @@ public enum PageElementContract: Tier {
     /// to the window this page or arrangement stands in: its address.
     public static let linkOpened = ElementEvent<Self, String>("linkOpened", layer: .adaptive)
 
-    /// The picture shown with the title - a tab's icon.
-    public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)
-
     /// The title.
     public static let title = ElementProperty<Self, String>("title", layer: .native)
 
     /// The tiers it wears.
-    public static let tiers: [any Tier.Type] = [BackgroundElementContract.self]
+    public static let tiers: [any Tier.Type] = [BackgroundElementContract.self, IconElementContract.self]
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [icon, linkOpened, title]
+    public static let members: [any ContractMember] = [linkOpened, title]
 }

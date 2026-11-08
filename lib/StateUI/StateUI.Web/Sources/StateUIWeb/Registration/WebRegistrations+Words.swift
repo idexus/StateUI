@@ -41,14 +41,14 @@ extension WebRegistrations {
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
             button.applies(
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
                 ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
+                    values[IconElementContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
                     spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText],
-                        hasPicture: HostPicture(values[ButtonContract.icon], dark: false) != nil, byDefault: true))
+                        hasPicture: HostPicture(values[IconElementContract.icon], dark: false) != nil, byDefault: true))
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
             button.property(TrackingElementContract.tracking) { view, spacing in

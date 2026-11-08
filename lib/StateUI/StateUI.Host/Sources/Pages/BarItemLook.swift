@@ -24,7 +24,7 @@
     private static func records(
         tier: (any ContractMember) -> HostRecord, item: (any ContractMember, any Contract.Type) -> HostRecord
     ) -> [HostRecord] {
-        let own = BarItemElementContract.members + [BarElementContract.toolbarSpacing as any ContractMember]
+        let own = BarItemElementContract.worn.flatMap { $0.members } + [BarElementContract.toolbarSpacing as any ContractMember]
         let box = BorderElementContract.members + PaddingElementContract.members
         let words = TextColorElementContract.members + FontElementContract.members
         let buttons: [any Contract.Type] = [ToolbarButtonContract.self, ToolbarToggleContract.self]

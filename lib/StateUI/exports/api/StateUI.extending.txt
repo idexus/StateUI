@@ -405,6 +405,7 @@ swift.conformance HostEventSubscription: Swift.Sendable
 swift.conformance HostEvents: Swift.Sendable
 swift.conformance HoverElementContract: StateUI.Contract
 swift.conformance Icon: StateUI.HostRepresentable
+swift.conformance IconElementContract: StateUI.Contract
 swift.conformance IconPosition: StateUI.HostRepresentable
 swift.conformance IconPosition: StateUI.LaneValue
 swift.conformance IconPosition: StateUI.StateChoice
@@ -2973,6 +2974,8 @@ swift.type.property HStackContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property HStackContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property HoverElementContract.members: static let members: [any ContractMember]
 swift.type.property HoverElementContract.tiers: static var tiers: [any Tier.Type] { get }
+swift.type.property IconElementContract.members: static let members: [any ContractMember]
+swift.type.property IconElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property IconPosition.laneKind: static var laneKind: LaneKind { get }
 swift.type.property IconPosition.lanes: static var lanes: Int { get }
 swift.type.property IconPosition.moving: static var moving: MotionValues { get }
@@ -3384,6 +3387,7 @@ swift.type.property ToolbarLabelContract.layer: static let layer: ElementLayer
 swift.type.property ToolbarLabelContract.layer: static var layer: ElementLayer { get }
 swift.type.property ToolbarLabelContract.members: static let members: [any ContractMember]
 swift.type.property ToolbarLabelContract.nodeType: static let nodeType: NodeType
+swift.type.property ToolbarLabelContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property ToolbarLabelContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ToolbarStyle.laneKind: static var laneKind: LaneKind { get }
 swift.type.property ToolbarStyle.lanes: static var lanes: Int { get }

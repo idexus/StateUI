@@ -378,6 +378,9 @@ swift.conformance Icon: Swift.Equatable
 swift.conformance Icon: Swift.Hashable
 swift.conformance Icon: Swift.RawRepresentable
 swift.conformance Icon: Swift.Sendable
+swift.conformance IconElementContract: StateUI.Tier
+swift.conformance IconElementContract: StateUI.WornContract
+swift.conformance IconElementContract: Swift.Sendable
 swift.conformance IconPosition: Swift.Equatable
 swift.conformance IconPosition: Swift.Hashable
 swift.conformance IconPosition: Swift.RawRepresentable
@@ -1067,6 +1070,7 @@ swift.enum GridLength: enum GridLength
 swift.enum HStackContract: enum HStackContract
 swift.enum HoverElementContract: enum HoverElementContract
 swift.enum Icon: enum Icon
+swift.enum IconElementContract: enum IconElementContract
 swift.enum IconPosition: enum IconPosition
 swift.enum ImageContract: enum ImageContract
 swift.enum ImageElementContract: enum ImageElementContract
@@ -13576,7 +13580,6 @@ swift.type.property BorderElementContract.shape: static let shape: ElementProper
 swift.type.property BorderElementContract.stroke: static let stroke: ElementProperty<BorderElementContract, Brush>
 swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
-swift.type.property ButtonContract.icon: static let icon: ElementProperty<ButtonContract, ImageSource>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
 swift.type.property ButtonContract.iconSpacing: static let iconSpacing: ElementProperty<ButtonContract, Double>
 swift.type.property ButtonContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<ButtonContract, KeyboardShortcut>
@@ -13691,6 +13694,8 @@ swift.type.property HTTPMethod.put: static let put: HTTPMethod
 swift.type.property HoverElementContract.name: static let name: String
 swift.type.property HoverElementContract.pointerEntered: static let pointerEntered: ElementEvent<HoverElementContract, Void>
 swift.type.property HoverElementContract.pointerExited: static let pointerExited: ElementEvent<HoverElementContract, Void>
+swift.type.property IconElementContract.icon: static let icon: ElementProperty<IconElementContract, ImageSource>
+swift.type.property IconElementContract.name: static let name: String
 swift.type.property ImageContract.isAnimating: static let isAnimating: ElementProperty<ImageContract, Bool>
 swift.type.property ImageContract.name: static var name: String { get }
 swift.type.property ImageContract.source: static let source: ElementProperty<ImageContract, ImageSource>
@@ -13781,7 +13786,6 @@ swift.type.property MenuBarContract.order: static let order: ElementProperty<Men
 swift.type.property MenuContract.name: static var name: String { get }
 swift.type.property MenuContract.text: static let text: ElementProperty<MenuContract, String>
 swift.type.property MenuItemContract.name: static var name: String { get }
-swift.type.property MenuItemElementContract.icon: static let icon: ElementProperty<MenuItemElementContract, ImageSource>
 swift.type.property MenuItemElementContract.keyboardShortcut: static let keyboardShortcut: ElementProperty<MenuItemElementContract, KeyboardShortcut>
 swift.type.property MenuItemElementContract.name: static let name: String
 swift.type.property MenuItemElementContract.text: static let text: ElementProperty<MenuItemElementContract, String>
@@ -13830,7 +13834,6 @@ swift.type.property PageContract.showsCloseButton: static let showsCloseButton: 
 swift.type.property PageContract.showsNavigationBar: static let showsNavigationBar: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.showsTitle: static let showsTitle: ElementProperty<PageContract, Bool>
 swift.type.property PageContract.subtitle: static let subtitle: ElementProperty<PageContract, String>
-swift.type.property PageElementContract.icon: static let icon: ElementProperty<PageElementContract, ImageSource>
 swift.type.property PageElementContract.linkOpened: static let linkOpened: ElementEvent<PageElementContract, String>
 swift.type.property PageElementContract.name: static let name: String
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>
@@ -13988,7 +13991,6 @@ swift.type.property ToolbarGroupContract.part: static let part: ElementProperty<
 swift.type.property ToolbarGroupContract.position: static let position: ElementProperty<ToolbarGroupContract, ToolbarPosition>
 swift.type.property ToolbarGroupContract.spacing: static let spacing: ElementProperty<ToolbarGroupContract, Double>
 swift.type.property ToolbarGroupContract.standsAlone: static let standsAlone: ElementProperty<ToolbarGroupContract, Bool>
-swift.type.property ToolbarLabelContract.icon: static let icon: ElementProperty<ToolbarLabelContract, ImageSource>
 swift.type.property ToolbarLabelContract.name: static var name: String { get }
 swift.type.property ToolbarLabelContract.text: static let text: ElementProperty<ToolbarLabelContract, String>
 swift.type.property ToolbarToggleContract.name: static var name: String { get }

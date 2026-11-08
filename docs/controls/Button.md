@@ -13,7 +13,7 @@ Button("Pressed \(count) times")
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [ClickElement](tiers/ClickElement.md) · [HoverElement](tiers/HoverElement.md) · [PressElement](tiers/PressElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [IconElement](tiers/IconElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [ClickElement](tiers/ClickElement.md) · [HoverElement](tiers/HoverElement.md) · [PressElement](tiers/PressElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TrackingElement](tiers/TrackingElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [ImageElement](tiers/ImageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -33,7 +33,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (106)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 38 ✓ · 3 –</td><td><code>NSButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 33 ✓ · 5 –</td><td><code>NSButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>18 ✅ · 2 ✓ · 3 –</td><td><code>UIButton</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>17 ✅ · 2 ✓ · 3 –</td><td><code>Button</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>24 ✅</td><td><code>Button</code></td></tr></tbody>
@@ -47,7 +47,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ButtonContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>iconPosition</code></td><td>property</td><td><code>IconPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>iconSpacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: AppKit's button stands its picture at its own gap from the words: it takes no other.</td></tr></tbody>
@@ -167,12 +166,12 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>layoutBody</code></td><td>property</td><td><code>LayoutBody</code></td><td>stateUI</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPinchUpdated</code> (<code>pinchUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Point, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerMoved</code> (<code>pointerMoved</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: waits on Button.pointerEntered, not realized yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerPressed</code> (<code>pointerPressed</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: waits on Button.pointerEntered, not realized yet</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">⏸</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: waits on Button.pointerEntered, not realized yet</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
@@ -196,6 +195,15 @@ What every element showing words has: the words, and the case they are drawn in.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>textCase</code></td><td>property</td><td><code>TextCase</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [IconElement](tiers/IconElement.md)
+
+The picture an element shows beside or for its words: a button's, a toolbar label's, a menu entry's, a page's.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [BackgroundElement](tiers/BackgroundElement.md)
@@ -232,10 +240,10 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: hover on Button: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerEntered</code> (<code>pointerEntered</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.</td></tr></tbody>
 </table>
 
 ## From [PressElement](tiers/PressElement.md)

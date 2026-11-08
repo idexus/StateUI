@@ -37,7 +37,7 @@ extension View {
     ///
     ///     NotesPage().title("Notes").pageIcon("notes.png")
     public func pageIcon(_ value: ImageSource) -> Modified {
-        pageSays { $0.setValue(PageElementContract.icon, value) }
+        pageSays { $0.setValue(IconElementContract.icon, value) }
     }
 
     /// What the whole page is made of behind what it shows, also where the view it shows does not reach. Written on

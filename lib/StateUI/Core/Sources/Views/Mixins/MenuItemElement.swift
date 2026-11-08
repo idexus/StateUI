@@ -20,7 +20,7 @@ extension MenuItemElement {
 
     /// The picture on it, resolved from the application's image resources.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(MenuItemElementContract.icon, value)
+        setValue(IconElementContract.icon, value)
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the

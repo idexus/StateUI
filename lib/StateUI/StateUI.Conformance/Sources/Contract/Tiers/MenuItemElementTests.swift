@@ -19,7 +19,7 @@
                 chosen(element),
                 outOfReachWithItsBranch(element),
                 Aspects.holds(MenuItemElementContract.text, on: element, "Copy", then: "Duplicate"),
-                Aspects.holds(MenuItemElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
+                Aspects.holds(IconElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
                 Aspects.holds(EnabledElementContract.isEnabled, on: element, true, then: false),
                 Aspects.holds(
                     MenuItemElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),

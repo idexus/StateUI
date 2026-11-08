@@ -1,4 +1,3 @@
 # revision 1.1
 ToolbarLabel: ✅
-ToolbarLabel.icon: ✅
 ToolbarLabel.text: ✅
