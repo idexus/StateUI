@@ -21,7 +21,6 @@ struct APIProperties {
             throw CocoaError(.propertyListReadCorrupt)
         }
         read(root, parents: [], module: module)
-        guard !properties.isEmpty else { throw CocoaError(.propertyListReadCorrupt) }
     }
 
     private mutating func read(_ node: [String: Any], parents: [String], module: String) {

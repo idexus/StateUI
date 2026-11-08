@@ -35,6 +35,12 @@ rm -f "$scratch/out/Products/Debug-webassembly-wasm32/libStateUIWebTests.a"
 
 STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --build-tests
 products="$(STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --show-bin-path)"
+# The facade, as the WebAssembly build made it, held to its API record (lib/StateUI/exports/api/StateUIWeb.txt).
+configuration="$(swift sdk configure --show-configuration "$sdk" 2>&1)"
+"$checkout/.scripts/API/record.sh" StateUIWeb "$products" wasm32-unknown-wasip1 \
+  "$(sed -n 's/^sdkRootPath: //p' <<< "$configuration")" \
+  -resource-dir "$(sed -n 's/^swiftResourcesPath: //p' <<< "$configuration")" \
+  -Xcc -fmodule-map-file="$checkout/lib/StateUI/StateUI.Web/Sources/CStateUIWeb/module.modulemap"
 program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"

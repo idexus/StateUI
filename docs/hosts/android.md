@@ -268,7 +268,8 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 A head calls its Java half through `Java`: `Java.call` and `Java.callStatic`
 read the answer as the type the call stands for - `let width: Int32 =
 Java.call(view, method)` - an `int`, a `long`, a `boolean`, a `float`, a
-`double` or an object, and one standing as a statement answers nothing.
+`double` or an object, each a `JavaResult` - and one standing as a statement
+answers nothing.
 `Java.frame` lets go of the local references the calls inside it make.
 `Java.env` and `Java.jni` are the main thread's environment and its function
 table, for what the calls do not cover; a call through them is the head's

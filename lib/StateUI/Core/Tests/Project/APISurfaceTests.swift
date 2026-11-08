@@ -21,6 +21,14 @@ final class APISurfaceTests: XCTestCase {
         try String(contentsOf: record, encoding: .utf8) + String(contentsOf: extendingRecord, encoding: .utf8)
     }
 
+    /// Every record's lines: StateUI's two, and each module a host's script records - its facade, a backend, the
+    /// testing module.
+    static func everyRecorded() throws -> String {
+        let folder = record.deletingLastPathComponent()
+        return try FileManager.default.contentsOfDirectory(atPath: folder.path).filter { $0.hasSuffix(".txt") }.sorted()
+            .map { try String(contentsOf: folder.appendingPathComponent($0), encoding: .utf8) }.joined(separator: "\n")
+    }
+
     /// The types an author extending StateUI writes with, every member with them: a contract and its members, a
     /// node, the values a host is handed, a value of a state's own, and an application's acts and events.
     /// Design: docs/design/architecture.md#two-surfaces
@@ -108,10 +116,10 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(missing, [], "a See names a declaration the API record holds")
     }
 
-    /// The handbook names every public type of both surfaces - README and docs/, the design notes left out: what 1.0
-    /// freezes is what the handbook promised, so a type no page names is a promise nobody made.
+    /// The handbook names every public type of every record - README and docs/, the design notes left out: what
+    /// 1.0 freezes is what the handbook promised, so a type no page names is a promise nobody made.
     func testTheHandbookNamesEveryPublicType() throws {
-        let declared = try Self.recorded().split(separator: "\n").compactMap { line -> String? in
+        let declared = try Self.everyRecorded().split(separator: "\n").compactMap { line -> String? in
             let fields = line.split(separator: " ", maxSplits: 2)
             guard fields.count > 1, ["swift.struct", "swift.class", "swift.enum", "swift.protocol", "swift.typealias"]
                 .contains(String(fields[0])), fields[1].hasSuffix(":"), !fields[1].contains(".") else { return nil }
@@ -286,22 +294,48 @@ final class APISurfaceTests: XCTestCase {
         let (application, extending) = Self.split(surface)
 
         for (record, lines) in [(Self.record, application), (Self.extendingRecord, extending)] {
-            if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
-                try FileManager.default.createDirectory(
-                    at: record.deletingLastPathComponent(), withIntermediateDirectories: true)
-                try (lines.joined(separator: "\n") + "\n").write(to: record, atomically: true, encoding: .utf8)
-                continue
-            }
-
-            let recorded = try String(contentsOf: record, encoding: .utf8).replacingOccurrences(of: "\r\n", with: "\n")
-            let (was, now) = (Set(recorded.split(separator: "\n").map(String.init)), Set(lines))
-            let added = now.subtracting(was).sorted(), removed = was.subtracting(now).sorted()
-            XCTAssertTrue(added.isEmpty && removed.isEmpty, """
-                \(record.lastPathComponent) is not the recorded API - \(added.count) added, \(removed.count) taken \
-                away. Read the change, then write it: STATEUI_UPDATE_EXPORTS=1 swift test --filter APISurfaceTests
-                \((added.prefix(20).map { "+ \($0)" } + removed.prefix(20).map { "- \($0)" }).joined(separator: "\n"))
-                """)
+            try Self.hold(lines, to: record)
         }
+    }
+
+    /// The module a host's script names - its facade, a backend, the testing module - says what its record says,
+    /// `lib/StateUI/exports/api/<Module>.txt`. The script names the module and the folder it was built in
+    /// (`STATEUI_API_MODULE`, `STATEUI_API_MODULES`), and for another platform the triple, the SDK and the
+    /// arguments that find its C modules (`STATEUI_API_TRIPLE`, `STATEUI_API_SDK`, `STATEUI_API_ARGUMENTS`); the
+    /// core's own run names none, and is skipped saying so.
+    /// Design: docs/design/architecture.md#a-hosts-modules
+    func testTheModuleAHostsScriptNamesIsItsRecord() throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard let module = environment["STATEUI_API_MODULE"], !module.isEmpty else {
+            throw XCTSkip("a host's script names the module it records, STATEUI_API_MODULE")
+        }
+        let said = { (name: String) in environment[name].flatMap { $0.isEmpty ? nil : $0 } }
+        let modules = try XCTUnwrap(said("STATEUI_API_MODULES"), "the folder \(module) was built in")
+        let surface = try Self.surface(
+            module: module, directory: URL(fileURLWithPath: modules), triple: said("STATEUI_API_TRIPLE"),
+            sdk: said("STATEUI_API_SDK"),
+            arguments: (environment["STATEUI_API_ARGUMENTS"] ?? "").split(whereSeparator: \.isWhitespace).map(String.init))
+
+        XCTAssertFalse(surface.isEmpty, "the symbol graph of \(module) read nothing")
+        try Self.hold(surface, to: Self.record.deletingLastPathComponent().appendingPathComponent("\(module).txt"))
+    }
+
+    /// Holds `lines` to `record`, or writes them there under `STATEUI_UPDATE_EXPORTS=1`.
+    private static func hold(_ lines: [String], to record: URL) throws {
+        if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
+            try FileManager.default.createDirectory(at: record.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try (lines.joined(separator: "\n") + "\n").write(to: record, atomically: true, encoding: .utf8)
+            return
+        }
+
+        let recorded = try String(contentsOf: record, encoding: .utf8).replacingOccurrences(of: "\r\n", with: "\n")
+        let (was, now) = (Set(recorded.split(separator: "\n").map(String.init)), Set(lines))
+        let added = now.subtracting(was).sorted(), removed = was.subtracting(now).sorted()
+        XCTAssertTrue(added.isEmpty && removed.isEmpty, """
+            \(record.lastPathComponent) is not the recorded API - \(added.count) added, \(removed.count) taken \
+            away. Read the change, then write it: STATEUI_UPDATE_EXPORTS=1 and the run that records it
+            \((added.prefix(20).map { "+ \($0)" } + removed.prefix(20).map { "- \($0)" }).joined(separator: "\n"))
+            """)
     }
 
     func testTheSurfaceRecordsProjectedValuesAndPublicSetterAccess() throws {
@@ -376,7 +410,10 @@ final class APISurfaceTests: XCTestCase {
     /// Every public declaration of the module this run built - its kind, its path and its declaration - and every
     /// type's conformances, sorted, from the symbol graph the toolchain beside `swift` extracts: the module's own and
     /// its extensions of other modules'.
-    private static func surface(module: String = "StateUI", directory: URL? = nil) throws -> [String] {
+    private static func surface(
+        module: String = "StateUI", directory: URL? = nil, triple: String? = nil, sdk given: String? = nil,
+        arguments extra: [String] = []
+    ) throws -> [String] {
         // Never a skip: a check that did not run reads as one that passed.
         guard let modules = directory ?? builtModules() else {
             throw CocoaError(.fileNoSuchFile, userInfo: [NSDebugDescriptionErrorKey: "no StateUI.swiftmodule beside the tests"])
@@ -385,9 +422,10 @@ final class APISurfaceTests: XCTestCase {
         try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: output) }
 
-        var arguments = ["-module-name", module, "-I", modules.path, "-target", try triple(),
-                         "-minimum-access-level", "public", "-output-dir", output.path]
-        if let sdk = try sdk() { arguments += ["-sdk", sdk] }
+        let target = try triple ?? Self.triple(), sdk = try given ?? Self.sdk()
+        var arguments = ["-module-name", module, "-I", modules.path, "-target", target,
+                         "-minimum-access-level", "public", "-output-dir", output.path] + extra
+        if let sdk { arguments += ["-sdk", sdk] }
         let said = try run("swift-symbolgraph-extract", arguments)
         let graphs = try FileManager.default.contentsOfDirectory(atPath: output.path).filter { $0.hasSuffix(".json") }
         guard !graphs.isEmpty else { throw CocoaError(.fileReadNoSuchFile, userInfo: [NSDebugDescriptionErrorKey: said]) }
@@ -399,8 +437,9 @@ final class APISurfaceTests: XCTestCase {
         }
 
         let digest = output.appendingPathComponent("accessors.json")
-        var digestArguments = ["-dump-sdk", "-module", module, "-I", modules.path, "-target", try triple(), "-o", digest.path]
-        if let sdk = try sdk() { digestArguments += ["-sdk", sdk] }
+        var digestArguments = ["-dump-sdk", "-module", module, "-I", modules.path, "-target", target, "-o", digest.path]
+            + extra
+        if let sdk { digestArguments += ["-sdk", sdk] }
         _ = try run("swift-api-digester", digestArguments)
         let json = try JSONSerialization.jsonObject(with: Data(contentsOf: digest))
         let properties = try APIProperties(json as? [String: Any] ?? [:], module: module)

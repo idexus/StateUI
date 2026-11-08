@@ -182,6 +182,25 @@ Every public type of either file is named on a handbook page - README and
 which `APISurfaceTests` holds: what 1.0 freezes is what the handbook
 promised.
 
+## A host's modules
+
+What an application writes for a host is recorded too, a file a module beside
+StateUI's two: each facade (`StateUIAppKit.txt`, `StateUIUIKit.txt`,
+`StateUIAndroid.txt`, `StateUIWinUI.txt`, `StateUIGTK.txt`, `StateUIWeb.txt`),
+each backend (`StateUIWebViewGTK.txt`, `StateUIWebViewWinUI.txt`) and the
+testing module (`StateUITesting.txt`). The core's `APISurfaceTests` stays the
+one reading of a surface: a host's test script, after its build, runs its
+`testTheModuleAHostsScriptNamesIsItsRecord` through `.scripts/API/record.sh`
+(`record.ps1` on Windows), naming the module, the folder its build left the
+modules in, and - for a build for another platform - the triple, the SDK and
+what finds the module's C modules (their maps, pkg-config's flags). The record
+is written under `STATEUI_UPDATE_EXPORTS=1` and held otherwise, as the marks
+are. The script reads it where the module was built: the simulator's, an
+Android device's and the WebAssembly build's tests run where no toolchain is,
+so the test cannot read its own module. The core's own run names no module and
+the test stands skipped, saying so. The handbook names every public type of
+every record, the hosts' included.
+
 ## Where to read next
 
 - [Glossary](glossary.md): StateUI's words and the common term for each.

@@ -1,0 +1,4 @@
+module CWebViewWinUI {
+    umbrella header "CWebViewWinUI.h"
+    export *
+}

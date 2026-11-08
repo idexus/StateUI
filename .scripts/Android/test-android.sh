@@ -73,7 +73,7 @@ serial="$(device_serial "${1:-${ANDROID_SERIAL:-}}")"
 abi="$(device_abi "$serial")"
 echo "device:     $serial ($abi)"
 
-apk="${STATEUI_TEST_APK:-$(build_head "$tests_dir" StateUIAndroidTests debug "$abi")}"
+apk="${STATEUI_TEST_APK:-$(STATEUI_API_RECORD=1 build_head "$tests_dir" StateUIAndroidTests debug "$abi")}"
 package="$("$AAPT2" dump packagename "$apk")"
 "$ADB" -s "$serial" install -r "$apk" >/dev/null
 # The verdicts of a run before this one stay in the APK's files: none may stand for this run's.

@@ -68,4 +68,13 @@ $narrowing = if ($Filter) { @('--filter', $Filter) + $apart }
     elseif ($Conformance -or $Stale) { @('--filter', 'WinUIConformanceTests') + $apart }
     else { @('--skip', 'WinUIConformanceTests') + $apart }
 swift test --package-path $testing @scratch --skip-build @narrowing
-exit $LASTEXITCODE
+if ($LASTEXITCODE) { exit $LASTEXITCODE }
+
+# The facade and the web view's backend, as this build made them, held to their API records
+# (lib/StateUI/exports/api/StateUIWinUI.txt, StateUIWebViewWinUI.txt): their C modules found by their maps.
+$maps = @(
+    'StateUI\StateUI.WinUI\Sources\CStateUIWinUI\include', 'Backends\WebView.WinUI\Relay\include', 'StateUI\StateUI.Host\CStateUIHost'
+) | ForEach-Object { @('-Xcc', "-fmodule-map-file=$(Join-Path $StateUIRepository "lib\$_\module.modulemap")") }
+foreach ($module in 'StateUIWinUI', 'StateUIWebViewWinUI') {
+    & (Join-Path $StateUIRepository '.scripts\API\record.ps1') -Module $module -Modules $bin -Arguments $maps
+}
