@@ -170,7 +170,7 @@ A Swift `Style` can target the control once its Swift struct conforms to
 `StyleTarget`. Styles resolve on the Swift side, so the control arrives with
 the style's values already among its own; the registration needs nothing for
 it. A value handed over as a state - `.rating($stars)` over
-`setValue(_:on:mode:kind:)` - reaches the same applier on the host's own
+`setValue(_:on:as:)` - reaches the same applier on the host's own
 frames; see [Motion and journeys](../concepts/motion-and-journeys.md). A state
 the host cannot carry, or one the control translates - an enumeration, a choice
 by its place - is read by the element as it is described: `.signal($signal)`

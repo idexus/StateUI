@@ -143,13 +143,13 @@ final class WindowValueTests: XCTestCase {
         let channel = try channel(.textField, .text, in: whole)
         let first = try binding(.label, "a")
 
-        XCTAssertTrue(HostBoundary.report(.text("b"), through: channel))
+        XCTAssertTrue(HostBoundary.report(.string("b"), through: channel))
         renders.render(tree(), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(first.wrappedValue, "a")
         XCTAssertEqual(about(.label).values, [AnyHashable("a"), AnyHashable("b")])
         XCTAssertEqual(about(.label).texts, [try ValueText.write("a"), try ValueText.write("b")])
-        guard case .text(let put)? = handed(channel) else { return XCTFail("the host is handed the text put back") }
+        guard case .string(let put)? = handed(channel) else { return XCTFail("the host is handed the text put back") }
         XCTAssertEqual(put, "a")
     }
 

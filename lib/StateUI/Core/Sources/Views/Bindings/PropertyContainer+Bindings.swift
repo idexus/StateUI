@@ -10,59 +10,55 @@ extension ModifiableElement {
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`, of a `@State` or a `@Binding`.
-    ///   - mode: which way the value crosses.
-    ///   - kind: how the host applies the value; see `StateKind`.
+    ///   - passage: how the value crosses - `.oneWay`, `.twoWay` or `.feed`.
     /// - Returns: the element, with the registration on it.
     public func setValue<Owner: WornContract, Value: HostRepresentable & LaneValue>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
-        mode: StateMode,
-        kind: StateKind
+        as passage: StatePassage<Value>
     ) -> Modified {
         Wearing.takes(node.declaration, property)
-        return setValue(property.token, on: state, mode: mode, kind: kind)
+        return setValue(property.token, on: state, mode: passage.mode, kind: passage.kind)
     }
 
     /// The same, for text: the host writes the words as the state changes,
-    /// and with `.inOut` lands what the user types on the state whole.
+    /// and `.twoWay` lands what the user types on the state whole.
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`.
-    ///   - mode: which way the words cross.
+    ///   - passage: how the words cross - `.oneWay` or `.twoWay`.
     /// - Returns: the element, with the registration on it.
     public func setValue<Owner: WornContract>(
         _ property: ElementProperty<Owner, String>,
         on state: Binding<String>,
-        mode: StateMode
+        as passage: StatePassage<String>
     ) -> Modified {
         Wearing.takes(node.declaration, property)
-        return setValue(property.token, on: state, mode: mode)
+        return setValue(property.token, on: state, mode: passage.mode)
     }
 
     /// The same, for a value the host can animate - a number, a color, a
-    /// thickness, a point. With `kind: .property` the host animates the
-    /// property along the state's journey, so `$stars.journey.move(to: 5)`
-    /// moves it; any other kind carries the value as it stands.
+    /// thickness, a point. As a `.journey` the host animates the property
+    /// along the state's journey, so `$stars.journey.move(to: 5)` moves it;
+    /// any other passage carries the value as it stands.
     ///
     ///     func rating(_ state: Binding<Double>) -> Modified {
-    ///         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+    ///         setValue(RatingBarContract.rating, on: state, as: .journey)
     ///     }
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
     ///   - state: the whole state, `$x`.
-    ///   - mode: which way the value crosses.
-    ///   - kind: how the host applies the value; see `StateKind`.
+    ///   - passage: how the value crosses - `.journey`, `.oneWay`, `.twoWay` or `.feed`.
     /// - Returns: the element, with the registration on it.
     public func setValue<Owner: WornContract, Value: HostRepresentable & Walked>(
         _ property: ElementProperty<Owner, Value>,
         on state: Binding<Value>,
-        mode: StateMode,
-        kind: StateKind
+        as passage: StatePassage<Value>
     ) -> Modified {
         Wearing.takes(node.declaration, property)
-        return setValue(property.token, on: state, mode: mode, kind: kind)
+        return setValue(property.token, on: state, mode: passage.mode, kind: passage.kind)
     }
 }
 
@@ -81,7 +77,7 @@ extension PropertyContainer {
     }
 
     /// Carries a property from a state by its token - what the typed
-    /// `setValue(_:on:mode:kind:)` and every driven modifier are written over.
+    /// `setValue(_:on:as:)` and every driven modifier are written over.
     func setValue<Value: LaneValue>(
         _ property: Prop,
         on state: Binding<Value>,

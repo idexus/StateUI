@@ -8,8 +8,8 @@
     /// or a color's channels as fractions of full as lanes; nil for what no state carries.
     public init?(carrying value: HostValue) {
         switch value {
-        case .string(let text): self = .text(text)
-        case .name(let name): self = .text(name)
+        case .string(let text): self = .string(text)
+        case .name(let name): self = .string(name)
         case .bool(let flag): self = .lanes([flag ? 1 : 0])
         case .number(let number): self = .lanes([number])
         case .numbers(let numbers): self = .lanes(numbers)

@@ -1068,7 +1068,7 @@ func typed(_ number: Int32, _ text: String) {
     }
 
     XCTAssertTrue(
-        HostBoundary.report(.text(text), through: binding),
+        HostBoundary.report(.string(text), through: binding),
         "the host's report of state \(number) was refused")
 }
 

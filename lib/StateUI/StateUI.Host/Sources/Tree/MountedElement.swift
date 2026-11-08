@@ -801,7 +801,7 @@
         }
 
         switch (binding.kind, state) {
-        case (.text, .text(let text)):
+        case (.text, .string(let text)):
             return .string(text)
 
         case (.plain, .lanes(let lanes)):
@@ -885,7 +885,7 @@
         switch kind {
         case .number:
             return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
-        case .boolean:
+        case .bool:
             return Bool(carried: .lanes(lanes))?.propValue
         case .choice:
             return Int32(exactly: lanes[0].rounded()).map(HostValue.enumeration)

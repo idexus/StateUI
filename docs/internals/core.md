@@ -152,7 +152,7 @@ turns the nodes into the patch.
 - **The binding twins**, the `Binding` form of each value modifier, stand
   beside their value forms; `Bindings/` holds the driven words of a label, the
   feeds the platform reports into a state, the described two-way form, and
-  `setValue(_:on:mode:kind:)`, which carries an application's own property.
+  `setValue(_:on:as:)`, which carries an application's own property.
   *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
 - **`View`**, **`ModifiedContent`**, **`AnyView`**, **`ViewBuilder`** and
@@ -296,7 +296,10 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`StateCarried`**, **`StateMode`**, **`StateKind`** and **`LaneKind`** are a
   value as the image holds it, the way it crosses at an attachment, the door
   it goes through and what its lanes are read as; a host reads them as
-  `HostStateValue`, `HostStateMode`, `HostStateKind` and `HostLaneKind`. `StateRegistration` and `StateImage` are internal.
+  `HostStateValue`, `HostStateMode`, `HostStateKind` and `HostLaneKind`. The
+  mode and the door are the host's (`@_spi(Host)`): an application's own
+  control names both at once by a **`StatePassage`**. `StateRegistration` and
+  `StateImage` are internal.
   ([A state the host carries](../design/types/README.md#a-state-the-host-carries))
 
 ### Journeys

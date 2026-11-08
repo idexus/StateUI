@@ -243,8 +243,9 @@ Boolean too. A host reading lanes by the property's name would know only the
 names it lists, and any other member would arrive as a number.
 
 Text is no `LaneValue`: it has no lanes, and it goes through the text door
-alone. `plain` and the lane form of `setValue(_:on:mode:kind:)` refuse it by
-type; its own form takes the mode alone.
+alone. `plain` and the lane form of `setValue(_:on:as:)` refuse it by type;
+its own form takes `.oneWay` and `.twoWay` alone - words are never walked and
+never fed.
 
 ## Three protocols, three capabilities
 

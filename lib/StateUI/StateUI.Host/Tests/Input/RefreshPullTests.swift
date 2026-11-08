@@ -59,7 +59,7 @@ final class RefreshPullTests: XCTestCase {
     }
 
     /// A state of `isRefreshing` the pull writes into.
-    private static let binding = HostStateBinding(state: 901, mode: .inOut, kind: .plain, laneKind: .boolean)
+    private static let binding = HostStateBinding(state: 901, mode: .inOut, kind: .plain, laneKind: .bool)
 
     /// `children` mounted in a stack.
     private func mounted(_ children: [HostPatch], in runtime: HostRuntime = .still()) throws -> MountedElement {

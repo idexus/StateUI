@@ -85,6 +85,7 @@ and this table maps the two.
 | image (`HostStorage`) | shared value buffer | the bytes both sides read for a carried state |
 | crossing | boundary encoding | the published bytes, inherited and custom timing resolved |
 | door (`StateKind`) | binding kind | how a carried state reaches a control: text, plain value, animated value, placement run, feed |
+| passage (`StatePassage`) | binding direction | how a state crosses to an extension's control: a journey, one way, two ways, a feed |
 | latch, publish | snapshot, commit | the first and the last step of a cycle |
 | stamp | write counter | what an engine compares to know a state changed |
 | armed, stirred, awake | wake reasons | why an engine runs on a frame |

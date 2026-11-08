@@ -2683,11 +2683,11 @@ enum Listings {
             /// same state grows the cube on the host's own frames, and nothing here is
             /// built again for it.
             ///
-            /// `.inOut`, because the host reports where a walk has got to, which is
-            /// what `$size.journey.value` reads - so `$size.journey.move(to: 1)` grows
-            /// the cube the way it moves any other walked value.
+            /// A `.journey`: the host walks it and reports where the walk has got to,
+            /// which is what `$size.journey.value` reads - so `$size.journey.move(to: 1)`
+            /// grows the cube the way it moves any other walked value.
             public func size(_ state: Binding<Double>) -> Modified {
-                setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
+                setValue(Cube3DContract.size, on: state, as: .journey)
             }
 
             /// Which color the cube is painted.
@@ -2703,7 +2703,7 @@ enum Listings {
             /// The same, set by the host from a state as it stands: a switch bound to
             /// the state stops and starts the cube, and nothing here is built again.
             public func isSpinning(_ state: Binding<Bool>) -> Modified {
-                setValue(Cube3DContract.isSpinning, on: state, mode: .out, kind: .plain)
+                setValue(Cube3DContract.isSpinning, on: state, as: .oneWay)
             }
         }
         """#,
@@ -13303,14 +13303,14 @@ enum Listings {
         ///
         ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
         ///
-        /// `.inOut`, because the host reports where the walk has got to, which is
-        /// what `$stars.journey.value` reads. A tap does not arrive this way;
-        /// `.onRatingChanged(_:)` hears it.
+        /// A `.journey`: the host walks it and reports where the walk has got to,
+        /// which is what `$stars.journey.value` reads. A tap does not arrive this
+        /// way; `.onRatingChanged(_:)` hears it.
         ///
         /// On the control and not on `RatingBarProperties`: a style wears that
         /// protocol, and a style has no state to follow.
         public func rating(_ state: Binding<Double>) -> Modified {
-            setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+            setValue(RatingBarContract.rating, on: state, as: .journey)
         }
         """#,
     ]

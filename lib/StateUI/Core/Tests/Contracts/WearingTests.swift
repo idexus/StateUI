@@ -16,7 +16,7 @@ final class WearingTests: XCTestCase {
 
     func testAStateOfAContractTheElementDoesNotWearIsSaid() {
         _ = Beacon().setValue(
-            RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)
+            RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)
 
         XCTAssertTrue(hasComplained("Test.Beacon was handed `RangeElement.maximum`"))
     }

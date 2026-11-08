@@ -28,7 +28,7 @@ final class APISurfaceTests: XCTestCase {
         "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct", "ControlChild",
         "ControlReports", "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "HostEventSubscription",
         "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name", "Node", "NodeType",
-        "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue", "Walked",
+        "PropValue", "StateCarried", "StateChoice", "StatePassage", "StateValue", "Walked",
         // Values only a contract's member, a host or a kept value's store takes.
         "CornerRadius", "KeyboardShortcut", "PersistentKind", "SelectionMode", "WebViewSource",
     ]

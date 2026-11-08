@@ -616,6 +616,6 @@ extension State.Storage where Value: StateValue {
     /// a trap.
     private static var nothing: Value {
         Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
-            ?? Value(carried: .text(""))!
+            ?? Value(carried: .string(""))!
     }
 }

@@ -8,7 +8,7 @@ public enum LaneKind: Sendable {
     case number
 
     /// A Boolean, true where its one lane is not nought.
-    case boolean
+    case bool
 
     /// A case of a closed vocabulary, its one lane the case's number.
     case choice

@@ -113,8 +113,8 @@ final class HostRenderTests: XCTestCase {
 
         let binding = try XCTUnwrap(driven[.text])
 
-        XCTAssertEqual(HostBoundary.value(for: binding), .text("Ada"))
-        XCTAssertTrue(HostBoundary.report(.text("Grace"), through: binding))
+        XCTAssertEqual(HostBoundary.value(for: binding), .string("Ada"))
+        XCTAssertTrue(HostBoundary.report(.string("Grace"), through: binding))
         XCTAssertEqual(name.wrappedValue, "Grace")
     }
 
@@ -130,7 +130,7 @@ final class HostRenderTests: XCTestCase {
         let binding = try XCTUnwrap(driven[.text])
 
         XCTAssertEqual(binding.mode, .out)
-        XCTAssertFalse(HostBoundary.report(.text("Changed"), through: binding))
+        XCTAssertFalse(HostBoundary.report(.string("Changed"), through: binding))
         XCTAssertEqual(caption.wrappedValue, "Waiting")
     }
 
@@ -152,7 +152,7 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertEqual(
             cycle.changes,
-            [HostStateChange(state: binding.state, changed: ~0, value: .text("Ready"))])
+            [HostStateChange(state: binding.state, changed: ~0, value: .string("Ready"))])
         XCTAssertFalse(cycle.continues)
         XCTAssertFalse(HostBoundary.cyclesPending)
     }
@@ -174,7 +174,7 @@ final class HostRenderTests: XCTestCase {
 
         HostBoundary.readsKept { name, kind in
             switch (name, kind) {
-            case ("host.theme", .text): .string("dark")
+            case ("host.theme", .string): .string("dark")
             case ("host.count", .integer): .number(4)
             default: nil
             }

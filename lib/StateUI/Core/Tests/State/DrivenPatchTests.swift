@@ -140,9 +140,9 @@ final class DrivenPatchTests: XCTestCase {
             ties(page, .auto(3), .auto(4)),
             tied(["fontSize"], to: 1, .inOut, .property, .number)
                 .merging(tied(["horizontalAlignment"], to: 2, .out, .plain, .choice)) { $1 }
-                .merging(tied(["isVisible"], to: 3, .out, .plain, .boolean)) { $1 })
+                .merging(tied(["isVisible"], to: 3, .out, .plain, .bool)) { $1 })
         XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text, nil))
-        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["isOn"], to: 5, .inOut, .plain, .boolean))
+        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["isOn"], to: 5, .inOut, .plain, .bool))
     }
 
     /// Every one of the thirty twins, on one element each of the tiers they

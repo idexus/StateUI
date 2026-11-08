@@ -8,5 +8,5 @@ public enum StateCarried: Equatable, Sendable {
     case lanes([Double])
 
     /// Text, which has no lanes: it is dirty or it is not.
-    case text(String)
+    case string(String)
 }

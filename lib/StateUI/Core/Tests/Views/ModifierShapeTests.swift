@@ -40,7 +40,7 @@ final class ModifierShapeTests: XCTestCase {
             for (index, line) in lines.enumerated() {
                 guard let declared = line.firstMatch(of: /public func (\w+)\((_|into) state: Binding</) else { continue }
                 let body = lines[(index + 1)...].prefix { !$0.hasPrefix("    }") }.joined(separator: "\n")
-                let platformWrites = body.contains("mode: .in)") || body.contains("mode: .in,")
+                let platformWrites = body.contains("mode: .in)") || body.contains("mode: .in,") || body.contains("as: .feed)")
                     || (body.contains("onEvent(") && body.contains("state.wrappedValue = "))
                 if platformWrites { feeds += 1 }
                 if platformWrites != (declared.2 == "into") {

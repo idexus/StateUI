@@ -39,9 +39,10 @@ final class ContractRoadsTests: XCTestCase {
 
             static let title = ElementProperty<Self, String>("title")
             static let level = ElementProperty<Self, Double>("level")
+            static let isLit = ElementProperty<Self, Bool>("isLit")
             static let tapped = ElementEvent<Self, Int>("tapped")
 
-            static let members: [any ContractMember] = [title, level, tapped]
+            static let members: [any ContractMember] = [title, level, isLit, tapped]
         }
 
         struct Beacon: ElementView {
@@ -77,21 +78,41 @@ final class ContractRoadsTests: XCTestCase {
             name: "a property driven from a state by its token",
             closed: """
                 @State var level = 0.5
-                _ = Beacon().setValue(Prop("level"), on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(Prop("level"), on: $level, as: .journey)
                 """,
             open: """
                 @State var level = 0.5
-                _ = Beacon().setValue(BeaconContract.level, on: $level, mode: .inOut, kind: .property)
+                _ = Beacon().setValue(BeaconContract.level, on: $level, as: .journey)
                 """),
         Road(
-            name: "text from a state through a door for numbers",
+            name: "words from a state walked as a journey",
             closed: """
                 @State var title = "Harbour"
-                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out, kind: .plain)
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .journey)
                 """,
             open: """
                 @State var title = "Harbour"
-                _ = Beacon().setValue(BeaconContract.title, on: $title, mode: .out)
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .oneWay)
+                """),
+        Road(
+            name: "a flag from a state walked as a journey",
+            closed: """
+                @State var lit = false
+                _ = Beacon().setValue(BeaconContract.isLit, on: $lit, as: .journey)
+                """,
+            open: """
+                @State var lit = false
+                _ = Beacon().setValue(BeaconContract.isLit, on: $lit, as: .twoWay)
+                """),
+        Road(
+            name: "words from a state fed by the host",
+            closed: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .feed)
+                """,
+            open: """
+                @State var title = "Harbour"
+                _ = Beacon().setValue(BeaconContract.title, on: $title, as: .twoWay)
                 """),
         Road(
             name: "an event heard by its token",
@@ -320,8 +341,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Canvas { Draw.lineWidth(2) }"#),
         Road(
             name: "a state handed to a style by setValue(_:on:)",
-            closed: #"_ = Style<Slider>().setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#,
-            open: #"_ = Slider(0.5).setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, mode: .in, kind: .property)"#),
+            closed: #"_ = Style<Slider>().setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#,
+            open: #"_ = Slider(0.5).setValue(RangeElementContract.maximum, on: State(wrappedValue: 1.0).projectedValue, as: .journey)"#),
         Road(
             name: "an application calling the library's own act",
             closed: #"_ = ApplicationContract.handlerFailed"#,

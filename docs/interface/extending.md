@@ -184,10 +184,14 @@ one only an element wears on the element side, `FocusElement` or
 
 ### A state the host walks
 
-A property bound to a state is handed to the host with the state, which walks
-it there and reports where it got to. `setValue(_:on:mode:kind:)` says which
-way it crosses - a `StateMode`: `.in`, `.out` or `.inOut` - and which of the
-host's doors it goes through, a `StateKind`:
+A property bound to a state is handed to the host with the state.
+`setValue(_:on:as:)` says how it crosses, a `StatePassage`: `.journey`, walked
+by the host and where the walk has got to reported back; `.oneWay`, written
+to the host as it stands; `.twoWay`, written so, and what the control reports
+landing back on the state; `.feed`, written by the host alone and read by the
+application. A state takes only the ways its value can - a journey where the
+host can walk it, a feed where it is numbers - so a flag or words walked as
+a journey does not compile:
 
 ```swift listing extending.md.state
 // Sources/Samples/Interop/RatingBar.swift
@@ -195,14 +199,14 @@ host's doors it goes through, a `StateKind`:
 ///
 ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
 ///
-/// `.inOut`, because the host reports where the walk has got to, which is
-/// what `$stars.journey.value` reads. A tap does not arrive this way;
-/// `.onRatingChanged(_:)` hears it.
+/// A `.journey`: the host walks it and reports where the walk has got to,
+/// which is what `$stars.journey.value` reads. A tap does not arrive this
+/// way; `.onRatingChanged(_:)` hears it.
 ///
 /// On the control and not on `RatingBarProperties`: a style wears that
 /// protocol, and a style has no state to follow.
 public func rating(_ state: Binding<Double>) -> Modified {
-    setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+    setValue(RatingBarContract.rating, on: state, as: .journey)
 }
 ```
 

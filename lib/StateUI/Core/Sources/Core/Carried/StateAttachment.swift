@@ -6,7 +6,7 @@
 /// Every registration carries one. A placement and a caption's text are
 /// `.out`, a feed `.in`; a walked property, a field's text and a value a
 /// control reports are `.inOut`.
-public enum StateMode: Int32, Sendable {
+@_spi(Host) public enum StateMode: Int32, Sendable {
     /// The host writes it; nothing this side writes reaches the control.
     case `in` = 0
 
@@ -19,7 +19,7 @@ public enum StateMode: Int32, Sendable {
 
 /// What a registration is about - which of the host's own doors the value goes
 /// through. This library's own, numbered in declaration order.
-public enum StateKind: Int32, Sendable {
+@_spi(Host) public enum StateKind: Int32, Sendable {
     /// An animated value driving one property of one control.
     case property = 0
 

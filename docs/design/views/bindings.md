@@ -89,10 +89,14 @@ The other modes are stated by whoever knows. A placement and a caption are
 `.out`: there is nothing to report. A frame is `.in`: the host tells the state
 where the layout put the view. A field's text is `.inOut` with nothing
 animating, what the user types landing on the state. An application
-registering a control of its own picks the mode on the public
-`setValue(_:on:mode:kind:)`, because only it knows whether its property is one
-the platform answers; its text form, `setValue(_:on:mode:)`, takes no door,
-since words have one.
+registering a control of its own picks the passage on the public
+`setValue(_:on:as:)`, because only it knows whether its property is one the
+platform answers: a `StatePassage`, whose four ways - a journey, one way,
+two ways, a feed - each name a mode and a door, so a mode and a door that
+make no sense together cannot be written. The passage is generic over the
+state's value: a journey stands only for a value the host can walk, a feed
+only for one of numbers, and words take one way or two through the one door
+they have.
 
 ## A stated value beside a driven one
 

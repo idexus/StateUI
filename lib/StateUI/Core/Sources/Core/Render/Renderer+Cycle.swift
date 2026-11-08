@@ -82,7 +82,7 @@ extension Renderer {
         let mask: UInt64
 
         switch (binding.kind, value) {
-        case (.text, .text):
+        case (.text, .string):
             mask = ~0
 
         case (.plain, .lanes(let lanes)), (.feed, .lanes(let lanes)):
