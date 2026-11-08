@@ -29,7 +29,7 @@ Swift protocols behind them refine each other.
   TrackingElement                        space between letters
   DecorableTextElement                   underline and strikethrough
   BorderElement                          the shape of an element's own box, and its outline
-  ImageElement                           how a picture fills its room
+  ContentModeElement                     how a picture or a shape fills its room
   TintElement                            a control's one accent color
   KeyboardElement                        keys taken while it holds the keyboard
   '-- FocusElement                       the keyboard put on it and taken off

@@ -45,7 +45,7 @@ Page 9
 PageElement 6
 View 23
 VisualElement 28
-Shape 5
+Shape 6
 BorderElement 14
 TextInput 9
 Application 14
@@ -106,3 +106,4 @@ Sheet 2
 ActionElement 2
 Menu 3
 ToolbarLabel 3
+ContentModeElement 2

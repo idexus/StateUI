@@ -42,7 +42,7 @@
         DecorableTextElementContract.self,
         PaddingElementContract.self,
         BorderElementContract.self,
-        ImageElementContract.self,
+        ContentModeElementContract.self,
         TintElementContract.self,
         KeyboardElementContract.self,
         FocusElementContract.self,

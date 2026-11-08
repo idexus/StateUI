@@ -97,7 +97,7 @@ final class GTKConformanceTests: XCTestCase {
     func testDecorableTextElement() { conform(DecorableTextElementTests.self) }
     func testPaddingElement() { conform(PaddingElementTests.self) }
     func testBorderElement() { conform(BorderElementTests.self) }
-    func testImageElement() { conform(ImageElementTests.self) }
+    func testContentModeElement() { conform(ContentModeElementTests.self) }
     func testTintElement() { conform(TintElementTests.self) }
     func testPlaceholderElement() { conform(PlaceholderElementTests.self) }
     func testStyledElement() { conform(StyledElementTests.self) }

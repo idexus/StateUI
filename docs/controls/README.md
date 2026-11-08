@@ -29,28 +29,28 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 <!-- controls:begin -->
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Button](Button.md) | 106 | 60 ✅ · 3 ☑️ · 38 ✓ · 3 – | 16 ✅ · 2 ✓ · 3 – | 15 ✅ · 2 ✓ · 3 – | 22 ✅ | 17 ✅ · 4 ✓ · 1 – | 22 ✅ |
+| [Button](Button.md) | 106 | 60 ✅ · 3 ☑️ · 38 ✓ · 3 – | 16 ✅ · 2 ✓ · 3 – | 15 ✅ · 2 ✓ · 3 – | 21 ✅ | 17 ✅ · 3 ✓ · 1 – | 21 ✅ |
 | [Canvas](Canvas.md) | 75 | 36 ✅ · 3 ☑️ · 36 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ |
-| [Capsule](Capsule.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 7 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ☑️ |
+| [Capsule](Capsule.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 1 ☑️ · 1 – | 1 ✅ · 1 ☑️ |
 | [CheckBox](CheckBox.md) | 85 | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 3 ✅ · 2 ✓ · 3 – | 3 ✅ · 2 ✓ · 3 – | 8 ✅ | 4 ✅ · 3 ✓ · 1 – | 8 ✅ |
 | [ColorPicker](ColorPicker.md) | 82 | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 4 ✅ · 2 ✓ · 3 – | 9 – | 9 ✅ | 6 ✅ · 2 ✓ · 1 – | 8 ✅ · 1 – |
 | [DatePicker](DatePicker.md) | 94 | 47 ✅ · 3 ☑️ · 37 ✓ · 7 – | 1 ✅ · 2 ✓ · 10 – | 7 ✅ · 2 ✓ · 3 – | 13 ✅ | 10 ✅ · 2 ✓ · 1 – | 13 ✅ |
-| [Ellipse](Ellipse.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 8 ✅ · 1 ☑️ | 7 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ☑️ |
+| [Ellipse](Ellipse.md) | 82 | 43 ✅ · 3 ☑️ · 36 ✓ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 1 ☑️ · 1 – | 1 ✅ · 1 ☑️ |
 | [Fill](Fill.md) | 77 | 39 ✅ · 2 ☑️ · 36 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – | 4 ✅ |
 | [Grid](Grid.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ | 10 ✅ · 1 ☑️ · 2 ✓ | 12 ✅ · 2 ✓ | 12 ✅ · 1 – | 10 ✅ · 2 ✓ · 2 – | 14 ✅ |
 | [HStack](HStack.md) | 87 | 48 ✅ · 2 ☑️ · 36 ✓ | 10 ✅ · 1 ☑️ · 2 ✓ | 12 ✅ · 2 ✓ | 12 ✅ · 1 – | 10 ✅ · 2 ✓ · 2 – | 14 ✅ |
-| [Image](Image.md) | 77 | 37 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ | 2 ✅ | 3 ✅ | 2 ✅ · 1 – | 3 ✅ |
+| [Image](Image.md) | 77 | 37 ✅ · 3 ☑️ · 36 ✓ | 2 ✅ | 1 ✅ | 2 ✅ | 1 ✅ · 1 – | 2 ✅ |
 | [ItemsView](ItemsView.md) | 92 | 45 ✅ · 3 ☑️ · 40 ✓ · 4 – | 10 ✅ · 6 ✓ · 3 – | 16 ✅ · 3 ✓ | 16 ✅ · 3 – | 13 ✅ · 2 ✓ · 4 – | 15 ✅ · 1 ✓ · 3 – |
-| [Line](Line.md) | 83 | 44 ✅ · 3 ☑️ · 36 ✓ | 10 ✅ | 10 ✅ | 10 ✅ | 9 ✅ · 1 – | 10 ✅ |
+| [Line](Line.md) | 83 | 44 ✅ · 3 ☑️ · 36 ✓ | 3 ✅ | 3 ✅ | 3 ✅ | 2 ✅ · 1 – | 3 ✅ |
 | [Link](Link.md) | 84 | 43 ✅ · 3 ☑️ · 37 ✓ · 1 – | 2 ✅ · 2 ✓ · 3 – | 2 ✅ · 2 ✓ · 3 – | 7 ✅ | 4 ✅ · 2 ✓ · 1 – | 7 ✅ |
 | [Map](Map.md) | 82 | 41 ✅ · 3 ☑️ · 37 ✓ · 1 – | 8 ✅ · 1 ✓ | 9 🧩 | 9 🧩 | 9 🧩 | 9 🧩 |
 | [MotionLayout](MotionLayout.md) | 94 | 42 ✅ · 2 ☑️ · 45 ✓ · 1 – | 6 ✅ · 1 ☑️ · 11 ✓ · 1 – | 11 ✅ · 6 ✓ · 1 – | 9 ✅ · 8 ✓ · 3 – | 6 ✅ · 9 ✓ · 3 – | 15 ✅ · 1 ☑️ · 4 ✓ · 1 – |
-| [Path](Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 10 ✅ · 1 ☑️ · 1 – | 11 ✅ · 1 ☑️ |
+| [Path](Path.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [Picker](Picker.md) | 96 | 51 ✅ · 3 ☑️ · 37 ✓ · 2 – | 10 ✅ · 2 ✓ · 3 – | 9 ✅ · 2 ✓ · 3 – | 15 ✅ | 10 ✅ · 2 ✓ · 3 – | 13 ✅ |
-| [Polygon](Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 12 ✅ · 1 ☑️ | 12 ✅ · 1 ☑️ | 12 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ · 1 – | 12 ✅ · 1 ☑️ |
-| [Polyline](Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 12 ✅ · 1 ☑️ | 12 ✅ · 1 ☑️ | 12 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ · 1 – | 12 ✅ · 1 ☑️ |
+| [Polygon](Polygon.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
+| [Polyline](Polyline.md) | 86 | 47 ✅ · 3 ☑️ · 36 ✓ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ · 1 – | 5 ✅ · 1 ☑️ |
 | [ProgressBar](ProgressBar.md) | 76 | 35 ✅ · 3 ☑️ · 36 ✓ · 2 – | 3 ✅ | 3 ✅ | 3 ✅ | 1 ✅ · 1 ✓ · 1 – | 3 ✅ |
-| [Rectangle](Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 11 ✅ · 1 ☑️ | 10 ✅ · 1 ☑️ · 1 – | 11 ✅ · 1 ☑️ |
+| [Rectangle](Rectangle.md) | 85 | 46 ✅ · 3 ☑️ · 36 ✓ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 4 ✅ · 1 ☑️ | 3 ✅ · 1 ☑️ · 1 – | 4 ✅ · 1 ☑️ |
 | [ScrollView](ScrollView.md) | 91 | 43 ✅ · 4 ☑️ · 37 ✓ · 7 – | 11 ✅ · 2 ✓ · 3 – | 12 ✅ · 3 ✓ · 3 – | 15 ✅ · 3 – | 12 ✅ · 2 ✓ · 4 – | 12 ✅ · 6 – |
 | [SearchField](SearchField.md) | 104 | 55 ✅ · 5 ☑️ · 36 ✓ · 5 – | 15 ✅ · 2 ✓ | 14 ✅ · 2 ✓ | 16 ✅ · 1 ☑️ | 11 ✅ · 5 ✓ · 1 – | 17 ✅ |
 | [Separator](Separator.md) | 74 | 34 ✅ · 3 ☑️ · 36 ✓ · 1 – | 1 ✅ | 1 ✅ | 1 ✅ | 1 – | 1 ✅ |
@@ -66,10 +66,10 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | [VStack](VStack.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ | 8 ✅ · 1 ☑️ · 1 ✓ | 10 ✅ · 1 ✓ | 9 ✅ · 1 – | 8 ✅ · 1 ✓ · 2 – | 11 ✅ |
 | [WebView](WebView.md) | 90 | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 14 ✅ · 3 ✓ | 12 ✅ · 2 ✓ · 3 – | 14 ✅ · 3 – | 14 ✅ · 2 ✓ · 1 – | 11 ✅ · 3 – |
 | [ZStack](ZStack.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ | 6 ✅ · 1 ☑️ · 2 ✓ | 8 ✅ · 2 ✓ | 8 ✅ · 1 – | 6 ✅ · 2 ✓ · 2 – | 10 ✅ |
-| ✅ |  | 1665 | 283 | 291 | 363 | 276 | 368 |
-| ✓ |  | 1355 | 56 | 45 | 8 | 64 | 5 |
+| ✅ |  | 1665 | 233 | 241 | 312 | 226 | 317 |
+| ✓ |  | 1355 | 56 | 45 | 8 | 63 | 5 |
 | – |  | 57 | 48 | 43 | 16 | 50 | 14 |
-| **Met** | 3210 | **3077** | **387** | **379** | **387** | **390** | **387** |
+| **Met** | 3210 | **3077** | **337** | **329** | **336** | **339** | **336** |
 | 🧩 |  | 0 | 0 | 9 | 9 | 9 | 9 |
 <!-- controls:end -->
 
@@ -153,7 +153,7 @@ Members many elements share, declared once.
 - [DecorableTextElement](tiers/DecorableTextElement.md) - The lines drawn through or under text.
 - [PaddingElement](tiers/PaddingElement.md) - The space kept inside an element, around what it holds.
 - [BorderElement](tiers/BorderElement.md) - What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
-- [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
+- [ContentModeElement](tiers/ContentModeElement.md) - How what an element draws fills the room it was given: a picture, a shape.
 - [TintElement](tiers/TintElement.md) - A control's one accent color.
 - [KeyboardElement](tiers/KeyboardElement.md) - An element that can hold the keyboard - a control taking the focus, or a layout holding the view that does - and so hear the keys it takes.
 - [FocusElement](tiers/FocusElement.md) - An element that takes the keyboard focus itself - a field, a button, a list - and so holds the keyboard.

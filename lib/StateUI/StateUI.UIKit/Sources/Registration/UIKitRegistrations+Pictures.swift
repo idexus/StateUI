@@ -10,8 +10,8 @@ extension UIKitRegistrations {
     /// An Image - one of the application's pictures, filling its room as its aspect says.
     static func pictures(_ registry: Registry<UIView>) {
         registry.add(ImageContract.self, create: { _ in UIKitImageView() }) { image in
-            image.applies(ImageContract.source, ImageElementContract.contentMode) { view, values in
-                view.apply(source: values[ImageContract.source], aspect: values[ImageElementContract.contentMode] ?? .fit)
+            image.applies(ImageContract.source, ContentModeElementContract.contentMode) { view, values in
+                view.apply(source: values[ImageContract.source], aspect: values[ContentModeElementContract.contentMode] ?? .fit)
             }
         }
     }

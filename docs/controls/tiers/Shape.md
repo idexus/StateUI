@@ -12,7 +12,7 @@ Line(from: Point(0, 0), to: Point(120, 0))
     .lineCap(.round)
 ```
 
-Wears: [View](View.md)
+Wears: [View](View.md) · [ContentModeElement](ContentModeElement.md)
 
 Worn by: [Capsule](../Capsule.md) · [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [Rectangle](../Rectangle.md)
 
@@ -22,7 +22,6 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `contentMode` | property | `ContentMode` | native |
 | `geometryTransform` | property | `ViewTransform` | native |
 | `stroke` | property | `Brush` | stateUI |
 | `dashPhase` | property | `Double` | stateUI |

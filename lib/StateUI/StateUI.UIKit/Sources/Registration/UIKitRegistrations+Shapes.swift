@@ -89,7 +89,7 @@ extension UIKitRegistrations {
     private static func authored<Realized: ElementContract>(
         _ curves: [HostCurveCommand], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> UIKitShapeView.Geometry {
-        .authored(curves, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: transform(values))
+        .authored(curves, evenOdd: evenOdd, aspect: values[ContentModeElementContract.contentMode] ?? .fit, transform: transform(values))
     }
 
     /// The shape's own transform's six numbers, where it has one that is all numbers.

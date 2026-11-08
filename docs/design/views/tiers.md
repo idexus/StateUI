@@ -34,8 +34,8 @@ allowed can be written" a compiler rule rather than a convention.
       TextColorElement  TextualElement  FontElement        ├── Shape
       TextAlignmentElement  PaddingElement                 │   ├── FilledShape
       LineHeightElement  DecorableTextElement              │   └── CorneredShape
-      BorderElement  ImageElement  TintElement             └── TextInput
-      BarElement
+      BorderElement  TintElement  BarElement               └── TextInput
+      ContentModeElement
 
   the element side's mixins: AutomationElement (refined by VisualElement and
   MenuItemElement), KeyboardElement, FocusElement - a style names no element

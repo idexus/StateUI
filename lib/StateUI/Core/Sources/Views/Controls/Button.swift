@@ -52,8 +52,8 @@ extension ButtonProperties {
 /// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement, ClickElement,
-    ShortcutElement {
+    ContentModeElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement, PressElement,
+    ClickElement, ShortcutElement {
     /// The node this control describes.
     public var node: Node
 

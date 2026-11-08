@@ -8,10 +8,10 @@ extension WinUIRegistrations {
     /// A picture from the application's folder.
     static func pictures(_ registry: Registry<WinUIView>) {
         registry.add(ImageContract.self, create: { _ in WinUIImageView() }) { image in
-            image.applies(ImageContract.source, ImageElementContract.contentMode) { view, values in
+            image.applies(ImageContract.source, ContentModeElementContract.contentMode) { view, values in
                 view.apply(
                     picture: HostPicture(values[ImageContract.source], dark: false),
-                    aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    aspect: values[ContentModeElementContract.contentMode] ?? .fit)
             }
         }
     }

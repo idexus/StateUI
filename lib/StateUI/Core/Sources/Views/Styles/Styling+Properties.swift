@@ -25,7 +25,7 @@ extension Styling: LineHeightElement where Target: LineHeightElement {}
 extension Styling: TrackingElement where Target: TrackingElement {}
 extension Styling: DecorableTextElement where Target: DecorableTextElement {}
 extension Styling: BorderElement where Target: BorderElement {}
-extension Styling: ImageElement where Target: ImageElement {}
+extension Styling: ContentModeElement where Target: ContentModeElement {}
 extension Styling: ButtonMenuElement where Target: ButtonMenuElement {}
 extension Styling: TextAndIconElement where Target: TextAndIconElement {}
 extension Styling: TextInputProperties where Target: TextInput {}

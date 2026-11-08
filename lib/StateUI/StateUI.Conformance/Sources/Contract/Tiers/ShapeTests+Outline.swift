@@ -92,7 +92,7 @@ extension ShapeTests {
     @MainActor
     static func inset(_ element: String) -> [any Worn] {
         let square = [Point(8, 8), Point(32, 8), Point(32, 32), Point(8, 32)]
-        let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
+        let atItsSize = Write(ContentModeElementContract.contentMode, ContentMode.center)
         return switch element {
         case "Line": [
             Write(LineContract.from, Point(0, 20)),

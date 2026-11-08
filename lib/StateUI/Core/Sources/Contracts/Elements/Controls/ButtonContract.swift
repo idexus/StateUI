@@ -13,7 +13,7 @@ public enum ButtonContract: ElementContract {
     /// picture fitted, and a menu it may open.
     public static let tiers: [any Tier.Type] = [
         ViewContract.self, TextualElementContract.self, TrackingElementContract.self, FontElementContract.self,
-        PaddingElementContract.self, BorderElementContract.self, ImageElementContract.self, FocusElementContract.self,
+        PaddingElementContract.self, BorderElementContract.self, ContentModeElementContract.self, FocusElementContract.self,
         ButtonMenuElementContract.self, TextAndIconElementContract.self,
         PressElementContract.self,
         ClickElementContract.self,

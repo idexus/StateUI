@@ -31,11 +31,11 @@ extension WinUIRegistrations {
             }
             button.applies(
                 IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                ContentModeElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
                 let picture = HostPicture(values[IconElementContract.icon], dark: false)
                 view.setIcon(
                     WinUIPictures.lines(picture), position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ContentModeElementContract.contentMode] ?? .fit,
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }

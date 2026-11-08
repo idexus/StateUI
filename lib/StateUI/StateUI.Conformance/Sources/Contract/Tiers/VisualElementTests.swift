@@ -489,7 +489,7 @@
         let red = Brush.solidColor(.red)
         let redFill = Material.color(.red)
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
-        let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
+        let atItsSize = Write(ContentModeElementContract.contentMode, ContentMode.center)
         return switch element {
         case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, redFill)]
         case "Line": [

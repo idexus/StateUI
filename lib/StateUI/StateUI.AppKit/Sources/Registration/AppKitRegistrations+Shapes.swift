@@ -83,7 +83,7 @@ extension AppKitRegistrations {
             lineCap: values[ShapeContract.lineCap]?.rawValue ?? 0,
             lineJoin: values[CorneredShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[CorneredShapeContract.miterLimit] ?? 10,
-            aspect: values[ShapeContract.contentMode] ?? .fit,
+            aspect: values[ContentModeElementContract.contentMode] ?? .fit,
             geometryTransform: Self.transform(values),
             geometry: geometry)
     }

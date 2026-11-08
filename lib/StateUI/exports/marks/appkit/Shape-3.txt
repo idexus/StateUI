@@ -1,31 +1,24 @@
-# revision 5.1
-Capsule.contentMode: does not apply - read contentMode of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
-Capsule.dash: does not apply - read dash of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
-Capsule.dashPhase: ✅
-Capsule.geometryTransform: ✅
-Ellipse.contentMode: ✅
-Ellipse.dash: ✅
+# revision 6.1
+Capsule.dash: ✅
+Capsule.dashPhase: does not apply - read dashPhase of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
+Capsule.stroke: does not apply - read stroke of Capsule - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
+Ellipse.dashPhase: ✅
 Ellipse.lineCap: does not apply - read lineCap of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
-Ellipse.lineWidth: does not apply - read lineWidth of Ellipse - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
-Line.dashPhase: does not apply - read dashPhase of Line - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
-Line.geometryTransform: does not apply - read geometryTransform of Line - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
+Ellipse.lineWidth: ✅
+Ellipse.stroke: ✅
+Line.dash: does not apply - read dash of Line - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
+Line.geometryTransform: ✅
 Line.lineCap: ✅
-Line.lineWidth: ✅
-Line.stroke: ✅
-Path.contentMode: does not apply - read contentMode of Path - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
-Path.dash: does not apply - read dash of Path - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
-Path.dashPhase: ✅
-Path.geometryTransform: ✅
-Polygon.contentMode: ✅
-Polygon.dash: ✅
+Path.dash: ✅
+Path.dashPhase: does not apply - read dashPhase of Path - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
+Path.stroke: does not apply - read stroke of Path - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it
+Polygon.dashPhase: ✅
 Polygon.lineCap: does not apply - read lineCap of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its lineCap; its drawing proves it
-Polygon.lineWidth: does not apply - read lineWidth of Polygon - StateUI draws a shape in its view's draw(_:), which holds none of its lineWidth; its drawing proves it
-Polyline.dashPhase: does not apply - read dashPhase of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
-Polyline.geometryTransform: does not apply - read geometryTransform of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its geometryTransform; its drawing proves it
+Polygon.lineWidth: ✅
+Polygon.stroke: ✅
+Polyline.dash: does not apply - read dash of Polyline - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
+Polyline.geometryTransform: ✅
 Polyline.lineCap: ✅
-Polyline.lineWidth: ✅
-Polyline.stroke: ✅
-Rectangle.contentMode: does not apply - read contentMode of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its contentMode; its drawing proves it
-Rectangle.dash: does not apply - read dash of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its dash; its drawing proves it
-Rectangle.dashPhase: ✅
-Rectangle.geometryTransform: ✅
+Rectangle.dash: ✅
+Rectangle.dashPhase: does not apply - read dashPhase of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its dashPhase; its drawing proves it
+Rectangle.stroke: does not apply - read stroke of Rectangle - StateUI draws a shape in its view's draw(_:), which holds none of its stroke; its drawing proves it

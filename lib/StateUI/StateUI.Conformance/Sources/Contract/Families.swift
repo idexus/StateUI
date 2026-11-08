@@ -89,7 +89,7 @@
         DecorableTextElementTests.self,
         PaddingElementTests.self,
         BorderElementTests.self,
-        ImageElementTests.self,
+        ContentModeElementTests.self,
         TintElementTests.self,
         PlaceholderElementTests.self,
         StyledElementTests.self,

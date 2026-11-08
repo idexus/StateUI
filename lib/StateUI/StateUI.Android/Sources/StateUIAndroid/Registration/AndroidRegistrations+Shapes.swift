@@ -65,7 +65,7 @@ extension AndroidRegistrations {
             cap: values[ShapeContract.lineCap]?.rawValue ?? 0,
             join: values[CorneredShapeContract.lineJoin]?.rawValue ?? 0,
             miterLimit: values[CorneredShapeContract.miterLimit] ?? 10,
-            aspect: values[ShapeContract.contentMode]?.rawValue ?? 0,
+            aspect: values[ContentModeElementContract.contentMode]?.rawValue ?? 0,
             transform: transform.flatMap { $0.count == 6 && $0.allSatisfy(\.isFinite) ? $0 : nil })
     }
 }

@@ -113,7 +113,7 @@ extension NodeType {
     static let itemsLayout = ItemsViewContract.itemsLayout.token
     static let pivotX = VisualElementContract.pivotX.token
     static let pivotY = VisualElementContract.pivotY.token
-    static let contentMode = ShapeContract.contentMode.token
+    static let contentMode = ContentModeElementContract.contentMode.token
     static let growsWithText = TextEditorContract.growsWithText.token
     static let scrollEdge = BottomBarContract.scrollEdge.token
     static let background = BackgroundElementContract.background.token

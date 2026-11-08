@@ -193,6 +193,9 @@ swift.conformance ContentMode: Swift.Equatable
 swift.conformance ContentMode: Swift.Hashable
 swift.conformance ContentMode: Swift.RawRepresentable
 swift.conformance ContentMode: Swift.Sendable
+swift.conformance ContentModeElementContract: StateUI.Tier
+swift.conformance ContentModeElementContract: StateUI.WornContract
+swift.conformance ContentModeElementContract: Swift.Sendable
 swift.conformance ContextMenuContract: StateUI.WornContract
 swift.conformance ContextMenuContract: Swift.Sendable
 swift.conformance CoordinateSpace: Swift.Equatable
@@ -387,9 +390,6 @@ swift.conformance Image: StateUI.Views
 swift.conformance Image: Swift.Sendable
 swift.conformance ImageContract: StateUI.WornContract
 swift.conformance ImageContract: Swift.Sendable
-swift.conformance ImageElementContract: StateUI.Tier
-swift.conformance ImageElementContract: StateUI.WornContract
-swift.conformance ImageElementContract: Swift.Sendable
 swift.conformance ImageSource: Swift.Equatable
 swift.conformance ImageSource: Swift.ExpressibleByExtendedGraphemeClusterLiteral
 swift.conformance ImageSource: Swift.ExpressibleByStringLiteral
@@ -1042,6 +1042,7 @@ swift.enum Complaints: enum Complaints
 swift.enum ConnectionProfile: enum ConnectionProfile
 swift.enum ContainerShape: enum ContainerShape
 swift.enum ContentMode: enum ContentMode
+swift.enum ContentModeElementContract: enum ContentModeElementContract
 swift.enum ContextMenuContract: enum ContextMenuContract
 swift.enum CoordinateSpace: enum CoordinateSpace
 swift.enum CorneredShapeContract: enum CorneredShapeContract
@@ -1078,7 +1079,6 @@ swift.enum Icon: enum Icon
 swift.enum IconElementContract: enum IconElementContract
 swift.enum IconPosition: enum IconPosition
 swift.enum ImageContract: enum ImageContract
-swift.enum ImageElementContract: enum ImageElementContract
 swift.enum InputPurpose: enum InputPurpose
 swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
@@ -3200,6 +3200,8 @@ swift.method ColorPicker.visualState(_:_:): @MainActor func visualState(_ state:
 swift.method ColorPicker.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPickerProperties.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
+swift.method ContentModeElement.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
+swift.method ContentModeElement.contentMode(_:): @MainActor func contentMode(_ value: ContentMode) -> Self.Modified
 swift.method CorneredShape.lineJoin(_:): @MainActor func lineJoin(_ state: Binding<LineJoin>) -> Self.Modified
 swift.method CorneredShape.miterLimit(_:): @MainActor func miterLimit(_ state: Binding<Double>) -> Self.Modified
 swift.method CorneredShapeProperties.lineJoin(_:): @MainActor func lineJoin(_ value: LineJoin) -> Self.Modified
@@ -5690,8 +5692,6 @@ swift.method Image.visualState(_:): @MainActor func visualState(_ state: VisualS
 swift.method Image.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Image.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method ImageElement.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
-swift.method ImageElement.contentMode(_:): @MainActor func contentMode(_ value: ContentMode) -> Self.Modified
 swift.method ImageProperties.isAnimating(_:): @MainActor func isAnimating(_ value: Bool) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9417,12 +9417,10 @@ swift.method Separator.visualState(_:): @MainActor func visualState(_ state: Vis
 swift.method Separator.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method Separator.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method Shape.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Shape.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Shape.lineCap(_:): @MainActor func lineCap(_ state: Binding<LineCap>) -> Self.Modified
 swift.method Shape.lineWidth(_:): @MainActor func lineWidth(_ state: Binding<Double>) -> Self.Modified
 swift.method Shape.stroke(_:): @MainActor func stroke(_ state: Binding<Color>) -> Self.Modified
-swift.method ShapeProperties.contentMode(_:): @MainActor func contentMode(_ value: ContentMode) -> Self.Modified
 swift.method ShapeProperties.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method ShapeProperties.dashPhase(_:): @MainActor func dashPhase(_ value: Double) -> Self.Modified
 swift.method ShapeProperties.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
@@ -13265,7 +13263,7 @@ swift.protocol LocalizationCatalog: protocol LocalizationCatalog
 swift.protocol LocalizedResources: @MainActor protocol LocalizedResources
 swift.protocol PersistentValue: protocol PersistentValue
 swift.protocol Scene: @MainActor protocol Scene
-swift.protocol Shape: @MainActor protocol Shape : ElementView, ShapeProperties
+swift.protocol Shape: @MainActor protocol Shape : ContentModeElement, ElementView, ShapeProperties
 swift.protocol Stack: @MainActor protocol Stack : Layout, StackProperties
 swift.protocol TextInput: @MainActor protocol TextInput : ElementView, FocusElement, PlaceholderElement, TextInputProperties
 swift.protocol Tier: protocol Tier : WornContract
@@ -13639,6 +13637,8 @@ swift.type.property ColorPickerContract.choosesOpacity: static let choosesOpacit
 swift.type.property ColorPickerContract.color: static let color: ElementProperty<ColorPickerContract, Color>
 swift.type.property ColorPickerContract.colorChanged: static let colorChanged: ElementEvent<ColorPickerContract, Color>
 swift.type.property ColorPickerContract.name: static var name: String { get }
+swift.type.property ContentModeElementContract.contentMode: static let contentMode: ElementProperty<ContentModeElementContract, ContentMode>
+swift.type.property ContentModeElementContract.name: static let name: String
 swift.type.property ContextMenuContract.name: static var name: String { get }
 swift.type.property CorneredShapeContract.lineJoin: static let lineJoin: ElementProperty<CorneredShapeContract, LineJoin>
 swift.type.property CorneredShapeContract.miterLimit: static let miterLimit: ElementProperty<CorneredShapeContract, Double>
@@ -13703,8 +13703,6 @@ swift.type.property IconElementContract.name: static let name: String
 swift.type.property ImageContract.isAnimating: static let isAnimating: ElementProperty<ImageContract, Bool>
 swift.type.property ImageContract.name: static var name: String { get }
 swift.type.property ImageContract.source: static let source: ElementProperty<ImageContract, ImageSource>
-swift.type.property ImageElementContract.contentMode: static let contentMode: ElementProperty<ImageElementContract, ContentMode>
-swift.type.property ImageElementContract.name: static let name: String
 swift.type.property ItemsViewContract.endReached: static let endReached: ElementEvent<ItemsViewContract, Void>
 swift.type.property ItemsViewContract.endReachedWithin: static let endReachedWithin: ElementProperty<ItemsViewContract, Int>
 swift.type.property ItemsViewContract.itemActivated: static let itemActivated: ElementEvent<ItemsViewContract, String>
@@ -13902,7 +13900,6 @@ swift.type.property SessionElementContract.activated: static let activated: Elem
 swift.type.property SessionElementContract.deactivated: static let deactivated: ElementEvent<SessionElementContract, Void>
 swift.type.property SessionElementContract.name: static let name: String
 swift.type.property SessionElementContract.stopped: static let stopped: ElementEvent<SessionElementContract, Void>
-swift.type.property ShapeContract.contentMode: static let contentMode: ElementProperty<ShapeContract, ContentMode>
 swift.type.property ShapeContract.dash: static let dash: ElementProperty<ShapeContract, [Double]>
 swift.type.property ShapeContract.dashPhase: static let dashPhase: ElementProperty<ShapeContract, Double>
 swift.type.property ShapeContract.geometryTransform: static let geometryTransform: ElementProperty<ShapeContract, ViewTransform>

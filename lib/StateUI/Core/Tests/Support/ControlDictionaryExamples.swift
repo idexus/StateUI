@@ -777,7 +777,7 @@ extension ControlDictionary {
             .lineWidth(1)
             """#),
 
-        (ImageElementContract.self, #"""
+        (ContentModeElementContract.self, #"""
             Button("Delete")
                 .icon("trash.png")
                 .showsText(false)

@@ -82,7 +82,7 @@ enum AndroidRealization {
         .complete(StyledElementContract.style, on: VisualElementContract.self),
 
         // MARK: Entries - a control's or a part's own
-        .partial(ImageElementContract.contentMode, on: ButtonContract.self,
+        .partial(ContentModeElementContract.contentMode, on: ButtonContract.self,
             missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .notPlanned(VisualElementContract.zIndex, on: ButtonContract.self,
             reason: "Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own."),

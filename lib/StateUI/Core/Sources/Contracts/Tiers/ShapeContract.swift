@@ -7,11 +7,8 @@ public enum ShapeContract: Tier {
     /// The tier's name.
     public static let name = "Shape"
 
-    /// A shape is a view.
-    public static let tiers: [any Tier.Type] = [ViewContract.self]
-
-    /// How the shape fills the room it was given when the two differ.
-    public static let contentMode = ElementProperty<Self, ContentMode>("contentMode", layer: .native)
+    /// A shape is a view, and fits its drawing into its room.
+    public static let tiers: [any Tier.Type] = [ViewContract.self, ContentModeElementContract.self]
 
     /// A transform of the shape's drawing, which moves nothing around it.
     public static let geometryTransform = ElementProperty<Self, ViewTransform>("geometryTransform", layer: .native)
@@ -34,7 +31,5 @@ public enum ShapeContract: Tier {
         "lineWidth", layer: .stateUI, moves: .shape)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [
-        contentMode, geometryTransform, stroke, dashPhase, dash, lineCap, lineWidth,
-    ]
+    public static let members: [any ContractMember] = [geometryTransform, stroke, dashPhase, dash, lineCap, lineWidth]
 }

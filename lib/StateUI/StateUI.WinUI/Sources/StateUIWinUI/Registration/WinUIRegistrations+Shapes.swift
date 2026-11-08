@@ -82,7 +82,7 @@ extension WinUIRegistrations {
     private static func authored<Realized: ElementContract>(
         _ commands: [Double], evenOdd: Bool, _ values: ElementValues<Realized>
     ) -> WinUIPathView.Geometry {
-        .authored(commands, evenOdd: evenOdd, aspect: values[ShapeContract.contentMode] ?? .fit, transform: moved(values))
+        .authored(commands, evenOdd: evenOdd, aspect: values[ContentModeElementContract.contentMode] ?? .fit, transform: moved(values))
     }
 
     /// The shape's transform, as the six numbers of its matrix; nil for none.

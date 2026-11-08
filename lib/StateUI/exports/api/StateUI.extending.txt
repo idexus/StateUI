@@ -79,11 +79,11 @@ swift.conformance Button: StateUI.BorderElement
 swift.conformance Button: StateUI.ButtonMenuElement
 swift.conformance Button: StateUI.ButtonProperties
 swift.conformance Button: StateUI.ClickElement
+swift.conformance Button: StateUI.ContentModeElement
 swift.conformance Button: StateUI.Element
 swift.conformance Button: StateUI.ElementView
 swift.conformance Button: StateUI.FocusElement
 swift.conformance Button: StateUI.FontElement
-swift.conformance Button: StateUI.ImageElement
 swift.conformance Button: StateUI.KeyboardElement
 swift.conformance Button: StateUI.ModifiableElement
 swift.conformance Button: StateUI.PaddingElement
@@ -122,6 +122,7 @@ swift.conformance Canvas: StateUI.VisualElementProperties
 swift.conformance CanvasContract: StateUI.Contract
 swift.conformance CanvasContract: StateUI.ElementContract
 swift.conformance Capsule: StateUI.AutomationElement
+swift.conformance Capsule: StateUI.ContentModeElement
 swift.conformance Capsule: StateUI.Element
 swift.conformance Capsule: StateUI.ElementView
 swift.conformance Capsule: StateUI.FilledShapeProperties
@@ -182,6 +183,8 @@ swift.conformance ContentMode: StateUI.HostRepresentable
 swift.conformance ContentMode: StateUI.LaneValue
 swift.conformance ContentMode: StateUI.StateChoice
 swift.conformance ContentMode: StateUI.StateValue
+swift.conformance ContentModeElement: StateUI.PropertyContainer
+swift.conformance ContentModeElementContract: StateUI.Contract
 swift.conformance ContextMenuContract: StateUI.Contract
 swift.conformance ContextMenuContract: StateUI.ElementContract
 swift.conformance Contract: Swift.Sendable
@@ -193,6 +196,7 @@ swift.conformance CornerRadius: StateUI.HostRepresentable
 swift.conformance CornerRadius: Swift.Equatable
 swift.conformance CornerRadius: Swift.Sendable
 swift.conformance CorneredShape: StateUI.AutomationElement
+swift.conformance CorneredShape: StateUI.ContentModeElement
 swift.conformance CorneredShape: StateUI.CorneredShapeProperties
 swift.conformance CorneredShape: StateUI.Element
 swift.conformance CorneredShape: StateUI.ElementView
@@ -278,6 +282,7 @@ swift.conformance ElementView: StateUI.ViewProperties
 swift.conformance ElementView: StateUI.VisualElement
 swift.conformance ElementView: StateUI.VisualElementProperties
 swift.conformance Ellipse: StateUI.AutomationElement
+swift.conformance Ellipse: StateUI.ContentModeElement
 swift.conformance Ellipse: StateUI.Element
 swift.conformance Ellipse: StateUI.ElementView
 swift.conformance Ellipse: StateUI.FilledShapeProperties
@@ -309,6 +314,7 @@ swift.conformance FillRule: StateUI.LaneValue
 swift.conformance FillRule: StateUI.StateChoice
 swift.conformance FillRule: StateUI.StateValue
 swift.conformance FilledShape: StateUI.AutomationElement
+swift.conformance FilledShape: StateUI.ContentModeElement
 swift.conformance FilledShape: StateUI.Element
 swift.conformance FilledShape: StateUI.ElementView
 swift.conformance FilledShape: StateUI.FilledShapeProperties
@@ -411,9 +417,9 @@ swift.conformance IconPosition: StateUI.LaneValue
 swift.conformance IconPosition: StateUI.StateChoice
 swift.conformance IconPosition: StateUI.StateValue
 swift.conformance Image: StateUI.AutomationElement
+swift.conformance Image: StateUI.ContentModeElement
 swift.conformance Image: StateUI.Element
 swift.conformance Image: StateUI.ElementView
-swift.conformance Image: StateUI.ImageElement
 swift.conformance Image: StateUI.ImageProperties
 swift.conformance Image: StateUI.ModifiableElement
 swift.conformance Image: StateUI.PropertyContainer
@@ -423,8 +429,6 @@ swift.conformance Image: StateUI.VisualElement
 swift.conformance Image: StateUI.VisualElementProperties
 swift.conformance ImageContract: StateUI.Contract
 swift.conformance ImageContract: StateUI.ElementContract
-swift.conformance ImageElement: StateUI.PropertyContainer
-swift.conformance ImageElementContract: StateUI.Contract
 swift.conformance ImageProperties: StateUI.PropertyContainer
 swift.conformance ImageSource: StateUI.HostRepresentable
 swift.conformance InputPurpose: StateUI.HostRepresentable
@@ -501,6 +505,7 @@ swift.conformance LayoutProperties: StateUI.PropertyContainer
 swift.conformance LayoutProperties: StateUI.ViewProperties
 swift.conformance LayoutProperties: StateUI.VisualElementProperties
 swift.conformance Line: StateUI.AutomationElement
+swift.conformance Line: StateUI.ContentModeElement
 swift.conformance Line: StateUI.Element
 swift.conformance Line: StateUI.ElementView
 swift.conformance Line: StateUI.ModifiableElement
@@ -655,6 +660,7 @@ swift.conformance PageContract: StateUI.Contract
 swift.conformance PageContract: StateUI.ElementContract
 swift.conformance PageElementContract: StateUI.Contract
 swift.conformance Path: StateUI.AutomationElement
+swift.conformance Path: StateUI.ContentModeElement
 swift.conformance Path: StateUI.CorneredShapeProperties
 swift.conformance Path: StateUI.Element
 swift.conformance Path: StateUI.ElementView
@@ -703,6 +709,7 @@ swift.conformance Point: StateUI.LaneValue
 swift.conformance Point: StateUI.StateValue
 swift.conformance Point: StateUI.Walked
 swift.conformance Polygon: StateUI.AutomationElement
+swift.conformance Polygon: StateUI.ContentModeElement
 swift.conformance Polygon: StateUI.CorneredShapeProperties
 swift.conformance Polygon: StateUI.Element
 swift.conformance Polygon: StateUI.ElementView
@@ -719,6 +726,7 @@ swift.conformance PolygonContract: StateUI.Contract
 swift.conformance PolygonContract: StateUI.ElementContract
 swift.conformance PolygonProperties: StateUI.PropertyContainer
 swift.conformance Polyline: StateUI.AutomationElement
+swift.conformance Polyline: StateUI.ContentModeElement
 swift.conformance Polyline: StateUI.CorneredShapeProperties
 swift.conformance Polyline: StateUI.Element
 swift.conformance Polyline: StateUI.ElementView
@@ -779,6 +787,7 @@ swift.conformance Rect: StateUI.LaneValue
 swift.conformance Rect: StateUI.StateValue
 swift.conformance Rect: StateUI.Walked
 swift.conformance Rectangle: StateUI.AutomationElement
+swift.conformance Rectangle: StateUI.ContentModeElement
 swift.conformance Rectangle: StateUI.CorneredShapeProperties
 swift.conformance Rectangle: StateUI.Element
 swift.conformance Rectangle: StateUI.ElementView
@@ -878,6 +887,7 @@ swift.conformance SeparatorContract: StateUI.Contract
 swift.conformance SeparatorContract: StateUI.ElementContract
 swift.conformance SessionElementContract: StateUI.Contract
 swift.conformance Shape: StateUI.AutomationElement
+swift.conformance Shape: StateUI.ContentModeElement
 swift.conformance Shape: StateUI.Element
 swift.conformance Shape: StateUI.ElementView
 swift.conformance Shape: StateUI.ModifiableElement
@@ -1003,6 +1013,7 @@ swift.conformance Styling: StateUI.BorderElement where Target : BorderElement, T
 swift.conformance Styling: StateUI.ButtonMenuElement where Target : ButtonMenuElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ButtonProperties where Target == Button
 swift.conformance Styling: StateUI.ColorPickerProperties where Target == ColorPicker
+swift.conformance Styling: StateUI.ContentModeElement where Target : ContentModeElement, Target : StyleTarget
 swift.conformance Styling: StateUI.CorneredShapeProperties where Target : CorneredShape, Target : StyleTarget
 swift.conformance Styling: StateUI.DatePickerProperties where Target == DatePicker
 swift.conformance Styling: StateUI.DecorableTextElement where Target : DecorableTextElement, Target : StyleTarget
@@ -1010,7 +1021,6 @@ swift.conformance Styling: StateUI.FilledShapeProperties where Target : FilledSh
 swift.conformance Styling: StateUI.FontElement where Target : FontElement, Target : StyleTarget
 swift.conformance Styling: StateUI.GridProperties where Target == Grid
 swift.conformance Styling: StateUI.HStackProperties where Target == HStack
-swift.conformance Styling: StateUI.ImageElement where Target : ImageElement, Target : StyleTarget
 swift.conformance Styling: StateUI.ImageProperties where Target == Image
 swift.conformance Styling: StateUI.LayoutProperties where Target : Layout, Target : StyleTarget
 swift.conformance Styling: StateUI.LayoutProperties where Target : Stack, Target : StyleTarget
@@ -1024,11 +1034,11 @@ swift.conformance Styling: StateUI.PolylineProperties where Target == Polyline
 swift.conformance Styling: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : BorderElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : ButtonMenuElement, Target : StyleTarget
+swift.conformance Styling: StateUI.PropertyContainer where Target : ContentModeElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : CorneredShape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : DecorableTextElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : FilledShape, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : FontElement, Target : StyleTarget
-swift.conformance Styling: StateUI.PropertyContainer where Target : ImageElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : Layout, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : LineHeightElement, Target : StyleTarget
 swift.conformance Styling: StateUI.PropertyContainer where Target : PaddingElement, Target : StyleTarget
@@ -2544,6 +2554,7 @@ swift.protocol ButtonMenuElement: @MainActor protocol ButtonMenuElement : Proper
 swift.protocol ButtonProperties: @MainActor protocol ButtonProperties : PropertyContainer
 swift.protocol ClickElement: @MainActor protocol ClickElement : PropertyContainer
 swift.protocol ColorPickerProperties: @MainActor protocol ColorPickerProperties : PropertyContainer
+swift.protocol ContentModeElement: @MainActor protocol ContentModeElement : PropertyContainer
 swift.protocol Contract: protocol Contract : Sendable
 swift.protocol ContractMember: protocol ContractMember : Sendable
 swift.protocol CorneredShapeProperties: @MainActor protocol CorneredShapeProperties : ShapeProperties
@@ -2558,7 +2569,6 @@ swift.protocol FontElement: @MainActor protocol FontElement : PropertyContainer
 swift.protocol GridProperties: @MainActor protocol GridProperties : PropertyContainer
 swift.protocol HStackProperties: @MainActor protocol HStackProperties : PropertyContainer
 swift.protocol HostRepresentable: protocol HostRepresentable
-swift.protocol ImageElement: @MainActor protocol ImageElement : PropertyContainer
 swift.protocol ImageProperties: @MainActor protocol ImageProperties : PropertyContainer
 swift.protocol KeyboardElement: @MainActor protocol KeyboardElement : View
 swift.protocol LaneValue: protocol LaneValue : StateValue
@@ -2912,6 +2922,8 @@ swift.type.property ColorPickerContract.tiers: static var tiers: [any Tier.Type]
 swift.type.property ContentMode.laneKind: static var laneKind: LaneKind { get }
 swift.type.property ContentMode.lanes: static var lanes: Int { get }
 swift.type.property ContentMode.moving: static var moving: MotionValues { get }
+swift.type.property ContentModeElementContract.members: static let members: [any ContractMember]
+swift.type.property ContentModeElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property ContextMenuContract.layer: static let layer: ElementLayer
 swift.type.property ContextMenuContract.layer: static var layer: ElementLayer { get }
 swift.type.property ContextMenuContract.members: static let members: [any ContractMember]
@@ -3002,8 +3014,6 @@ swift.type.property ImageContract.members: static let members: [any ContractMemb
 swift.type.property ImageContract.nodeType: static let nodeType: NodeType
 swift.type.property ImageContract.tiers: static let tiers: [any Tier.Type]
 swift.type.property ImageContract.tiers: static var tiers: [any Tier.Type] { get }
-swift.type.property ImageElementContract.members: static let members: [any ContractMember]
-swift.type.property ImageElementContract.tiers: static var tiers: [any Tier.Type] { get }
 swift.type.property InputPurpose.laneKind: static var laneKind: LaneKind { get }
 swift.type.property InputPurpose.lanes: static var lanes: Int { get }
 swift.type.property InputPurpose.moving: static var moving: MotionValues { get }

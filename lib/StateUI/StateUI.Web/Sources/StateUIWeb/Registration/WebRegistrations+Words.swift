@@ -42,10 +42,10 @@ extension WebRegistrations {
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
             button.applies(
                 IconElementContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                ContentModeElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
                 view.setIcon(
                     values[IconElementContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ContentModeElementContract.contentMode] ?? .fit,
                     showsText: TextAndIcon.showsText(
                         values[TextAndIconElementContract.showsText],
                         hasPicture: HostPicture(values[IconElementContract.icon], dark: false) != nil, byDefault: true))

@@ -27,7 +27,7 @@ extension AppKitRegistrations {
         }, members: { button in
             button.applies(
                 TextElementContract.text, TextualElementContract.textCase, IconElementContract.icon,
-                ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
+                ButtonContract.iconPosition, ContentModeElementContract.contentMode, ButtonContract.lineBreak,
                 TextColorElementContract.textColor, BackgroundElementContract.background, BorderElementContract.shape,
                 BorderElementContract.stroke, BorderElementContract.lineWidth, EnabledElementContract.isEnabled,
                 FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
@@ -50,7 +50,7 @@ extension AppKitRegistrations {
                 let scaling: NSImageScaling = if alone, case .icon? = source {
                     .scaleProportionallyDown
                 } else if alone {
-                    Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
+                    Self.imageScaling(values[ContentModeElementContract.contentMode] ?? .fit)
                 } else {
                     .scaleProportionallyDown
                 }

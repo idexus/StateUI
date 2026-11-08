@@ -131,7 +131,7 @@ final class HostDeclarationTests: XCTestCase {
             // The drift this road exists to end: `contentMode` reaches an Image
             // through the tier declaring it, whatever the host called the member.
             XCTAssertTrue(realization.members.contains(
-                HostRealizedMember(element: "Image", owner: "ImageElement", member: "contentMode")))
+                HostRealizedMember(element: "Image", owner: "ContentModeElement", member: "contentMode")))
         }
     }
 
