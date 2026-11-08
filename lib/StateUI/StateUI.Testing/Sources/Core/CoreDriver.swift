@@ -128,6 +128,16 @@ final class CoreDriver: HostDriver {
         element.presented(property)
     }
 
+    /// None served: a test window's requests go where its application sends them.
+    func served() throws -> String {
+        throw DriverCannot("serve a request")
+    }
+
+    /// None held: the window stands up no server.
+    func held() throws -> (taken: Int, stopped: Int) {
+        throw DriverCannot("count the requests held")
+    }
+
     /// One step of a stepper, as its buttons take it: none where its way is at the range's end.
     private func step(up: Bool, on element: MountedElement, in runtime: HostRuntime) throws {
         let given = ValueArithmetic.ends(

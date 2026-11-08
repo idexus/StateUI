@@ -42,6 +42,10 @@ private final class RegisterOnly: HostDriver {
     func frame() {}
     func perform(_ act: UserAct, on element: MountedElement) throws {}
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? { nil }
+
+    /// The page's own server, as a host whose page answers requests names it.
+    func served() throws -> String { "/the page's own" }
+    func held() throws -> (taken: Int, stopped: Int) { (2, 1) }
 }
 
 /// A family of the cases a test hands it.
@@ -60,6 +64,15 @@ final class ConformanceRunnerTests: XCTestCase {
         Handed.cases = cases
         return Conformance.run(
             Handed.self, on: driver, report: { self.failures.append($0.message) }, log: { self.lines.append($0) })
+    }
+
+    /// A case's requests go to the server its driver names, and the requests held are counted there: a host whose
+    /// page answers them names its own.
+    func testACaseAsksTheDriversOwnServer() throws {
+        let session = Session(driver: RegisterOnly(realizing: []), case: "served", report: { _ in })
+        XCTAssertEqual(try session.served(), "/the page's own")
+        XCTAssertEqual(try session.held().taken, 2)
+        XCTAssertEqual(try session.held().stopped, 1)
     }
 
     /// A case runs only where the host realizes every member it proves and everything it needs; the register says

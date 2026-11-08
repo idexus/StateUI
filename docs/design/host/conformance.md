@@ -132,6 +132,14 @@ host's own report of the window's insets; a host whose window has its own
 (UIKit's) or whose platform stands nothing over a window's content leaves
 it, so a case of the safe area proves on each host what a user meets there.
 
+A case's requests go to the HTTP server its driver names (`served()`, and
+`held()` counting the requests it holds). A native host's driver names the
+suite's own, on the machine's loopback, which the conformance package gives
+every driver; the Web's names its page's own, which the browser's runner
+answers. Both are requirements of the protocol, so a driver's own is the one
+a case reaches: a method a driver adds outside the protocol is never called
+through it.
+
 A host with backends keeps its driver and its suite in a package of their own
 inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
 the GTK host's `StateUIGTKDriver`, and their tests. They

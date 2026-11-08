@@ -110,6 +110,16 @@
     /// The accent the platform draws the application's controls in now.
     func accent() throws -> Color
 
+    /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
+    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
+    /// request's own `X-Asked` said, and the request's body.
+    /// Design: docs/design/host/conformance.md#the-driver
+    func served() throws -> String
+
+    /// How many requests for `/held` the driver's server took, and how many of them their client stopped - the
+    /// connection closed before the answer.
+    func held() throws -> (taken: Int, stopped: Int)
+
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
 
