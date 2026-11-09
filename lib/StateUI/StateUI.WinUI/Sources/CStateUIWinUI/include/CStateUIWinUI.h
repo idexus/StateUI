@@ -831,6 +831,9 @@ void stateui_winui_sheet_set_ground(StateUIObjectRef sheet, StateUIGround kind, 
 void stateui_winui_window_push_sheet(StateUIObjectRef window, StateUIObjectRef sheet);
 void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 
+/// Takes the page off the sheet's card, which may stand on another sheet before this one goes.
+void stateui_winui_sheet_let_go(StateUIObjectRef sheet);
+
 /// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
 /// what they hold goes on to them. None takes the layer away.
 void stateui_winui_window_set_overlays(StateUIObjectRef window, StateUIObjectRef const *overlays, int32_t count);

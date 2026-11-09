@@ -106,6 +106,35 @@ final class WinUISheetTests: XCTestCase {
         }
     }
 
+    /// A sheet beneath another given another page comes over it: the sheets from the change up leave and come again,
+    /// each holding its page - which the sheet it leaves lets go of at once.
+    func testASheetGivenAnotherPageComesOverTheOthersHoldingItsPage() throws {
+        try onUIThread {
+            let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
+            let host = WinUIRenderer.running {
+                VStack {
+                    Text("Notes").sheet(item: note.projectedValue) { number in Text("Sheet \(number)").title("Sheet \(number)") }
+                    Text("More").sheet(isPresented: shows.projectedValue) { Text("Sheet 2").title("Sheet 2") }
+                }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { stateui_winui_window_sheets(window.handle) == 1 }
+            shows.wrappedValue = true
+            host.settle { stateui_winui_window_sheets(window.handle) == 2 }
+
+            note.wrappedValue = 3
+            let read = { (sheet: WinUISheetView, what: String) in
+                WinUIStrings.read { stateui_winui_read(sheet.handle, what, $0, $1) }
+            }
+            let sheets = { host.windows.first?.sheetsForTesting ?? [] }
+            host.settle { host.views(WinUITextView.self).contains { $0.text == "Sheet 3" } }
+            host.settle { false }
+
+            XCTAssertEqual(stateui_winui_window_sheets(window.handle), 2)
+            XCTAssertEqual(sheets().compactMap { read($0, "page") }, ["1", "1"], "a sheet come again holds its page")
+        }
+    }
+
     /// Escape takes the top sheet away and the way back of a sheet with none of its own takes it away too: each
     /// writes false onto its state, and the page beneath shows again.
     func testEscapeAndTheWayBackTakeTheTopSheetAway() throws {

@@ -263,6 +263,15 @@ extern "C" void stateui_winui_window_push_sheet(StateUIObjectRef handle, StateUI
     }
 }
 
+extern "C" void stateui_winui_sheet_let_go(StateUIObjectRef handle) {
+    try {
+        auto card = borrow<controls::Grid>(handle).Children().GetAt(1).as<controls::Border>();
+        standInRow(card.Child().as<controls::Grid>(), 1, nullptr);
+    } catch (...) {
+        report("letting a sheet's page go");
+    }
+}
+
 extern "C" void stateui_winui_window_pop_sheet(StateUIObjectRef handle) {
     try {
         auto held = layer(borrow<xaml::Window>(handle), false);

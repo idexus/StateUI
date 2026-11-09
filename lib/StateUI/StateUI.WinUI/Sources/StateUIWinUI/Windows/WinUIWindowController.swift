@@ -80,7 +80,10 @@ final class WinUIWindowController {
     /// Design: docs/design/platforms/winui/pages.md#sheets
     private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
         let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
-        for _ in change.leaving { window.popSheet() }
+        for (_, sheet) in change.leaving {
+            sheet.letGoOfItsPage()
+            window.popSheet()
+        }
         sheets.removeLast(sheets.count - change.kept)
         for (page, sheet) in sheets { show(page, on: sheet, in: runtime) }
         for page in change.coming {
