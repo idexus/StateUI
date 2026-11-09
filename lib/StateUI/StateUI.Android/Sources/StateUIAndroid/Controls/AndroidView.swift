@@ -351,13 +351,13 @@ class AndroidView {
     /// a long press of itself, or offers a context menu, still takes one.
     func longPressChanged() {
         guard takesLongPress != listensForLongPress else { return }
+        _ = longClickableOfItself
         listensForLongPress = takesLongPress
         if takesLongPress {
-            longClickableOfItself = Java.callBool(reference, JavaAPI.isLongClickable)
             listen(JavaAPI.setOnLongClickListener)
         } else {
             Java.call(reference, JavaAPI.setOnLongClickListener, .object(nil))
-            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableOfItself || onMenuOpening != nil))
+            writeLongClickable()
         }
     }
 
@@ -367,12 +367,17 @@ class AndroidView {
     /// What the view does with one of its menu's items chosen, handed its place among them.
     var onMenuChose: ((Int) -> Void)?
 
-    /// Whether the view took a long press before it offered a menu, given back when it offers none.
-    private var longClickableWithoutMenu = false
-
-    /// Whether the view's one long-press listener is handed on, and whether it took a long press before.
+    /// Whether the view's one long-press listener is handed on.
     private var listensForLongPress = false
-    private var longClickableOfItself = false
+
+    /// Whether the view takes a long press of itself, read before the host first hands it a listener for one.
+    private lazy var longClickableOfItself = Java.callBool(reference, JavaAPI.isLongClickable)
+
+    /// Writes whether the view takes a long press: of itself, for its hold or drag, or for its menu.
+    private func writeLongClickable() {
+        Java.call(reference, JavaAPI.setLongClickable,
+            .bool(longClickableOfItself || listensForLongPress || onMenuOpening != nil))
+    }
 
     /// Makes the view offer a context menu, which `opening` writes as the user asks for it - a long press, a
     /// secondary click - or offer none for nil.
@@ -382,12 +387,12 @@ class AndroidView {
         onMenuOpening = opening
         guard (opening != nil) != offering else { return }
 
+        _ = longClickableOfItself
         if opening != nil {
-            longClickableWithoutMenu = Java.callBool(reference, JavaAPI.isLongClickable)
             listen(JavaAPI.setOnCreateContextMenuListener)
         } else {
             Java.call(reference, JavaAPI.setOnCreateContextMenuListener, .object(nil))
-            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu || listensForLongPress))
+            writeLongClickable()
             onMenuChose = nil
         }
     }
