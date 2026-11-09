@@ -13024,16 +13024,24 @@ enum Listings {
         /// Whether this page's own notice stands over the window.
         @State private var onThisPage = false
 
+        /// Whether the sheet laying a notice of its own shows.
+        @State private var sheetShown = false
+
         var body: some View {
             VStack {
                 switchRow(nav.$windowNotice, "Over every page", id: "window.overlay")
                 switchRow($onThisPage, "Over this page", id: "window.overlay.page")
+                Button("Open a sheet")
+                    .onClicked { sheetShown = true }
             }
             .overlays {
                 if onThisPage {
                     WindowNotice(words: "Over this page", shown: $onThisPage)
                         .verticalAlignment(.end)
                 }
+            }
+            .sheet(isPresented: $sheetShown) {
+                NoticedSheet()
             }
         }
 
@@ -13042,7 +13050,23 @@ enum Listings {
             Switch(words, isOn: value)
         }
 
-        /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
+        /// A sheet laying a notice of its own over itself, over the window's notices.
+        struct NoticedSheet: View {
+            @State private var noticed = true
+
+            var body: some View {
+                Switch("Over this sheet", isOn: $noticed)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+                    .overlays {
+                        if noticed {
+                            WindowNotice(words: "Over this sheet", shown: $noticed)
+                        }
+                    }
+            }
+        }
+
+        /// A notice laid over the window or a sheet: a line with its own way out, at the top unless it says otherwise.
         struct WindowNotice: View {
             let words: String
 
