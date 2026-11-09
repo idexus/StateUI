@@ -33,11 +33,11 @@ enum GTKRealization {
     /// The entries GTK will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
-    /// Every record, the tiers' first.
     /// Why no element is pulled to refresh here.
     private static let noPull = "GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a "
         + "command - a header bar button, Ctrl+R."
 
+    /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         .partial(BottomBarContract.scrollEdge, missing: "No edge: GNOME's flat bottom bar shows its shadow while the "
             + "content scrolls, whatever the edge says."),
