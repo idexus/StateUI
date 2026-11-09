@@ -11,6 +11,15 @@ ground around it (`MapFraming.side(of:)`). A map read back says the same:
 the circle its shorter side holds, from the ground its sides span
 (`MapFraming.region(center:width:height:)`).
 
+A map shows a region whose center stands on the globe - a latitude within
+90° each way - and whose radius is a number above nought: a longitude is
+taken round to within 180°, and a radius past a quarter of the way round the
+globe is held there (`MapFraming.shown`). A region whose center is off the
+globe or whose numbers are none is not shown: the map keeps what it shows,
+as the engines raise on such a region rather than refuse it. An engine
+holding a span to its own bounds - MapKit's 180° of latitude and 360° of
+longitude, which a pole's longitudes reach past - does so in its adapter.
+
 ## What a map shows
 
 A map's engine fits the region it is given to its view and measures ground
