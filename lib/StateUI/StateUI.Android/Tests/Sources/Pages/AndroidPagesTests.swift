@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIAndroid
 @testable import StateUIAndroid
 import StateUIConformance
 import XCTest
@@ -47,6 +48,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
             ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
             ("testAPagesScrollerKeepsTheBarsClearAsItsAxesChange", testAPagesScrollerKeepsTheBarsClearAsItsAxesChange),
+            ("testASheetStaysAsTheArrangementUnderItChanges", testASheetStaysAsTheArrangementUnderItChanges),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -1108,6 +1110,40 @@ extension AndroidPagesTests {
         }
     }
 
+    /// Whether `view` stands in `ancestor`, through its parents.
+    @MainActor private static func standsIn(_ ancestor: jobject, _ view: jobject) -> Bool {
+        let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
+        var each = Java.callObject(view, getParent)
+        while let parent = each {
+            if Java.jni.IsSameObject(Java.env, parent, ancestor) != 0 { return true }
+            each = Java.callObject(parent, getParent)
+        }
+        return false
+    }
+
+    /// A sheet stays over the window as the arrangement under it changes - the view presenting it showing another:
+    /// the new arrangement stands in the window, under the sheet.
+    func testASheetStaysAsTheArrangementUnderItChanges() throws {
+        try onMainActor {
+            let (swapped, presented) = (State(wrappedValue: false), State(wrappedValue: true))
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Swapping(swapped: swapped.wrappedValue)
+                    .sheet(isPresented: presented.projectedValue) { Text("Sheet").id("sheet") }
+            }
+            host.layOut()
+            let sheet = try XCTUnwrap(host.view(id: .manual("sheet")))
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the page and the sheet")
+
+            swapped.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            XCTAssertNotNil(host.view(id: .manual("after")), "the new arrangement")
+            XCTAssertTrue(host.view(id: .manual("sheet")) === sheet, "the same sheet")
+            XCTAssertEqual(Java.callInt(host.root.reference, TestJava.getChildCount), 2, "the new page and the sheet")
+            XCTAssertTrue(Self.standsIn(host.root.reference, sheet.outermost), "the sheet still stands in the window")
+        }
+    }
+
     /// The program closing sheets takes their pages down after the tree has let them go - a page shown hears it
     /// disappears as it leaves, and nothing more - and the page under them shows again.
     func testThePageUnderPagesTheProgramTakesDownShowsAgain() {
@@ -1231,6 +1267,15 @@ private func sheetsPage(
             TitledPage(title: "Sheet 1", log: log)
                 .sheet(isPresented: second.projectedValue) { TitledPage(title: "Sheet 2", log: log) }
         }
+}
+
+/// An arrangement of one kind, or of another once swapped.
+private struct Swapping: View {
+    let swapped: Bool
+
+    var body: some View {
+        if swapped { ZStack { Text("After").id("after") } } else { VStack { Text("Before").id("before") } }
+    }
 }
 
 /// A page that tells its window as it comes.
