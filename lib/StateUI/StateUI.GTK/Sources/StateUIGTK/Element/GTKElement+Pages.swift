@@ -44,7 +44,7 @@ extension GTKElement {
             chrome.tabs = (view as? GTKTabView)?.switcher
             chrome.showsBar = value(.showsNavigationBar)?.bool != false
             chrome.offersBack = value(.showsBackButton)?.bool != false
-            (chrome.barBackground, chrome.barForeground) = element.barColors
+            (chrome.barBackground, chrome.barForeground) = element.restingBarColors
             return chrome
         }
 
@@ -60,7 +60,7 @@ extension GTKElement {
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
-        (chrome.barBackground, chrome.barForeground) = element.barColors
+        (chrome.barBackground, chrome.barForeground) = element.restingBarColors
 
         let actions = element.chromeActions
         chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }

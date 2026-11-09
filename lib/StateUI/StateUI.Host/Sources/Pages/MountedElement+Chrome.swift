@@ -116,6 +116,13 @@ extension MountedElement {
         (barMaterial.painted, barValue(.barForegroundColor))
     }
 
+    /// The bar's colors where a journey carrying them lands - what a host painting its bar only at rest shows, never
+    /// a color on its way.
+    /// Design: docs/design/platforms/gtk/motion.md#what-moves
+    public var restingBarColors: (background: HostValue?, foreground: HostValue?) {
+        (HostMaterial(barValue(.barBackground, atRest: true)).painted, barValue(.barForegroundColor, atRest: true))
+    }
+
     /// What this element's bar is made of, the nearest declared on its path; empty for the platform's own.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var barMaterial: HostMaterial {
@@ -165,8 +172,10 @@ extension MountedElement {
     }
 
     /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's whose bar it
-    /// wears - around it, and a sidebar's own split view.
-    public func barValue(_ member: Prop) -> HostValue? {
-        ([self] + barArrangements.reversed()).lazy.compactMap { $0.value(member) }.first
+    /// wears - around it, and a sidebar's own split view; where a journey carrying it lands, `atRest`.
+    public func barValue(_ member: Prop, atRest: Bool = false) -> HostValue? {
+        ([self] + barArrangements.reversed()).lazy.compactMap { element in
+            (atRest ? element.destination(member) : nil) ?? element.value(member)
+        }.first
     }
 }
