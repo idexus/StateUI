@@ -71,6 +71,11 @@ final class IntegerBoundsTests: XCTestCase {
                 ], completion: nil)))
             XCTAssertNil(prompt.maximumLength)
         }
+        let past = try XCTUnwrap(HostQuestion(HostActCall(
+            act: .prompt, arguments: HostActCall.usersWindow + [
+                .string("Type"), .nothing, .nothing, .nothing, .nothing, .number(Double(Int32.max) + 1),
+            ], completion: nil)))
+        XCTAssertNil(past.maximumLength, "a bound past a toolkit's 32-bit count is none")
     }
 
     func testValidWholeNumbersKeepTheContractsRoundingAndSign() throws {
