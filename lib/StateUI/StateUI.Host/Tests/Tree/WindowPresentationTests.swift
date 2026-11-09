@@ -80,8 +80,8 @@ final class WindowPresentationTests: XCTestCase {
         XCTAssertEqual(try show(["sharer"]).sheets?.map(\.id), [.manual("sharer")], "the editor took its picker away")
     }
 
-    /// The overlays a window lays: those its shown path declares, the outer under the inner, then each sheet's, then
-    /// the library's own over every other; a page pushed over another takes that page's away.
+    /// The overlays a window lays over its pages: those its shown path declares, the outer under the inner, then the
+    /// library's own; a sheet lays its own over itself, apart; a page pushed over another takes that page's away.
     func testTheOverlaysOfAWindowStandInThePathsOrder() throws {
         let runtime = HostRuntime.still()
         func tree(pushed: Bool) -> HostPatch {
@@ -100,14 +100,16 @@ final class WindowPresentationTests: XCTestCase {
         let root = try XCTUnwrap(runtime.tree.root)
 
         let first = presentation.show(root, in: runtime.lifecycle)
-        XCTAssertEqual(first.overlays?.map(\.id), [
-            .manual("stack's"), .manual("home's"), .manual("sheet's"), .manual("inspector"),
-        ])
+        XCTAssertEqual(first.overlays?.map(\.id), [.manual("stack's"), .manual("home's"), .manual("inspector")],
+                       "the window's, under its sheets")
+        XCTAssertEqual(first.sheetOverlays?.map(\.sheet.id), [.manual("sheet")])
+        XCTAssertEqual(first.sheetOverlays?.map { $0.overlays.map(\.id) }, [[.manual("sheet's")]], "the sheet's own, over it")
 
         runtime.tree.apply(tree(pushed: true), complete: true)
         let pushed = presentation.show(root, in: runtime.lifecycle)
-        XCTAssertEqual(pushed.overlays?.map(\.id), [.manual("stack's"), .manual("sheet's"), .manual("inspector")],
+        XCTAssertEqual(pushed.overlays?.map(\.id), [.manual("stack's"), .manual("inspector")],
                        "the home page's went with it")
+        XCTAssertNil(pushed.sheetOverlays, "the sheet's stand as they stood")
     }
 
     /// A window's place and size are four requests, each said alone where the tree changed it; one it keeps, or

@@ -424,13 +424,17 @@ frame moving it - the host paints each tabbed view its arrangements show
 
 ## The overlays of a window
 
-A window lays over what it shows the overlays declared along each page it
-shows (`WindowPresentation.overlays`): the arrangement's visible path, the
-outer under the inner, then each sheet's in turn, then the window's own - the
-library's docked inspector - over every other. Each is one layer holding the
-views declared together. A page that stops being shown - a page pushed over
-it, a tab chosen away - takes its overlays with it; nothing is restored,
-because nothing was overwritten.
+A window lays over its pages the overlays declared along the arrangement's
+visible path (`WindowPresentation.overlays`), the outer under the inner, then
+the window's own - the library's docked inspector - over them; all of them
+stand under the window's sheets. Each sheet lays over itself the overlays
+declared along its own visible path (`WindowPresentation.sheetOverlays`), a
+pair for every sheet in order, so a sheet's notice stands over that sheet and
+a sheet over the window's notices. The host lays a sheet's in the sheet's own
+surface - its dialog, card or window - as it lays the window's in the
+window. Each is one layer holding the views declared together. A page that
+stops being shown - a page pushed over it, a tab chosen away - takes its
+overlays with it; nothing is restored, because nothing was overwritten.
 
 ## A popover
 

@@ -521,7 +521,9 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 /* Its bar over the top of its room, as the window's is: the room runs under it, its depth the top of the room's safe
    area, so a page's rows scroll under it where the page says so. */
 .stateui-sheet > .stateui-bar { border-radius: 0; position: absolute; top: 0; left: 0; right: 0; }
-.stateui-sheet:has(> .stateui-bar:not([hidden])) > .stateui-sheet-room { --stateui-over-top: var(--stateui-bar-height); }
+.stateui-sheet:has(> .stateui-bar:not([hidden])) > :is(.stateui-sheet-room, .stateui-overlays) {
+  --stateui-over-top: var(--stateui-bar-height);
+}
 .stateui-sheet-room { display: grid; flex: 1 1 auto; min-height: 0; min-width: 0; position: relative; }
 /* A page asking a size of its own stands as large as it is, within the dialog's room: its height the content's, as
    WebKit stretches a modal dialog of no height of its own over the window. */

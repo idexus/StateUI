@@ -467,13 +467,15 @@ struct LibraryPage: View {
 ```
 
 Declared on a window's page, the overlays stand over every page the window
-shows and every sheet over it, and live as long as the window; declared on a
-page, they stand while that page is shown and go with it - a page pushed over
-it takes them away, and going back brings them again. Those declared further
-in stand over those declared around them, and `.zIndex` reorders the views of
-one declaration. Each view has the window's whole area and stands where its
-alignments put it. A click beside it goes on to what is under it. A docked
-inspector stands over every overlay.
+shows, under its sheets, and live as long as the window; declared on a page,
+they stand while that page is shown and go with it - a page pushed over it
+takes them away, and going back brings them again. Declared on a sheet's
+page, they stand over that sheet and go with it. Those declared further in
+stand over those declared around them, and `.zIndex` reorders the views of
+one declaration. Each view has the whole area of the window or the sheet
+and stands where its alignments put it. A click beside it goes on to what
+is under it. A docked inspector stands over the window's overlays, under
+its sheets.
 
 ## Page titles and navigation furniture
 

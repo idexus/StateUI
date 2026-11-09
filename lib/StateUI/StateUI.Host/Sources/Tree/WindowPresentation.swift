@@ -17,8 +17,12 @@
         /// The pages its views present as sheets, the last on top, where they changed.
         public var sheets: [MountedElement]?
 
-        /// What the window lays over its pages and sheets now, where that changed: each layer, the first lowest.
+        /// What the window lays over its pages, under its sheets, where that changed: each layer, the first lowest.
         public var overlays: [MountedElement]?
+
+        /// What each sheet lays over itself, in the sheets' order, where any of it changed: each layer, the first
+        /// lowest.
+        public var sheetOverlays: [(sheet: MountedElement, overlays: [MountedElement])]?
 
         /// The place and size the tree changed, each alone; nil where it changed none.
         public var frame: WindowFrame?
@@ -40,8 +44,11 @@
     /// The pages shown as sheets over it, the last on top.
     public private(set) var sheets: [MountedElement] = []
 
-    /// What is laid over the pages and sheets, each layer an overlay element, the first lowest.
+    /// What is laid over the pages, under the sheets, each layer an overlay element, the first lowest.
     public private(set) var overlays: [MountedElement] = []
+
+    /// What each sheet lays over itself, in the sheets' order.
+    public private(set) var sheetOverlays: [(sheet: MountedElement, overlays: [MountedElement])] = []
 
     /// The page the user sees on top: the top sheet's, else the arrangement's.
     public var frontPage: MountedElement? { (sheets.last ?? arrangement)?.visiblePage }
@@ -75,10 +82,17 @@
             changes.sheets = sheets
             self.sheets = sheets
         }
-        let overlays = Self.overlays(of: window, over: [arrangement].compactMap { $0 } + sheets)
+        let overlays = Self.overlays(along: arrangement) + window.children.filter { $0.type == .overlay }
         if !overlays.elementsEqual(self.overlays, by: ===) {
             changes.overlays = overlays
             self.overlays = overlays
+        }
+        let sheetOverlays = sheets.map { (sheet: $0, overlays: Self.overlays(along: $0)) }
+        if !sheetOverlays.elementsEqual(self.sheetOverlays, by: { $0.sheet === $1.sheet
+            && $0.overlays.elementsEqual($1.overlays, by: ===) })
+        {
+            changes.sheetOverlays = sheetOverlays
+            self.sheetOverlays = sheetOverlays
         }
         let requested = WindowFrame(of: window)
         let frame = requested.changes(since: self.requested)
@@ -123,11 +137,10 @@
         return arrangement?.visibleBackStack.map(WayBack.pop)
     }
 
-    /// The layers laid over `window`, the first lowest: those declared along the path of each page it shows - the
-    /// arrangement's, then each sheet's - the outer under the inner, then the library's own, over every other.
+    /// The layers declared along the path to the page `shown` shows - an arrangement's, a sheet's - the outer under
+    /// the inner, the first lowest.
     /// Design: docs/design/host/pages.md#the-overlays-of-a-window
-    private static func overlays(of window: MountedElement, over shown: [MountedElement]) -> [MountedElement] {
-        shown.flatMap { $0.visiblePage?.declared(.overlay).map(\.element) ?? [] }
-            + window.children.filter { $0.type == .overlay }
+    private static func overlays(along shown: MountedElement?) -> [MountedElement] {
+        shown?.visiblePage?.declared(.overlay).map(\.element) ?? []
     }
 }

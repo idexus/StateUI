@@ -1,5 +1,5 @@
 # revision 2.1
 Popover.isPresented: ✅
 Popover.isPresentedChanged: ✓ close on Popover: the popup window dismissed as a touch beside it dismisses it, no touch sent
-Sheet.isPresented: ◐ cannot read isPresented of Sheet - Android's driver has no path for it yet
+Sheet.isPresented: ✅
 Sheet.isPresentedChanged: ✅

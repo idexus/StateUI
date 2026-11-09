@@ -243,8 +243,18 @@ that away in its own time, dropping what is presented over it meanwhile - so
 the root takes it away first and presents what is asked for anew; a movement
 that began in the window gone ends there and does nothing.
 
-The overlays are laid over the window's pages within the safe area, the first
-lowest, and a touch beside what one holds reaches the page under it.
+## A sheet's overlays
+
+The window's overlays are laid in its root's view over the window's pages
+within the safe area, the first lowest, and a touch beside what one holds
+reaches the page under it; every sheet UIKit presents stands over them. What
+a sheet's own page declares stands in a layer of the sheet's
+(`UIKitOverlayLayer`): a view over the presented controller's view within its
+safe area, brought to the front each time it is laid - over the page and its
+bottom bar, which stands just over the page - and under a sheet presented
+over it. A page pushed in a sheet's stack changes what the sheet lays, so the
+layer is laid again over it. A touch on the layer beside what it holds goes
+on to the sheet, and a sheet gone takes its layer with it.
 
 ## What passes over the sheets
 

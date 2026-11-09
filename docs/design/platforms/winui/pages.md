@@ -332,7 +332,7 @@ no head (`bringsABar`). The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own
-depth (`Canvas.ZIndex` 1, the overlays' 2), never by their place among the
+depth (`Canvas.ZIndex` 2, the window's overlays' 1), never by their place among the
 root's children. The trap: a page stood in a row is put on the end of them,
 so a window arranged anew after a first sheet - a sidebar beside a stack
 once signed in - would stand over every sheet presented after it, the veil
@@ -364,14 +364,17 @@ program's own `Hide` is heard by nobody.
 
 ## The window's overlays
 
-What a window lays over everything it shows - the overlays the pages on its
-visible path declare, then the inspector docked in it - stands where the page
-stands, beneath the chrome, over the page and over every sheet, whichever
-came first, the first lowest. None has a background of its own, so a click
-beside what one holds goes on to the page or the sheet under it. They and the
-sheets are layers of the window, not the content of a row: the chrome and the
-menu bar standing again, as a page's menus come and go, leave both where they
-are. The window takes the overlays' layer out when it is told none.
+What a window lays over its pages - the overlays the pages on its visible
+path declare, then the inspector docked in it - stands where the page
+stands, beneath the chrome, over the page and under every sheet, the first
+lowest. What a sheet's own page declares stands on that sheet's card, over
+its page and under its head. One relay lays both (`layOverlays`): a layer of
+its own over a row of its grid. None has a background of its own, so a click
+beside what one holds goes on to the page under it. The layers are not the
+content of a row: the chrome and the menu bar standing again, as a page's
+menus come and go, and a sheet's page shown anew, leave them where they are.
+The layer goes when it is told none, and a sheet going lets go of its
+overlays with its page.
 
 ## Menus
 

@@ -671,7 +671,9 @@ final class GTKPagesTests: XCTestCase {
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
                           "the last shown on top")
             for (_, sheet) in controller.sheets {
-                XCTAssertTrue(adw_dialog_get_child(sheet.dialog) == sheet.page.widget, "a sheet come again shows its page")
+                XCTAssertTrue(
+                    gtk_widget_is_ancestor(sheet.page.widget, sheet.dialog.of(GtkWidget.self)) != 0,
+                    "a sheet come again shows its page")
             }
         }
     }

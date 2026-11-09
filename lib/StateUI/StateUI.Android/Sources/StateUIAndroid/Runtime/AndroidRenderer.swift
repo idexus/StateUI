@@ -342,7 +342,8 @@ final class AndroidRenderer {
                 Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
             }
         }
-        let rose = changes.sheets.map { modals.present($0) } ?? false
+        if let sheets = changes.sheets { modals.present(sheets) }
+        if let sheetOverlays = changes.sheetOverlays { modals.lay(sheetOverlays) }
         modals.standAtTheirSizes()
         standUnderTheWindowsInsets()
         showStatusWords()
@@ -352,18 +353,17 @@ final class AndroidRenderer {
             (page.native as? AndroidElement)?.showTopEdge()
         }
 
-        // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
-        // touch beside what they hold, which goes on to the page under them.
+        // The window's overlays lie over its arrangement and under its sheets, the first lowest; they take no touch
+        // beside what they hold, which goes on to the page under them.
         let overlays = presentation.overlays.compactMap(\.android.view)
         if !overlays.elementsEqual(shownOverlays, by: ===) {
             for leaving in shownOverlays { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
-            for overlay in overlays {
+            let first: Int32 = presentation.arrangement?.android.view == nil ? 0 : 1
+            for (place, overlay) in overlays.enumerated() {
                 overlay.forgetPlace()
-                Java.call(root.reference, JavaAPI.addView, .object(overlay.reference), .int(-1), .int(-1))
+                Java.call(root.reference, JavaAPI.addViewAt, .object(overlay.reference), .int(first + Int32(place)))
             }
             shownOverlays = overlays
-        } else if rose {
-            for overlay in overlays { Java.call(overlay.reference, JavaAPI.bringToFront) }
         }
     }
 

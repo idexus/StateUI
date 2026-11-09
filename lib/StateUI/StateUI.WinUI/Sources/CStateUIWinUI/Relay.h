@@ -359,6 +359,28 @@ namespace stateui {
         return name == L"sheets" || name == L"overlay";
     }
 
+    /// Lays `overlays` over `row` of `grid` in a layer of their own at `depth`, the first lowest; with no background,
+    /// the layer lets a click beside what they hold go on beneath. None takes the layer away.
+    inline void layOverlays(controls::Grid const &grid, int32_t row, int32_t depth, StateUIObjectRef const *overlays,
+                            int32_t count) {
+        auto children = grid.Children();
+        controls::Grid layer{nullptr};
+        for (auto const &child : children)
+            if (auto held = child.try_as<controls::Grid>(); held && winrt::unbox_value_or<winrt::hstring>(held.Tag(), L"") == L"overlay")
+                layer = held;
+        if (!layer && count == 0) return;
+        if (!layer) {
+            layer = controls::Grid();
+            layer.Tag(winrt::box_value(L"overlay"));
+            controls::Grid::SetRow(layer, row);
+            controls::Canvas::SetZIndex(layer, depth);
+            children.Append(layer);
+        }
+        layer.Children().Clear();
+        for (int32_t i = 0; i < count; ++i) layer.Children().Append(as<xaml::UIElement>(overlays[i]));
+        if (uint32_t index; count == 0 && children.IndexOf(layer, index)) children.RemoveAt(index);
+    }
+
     /// Stands `element` in `row` of `grid` in place of what stood there; nothing for null.
     inline void standInRow(controls::Grid const &grid, int32_t row, StateUIObjectRef element) {
         auto children = grid.Children();

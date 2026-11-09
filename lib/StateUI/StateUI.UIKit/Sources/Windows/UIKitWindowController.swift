@@ -135,6 +135,7 @@ final class UIKitWindowController {
         if let overlays = changes.overlays {
             root.lay(overlays.compactMap(\.uiKit.view))
         }
+        if let sheetOverlays = changes.sheetOverlays { laySheetOverlays(sheetOverlays) }
         if let sheets = changes.sheets {
             // The sheets over the `remaining` that stay go, the top first.
             root.onSheetDismissed = { [weak self, weak runtime, weak element] remaining in
@@ -199,6 +200,26 @@ final class UIKitWindowController {
         root.letGo()
         window?.isHidden = true
         window?.windowScene = nil
+    }
+
+    /// Each sheet's overlay layer, by its page.
+    private var sheetLayers: [ObjectIdentifier: UIKitOverlayLayer] = [:]
+
+    /// Lays each sheet's overlays over that sheet, in its own layer; a sheet gone takes its layer with it.
+    /// Design: docs/design/platforms/uikit/pages.md#a-sheets-overlays
+    private func laySheetOverlays(_ sheets: [(sheet: MountedElement, overlays: [MountedElement])]) {
+        let standing = Set(sheets.map { ObjectIdentifier($0.sheet) })
+        for (key, layer) in sheetLayers where !standing.contains(key) {
+            layer.removeFromSuperview()
+            sheetLayers[key] = nil
+        }
+        for (sheet, overlays) in sheets {
+            guard let controller = sheet.uiKit.controller else { continue }
+            let layer = sheetLayers[ObjectIdentifier(sheet)] ?? UIKitOverlayLayer()
+            sheetLayers[ObjectIdentifier(sheet)] = layer
+            layer.stand(over: controller)
+            layer.lay(overlays.compactMap(\.uiKit.view))
+        }
     }
 }
 #endif

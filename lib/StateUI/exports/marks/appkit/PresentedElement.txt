@@ -1,5 +1,5 @@
 # revision 2.1
 Popover.isPresented: ✅
 Popover.isPresentedChanged: ✓ close on Popover: the host's own close of a popover held unshown, as a test shows no window
-Sheet.isPresented: ◐ cannot read isPresented of Sheet - AppKit's driver has no path for it yet
+Sheet.isPresented: ✅
 Sheet.isPresentedChanged: ✅

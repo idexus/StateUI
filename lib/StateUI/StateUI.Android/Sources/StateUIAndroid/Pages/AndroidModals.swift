@@ -30,9 +30,8 @@ final class AndroidModals {
 
     /// Presents the window's sheets by the host layer's rule (`SheetChange`): the ones shown and still described
     /// stay, the rest leave from the top, and each new one rises over the one before; the page in front is the one
-    /// that shows. Whether one rose.
-    @discardableResult
-    func present(_ target: [MountedElement]) -> Bool {
+    /// that shows.
+    func present(_ target: [MountedElement]) {
         let change = SheetChange(from: shown, to: target) { $0.element === $1 }
         for _ in change.leaving { dismissTop() }
 
@@ -53,8 +52,33 @@ final class AndroidModals {
                 .long(duration))
             shown.append(Shown(element: element, holder: holder))
         }
-        return shown.count > change.kept
     }
+
+    /// Lays each sheet's overlays over its page, in the holder or on the card it stands on, the first lowest; those it
+    /// laid before and lays no more go.
+    /// Design: docs/design/host/pages.md#the-overlays-of-a-window
+    func lay(_ sheets: [(sheet: MountedElement, overlays: [MountedElement])]) {
+        for (sheet, overlays) in sheets {
+            guard let page = sheet.android.view, let held = Java.callObject(page.reference, JavaAPI.getParent) else {
+                continue
+            }
+            defer { Java.release(local: held) }
+            let laid = overlays.compactMap(\.android.view)
+            let before = laidOverlays[ObjectIdentifier(sheet)] ?? []
+            guard !laid.elementsEqual(before, by: ===) else { continue }
+            for leaving in before { Java.call(held, JavaAPI.removeView, .object(leaving.reference)) }
+            for overlay in laid {
+                overlay.forgetPlace()
+                Java.call(held, JavaAPI.addView, .object(overlay.reference), .int(-1), .int(-1))
+            }
+            laidOverlays[ObjectIdentifier(sheet)] = laid
+        }
+        let standing = Set(sheets.map { ObjectIdentifier($0.sheet) })
+        laidOverlays = laidOverlays.filter { standing.contains($0.key) }
+    }
+
+    /// The overlays laid over each sheet's page, by the page.
+    private var laidOverlays: [ObjectIdentifier: [AndroidView]] = [:]
 
     /// Stands every sheet on its window's background as it changes (`overlaidGround`).
     func ground() {
@@ -83,6 +107,9 @@ final class AndroidModals {
         for sheet in shown {
             let fills = Self.card(for: sheet.element, in: window).width == 0
             (sheet.element.android.view as? AndroidLayoutView)?.roomInsets = fills ? insets : .none
+            for overlay in laidOverlays[ObjectIdentifier(sheet.element)] ?? [] {
+                (overlay as? AndroidLayoutView)?.roomInsets = fills ? insets : .none
+            }
         }
     }
 

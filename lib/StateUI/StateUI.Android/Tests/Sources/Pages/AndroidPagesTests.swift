@@ -1193,8 +1193,8 @@ extension AndroidPagesTests {
         }
     }
 
-    /// The inspector docked in the window is its overlay: over the page and over a page presented after it,
-    /// taking no touch beside its panel, and gone once the inspector closes.
+    /// The inspector docked in the window is its overlay: over the page and under a sheet presented over it, as
+    /// every overlay of the window, taking no touch beside its panel, and gone once the inspector closes.
     func testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough() throws {
         try onMainActor {
             let (first, second) = (State(wrappedValue: false), State(wrappedValue: false))
@@ -1218,7 +1218,8 @@ extension AndroidPagesTests {
             first.wrappedValue = true
             host.runtime.pump.turn()
             XCTAssertEqual(Java.callInt(root, TestJava.getChildCount), 3)
-            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 2, "under the sheet")
+            XCTAssertEqual(Java.callInt(root, TestJava.indexOfChild, .object(overlay.reference)), 1,
+                           "the window's, under the sheet that rose over it")
 
             session.debugInspector = nil
             host.runtime.pump.turn()

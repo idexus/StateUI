@@ -43,7 +43,7 @@ final class GTKWindow {
     /// The layers the window's content and its overlays stand in.
     private let layers: GTKWidget
 
-    /// What the window lays over everything it shows; empty for nothing.
+    /// What the window lays over its page, under its sheets; empty for nothing.
     private(set) var overlays: [GTKView] = []
 
     private var presented = false
@@ -243,7 +243,7 @@ final class GTKWindow {
         setContent(pageFrame?.widget)
     }
 
-    /// Lays `views` over everything the window shows, where the page stands, the first lowest; none takes them away.
+    /// Lays `views` over the page, where it stands, and under the sheets, the first lowest; none takes them away.
     /// Design: docs/design/platforms/gtk/pages.md#the-windows-overlays
     func showOverlays(_ views: [GTKView]) {
         guard !views.elementsEqual(overlays, by: ===) else { return }

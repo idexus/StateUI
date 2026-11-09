@@ -275,14 +275,18 @@ nobody's, and the popover comes up again by the new view after the render.
 
 ## The window's overlays
 
-What a window lays over everything it shows - the overlays the pages on its
-visible path declare, then the inspector docked in it - are overlays of the
+What a window lays over its pages - the overlays the pages on its visible
+path declare, then the inspector docked in it - are overlays of the
 `GtkOverlay` the window's content stands in, the first lowest: over the
 whole window, header bars included, which the inspector's own layout leaves
-free where it docks at a side. Each holds a layout that lets input through,
-so a click beside what it holds goes on to the page under it
-([listening](input.md#listening)). The window takes the overlays out and
-lays them again when the list it is told changes.
+free where it docks at a side. A sheet's `AdwDialog` stands over the
+window's content, so its overlays stand under every sheet. What a sheet's
+own page declares stands in a `GtkOverlay` of the sheet's, the dialog's
+child, over its page. Each holds a layout that lets input through, so a
+click beside what it holds goes on to the page under it
+([listening](input.md#listening)). The window and the sheet take the
+overlays out and lay them again when the list they are told changes; a
+sheet closing lets go of its page and its overlays.
 
 ## A page's phases
 

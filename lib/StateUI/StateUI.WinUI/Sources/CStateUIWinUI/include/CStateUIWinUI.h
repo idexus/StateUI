@@ -838,9 +838,13 @@ void stateui_winui_window_pop_sheet(StateUIObjectRef window);
 /// Takes the page off the sheet's card, which may stand on another sheet before this one goes.
 void stateui_winui_sheet_let_go(StateUIObjectRef sheet);
 
-/// Lays `overlays` over the window's page and its sheets, where the page stands, the first lowest; a click beside
-/// what they hold goes on to them. None takes the layer away.
+/// Lays `overlays` over the window's page, where it stands, and under its sheets, the first lowest; a click beside
+/// what they hold goes on to the page. None takes the layer away.
 void stateui_winui_window_set_overlays(StateUIObjectRef window, StateUIObjectRef const *overlays, int32_t count);
+
+/// Lays `overlays` over the sheet's page, on its card, the first lowest; a click beside what they hold goes on to the
+/// page. None takes the layer away.
+void stateui_winui_sheet_set_overlays(StateUIObjectRef sheet, StateUIObjectRef const *overlays, int32_t count);
 
 /// How many sheets a window shows - what a test reads.
 int32_t stateui_winui_window_sheets(StateUIObjectRef window);

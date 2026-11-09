@@ -60,6 +60,7 @@ enum JavaAPI {
         choreographer, "postFrameCallback", "(Landroid/view/Choreographer$FrameCallback;)V")
     static let removeAllViews = Java.method(viewGroup, "removeAllViews", "()V")
     static let addView = Java.method(viewGroup, "addView", "(Landroid/view/View;II)V")
+    static let addViewAt = Java.method(viewGroup, "addView", "(Landroid/view/View;I)V")
     static let removeView = Java.method(viewGroup, "removeView", "(Landroid/view/View;)V")
     static let bringToFront = Java.method(view, "bringToFront", "()V")
     static let setClipChildren = Java.method(viewGroup, "setClipChildren", "(Z)V")
