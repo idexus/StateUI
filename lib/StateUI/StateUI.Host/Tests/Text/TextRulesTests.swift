@@ -119,6 +119,13 @@ final class TextRulesTests: XCTestCase {
                        [.regular, .regular, .regular, .regular, .medium, .medium, .semibold, .semibold, .bold, .bold])
     }
 
+    /// A weight the host reads as no number is the regular one, and never stops the application.
+    func testAWeightOfNoNumberIsRegular() {
+        XCTAssertEqual(FontWeight(nearest: .nan), .regular)
+        XCTAssertEqual(FontWeight(nearest: .infinity), .bold)
+        XCTAssertEqual(FontWeight(nearest: -.infinity), .regular)
+    }
+
     /// Words follow the user's text size unless the tree says not: a run scales only where neither it nor its label
     /// says no.
     func testWordsScaleWithTheUsersTextSizeUnlessTheTreeSaysNot() {

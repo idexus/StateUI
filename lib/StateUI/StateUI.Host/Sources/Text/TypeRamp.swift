@@ -8,10 +8,10 @@ extension FontWeight {
     public var number: Int { 400 + Int(rawValue) * 100 }
 
     /// The weight whose number stands nearest `number` - what a font drawn at `number` reads as; the lighter of two
-    /// as near, and regular or bold beyond them.
+    /// as near, regular or bold beyond them, and regular for no number.
     public init(nearest number: Double) {
         let step = ((number - 400) / 100 - 0.5).rounded(.up)
-        self = FontWeight(rawValue: Int32(min(max(step, 0), 3))) ?? .regular
+        self = step.isNaN ? .regular : FontWeight(rawValue: Int32(min(max(step, 0), 3))) ?? .regular
     }
 }
 
