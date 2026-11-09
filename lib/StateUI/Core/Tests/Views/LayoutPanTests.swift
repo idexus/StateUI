@@ -149,6 +149,19 @@ final class LayoutPanTests: XCTestCase {
         XCTAssertEqual(board.wrappedValue, Board())
     }
 
+    /// TWO FINGERS THE HOST SAYS NO NUMBERS OF - a scale endless, degrees and a speed not a number - move nothing.
+    func testTwoFingersOfNoNumberMoveNothing() {
+        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        func built() -> Node { tree(board, handed) }
+        _ = bench.laid(renders, built)
+
+        bench.pinch(renders, built, .began)
+        bench.pinch(renders, built, .changed, scale: .infinity, degrees: .nan)
+        bench.pinch(renders, built, .ended, velocity: Point(.nan, .infinity))
+        frames()
+        XCTAssertEqual(board.wrappedValue, Board())
+    }
+
     /// A PAN AND TWO FINGERS MOVE AT ONCE: the hand pans while the fingers spread, each its own axes.
     func testAPanAndTwoFingersMoveAtOnce() {
         let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
