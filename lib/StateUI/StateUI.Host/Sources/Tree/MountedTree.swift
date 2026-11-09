@@ -283,12 +283,14 @@
         if element.type == .sheet { sheets[element.mount] = Held(element: element) }
     }
 
-    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows.
+    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows - the
+    /// arrangement an anchor there holds standing in its place.
     /// Design: docs/design/host/tree.md#a-window-shown
     public func presentedSheets(in window: MountedElement) -> [MountedElement] {
         sheets.values.compactMap(\.element)
             .compactMap { $0.enclosing(type: .window) === window ? $0.children.first : nil }
             .sorted { $0.mount < $1.mount }
+            .compactMap(\.placed)
     }
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
