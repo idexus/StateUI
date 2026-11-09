@@ -41,6 +41,25 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A page that says no title still stands named - libadwaita asks every page for the name its back button and
+    /// assistive technology read: the application's, where it has one.
+    func testAPageSayingNoTitleStandsNamed() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [1]).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in
+                    Text("Untitled")
+                }
+            }
+            let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
+            XCTAssertEqual(navigation.visiblePageTitle?.isEmpty, false, "the chrome named the page nothing")
+        }
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "Detail", application: "Notes"), "Detail")
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "", application: "Notes"), "Notes")
+        XCTAssertEqual(GTKNavigationView.name(ofPage: "", application: ""), " ")
+    }
+
     /// A push: the root navigates from and disappears, then the pushed page appears and is navigated to; a pop the
     /// other way - every phase rendered before the next is heard.
     func testAPushAndAPopAreHeardByThePagesInOrder() {
