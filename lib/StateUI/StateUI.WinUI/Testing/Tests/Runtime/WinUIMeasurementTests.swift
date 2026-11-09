@@ -44,4 +44,36 @@ final class WinUIMeasurementTests: XCTestCase {
             XCTAssertLessThanOrEqual(WinUILayoutView.sizings - before, 60, "a few for each grid above it, none beside")
         }
     }
+
+    /// A label that never wraps keeps its natural width whatever room is offered. WinUI measures such a line at
+    /// the width just under its own - an ellipsis's worth shorter - so a layout feeding that size back into the
+    /// room it offers measures it again for ever.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    func testALabelThatNeverWrapsKeepsItsNaturalWidth() {
+        onUIThread {
+            let label = WinUITextualView()
+            label.setText("words that never wrap")
+            label.setLines(breaking: .noWrap, maximum: nil)
+
+            let natural = label.measure(width: nil, height: nil)
+            let narrower = label.measure(width: natural.width - 1, height: nil)
+
+            XCTAssertEqual(narrower.width, natural.width, "a line that never wraps keeps its size")
+        }
+    }
+
+    /// A button's caption that never wraps keeps its natural width too, so a layout cannot measure it for ever at
+    /// the width it feeds back.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    func testAButtonsNonWrappingCaptionKeepsItsNaturalWidth() {
+        onUIThread {
+            let button = WinUIButtonView()
+            button.setText("words that never wrap")
+
+            let natural = button.measure(width: nil, height: nil)
+            let narrower = button.measure(width: natural.width - 1, height: nil)
+
+            XCTAssertEqual(narrower.width, natural.width, "a button's line that never wraps keeps its size")
+        }
+    }
 }
