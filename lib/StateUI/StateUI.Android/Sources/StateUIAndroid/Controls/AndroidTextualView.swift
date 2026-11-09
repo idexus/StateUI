@@ -144,6 +144,8 @@ class AndroidTextualView: AndroidView {
 
     /// The words' color; nil puts back the platform's (`plainWordColors`).
     func setTextColor(_ color: HostValue?) {
+        // The platform's colors are read before the first written over them - a role's included.
+        _ = madeWith
         writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
             let colors = Java.callStaticObject(
