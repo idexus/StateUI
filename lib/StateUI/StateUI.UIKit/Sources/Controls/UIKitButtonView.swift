@@ -233,7 +233,7 @@ final class UIKitButtonView: UIButton {
         face.contentInsets = .zero
         let button = UIButton(configuration: face)
         button.showsMenuAsPrimaryAction = true
-        button.accessibilityLabel = "More"
+        button.accessibilityLabel = CoreLink().chromeWords.more
         let line = UIView()
         line.isUserInteractionEnabled = false
         addSubview(line)
