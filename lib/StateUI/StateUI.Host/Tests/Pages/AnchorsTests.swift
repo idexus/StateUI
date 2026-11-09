@@ -70,6 +70,23 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(tabs.visiblePage?.id, .manual("root"))
     }
 
+    /// A stack's page an anchor holds names the way back from the page above it with its own words.
+    func testAPageAnAnchorHoldsNamesTheWayBackAboveIt() throws {
+        let (runtime, window) = try mounted(node("window", .window, [
+            node("stack", .navigationStack, [
+                node("anchor", .anchor, [
+                    node("inbox", .page, [], [.backButtonTitle: .string("Inbox")]), node("sheet", .sheet),
+                ]),
+                node("message", .page),
+            ]),
+        ]))
+
+        let shown = WindowPresentation().show(window, in: runtime.lifecycle)
+        let chrome = WindowChrome(window: window, arrangement: shown.arrangement?.shown)
+        XCTAssertEqual(chrome.back?.stack.id, .manual("stack"))
+        XCTAssertEqual(chrome.back?.title, "Inbox")
+    }
+
     /// A popover shown on an anchor whose view is made anew - a branch flipped - is tried again after the render, to
     /// stand by the new view.
     func testAPopoverShownOnAnAnchorWhoseViewFlipsIsTriedAgain() throws {

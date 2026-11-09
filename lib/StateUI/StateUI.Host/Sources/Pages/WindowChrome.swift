@@ -74,7 +74,8 @@
         showsTitle = arrangement?.titledPage?.value(.showsTitle)?.bool != false
         subtitle = arrangement?.titledPage?.barSubtitle
         back = arrangement?.visibleBackStack.map { stack in
-            (stack, stack.children[stack.children.count - 2].value(.backButtonTitle)?.string ?? window.tree?.core.chromeWords.back ?? "")
+            (stack, stack.arrangedChildren.dropLast().last?.value(.backButtonTitle)?.string
+                ?? window.tree?.core.chromeWords.back ?? "")
         }
         if let page { actions = page.chromeActions }
         if let sidebar = arrangement?.sidebarPage { sidebarActions = sidebar.chromeActions }
