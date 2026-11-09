@@ -84,6 +84,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
             ("testAnActivityMadeAgainLeavesItsWindowsPhaseAlone", testAnActivityMadeAgainLeavesItsWindowsPhaseAlone),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
+            ("testARendererStartedOnALaidOutRootStandsThereAlone", testARendererStartedOnALaidOutRootStandsThereAlone),
             ("testAPictureStandsAtItsOwnSizeAfterTheDensityChanges", testAPictureStandsAtItsOwnSizeAfterTheDensityChanges),
             ("testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent", testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
@@ -282,6 +283,19 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(now.density, density)
             XCTAssertEqual(now.views(AndroidTextView.self).map(\.text), ["count 1"], "the scene with its state")
             XCTAssertEqual(Java.callInt(now.root.reference, TestJava.getChildCount), 1, "the window once")
+        }
+    }
+
+    /// A renderer started on the root another laid out - the activity's, at a new density - stands there alone: what
+    /// the one before laid in it leaves with that one's tree, whatever density the device stands at.
+    func testARendererStartedOnALaidOutRootStandsThereAlone() {
+        onMainActor {
+            let first = AndroidRenderer.running { CounterPage() }
+            XCTAssertEqual(Java.callInt(first.root.reference, TestJava.getChildCount), 1, "the window")
+
+            let again = AndroidRenderer.start(context: TestContext.context, root: first.root, density: first.density * 2)
+            XCTAssertEqual(again.views(AndroidTextView.self).map(\.text), ["count 0"], "the scene shown again")
+            XCTAssertEqual(Java.callInt(again.root.reference, TestJava.getChildCount), 1, "the window once")
         }
     }
 

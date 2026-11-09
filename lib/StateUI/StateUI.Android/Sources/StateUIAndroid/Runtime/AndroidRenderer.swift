@@ -111,6 +111,9 @@ final class AndroidRenderer {
         let previous = shared
         let sceneStands = previous?.runtime.tree.root?.children.contains { $0.type == .scene } == true
         previous?.runtime.tree.root?.leave()
+        // What the renderer before laid in its root leaves with its tree: the same root, at a new density, holds the
+        // new window alone.
+        if let previous { Java.call(previous.root.reference, JavaAPI.removeAllViews) }
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
