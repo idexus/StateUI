@@ -29,4 +29,6 @@ without this change and passes with it.
 - [ ] The Gallery was exercised on every affected host, where the behavior is
       visible or interactive
 - [ ] Anything an author can reach has a `///` describing its StateUI semantics
-- [ ] New or changed comments describe the current state, not how it got there
+- [ ] New or changed comments describe the current state, stay under a quarter
+      of each file, and leave a reason, a trap or a rule to `docs/design`
+      (CONTRIBUTING.md, "Comments and design notes")
