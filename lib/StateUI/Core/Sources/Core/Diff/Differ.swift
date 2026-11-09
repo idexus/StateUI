@@ -66,6 +66,9 @@ final class Differ {
     /// The `.onDestroying` handlers of what this walk let go, innermost first.
     private var leaving: [EventHandler] = []
 
+    /// The states whose last wearer left in the walk under way (`landUnworn`).
+    private var unworn: [HostStorage] = []
+
     /// The environments in scope where the walk stands, nearest last.
     var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
 
@@ -128,6 +131,7 @@ final class Differ {
 
         let walked = element(id: id, rendered: previous, node: tree)
         sayAnsweredTwice()
+        landUnworn()
         return walked
     }
 
@@ -148,6 +152,7 @@ final class Differ {
 
         let walked = revisit(rendered)
         sayAnsweredTwice()
+        landUnworn()
         return walked
     }
 
@@ -157,6 +162,33 @@ final class Differ {
 
         state.ties -= 1
         state.answers[id] = nil
+        if state.ties == 0 { unworn.append(state) }
+    }
+
+    /// The moves no wearer is left to walk, landed once the walk is done: a state whose last wearer left, and that
+    /// nothing wore again elsewhere in the walk, stands at its destination, still, and its waiter hears it arrived -
+    /// the host's channel went with the wearer and answers nobody.
+    /// Design: docs/design/core/state.md#a-state-nobody-wears
+    private func landUnworn() {
+        let left = unworn
+        unworn = []
+        let board = Renderer.shared.board
+
+        for state in left where state.ties == 0 && state.door == .property {
+            guard case .lanes(var lanes) = board.read(state, lanes: StateValueLanes.own),
+                  let law = StateLaw.within(.property, lanes: lanes.count), lanes[law + StateLaw.lanes] != 0
+            else { continue }
+
+            let (width, completion) = (law / 3, lanes[law + StateLaw.lanes])
+            for lane in 0..<width {
+                lanes[lane] = lanes[width + lane]
+                lanes[width * 2 + lane] = 0
+            }
+            lanes[law + StateLaw.lanes] = 0
+            board.write(StateImage.bytes(of: .lanes(lanes)), to: state)
+            if state.readAtBuild { Renderer.shared.stateChanged(state) }
+            if let id = Int(exactly: completion) { HostBoundary.complete(id, succeeded: true) }
+        }
     }
 
     /// Says each driven value two live elements answer `.inherited` for differently - after the walk let go of

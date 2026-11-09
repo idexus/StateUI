@@ -138,6 +138,33 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0)
     }
 
+    /// A move sent while the state is worn, whose last wearer leaves before a host walks it, arrives as the wearer
+    /// leaves: the host's channel goes with the wearer and would never answer it, so the value lands where it was
+    /// sent and the waiter hears it is there. A wearer that leaves one place for another in the same render keeps
+    /// the move walking.
+    func testAMoveWhoseWearerLeavesBeforeItIsWalkedArrives() {
+        let fade = State(wrappedValue: 1.0)
+        let journey = fade.projectedValue.journey
+        let renders = Renders()
+        renders.render(stack([Rectangle().opacity(fade.projectedValue).node], id: "root"))
+
+        let arrival = journey.move(to: 0, .eased(.seconds(1)))
+        XCTAssertNil(arrival.ended, "worn, it waits for the host to walk it")
+        renders.render(stack([], id: "root"))
+
+        XCTAssertEqual(arrival.ended, true, "nobody walks it any more: it is there")
+        XCTAssertEqual(journey.value, 0)
+        XCTAssertEqual(journey.velocity, 0)
+
+        let moving = State(wrappedValue: 1.0)
+        let shown = Renders()
+        let worn = { Rectangle().opacity(moving.projectedValue).node }
+        shown.render(stack([stack([worn()], id: "a"), stack([], id: "b")], id: "root"))
+        let walked = moving.projectedValue.journey.move(to: 0, .eased(.seconds(1)))
+        shown.render(stack([stack([], id: "a"), stack([worn()], id: "b")], id: "root"))
+        XCTAssertNil(walked.ended, "worn again in the same render, it is still walked")
+    }
+
     /// A WRITE LAYS ONLY ITS PART. A color read back through its type is eight
     /// bits a channel, and the host reports lanes between them: a stop or a move
     /// that laid the whole journey again would say the value and the speed moved,
