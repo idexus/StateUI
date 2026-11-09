@@ -165,13 +165,16 @@ final class TextRulesTests: XCTestCase {
         XCTAssertFalse(LineBreak.tailTruncation.endsWithEllipsis(maximum: 2), "its own ellipsis, on its one line")
     }
 
-    /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are.
+    /// A break that does not wrap keeps one line; wrapped words stand on the lines allowed, none where none are or
+    /// more than a toolkit counts.
     func testABreakAllowsItsLines() {
         XCTAssertEqual(LineBreak.tailTruncation.lines(maximum: 3), 1)
         XCTAssertEqual(LineBreak.noWrap.lines(maximum: nil), 1)
         XCTAssertEqual(LineBreak.wordWrap.lines(maximum: 3), 3)
         XCTAssertNil(LineBreak.characterWrap.lines(maximum: 0))
         XCTAssertNil(LineBreak.wordWrap.lines(maximum: nil))
+        XCTAssertNil(LineBreak.wordWrap.lines(maximum: Int(Int32.max) + 1), "more lines than a toolkit counts: no bound")
+        XCTAssertEqual(LineBreak.wordWrap.lines(maximum: Int(Int32.max)), Int(Int32.max))
         XCTAssertTrue(LineBreak.middleTruncation.truncates)
         XCTAssertFalse(LineBreak.wordWrap.truncates)
     }
