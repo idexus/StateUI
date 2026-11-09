@@ -13,13 +13,16 @@ import XCTest
 /// The gallery walked sample by sample, the live counts read back on each group's page.
 @MainActor
 final class LeakWalkTests: XCTestCase {
-    /// EVERY SAMPLE, VISITED AND LEFT, LEAVES NOTHING ALIVE: the rendered elements, the runs, the native halves and
-    /// the state channels stand where they stood on the group's page before the visit.
-    func testEverySampleLeftLeavesNothingAlive() async throws {
+    /// EVERY SAMPLE, VISITED AND LEFT, LEAVES NOTHING ALIVE AND HANDS THE LIBRARY NOTHING IT CANNOT USE: the rendered
+    /// elements, the runs, the native halves and the state channels stand where they stood on the group's page before
+    /// the visit, and the library says nothing during it (`Complaints`) - a sample's code is what an application
+    /// writes. Each complaint is said once a process, so it is caught on the visit that first says it.
+    func testEverySampleVisitedLeavesNothingAliveAndIsSaidNothingOf() async throws {
         let walk = Walk()
         var visited = 0
         var unopened: [String] = []
         var outlived: [String] = []
+        var complained: [String] = []
 
         for group in Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog()).groups {
             try walk.tap(handle("menu", group.title))
@@ -27,6 +30,7 @@ final class LeakWalkTests: XCTestCase {
             let base = walk.alive
 
             for sample in group.samples {
+                let said = Said.shared.everySaid.count
                 try walk.tap(handle("row", sample.title))
                 await walk.settle()
                 if walk.alive.elements <= base.elements { unopened.append("\(group.route)/\(sample.id)") }
@@ -35,12 +39,34 @@ final class LeakWalkTests: XCTestCase {
                 visited += 1
                 let after = walk.alive
                 if after != base { outlived.append("\(group.route)/\(sample.id): \(base) -> \(after)") }
+                let heard = Said.shared.everySaid.dropFirst(said)
+                if !heard.isEmpty { complained.append("\(group.route)/\(sample.id): \(heard.joined(separator: " / "))") }
             }
         }
 
         XCTAssertGreaterThan(visited, 100, "the walk reached the gallery's samples")
         XCTAssertEqual(unopened, [], "a tap on these rows opened no page")
         XCTAssertEqual(outlived, [], "a sample left something alive behind it")
+        XCTAssertEqual(complained, [], "a sample handed the library what it cannot use")
+    }
+
+    /// THE WINDOW BAR SAMPLE'S PAGE SAYS THE LINE TYPED UNDER ITS TITLE: the window's bar shows it as the user types
+    /// it, and no more once the field is emptied.
+    func testTheWindowBarSamplesPageSaysTheLineTypedUnderItsTitle() async throws {
+        let walk = Walk()
+        try walk.tap(handle("menu", "Scene"))
+        await walk.settle()
+        try walk.tap(handle("row", WindowBarSample.title))
+        await walk.settle()
+        XCTAssertNil(try walk.barSubtitle(), "no line before one is typed")
+
+        try walk.type("Draft 3", into: "windowBar.subtitle")
+        await walk.settle()
+        XCTAssertEqual(try walk.barSubtitle(), "Draft 3")
+
+        try walk.type("", into: "windowBar.subtitle")
+        await walk.settle()
+        XCTAssertNil(try walk.barSubtitle(), "an empty line is none")
     }
 }
 
@@ -91,6 +117,18 @@ private final class Walk: HostPresenter {
             if let found = find(identifier, in: child) { return found }
         }
         return nil
+    }
+
+    /// The user types `words` into the field the gallery names `identifier`, in place of what it held.
+    func type(_ words: String, into identifier: String) throws {
+        let field = try XCTUnwrap(runtime.tree.root.flatMap { Self.find(identifier, in: $0) }, identifier)
+        field.reportUserChange(.text, .textChanged, .string(words), in: runtime)
+    }
+
+    /// The line under the title on the bar of the one window, as the host layer composes it.
+    func barSubtitle() throws -> String? {
+        let (window, presentation) = try XCTUnwrap(roster.windows.first)
+        return WindowChrome(window: window, arrangement: presentation.arrangement).subtitle
     }
 
     /// The user goes back the way the window offers.

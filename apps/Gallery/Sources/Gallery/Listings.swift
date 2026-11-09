@@ -10093,6 +10093,13 @@ enum Listings {
             }
         }
         """#,
+        "SamplePage.subtitle": #"""
+        // Sources/Gallery/SamplePage.swift
+        // The line under the page's title, written on the view the page
+        // shows: a page takes what that view says of it, and nothing
+        // written deeper inside it.
+        .subtitle(sample.subtitle ?? Self.noSubtitle)
+        """#,
         "SaveAndDelete": #"""
         // Sources/Samples/State/GateSample.swift
         /// One gate for both of the document's actions.
@@ -12966,6 +12973,10 @@ enum Listings {
         /// The values shared with the gallery window the sample is in.
         let bar: WindowBarState
 
+        /// The line under this page's title, wherever its title shows: the
+        /// sample's page says it (`SamplePage.subtitle`).
+        var subtitle: Binding<String>? { bar.$subtitle }
+
         var body: some View {
             VStack {
                 TextField(bar.$subtitle)
@@ -12973,8 +12984,6 @@ enum Listings {
 
                 Switch("Surprise me on every page", isOn: bar.$showsSurprise)
             }
-            // The line under the page's title, wherever its title shows.
-            .subtitle(bar.$subtitle)
         }
         """#,
         "WindowLog": #"""

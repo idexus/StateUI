@@ -23,11 +23,15 @@ struct WindowBarSample: SampleContent, ExampleContent {
     static let title = "Window bar"
     static let summary = "Type a line under this page's title, then turn on an action every page carries."
 
-    static var code: String { Listings.joined("WindowBarSample", "MainPage.bar") }
+    static var code: String { Listings.joined("WindowBarSample", "SamplePage.subtitle", "MainPage.bar") }
 
     var notes: (any View)? { nil }
 
     // listing: WindowBarSample
+    /// The line under this page's title, wherever its title shows: the
+    /// sample's page says it (`SamplePage.subtitle`).
+    var subtitle: Binding<String>? { bar.$subtitle }
+
     var body: some View {
         VStack {
             TextField(bar.$subtitle)
@@ -39,8 +43,6 @@ struct WindowBarSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("windowBar.surprise")
         }
         .spacing(12)
-        // The line under the page's title, wherever its title shows.
-        .subtitle(bar.$subtitle)
     }
     // listing: end
 }
