@@ -46,6 +46,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testARootDrawnEdgeToEdgeHearsTheStatusBar", testARootDrawnEdgeToEdgeHearsTheStatusBar),
             ("testAStacksBarReachesUnderTheStatusBar", testAStacksBarReachesUnderTheStatusBar),
             ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
+            ("testAPagesScrollerKeepsTheBarsClearAsItsAxesChange", testAPagesScrollerKeepsTheBarsClearAsItsAxesChange),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -1080,6 +1081,30 @@ extension AndroidPagesTests {
             let scroll = try XCTUnwrap(host.views(AndroidScrollView.self).first?.scrollers.first)
             XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingTop), 48)
             XCTAssertEqual(Java.callInt(scroll.reference, TestJava.getPaddingBottom), 96)
+        }
+    }
+
+    /// A page's scroller keeps the bars clear as its axes change: the scrollers made for the new axes keep them too.
+    func testAPagesScrollerKeepsTheBarsClearAsItsAxesChange() throws {
+        try onMainActor {
+            let both = State(wrappedValue: false)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Grid {
+                    ScrollView { Text("rows").height(2000).width(2000) }
+                        .axes(both.wrappedValue ? .all : .vertical)
+                }
+                .ignoresSafeArea(.all)
+            }
+            host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
+            host.layOut()
+            both.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            let scrollers = try XCTUnwrap(host.views(AndroidScrollView.self).first?.scrollers)
+            XCTAssertEqual(scrollers.count, 2, "one down, one across")
+            let down = try XCTUnwrap(scrollers.first)
+            XCTAssertEqual(Java.callInt(down.reference, TestJava.getPaddingTop), 48)
+            XCTAssertEqual(Java.callInt(down.reference, TestJava.getPaddingBottom), 96)
         }
     }
 

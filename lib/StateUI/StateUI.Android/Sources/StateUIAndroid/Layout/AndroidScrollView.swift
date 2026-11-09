@@ -162,6 +162,12 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
     func keepClear(_ clearance: Clearance) {
         guard clearance != kept else { return }
         kept = clearance
+        writeClearance()
+    }
+
+    /// Pads each scroller clear of what it keeps clear, its padding drawn through.
+    private func writeClearance() {
+        let clearance = kept
         for scroller in scrollers {
             Java.call(scroller.reference, JavaAPI.setClipToPadding, .bool(false))
             let down = scroller === vertical
@@ -306,6 +312,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         Java.call(scrollers.last!.reference, JavaAPI.addView, .object(document.reference), .int(-1), .int(-1))
         holdOutermost()
         directScrollers()
+        if kept != .none { writeClearance() }
         scrollerOffset = ScrollerOffset()
     }
 }
