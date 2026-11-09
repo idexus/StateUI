@@ -135,6 +135,20 @@ final class LayoutPanTests: XCTestCase {
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 2))
     }
 
+    /// A WHEEL THE HOST SAYS NO NOTCHES OF - not a number, endless - steps nothing and never stops the application.
+    func testAWheelOfNoNumberStepsNothing() {
+        let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+        func built() -> Node { tree(board, handed) }
+        let patch = bench.laid(renders, built).patch
+
+        guard let stepped = patch.first(.motionLayout)?.events?[.wheelStepped] else {
+            return XCTFail("the layout hears no wheel")
+        }
+        XCTAssertTrue(renders.fire(stepped, with: MemberValues.encode(Point(.nan, .infinity))))
+        frames()
+        XCTAssertEqual(board.wrappedValue, Board())
+    }
+
     /// A PAN AND TWO FINGERS MOVE AT ONCE: the hand pans while the fingers spread, each its own axes.
     func testAPanAndTwoFingersMoveAtOnce() {
         let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())

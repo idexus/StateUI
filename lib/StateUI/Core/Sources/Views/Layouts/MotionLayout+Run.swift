@@ -652,8 +652,8 @@ extension MotionLayout {
         /// rests, and wait while it goes. A hand holding the run keeps it.
         /// Design: docs/design/views/motion-layout.md#a-wheels-notch
         func step(_ notches: Point) {
-            let count = Int((-(across ? notches.x : notches.y)).rounded())
-            guard count != 0 else { return }
+            // A notch the host says as no number is no notch.
+            guard let count = Int(nearest: -(across ? notches.x : notches.y)), count != 0 else { return }
             guard held == nil else { return }
 
             let journey = parameters.journey
