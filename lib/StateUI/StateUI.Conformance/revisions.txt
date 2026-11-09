@@ -94,7 +94,7 @@ VStack 3
 WebView 4
 ZStack 2
 Popover 6
-TextualElement 3
+TextualElement 4
 Link 3
 TextAndIconElement 2
 BottomBar 5

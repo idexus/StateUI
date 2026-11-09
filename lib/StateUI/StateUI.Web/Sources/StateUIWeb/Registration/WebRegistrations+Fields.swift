@@ -81,6 +81,7 @@ extension WebRegistrations {
         if values.changed(TextInputContract.maximumLength) {
             view.setMaximumLength(values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil })
         }
+        if values.changed(TextualElementContract.textCase) { view.textCase = values[TextualElementContract.textCase] }
         if values.changed(TextElementContract.text) || values.changed(TextualElementContract.textCase) {
             let textCase = values[TextualElementContract.textCase] ?? .none
             view.setText(textCase.applied(to: values[TextElementContract.text] ?? ""))
