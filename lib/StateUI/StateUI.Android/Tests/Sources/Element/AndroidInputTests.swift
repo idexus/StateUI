@@ -94,8 +94,8 @@ extension AndroidInputTests {
     }
 
     /// The keypad's Enter presses what Return does, as every platform's Enter does: a button Return presses.
-    func testTheKeypadsEnterPressesWhatReturnDoes() throws {
-        try onMainActor {
+    func testTheKeypadsEnterPressesWhatReturnDoes() {
+        onMainActor {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 Button("Send").keyboardShortcut(.return, modifiers: []).onClicked { heard.values.append("send") }
