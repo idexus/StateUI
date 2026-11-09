@@ -38,7 +38,7 @@ final class GTKPixelBoundsTests: XCTestCase {
     /// Numbers past what GTK counts - its 32-bit pixels, Pango's 1024ths of a point, a label's lines - stop nothing:
     /// each stands as none, or at what GTK holds.
     func testNumbersPastWhatGTKCountsStopNothing() throws {
-        try onUIThread {
+        onUIThread {
             let host = GTKRenderer.running { PastCountsPage() }
             host.settle { host.views(GTKTextView.self).count == 3 }
 

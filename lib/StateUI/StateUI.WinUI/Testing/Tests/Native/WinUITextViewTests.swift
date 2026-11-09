@@ -40,7 +40,7 @@ final class WinUITextViewTests: XCTestCase {
     /// layout places by - stop nothing: the words stand with no room between their letters and no bound on their
     /// lines, and a stack a padding past a pixel's reach widens places its stepper as none.
     func testNumbersPastWhatWinUICountsStopNothing() throws {
-        try onUIThread {
+        onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     Text("Spaced").tracking(1e300)
