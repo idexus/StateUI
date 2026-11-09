@@ -85,9 +85,10 @@
         return standard
     }
 
-    /// The entries `container` holds - a menu, a context menu, a submenu - in order; what is none of them is none.
+    /// The entries `container` holds - a menu, a context menu, a submenu - in order, an anchor's in its place; what is
+    /// none of them is none.
     public static func entries(of container: MountedElement) -> [MenuEntry] {
-        container.children.compactMap { entry in
+        container.arrangedChildren.compactMap { entry in
             switch entry.type {
             case .menuItem, .menuToggle: MenuEntry(entry, kind: .item, entries: [])
             case .menuSeparator: .separator

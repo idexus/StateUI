@@ -208,9 +208,13 @@ replacement are that view's; the element placing it is the one around the
 anchor (`placingParent`). The same list is an arrangement's pages, so a
 window, a stack, a tab or a split view holding an anchor shows the
 arrangement or page it holds, and every walk down the page path goes through
-it. A walk up the path steps through an anchor as through a stack. What the
-anchor presents - a sheet, a popover - stands by the view it shows
-(`presenter`).
+it. A walk up the path steps through an anchor as through a stack: the page
+an arrangement shows is the anchor's child, while the arrangement's own child
+is the anchor, so a walk comparing the two compares the anchor with what it
+holds. The entries of a menu and the items of a bar's group are the same
+list, and the content of a page is its first, where a key walks out from
+with nothing holding the keyboard. What the anchor presents - a sheet, a
+popover - stands by the view it shows (`presenter`).
 
 ## Slots
 

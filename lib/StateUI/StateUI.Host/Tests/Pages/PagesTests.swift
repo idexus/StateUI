@@ -615,6 +615,15 @@ final class PagesTests: XCTestCase {
         XCTAssertFalse(entry.isEnabled, "words are chosen by nobody")
     }
 
+    /// An item an anchor holds - a composed view's - stands on the bar in the anchor's place.
+    func testABarsItemAnAnchorHoldsStandsInItsPlace() throws {
+        let runtime = runtime(pageWindow(inner: [
+            toolbarGroup("items", [toolbarAction("first"), node("anchor", .anchor, children: [toolbarAction("held")])]),
+        ])) { _ in }
+
+        XCTAssertEqual(bar("detail", in: runtime), "|[first held]|")
+    }
+
     /// The groups behind the overflow are its sections, in reading order, the outer first.
     func testTheOverflowsGroupsAreItsSections() throws {
         let runtime = runtime(pageWindow(
@@ -1140,6 +1149,19 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(submenu.entries.map(\.title), ["New", "Close"])
         XCTAssertEqual(MenuEntry.entry(of: new).kind, .item)
         XCTAssertEqual(MenuEntry.entry(of: new).title, "New")
+    }
+
+    /// A menu and an entry an anchor holds - a composed view's - stand in the anchor's place.
+    func testAMenuAndAnEntryAnAnchorHoldsStandInItsPlace() throws {
+        let runtime = runtime(node("page", .page, children: [menuBar("bar", [
+            menu("file", "File", [
+                menuItem("new", "New"), node("entry", .anchor, children: [menuItem("open", "Open")]),
+                menuItem("close", "Close"),
+            ]),
+            node("held", .anchor, children: [menu("go", "Go", [menuItem("back", "Back")])]),
+        ])])) { _ in }
+
+        XCTAssertEqual(said(try XCTUnwrap(runtime.tree.root).chromeMenus.menus), "File[New;Open;Close] Go[Back]")
     }
 
     /// A menu of an id declared further in joins the one around it as a section after its entries; the others follow

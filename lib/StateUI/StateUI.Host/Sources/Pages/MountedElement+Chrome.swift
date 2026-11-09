@@ -64,7 +64,7 @@ extension MountedElement {
         var (child, each) = (self, parent)
         while let element = each, element.type != .window, element.type != .sheet {
             if element.type == .splitView {
-                return (element, element.arrangedChildren.first === child ? .sidebar : .detail)
+                return (element, element.children.first === child ? .sidebar : .detail)
             }
             (child, each) = (element, element.parent)
         }

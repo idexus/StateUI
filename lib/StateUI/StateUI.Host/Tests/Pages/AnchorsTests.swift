@@ -70,6 +70,28 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(tabs.visiblePage?.id, .manual("root"))
     }
 
+    /// A sidebar an anchor holds is the sidebar: its bar is the sidebar's part.
+    func testASidebarAnAnchorHoldsIsTheSidebar() throws {
+        let (_, window) = try mounted(node("window", .window, [
+            node("split", .splitView, [node("anchor", .anchor, [node("sidebar", .page)]), node("detail", .page)]),
+        ]))
+
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("sidebar"))).splitBarPart?.part, .sidebar)
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("detail"))).splitBarPart?.part, .detail)
+    }
+
+    /// What stands on a chosen tab an anchor holds stands in sight: its shortcut acts.
+    func testWhatStandsOnAChosenTabAnAnchorHoldsIsInSight() throws {
+        let save = node("save", .button, [], [.keyboardShortcut: KeyboardShortcut("s", modifiers: [.primary]).propValue])
+        let (_, window) = try mounted(node("window", .window, [
+            node("tabs", .tabView, [node("anchor", .anchor, [node("first", .page, [save])]), node("second", .page)]),
+        ]))
+
+        XCTAssertTrue(try XCTUnwrap(window.first(id: .manual("save"))).standsInSight)
+        XCTAssertEqual(
+            KeyboardShortcuts.target(of: KeyboardShortcut("s", modifiers: [.primary]), under: window)?.id, .manual("save"))
+    }
+
     /// A stack's page an anchor holds names the way back from the page above it with its own words.
     func testAPageAnAnchorHoldsNamesTheWayBackAboveIt() throws {
         let (runtime, window) = try mounted(node("window", .window, [
