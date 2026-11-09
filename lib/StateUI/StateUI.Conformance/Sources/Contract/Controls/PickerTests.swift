@@ -106,6 +106,7 @@
             s.expect(try s.held(PickerContract.options, on: picker), ["L", "M", "S"])
             s.expect(try s.held(PickerContract.selectedIndex, on: picker), 2, "the same value at its new place")
             s.expect(size.wrappedValue, "S", "the state holds it still")
+            s.turn()
             s.expect(heard.values, [], "and nobody heard a choice")
         }
     }
