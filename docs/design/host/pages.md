@@ -211,11 +211,12 @@ arrangement or page it holds, and every walk down the page path goes through
 it. A walk up the path steps through an anchor as through a stack: the page
 an arrangement shows is the anchor's child, while the arrangement's own child
 is the anchor, so a walk comparing the two compares what stands in the
-anchor's place (`placed`). The entries of a menu, the items of a bar's group
-and the context menu of a list's item are found the same way, and the content
-of a page is its first arranged child, where a key walks out from with
-nothing holding the keyboard. What the anchor presents - a sheet, a
-popover - stands by the view it shows (`presenter`).
+anchor's place (`placed`). A list's item is found the same way - its context
+menu stands on the view the anchor holds - and the content of a page is its
+first arranged child, where a key walks out from with nothing holding the
+keyboard. A menu's entries and a bar's items are elements, which their
+builders take by type, so no anchor stands among them. What the anchor
+presents - a sheet, a popover - stands by the view it shows (`presenter`).
 
 ## Slots
 
