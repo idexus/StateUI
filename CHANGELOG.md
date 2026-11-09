@@ -3,13 +3,6 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
-## Unreleased
-
-### Breaking changes
-
-- **A page says no subtitle.** `.subtitle(_:)` - the line under a page's title - is no longer offered: a page says
-  what it needs in its title or in its content. A map marker keeps its `subtitle`.
-
 ## 0.8.2 - 2026-11-08
 
 ### Breaking changes
