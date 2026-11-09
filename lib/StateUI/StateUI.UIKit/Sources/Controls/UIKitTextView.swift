@@ -20,7 +20,6 @@ final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
 
     var shown = UIKitLabelWords()
 
-    /// The room between the label's edge and its words.
     /// The room between the label's edge and its words, as the tree says it.
     private var insets = Insets(0)
 

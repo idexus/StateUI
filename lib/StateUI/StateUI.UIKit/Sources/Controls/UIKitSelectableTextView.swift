@@ -13,7 +13,6 @@ import UIKit
 final class UIKitSelectableTextView: UITextView, UIKitLabel {
     var shown = UIKitLabelWords()
 
-    /// The room between the view's edge and its words.
     /// The room between the view's edge and its words, as the tree says it.
     private var insets = Insets(0)
 
