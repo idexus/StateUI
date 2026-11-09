@@ -228,11 +228,14 @@
         let previouslyShown = isPagePresented ? shownChildren : []
         let heardPull = hearsPull
         let readFrameBefore = frameReaders
+        // A complete message names what stands as well as what changed: only what it names otherwise is a change.
+        // Design: docs/design/host/patches.md#a-complete-message
+        let complete = tree.appliesCompleteMessage
         var changed = Set(patch.clearedProperties)
-        changed.formUnion(patch.properties.keys)
+        changed.formUnion(patch.properties.keys.filter { !complete || properties[$0] != patch.properties[$0] })
         if case .replace(let replacement) = patch.driven {
-            changed.formUnion(driven.keys)
-            changed.formUnion(replacement.keys)
+            let named = Set(driven.keys).union(replacement.keys)
+            changed.formUnion(named.filter { !complete || driven[$0] != replacement[$0] })
         }
 
         // Nothing of an element being made runs to be cut short: it receives what it animates and what a state drives,

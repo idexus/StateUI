@@ -104,6 +104,32 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.changed["label"]?.contains(.background), true, "its native half hears the value go")
     }
 
+    /// A complete message changes nothing it names as it stands: a value and a state's binding the element holds
+    /// already reach its native half as no change - a control writing what it is told anew, as a web view loading its
+    /// source again, would lose what the user did with it.
+    @MainActor
+    func testACompleteMessageChangesNothingItNamesAsItStands() {
+        let (tree, log) = Self.tree()
+        let binding = HostStateBinding(state: 700, mode: .inOut, kind: .property, laneKind: .number)
+        func stack(_ text: String) -> HostPatch {
+            var label = HostPatch(id: .manual("label"), type: .text)
+            label.properties = [.zIndex: .number(1), .text: .string(text)]
+            label.driven = .replace([.value: binding])
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.children = .arranged([label])
+            return stack
+        }
+        tree.apply(stack("Notes"), complete: true)
+        log.changed = [:]
+
+        tree.apply(stack("Notes"), complete: true)
+        XCTAssertEqual(log.changed["label"] ?? [], [], "what stands as named")
+
+        log.changed = [:]
+        tree.apply(stack("Inbox"), complete: true)
+        XCTAssertEqual(log.changed["label"] ?? [], [.text], "what the message names otherwise")
+    }
+
     /// A sparse message leaves what it does not name as it stands.
     @MainActor
     func testASparseMessageKeepsWhatItDoesNotName() {
