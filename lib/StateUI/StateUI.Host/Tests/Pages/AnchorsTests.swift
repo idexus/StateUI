@@ -70,6 +70,17 @@ final class AnchorsTests: XCTestCase {
         XCTAssertEqual(tabs.visiblePage?.id, .manual("root"))
     }
 
+    /// Tabs an anchor holds are among the tabs an arrangement shows.
+    func testTabsAnAnchorHoldsAreShown() throws {
+        let (_, window) = try mounted(node("window", .window, [
+            node("split", .splitView, [
+                node("sidebar", .page), node("anchor", .anchor, [node("tabs", .tabView, [node("first", .page)])]),
+            ]),
+        ]))
+
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("split"))).tabViewsShown.map(\.id), [.manual("tabs")])
+    }
+
     /// A sidebar an anchor holds is the sidebar: its bar is the sidebar's part.
     func testASidebarAnAnchorHoldsIsTheSidebar() throws {
         let (_, window) = try mounted(node("window", .window, [

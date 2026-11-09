@@ -145,7 +145,7 @@ extension MountedElement {
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     public var tabViewsShown: [MountedElement] {
         var shown: [MountedElement] = type == .tabView ? [self] : []
-        for child in children where NodeType.pageTypes.contains(child.type) { shown += child.tabViewsShown }
+        for child in arrangedChildren where NodeType.pageTypes.contains(child.type) { shown += child.tabViewsShown }
         return shown
     }
 
