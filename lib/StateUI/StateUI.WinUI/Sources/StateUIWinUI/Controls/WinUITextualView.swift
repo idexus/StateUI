@@ -15,6 +15,9 @@ class WinUITextualView: WinUIView {
     /// against, and what it is.
     private(set) var look = TextLook()
 
+    /// How the words break; wrapped unless the element says otherwise.
+    private(set) var breaks = LineBreak.wordWrap
+
     /// The size WinUI draws body text at, in DIPs.
     static let platformFontSize = 14.0
 
@@ -23,6 +26,13 @@ class WinUITextualView: WinUIView {
 
     init() {
         super.init { _ in stateui_winui_text_make() }
+    }
+
+    /// The words' natural size. A line that never wraps keeps its size whatever the room offered: WinUI measures
+    /// such a line differently at a width just under its own - an ellipsis's worth - so a layout that fed that
+    /// width back into the measure would never settle. Wrapped words are measured at the room they are offered.
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        super.measure(width: breaks.wraps ? width : nil, height: height)
     }
 
     /// The words shown.
@@ -44,6 +54,7 @@ class WinUITextualView: WinUIView {
     /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
     /// (`LineBreak.lines`): wrapped words held to some lines end the last with an ellipsis.
     func setLines(breaking: LineBreak, maximum: Int?) {
+        breaks = breaking
         stateui_winui_text_set_lines(
             handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0),
             breaking.truncates || breaking.endsWithEllipsis(maximum: maximum))

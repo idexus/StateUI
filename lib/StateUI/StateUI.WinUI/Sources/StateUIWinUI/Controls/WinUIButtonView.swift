@@ -138,8 +138,11 @@ final class WinUIButtonView: WinUIView {
     /// grow to any room it is measured in.
     /// Design: docs/design/platforms/winui/controls.md#a-button
     override func measure(width: Double?, height: Double?) -> LayoutSize {
-        guard let shown, !shown.hasWords, !shown.icon.isEmpty else { return super.measure(width: width, height: height) }
-        return super.measure(width: nil, height: nil)
+        if let shown, !shown.hasWords, !shown.icon.isEmpty { return super.measure(width: nil, height: nil) }
+        // A caption that never wraps keeps its size whatever the room offered - as a label's does - so a layout
+        // feeding its size back into the room it offers cannot measure it again for ever.
+        if shown?.lineBreak?.wraps == true { return super.measure(width: width, height: height) }
+        return super.measure(width: nil, height: height)
     }
 
     /// A picture beside the words stands no taller than the button's place leaves it.
