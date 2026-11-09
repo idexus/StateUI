@@ -343,7 +343,10 @@ loops, no closures held across them), and tells the native half in another
 tablet browser's stack - far less than a desktop's - overflows a WebAssembly
 Gallery before its first frame where one function does all of a level's
 work, in the differ as in the mount; `MountStackTests` holds a level under
-eight kilobytes. A WebAssembly start that fails takes the loading screen away, so
+eight kilobytes, under the thread sanitizer too. A patch is a large value:
+one made from it - a complete message's patch completed with what the
+element no longer names - is made in `received`, whose frame is gone before
+the children are, never as a local of `apply`. A WebAssembly start that fails takes the loading screen away, so
 its reason stands on the page rather than a load with no end, and ends the
 program with 1, so a test's runner waiting for it hears it failed.
 

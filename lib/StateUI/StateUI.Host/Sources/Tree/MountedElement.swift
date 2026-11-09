@@ -175,7 +175,6 @@
     public func apply(_ patch: HostPatch) {
         guard let tree else { return }
 
-        let patch = tree.appliesCompleteMessage ? completed(patch) : patch
         let applying = received(patch, tree: tree)
         if case .unchanged = patch.children {} else { willShowAnew() }
         childrenApplied(patch.children, tree: tree)
@@ -221,6 +220,8 @@
     /// The patch's own values taken: its properties, events, driven states and motion, before its children.
     @inline(never)
     private func received(_ patch: HostPatch, tree: MountedTree) -> Applying {
+        // Design: docs/design/host/runtime.md#the-mounts-stack
+        let patch = tree.appliesCompleteMessage ? completed(patch) : patch
         if let key = patch.menuKey { menuKey = key }
         let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
         tree.tally?.nodes += 1
