@@ -21,6 +21,7 @@ final class AndroidImageView: AndroidView {
 
     /// The picture is held read at one pixel in `sample` across and down; 0 while none is held.
     private var sample: Int32 = 0
+    private var held: AndroidPictures.Held?
 
     init() {
         super.init { _ in Java.new(JavaAPI.imageView, JavaAPI.newImageView, .object(AndroidRenderer.context)) }
@@ -77,7 +78,8 @@ final class AndroidImageView: AndroidView {
         let needed = aspect == .center ? 1 : AndroidPictures.sample(picture, size: pictureSize, shown: shown)
         guard sample == 0 || needed < sample else { return }
 
-        let bitmap = AndroidPictures.take(picture, sample: needed)
+        let taken = AndroidPictures.take(picture, sample: needed)
+        let bitmap = taken?.bitmap
         // Drawn at the host's density, as the picture was read and measured, not at the system's; an icon in the
         // theme's color.
         Java.frame {
@@ -91,15 +93,13 @@ final class AndroidImageView: AndroidView {
             Java.call(reference, JavaAPI.setImageDrawable, .object(drawable))
         }
         letGoOfPicture()
-        sample = needed
+        (held, sample) = (taken, needed)
     }
 
     /// Lets go of the picture the view holds.
     private func letGoOfPicture() {
-        guard let picture, sample != 0 else { return }
-
-        AndroidPictures.letGo(picture, sample: sample)
-        sample = 0
+        if let held { AndroidPictures.letGo(held) }
+        (held, sample) = (nil, 0)
     }
 
     override func detach() {

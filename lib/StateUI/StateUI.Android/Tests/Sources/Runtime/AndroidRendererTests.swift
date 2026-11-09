@@ -84,6 +84,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
             ("testAnActivityMadeAgainLeavesItsWindowsPhaseAlone", testAnActivityMadeAgainLeavesItsWindowsPhaseAlone),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
+            ("testAPictureStandsAtItsOwnSizeAfterTheDensityChanges", testAPictureStandsAtItsOwnSizeAfterTheDensityChanges),
             ("testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent", testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
@@ -281,6 +282,31 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(now.density, density)
             XCTAssertEqual(now.views(AndroidTextView.self).map(\.text), ["count 1"], "the scene with its state")
             XCTAssertEqual(Java.callInt(now.root.reference, TestJava.getChildCount), 1, "the window once")
+        }
+    }
+
+    /// A picture shown before the display's density changed stands at its own size in points after it, in the window
+    /// made again, as one read afresh does: what was read at the former density is no measure of the new.
+    func testAPictureStandsAtItsOwnSizeAfterTheDensityChanges() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running {
+                VStack { Image("test_wide.png").id("picture") }.horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            first.layOut()
+            let density = AndroidEnvironment.density(of: TestContext.context.reference)
+            guard density != first.density else { throw XCTSkip("the device stands at the test's density") }
+            let shown = { (host: AndroidRenderer) throws -> [Double] in
+                let picture = try XCTUnwrap(host.view(id: .manual("picture")))
+                return [Double(picture.frame.width) / host.density, Double(picture.frame.height) / host.density]
+            }
+            let before = try shown(first)
+
+            first.configured()
+            let now = try XCTUnwrap(AndroidRenderer.shared)
+            now.layOut()
+            let after = try shown(now)
+            XCTAssertEqual(after[0], before[0], accuracy: 1, "as wide, in points")
+            XCTAssertEqual(after[1], before[1], accuracy: 1, "as tall, in points")
         }
     }
 
