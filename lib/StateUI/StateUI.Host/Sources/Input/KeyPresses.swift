@@ -15,12 +15,18 @@
         of key: Key, modifiers: KeyModifiers, focused: MountedElement?, front: MountedElement?
     ) -> MountedElement? {
         guard modifiers.isDisjoint(with: [.primary, .alt]) else { return nil }
-        var each = focused ?? front.map { $0.children.first ?? $0 }
+        var each = start(focused: focused, front: front)
         while let element = each {
             if element.takes(key), element.standsInSight, element.isEffectivelyEnabled { return element }
             each = element.parent
         }
         return nil
+    }
+
+    /// Where a key's walk out begins: the view holding the keyboard, else the content of the page in front - what an
+    /// anchor there holds, past what is declared on the page for its chrome.
+    private static func start(focused: MountedElement?, front: MountedElement?) -> MountedElement? {
+        focused ?? front.map { $0.arrangedChildren.first ?? $0 }
     }
 
     /// The element holding the keyboard under `root`: the deepest that `holds` it, as its toolkit says whether a
@@ -37,7 +43,7 @@
     /// StateUI's order: what a toolkit holding its keys on the window rather than on each view offers.
     public static func taken(focused: MountedElement?, front: MountedElement?) -> [Key] {
         var keys: [Key] = []
-        var each = focused ?? front.map { $0.children.first ?? $0 }
+        var each = start(focused: focused, front: front)
         while let element = each {
             if element.standsInSight, element.isEffectivelyEnabled {
                 keys += element.value(.keysTaken).flatMap([Key].init(propValue:)) ?? []
