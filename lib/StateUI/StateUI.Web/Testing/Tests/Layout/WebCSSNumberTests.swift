@@ -37,4 +37,11 @@ final class WebCSSNumberTests: XCTestCase {
         XCTAssertEqual(WebCSS.number(1e20), String(1e20))
         XCTAssertEqual(WebCSS.number(1.5e13 + 0.25), String(1.5e13 + 0.25))
     }
+
+    /// A stepped number past what whole numbers count at its places is written as any number beyond room is.
+    func testASteppedNumberPastWholeNumbersIsWrittenAsBeyondRoom() {
+        XCTAssertEqual(WebCSS.number(12.5, decimals: 2), "12.50")
+        XCTAssertEqual(WebCSS.number(1e20, decimals: 0), WebCSS.number(1e20))
+        XCTAssertEqual(WebCSS.number(-1e17, decimals: 2), WebCSS.number(-1e17))
+    }
 }
