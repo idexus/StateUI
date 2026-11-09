@@ -717,7 +717,9 @@
             windowChrome: WindowChrome.follows(type, changed: changed))
     }
 
-    /// The value `property` presents: a running animation's, else the described or bound one.
+    /// The value `property` presents: a running animation's, else the described or bound one - none where it is a
+    /// number that is none.
+    /// Design: docs/design/core/contracts.md#a-number-that-is-none
     public func value(_ property: Prop) -> HostValue? {
         let shown: HostValue?
         if driven[property].map({ $0.mode != .in }) == true {
@@ -725,7 +727,8 @@
         } else {
             shown = tree?.presentedPropertyValue(mount: mount, property: property) ?? resolvedValue(property)
         }
-        return GeometryArithmetic.value(shown, for: property)
+        guard let value = GeometryArithmetic.value(shown, for: property), !value.holdsNonFiniteNumber else { return nil }
+        return value
     }
 
     /// The text value of `property`.

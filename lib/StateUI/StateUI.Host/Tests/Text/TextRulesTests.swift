@@ -126,6 +126,24 @@ final class TextRulesTests: XCTestCase {
         XCTAssertEqual(FontWeight(nearest: -.infinity), .regular)
     }
 
+    /// A number that is none - NaN, infinite - is no value to any host reading an element: a label's look reads no
+    /// size, no line height and no space between its letters, which a toolkit's whole units cannot hold.
+    func testANumberThatIsNoneIsNoValueOfAnElement() throws {
+        let runtime = HostRuntime.still()
+        var text = HostPatch(id: .manual("text"), type: .text)
+        text.properties = [
+            .tracking: .number(.nan), .fontSize: .number(.infinity), .lineHeight: .number(-.infinity),
+            .opacity: .number(.nan),
+        ]
+        runtime.tree.apply(text, complete: true)
+        let element = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertNil(element.value(.opacity))
+        XCTAssertEqual(element.textLook.letterSpacing, 0)
+        XCTAssertNil(element.textLook.size)
+        XCTAssertNil(element.textLook.lineHeight)
+    }
+
     /// Words follow the user's text size unless the tree says not: a run scales only where neither it nor its label
     /// says no.
     func testWordsScaleWithTheUsersTextSizeUnlessTheTreeSaysNot() {

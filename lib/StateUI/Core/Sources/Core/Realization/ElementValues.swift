@@ -91,12 +91,7 @@
     /// Design: docs/design/core/contracts.md#a-number-that-is-none
     @MainActor
     private static func holdsNumbers<Owner: WornContract, Value>(_ value: HostValue, _ member: ElementProperty<Owner, Value>) -> Bool {
-        let numbers: [Double] = switch value {
-        case .number(let number): [number]
-        case .numbers(let numbers): numbers
-        default: []
-        }
-        guard numbers.contains(where: { !$0.isFinite }) else { return true }
+        guard value.holdsNonFiniteNumber else { return true }
         complain("`\(member.name)` reached \(Realized.name) as \(MemberValues.describe([value])), which is no number: "
             + "the view read no value for it.")
         return false
