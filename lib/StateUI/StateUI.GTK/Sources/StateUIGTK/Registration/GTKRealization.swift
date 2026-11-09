@@ -37,11 +37,19 @@ enum GTKRealization {
     private static let noPull = "GTK and libadwaita offer no pull to refresh: a GNOME application refreshes by a "
         + "command - a header bar button, Ctrl+R."
 
+    /// What of a branch's language GTK sets.
+    private static let wordsAlone = "Pango sets a text's words by it - their breaks, hyphens and the typeface a "
+        + "script falls back to; GTK gives no other widget a language of its own."
+
     /// Every record, the tiers' first.
     static let records: [HostRecord] = [
         .partial(BottomBarContract.scrollEdge, missing: "No edge: GNOME's flat bottom bar shows its shadow while the "
             + "content scrolls, whatever the edge says."),
         // MARK: Tiers - a member every wearer realizes alike
+        .partial(LanguageElementContract.language, on: TextContract.self, missing: Self.wordsAlone),
+        .partial(LanguageElementContract.language, on: WindowContract.self, missing: Self.wordsAlone),
+        .notPlanned(LanguageElementContract.language,
+            reason: "GTK gives a widget no language of its own: Orca reads it in the system's."),
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),

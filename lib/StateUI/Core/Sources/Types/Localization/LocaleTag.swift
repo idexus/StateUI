@@ -15,7 +15,7 @@
 /// `isValid` says so.
 ///
 /// Design: docs/design/types/localization.md#a-language-is-a-tag
-public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible, HostRepresentable {
     /// The tag in its standard spelling: `"zh-Hant-TW"`.
     public let identifier: String
 
@@ -133,4 +133,17 @@ public struct LocaleTag: Hashable, Sendable, ExpressibleByStringLiteral, CustomS
 
     /// The scripts written right to left.
     private static let rightToLeft: Set<String> = ["Adlm", "Arab", "Hebr", "Mand", "Nkoo", "Rohg", "Samr", "Syrc", "Thaa"]
+}
+
+extension LocaleTag {
+    /// The tag, as a name from an open vocabulary.
+    public var propValue: PropValue { .name(identifier) }
+
+    /// The tag back - nil for any other kind.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .name(let text) = propValue else { return nil }
+
+        self.init(text)
+    }
 }

@@ -199,6 +199,16 @@ extern "C" void stateui_winui_set_flow_direction(StateUIObjectRef handle, bool r
     }
 }
 
+extern "C" void stateui_winui_set_language(StateUIObjectRef handle, char const *tag) {
+    try {
+        auto element = as<xaml::FrameworkElement>(handle);
+        if (tag) element.Language(text(tag));
+        else element.ClearValue(xaml::FrameworkElement::LanguageProperty());
+    } catch (...) {
+        report("saying the language an element's words are in");
+    }
+}
+
 extern "C" void stateui_winui_update_layout(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).UpdateLayout();

@@ -130,6 +130,7 @@ enum UIKitRealization {
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),
+        .complete(LanguageElementContract.language),
         .complete(BackgroundElementContract.background, on: PageElementContract.self),
         .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),

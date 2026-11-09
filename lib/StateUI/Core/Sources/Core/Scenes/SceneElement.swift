@@ -81,6 +81,7 @@ struct SceneElement: Element {
             showing: { declared.page(opened, record) },
             session: record.windowSession(opened.key), inspector: { Inspector.docked(in: record, window: opened.key) })
         node.environments.insert(contentsOf: declared.environments, at: 0)
+        node.sayLanguage(of: declared.environments)
         return node
     }
 

@@ -196,3 +196,11 @@ edge and measures it a line tall - so an outlined field keeps them, read off a
 field in its own frame in the same font: as tall, its words set in as far, and
 no less than half a round end. An editor keeps its corners of 8 where the
 tree says no shape.
+
+## The language of the words
+
+Every view holds the language its branch is written in as its
+`accessibilityLanguage`, which VoiceOver speaks its words in - the control a
+view presents where it presents one. UIKit hands a view's language to no view
+inside it, so each view is given the language it holds, and everything
+following an element is given it again when that element's changes.

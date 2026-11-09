@@ -117,6 +117,7 @@ final class UIKitElement: NativeElement {
         if let view, let host { element.applyDrawnChildren(to: view, through: UIKitRegistrations.registry, in: host.runtime) }
         configureGestures()
         applyAccessibility()
+        speakLanguage(changed: changed)
         configureContextMenu()
         configureButtonMenu()
         configureLayoutMotion()

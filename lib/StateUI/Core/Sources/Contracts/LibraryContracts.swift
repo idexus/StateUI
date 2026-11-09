@@ -46,6 +46,7 @@
         BorderElementContract.self,
         ContentModeElementContract.self,
         TintElementContract.self,
+        LanguageElementContract.self,
         KeyboardElementContract.self,
         FocusElementContract.self,
         RefreshElementContract.self,

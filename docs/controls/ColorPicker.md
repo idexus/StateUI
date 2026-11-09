@@ -12,7 +12,7 @@ ColorPicker($tint)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [LanguageElement](tiers/LanguageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -31,14 +31,14 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td><code>NSColorWell</code> opening the color panel</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>36 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>82 –</td><td>no honest native counterpart</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSColorWell</code> opening the color panel</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>37 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>83 –</td><td>no honest native counterpart</td></tr>
 <tr><td colspan="3">Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 4 ☑️ · 24 ✓ · 6 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 1 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>57 ✅ · 1 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ColorPickerContract.swift`.
@@ -257,6 +257,16 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 <tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>GTK 4: GTK gives a widget no language of its own: Orca reads it in the system's.</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

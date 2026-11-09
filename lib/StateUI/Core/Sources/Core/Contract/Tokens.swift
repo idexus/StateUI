@@ -142,6 +142,7 @@ extension NodeType {
     static let fillRule = PointsShapeContract.fillRule.token
     static let floatsOnTop = WindowContract.floatsOnTop.token
     static let layoutDirection = VisualElementContract.layoutDirection.token
+    static let language = LanguageElementContract.language.token
     static let letsInputThrough = LayoutContract.letsInputThrough.token
     static let fontAttributes = FontElementContract.fontAttributes.token
     static let fontWeight = FontElementContract.fontWeight.token

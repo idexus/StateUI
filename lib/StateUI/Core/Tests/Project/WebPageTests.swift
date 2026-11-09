@@ -47,11 +47,11 @@ final class WebPageTests: XCTestCase {
             <meta name="application-name" content="Monitoring Paczek & co">
             """#)
         XCTAssertTrue(named.contains(#"<div class="stateui-loading-name">Monitoring Paczek & co</div>"#), named)
-        XCTAssertTrue(named.contains(#"aria-label="Loading Monitoring Paczek & co""#), named)
+        XCTAssertTrue(named.contains(#"aria-label="Monitoring Paczek & co""#), named)
 
         let titled = try layPage(head: #"<title>Notes "kept" & found</title>"#)
         XCTAssertTrue(titled.contains(#"<div class="stateui-loading-name">Notes &quot;kept&quot; & found</div>"#), titled)
-        XCTAssertTrue(titled.contains(#"aria-label="Loading Notes &quot;kept&quot; & found""#), titled)
+        XCTAssertTrue(titled.contains(#"aria-label="Notes &quot;kept&quot; & found""#), titled)
 
         let plain = try layPage(head: nil)
         XCTAssertTrue(plain.contains(#"<div class="stateui-loading-name">Notes</div>"#), plain)

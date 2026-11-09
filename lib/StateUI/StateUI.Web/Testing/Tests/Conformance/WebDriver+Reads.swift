@@ -35,6 +35,8 @@ extension WebDriver {
                 e.matches(":disabled") || e.getAttribute("aria-disabled") === "true" \
                 || (e.getAttribute("role") === "group" && !e.querySelector("input:enabled, button:enabled"))
                 """, on: e)).propValue
+        case (LanguageElementContract.language.token, _):
+            return try WebBrowser.evaluate("e.closest('[lang]')?.getAttribute('lang') ?? null", on: e).map { LocaleTag($0).propValue }
         case (.layoutDirection, _):
             let rightToLeft = try WebBrowser.truth("getComputedStyle(e).direction === 'rtl'", on: e)
             return (rightToLeft ? LayoutDirection.rightToLeft : .leftToRight).propValue

@@ -16,7 +16,7 @@ A host with no map of its own shows the one the application registers with it - 
 
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [LanguageElement](tiers/LanguageElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,16 +35,16 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 37 ✓ · 1 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>40 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>82 🧩</td><td>the application's own, registered</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>41 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>82 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>82 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>82 🧩</td><td>the application's own, registered</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
 <tr><td colspan="3">the application registers its own control</td></tr></tbody>
 </table>
 
@@ -274,4 +274,14 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 <tr><td colspan="9">AppKit: only through the host's own: hover on Map: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Map: the view's listening handed the recognizer's states, no touch sent<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on Map: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Map: the view's listening handed the recognizer's states, no touch sent<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
 </table>

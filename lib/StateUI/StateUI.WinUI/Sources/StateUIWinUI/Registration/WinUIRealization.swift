@@ -44,6 +44,7 @@ enum WinUIRealization {
     /// A tier's member every wearer realizes alike.
     private static let tierRecords: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
+        .complete(LanguageElementContract.language),
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),
         .notPlanned(RefreshElementContract.isRefreshEnabled, on: ItemsViewContract.self, reason: Self.noListPull),

@@ -16,7 +16,7 @@ ItemsView(["Apple", "Banana", "Cherry"]) { fruit in
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [RefreshElement](tiers/RefreshElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [LanguageElement](tiers/LanguageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md) · [RefreshElement](tiers/RefreshElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,13 +35,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 3 ☑️ · 40 ✓ · 4 –</td><td><code>NSCollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 42 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 5 ☑️ · 13 ✓ · 2 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>67 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ItemsView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 24 ✓ · 9 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 22 ✓ · 6 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 3 ☑️ · 40 ✓ · 5 –</td><td><code>NSCollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 3 ☑️ · 42 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 5 ☑️ · 13 ✓ · 3 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ItemsView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 24 ✓ · 10 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 22 ✓ · 6 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -243,6 +243,16 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 <tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on ItemsView: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views: Android gives a view no language of its own: TalkBack reads it in the system's.<br>GTK 4: GTK gives a widget no language of its own: Orca reads it in the system's.</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

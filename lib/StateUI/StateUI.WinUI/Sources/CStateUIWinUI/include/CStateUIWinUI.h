@@ -611,6 +611,10 @@ void stateui_winui_set_z_index(StateUIObjectRef element, int32_t z);
 /// left to right.
 void stateui_winui_set_flow_direction(StateUIObjectRef element, bool rightToLeft);
 
+/// The language the element's words are written in, a BCP 47 tag, which what stands in it inherits; NULL for its
+/// parent's.
+void stateui_winui_set_language(StateUIObjectRef element, char const *tag);
+
 /// Tips the element as it is drawn after its transform: `matrix` the sixteen numbers of a 4 x 4 matrix, row by
 /// row, applied to a point (x, y, 0, 1) of the element and divided by the fourth; null for no tip.
 void stateui_winui_set_projection(StateUIObjectRef element, const double *matrix);

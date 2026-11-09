@@ -797,6 +797,20 @@ keeps the user's and says it did not. The accent the core resolves
 the platform reports - so a platform's later report leaves the application's
 in force. The core hands on a pair's half in force, again as the theme turns.
 
+## The language a branch is written in
+
+An element holds the language the core says on it or on the nearest element
+above it (`spokenLanguage`); none where no element says one, and the
+platform's own stands. A toolkit that keeps a language per view and hands it
+to no view inside - UIKit's `accessibilityLanguage`, a Mac text's words - is
+given `spokenLanguage` on every view, and again on `followingLanguage` as an
+element's own changes: the element and everything under it saying none of
+its own. A toolkit that hands a view's language to the views inside - the
+Web's `lang`, WinUI's `Language` - is given `languageOnItsView`: an element's
+own; the one it holds where that comes through an element with no view (a
+window, a sheet), or where its view stands apart from the views above it (a
+popover's, a sheet's page); none where its view's parent holds it already.
+
 ## The application's phase
 
 A toolkit tells what each window does - whether it is minimized, and whether

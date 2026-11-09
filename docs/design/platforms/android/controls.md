@@ -463,3 +463,13 @@ A field the tree outlines or shapes (`stroke`, `lineWidth`, `shape`) is drawn
 as a shape in place of the theme's underline - its ground, its outline and its
 corners, fitted to each size it is placed at - and with neither stands on its
 ground alone, or on the theme's look.
+
+## The language of the words
+
+Android gives a view no language of its own: TalkBack reads it, and the
+keyboard offers its words, in the system's language. A view showing words -
+a text, a button, a field, a link, a toggle's label, a day's or a time's
+field - sets them by the language its branch is written in
+(`setTextLocale`): where it breaks them, how it hyphenates them and the
+typeface a script falls back to. The language is `.partial` on those
+elements and `.notPlanned` on every other.

@@ -46,6 +46,7 @@ extension AndroidDriver {
             // The color the figure is drawn with - Android blurs nothing, so a blur's stand-in is that color.
             return shape.fillForTesting.flatMap(Color.init(propValue:)).map { StandIns.material(painted: $0).propValue }
         case (.isOn, let toggle as AndroidToggleView): return toggle.isOn.propValue
+        case (LanguageElementContract.language.token, let words as AndroidTextualView): return Self.textLocale(of: words)
         case (.isPresented, let popover as AndroidPopoverView): return popover.windowShows.propValue
         case (ButtonContract.role.token, let button as AndroidButtonView): return button.role.map(\.propValue) ?? HostValue.nothing
         case (.showsText, let button as AndroidButtonView): return (!button.text.isEmpty).propValue
@@ -155,6 +156,17 @@ extension AndroidDriver {
     }
 
     /// The slant and the digits a text view draws: its typeface's italic bit, and its font features.
+    /// The language a view's words are set by, as Android holds it.
+    static func textLocale(of words: AndroidTextualView) -> HostValue? {
+        guard let locale = Java.callObject(words.reference, JavaAPI.getTextLocale) else { return nil }
+        let tag = Java.callObject(locale, JavaAPI.toLanguageTag)
+        defer {
+            Java.release(local: tag)
+            Java.release(local: locale)
+        }
+        return LocaleTag(Java.text(tag)).propValue
+    }
+
     static func attributes(of view: jobject?) -> FontAttributes {
         var attributes = FontAttributes(rawValue: Java.callStaticInt(testText, style, .object(view)) & 2)
         if Java.callStaticBool(testText, digits, .object(view)) { attributes.insert(.monospacedDigits) }

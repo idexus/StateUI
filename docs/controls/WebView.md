@@ -22,7 +22,7 @@ Grid {
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [StyledElement](tiers/StyledElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [LanguageElement](tiers/LanguageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -41,13 +41,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (90)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 37 ✓ · 1 –</td><td><code>WKWebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>46 ✅ · 3 ☑️ · 39 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 12 ✓ · 4 –</td><td><code>WebView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>49 ✅ · 13 ✓ · 27 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 4 ☑️ · 24 ✓ · 6 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>59 ✅ · 1 ☑️ · 21 ✓ · 6 –</td><td><code>&lt;iframe&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 39 ✓ · 2 –</td><td><code>WKWebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 12 ✓ · 5 –</td><td><code>WebView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>50 ✅ · 13 ✓ · 27 –</td><td><code>WebView2</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td>WebKitGTK <code>WebKitWebView</code>, a backend</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 21 ✓ · 6 –</td><td><code>&lt;iframe&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/WebViewContract.swift`.
@@ -251,6 +251,16 @@ What an element the pointer comes over and leaves reports: a view, an item on a 
 <tr><td colspan="9">AppKit: only through the host's own: hover on WebView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerExited</code> (<code>pointerExited</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on WebView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on WebView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views: Android gives a view no language of its own: TalkBack reads it in the system's.<br>GTK 4: GTK gives a widget no language of its own: Orca reads it in the system's.</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

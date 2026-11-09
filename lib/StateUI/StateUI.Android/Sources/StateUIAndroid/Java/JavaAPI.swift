@@ -150,6 +150,8 @@ enum JavaAPI {
     static let setGravity = Java.method(textView, "setGravity", "(I)V")
     static let getGravity = Java.method(textView, "getGravity", "()I")
     static let setLetterSpacing = Java.method(textView, "setLetterSpacing", "(F)V")
+    static let setTextLocale = Java.method(textView, "setTextLocale", "(Ljava/util/Locale;)V")
+    static let getTextLocale = Java.method(textView, "getTextLocale", "()Ljava/util/Locale;")
     static let setLineSpacing = Java.method(textView, "setLineSpacing", "(FF)V")
     static let getPaintFlags = Java.method(textView, "getPaintFlags", "()I")
     static let getLinkTextColors = Java.method(textView, "getLinkTextColors", "()Landroid/content/res/ColorStateList;")
@@ -442,6 +444,13 @@ enum JavaAPI {
     static let object = Java.findClass("java/lang/Object")
     static let string = Java.findClass("java/lang/String")
     static let toString = Java.method(object, "toString", "()Ljava/lang/String;")
+
+    // MARK: - java.util
+
+    static let locale = Java.findClass("java/util/Locale")
+    static let localeForLanguageTag = Java.staticMethod(locale, "forLanguageTag", "(Ljava/lang/String;)Ljava/util/Locale;")
+    static let defaultLocale = Java.staticMethod(locale, "getDefault", "()Ljava/util/Locale;")
+    static let toLanguageTag = Java.method(locale, "toLanguageTag", "()Ljava/lang/String;")
 
     // MARK: - The host's own classes
 

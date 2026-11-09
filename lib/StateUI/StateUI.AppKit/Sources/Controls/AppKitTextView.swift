@@ -29,6 +29,24 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring, 
     var attributedStringValue: NSAttributedString { textField.attributedStringValue }
     var stringValue: String { textField.stringValue }
 
+    /// The language the words are written in, which VoiceOver reads them in; nil for the system's.
+    /// Design: docs/design/platforms/appkit/views.md#the-language-of-the-words
+    var language: String? {
+        didSet {
+            guard language != oldValue else { return }
+            textField.attributedStringValue = languaged(textField.attributedStringValue)
+        }
+    }
+
+    /// `text` saying its language over the whole of it, or none.
+    private func languaged(_ text: NSAttributedString) -> NSAttributedString {
+        let marked = NSMutableAttributedString(attributedString: text)
+        let whole = NSRange(location: 0, length: marked.length)
+        if let language { marked.addAttribute(.accessibilityLanguage, value: language, range: whole) }
+        else { marked.removeAttribute(.accessibilityLanguage, range: whole) }
+        return marked
+    }
+
     /// Whether the user can select the words and copy them.
     var isSelectable: Bool {
         get { textField.isSelectable }
@@ -69,8 +87,8 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring, 
         maximumNumberOfLines: Int
     ) {
         let lineBreakMode = NSLineBreakMode(breaking)
-        let styled = paragraphStyled(
-            attributedText, alignment: horizontalAlignment, breaking: lineBreakMode)
+        let styled = languaged(paragraphStyled(
+            attributedText, alignment: horizontalAlignment, breaking: lineBreakMode))
         let unchanged = textField.attributedStringValue.isEqual(to: styled)
             && horizontalTextAlignment == horizontalAlignment
             && verticalTextAlignment == verticalAlignment

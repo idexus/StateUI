@@ -25,6 +25,7 @@ enum WebRealization {
     static let records: [HostRecord] = [
         .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
+        .complete(LanguageElementContract.language),
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
         .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),

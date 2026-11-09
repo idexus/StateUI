@@ -447,6 +447,11 @@ final class UIKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if property == .language, let view = (element.native as? UIKitElement)?.view {
+            // The language VoiceOver speaks the view's words in.
+            let target = (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
+            return target.accessibilityLanguage.map { LocaleTag($0).propValue }
+        }
         if element.type == .sheet, property == .background {
             // A sheet shows its page, which stands on the ground it paints - the window's, where it says none.
             let page = element.children.first.map { $0.visiblePage ?? $0 }

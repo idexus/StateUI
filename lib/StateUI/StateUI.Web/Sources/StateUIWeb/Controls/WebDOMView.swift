@@ -254,6 +254,17 @@ class WebDOMView {
         style("background-color", WebCSS.fill(HostMaterial(value).painted))
     }
 
+    /// The language the view says its words, and those of the views in it, are written in; nil where it holds its
+    /// parent's.
+    private(set) var language: LocaleTag?
+
+    /// Says the view's words are written in `language`, on its `lang`; nil holds its parent's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        attribute("lang", language?.identifier)
+    }
+
     /// Sets an attribute, or takes it away for nil.
     func attribute(_ name: String, _ value: String?) {
         #if DEBUG

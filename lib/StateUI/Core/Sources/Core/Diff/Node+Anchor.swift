@@ -102,6 +102,7 @@ extension Node {
         destroying += written.destroying
         hostEvents += written.hostEvents
         engines += written.engines
+        describedReads += written.describedReads
         children += written.children
         if let wrote = written.pageValues {
             pageValues = pageValues.map { $0.merged(under: wrote) } ?? wrote

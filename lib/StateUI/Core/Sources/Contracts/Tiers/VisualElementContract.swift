@@ -11,7 +11,7 @@ public enum VisualElementContract: Tier {
     /// Every drawn element is found by automation.
     public static let tiers: [any Tier.Type] = [
         AutomationElementContract.self, EnabledElementContract.self, BackgroundElementContract.self,
-        StyledElementContract.self,
+        StyledElementContract.self, LanguageElementContract.self,
     ]
 
     /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.

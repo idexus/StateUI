@@ -83,6 +83,11 @@ struct LocalizationSample: SampleContent, ExampleContent {
                 + "11 October 2026\" - English words in Polish order.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+
+            Text("Turn on a screen reader that follows a text's language: each copy is read in the language "
+                + "its localization speaks, the page around it in the system's.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
         }
         .spacing(10)
     }

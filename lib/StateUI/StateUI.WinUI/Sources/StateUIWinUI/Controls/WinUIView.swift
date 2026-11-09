@@ -91,6 +91,7 @@ class WinUIView {
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+        if let language { stateui_winui_set_language(handle, language.identifier) }
         if offered != .none { stateui_winui_offer_drag(handle, number, offered.words, offered.takesWords, offered.takesFiles) }
         writtenTip = nil
         writeTransform()
@@ -184,6 +185,18 @@ class WinUIView {
     func setDirection(_ direction: LayoutDirection) {
         writtenRightToLeft = takesDirection && direction == .rightToLeft
         stateui_winui_set_flow_direction(handle, writtenRightToLeft)
+    }
+
+    /// The language the view says its words, and those of the views in it, are written in; nil where it holds its
+    /// parent's.
+    private(set) var language: LocaleTag?
+
+    /// Says the view's words are written in `language`, which WinUI hands to what stands in it; nil holds its
+    /// parent's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        stateui_winui_set_language(handle, language?.identifier)
     }
 
     /// Where the view is drawn among its layout's children, written only where it differs.

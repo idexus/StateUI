@@ -157,9 +157,13 @@ extension VisualElement {
     ///
     /// Providing reads no property, so a change in the object rebuilds the
     /// readers below and not the provider; replacing the object rebuilds the
-    /// branch.
+    /// branch. A `Localization` also says the language the branch's words are
+    /// in; a change of that language reaches the branch, not the provider.
     public func environment<Value: AnyObject>(_ object: Value) -> Modified {
-        modified { $0.environments.append((key: ObjectIdentifier(Value.self), object: object)) }
+        modified {
+            $0.environments.append((key: ObjectIdentifier(Value.self), object: object))
+            $0.sayLanguage(of: [(key: ObjectIdentifier(Value.self), object: object)])
+        }
     }
 }
 

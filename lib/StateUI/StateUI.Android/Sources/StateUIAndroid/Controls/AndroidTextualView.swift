@@ -33,6 +33,23 @@ class AndroidTextualView: AndroidView {
         Java.release(local: string)
     }
 
+    /// The language the words are written in, which Android sets them by - their breaks, their hyphens, the typeface
+    /// a script falls back to; nil for the system's.
+    private(set) var language: LocaleTag?
+
+    /// Sets the words by the rules of `language`; nil, the system's.
+    func setLanguage(_ language: LocaleTag?) {
+        guard language != self.language else { return }
+        self.language = language
+        let tag = language.flatMap { Java.string($0.identifier) }
+        let locale = language == nil
+            ? Java.callStaticObject(JavaAPI.locale, JavaAPI.defaultLocale)
+            : Java.callStaticObject(JavaAPI.locale, JavaAPI.localeForLanguageTag, .object(tag))
+        if let locale { Java.call(reference, JavaAPI.setTextLocale, .object(locale)) }
+        Java.release(local: locale)
+        Java.release(local: tag)
+    }
+
     /// The words the view shows now, read back.
     var text: String {
         guard let sequence = Java.callObject(reference, JavaAPI.getText) else { return "" }

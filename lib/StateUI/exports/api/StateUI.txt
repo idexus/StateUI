@@ -437,6 +437,9 @@ swift.conformance KeyboardElement: StateUI.Views
 swift.conformance KeyboardElementContract: StateUI.Tier
 swift.conformance KeyboardElementContract: StateUI.WornContract
 swift.conformance KeyboardElementContract: Swift.Sendable
+swift.conformance LanguageElementContract: StateUI.Tier
+swift.conformance LanguageElementContract: StateUI.WornContract
+swift.conformance LanguageElementContract: Swift.Sendable
 swift.conformance Layout: StateUI.View
 swift.conformance Layout: StateUI.Views
 swift.conformance LayoutBody: Swift.Equatable
@@ -1090,6 +1093,7 @@ swift.enum ItemDragStart: enum ItemDragStart
 swift.enum ItemsLayout: enum ItemsLayout
 swift.enum ItemsViewContract: enum ItemsViewContract
 swift.enum KeyboardElementContract: enum KeyboardElementContract
+swift.enum LanguageElementContract: enum LanguageElementContract
 swift.enum LayoutContract: enum LayoutContract
 swift.enum LayoutDirection: enum LayoutDirection
 swift.enum LineBreak: enum LineBreak
@@ -13039,6 +13043,8 @@ swift.type.property KeyModifiers.shift: static let shift: KeyModifiers
 swift.type.property KeyboardElementContract.keyPressed: static let keyPressed: ElementEvent<KeyboardElementContract, (Key, KeyModifiers)>
 swift.type.property KeyboardElementContract.keysTaken: static let keysTaken: ElementProperty<KeyboardElementContract, [Key]>
 swift.type.property KeyboardElementContract.name: static let name: String
+swift.type.property LanguageElementContract.language: static let language: ElementProperty<LanguageElementContract, LocaleTag>
+swift.type.property LanguageElementContract.name: static let name: String
 swift.type.property LayoutContract.clipsContent: static let clipsContent: ElementProperty<LayoutContract, Bool>
 swift.type.property LayoutContract.ignoresSafeArea: static let ignoresSafeArea: ElementProperty<LayoutContract, SafeAreaEdges>
 swift.type.property LayoutContract.letsInputThrough: static let letsInputThrough: ElementProperty<LayoutContract, Bool>

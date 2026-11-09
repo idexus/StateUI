@@ -13,7 +13,7 @@ Switch("Sound", isOn: $soundOn)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [ToggleElement](tiers/ToggleElement.md) · [TextColorElement](tiers/TextColorElement.md) · [TintElement](tiers/TintElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextualElement](tiers/TextualElement.md) · [StyledElement](tiers/StyledElement.md) · [TextElement](tiers/TextElement.md) · [BackgroundElement](tiers/BackgroundElement.md) · [EnabledElement](tiers/EnabledElement.md) · [HoverElement](tiers/HoverElement.md) · [ToggleElement](tiers/ToggleElement.md) · [TextColorElement](tiers/TextColorElement.md) · [TintElement](tiers/TintElement.md) · [LanguageElement](tiers/LanguageElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (85)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 5 ☑️ · 12 ✓ · 4 –</td><td><code>Switch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>ToggleSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 25 ✓ · 7 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (86)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 36 ✓ · 3 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>40 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>62 ✅ · 6 ☑️ · 12 ✓ · 4 –</td><td><code>Switch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 14 ✓ · 6 –</td><td><code>ToggleSwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 25 ✓ · 8 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SwitchContract.swift`.
@@ -271,6 +271,16 @@ A control's one accent color.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>tint</code></td><td>property</td><td><code>Color</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: AppKit draws it in the accent color the user chooses: it takes none of its own.<br>Android Views: not realized<br>GTK 4: only through the host's own: read tint of Switch: the tint the host gave the track's node: GTK's style sheet tells no one</td></tr></tbody>
+</table>
+
+## From [LanguageElement](tiers/LanguageElement.md)
+
+The language a branch of the interface is written in: the one a screen reader speaks its words in, and whose rules set them - where they break, how they hyphenate.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>language</code></td><td>property</td><td><code>LocaleTag</code></td><td>adaptive</td><td align="center">–</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit gives a view no language of its own: VoiceOver reads it in the system's.<br>Android Views: Android sets the words by it - their breaks, hyphens and the typeface a script falls back to; TalkBack and the keyboard keep the system's language.<br>GTK 4: GTK gives a widget no language of its own: Orca reads it in the system's.</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

@@ -717,6 +717,7 @@ namespace {
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
             if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(metOf(object)));
             if (what == "flowDirection") return number(static_cast<int32_t>(element.FlowDirection()));
+            if (what == "language") return narrow(element.Language());
             if (what == "hitTestable") return flag(element.IsHitTestVisible());
             if (what == "zIndex") return number(controls::Canvas::GetZIndex(element));
             if (what == "clipped") {

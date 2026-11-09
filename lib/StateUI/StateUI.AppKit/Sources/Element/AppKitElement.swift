@@ -131,6 +131,7 @@ final class AppKitElement: NSObject, NativeElement {
             }
         }
         applyProperties(changed: changed)
+        speakLanguage(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AppKitRegistrations.registry, in: host.runtime) }
         configureContextMenu()
         configureButtonMenu()
