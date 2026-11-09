@@ -35,7 +35,7 @@ private func sheetsOver(_ shows: State<Bool>, menus: State<Bool>, windows: Recei
 }
 
 final class WinUIOverlayTests: XCTestCase {
-    /// The window's overlay - the inspector docked in it - stands over its page and over a sheet presented after
+    /// The window's overlay - the inspector docked in it - stands over its page and under a sheet presented after
     /// it, and a click beside what it holds goes on to the page; closed, it is gone.
     func testTheWindowsOverlayStandsOverItsPageLettingAClickBesideItThrough() throws {
         try onUIThread {
@@ -60,7 +60,11 @@ final class WinUIOverlayTests: XCTestCase {
 
             sheets.wrappedValue = true
             host.settle { stateui_winui_window_sheets(window.handle) == 1 }
-            XCTAssertTrue(overlay.reaches(size.width / 2, size.height - 20), "over the sheet presented after it")
+            XCTAssertFalse(overlay.reaches(size.width / 2, size.height - 20), "under the sheet presented after it")
+
+            sheets.wrappedValue = false
+            host.settle { stateui_winui_window_sheets(window.handle) == 0 }
+            XCTAssertTrue(overlay.reaches(size.width / 2, size.height - 20), "over the page again, the sheet gone")
 
             session.debugInspector = nil
             host.settle { window.overlays.isEmpty }
@@ -70,7 +74,7 @@ final class WinUIOverlayTests: XCTestCase {
     }
 
     /// The window's layers over its rows - its sheets, its overlay - are no row's own: the menu bar coming to stand
-    /// beneath the chrome takes neither away.
+    /// beneath the chrome takes neither away, and the overlay stands over the page once the sheet is gone.
     func testTheChromeStandingAgainLeavesTheSheetsAndTheOverlay() throws {
         try onUIThread {
             let (sheets, menus, windows) = (State(wrappedValue: true), State(wrappedValue: false), Received<WindowSession>())
@@ -87,6 +91,8 @@ final class WinUIOverlayTests: XCTestCase {
             XCTAssertTrue(window.menuBarStands)
             XCTAssertEqual(stateui_winui_window_sheets(window.handle), 1, "the sheet stays")
             let overlay = try XCTUnwrap(window.overlays.first)
+            sheets.wrappedValue = false
+            host.settle { stateui_winui_window_sheets(window.handle) == 0 }
             host.layOut()
             XCTAssertTrue(overlay.reaches(overlay.frame.width / 2, overlay.frame.height - 20), "the overlay stays")
         }
