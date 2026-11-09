@@ -333,6 +333,31 @@ final class ActCallShapeTests: XCTestCase {
         taken(drain(), "useColorScheme", [.enumeration(ColorScheme.light.rawValue)], awaited: false)
     }
 
+    /// A new application starts where the platform stands: the theme and the accent the one before it asked of the
+    /// host go with that one - its session holds neither, the host is told to follow the platform again, and the
+    /// new one asking the same is heard.
+    func testANewApplicationTakesBackWhatTheOneBeforeAsked() throws {
+        drain()
+        let application = StandardEnvironment.application
+        application.colorScheme = .dark
+        application.accentColor = .firebrick
+        drain()
+
+        Renderer.shared.setApplication(Asking())
+        defer { OpenScenes.shared.reset() }
+
+        XCTAssertNil(application.colorScheme, "the theme the one before asked")
+        XCTAssertNil(application.accentColor, "the accent the one before asked")
+        let told = drain()
+        XCTAssertEqual(told.map(\.name).sorted(), ["Application.useAccentColor", "Application.useColorScheme"])
+        XCTAssertEqual(told.map(\.arguments), [[.nothing], [.nothing]], "the platform's again")
+
+        application.colorScheme = .dark
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.dark.rawValue)], awaited: false)
+        application.colorScheme = nil
+        drain()
+    }
+
     /// The accent the application holds crosses as one color - a pair's half in force, and the other half as the
     /// theme turns - and none once it gives the platform's back.
     func testTheApplicationsAccentCrossesAsTheHalfInForce() throws {
@@ -548,4 +573,9 @@ final class ActCallShapeTests: XCTestCase {
         XCTAssertGreaterThan(acts.count, 15, "the contracts declare almost no acts")
         XCTAssertEqual(Set(acts).subtracting(checked).sorted(), [], "an act no test here checks")
     }
+}
+
+/// An application of one empty page: what a registration after another stands for.
+private struct Asking: Application {
+    var body: some Scene { WindowGroup { Text("") } }
 }
