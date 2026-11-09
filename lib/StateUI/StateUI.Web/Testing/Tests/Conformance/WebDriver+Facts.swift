@@ -323,20 +323,20 @@ extension WebDriver {
         return try openMenu()
     }
 
-    /// The actions the menu open now shows, before the page's menus, each said by its element.
+    /// The actions the menu open now shows, its sections run together, each said by its element: the page's menus
+    /// after them, no bar's items, left out.
     private func openMenu() throws -> [String] {
         let open = "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open'))"
         let script = "((m) => { const out = []; for (const c of m ? m.children : []) {"
-            + " if (c.getAttribute('role') === 'separator') break; if (c.classList.contains('stateui-menu')) continue;"
+            + " if (c.getAttribute('role') === 'separator' || c.classList.contains('stateui-menu')) continue;"
             + " out.push((c.disabled ? '!' : '') + ([...c.querySelectorAll('span')].pop()?.textContent ?? '')); }"
             + " return out.join(String.fromCharCode(10)); })(\(open))"
         let said = try WebBrowser.evaluate(script, on: 0) ?? ""
         let items = toolbarItems(in: renderer?.runtime.tree.root)
-        return said.split(separator: "\n").map { line in
+        return said.split(separator: "\n").compactMap { line in
             let enabled = !line.hasPrefix("!")
             let caption = String(enabled ? line : line.dropFirst())
-            guard let item = items.first(where: { $0.value(.text)?.string == caption }) else { return String(line) }
-            return BarWords.word(item, enabled: enabled)
+            return items.first { $0.value(.text)?.string == caption }.map { BarWords.word($0, enabled: enabled) }
         }
     }
 

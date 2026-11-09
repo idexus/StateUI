@@ -585,6 +585,34 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// Groups placed behind "more" are sections of its menu, a line between two - on the title bar and on the bar at
+    /// the page's foot.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes")
+                    .toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                    .toolbar(.bottom) {
+                        ToolbarButton("Share").placement(at: .overflow)
+                        ToolbarButton("Print").placement(at: .overflow)
+                    }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "bar") != "||" }
+            XCTAssertEqual(Self.words(bar, "bar"), "||0,1 2")
+            let page = try XCTUnwrap(host.runtime.tree.root?.first(type: .page))
+            let foot = try XCTUnwrap(((page.native as? WinUIElement)?.view as? WinUIPageView)?.toolbar)
+            XCTAssertEqual(Self.words(foot, "footBar"), "||0 1")
+        }
+    }
+
     /// Groups stand apart by room alone: the bar draws no line between them, as a Windows application's toolbar.
     func testGroupsStandApartByRoomAlone() throws {
         try onUIThread {

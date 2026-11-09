@@ -188,6 +188,40 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// Groups placed behind a bar's More are sections of its menu, a line between two - on the header bar and on
+    /// the bar at the page's foot.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Notes")
+                        .toolbar {
+                            ToolbarGroup {
+                                ToolbarButton("Rename")
+                                ToolbarButton("Move")
+                            }
+                            .placement(at: .overflow)
+                            ToolbarButton("Delete").placement(at: .overflow)
+                        }
+                        .toolbar(.bottom) {
+                            ToolbarButton("Share").placement(at: .overflow)
+                            ToolbarButton("Print").placement(at: .overflow)
+                        }
+                        .title("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+            }
+            let rows = { (list: GTKWidget) in
+                GTKTestHost.children(of: list).map { String(cString: gtk_widget_get_css_name($0)) == "separator" ? "-" : "item" }
+            }
+
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            XCTAssertEqual(rows(frame.overflowListForTesting), ["item", "item", "-", "item"])
+            XCTAssertEqual(rows(try XCTUnwrap(frame.footBar).moreListForTesting), ["item", "-", "item"])
+        }
+    }
+
     /// The overflow's button, a picture alone, is named More - its tip, which a screen reader says - as the main
     /// menu's is named.
     func testTheOverflowIsNamedMore() throws {

@@ -25,14 +25,15 @@ struct UIKitPageChrome {
     var barForeground: HostValue?
     var leadingActions: [[UIKitBarAction]] = []
     var actions: [[UIKitBarAction]] = []
-    var overflow: [UIKitBarAction] = []
+    /// The groups behind the overflow, each a section of its menu.
+    var overflow: [[UIKitBarAction]] = []
     /// What the bar's close button does, where the page's stack stands in a sheet and offers one; nil for none.
     var closes: (() -> Void)?
 
     /// What the bar's buttons say, the leading groups, the trailing, the overflow and the close.
     var buttonsSaid: [[UIKitBarAction.Said]] {
-        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [overflow.map(\.said)]
-            + [closes == nil ? [] : [Self.closeSaid]]
+        leadingActions.map { $0.map(\.said) } + [[]] + actions.map { $0.map(\.said) } + [[]]
+            + overflow.map { $0.map(\.said) } + [closes == nil ? [] : [Self.closeSaid]]
     }
 
     /// What the close button says among the bar's buttons, and the identifier of its action.
@@ -74,7 +75,7 @@ struct UIKitPageChrome {
             // Named More: a picture on the bar, its title in UIKit's own menu of what a narrow bar has no room for.
             let menu = overflow.isEmpty ? [] : [[UIBarButtonItem(
                 title: CoreLink().chromeWords.more, image: UIImage(systemName: "ellipsis.circle"), primaryAction: nil,
-                menu: UIMenu(children: overflow.map(\.overflowEntry)))]]
+                menu: UIKitBarAction.overflowMenu(overflow))]]
             menu.joined().forEach { $0.tintColor = foreground }
             // The sheet's close at the trailing edge, UIKit's own button.
             let close = closes.map { closes in

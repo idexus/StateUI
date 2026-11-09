@@ -467,7 +467,7 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(chrome.title, "Detail")
         XCTAssertEqual(chrome.back?.title, "Home")
         XCTAssertEqual(chrome.actions.primary.map(\.id), [.manual("first"), .manual("next")])
-        XCTAssertEqual(chrome.actions.overflow.map(\.id), [.manual("more")])
+        XCTAssertEqual(chrome.actions.overflowSections.map { $0.map(\.id) }, [[.manual("more")]])
         XCTAssertEqual(chrome.center?.id, .manual("words"), "the page's title view")
         XCTAssertEqual(chrome.background, .string("stack"))
         XCTAssertNil(chrome.splitView)
@@ -610,7 +610,7 @@ final class PagesTests: XCTestCase {
         let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
 
         XCTAssertEqual(bar("detail", in: runtime), "|[count save]|[saved]")
-        let entry = MenuEntry.entry(of: try XCTUnwrap(page.chromeActions.overflow.first))
+        let entry = MenuEntry.entry(of: try XCTUnwrap(page.chromeActions.overflowSections.first?.first))
         XCTAssertEqual(entry.title, "Saved")
         XCTAssertFalse(entry.isEnabled, "words are chosen by nobody")
     }

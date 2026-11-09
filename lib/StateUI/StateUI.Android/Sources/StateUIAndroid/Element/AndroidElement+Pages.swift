@@ -166,15 +166,15 @@ extension AndroidElement {
     }
 
     /// Writes on `content` the actions a bar shows - its groups in reading order, as Android's bar has no place at
-    /// the leading edge beside the navigation button, then those behind its overflow - and `menus` behind the
-    /// overflow: the items, each at its place.
+    /// the leading edge beside the navigation button, then those behind its overflow, each group a group of
+    /// Android's menu - and `menus` behind the overflow: the items, each at its place.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     private static func fill(
         _ content: inout AndroidBarView.Content, with actions: ChromeActions, menus: [MenuEntry]
     ) -> [MountedElement] {
-        let groups = actions.start + actions.end
-        let onBar = groups.flatMap { $0 }
-        let shown = onBar + actions.overflow
+        let onBar = (actions.start + actions.end).flatMap { $0 }
+        let groups = actions.start + actions.end + actions.overflowSections
+        let shown = groups.flatMap { $0 }
         // Each item's place - its menu item's id less one - in the order the bar's menu is written: an action, the
         // entries of a menu it opens there, and then the menus behind the overflow.
         var items: [MountedElement] = []

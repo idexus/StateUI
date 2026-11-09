@@ -56,7 +56,7 @@ extension AppKitWindowController {
             showsSidebarToggle: chrome.showsSidebarToggle,
             sidebarLeadingActions: chrome.sidebarActions.start.map { $0.map(Self.action) },
             sidebarActions: chrome.sidebarActions.end.map { $0.map(Self.action) },
-            sidebarOverflow: chrome.sidebarActions.overflow.map(Self.action),
+            sidebarOverflow: chrome.sidebarActions.overflowSections.map { $0.map(Self.action) },
             back: chrome.back.map { back in
                 AppKitToolbarAction(
                     identifier: AppKitWindowToolbar.back, title: back.title,
@@ -70,7 +70,7 @@ extension AppKitWindowController {
             leadingActions: chrome.actions.start.map { $0.map(Self.action) },
             center: chrome.center?.appKit.view,
             actions: chrome.actions.end.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action),
+            overflow: chrome.actions.overflowSections.map { $0.map(Self.action) },
             words: words))
         split?.onSidebarResized = { [weak self] in self?.toolbar.fitAgain() }
         synchronizeBar(window, brush: bar, split: split)

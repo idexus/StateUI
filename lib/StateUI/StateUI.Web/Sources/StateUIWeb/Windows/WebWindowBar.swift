@@ -65,16 +65,16 @@ final class WebWindowBar: WebDOMView {
     private let sideMore = WebDOMView(tag: "button")
     private var sideBehind: [MenuEntry] = []
 
-    /// The items of each group shown, in reading order as `groups` stands; those placed behind the bar; and the
-    /// menus the page's path declares - what More offers besides the groups that leave the bar.
+    /// The items of each group shown, in reading order as `groups` stands; the groups placed behind the bar; and
+    /// the menus the page's path declares - what More offers besides the groups that leave the bar.
     private var runs: [[MountedElement]] = []
-    private var placed: [MountedElement] = []
+    private var placed: [[MountedElement]] = []
     private var menus: [MenuEntry] = []
 
-    /// The items of each group over the sidebar, in reading order as `sideGroups` stands, and those placed behind
-    /// the sidebar's part's More.
+    /// The items of each group over the sidebar, in reading order as `sideGroups` stands, and the groups placed
+    /// behind the sidebar's part's More.
     private var sideRuns: [[MountedElement]] = []
-    private var sidePlaced: [MountedElement] = []
+    private var sidePlaced: [[MountedElement]] = []
 
     /// The items standing over the sidebar, by identity: one moving to the other part slides there.
     private var sideItems: Set<ObjectIdentifier> = []
@@ -217,13 +217,13 @@ final class WebWindowBar: WebDOMView {
         }
         sideItems = overSidebar
         sideRuns = sidebar.start + sidebar.end
-        sidePlaced = sidebar.overflow
+        sidePlaced = sidebar.overflowSections
         // With actions of its own, the part over the sidebar stands its name beside them rather than over them.
         attribute("data-side-acts", sideRuns.isEmpty && sidePlaced.isEmpty ? nil : "")
         WebRelay.insert(sideMore.node, into: sideTrailing.node, at: sidebar.end.count)
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         runs = chrome.actions.start + ending
-        placed = chrome.actions.overflow
+        placed = chrome.actions.overflowSections
         // A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
         menus = chrome.menus
             .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus

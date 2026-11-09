@@ -12308,7 +12308,7 @@ enum Listings {
 
                     Text(favorite ? "A favorite" : "Not a favorite")
 
-                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; Clear is in the overflow.")
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; More holds two sections.")
 
                     SectionTitle("Where the actions stand")
 
@@ -12332,7 +12332,8 @@ enum Listings {
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
-                // `addWords` Add's words, the four switches where the group stands.
+                // `recent` whether Duplicate and Forget last can, `addWords` Add's
+                // words, the four switches where the group stands.
                 .toolbar {
                     ToolbarGroup {
                         // Its click its own, its menu apart: from an arrow of its
@@ -12378,6 +12379,24 @@ enum Listings {
                         .icon(
                             ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
                             on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                    // Behind More, each group a section of its menu: these two
+                    // together, Clear apart.
+                    ToolbarGroup {
+                        ToolbarButton("Duplicate")
+                            .id("duplicate")
+                            .isEnabled(!recent.isEmpty)
+                            .onClicked {
+                                added += 1
+                                recent.append("copy\(added).txt")
+                            }
+
+                        ToolbarButton("Forget last")
+                            .id("forgetLast")
+                            .isEnabled(!recent.isEmpty)
+                            .onClicked { recent.removeLast() }
+                    }
+                    .placement(at: .overflow)
 
                     ToolbarButton("Clear")
                         .id("clear")

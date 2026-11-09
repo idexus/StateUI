@@ -25,8 +25,8 @@ final class WebBottomToolbar: WebDOMView {
     private var groups: [WebBarGroup] = []
     private var runs: [[MountedElement]] = []
 
-    /// The items placed behind the bar.
-    private var placed: [MountedElement] = []
+    /// The groups placed behind the bar.
+    private var placed: [[MountedElement]] = []
 
     init() {
         super.init(tag: "div")
@@ -67,7 +67,7 @@ final class WebBottomToolbar: WebDOMView {
         for gone in pool { gone.release() }
         buttons = kept
         runs = actions.start + actions.end
-        placed = actions.overflow
+        placed = actions.overflowSections
         WebRelay.insert(more.node, into: trailing.node, at: actions.end.count)
         setShown(holdsItems)
         fit()

@@ -304,7 +304,7 @@ extension UIKitDriver {
         func search(_ controller: UIViewController) {
             for item in Self.barItems(of: controller) {
                 if let action = item.primaryAction { found.append((action, item.isEnabled)) }
-                for case let entry as UIAction in item.menu?.children ?? [] {
+                for case let entry as UIAction in Self.overflowEntries(of: item.menu) {
                     found.append((entry, !entry.attributes.contains(.disabled)))
                 }
             }

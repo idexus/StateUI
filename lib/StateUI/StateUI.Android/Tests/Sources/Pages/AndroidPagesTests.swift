@@ -33,6 +33,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testATabChosenShowsItsPageAndSaysSo", testATabChosenShowsItsPageAndSaysSo),
             ("testTheRowMarksTheTabShown", testTheRowMarksTheTabShown),
             ("testAPagesToolbarItemsAreTheBarsActions", testAPagesToolbarItemsAreTheBarsActions),
+            ("testGroupsBehindTheOverflowAreSectionsOfItsMenu", testGroupsBehindTheOverflowAreSectionsOfItsMenu),
             ("testALeadingGroupStandsFirstAmongTheActions", testALeadingGroupStandsFirstAmongTheActions),
             ("testTheBarsActionsStandInItsWordsColor", testTheBarsActionsStandInItsWordsColor),
             ("testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle", testAPagesTitleViewStandsInTheBarInPlaceOfItsTitle),
@@ -722,6 +723,29 @@ final class AndroidPagesTests: XCTestCase {
             for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
             host.runtime.pump.turn()
             XCTAssertEqual(heard.values, ["save", "delete"])
+        }
+    }
+
+    /// Groups placed behind the bar's overflow are sections of its menu: each a group of Android's menu, a line
+    /// between two.
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Notes").title("Notes").toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                } destination: { _ in Text("Note") }
+            }
+            let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+
+            let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
+            XCTAssertEqual(TestMenus.describe(menu), "Rename, Move | Delete")
         }
     }
 }

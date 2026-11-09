@@ -23,7 +23,7 @@ extension GTKDriver {
         let groups = { (edge: GTKWidget) in
             GTKTestHost.children(of: edge).map { GTKTestHost.children(of: $0).compactMap(word) }.filter { !$0.isEmpty }
         }
-        let overflow = zip(frame.overflowButtons, frame.chrome.overflow).compactMap { button, action in
+        let overflow = zip(frame.overflowButtons, frame.chrome.overflow.joined()).compactMap { button, action in
             action.item.map { BarWords.word($0, enabled: gtk_widget_get_sensitive(button.widget) != 0) }
         }
         return BarWords.said(
@@ -43,7 +43,7 @@ extension GTKDriver {
                 }
             }.filter { !$0.isEmpty }
         }
-        let overflow = zip(foot.overflowButtons, foot.actions.overflow).compactMap { button, action in
+        let overflow = zip(foot.overflowButtons, foot.actions.overflow.joined()).compactMap { button, action in
             action.item.map { BarWords.word($0, enabled: gtk_widget_get_sensitive(button.widget) != 0) }
         }
         return BarWords.said(leading: groups(true), trailing: groups(false), overflow: overflow)
@@ -156,7 +156,8 @@ extension GTKDriver {
                 if let at = onBar.firstIndex(where: { $0.item === element }), at < foot.buttons.count {
                     return foot.buttons[at]
                 }
-                if let at = foot.actions.overflow.firstIndex(where: { $0.item === element }), at < foot.overflowButtons.count {
+                if let at = Array(foot.actions.overflow.joined()).firstIndex(where: { $0.item === element }),
+                   at < foot.overflowButtons.count {
                     return foot.overflowButtons[at]
                 }
             }
@@ -164,7 +165,8 @@ extension GTKDriver {
             if let at = onBar.firstIndex(where: { $0.item === element }), at < frame.buttons.count {
                 return frame.buttons[at]
             }
-            if let at = frame.chrome.overflow.firstIndex(where: { $0.item === element }), at < frame.overflowButtons.count {
+            if let at = Array(frame.chrome.overflow.joined()).firstIndex(where: { $0.item === element }),
+               at < frame.overflowButtons.count {
                 return frame.overflowButtons[at]
             }
         }

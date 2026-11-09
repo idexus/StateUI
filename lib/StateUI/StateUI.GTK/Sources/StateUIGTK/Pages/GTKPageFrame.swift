@@ -49,7 +49,7 @@ final class GTKPageFrame {
     private var fittedWidth: Int32?
 
     /// The actions placed behind More whatever the room, and the bar's More: hidden while nothing stands behind it.
-    private var placed: [GTKToolbarAction] = []
+    private var placed: [[GTKToolbarAction]] = []
     private let overflowButton: GTKWidget
     private let overflowList: GTKWidget
 
@@ -296,11 +296,14 @@ final class GTKPageFrame {
     /// The sidebar's toggle, where the bar shows one.
     var sidebarToggle: GTKButtonView? { sidebarButton }
 
+    /// The rows of the bar's More menu: its buttons, and the lines between its sections.
+    var overflowListForTesting: GTKWidget { overflowList }
+
     /// The groups of actions as buttons at each edge, a group a box of its own, and the overflow behind a menu at the
     /// bar's end.
     /// Design: docs/design/platforms/gtk/pages.md#the-chrome
     private func showActions(
-        leading: [[GTKToolbarAction]], trailing: [[GTKToolbarAction]], overflow: [GTKToolbarAction]
+        leading: [[GTKToolbarAction]], trailing: [[GTKToolbarAction]], overflow: [[GTKToolbarAction]]
     ) {
         let drawsLike = { (new: [GTKToolbarAction], old: [GTKToolbarAction]) in
             new.count == old.count && zip(new, old).allSatisfy { $0.draws(like: $1) }
@@ -310,7 +313,7 @@ final class GTKPageFrame {
         }
         let onBar = (leading + trailing).flatMap { $0 }
         guard !groupsLike(leading, chrome.leading) || !groupsLike(trailing, chrome.trailing)
-            || !drawsLike(overflow, chrome.overflow)
+            || !groupsLike(overflow, chrome.overflow)
         else {
             for (button, action) in zip(buttons, onBar.filter { !$0.isLabel }) { button.onClicked = action.perform }
             groups = zip(groups, leading + trailing).map { (box: $0.box, actions: $1) }
@@ -350,7 +353,7 @@ final class GTKPageFrame {
         fit()
     }
 
-    /// The groups that left the bar, each apart, then the actions placed behind More whatever the room.
+    /// The groups that left the bar, then those placed behind More whatever the room, each apart.
     private var behind: [[GTKToolbarAction]] {
         BarFit.groupsBehind(left: groups.dropFirst(standing).map(\.actions), placed: placed)
     }

@@ -33,7 +33,7 @@ final class WinUISheetView: WinUIView {
     /// the standard size otherwise.
     func show(
         title: String, page: WinUIView?, back: (() -> Void)?, leading: [[WinUIToolbarAction]] = [],
-        trailing: [[WinUIToolbarAction]] = [], overflow: [WinUIToolbarAction] = [], close: (() -> Void)?,
+        trailing: [[WinUIToolbarAction]] = [], overflow: [[WinUIToolbarAction]] = [], close: (() -> Void)?,
         material: HostMaterial = HostMaterial(nil), foreground: HostValue? = nil, words: ChromeWords, fits: Bool
     ) {
         self.back = back

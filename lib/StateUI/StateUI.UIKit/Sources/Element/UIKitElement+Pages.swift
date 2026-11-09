@@ -57,7 +57,7 @@ extension UIKitElement {
         let actions = element.chromeActions
         chrome.leadingActions = actions.start.map { $0.map(Self.action) }
         chrome.actions = actions.end.map { $0.map(Self.action) }
-        chrome.overflow = actions.overflow.map(Self.action)
+        chrome.overflow = actions.overflowSections.map { $0.map(Self.action) }
         if element.offersItsSheetsClose { chrome.closes = { [weak self] in self?.closeItsSheet() } }
         return chrome
     }
@@ -70,7 +70,7 @@ extension UIKitElement {
         let actions = element.chromeBottomActions
         return UIKitPageToolbar(
             leadingActions: actions.start.map { $0.map(Self.action) }, actions: actions.end.map { $0.map(Self.action) },
-            overflow: actions.overflow.map(Self.action))
+            overflow: actions.overflowSections.map { $0.map(Self.action) })
     }
 
     /// The user pressed the bar's close button: the sheet the page's stack stands in goes, false onto its state.

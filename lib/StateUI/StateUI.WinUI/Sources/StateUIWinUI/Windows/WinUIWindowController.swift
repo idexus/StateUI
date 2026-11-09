@@ -110,7 +110,7 @@ final class WinUIWindowController {
             },
             leading: chrome.actions.start.map { $0.map(Self.action) },
             trailing: chrome.actions.end.map { $0.map(Self.action) },
-            overflow: chrome.actions.overflow.map(Self.action),
+            overflow: chrome.actions.overflowSections.map { $0.map(Self.action) },
             close: page.offersClose
                 ? { [weak element, weak page] in
                     if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
@@ -161,13 +161,13 @@ final class WinUIWindowController {
         chrome.center = composed.center?.winUI.view
         chrome.leading = composed.actions.start.map { $0.map(Self.action) }
         chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
-        chrome.overflow = composed.actions.overflow.map(Self.action)
+        chrome.overflow = composed.actions.overflowSections.map { $0.map(Self.action) }
         // The sidebar's part stands on the head of its pane, as a Windows application's navigation pane holds its
         // commands.
         (composed.splitView?.winUI.view as? WinUISplitView)?.sidebar.showActions(
             leading: composed.sidebarActions.start.map { $0.map(Self.action) },
             trailing: composed.sidebarActions.end.map { $0.map(Self.action) },
-            overflow: composed.sidebarActions.overflow.map(Self.action))
+            overflow: composed.sidebarActions.overflowSections.map { $0.map(Self.action) })
         chrome.background = composed.background
         chrome.material = composed.material
         chrome.foreground = composed.foreground

@@ -1091,6 +1091,42 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertTrue(earlier.isBordered)
     }
 
+    /// Groups placed behind a bar's More are sections of its menu, a line between two - on the window's bar and on
+    /// the bar at the page's foot.
+    @MainActor
+    func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Files")
+                    .toolbar {
+                        ToolbarGroup {
+                            ToolbarButton("Rename")
+                            ToolbarButton("Move")
+                        }
+                        .placement(at: .overflow)
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                    .toolbar(.bottom) {
+                        ToolbarButton("Share").placement(at: .overflow)
+                        ToolbarButton("Print").placement(at: .overflow)
+                    }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { renderer.finish() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let said = { (items: [NSMenuItem]) in items.map { $0.isSeparatorItem ? "-" : $0.title } }
+
+        let more = try XCTUnwrap(
+            controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.overflow) as? NSMenuToolbarItem)
+        XCTAssertEqual(said(more.menu.items), ["Rename", "Move", "-", "Delete"])
+        func footBar(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(footBar).first
+        }
+        let foot = try XCTUnwrap(controller.window?.contentView.flatMap(footBar))
+        XCTAssertEqual(said(foot.overflowMenuForTesting.items), ["Share", "-", "Print"])
+    }
+
     @MainActor
     func testVisiblePageBuildsNativeNestedMenuItems() throws {
         let renderer = testRenderer(

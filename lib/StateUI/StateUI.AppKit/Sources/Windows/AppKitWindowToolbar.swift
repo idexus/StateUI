@@ -77,7 +77,7 @@ struct AppKitWindowChrome {
     /// The groups standing in the sidebar's part, at its start and at its end, and those behind its own overflow.
     var sidebarLeadingActions: [[AppKitToolbarAction]] = []
     var sidebarActions: [[AppKitToolbarAction]] = []
-    var sidebarOverflow: [AppKitToolbarAction] = []
+    var sidebarOverflow: [[AppKitToolbarAction]] = []
 
     /// How many groups stand in the sidebar's part.
     var sidebarGroups: Int { sidebarLeadingActions.count + sidebarActions.count }
@@ -86,7 +86,8 @@ struct AppKitWindowChrome {
     var leadingActions: [[AppKitToolbarAction]] = []
     var center: NSView?
     var actions: [[AppKitToolbarAction]] = []
-    var overflow: [AppKitToolbarAction] = []
+    /// The groups behind the overflow, each a section of its menu.
+    var overflow: [[AppKitToolbarAction]] = []
     /// The button closing the sheet a stack's bar stands in, at the trailing edge.
     var close: AppKitToolbarAction?
 
@@ -189,7 +190,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// Design: docs/design/platforms/appkit/runtime.md#the-toolbar
     private func layFittingTheSidebar(_ chrome: AppKitWindowChrome) {
         guard chrome.sidebarGroups > 0 else {
-            return lay(chrome, behindMore: [chrome.overflow], sidebarBehind: [chrome.sidebarOverflow])
+            return lay(chrome, behindMore: chrome.overflow, sidebarBehind: chrome.sidebarOverflow)
         }
         let standing = BarFit.standing(groups: chrome.sidebarGroups) { trial in
             lay(chrome, keepingInTheSidebar: trial.groups)
@@ -204,7 +205,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         kept.sidebarLeadingActions = Array(chrome.sidebarLeadingActions.prefix(count))
         kept.sidebarActions = Array(chrome.sidebarActions.prefix(max(0, count - chrome.sidebarLeadingActions.count)))
         let left = Array((chrome.sidebarLeadingActions + chrome.sidebarActions).dropFirst(count))
-        lay(kept, behindMore: [chrome.overflow], sidebarBehind: BarFit.groupsBehind(left: left, placed: chrome.sidebarOverflow))
+        lay(kept, behindMore: chrome.overflow, sidebarBehind: BarFit.groupsBehind(left: left, placed: chrome.sidebarOverflow))
     }
 
     /// Whether every item of the sidebar's part stands in sight; true where the bar stands in no window.

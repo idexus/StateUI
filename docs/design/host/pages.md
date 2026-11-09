@@ -276,7 +276,11 @@ overflow - the groups stand by their `order`, then the outer at the edge -
 first at the start and in the overflow, last at the end - by how far out their
 declarer stands, the split view's furthest, a page's by its depth in the page's
 tree (`ChromeActions`), then as declared. Each group behind the overflow is a
-section of it (`overflowSections`). A bar that draws no groups takes the
+section of it (`overflowSections`), as is each group that left the bar for want
+of room (`BarFit.groupsBehind`): a line stands between two - AppKit's separator
+item, a menu UIKit shows inline, a group of Android's menu, WinUI's
+`AppBarSeparator` among the secondary commands, GTK's separator, the Web's. An
+item standing alone is a section of one. A bar that draws no groups takes the
 trailing actions in reading order (`primary`).
 
 A group declared for the bar at the page's foot (`barEdge`, `.toolbar(.bottom)`)

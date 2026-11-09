@@ -21,7 +21,8 @@ struct WinUIWindowChrome {
     var center: WinUIView?
     var leading: [[WinUIToolbarAction]] = []
     var trailing: [[WinUIToolbarAction]] = []
-    var overflow: [WinUIToolbarAction] = []
+    /// The groups behind "more", each a section of its menu.
+    var overflow: [[WinUIToolbarAction]] = []
     var background: HostValue?
     var material = HostMaterial(nil)
     var foreground: HostValue?
