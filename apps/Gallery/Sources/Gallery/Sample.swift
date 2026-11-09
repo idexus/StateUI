@@ -68,11 +68,6 @@ protocol SampleContent {
     /// The examples, in the order the page shows them: "Example" where there
     /// is one, "Example 1", "Example 2" and on where there are several.
     var examples: [Example] { get }
-
-    /// The line the sample's scrolling page says under its title, from a
-    /// state; nil for none. A page takes it from the view it shows, which the
-    /// examples stand deep inside, so the page writes it there for them.
-    var subtitle: Binding<String>? { get }
 }
 
 extension SampleContent {
@@ -87,9 +82,6 @@ extension SampleContent {
 
     /// Showing nothing a host may leave unreported, which is what almost every sample is.
     @MainActor static func shows(_ device: Device) -> Bool { true }
-
-    /// No line under the page's title, which is what almost every sample says.
-    var subtitle: Binding<String>? { nil }
 }
 
 extension SampleContent where Self: ExampleContent {
@@ -274,9 +266,6 @@ struct Sample {
     /// that keeps this catalog.
     let examples: [Example]
 
-    /// The line its scrolling page says under its title (`SampleContent.subtitle`).
-    let subtitle: Binding<String>?
-
     /// Whether `device` lists this sample: one of its form factors, with what it shows. An UNKNOWN formFactor - a
     /// headless test, a host that could not say - lists everything: hiding is a courtesy to the user, and a test wants
     /// to see it all.
@@ -304,7 +293,6 @@ struct Sample {
         shows = { Content.shows($0) }
         fills = Content.fills
         examples = content.examples
-        subtitle = content.subtitle
     }
 }
 

@@ -195,7 +195,6 @@ enum WinUIRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(PageContract.subtitle),
         .complete(PresentedElementContract.isPresented, on: PopoverContract.self),
         .complete(PresentedElementContract.isPresentedChanged, on: PopoverContract.self),
         .complete(PageContract.navigatedFrom),

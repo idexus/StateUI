@@ -159,11 +159,9 @@ of its members each meets, and why a cell is empty.
 
 The AppKit split view uses `NSSplitViewController`.
 
-Every arrangement exposes an optional flat `barBackgroundColor` and a
-`barForegroundColor` for its bar's title and native action affordances, and the
-application's name, the line under the title and its mark (`barTitle`,
-`barSubtitle`, `barIcon`); a page's bar takes each from the nearest arrangement
-around it that declares one. A split view's bar is both its panes': a sidebar
+Every arrangement exposes an optional `barBackground` - a color or a material -
+and a `barForegroundColor` for its bar's title and native action affordances; a
+page's bar takes each from the nearest arrangement around it that declares one. A split view's bar is both its panes': a sidebar
 with a bar of its own wears what its split view declares, and nothing from
 around the split view. On AppKit and WinUI 3 a tab selector keeps the
 toolkit's selected and unselected appearance; GTK 4 stands its switcher on a
@@ -531,7 +529,7 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
+| [Page](controls/Page.md) | 14 | 10 ✅ · 1 ✓ | 13 ✅ · 1 ✓ | 12 ✅ · 1 ✓ · 1 – | 12 ✅ · 1 ✓ · 1 – | 10 ✅ · 1 ✓ · 2 – | 12 ✅ · 1 ✓ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -545,10 +543,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 21 | 13 ✅ · 1 ☑️ · 6 ✓ | 2 ✅ · 1 ☑️ · 4 ✓ · 8 – | 2 ✅ · 1 ☑️ · 4 ✓ · 12 – | 20 ✅ · 1 ☑️ | 7 ✅ · 2 ☑️ · 5 ✓ · 7 – | 2 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 109 | 115 | 93 | 140 | 101 | 169 |
+| ✅ |  | 108 | 114 | 92 | 139 | 100 | 168 |
 | ✓ |  | 27 | 25 | 23 | 9 | 17 | 14 |
 | – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 213 | **191** | **201** | **188** | **201** | **191** | **199** |
+| **Met** | 212 | **190** | **200** | **187** | **200** | **190** | **198** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -634,7 +632,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 11 | 2 ✅ · 9 ✓ | 2 ✅ · 9 ✓ | 7 ✅ · 4 ✓ | 2 ✅ · 8 ✓ · 1 – | 4 ✅ · 7 ✓ | 6 ✅ · 1 ☑️ · 4 ✓ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
+| [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 10 | 8 ✅ | 10 ✅ | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ · 1 – | 9 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Picker](controls/Picker.md) | `options`, `presentation`, `selectedIndex`, `onSelectionChanged` (`selectedIndexChanged`) | 4 | 3 ✅ · 1 ✓ | 1 ☑️ · 3 ✓ | 2 ✅ · 1 ☑️ · 1 ✓ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |

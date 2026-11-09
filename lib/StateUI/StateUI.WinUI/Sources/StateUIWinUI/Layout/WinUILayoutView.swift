@@ -73,18 +73,14 @@ class WinUILayoutView: WinUIView {
     /// The title heading the page or tab view this layout is; nil for none.
     private(set) var heading: WinUIPageHeading?
 
-    /// Heads the page or tab view with `title` and the `line` under it, its content under them; nil takes the
-    /// heading away.
+    /// Heads the page or tab view with `title`, its content under it; nil takes the heading away.
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
-    func setHeading(_ title: String?, line: String?) {
-        guard title != heading?.view.text || line ?? "" != heading?.line.text ?? "" else { return }
+    func setHeading(_ title: String?) {
+        guard title != heading?.view.text else { return }
         if let title, let heading {
-            let shown = heading.views.count
             heading.view.setText(title)
-            heading.line.setText(line ?? "")
-            if heading.views.count != shown { holdChildren() }
         } else {
-            heading = title.map { WinUIPageHeading($0, line: line) }
+            heading = title.map(WinUIPageHeading.init)
             holdChildren()
         }
         invalidateMeasurements()

@@ -156,19 +156,13 @@ extension MountedElement {
         return shown
     }
 
-    /// The line under this page's title on its bar: its own subtitle; nil where it says none, or an empty one.
-    /// Design: docs/design/host/pages.md#a-pages-title-area
-    public var barSubtitle: String? {
-        value(PageContract.subtitle.token)?.string.flatMap { $0.isEmpty ? nil : $0 }
-    }
-
     /// What this page's bar says where it names the application - a sidebar's page's: its title, else the
-    /// application's `applicationName`; the line under it; and its picture.
+    /// application's `applicationName`, and its picture.
     /// Design: docs/design/host/pages.md#a-pages-title-area
     public func titleArea(applicationName: String) -> WindowChrome.TitleArea {
         let title = barTitle(applicationName: applicationName)
         return WindowChrome.TitleArea(
-            title: title.isEmpty ? nil : title, subtitle: barSubtitle, icon: HostPicture(value(.icon)))
+            title: title.isEmpty ? nil : title, icon: HostPicture(value(.icon)))
     }
 
     /// `member` of the bar: this element's own where it declares one, else the nearest arrangement's whose bar it

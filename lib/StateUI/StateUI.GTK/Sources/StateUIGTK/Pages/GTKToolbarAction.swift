@@ -93,8 +93,6 @@ struct GTKPageChrome {
     /// Whether the header bar shows the title; the window keeps it for the system all the same.
     var showsTitle = true
 
-    /// The line under the title; nil for none.
-    var subtitle: String?
     var titleView: GTKView?
 
     /// A tabbed view's switcher, which stands in a bar of its own beneath the header bar; nil for none.

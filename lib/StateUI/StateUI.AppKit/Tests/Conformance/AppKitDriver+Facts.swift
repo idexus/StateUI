@@ -145,18 +145,12 @@ extension AppKitDriver {
         return Self.ground(of: window)
     }
 
-    /// The line under the title of the page `element`, naming its window: the window's subtitle; nil for none.
-    func subtitleHolds(_ element: MountedElement) throws -> HostValue? {
-        let words = try controller(of: element).window?.subtitle ?? ""
-        return words.isEmpty ? nil : words.propValue
-    }
-
     /// The color the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
     /// painted in a bar color shows; nil on the system's material, where the system draws the title.
     func barWordsColor(_ element: MountedElement) throws -> HostValue? {
         let controller = try controller(of: element)
         guard controller.bandTitle.window != nil else { return nil }
-        return controller.bandTitle.words.textColor.map { Self.color($0).propValue }
+        return controller.bandTitle.textColor.map { Self.color($0).propValue }
     }
 
     /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the

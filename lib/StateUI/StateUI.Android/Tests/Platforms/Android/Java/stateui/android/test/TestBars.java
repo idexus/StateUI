@@ -65,12 +65,6 @@ public final class TestBars {
         return bar.getTitle() != null;
     }
 
-    /** The line under the bar's title; null for none. */
-    public static String subtitle(Toolbar bar) {
-        CharSequence words = bar.getSubtitle();
-        return words == null ? null : words.toString();
-    }
-
     /** What the bar's navigation button says to TalkBack; null where the bar shows no navigation button. */
     public static String navigation(Toolbar bar) {
         if (bar.getNavigationIcon() == null) return null;

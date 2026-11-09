@@ -26,6 +26,7 @@ Window 13
 Scene 4
 Overlay 5
 BarElement 15
+android BarElement 2
 NavigationStack 3
 uikit WebView 2
 android WebView 3
@@ -41,7 +42,7 @@ DatePicker 6
 TimePicker 6
 Picker 6
 Image 3
-Page 9
+Page 10
 PageElement 6
 View 23
 VisualElement 28

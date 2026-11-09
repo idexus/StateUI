@@ -67,8 +67,7 @@ extension UIKitDriver {
             // The edge the page the arrangement shows has its scroller draw under the bar at its top.
             return ((element.visiblePage?.native as? UIKitElement)?.controller as? UIKitPageController)?.topEdge.propValue
         }
-        if [.barBackground, .barForegroundColor].contains(property)
-            || property == PageContract.subtitle.token && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
@@ -130,7 +129,6 @@ extension UIKitDriver {
             return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
-        case PageContract.subtitle.token: return item.subtitle.map { .string($0) }
         default: return nil
         }
     }

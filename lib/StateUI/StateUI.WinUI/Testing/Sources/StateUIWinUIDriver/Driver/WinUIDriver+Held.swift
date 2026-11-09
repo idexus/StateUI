@@ -465,13 +465,6 @@ extension WinUIDriver {
             // The bar's ground: a color, or the in-app acrylic a blur is.
             if name == "barBackground" { return Self.ground(try read(bar, "background")) }
             return try Self.color(read(bar, "foreground")).map { $0.propValue }
-        // The line under a page's title: its heading's where the chrome names the application, else the title bar's.
-        case ("subtitle", _) where element.type == .page:
-            if let heading = renderer?.views(WinUILayoutView.self).lazy.compactMap(\.heading).first {
-                return heading.line.text.isEmpty ? nil : .string(heading.line.text)
-            }
-            let words = try read(window().titleBar, "subtitle")
-            return words.isEmpty ? nil : .string(words)
         case ("showsSidebar", let split as WinUISplitView): return (try read(split.sidebar, "paneOpen") == "1").propValue
         case ("showsSidebarToggle", _): return (try read(window().titleBar, "paneToggle") == "1").propValue
         case ("sidebarOverlays", let split as WinUISplitView):

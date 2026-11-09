@@ -18,7 +18,7 @@ extension AndroidDriver {
             return Self.barHolds(property, of: element)
         }
         if element.type == .page,
-           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle, PageContract.subtitle.token].contains(property) {
+           [.showsBackButton, .showsCloseButton, .showsNavigationBar, .showsTitle].contains(property) {
             return Self.pageBarHolds(property, of: element)
         }
         if property == PageElementContract.title.token || property == .icon, let tabs = element.parent, tabs.type == .tabView {

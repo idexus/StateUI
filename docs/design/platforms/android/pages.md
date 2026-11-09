@@ -110,7 +110,7 @@ is (`AndroidColumnView`), and the split view's one bar stands in two parts
 over them ([a page's actions](../../host/pages.md#a-pages-actions)). The
 sidebar's shows the title area the sidebar's page names the application with
 (`titleArea(applicationName:)`) - its title, else the application's name,
-the line under it and its picture as the mark before them - in the colors its
+and its picture as the mark before it - in the colors its
 path declares, the sidebar's toggle in Android's menu glyph, which hides the
 sidebar, and the actions of the sidebar's part after it - Android's toolbar
 stands its menu of actions last. A detail

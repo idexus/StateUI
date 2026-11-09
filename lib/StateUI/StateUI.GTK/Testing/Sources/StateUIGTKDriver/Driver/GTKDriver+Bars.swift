@@ -137,13 +137,6 @@ extension GTKDriver {
                 height: Double(gtk_widget_get_height(frame.header)))?.propValue
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
-        case PageContract.subtitle.token:
-            guard let heading = adw_header_bar_get_title_widget(frame.header.opaque),
-                  GTKTestHost.holds(heading, adw_window_title_get_type()),
-                  let subtitle = adw_window_title_get_subtitle(heading.opaque)
-            else { return nil }
-            let words = String(cString: subtitle)
-            return words.isEmpty ? nil : words.propValue
         default: throw DriverCannot(reading: property, of: element)
         }
     }

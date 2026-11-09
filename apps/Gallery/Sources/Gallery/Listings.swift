@@ -10093,13 +10093,6 @@ enum Listings {
             }
         }
         """#,
-        "SamplePage.subtitle": #"""
-        // Sources/Gallery/SamplePage.swift
-        // The line under the page's title, written on the view the page
-        // shows: a page takes what that view says of it, and nothing
-        // written deeper inside it.
-        .subtitle(sample.subtitle ?? Self.noSubtitle)
-        """#,
         "SaveAndDelete": #"""
         // Sources/Samples/State/GateSample.swift
         /// One gate for both of the document's actions.
@@ -12960,12 +12953,9 @@ enum Listings {
         """#,
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
-        /// What the gallery's window says on its bar, written by the sample and declared by the window and the sample's page.
+        /// What the gallery's window says on its bar, written by the sample and declared by the window.
         @MainActor
         final class WindowBarState {
-            /// The line under the sample page's title.
-            @State var subtitle = ""
-
             /// Whether the window's bar carries "Surprise me" on every page.
             @State var showsSurprise = false
         }
@@ -12973,17 +12963,8 @@ enum Listings {
         /// The values shared with the gallery window the sample is in.
         let bar: WindowBarState
 
-        /// The line under this page's title, wherever its title shows: the
-        /// sample's page says it (`SamplePage.subtitle`).
-        var subtitle: Binding<String>? { bar.$subtitle }
-
         var body: some View {
-            VStack {
-                TextField(bar.$subtitle)
-                    .placeholder("Window subtitle")
-
-                Switch("Surprise me on every page", isOn: bar.$showsSurprise)
-            }
+            Switch("Surprise me on every page", isOn: bar.$showsSurprise)
         }
         """#,
         "WindowLog": #"""

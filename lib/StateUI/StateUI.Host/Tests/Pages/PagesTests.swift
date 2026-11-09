@@ -988,16 +988,15 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(sheet.toolbarStyle, .rounded, "its buttons' look too")
     }
 
-    /// A page says what its bar says of it, and nothing climbs: the chrome shows the line under the title of the page
-    /// naming the window, and names the application over a split view's sidebar by the sidebar's page - its title,
-    /// else the application's name, its line and its picture. An empty line is none; a window showing no split view
-    /// names no application.
+    /// A page says what its bar says of it, and nothing climbs: the chrome names the application over a split view's
+    /// sidebar by the sidebar's page - its title, else the application's name, and its picture. A window showing no
+    /// split view names no application.
     func testAPageSaysItsTitleArea() throws {
         let runtime = runtime(node("window", .window, children: [
             node("split", .splitView, children: [
-                node("menu", .page, [PageContract.subtitle.token: .string("Fundamentals"), .icon: .string("mark.png")]),
+                node("menu", .page, [.icon: .string("mark.png")]),
                 node("stack", .navigationStack, children: [
-                    node("detail", .page, [PageElementContract.title.token: .string("Detail"), PageContract.subtitle.token: .string("Buttons")]),
+                    node("detail", .page, [PageElementContract.title.token: .string("Detail")]),
                 ]),
             ]),
         ])) { _ in }
@@ -1005,21 +1004,18 @@ final class PagesTests: XCTestCase {
         let chrome = WindowChrome(window: root, arrangement: root.first(id: .manual("split")))
 
         XCTAssertEqual(chrome.title, "Detail")
-        XCTAssertEqual(chrome.subtitle, "Buttons", "the line under the title of the page naming the window")
-        XCTAssertEqual(chrome.titleArea?.subtitle, "Fundamentals", "the sidebar's page names the application")
-        XCTAssertEqual(chrome.titleArea?.icon, HostPicture(.string("mark.png")))
+        XCTAssertEqual(chrome.titleArea?.icon, HostPicture(.string("mark.png")), "the sidebar's page names the application")
         let menu = try XCTUnwrap(root.first(id: .manual("menu")))
         XCTAssertEqual(
             menu.titleArea(applicationName: "Notes"),
-            WindowChrome.TitleArea(title: "Notes", subtitle: "Fundamentals", icon: HostPicture(.string("mark.png"))),
+            WindowChrome.TitleArea(title: "Notes", icon: HostPicture(.string("mark.png"))),
             "a sidebar's page that says no title names the application")
 
         let bare = self.runtime(node("window", .window, children: [
-            node("page", .page, [PageElementContract.title.token: .string("Page"), PageContract.subtitle.token: .string("")]),
+            node("page", .page, [PageElementContract.title.token: .string("Page")]),
         ])) { _ in }
         let bareRoot = try XCTUnwrap(bare.tree.root)
         let alone = WindowChrome(window: bareRoot, arrangement: bareRoot.first(id: .manual("page")))
-        XCTAssertNil(alone.subtitle, "an empty line is none")
         XCTAssertNil(alone.titleArea, "no split view, no application named")
     }
 

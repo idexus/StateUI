@@ -26,7 +26,6 @@ extension AppKitWindowController {
         let bar = AppKitBrush(chrome.background)
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? element.appKit.core.applicationName
-        window.subtitle = chrome.subtitle ?? ""
         // The bars' edge is shown as the rooms lay out, the band under the toolbar with them.
         if chrome.barScrollEdge != shownBarScrollEdge {
             shownBarScrollEdge = chrome.barScrollEdge
@@ -43,8 +42,9 @@ extension AppKitWindowController {
         window.titleVisibility = titleView == nil && !bar.paints && chrome.showsTitle ? .visible : .hidden
         let paintedTitle: NSView? = chrome.background.flatMap { band in
             guard titleView == nil, bar.paints, chrome.showsTitle else { return nil }
-            bandTitle.show(
-                title: window.title, subtitle: chrome.subtitle, color: Self.foreground(on: band, written: foreground))
+            bandTitle.stringValue = window.title
+            bandTitle.textColor = Self.foreground(on: band, written: foreground)
+            bandTitle.sizeToFit()
             return bandTitle
         }
 
@@ -222,7 +222,6 @@ extension AppKitWindowController {
 
         titleCluster.apply(
             title: area.title ?? "",
-            subtitle: area.subtitle ?? "",
             image: area.icon.flatMap { host?.image($0) },
             foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and

@@ -22,12 +22,11 @@ final class AndroidBarView: AndroidView {
         case close
     }
 
-    /// What the bar says and shows: its title, the line under it and the mark before them, its colors, its
-    /// actions, and the page's menus behind its overflow.
+    /// What the bar says and shows: its title and the mark before it, its colors, its actions, and the page's menus
+    /// behind its overflow.
     struct Content: Equatable {
         /// The title; nil where the page shows none, which leaves the bar's place for it empty.
         var title: String? = ""
-        var subtitle: String?
         var mark: HostPicture?
         var background: HostValue?
         var foreground: HostValue?
@@ -95,12 +94,10 @@ final class AndroidBarView: AndroidView {
 
         // A color or a gradient, drawn as a view's background is - fitted to each size the bar is placed at.
         if changed(\.background) { setBackground(content.background) }
-        if changed(\.title) || changed(\.subtitle) || changed(\.foreground) {
+        if changed(\.title) || changed(\.foreground) {
             let title = content.title.flatMap(Java.string)
-            let subtitle = content.subtitle.flatMap(Java.string)
-            Java.call(reference, JavaAPI.showBar, .object(title), .object(subtitle), .int(tint))
+            Java.call(reference, JavaAPI.showBar, .object(title), .int(tint))
             Java.release(local: title)
-            Java.release(local: subtitle)
         }
         if changed(\.navigation) || changed(\.foreground) { showNavigation(content.navigation, tint: tint) }
         if changed(\.afterNavigation) || changed(\.foreground) {

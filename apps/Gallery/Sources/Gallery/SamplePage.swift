@@ -43,16 +43,7 @@ struct SamplePage: View {
         Grid { scrolling }
             .ignoresSafeArea(.all)
             .galleryPage(sample.title)
-            // listing: SamplePage.subtitle
-            // The line under the page's title, written on the view the page
-            // shows: a page takes what that view says of it, and nothing
-            // written deeper inside it.
-            .subtitle(sample.subtitle ?? Self.noSubtitle)
-            // listing: end
     }
-
-    /// The line a page with no subtitle says: none, as an empty one is.
-    private static let noSubtitle = State(wrappedValue: "").projectedValue
 
     /// Everything in one scroller: the summary, then each example with its
     /// notes and its Swift. The notes sit in no scroller of their own and a

@@ -122,7 +122,7 @@ extension AndroidElement {
     // MARK: - A stack's bar
 
     /// Shows on a stack's bar what its visible page says: the title - the page's the host layer names it by
-    /// (`titledPage`), or the view standing in for it - the line under it and the colors its path declares, the way
+    /// (`titledPage`), or the view standing in for it - and the colors its path declares, the way
     /// back or to the sidebar, the page's actions in their order, and the menus its path declares behind the overflow.
     /// Design: docs/design/platforms/android/pages.md#the-bar
     func refreshBar() {
@@ -138,7 +138,6 @@ extension AndroidElement {
         // A page showing no title leaves the bar's place for it empty; the window keeps its name.
         let titled = element.titledPage
         content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(PageElementContract.title.token)?.string ?? ""
-        content.subtitle = titled?.value(.showsTitle)?.bool == false ? nil : titled?.barSubtitle
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         let items = Self.fill(&content, with: page?.chromeActions ?? ChromeActions(), menus: page?.chromeMenus.menus ?? [])
@@ -230,7 +229,7 @@ extension AndroidElement {
     }
 
     /// Shows on a split view's sidebar its own bar: the title area its page names the application with - its title,
-    /// else the application's name, the line under it and its picture as the mark - in the colors its path declares,
+    /// else the application's name, and its picture as the mark - in the colors its path declares,
     /// the toggle hiding the sidebar, where the split view offers it, and the actions of the sidebar's part last.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshSidebarBar() {
@@ -240,7 +239,6 @@ extension AndroidElement {
 
         var content = AndroidBarView.Content()
         content.title = area.title ?? ""
-        content.subtitle = area.subtitle
         content.mark = area.icon
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
@@ -253,7 +251,7 @@ extension AndroidElement {
     }
 
     /// Shows on a split view's detail page its own bar, as a stack's top page's: its title or the view standing in for
-    /// it, the line under it, its colors, the actions of the detail's part and its menus, and first the sidebar's
+    /// it, its colors, the actions of the detail's part and its menus, and first the sidebar's
     /// toggle while the sidebar does not stand beside it, where the split view offers it.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshDetailBar() {
@@ -265,7 +263,6 @@ extension AndroidElement {
         var content = AndroidBarView.Content()
         let titled = page.value(.showsTitle)?.bool != false
         content.title = titled ? page.value(PageElementContract.title.token)?.string ?? "" : nil
-        content.subtitle = titled ? page.barSubtitle : nil
         content.background = colors.background
         content.foreground = BandWords.color(on: colors.background, written: colors.foreground)
         let items = Self.fill(&content, with: page.chromeActions, menus: page.chromeMenus.menus)

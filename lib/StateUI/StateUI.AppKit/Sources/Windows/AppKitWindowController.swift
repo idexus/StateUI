@@ -58,7 +58,12 @@ final class AppKitWindowController: NSWindowController {
     let titleCluster = AppKitTitleAreaView()
 
     /// The page's title where a painted band hides the system's own.
-    let bandTitle = AppKitBandTitle()
+    let bandTitle: NSTextField = {
+        let label = NSTextField(labelWithString: "")
+        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
     let content = AppKitWindowContentView()
     private let nativeContentMinSize: NSSize
     private let nativeContentMaxSize: NSSize

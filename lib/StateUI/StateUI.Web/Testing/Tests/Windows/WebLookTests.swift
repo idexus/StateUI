@@ -490,12 +490,12 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(start, 20, accuracy: 1, "in line with a row's content")
     }
 
-    /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, as tall as
-    /// its name and the line under it and as wide as its picture is at that height.
+    /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, 32 high and
+    /// as wide as its picture is at that height.
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Samples").title("Gallery").subtitle("Every sample").pageIcon("test_dot.png")
+                Text("Samples").title("Gallery").pageIcon("test_dot.png")
             } detail: {
                 Text("Detail").title("Page")
             }

@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a page's bar shows: its title or the view standing in for it, the line under the title, its groups of actions
+/// What a page's bar shows: its title or the view standing in for it, its groups of actions
 /// at either edge and those in its overflow menu, whether it shows and offers the way back, and its colors.
 /// Design: docs/design/platforms/uikit/pages.md#the-bar
 @MainActor
@@ -14,7 +14,6 @@ struct UIKitPageChrome {
     var title = ""
     /// Whether the bar shows the title; the title names the way back all the same.
     var showsTitle = true
-    var subtitle: String?
     var titleView: UIView?
     var showsBar = true
     var offersBack = true
@@ -47,7 +46,6 @@ struct UIKitPageChrome {
     /// says what they say.
     func show(on item: UINavigationItem, barSize: CGSize, buttons standing: inout [[UIKitBarAction.Said]]?) {
         item.title = title
-        if item.subtitle != subtitle { item.subtitle = subtitle }
         // A layout's size follows what it holds; a control is fitted once and keeps the width the bar gives it:
         // fitted to its words at every render, it would be cut and widened by the bar, letter by letter.
         // Design: docs/design/platforms/uikit/pages.md#the-bar
@@ -107,7 +105,6 @@ struct UIKitPageChrome {
         if let foreground {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]
-            appearance.subtitleTextAttributes = [.foregroundColor: foreground]
             appearance.buttonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: foreground]
             let back = UIImage(systemName: "chevron.backward")?.withTintColor(foreground, renderingMode: .alwaysOriginal)

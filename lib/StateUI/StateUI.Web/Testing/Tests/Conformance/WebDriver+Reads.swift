@@ -138,7 +138,6 @@ extension WebDriver {
         case (_, .holdDuration):
             guard let view = (element.native as? WebElement)?.view else { return nil }
             return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
-        case (.page, PageContract.subtitle.token): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .toolbarSpacing):
             // The room between the groups at the bar's end.

@@ -32,9 +32,9 @@ final class WinUIWindowController {
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
     private func head(_ page: MountedElement?) {
         let view = page?.winUI.view as? WinUILayoutView
-        if headed !== view { headed?.setHeading(nil, line: nil) }
+        if headed !== view { headed?.setHeading(nil) }
         headed = view
-        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
+        view?.setHeading(page?.value(PageElementContract.title.token)?.string.flatMap { $0.isEmpty ? nil : $0 })
     }
 
     init(_ element: MountedElement) {
@@ -149,7 +149,6 @@ final class WinUIWindowController {
         chrome.title = composed.title ?? ""
         chrome.titleArea = composed.titleArea
         chrome.showsTitle = composed.showsTitle
-        chrome.subtitle = composed.subtitle
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }

@@ -556,15 +556,13 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 }
 
-/// The application's title area: its mark, name and the line under it,
+/// The application's title area: its mark and name,
 /// standing at the trailing edge of the window's title bar in the system's
 /// colors, or in the bar's foreground over a painted band.
 @MainActor
 final class AppKitTitleAreaView: NSStackView {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
-    private let subtitleLabel = NSTextField(labelWithString: "")
-    private let textStack = NSStackView()
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -584,18 +582,9 @@ final class AppKitTitleAreaView: NSStackView {
         titleLabel.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .semibold)
         titleLabel.textColor = .labelColor
         titleLabel.lineBreakMode = .byTruncatingTail
-        subtitleLabel.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-        subtitleLabel.textColor = .secondaryLabelColor
-        subtitleLabel.lineBreakMode = .byTruncatingTail
-
-        textStack.orientation = .vertical
-        textStack.alignment = .leading
-        textStack.spacing = 0
-        textStack.addArrangedSubview(titleLabel)
-        textStack.addArrangedSubview(subtitleLabel)
 
         addArrangedSubview(iconView)
-        addArrangedSubview(textStack)
+        addArrangedSubview(titleLabel)
     }
 
     @available(*, unavailable)
@@ -603,19 +592,15 @@ final class AppKitTitleAreaView: NSStackView {
         fatalError("AppKitTitleAreaView is created in code")
     }
 
-    func apply(title: String, subtitle: String, image: NSImage?, foreground: NSColor?) {
+    func apply(title: String, image: NSImage?, foreground: NSColor?) {
         titleLabel.textColor = foreground ?? .labelColor
-        subtitleLabel.textColor = foreground?.withAlphaComponent(0.8) ?? .secondaryLabelColor
         titleLabel.stringValue = title
         titleLabel.isHidden = title.isEmpty
-        subtitleLabel.stringValue = subtitle
-        subtitleLabel.isHidden = subtitle.isEmpty
         iconView.image = image
         iconView.isHidden = image == nil
     }
 
     var titleForTesting: String { titleLabel.stringValue }
-    var subtitleForTesting: String { subtitleLabel.stringValue }
     var titleColorForTesting: NSColor? { titleLabel.textColor }
     var imageForTesting: NSImage? { iconView.image }
 }

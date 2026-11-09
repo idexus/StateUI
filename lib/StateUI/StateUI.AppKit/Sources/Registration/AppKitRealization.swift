@@ -164,7 +164,6 @@ enum AppKitRealization {
         .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(PageContract.subtitle),
         // A page is no `VisualElement`: it wears `PageElement` alone, so the
         // tier's record about a background does not reach it.
         .complete(BackgroundElementContract.background, on: PageElementContract.self),

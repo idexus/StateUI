@@ -305,7 +305,7 @@ final class GTKDriver: HostDriver {
             return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
         }
         if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
-        if [.barBackground, .barForegroundColor].contains(property) || property == PageContract.subtitle.token && element.type == .page {
+        if [.barBackground, .barForegroundColor].contains(property) {
             return try barHolds(property, element)
         }
         if let value = backendHolds(property, on: element) { return value }

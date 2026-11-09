@@ -120,7 +120,6 @@ final class GTKPageFrame {
     /// Shows `chrome` on the header bar, writing only what differs from what it shows.
     func show(_ chrome: GTKPageChrome) {
         if chrome.title != self.chrome.title { adw_window_title_set_title(heading.opaque, chrome.title) }
-        if chrome.subtitle != self.chrome.subtitle { adw_window_title_set_subtitle(heading.opaque, chrome.subtitle ?? "") }
         if chrome.showsTitle != self.chrome.showsTitle { gtk_widget_set_visible(heading, chrome.showsTitle ? 1 : 0) }
         if chrome.titleView !== self.chrome.titleView {
             adw_header_bar_set_title_widget(header.opaque, chrome.titleView?.widget ?? heading)

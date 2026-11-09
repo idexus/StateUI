@@ -49,25 +49,6 @@ final class LeakWalkTests: XCTestCase {
         XCTAssertEqual(outlived, [], "a sample left something alive behind it")
         XCTAssertEqual(complained, [], "a sample handed the library what it cannot use")
     }
-
-    /// THE WINDOW BAR SAMPLE'S PAGE SAYS THE LINE TYPED UNDER ITS TITLE: the window's bar shows it as the user types
-    /// it, and no more once the field is emptied.
-    func testTheWindowBarSamplesPageSaysTheLineTypedUnderItsTitle() async throws {
-        let walk = Walk()
-        try walk.tap(handle("menu", "Scene"))
-        await walk.settle()
-        try walk.tap(handle("row", WindowBarSample.title))
-        await walk.settle()
-        XCTAssertNil(try walk.barSubtitle(), "no line before one is typed")
-
-        try walk.type("Draft 3", into: "windowBar.subtitle")
-        await walk.settle()
-        XCTAssertEqual(try walk.barSubtitle(), "Draft 3")
-
-        try walk.type("", into: "windowBar.subtitle")
-        await walk.settle()
-        XCTAssertNil(try walk.barSubtitle(), "an empty line is none")
-    }
 }
 
 /// What stands alive: the core's rendered elements and runs, the native halves, the state channels.
@@ -117,18 +98,6 @@ private final class Walk: HostPresenter {
             if let found = find(identifier, in: child) { return found }
         }
         return nil
-    }
-
-    /// The user types `words` into the field the gallery names `identifier`, in place of what it held.
-    func type(_ words: String, into identifier: String) throws {
-        let field = try XCTUnwrap(runtime.tree.root.flatMap { Self.find(identifier, in: $0) }, identifier)
-        field.reportUserChange(.text, .textChanged, .string(words), in: runtime)
-    }
-
-    /// The line under the title on the bar of the one window, as the host layer composes it.
-    func barSubtitle() throws -> String? {
-        let (window, presentation) = try XCTUnwrap(roster.windows.first)
-        return WindowChrome(window: window, arrangement: presentation.arrangement).subtitle
     }
 
     /// The user goes back the way the window offers.

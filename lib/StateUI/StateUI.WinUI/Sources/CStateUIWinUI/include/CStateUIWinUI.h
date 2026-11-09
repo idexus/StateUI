@@ -1204,7 +1204,7 @@ StateUIObjectRef stateui_winui_title_bar_make(int64_t view);
 /// `opacity` of what is behind it and its tint `tintOpacity` - or on `gradient` where it is a line's or a point's;
 /// `foreground` is the color of the words on a bar the tree paints, its title's and its actions' alike; the bar
 /// stands in `theme`, a `StateUIColorScheme` - dark for light words on a dark bar - its buttons and commands with it.
-void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *subtitle, char const *icon,
+void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char const *icon,
                                  bool back, bool paneToggle, StateUIGround ground, uint32_t argb, float opacity,
                                  float tintOpacity, StateUIBrush gradient, bool hasForeground, uint32_t foreground,
                                  int32_t theme);

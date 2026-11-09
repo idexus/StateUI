@@ -242,7 +242,6 @@ final class AppKitDriver: HostDriver {
         if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
             return .number(hold.minimumPressDuration * 1000)
         }
-        if property == PageContract.subtitle.token, element.type == .page { return try subtitleHolds(element) }
         if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {

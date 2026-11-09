@@ -67,7 +67,6 @@ private struct EveryPropertyPage: View {
             }
             // The page's own.
             .title("Everything")
-            .subtitle("All of it")
             .showsTitle(false)
             .pageIcon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
@@ -115,7 +114,6 @@ private struct KnobPage: View {
     var body: some View {
         VStack { Button("dress").onClicked { on = true } }
             .title(on ? "On" : "Off")
-            .subtitle(on ? "Lit" : "Dark")
             .showsTitle(on)
             .pageIcon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
@@ -671,7 +669,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props, [
             "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "PageElement.title": .string("Everything"), "Page.subtitle": .string("All of it"), "showsTitle": .bool(false),
+            "PageElement.title": .string("Everything"), "showsTitle": .bool(false),
             "showsCloseButton": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)

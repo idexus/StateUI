@@ -51,7 +51,6 @@ extension GTKElement {
         var chrome = GTKPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.showsTitle = value(.showsTitle)?.bool != false
-        chrome.subtitle = element.barSubtitle
         chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.bottomBar = element.chromeBottomBar?.gtk.view
         chrome.bottomBarEdge = element.chromeBottomBarEdge
