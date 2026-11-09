@@ -43,9 +43,8 @@ extension AppKitWindowController {
         window.titleVisibility = titleView == nil && !bar.paints && chrome.showsTitle ? .visible : .hidden
         let paintedTitle: NSView? = chrome.background.flatMap { band in
             guard titleView == nil, bar.paints, chrome.showsTitle else { return nil }
-            bandTitle.stringValue = window.title
-            bandTitle.textColor = Self.foreground(on: band, written: foreground)
-            bandTitle.sizeToFit()
+            bandTitle.show(
+                title: window.title, subtitle: chrome.subtitle, color: Self.foreground(on: band, written: foreground))
             return bandTitle
         }
 

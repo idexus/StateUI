@@ -156,7 +156,7 @@ extension AppKitDriver {
     func barWordsColor(_ element: MountedElement) throws -> HostValue? {
         let controller = try controller(of: element)
         guard controller.bandTitle.window != nil else { return nil }
-        return controller.bandTitle.textColor.map { Self.color($0).propValue }
+        return controller.bandTitle.words.textColor.map { Self.color($0).propValue }
     }
 
     /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the

@@ -136,7 +136,7 @@ final class AppKitPageTests: XCTestCase {
         // when no foreground is written. The window keeps its name.
         let toolbar = controller.toolbarForTesting
         let title = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? NSTextField)
+            (toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? AppKitBandTitle)?.words)
         XCTAssertEqual(window.titleVisibility, .hidden)
         XCTAssertEqual(window.title, "Home")
         XCTAssertEqual(title.stringValue, "Home")
@@ -167,10 +167,42 @@ final class AppKitPageTests: XCTestCase {
 
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
         let title = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? NSTextField)
+            (toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? AppKitBandTitle)?.words)
         XCTAssertEqual(title.stringValue, "Home")
         XCTAssertEqual(title.textColor, NSColor(
             srgbRed: 51 / 255, green: 179 / 255, blue: 230 / 255, alpha: 1))
+    }
+
+    /// On a painted band, which hides the system's own title, the page's subtitle stands under its title as the
+    /// system's would, and goes once the page says none.
+    @MainActor
+    func testAPagesSubtitleStandsUnderItsTitleOnAPaintedBand() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.finish() }
+
+        var home = page("home", title: "Home")
+        home.properties[PageContract.subtitle.token] = .string("Draft 3")
+        var stack = navigation([home])
+        stack.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(stack))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let title = try XCTUnwrap(controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.title)?.view)
+        XCTAssertEqual(Self.words(in: title), ["Home", "Draft 3"])
+        XCTAssertEqual(controller.window?.subtitle, "Draft 3", "the system's own, which its window menus show")
+
+        home.properties[PageContract.subtitle.token] = .string("")
+        var again = navigation([home])
+        again.properties[.barBackground] = stack.properties[.barBackground]
+        renderer.applyForTesting(tree(again))
+        let shown = try XCTUnwrap(controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.title)?.view)
+        XCTAssertEqual(Self.words(in: shown), ["Home"])
+    }
+
+    /// The words every label shown in `view` holds, `view` first, in order.
+    private static func words(in view: NSView) -> [String] {
+        let own = (view as? NSTextField).flatMap { $0.isHidden || $0.stringValue.isEmpty ? nil : [$0.stringValue] } ?? []
+        return own + view.subviews.flatMap(words)
     }
 
     /// In a split view the bars' color paints the window's band, under the
