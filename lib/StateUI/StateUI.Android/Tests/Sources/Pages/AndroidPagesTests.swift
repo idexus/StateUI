@@ -49,6 +49,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear", testAPagesScrollerUnderTheNavigationBarKeepsItsLastRowClear),
             ("testAPagesScrollerKeepsTheBarsClearAsItsAxesChange", testAPagesScrollerKeepsTheBarsClearAsItsAxesChange),
             ("testASheetStaysAsTheArrangementUnderItChanges", testASheetStaysAsTheArrangementUnderItChanges),
+            ("testASheetStaysAsTheWindowIsArrangedAnew", testASheetStaysAsTheWindowIsArrangedAnew),
             ("testThePageUnderPagesTheProgramTakesDownShowsAgain", testThePageUnderPagesTheProgramTakesDownShowsAgain),
             ("testAnArrangementTheWindowShowsInsteadAppears", testAnArrangementTheWindowShowsInsteadAppears),
             ("testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough", testTheWindowsOverlayStandsOverItsPagesAndLetsATouchBesideItThrough),
@@ -1144,6 +1145,30 @@ extension AndroidPagesTests {
         }
     }
 
+    /// A sheet stays over the window as the window is arranged anew under it - a branch choosing another stack, the
+    /// sheet written on the branch: the new stack stands in the window, and the sheet still over it.
+    func testASheetStaysAsTheWindowIsArrangedAnew() throws {
+        try onMainActor {
+            let (stacked, presented) = (State(wrappedValue: false), State(wrappedValue: true))
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                Arranging(stacked: stacked.wrappedValue)
+                    .sheet(isPresented: presented.projectedValue) { Text("Sheet").id("sheet") }
+            }
+            host.layOut()
+            let sheet = try XCTUnwrap(host.view(id: .manual("sheet")))
+            XCTAssertTrue(Self.standsIn(host.root.reference, sheet.outermost), "the sheet stands in the window")
+
+            stacked.wrappedValue = true
+            host.runtime.pump.turn()
+            host.layOut()
+            let stack = try XCTUnwrap(host.view(id: .manual("stacked")), "the stack")
+            XCTAssertTrue(Self.standsIn(host.root.reference, stack.outermost), "the stack stands in the window")
+            let shown = try XCTUnwrap(host.view(id: .manual("sheet")), "the sheet")
+            XCTAssertTrue(shown === sheet, "the same sheet")
+            XCTAssertTrue(Self.standsIn(host.root.reference, shown.outermost), "the sheet still stands in the window")
+        }
+    }
+
     /// The program closing sheets takes their pages down after the tree has let them go - a page shown hears it
     /// disappears as it leaves, and nothing more - and the page under them shows again.
     func testThePageUnderPagesTheProgramTakesDownShowsAgain() {
@@ -1268,6 +1293,21 @@ private func sheetsPage(
             TitledPage(title: "Sheet 1", log: log)
                 .sheet(isPresented: second.projectedValue) { TitledPage(title: "Sheet 2", log: log) }
         }
+}
+
+/// A window arranged as one stack, or as another once stacked.
+private struct Arranging: View {
+    let stacked: Bool
+    @State private var path: [Int] = []
+    @State private var other: [Int] = []
+
+    var body: some View {
+        if stacked {
+            NavigationStack($path) { Text("Stacked").id("stacked") } destination: { _ in Text("Next") }
+        } else {
+            NavigationStack($other) { Text("Plain").id("plain") } destination: { _ in Text("Next") }
+        }
+    }
 }
 
 /// An arrangement of one kind, or of another once swapped.

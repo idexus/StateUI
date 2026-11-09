@@ -335,11 +335,12 @@ final class AndroidRenderer {
             for split in window.splitViews { (split.native as? AndroidElement)?.groundSidebar() }
         }
         if let (_, arrangement) = changes.arrangement {
-            Java.call(root.reference, JavaAPI.removeAllViews)
-            shownOverlays = []
-            if let page = arrangement?.android.view {
+            // The arrangement shown before leaves alone; the new one stands under the overlays and the sheets.
+            if let leaving = shownArrangement { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
+            shownArrangement = arrangement?.android.view
+            if let page = shownArrangement {
                 page.forgetPlace()
-                Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
+                Java.call(root.reference, JavaAPI.addViewAt, .object(page.reference), .int(0))
             }
         }
         if let sheets = changes.sheets { modals.present(sheets) }
@@ -358,7 +359,7 @@ final class AndroidRenderer {
         let overlays = presentation.overlays.compactMap(\.android.view)
         if !overlays.elementsEqual(shownOverlays, by: ===) {
             for leaving in shownOverlays { Java.call(root.reference, JavaAPI.removeView, .object(leaving.reference)) }
-            let first: Int32 = presentation.arrangement?.android.view == nil ? 0 : 1
+            let first: Int32 = shownArrangement == nil ? 0 : 1
             for (place, overlay) in overlays.enumerated() {
                 overlay.forgetPlace()
                 Java.call(root.reference, JavaAPI.addViewAt, .object(overlay.reference), .int(first + Int32(place)))
@@ -369,6 +370,9 @@ final class AndroidRenderer {
 
     /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
     private var shownOverlays: [AndroidView] = []
+
+    /// The view of the arrangement the window shows, standing first in the root.
+    private var shownArrangement: AndroidView?
 
     /// What stands over the activity's root on each edge, in points: the system's bars and a cutout, and the keyboard
     /// at the bottom - Android draws the root edge to edge.

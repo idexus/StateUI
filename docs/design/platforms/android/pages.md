@@ -255,4 +255,6 @@ what holds it, and takes no touch of its own, as no StateUI layout on Android
 does: a touch beside what it holds goes on to the page under it. The host
 holds the overlays by their mounted elements, as it does the arrangement,
 and takes their views out and lays them again when the list it is told
-changes.
+changes. The arrangement stands first in the root: a window arranged anew
+takes out only the one shown before and stands the new one first, under its
+overlays and its sheets, which stay where they stand.
