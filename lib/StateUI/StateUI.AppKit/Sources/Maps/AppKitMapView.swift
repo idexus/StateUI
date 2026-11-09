@@ -37,7 +37,7 @@ final class AppKitMapView: MapKitView {
 
     override func dressCallout(_ marker: MKMarkerAnnotationView, of pin: MapKitMarker) {
         let details = AppKitPinDetailsButton(
-            image: NSImage(systemSymbolName: "info.circle", accessibilityDescription: "Details") ?? NSImage(),
+            image: NSImage(systemSymbolName: "info.circle", accessibilityDescription: CoreLink().controlWords.details) ?? NSImage(),
             target: self, action: #selector(detailsClicked(_:)))
         details.isBordered = false
         details.pin = pin

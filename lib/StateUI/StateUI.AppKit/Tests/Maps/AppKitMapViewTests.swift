@@ -5,7 +5,7 @@
 import AppKit
 import MapKit
 import ObjectiveC
-@_spi(Host) import StateUI
+@_spi(Host) @testable import StateUI
 @_spi(Host) import StateUIApple
 @testable import StateUIAppKit
 import XCTest
@@ -51,6 +51,32 @@ final class AppKitMapViewTests: XCTestCase {
         for region in regions { map.show(region, sliding: false) }
         map.show(MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000), sliding: false)
         XCTAssertEqual(map.centerCoordinate.latitude, 52.23, accuracy: 0.01, "a region it can show shows")
+    }
+
+    /// The button on a pin's callout opening its details says what it does to assistive technology, in the system's
+    /// language.
+    func testAPinsDetailsButtonIsNamedInTheSystemsLanguage() throws {
+        let locale = StandardEnvironment.locale
+        let before = HostLocaleInfo(
+            language: locale.language, timeZone: locale.timeZone,
+            uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
+            isMetric: locale.isMetric, writingDirection: locale.writingDirection, languages: locale.languages)
+        defer { HostBoundary.setLocaleInfo(before) }
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl-PL", timeZone: before.timeZone, uses24HourClock: true,
+            firstDayOfWeek: before.firstDayOfWeek, isMetric: true, writingDirection: .leftToRight))
+        let renderer = AppKitRenderer.running {
+            Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000))
+                .markers { Marker(at: Location(latitude: 52.23, longitude: 21.02)).title("Home") }
+        }
+        defer { renderer.finish() }
+
+        let map = try XCTUnwrap(renderer.nativeViews(AppKitMapView.self).first)
+        let pin = try XCTUnwrap(map.annotations.compactMap { $0 as? MapKitMarker }.first)
+        let marker = MKMarkerAnnotationView(annotation: pin, reuseIdentifier: nil)
+        map.dressCallout(marker, of: pin)
+        let details = try XCTUnwrap(marker.rightCalloutAccessoryView as? NSButton)
+        XCTAssertEqual(details.image?.accessibilityDescription, "Szczegóły")
     }
 }
 #endif
