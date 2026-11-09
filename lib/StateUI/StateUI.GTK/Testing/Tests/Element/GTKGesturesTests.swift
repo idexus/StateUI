@@ -130,7 +130,6 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// GTK hits a row across its bounds, past its words, where it draws nothing.
     /// GTK waits from half to twice its long-press time and refuses any other factor: a view's time beyond
     /// either stands at that end. A press held is no tap as it lets go; the next press taps again.
     func testAHoldWaitsWithinGTKsRangeAndIsNoTap() throws {
@@ -158,6 +157,7 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
+    /// GTK hits a row across its bounds, past its words, where it draws nothing.
     func testARowIsHitWhereItDrawsNothing() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }

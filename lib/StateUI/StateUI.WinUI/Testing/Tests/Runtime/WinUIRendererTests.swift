@@ -184,7 +184,6 @@ private struct DisplayPage: View {
     }
 }
 
-/// A page saying what it runs on and the theme it runs in.
 /// A page saying whether the user asked for less motion, and the scale of words.
 private struct AccessibilityPage: View {
     @Environment(\.device) private var device
@@ -194,6 +193,7 @@ private struct AccessibilityPage: View {
     }
 }
 
+/// A page saying what it runs on and the theme it runs in.
 private struct EnvironmentPage: View {
     @Environment(\.device) private var device
     @Environment(\.application) private var app

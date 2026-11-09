@@ -668,7 +668,6 @@ struct ConformanceFailure: Error, CustomStringConvertible {
     var description: String { message }
 }
 
-/// Buttons that hold the application's theme, over the theme in force as words.
 /// Buttons giving the application an accent and the platform's back, over the accent in force.
 private struct AccentChoices: View {
     @Environment(\.application) private var application
@@ -683,6 +682,7 @@ private struct AccentChoices: View {
     }
 }
 
+/// Buttons that hold the application's theme, over the theme in force as words.
 private struct ThemeChoices: View {
     @Environment(\.application) private var application
 

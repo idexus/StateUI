@@ -71,13 +71,13 @@ final class WinUISheetView: WinUIView {
     /// The actions on the head as they were last drawn, in reading order, those behind "more" last.
     var drawn: [WinUIToolbarAction] { actions.drawn }
 
-    /// The user pressed the way back (-1), the close button (-2), or an action by its place.
     /// Lets go of the page it shows: the page may stand on a sheet of its own before this one goes, and an element
     /// stands in one parent.
     func letGoOfItsPage() {
         stateui_winui_sheet_let_go(handle)
     }
 
+    /// The user pressed the way back (-1), the close button (-2), or an action by its place.
     override func chose(_ index: Int) {
         switch index {
         case -1: back?()

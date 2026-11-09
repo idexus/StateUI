@@ -115,7 +115,6 @@ final class FrameFollowersTests: XCTestCase {
         XCTAssertEqual(log.values, ["kept stands"])
     }
 
-    /// The elements `names` stand in `runtime`'s tree, in that order - the tree before replaced.
     /// An element followed again as another state came to read its frame says where it stands on the next frame,
     /// so the reader come since hears it; followed again for the same reader, it says nothing more.
     func testAnElementFollowedAgainForAReaderComeSinceSaysWhereItStands() {
@@ -141,6 +140,7 @@ final class FrameFollowersTests: XCTestCase {
         XCTAssertEqual(log.values, ["said", "said"], "another state reads it since")
     }
 
+    /// The elements `names` stand in `runtime`'s tree, in that order - the tree before replaced.
     private static func elements(of runtime: HostRuntime, _ names: [String]) -> [MountedElement] {
         // What the core waits to render is rendered first, so no turn of the test's own replaces the tree.
         runtime.pump.turn()

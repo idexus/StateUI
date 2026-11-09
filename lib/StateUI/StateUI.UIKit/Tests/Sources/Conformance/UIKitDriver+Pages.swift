@@ -265,7 +265,6 @@ extension UIKitDriver {
         return top
     }
 
-    /// The bar's button whose action is `action`; nil for one behind an overflow.
     /// The menu a button on the bars the window shows opens, by its identifier.
     func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
@@ -278,6 +277,7 @@ extension UIKitDriver {
         return window.rootViewController.flatMap(search)
     }
 
+    /// The bar's button whose action is `action`; nil for one behind an overflow.
     private func barButton(answering action: UIAction) -> UIBarButtonItem? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
         func search(_ controller: UIViewController) -> UIBarButtonItem? {

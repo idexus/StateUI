@@ -120,12 +120,12 @@ class GTKTextualView: GTKView {
         gtk_label_set_justify(widget.opaque, justification)
     }
 
-    /// Where the words stand down the label's height.
     /// Whether the user can select the words and copy them.
     func setSelectable(_ selectable: Bool) {
         gtk_label_set_selectable(widget.opaque, selectable ? 1 : 0)
     }
 
+    /// Where the words stand down the label's height.
     func setAlignment(vertical: TextAlignment) {
         gtk_label_set_yalign(widget.opaque, vertical == .start ? 0 : vertical == .center ? 0.5 : 1)
     }

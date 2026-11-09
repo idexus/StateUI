@@ -819,7 +819,6 @@ final class GalleryViewTests: XCTestCase {
         await gate.endEveryRun()
     }
 
-    /// And a gallery nobody asked for a tap lays no target at all.
     /// A gallery the user may not swipe still answers a tap on the card in front: nothing scrolls, so the
     /// target stands where the card does.
     func testAGalleryNobodyMaySwipeAnswersATapOnItsCardInFront() throws {
@@ -829,6 +828,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertNotNil(tappable(in: shown.whole), "the gallery laid no target")
     }
 
+    /// A gallery nobody asked for a tap lays no target at all.
     func testAGalleryNobodyAskedForATapAnswersNone() throws {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(5).node }).whole

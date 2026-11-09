@@ -66,12 +66,12 @@ enum WebCSS {
         return sign + String(whole) + "." + String(repeating: "0", count: places - fraction.count) + fraction
     }
 
-    /// A length in pixels; nil for none.
     /// A size in points as the browser's text size counts it: a sixteenth of a rem each.
     static func rems(_ value: Double) -> String {
         number(max(0, value) / 16) + "rem"
     }
 
+    /// A length in pixels; nil for none.
     static func pixels(_ value: Double?) -> String? {
         value.map { number(max(0, $0)) + "px" }
     }

@@ -252,7 +252,6 @@ extension AndroidDriver {
     }
 
 
-    /// The activity's title, as the system's recent tasks show it.
     /// The plain color the activity's window shows behind its pages; nil where it shows none.
     static func windowBackground() -> HostValue? {
         let argb = Java.callStaticLong(JavaAPI.environment, readWindowBackground, .object(TestContext.window.reference))
@@ -277,6 +276,7 @@ extension AndroidDriver {
         JavaAPI.environment, "windowBackground", "(Landroid/app/Activity;)J")
     static let night = Java.staticMethod(JavaAPI.environment, "night", "(Landroid/content/Context;)Z")
 
+    /// The activity's title, as the system's recent tasks show it.
     static func activityTitle() -> HostValue? {
         Java.frame {
             Java.callObject(TestContext.window.reference, getTitle).flatMap { Java.callObject($0, JavaAPI.toString) }

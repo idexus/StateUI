@@ -503,7 +503,6 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(words.wrappedValue, "at 50, 25", "and the second's")
     }
 
-    /// The law lying in a crossing's bytes, read the way the host reads it.
     /// The law the image itself holds, before its crossing resolves it.
     private func law(publishedBy image: HostStorage) -> Motion? {
         guard let door = image.door, let at = StateLaw.within(door, lanes: image.published.count / 8) else { return nil }
@@ -511,6 +510,7 @@ final class JourneyTests: XCTestCase {
         return StateLaw.motion(of: (0..<StateLaw.lanes).map { StateImage.lane(at + $0, of: image.published) })
     }
 
+    /// The law lying in a crossing's bytes, read the way the host reads it.
     private func law(crossing image: HostStorage) -> Motion? {
         let bytes = image.crossing()
 
