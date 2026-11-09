@@ -22,6 +22,9 @@ struct LibraryWords: LocalizedResources {
     /// What a menu bar a host keeps says of its own menus and entries.
     let menu: MenuWords
 
+    /// What a file a host names itself is called.
+    let file: FileWords
+
     /// What a question says on its own buttons.
     var question: QuestionWords { QuestionWords(accept: ok, cancel: cancel) }
 
@@ -126,6 +129,13 @@ struct LibraryWords: LocalizedResources {
 
     /// A step up.
     public let increase: String
+}
+
+/// What a file a host names itself is called, where the application names it nothing - a save written to a file
+/// before the user places it.
+@_spi(Host) public struct FileWords: Equatable, Sendable {
+    /// A file named nothing.
+    public let untitled: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

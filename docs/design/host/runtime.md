@@ -927,7 +927,10 @@ A file dialog is read from its act alike on every host (`HostFileDialog`):
 one file to open, several, or a place to save, the kinds it offers, a
 save's contents and its name. A save's name ends in an extension of its
 kinds: where it ends in none, the first kind's first is added - unless it
-is empty, which the platform names. A platform that takes the kind a save
+is empty, which the platform names. A host that writes a save's file itself
+before the user places it names an empty one by the library's word for a
+file named nothing, in the system's language (`name(untitled:)`,
+`FileWords.untitled`), its extension added alike. A platform that takes the kind a save
 writes as one extension reads it from the name, else from the first kind
 (`savedExtension`). A dialog that filters by extension
 alone shows every kind's, in order, each once. A file dialog waits its turn

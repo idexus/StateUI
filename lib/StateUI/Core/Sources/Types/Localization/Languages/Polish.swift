@@ -39,7 +39,8 @@ extension LibraryWords {
         control: ControlWords(decrease: "Zmniejsz", increase: "Zwiększ"),
         menu: MenuWords(
             file: "Plik", newWindow: "Nowe okno", edit: "Edycja", window: "Okno", minimize: "Minimalizuj",
-            bringAllToFront: "Wszystko na wierzch", quit: "Zakończ"))
+            bringAllToFront: "Wszystko na wierzch", quit: "Zakończ"),
+        file: FileWords(untitled: "Bez tytułu"))
 }
 
 extension RegionConventions {

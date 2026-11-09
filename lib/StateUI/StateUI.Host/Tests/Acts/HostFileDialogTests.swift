@@ -59,6 +59,20 @@ final class HostFileDialogTests: XCTestCase {
         XCTAssertNil(try save("notes", []).savedExtension)
     }
 
+    /// A host writing a save's file itself names an empty one by the library's word for a file named nothing, its
+    /// first kind's extension added; a name the save suggests stands as it is.
+    func testASaveNamedNothingIsNamedByTheLibrarysWord() throws {
+        func save(_ name: String, _ types: [FileType]) throws -> HostFileDialog {
+            try XCTUnwrap(HostFileDialog(HostActCall(
+                act: .saveFile, arguments: HostActCall.usersWindow + [[UInt8]().propValue, .string(name), types.propValue], completion: 1)))
+        }
+        XCTAssertEqual(try save("", [text]).name(untitled: "Bez tytułu"), "Bez tytułu.txt")
+        XCTAssertEqual(try save("", []).name(untitled: "Untitled"), "Untitled")
+        XCTAssertEqual(try save("Report", [page]).name(untitled: "Untitled"), "Report.html")
+        XCTAssertEqual(LibraryWords.polish.file.untitled, "Bez tytułu")
+        XCTAssertEqual(LibraryWords.english.file.untitled, "Untitled")
+    }
+
     /// A dialog filtering by extension alone shows every kind's, in order, each once.
     func testEveryKindsExtensionsStandOnce() throws {
         let dialog = try XCTUnwrap(HostFileDialog(HostActCall(

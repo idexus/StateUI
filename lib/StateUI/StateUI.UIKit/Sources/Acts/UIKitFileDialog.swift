@@ -40,7 +40,7 @@ final class UIKitFileDialog: NSObject, UIDocumentPickerDelegate {
             picker.allowsMultipleSelection = dialog.kind == .openSeveral
             return present(picker)
         }
-        let (contents, name) = (dialog.contents, dialog.name.isEmpty ? "Untitled" : dialog.name)
+        let (contents, name) = (dialog.contents, dialog.name(untitled: CoreLink().fileWords.untitled))
         Task { @MainActor [weak self] in
             let written = await Self.write(contents, named: name)
             guard let self else { return }
