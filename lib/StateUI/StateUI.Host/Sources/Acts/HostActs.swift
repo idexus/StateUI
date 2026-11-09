@@ -49,6 +49,11 @@
         [.number(Double(minutes))]
     }
 
+    /// Why `utcOffset` fails for a day no calendar a toolkit holds has (`CalendarArithmetic.exists`).
+    public static func noDay(_ day: CalendarDate) -> ActFailure {
+        ActFailure("no day \(day.year)-\(day.month)-\(day.day) stands in the calendar")
+    }
+
     /// Why `utcOffset` fails for a zone the platform does not know.
     public static func unknownZone(_ name: String?) -> ActFailure {
         ActFailure("no time zone '\(name ?? "")' is known")

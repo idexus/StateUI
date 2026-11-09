@@ -1129,8 +1129,9 @@ lands; at rest, its value itself. The destination comes with the journey
 
 A picker holds a day and a time by one arithmetic on every host
 (`CalendarArithmetic`): a day not in the Gregorian calendar - February 31st,
-a thirteenth month - is refused, and the picker goes on showing the day it
-had; a day past the range stands at its end, the range's ends in order
+a thirteenth month, a year outside 1 to 9999, which every toolkit's calendar
+holds - is refused, and the picker goes on showing the day it had; a zone's
+distance from UTC asked on such a day fails with the day (`HostActs.noDay`); a day past the range stands at its end, the range's ends in order
 whichever the tree gave first; and a time is its hours, minutes and seconds
 added up from midnight around the day, so 25:99 shows as 02:39.
 
