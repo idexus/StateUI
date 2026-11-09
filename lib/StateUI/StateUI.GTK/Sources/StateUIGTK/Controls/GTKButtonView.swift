@@ -305,7 +305,8 @@ final class GTKButtonView: GTKView {
         }
 
         let across = position == .start || position == .end
-        let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
+        let gap = spacing.flatMap { GeometryArithmetic.pixels($0) } ?? 6
+        let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, gap)!
         gtk_widget_set_direction(box, gtk_widget_get_direction(widget))
         gtk_widget_set_halign(box, GTK_ALIGN_CENTER)
         let label = gtk_label_new(caption)!
