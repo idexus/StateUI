@@ -35,6 +35,13 @@ per width until WinUI measures it again or a change forgets it on the way up.
 Measured at every width asked of it, a layout would forget its sizes each time
 and measure its whole subtree again.
 
+A line that never wraps asks for no room of the width offered: WinUI measures
+it at the width it is given, and a width just under the line's own returns a
+size an ellipsis's worth narrower. The size a layout reads back then differs
+from the room it offered, so measuring the line again at that size never
+settles. A line that never wraps is therefore measured at no width and keeps
+its natural size; wrapped words are measured at the room they are offered.
+
 A layout whose place travels lays its children out at the size it is bound
 for ([a layout bound for a size](../../host/motion.md#a-layout-bound-for-a-size)),
 so it is measured at that width while its box passes through the others.

@@ -28,9 +28,8 @@ class WinUITextualView: WinUIView {
         super.init { _ in stateui_winui_text_make() }
     }
 
-    /// The words' natural size. A line that never wraps keeps its size whatever the room offered: WinUI measures
-    /// such a line differently at a width just under its own - an ellipsis's worth - so a layout that fed that
-    /// width back into the measure would never settle. Wrapped words are measured at the room they are offered.
+    /// A line that never wraps keeps its natural size; wrapped words take the room offered.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     override func measure(width: Double?, height: Double?) -> LayoutSize {
         super.measure(width: breaks.wraps ? width : nil, height: height)
     }
@@ -54,10 +53,15 @@ class WinUITextualView: WinUIView {
     /// How the words break - wrapped, on one line, or cut short - and the most lines; nil for any
     /// (`LineBreak.lines`): wrapped words held to some lines end the last with an ellipsis.
     func setLines(breaking: LineBreak, maximum: Int?) {
+        let changed = breaks != breaking
         breaks = breaking
         stateui_winui_text_set_lines(
             handle, breaking.wraps, Int32(breaking.lines(maximum: maximum) ?? 0),
             breaking.truncates || breaking.endsWithEllipsis(maximum: maximum))
+        if changed {
+            invalidateMeasure()
+            placingLayout?.invalidateMeasurements()
+        }
     }
 
     /// Where the words stand across the label.
