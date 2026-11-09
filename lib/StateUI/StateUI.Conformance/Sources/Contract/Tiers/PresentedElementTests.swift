@@ -75,6 +75,21 @@
                 s.expect((try? s.element("inner")) == nil, true, "the sheet in it gone with it")
                 s.expect(states.inner.wrappedValue, false, "its flag written false")
             },
+            ConformanceCase("Sheet.anotherValuePresentsAnotherPageInItsPlace", proves: [
+                Covered(PresentedElementContract.isPresented, on: SheetContract.self),
+            ], needs: [Covered(TextContract.self)]) { s in
+                let states = SheetStates()
+                (states.shows.wrappedValue, states.inner.wrappedValue) = (false, false)
+                s.start { SheetsPage(states: states) }
+                try s.settle { try s.isShown("note") }
+
+                states.note.wrappedValue = "Archive"
+                try s.settle {
+                    try s.held(TextElementContract.text, on: s.element("note")) == "Archive" && s.isShown("note")
+                }
+                s.expect(try s.held(TextElementContract.text, on: s.element("note")), "Archive", "the new value's page")
+                s.expect(try s.isShown("note"), true, "shown in the first one's place")
+            },
             ConformanceCase("Popover.aPopoverShownFromTheStartStandsOnceItsAnchorDoes", proves: [
                 Covered(PresentedElementContract.isPresented, on: PopoverContract.self),
             ]) { s in
