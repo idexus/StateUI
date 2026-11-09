@@ -28,6 +28,34 @@ public enum SystemFacts {
             languages: Locale.preferredLanguages.map { LocaleTag($0) })
     }
 
+    /// The wall clock at `instant` in `zone`, on the civil calendar - the Gregorian, whatever calendar the user reads
+    /// days in - as `currentTime` answers it.
+    /// Design: docs/design/platforms/apple/system.md#the-clock
+    public static func localTime(at instant: Date = Date(), in zone: TimeZone = .current) -> LocalTime {
+        let now = civil(in: zone).dateComponents(
+            [.year, .month, .day, .hour, .minute, .second, .nanosecond], from: instant)
+        return LocalTime(
+            year: now.year ?? 0, month: now.month ?? 0, day: now.day ?? 0, hour: now.hour ?? 0,
+            minute: now.minute ?? 0, second: now.second ?? 0, millisecond: (now.nanosecond ?? 0) / 1_000_000)
+    }
+
+    /// How many minutes the zone named `name` - the user's for nil - stands from UTC at noon on `day`, now for nil;
+    /// nil for a name no zone has.
+    public static func utcOffset(of name: String?, on day: CalendarDate?) -> Int? {
+        guard let zone = name.map(TimeZone.init(identifier:)) ?? TimeZone.current else { return nil }
+        let date = day.flatMap {
+            civil(in: zone).date(from: DateComponents(year: $0.year, month: $0.month, day: $0.day, hour: 12))
+        } ?? Date()
+        return zone.secondsFromGMT(for: date) / 60
+    }
+
+    /// The Gregorian calendar in `zone`.
+    private static func civil(in zone: TimeZone) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = zone
+        return calendar
+    }
+
     /// What `path` reaches - the internet, only what is near, nothing - and through what.
     public static func connectivity(_ path: NWPath) -> HostConnectivityInfo {
         let access: NetworkAccess = switch path.status {

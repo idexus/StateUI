@@ -27,21 +27,11 @@ final class UIKitActToolkit: ActToolkit {
     let host = "UIKit"
 
     func localTime() -> LocalTime {
-        let now = Calendar.current.dateComponents(
-            [.year, .month, .day, .hour, .minute, .second, .nanosecond], from: Date())
-        return LocalTime(
-            year: now.year ?? 0, month: now.month ?? 0, day: now.day ?? 0, hour: now.hour ?? 0,
-            minute: now.minute ?? 0, second: now.second ?? 0, millisecond: (now.nanosecond ?? 0) / 1_000_000)
+        SystemFacts.localTime()
     }
 
     func utcOffset(of name: String?, on day: CalendarDate?) -> Int? {
-        guard let zone = name.map(TimeZone.init(identifier:)) ?? TimeZone.current else { return nil }
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = zone
-        let date = day.flatMap {
-            calendar.date(from: DateComponents(year: $0.year, month: $0.month, day: $0.day, hour: 12))
-        } ?? Date()
-        return zone.secondsFromGMT(for: date) / 60
+        SystemFacts.utcOffset(of: name, on: day)
     }
 
     /// Asks in UIKit's alert over what the window asked shows - its top sheet, else its pages - once nothing moves.
