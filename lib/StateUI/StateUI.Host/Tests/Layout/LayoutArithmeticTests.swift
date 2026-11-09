@@ -149,6 +149,24 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.x }, [80, 50])
     }
 
+    /// A track whose length or share is a number that is none - NaN, infinite - stands as a track the grid does not
+    /// define: one share of what is left, every place finite.
+    @MainActor
+    func testATrackOfNoNumberStandsAsOneShare() {
+        var first = Child(width: 10, height: 10)
+        first.values.column = 0
+        var second = Child(width: 10, height: 10)
+        second.values.column = 1
+
+        for track in [GridLength.proportional(.nan), .proportional(.infinity), .fixed(.infinity), .fixed(.nan)] {
+            let places = GridArithmetic.places(
+                of: [first, second], rows: [track], columns: [track, .fill], rowSpacing: 0, columnSpacing: 0,
+                padding: Insets(0), in: Rect(0, 0, 100, 10), direction: .leftToRight)
+            XCTAssertEqual(places.map { $0?.x }, [0, 50], "\(track)")
+            XCTAssertEqual(places.map { $0?.width }, [50, 50], "\(track)")
+        }
+    }
+
     /// A cell no grid has - a row or a column before the first, a span of none, an index or a span past any grid -
     /// stands in the nearest one there is: measured and placed alike, the grid holding a track for every child.
     @MainActor

@@ -80,10 +80,9 @@ enum WebCSS {
         number(value) + "px"
     }
 
-    /// A grid's `count` tracks: those defined, then a share each.
-    static func tracks(_ defined: [GridLength], count: Int) -> String? {
-        guard count > 0 else { return nil }
-        return (0..<count).map { $0 < defined.count ? track(defined[$0]) : "minmax(0, 1fr)" }.joined(separator: " ")
+    /// A grid's tracks, each as CSS writes it.
+    static func tracks(_ tracks: [GridLength]) -> String? {
+        tracks.isEmpty ? nil : tracks.map(track).joined(separator: " ")
     }
 
     /// One track: as large as its largest child, a length, or a share of the room the others leave - a share of
