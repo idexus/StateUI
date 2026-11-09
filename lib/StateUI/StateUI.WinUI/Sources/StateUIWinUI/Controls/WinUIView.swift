@@ -247,6 +247,18 @@ class WinUIView {
         return size
     }
 
+    /// A distance as XAML's layout holds it: as it is, or none where no 32-bit pixel holds it - XAML counts in floats
+    /// and refuses a place past them, as GTK's views stand empty past their pixels.
+    /// Design: docs/design/host/layout.md#finite-distances
+    static func held(_ distance: Double) -> Double {
+        GeometryArithmetic.pixels(distance) == nil ? 0 : distance
+    }
+
+    /// `place` as XAML's layout holds it, each part alone (`held`).
+    static func held(_ place: Rect) -> Rect {
+        Rect(x: held(place.x), y: held(place.y), width: held(place.width), height: held(place.height))
+    }
+
     /// The element's size for the room offered, in DIPs; nil offers any.
     /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
     func measure(width: Double?, height: Double?) -> LayoutSize {
@@ -270,7 +282,8 @@ class WinUIView {
                 _ = measure(width: width, height: nil)
                 layout.standsAt = width
             }
-            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
+            let held = Self.held(place)
+            stateui_winui_arrange(handle, held.x, held.y, held.width, held.height)
         } else {
             placingLayout?.invalidateArrange()
         }

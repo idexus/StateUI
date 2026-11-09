@@ -65,7 +65,7 @@ final class WinUITextView: WinUITextualView {
                         tabularDigits: look.attributes.contains(.monospacedDigits),
                         underline: look.decorations.contains(.underline),
                         strikethrough: look.decorations.contains(.strikethrough), family: families[index],
-                        spacing: Int32((spacing * 1000).rounded()))
+                        spacing: Self.thousandths(ofAnEm: spacing))
                 }
                 stateui_winui_text_set_runs(handle, words, Int32(words.count))
             }
