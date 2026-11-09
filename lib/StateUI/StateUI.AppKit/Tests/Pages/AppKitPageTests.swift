@@ -1219,6 +1219,23 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(shows.wrappedValue, "the sheet closed")
     }
 
+    /// A stack a composed view's anchor holds in a sheet is the sheet's page: its root shows in the sheet's window,
+    /// which it names.
+    @MainActor
+    func testAStackAnAnchorHoldsInASheetShows() throws {
+        let path = State(wrappedValue: [Int]())
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                AnchoredStack(path: path.projectedValue, compact: true).onChanged(true) {}
+            }
+        }
+        defer { renderer.finish() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        XCTAssertEqual(sheet.window?.title, "Root")
+        let root = try XCTUnwrap(renderer.viewForTesting(id: .manual("root")))
+        XCTAssertTrue(root.window === sheet.window && !root.isHiddenOrHasHiddenAncestor, "the root shows in the sheet")
+    }
+
     /// A sheet's bar crowded with its page's actions keeps its close button last: the groups that do not fit go
     /// behind the bar's More, ahead of what stands there anyway, and AppKit hides nothing behind a chevron of its own.
     @MainActor
@@ -1475,4 +1492,18 @@ private extension HostChildrenUpdate {
     }
 }
 
+
+/// One stack or another, as a composed view builds it.
+private struct AnchoredStack: View {
+    let path: Binding<[Int]>
+    let compact: Bool
+
+    var body: some View {
+        if compact {
+            NavigationStack(path) { Text("Root").title("Root").id("root") } destination: { _ in Text("Next") }
+        } else {
+            NavigationStack(path) { Text("Wide").title("Wide") } destination: { _ in Text("Next") }
+        }
+    }
+}
 #endif
