@@ -245,6 +245,25 @@ final class RegistryTests: XCTestCase {
         XCTAssertNil(crossed[LampContract.emphasis], "a value of another kind is no value")
     }
 
+    /// A number that is none - NaN, or infinite - is no value to a view: the view reads none, and its own stands,
+    /// as an end of a range does.
+    func testANumberThatIsNoneIsNoValue() {
+        let current: [Prop: HostValue] = [
+            StackContract.spacing.token: .number(.nan),
+            PaddingElementContract.padding.token: .numbers([4, .infinity, 4, 4]),
+        ]
+        let stack = ElementValues<VStackContract>(changed: [], reading: { current[$0] })
+        XCTAssertNil(stack[StackContract.spacing])
+        XCTAssertNil(stack[PaddingElementContract.padding])
+
+        let ends: [Prop: HostValue] = [
+            RangeElementContract.minimum.token: .number(-.infinity), RangeElementContract.maximum.token: .number(.nan),
+        ]
+        let slider = ElementValues<SliderContract>(changed: [], reading: { ends[$0] }, heading: { ends[$0] })
+        XCTAssertNil(slider.destination(RangeElementContract.minimum))
+        XCTAssertNil(slider[RangeElementContract.maximum])
+    }
+
     /// What a host's shared machinery realizes stands on every registered
     /// element wearing its contract, and on no element that does not.
     func testWhatTheSharedMachineryRealizesIsOnEveryElementWearingItsTier() {

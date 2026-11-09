@@ -30,6 +30,22 @@ final class AppKitSliderViewTests: XCTestCase {
         XCTAssertTrue(view.isContinuous)
     }
 
+    /// An end that is no number - infinite, NaN - is no end: the slider stands in its own range, where AppKit's
+    /// slider would place its thumb at NaN and stop the application.
+    @MainActor
+    func testAnEndOfNoNumberLeavesTheSliderItsOwnRange() throws {
+        let renderer = AppKitRenderer.running { Slider(0.5).minimum(-.infinity).maximum(.nan) }
+        defer { renderer.finish() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.layoutIfNeeded()
+        window.displayIfNeeded()
+
+        let slider = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)
+        XCTAssertEqual(slider.minValue, 0)
+        XCTAssertEqual(slider.maxValue, 1)
+        XCTAssertEqual(slider.doubleValue, 0.5)
+    }
+
     @MainActor
     func testAnInvertedRangeIsNormalizedDeterministically() {
         let view = AppKitSliderView()
