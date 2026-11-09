@@ -140,7 +140,7 @@ final class AndroidPagesTests: XCTestCase {
                 NavigationStack(path.projectedValue) {
                     TitledPage(title: "Items and Cards")
                 } destination: { _ in
-                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                    TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.pageTitle("ItemsView")
                 }
             }
             host.layOut()
@@ -732,7 +732,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let host = AndroidRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Text("Notes").title("Notes").toolbar {
+                    Text("Notes").pageTitle("Notes").toolbar {
                         ToolbarGroup {
                             ToolbarButton("Rename")
                             ToolbarButton("Move")
@@ -1053,7 +1053,7 @@ extension AndroidPagesTests {
         try onMainActor {
             let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    ZStack {}.id("content").title("Under the bar")
+                    ZStack {}.id("content").pageTitle("Under the bar")
                 } destination: { _ in Text("Next") }
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
@@ -1176,7 +1176,7 @@ private struct FurnishedPage: View {
     var body: some View {
         VStack { Text(title) }
             .padding(8)
-            .title(title)
+            .pageTitle(title)
             .pageBackground(.blue)
             .showsBackButton(showsBackButton)
             .showsNavigationBar(showsNavigationBar)
@@ -1191,7 +1191,7 @@ private struct SearchingPage: View {
         let query = $query
         return Text("Results")
             .titleView { SearchField(query).placeholder("Search") }
-            .title("Search")
+            .pageTitle("Search")
     }
 }
 
@@ -1256,7 +1256,7 @@ private struct TitledPage: View {
     var actions: [ToolbarButton] = []
 
     var body: some View {
-        let words = Text(title).toolbar { actions }.title(title)
+        let words = Text(title).toolbar { actions }.pageTitle(title)
         return (icon.map { words.pageIcon($0) } ?? words).loggingPhases(log, as: title)
     }
 }

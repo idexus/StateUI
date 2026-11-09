@@ -211,7 +211,7 @@ struct FilesPage: View {
             LanguageSettings()
         }
         .spacing(12)
-        .title(res.title)
+        .pageTitle(res.title)
     }
 }
 

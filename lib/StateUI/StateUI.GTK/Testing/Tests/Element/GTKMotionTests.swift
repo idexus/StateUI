@@ -120,7 +120,7 @@ final class GTKMotionTests: XCTestCase {
                             _ = bar.projectedValue.journey.move(
                                 to: Color(red: 0, green: 0, blue: 255), .eased(.milliseconds(200), curve: .linear))
                         }
-                        .title("Notes")
+                        .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }

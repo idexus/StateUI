@@ -29,7 +29,7 @@ struct ColorsPage: View {
         }
         .spacing(10)
         .padding(16)
-        .title("Colors")
+        .pageTitle("Colors")
         .onCreated {
             window.title = "Colors"
             window.width = 320

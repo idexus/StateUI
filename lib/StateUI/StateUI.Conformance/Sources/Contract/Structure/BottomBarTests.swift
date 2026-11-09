@@ -19,7 +19,7 @@
                     Rectangle()
                         .fill(.red)
                         .id("content")
-                        .title("Foot")
+                        .pageTitle("Foot")
                         .bottomBar {
                             Rectangle()
                                 .fill(.blue)
@@ -54,7 +54,7 @@
                         .id("scroller")
                     }
                     .ignoresSafeArea(.all)
-                    .title("Foot")
+                    .pageTitle("Foot")
                     .bottomBar {
                         Rectangle()
                             .fill(.blue)
@@ -90,7 +90,7 @@
                             .id("list")
                     }
                     .ignoresSafeArea(.all)
-                    .title("Foot")
+                    .pageTitle("Foot")
                     .bottomBar {
                         Button("To the end").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
                             .height(tall.wrappedValue)
@@ -120,7 +120,7 @@
                             .id("list")
                     }
                     .ignoresSafeArea(.all)
-                    .title("Foot")
+                    .pageTitle("Foot")
                     .bottomBar {
                         Button("To the end").onClicked(policy: .ignoreWhileRunning) { try await aim.scroll(to: 59, anchor: .end) }
                             .id("go")
@@ -139,9 +139,9 @@
                 let path = State(wrappedValue: [Int]())
                 s.start {
                     NavigationStack(path.projectedValue) {
-                        Rectangle().fill(.red).id("root").title("Root")
+                        Rectangle().fill(.red).id("root").pageTitle("Root")
                     } destination: { _ in
-                        Rectangle().fill(.green).id("pushed").title("Pushed")
+                        Rectangle().fill(.green).id("pushed").pageTitle("Pushed")
                     }
                     .bottomBar {
                         Rectangle()
@@ -172,7 +172,7 @@
                         }
                     }
                     .ignoresSafeArea(.all)
-                    .title("Foot")
+                    .pageTitle("Foot")
                     .bottomBar(scrollEdge: edge.wrappedValue) {
                         Rectangle()
                             .fill(.blue)

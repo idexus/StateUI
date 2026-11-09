@@ -620,7 +620,7 @@ What the page is, the view it shows says by modifier:
 
 | Modifier | Meaning |
 | --- | --- |
-| `.title` | navigation title, and the caption where the page is an item of something else |
+| `.pageTitle` | navigation title, and the caption where the page is an item of something else |
 | `.pageIcon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
 | `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
@@ -641,7 +641,7 @@ the `body` of the view written there - through a modifier, a `Group`, or an
 `if` choosing between an arrangement and another view, an `AnyView` - stands
 on a page. Anywhere else - inside a `VStack`, inside a page's content - an
 arrangement is left out and said once. It fills where it stands, so
-it keeps only what its contract declares, and takes its own `.title` and
+it keeps only what its contract declares, and takes its own `.pageTitle` and
 `.pageIcon`, for where it is an item of something else, such as a tab, and
 `.pageBackground`, the ground of each of its pages that says none.
 
@@ -682,7 +682,7 @@ struct EditorPage: View {
                     .isEnabled(dirty)
                     .onClicked { save() }
             }
-            .title(dirty ? "Draft - Edited" : "Draft")
+            .pageTitle(dirty ? "Draft - Edited" : "Draft")
     }
 
     private func save() { dirty = false }
@@ -727,11 +727,11 @@ struct NotesPage: View {
     var body: some View {
         SplitView {
             Text("Folders")
-                .title("Notes")
+                .pageTitle("Notes")
                 .pageIcon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
-                .title(folder)
+                .pageTitle(folder)
         }
         .showsSidebar($showsFolders)
         .barBackground(.cornflowerBlue)

@@ -41,7 +41,7 @@
 ///                         }
 ///                 }
 ///             }
-///             .title("Sections")   // names the sidebar's bar
+///             .pageTitle("Sections")   // names the sidebar's bar
 ///         }
 ///     }
 ///

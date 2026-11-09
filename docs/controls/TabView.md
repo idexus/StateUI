@@ -9,7 +9,7 @@ struct Tab: View {
     let name: String
 
     var body: some View {
-        Text("Nothing in \(name)").title(name)
+        Text("Nothing in \(name)").pageTitle(name)
     }
 }
 

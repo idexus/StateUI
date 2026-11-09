@@ -68,7 +68,7 @@ private struct BarredPage: View {
                 .id("file")
                 .isEnabled(true)
             }
-            .title("Notes")
+            .pageTitle("Notes")
     }
 }
 

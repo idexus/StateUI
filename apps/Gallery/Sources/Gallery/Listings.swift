@@ -7154,7 +7154,7 @@ enum Listings {
                     // A tab's caption and picture are what its page says, and this
                     // tab's page is the stack rather than the page inside it - so
                     // they are written on the stack.
-                    .title("Stack")
+                    .pageTitle("Stack")
                     .pageIcon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
                 case .second:
@@ -7495,7 +7495,7 @@ enum Listings {
                     }
                 }
                 .ignoresSafeArea(.all)
-                .title("StateUI")
+                .pageTitle("StateUI")
                 .pageIcon(Self.mark)
                 // The line about what this is stands at the menu's foot, and the rows
                 // scroll under it.
@@ -11612,7 +11612,7 @@ enum Listings {
                         } destination: { number in
                             Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                         }
-                        .title("Inbox")
+                        .pageTitle("Inbox")
                         .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
                     case .drafts:
@@ -11632,7 +11632,7 @@ enum Listings {
                         } destination: { number in
                             Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                         }
-                        .title("Drafts")
+                        .pageTitle("Drafts")
                         .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
                     }
                 }

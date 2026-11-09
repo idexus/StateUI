@@ -185,7 +185,7 @@ private struct MailSheet: View {
                 } destination: { number in
                     Text("Message \(number)").padding(24).galleryPage("Message \(number)")
                 }
-                .title("Inbox")
+                .pageTitle("Inbox")
                 .pageIcon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
 
             case .drafts:
@@ -205,7 +205,7 @@ private struct MailSheet: View {
                 } destination: { number in
                     Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
                 }
-                .title("Drafts")
+                .pageTitle("Drafts")
                 .pageIcon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
             }
         }

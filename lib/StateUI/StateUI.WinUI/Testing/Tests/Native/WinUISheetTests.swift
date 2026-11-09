@@ -36,8 +36,8 @@ private struct SheetPage: View {
             Text("on first")
             Button("Another").onClicked { presents.wrappedValue = true }
         }
-        .title("first")
-        .sheet(isPresented: presents.projectedValue) { Text("on second").title("second") }
+        .pageTitle("first")
+        .sheet(isPresented: presents.projectedValue) { Text("on second").pageTitle("second") }
     }
 }
 
@@ -78,9 +78,9 @@ final class WinUISheetTests: XCTestCase {
             let host = WinUIRenderer.running {
                 Text("Beneath").sheet(isPresented: shows.projectedValue) {
                     NavigationStack(path.projectedValue) {
-                        Text("Root").title("Root")
+                        Text("Root").pageTitle("Root")
                     } destination: { number in
-                        Text("Page \(number)").title("Pushed")
+                        Text("Page \(number)").pageTitle("Pushed")
                     }
                 }
             }
@@ -113,8 +113,8 @@ final class WinUISheetTests: XCTestCase {
             let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
             let host = WinUIRenderer.running {
                 VStack {
-                    Text("Notes").sheet(item: note.projectedValue) { number in Text("Sheet \(number)").title("Sheet \(number)") }
-                    Text("More").sheet(isPresented: shows.projectedValue) { Text("Sheet 2").title("Sheet 2") }
+                    Text("Notes").sheet(item: note.projectedValue) { number in Text("Sheet \(number)").pageTitle("Sheet \(number)") }
+                    Text("More").sheet(isPresented: shows.projectedValue) { Text("Sheet 2").pageTitle("Sheet 2") }
                 }
             }
             let window = try XCTUnwrap(host.window)

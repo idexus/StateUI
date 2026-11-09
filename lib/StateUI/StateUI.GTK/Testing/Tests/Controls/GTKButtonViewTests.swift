@@ -47,7 +47,7 @@ final class GTKButtonViewTests: XCTestCase {
         onUIThread {
             let shown = State(wrappedValue: true)
             let host = GTKRenderer.running {
-                Text("Notes").title("Notes").toolbar {
+                Text("Notes").pageTitle("Notes").toolbar {
                     if shown.wrappedValue {
                         ToolbarButton("Keep").onClicked {}.menu(.held) { MenuItem("Keep a copy") }
                     }

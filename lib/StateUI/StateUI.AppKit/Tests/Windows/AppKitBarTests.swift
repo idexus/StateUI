@@ -144,7 +144,7 @@ final class AppKitBarTests: XCTestCase {
         let under = State(wrappedValue: false)
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").title("Under")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).id("content").pageTitle("Under")
             } destination: { _ in Text("Next") }
         }
         defer { renderer.finish() }
@@ -171,7 +171,7 @@ final class AppKitBarTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
         }
         defer { renderer.finish() }
@@ -207,7 +207,7 @@ final class AppKitBarTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
             .barScrollEdge(edge.wrappedValue)
         }

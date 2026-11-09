@@ -45,7 +45,7 @@ private struct PlacedOnAPage: View {
             Text("top").onFrameChanged(in: .global) { frame in heard.values.append("window \(Int(frame.y))") }
         }
         .onFrameChanged(in: .safeArea) { frame in heard.values.append("page \(Int(frame.y))") }
-        .title("Placed")
+        .pageTitle("Placed")
     }
 }
 

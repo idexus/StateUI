@@ -32,7 +32,7 @@
 ///         var body: some View {
 ///             Button("Open the first")
 ///                 .onClicked { path.append(.details("first")) }
-///                 .title("Home")
+///                 .pageTitle("Home")
 ///         }
 ///     }
 ///

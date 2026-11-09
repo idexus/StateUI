@@ -27,7 +27,7 @@
 ///     struct TodayPage: View {
 ///         var body: some View {
 ///             Text("Nothing due.")
-///                 .title("Today")                    // the caption
+///                 .pageTitle("Today")                    // the caption
 ///                 .pageIcon("today.png")             // and the icon
 ///         }
 ///     }

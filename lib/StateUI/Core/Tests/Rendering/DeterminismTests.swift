@@ -56,7 +56,7 @@ private struct HomePage: View {
             Text("themed").textColor(Color(light: .black, dark: .white))
         }
         .spacing(12)
-        .title("Home")
+        .pageTitle("Home")
         .pageIcon(ImageSource("home.png"))
     }
 }
@@ -64,7 +64,7 @@ private struct HomePage: View {
 private struct DetailPage: View {
     let name: String
 
-    var body: some View { Text(name).title(name) }
+    var body: some View { Text(name).pageTitle(name) }
 }
 
 private struct SettingsPage: View {
@@ -73,7 +73,7 @@ private struct SettingsPage: View {
             Text("Settings").fontWeight(.bold)
             Switch(true).onToggled { _ in }
         }
-        .title("Settings")
+        .pageTitle("Settings")
         .pageIcon(ImageSource("settings.png"))
     }
 }
@@ -96,7 +96,7 @@ private struct MainPage: View {
                     case .detail(let name): DetailPage(name: name)
                     }
                 }
-                .title("Home")
+                .pageTitle("Home")
                 .barBackground(Color(hex: 0x512BD4))
                 .barForegroundColor(.white)
 

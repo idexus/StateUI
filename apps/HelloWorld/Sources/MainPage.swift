@@ -33,7 +33,7 @@ struct MainPage: View {
         .spacing(16)
         .verticalAlignment(.center)
         .padding(30)
-        .title("HelloWorld")
+        .pageTitle("HelloWorld")
     }
 
     /// What the button says once it has been clicked `count` times.

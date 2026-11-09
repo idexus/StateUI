@@ -143,7 +143,7 @@ final class GTKPagesTests: XCTestCase {
                         Button("Other")
                     }
                     .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
-                    .title("Notes")
+                    .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }
@@ -193,7 +193,7 @@ final class GTKPagesTests: XCTestCase {
                             if more.wrappedValue { ToolbarButton("Sooner").placement(at: .overflow) }
                         }
                         .menuBar { Menu("File") { MenuItem("Open") } }
-                        .title("Notes")
+                        .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }
@@ -226,7 +226,7 @@ final class GTKPagesTests: XCTestCase {
                             ToolbarButton("Share").placement(at: .overflow)
                             ToolbarButton("Print").placement(at: .overflow)
                         }
-                        .title("Notes")
+                        .pageTitle("Notes")
                 } destination: { _ in
                     Text("Note")
                 }
@@ -418,7 +418,7 @@ final class GTKPagesTests: XCTestCase {
         try onUIThread {
             let tabs = State(wrappedValue: ["A", "C"])
             let host = GTKRenderer.running {
-                TabView(tabs.wrappedValue) { name in TitledPage(title: name).title(name) }
+                TabView(tabs.wrappedValue) { name in TitledPage(title: name).pageTitle(name) }
             }
             let view = try XCTUnwrap(host.views(GTKTabView.self).first)
             let titles = { Self.switcherTitles(view) }
@@ -457,7 +457,7 @@ final class GTKPagesTests: XCTestCase {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             TitledPage(title: "Inbox")
                         } destination: { _ in TitledPage(title: "Message") }
-                        .title("Mail")
+                        .pageTitle("Mail")
                     } else {
                         TitledPage(title: "Settings")
                     }
@@ -492,7 +492,7 @@ final class GTKPagesTests: XCTestCase {
                             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                                 TitledPage(title: "Inbox")
                             } destination: { _ in TitledPage(title: "Message") }
-                            .title("Mail")
+                            .pageTitle("Mail")
                         } else {
                             TitledPage(title: "Settings")
                         }
@@ -531,7 +531,7 @@ final class GTKPagesTests: XCTestCase {
                             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                                 TitledPage(title: "Inbox")
                             } destination: { _ in TitledPage(title: "Message") }
-                            .title("Mail")
+                            .pageTitle("Mail")
                         } else {
                             TitledPage(title: "Settings")
                         }
@@ -826,7 +826,7 @@ struct TitledPage: View {
     var body: some View {
         Text(title)
             .toolbar { actions }
-            .title(title)
+            .pageTitle(title)
             .showsNavigationBar(!hidesBar)
             .showsBackButton(!hidesBack)
             .loggingPhases(log, as: title)
@@ -841,7 +841,7 @@ private struct SearchingPage: View {
         let query = $query
         return Text("Results")
             .titleView { TextField(query).placeholder("Search") }
-            .title("Search")
+            .pageTitle("Search")
     }
 }
 
@@ -905,7 +905,7 @@ private struct SheetedPage: View {
 private struct CrowdedBarPage: View {
     var body: some View {
         Text("Crowded")
-            .title("Crowded")
+            .pageTitle("Crowded")
             .toolbar {
                 ToolbarGroup {
                     ToolbarButton("Save")

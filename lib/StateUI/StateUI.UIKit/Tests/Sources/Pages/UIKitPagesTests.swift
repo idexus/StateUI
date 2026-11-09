@@ -20,7 +20,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(path.projectedValue) {
                 TitledPage(title: "Items and Cards")
             } destination: { _ in
-                TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.title("ItemsView")
+                TabView([1, 2]) { number in TitledPage(title: "Example \(number)") }.pageTitle("ItemsView")
             }
         }
         defer { host.finish() }
@@ -415,7 +415,7 @@ final class UIKitPagesTests: XCTestCase {
         let dark = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title(title.wrappedValue).toolbar {
+                Text("Root").pageTitle(title.wrappedValue).toolbar {
                     ToolbarButton("Save").accessibilityIdentifier("save")
                 }
             } destination: { _ in Text("Pushed") }
@@ -470,7 +470,7 @@ final class UIKitPagesTests: XCTestCase {
     func testATabChosenFromTheMoreListIsChosen() throws {
         let tab = State(wrappedValue: 0)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            TabView(0..<7) { number in Text("Tab \(number)").title("Tab \(number)") }.selection(tab.projectedValue)
+            TabView(0..<7) { number in Text("Tab \(number)").pageTitle("Tab \(number)") }.selection(tab.projectedValue)
         }
         defer { host.finish() }
         let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }
@@ -493,7 +493,7 @@ final class UIKitPagesTests: XCTestCase {
         let white = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                TabView([0, 1]) { Text("\($0)").title("Tab \($0)") }
+                TabView([0, 1]) { Text("\($0)").pageTitle("Tab \($0)") }
             } destination: { _ in Text("Pushed") }
                 .barForegroundColor(white.wrappedValue ? .white : .black)
         }
@@ -571,7 +571,7 @@ final class UIKitPagesTests: XCTestCase {
         let under = State(wrappedValue: false)
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).title("Under the bar")
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : []).pageTitle("Under the bar")
             } destination: { _ in Text("Next") }
         }
         defer { host.finish() }
@@ -597,7 +597,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
                     .ignoresSafeArea(.all)
-                    .title("Rows")
+                    .pageTitle("Rows")
             } destination: { _ in Text("Next") }
         }
         defer { host.finish() }
@@ -691,7 +691,7 @@ private struct TitledPage: View {
     let title: String
 
     var body: some View {
-        Text(title).title(title)
+        Text(title).pageTitle(title)
     }
 }
 

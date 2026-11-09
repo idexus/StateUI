@@ -51,7 +51,7 @@
                 declaring(element, [Write(BarElementContract.barBackground, Material.color(.steelBlue))], beside: [
                     Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                            Text("In the sheet").title("Sheet")
+                            Text("In the sheet").pageTitle("Sheet")
                         } destination: { _ in Text("Pushed") }
                     },
                 ])
@@ -98,7 +98,7 @@
         let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { Beside([Text("Page")] + others) }.title("Page")
+                VStack { Beside([Text("Page")] + others) }.pageTitle("Page")
             } destination: { _ in Text("Pushed") }
         }
         switch element {

@@ -22,7 +22,7 @@ final class WebEditMenuTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { TextField(words.projectedValue) }
                     .menuBar { Menu("Edit") { MenuItem("Find") }.joins(.edit) }
-                    .title("Notes")
+                    .pageTitle("Notes")
             } destination: { _ in
                 Text("Note")
             }

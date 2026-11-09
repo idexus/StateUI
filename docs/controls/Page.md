@@ -8,7 +8,7 @@ What a container shows as a screen: a window's page, a stack's root and destinat
 struct NotePage: View {
     var body: some View {
         Text("Nothing written yet.")
-            .title("Note")
+            .pageTitle("Note")
             .showsBackButton(true)
     }
 }

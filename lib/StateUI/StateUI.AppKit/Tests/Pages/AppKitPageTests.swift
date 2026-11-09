@@ -1097,7 +1097,7 @@ final class AppKitPageTests: XCTestCase {
     func testGroupsBehindTheOverflowAreSectionsOfItsMenu() throws {
         let renderer = AppKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                Text("Root").title("Files")
+                Text("Root").pageTitle("Files")
                     .toolbar {
                         ToolbarGroup {
                             ToolbarButton("Rename")
@@ -1226,9 +1226,9 @@ final class AppKitPageTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: shows.projectedValue) {
                 NavigationStack(path.projectedValue) {
-                    Text("Root").title("Root")
+                    Text("Root").pageTitle("Root")
                 } destination: { number in
-                    Text("Page \(number)").title("Pushed").id("pushed")
+                    Text("Page \(number)").pageTitle("Pushed").id("pushed")
                 }
             }
         }
@@ -1280,7 +1280,7 @@ final class AppKitPageTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             Text("Beneath").sheet(isPresented: shows.projectedValue) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Text("Root").title("A draft with a long title").toolbar {
+                    Text("Root").pageTitle("A draft with a long title").toolbar {
                         ToolbarButton("Undo").placement(at: .start)
                         ToolbarButton("Save")
                         ToolbarButton("Add")
@@ -1315,9 +1315,9 @@ final class AppKitPageTests: XCTestCase {
     func testTheSidebarsPartPutsWhatHasNoRoomBehindItsMore() throws {
         let renderer = AppKitRenderer.running {
             SplitView {
-                Text("Folders").title("Library")
+                Text("Folders").pageTitle("Library")
             } detail: {
-                Text("Books").title("All books")
+                Text("Books").pageTitle("All books")
             }
             .showsSidebar(State(wrappedValue: true).projectedValue)
             .toolbar {
@@ -1536,9 +1536,9 @@ private struct AnchoredStack: View {
 
     var body: some View {
         if compact {
-            NavigationStack(path) { Text("Root").title("Root").id("root") } destination: { _ in Text("Next") }
+            NavigationStack(path) { Text("Root").pageTitle("Root").id("root") } destination: { _ in Text("Next") }
         } else {
-            NavigationStack(path) { Text("Wide").title("Wide") } destination: { _ in Text("Next") }
+            NavigationStack(path) { Text("Wide").pageTitle("Wide") } destination: { _ in Text("Next") }
         }
     }
 }

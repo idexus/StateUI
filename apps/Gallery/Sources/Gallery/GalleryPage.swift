@@ -22,6 +22,6 @@ extension View {
     ///
     /// - Parameter title: what the page is called.
     func galleryPage(_ title: String) -> some View {
-        self.title(title)
+        self.pageTitle(title)
     }
 }

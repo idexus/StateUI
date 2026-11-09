@@ -313,7 +313,7 @@ extension ControlDictionary {
             struct NotePage: View {
                 var body: some View {
                     Text("Nothing written yet.")
-                        .title("Note")
+                        .pageTitle("Note")
                         .showsBackButton(true)
                 }
             }
@@ -492,7 +492,7 @@ extension ControlDictionary {
                 let name: String
 
                 var body: some View {
-                    Text("Nothing in \(name)").title(name)
+                    Text("Nothing in \(name)").pageTitle(name)
                 }
             }
 
@@ -1021,7 +1021,7 @@ extension ControlDictionary {
             } destination: { section in
                 Text(section)
             }
-            .title("Settings")
+            .pageTitle("Settings")
             .pageIcon("settings.png")
             """#),
     ]

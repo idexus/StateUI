@@ -338,9 +338,9 @@ struct SettingsButton: View {
                 NavigationStack($path) {
                     Button("Account")
                         .onClicked { path.append("Account") }
-                        .title("Settings")
+                        .pageTitle("Settings")
                 } destination: { name in
-                    Text(name).title(name)
+                    Text(name).pageTitle(name)
                 }
             }
     }
@@ -360,7 +360,7 @@ struct SignUpSheet: View {
         NavigationStack($path) {
             Button("Finish")
                 .onClicked { shown = false }
-                .title("Sign up")
+                .pageTitle("Sign up")
                 .showsCloseButton(false)
         } destination: { step in
             Text("Step \(step)")
@@ -477,7 +477,7 @@ inspector stands over every overlay.
 
 ## Page titles and navigation furniture
 
-A view shown as a page says what its page is by modifier - `.title("Notes")`
+A view shown as a page says what its page is by modifier - `.pageTitle("Notes")`
 ([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
 An arrangement is a page already, and takes its title and icon the same way:
 
@@ -501,7 +501,7 @@ NavigationStack($settingsPath) {
 } destination: { route in
     SettingsDestination(route: route)
 }
-.title("Settings")
+.pageTitle("Settings")
 .pageIcon("settings.png")
 ```
 
@@ -627,9 +627,9 @@ struct Library: View {
 
     var body: some View {
         SplitView {
-            Text("Folders").title("Library")
+            Text("Folders").pageTitle("Library")
         } detail: {
-            Text("Books").title("All books")
+            Text("Books").pageTitle("All books")
         }
         .showsSidebar($showsFolders)
         .toolbar {
@@ -877,7 +877,7 @@ struct Conversation: View {
             }
         }
         .ignoresSafeArea(.all)
-        .title("Conversation")
+        .pageTitle("Conversation")
         .bottomBar {
             HStack {
                 TextEditor($draft)

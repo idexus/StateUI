@@ -25,7 +25,7 @@ private struct TabPage: View {
 
     var body: some View {
         AnyView(node: label("\(tab)"))
-            .title("\(tab)")
+            .pageTitle("\(tab)")
             .pageIcon(ImageSource("\(tab).png"))
     }
 }
@@ -163,7 +163,7 @@ final class TabViewTests: XCTestCase {
             } destination: { _ in
                 TabPage(tab: .browse)
             }
-            .title("Home")
+            .pageTitle("Home")
             .pageIcon("house.png")
         }
         .selection(selection.projectedValue)
@@ -243,7 +243,7 @@ final class TabViewTests: XCTestCase {
                 } destination: { _ in
                     TabPage(tab: .browse)
                 }
-                .title("Home")
+                .pageTitle("Home")
                 .pageIcon("house.png")
 
             default:

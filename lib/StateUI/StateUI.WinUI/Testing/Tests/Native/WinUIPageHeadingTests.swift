@@ -17,12 +17,12 @@ final class WinUIPageHeadingTests: XCTestCase {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        Text("Home words").title("Home")
+                        Text("Home words").pageTitle("Home")
                     } destination: { _ in
-                        Text("Sample words").title("Button menu")
+                        Text("Sample words").pageTitle("Button menu")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -50,12 +50,12 @@ final class WinUIPageHeadingTests: XCTestCase {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
-                        Text("Home words").title("Home")
+                        Text("Home words").pageTitle("Home")
                     } destination: { _ in
-                        TabView([1, 2]) { number in Text("Example words").title("Example \(number)") }.title("Items")
+                        TabView([1, 2]) { number in Text("Example words").pageTitle("Example \(number)") }.pageTitle("Items")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -82,12 +82,12 @@ final class WinUIPageHeadingTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 SplitView {
-                    Text("Menu").title("StateUI")
+                    Text("Menu").pageTitle("StateUI")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        Text("Home words").title("Home").showsTitle(false)
+                        Text("Home words").pageTitle("Home").showsTitle(false)
                     } destination: { _ in
-                        Text("Sample words").title("Button menu")
+                        Text("Sample words").pageTitle("Button menu")
                     }
                 }
                 .showsSidebar(State(wrappedValue: true).projectedValue)
@@ -102,9 +102,9 @@ final class WinUIPageHeadingTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    Text("Home words").title("Home")
+                    Text("Home words").pageTitle("Home")
                 } destination: { _ in
-                    Text("Sample words").title("Button menu")
+                    Text("Sample words").pageTitle("Button menu")
                 }
             }
             host.settle { host.window.map { _ in true } ?? false }

@@ -19,7 +19,7 @@ final class WebChoiceTests: XCTestCase {
     func testAChoiceLoadsWhatAPageShowsWithNoOtherEvent() throws {
         let host = WebRenderer.running {
             SplitView {
-                Text("Menu").title("Parcels")
+                Text("Menu").pageTitle("Parcels")
             } detail: {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     SummaryPage()
@@ -64,7 +64,7 @@ private struct SummaryPage: View {
         }
         .rows(.automatic, .fill, .automatic)
         .toolbar { ToolbarButton("Report").showsText(true) }
-        .title("Summary")
+        .pageTitle("Summary")
         .onAppearing(policy: .cancelPrevious) { await load() }
         .onChanged(range, policy: .cancelPrevious) { await load() }
     }
