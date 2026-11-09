@@ -628,7 +628,8 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A sheet beneath another given another page comes over it, as a page presented anew: the sheets from the
-    /// change up leave and come again, so the last shown is the one on top.
+    /// change up leave and come again, so the last shown is the one on top - each holding its page, which a sheet
+    /// leaving lets go of at once.
     func testASheetGivenAnotherPageComesOverTheOthers() throws {
         try onUIThread {
             let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
@@ -650,6 +651,9 @@ final class GTKPagesTests: XCTestCase {
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
                           "the last shown on top")
+            for (_, sheet) in controller.sheets {
+                XCTAssertTrue(adw_dialog_get_child(sheet.dialog) == sheet.page.widget, "a sheet come again shows its page")
+            }
         }
     }
 

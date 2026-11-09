@@ -94,12 +94,14 @@ final class GTKSheet {
         adw_dialog_set_title(dialog, title)
     }
 
-    /// Closes the sheet as the program does: nobody hears it as the user's.
+    /// Closes the sheet as the program does: nobody hears it as the user's, and its page is let go of at once - the
+    /// same page may come again on a sheet of its own before this one goes, and a widget stands in one parent.
     func close() {
         guard !isClosed else { return }
         isClosed = true
         Self.shown.release(number)
         adw_dialog_force_close(dialog)
+        adw_dialog_set_child(dialog, nil)
     }
 
     /// The dialog closed: the user's close, where the program did not close it.
