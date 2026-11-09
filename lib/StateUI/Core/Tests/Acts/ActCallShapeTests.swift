@@ -273,6 +273,30 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// A time the host answers with a number that is no whole one - not a number, endless - is an unreadable answer,
+    /// thrown, and never stops the application; a whole number written as a fraction reads as the nearest.
+    func testATimeTheHostCannotSayIsThrownNotTrapped() async throws {
+        drain()
+        let task = Self.begin { try await StandardEnvironment.application.clock.now() }
+        let call = try XCTUnwrap(drain().first?.completion)
+        HostBoundary.reply(call, with: [.numbers([2026, 11, 9, .nan, 30, .infinity, 0])])
+        await settle()
+
+        do {
+            _ = try await task.value
+            XCTFail("a time of no numbers was read")
+        } catch let error as StateUIError {
+            guard case .unreadableAnswer = error else { return XCTFail("\(error)") }
+        }
+
+        let read = Self.begin { try await StandardEnvironment.application.clock.now() }
+        let answered = try XCTUnwrap(drain().first?.completion)
+        HostBoundary.reply(answered, with: [.numbers([2026, 11, 9, 13.9999999, 30, 15, 250])])
+        await settle()
+        let time = try await read.value
+        XCTAssertEqual(time, ClockTime(hour: 14, minute: 30, second: 15, millisecond: 250))
+    }
+
     func testAskingForAnOffsetCrossesWithItsArgumentsInPlace() async throws {
         try await check("utcOffset", [.string("Europe/Warsaw"), .numbers([2026, 1, 15])]) {
             _ = try? await StandardEnvironment.application.clock.utcOffset(
