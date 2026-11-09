@@ -1085,7 +1085,10 @@ take the keys and the checking alone.
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
 bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
-ends stand in order whichever the tree gave first, and where it gives none
+ends stand in order whichever the tree gave first, each within half the reach
+of a 32-bit float - so the span is a number to every toolkit: UIKit's slider
+counts in floats, and a slider whose span is none draws its thumb at NaN,
+which stops the application - and where it gives none
 they are the control's kind's - from 0 to a slider's 1, a share, or a
 stepper's 100, a count (`ValueArithmetic.ends`, which every host's
 registration reads through `ElementValues.ends`); a value past an end stands

@@ -23,6 +23,19 @@ final class UIKitValueControlsTests: XCTestCase {
         XCTAssertEqual([stepper.minimumValue, stepper.maximumValue, stepper.stepValue], [0, 10, 1])
     }
 
+    /// A slider whose end stands past what a float counts stands at the float's reach, its thumb on the screen:
+    /// UIKit's slider counts in floats, and a span of none placed its thumb at NaN.
+    @MainActor
+    func testASliderEndPastAFloatsReachStandsItsThumbOnTheScreen() throws {
+        let host = UIKitRenderer.running { Slider(0.5).minimum(1e300) }
+        defer { host.finish() }
+        host.settle { false }
+        let slider = try XCTUnwrap(host.views(UIKitSliderView.self).first)
+
+        XCTAssertTrue(slider.minimumValue.isFinite && slider.maximumValue.isFinite)
+        XCTAssertTrue((slider.maximumValue - slider.minimumValue).isFinite)
+    }
+
     /// A switch and a check box say the words the tree gives them, in their case: the check box as its own title;
     /// the switch's beside it at its start, the switch at its end, naming it for VoiceOver and flipping it at a tap.
     @MainActor

@@ -17,6 +17,17 @@ final class ValueArithmeticTests: XCTestCase {
         XCTAssertEqual(ValueArithmetic.step(nil), 1, "a step the tree gives none is 1")
     }
 
+    /// A range stands where every toolkit counts it: its ends within half the reach of a 32-bit float, so its span is
+    /// a number to each - a range wider stands at that reach.
+    func testARangeStandsWhereEveryToolkitCountsIt() {
+        let reach = Double(Float.greatestFiniteMagnitude) / 2
+        XCTAssertTrue(ValueArithmetic.range(1e300, 1) == (1, reach))
+        XCTAssertTrue(ValueArithmetic.range(-.greatestFiniteMagnitude, .greatestFiniteMagnitude) == (-reach, reach))
+        let (lower, upper) = ValueArithmetic.range(-1e300, 1e300)
+        XCTAssertTrue(Float(upper - lower).isFinite, "a span a float holds")
+        XCTAssertTrue(ValueArithmetic.range(-1e30, 1e30) == (-1e30, 1e30), "a range within it as it is")
+    }
+
     /// The ends of a range the tree gives none are its control's: a slider's a share, 0 to 1; a stepper's a count,
     /// 0 to 100 - and the tree's where it gives one.
     func testARangesEndsTheTreeLeavesOutAreItsControls() {
