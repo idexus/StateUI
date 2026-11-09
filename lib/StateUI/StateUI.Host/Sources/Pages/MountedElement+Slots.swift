@@ -20,6 +20,12 @@ extension MountedElement {
         }
     }
 
+    /// The element standing in this one's place among its parent's arranged children: what an anchor holds, else
+    /// this one.
+    public var placed: MountedElement? {
+        type == .anchor ? arrangedChildren.first : self
+    }
+
     /// The element placing this one among its arranged children: its parent, past an anchor standing between.
     public var placingParent: MountedElement? {
         guard let parent else { return nil }

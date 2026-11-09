@@ -152,7 +152,7 @@
             }
             switch parent.type {
             case .navigationStack: if parent.children.last !== child { return false }
-            case .tabView: if let chosen = parent.selectedTab, !child.standsAs(chosen) { return false }
+            case .tabView: if let chosen = parent.selectedTab, chosen !== child.placed { return false }
             default: break
             }
             child = parent
@@ -160,10 +160,5 @@
         // Under the window's sheets, none in sight.
         guard let window = enclosing(type: .window) else { return true }
         return tree?.presentedSheets(in: window).isEmpty != false
-    }
-
-    /// Whether this element is `placed`, or the anchor standing in its place.
-    private func standsAs(_ placed: MountedElement) -> Bool {
-        self === placed || type == .anchor && arrangedChildren.first === placed
     }
 }
