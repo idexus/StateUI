@@ -1218,6 +1218,25 @@ final class AppKitPageTests: XCTestCase {
             "the standard size, within the window it hangs from")
     }
 
+    /// A popover whose page is larger than any screen stands within the screen: AppKit raises over a frame past its
+    /// 32-bit points, which ends the application, and a popover larger than the screen shows no more of itself.
+    @MainActor
+    func testAPopoverLargerThanAnyScreenStandsWithinIt() throws {
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").popover(isPresented: State(wrappedValue: true).projectedValue) {
+                Text("Wide").width(1e12).height(1e12)
+            }
+        }
+        defer { renderer.finish() }
+        for _ in 0..<3 { renderer.runtime.pump.turn() }
+        let popover = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .popover)?.native as? AppKitElement)
+        XCTAssertTrue(popover.shownPopover?.isShown ?? false, "it stands")
+        let screen = try XCTUnwrap(NSScreen.main).visibleFrame.size
+        let shown = try XCTUnwrap(popover.view?.window).frame.size
+        XCTAssertLessThanOrEqual(shown.width, screen.width)
+        XCTAssertLessThanOrEqual(shown.height, screen.height)
+    }
+
     /// A stack in a sheet brings its bar to the sheet: the top page names the sheet, the way back returns to the
     /// page beneath, and the close button takes the sheet away, false onto its state.
     @MainActor

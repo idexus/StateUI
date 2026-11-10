@@ -183,6 +183,13 @@ picture before it - the same view a word item on the window's toolbar
 holds. The strip is made again only where an action draws otherwise, and
 follows the page's actions whenever the window's chrome is composed.
 
+## A popover
+
+A view's popover is AppKit's `NSPopover` by its anchor's view, as large as
+its page fits - within the screen the anchor stands on: AppKit raises over a
+popover window past its 32-bit points, which ends the application, and a
+popover larger than the screen shows no more of itself.
+
 ## Sheets
 
 A page a view presents is a sheet on the window - over the top of its sheets
