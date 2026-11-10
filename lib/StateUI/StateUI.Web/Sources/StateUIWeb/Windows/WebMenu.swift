@@ -116,8 +116,8 @@ final class WebMenu {
         owned.append(part)
     }
 
-    /// Takes down the menu this one stands in, whole.
-    private func takeDown() {
+    /// Takes down the menu this one stands in, whole: one shown for a view goes as the view leaves.
+    func takeDown() {
         guard let parent else { return WebRelay.hidePopover(popover.node) }
         parent.takeDown()
     }

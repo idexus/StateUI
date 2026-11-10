@@ -29,6 +29,9 @@ final class WebElement: NativeElement {
     var listensForMenu = false
     var listensForButtonMenu = false
 
+    /// The menu the view showed last - its context menu, or its button's - which goes as the view leaves.
+    weak var menuShown: WebMenu?
+
     /// Whether the view listens for the keyboard coming into it and leaving it.
     var listensForFocus = false
 
@@ -105,6 +108,7 @@ final class WebElement: NativeElement {
     }
 
     func leave() {
+        menuShown?.takeDown()
         host?.placements.beforeChange(along: layoutsUp)
         bottomBar?.release()
         bottomBar = nil

@@ -16,7 +16,9 @@ extension WebElement {
         listensForMenu = true
         view.listenForMenu { [weak self] in
             guard let self, let declared = element.children.first(where: { $0.type == .contextMenu }) else { return }
-            WebMenu(MenuEntry.entries(of: declared)).show(at: WebRelay.eventPointer.at)
+            let menu = WebMenu(MenuEntry.entries(of: declared))
+            menuShown = menu
+            menu.show(at: WebRelay.eventPointer.at)
         }
     }
 
@@ -32,7 +34,9 @@ extension WebElement {
         listensForButtonMenu = true
         button.holdMenu(opening) { [weak self, weak button] in
             guard let self, let button else { return }
-            WebMenu(ButtonMenu.entries(of: element)).show(under: button)
+            let menu = WebMenu(ButtonMenu.entries(of: element))
+            menuShown = menu
+            menu.show(under: button)
         }
     }
 }

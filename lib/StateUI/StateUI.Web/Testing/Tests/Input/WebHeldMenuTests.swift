@@ -46,6 +46,62 @@ final class WebHeldMenuTests: XCTestCase {
         host.finish()
     }
 
+    /// A view let go of while the menu its held finger opened stands takes off what the menu hung on the page: the
+    /// touch beside it and the Escape that would close it.
+    func testAViewLetGoOfUnderItsHeldMenuLeavesNothingOnThePage() throws {
+        WebRenderer.shared?.finish()
+        let shown = State(wrappedValue: true)
+        let host = WebRenderer.running {
+            VStack {
+                if shown.wrappedValue { Text("Weekly notes").padding(20).contextMenu { MenuItem("Archive") } }
+            }
+        }
+        host.step()
+        let words = "[...document.querySelectorAll('*')].find((e) => e.children.length === 0 "
+            + "&& e.textContent === 'Weekly notes')"
+        let middle = try XCTUnwrap(place(of: words), "the view with the menu")
+        // What the page hears a press or a key by, ahead of its elements, counted as it is hung and taken off.
+        try WebBrowser.run("""
+            const [add, remove] = [document.addEventListener, document.removeEventListener];
+            const counts = (type, options) => (type === 'pointerdown' || type === 'keydown') && options === true;
+            window.stateuiCounted = { add, remove, hung: 0 };
+            document.addEventListener = function (type, handler, options) {
+              if (counts(type, options)) stateuiCounted.hung += 1;
+              return add.call(this, type, handler, options);
+            };
+            document.removeEventListener = function (type, handler, options) {
+              if (counts(type, options)) stateuiCounted.hung -= 1;
+              return remove.call(this, type, handler, options);
+            };
+            """)
+        defer {
+            try? WebBrowser.run("""
+                document.addEventListener = stateuiCounted.add;
+                document.removeEventListener = stateuiCounted.remove;
+                """)
+        }
+
+        touch("touchStart", [middle])
+        settle(host) { self.menuShows }
+        touch("touchEnd", [])
+        for _ in 0..<5 {
+            host.step()
+            WebBrowser.pause()
+        }
+        XCTAssertTrue(menuShows, "the hold opened the menu")
+        XCTAssertEqual(try WebBrowser.number("stateuiCounted.hung", on: 0), 2, "a touch beside it and Escape")
+
+        shown.wrappedValue = false
+        for _ in 0..<5 {
+            host.step()
+            WebBrowser.pause()
+        }
+
+        XCTAssertFalse(menuShows, "the menu went with its view")
+        XCTAssertEqual(try WebBrowser.number("stateuiCounted.hung", on: 0), 0, "nothing hears the page for it")
+        host.finish()
+    }
+
     /// Whether a menu stands over the page.
     private var menuShows: Bool {
         (try? WebBrowser.truth("document.querySelector('.stateui-menu:popover-open') !== null", on: 0)) ?? false

@@ -229,7 +229,8 @@ over everything (`popover="auto"`): an item a button, a separator a line, a
 submenu a button opening its own popover beside it, inside the one it stands
 in so that both stay open. A click beside it or Escape takes it down - the
 browser's own light dismissal - and so does choosing an item, which then
-hears it chosen. An open menu holds the keyboard: the page's own keys - a
+hears it chosen. A menu a view showed - its context menu, its button's - goes
+as the view leaves the page. An open menu holds the keyboard: the page's own keys - a
 view taking the arrows, Enter or Escape - pass it by, so its arrows go
 through its items whatever the page takes, and as it goes the browser gives
 the keyboard back to what held it. A popover is kept in the window whole,
