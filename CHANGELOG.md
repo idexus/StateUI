@@ -16,8 +16,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
   listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
 - Text: on the Web a text's words are selected only where the application says so.
-- Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, and a view freed
-  of its area in a layered stack fills the room again.
+- Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, a view freed of
+  its area in a layered stack fills the room again, and a list that becomes the page's scroller as a view beside it
+  goes keeps its last items clear of the bar at the foot. The bars over and under a page no longer listen again to a
+  scroller each time it is the page's again.
 - Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
   Windows a path's curve after a close begins a figure of its own.
 - Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
