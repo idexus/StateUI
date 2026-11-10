@@ -75,6 +75,8 @@ namespace {
         media::PathGeometry geometry;
         geometry.FillRule(evenOdd ? media::FillRule::EvenOdd : media::FillRule::Nonzero);
         media::PathFigure figure{nullptr};
+        // A curve drawn with no figure open - the first, or one after a close - begins one where the last began.
+        auto start = at(0, 0);
         for (int32_t index = 0; index < count;) {
             auto op = static_cast<StateUICurve>(static_cast<int32_t>(commands[index++]));
             auto need = op == StateUICurveMove || op == StateUICurveLine ? 2
@@ -82,9 +84,15 @@ namespace {
             if (index + need > count) break;
             auto const *p = commands + index;
             index += need;
+            if (op == StateUICurveClose) {
+                if (figure) figure.IsClosed(true);
+                figure = nullptr;
+                continue;
+            }
             if (op == StateUICurveMove || !figure) {
+                if (op == StateUICurveMove) start = at(p[0], p[1]);
                 figure = media::PathFigure();
-                figure.StartPoint(op == StateUICurveMove ? at(p[0], p[1]) : at(0, 0));
+                figure.StartPoint(start);
                 figure.IsFilled(true);
                 geometry.Figures().Append(figure);
                 if (op == StateUICurveMove) continue;
@@ -113,8 +121,7 @@ namespace {
                 figure.Segments().Append(segment);
                 break;
             }
-            case 4:
-                figure.IsClosed(true);
+            default:
                 break;
             }
         }
