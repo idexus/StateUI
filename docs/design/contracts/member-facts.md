@@ -52,8 +52,8 @@ again instead:
 
 ```text
   a gesture's settings           allowsDrop, isDraggable, dragText, droppedFileTypes, tapCount,
-                                 panTouchCount, swipeDirection, swipeThreshold: they belong to
-                                 the recognizer
+                                 panTouchCount, holdDuration, swipeDirections, swipeThreshold:
+                                 they belong to the recognizer
   a list's items                 a picker's options, which are data
   where the host puts an item    a toolbar item's placement, a toolbar group's side and order,
                                  whether a toolbar item shows its text, a menu bar's order
