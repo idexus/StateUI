@@ -40,6 +40,13 @@ final class GTKFrameClock: FrameClock {
         Self.current = self
     }
 
+    /// Takes the tick off the widget held, and lets go of it.
+    isolated deinit {
+        guard let tickedWidget else { return }
+        if tick != 0 { gtk_widget_remove_tick_callback(tickedWidget, tick) }
+        g_object_unref(tickedWidget)
+    }
+
     /// A frame GTK draws: the frame's work at this moment; whether the clock is still held.
     func frame() -> Bool {
         guard held else { return false }
@@ -47,22 +54,26 @@ final class GTKFrameClock: FrameClock {
         return held
     }
 
-    /// Adds the tick callback to the widget while held, and removes it otherwise.
+    /// Adds the tick callback to the widget while held, and removes it otherwise. The widget ticked with is held
+    /// until the clock moves on: a window closed can go before the clock follows another.
     private func follow() {
         let wanted = held && ticksWithGTK ? widget : nil
         guard wanted != tickedWidget || (wanted != nil && tick == 0) else { return }
 
-        if let tickedWidget, tick != 0 { gtk_widget_remove_tick_callback(tickedWidget, tick) }
+        if let tickedWidget {
+            if tick != 0 { gtk_widget_remove_tick_callback(tickedWidget, tick) }
+            g_object_unref(tickedWidget)
+        }
         tick = 0
         tickedWidget = wanted
         guard let wanted else { return }
 
+        g_object_ref(wanted)
         tick = gtk_widget_add_tick_callback(wanted, { _, _, _ in
             MainActor.assumeIsolated {
                 guard let clock = GTKFrameClock.current else { return 0 }
                 if clock.frame() { return 1 }
                 clock.tick = 0
-                clock.tickedWidget = nil
                 return 0
             }
         }, nil, nil)

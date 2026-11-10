@@ -66,7 +66,10 @@ The frame clock adds a tick callback to the window while something holds it,
 and removes it when nothing moves. GTK calls it once for every frame it draws
 the window in, at the display's rate, before the frame's layout, so what the
 frame moves is drawn in that same frame. The runtime's time is GLib's
-monotonic clock, in milliseconds.
+monotonic clock, in milliseconds. The clock holds the window it ticks with
+until it moves on: the roster lets a closed window's controller go before
+the clock follows another window, and the tick comes off a window still
+there.
 
 ## The window
 
