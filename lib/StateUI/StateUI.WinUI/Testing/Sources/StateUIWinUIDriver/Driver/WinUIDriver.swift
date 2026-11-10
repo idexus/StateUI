@@ -88,9 +88,6 @@ final class WinUIDriver: HostDriver {
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
 
-    /// How many launches the relay held before the driver started the host, which `launched()` leaves out.
-    var launchesBefore = 0
-
     var register: HostRegister { WinUIRealization.register.and(backendRecords) }
 
     func start(
@@ -99,11 +96,11 @@ final class WinUIDriver: HostDriver {
         written.listen()
         Self.emptyStore()
         Self.emptyFiles()
-        stateui_winui_hold_launches(true)
-        launchesBefore = Self.launches().count
         WinUITestHost.closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
         renderer.actToolkit.holdsShareForTesting = true
+        renderer.actToolkit.announcedForTesting = []
+        renderer.fileToolkit.holdsLaunchesForTesting = true
         self.renderer = renderer
         return renderer.runtime.tree
     }

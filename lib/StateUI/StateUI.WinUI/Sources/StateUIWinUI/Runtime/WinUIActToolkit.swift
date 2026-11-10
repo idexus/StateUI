@@ -118,7 +118,11 @@ final class WinUIActToolkit: ActToolkit {
     /// Keeps the accent the user chose for Windows: WinUI draws its controls in it.
     func useAccentColor(_ accent: Color?) -> Bool { false }
 
+    /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
+
     func announce(_ words: String) {
+        announcedForTesting?.append(words)
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }
 

@@ -1481,9 +1481,6 @@ void stateui_winui_cancel_request(int64_t ticket);
 /// whether one took it comes back through `launchAnswered`, under `ticket`, on the UI thread.
 void stateui_winui_launch(int64_t ticket, char const *target, bool file);
 
-/// What a test does: while `held`, a launch is answered as taken and Windows is asked nothing.
-void stateui_winui_hold_launches(bool held);
-
 /// What a test does: a dialog that saves opens in `folder`, in UTF-8, so what a test saves stays there.
 void stateui_winui_keep_test_files_in(char const *folder);
 
@@ -1540,16 +1537,8 @@ void stateui_winui_prompt_write(StateUIObjectRef element, char const *utf8);
 /// (0x1F) but the last; -1 for none showing. What a test reads.
 int32_t stateui_winui_question(StateUIObjectRef element, char *utf8, int32_t capacity);
 
-/// What the screen reader was told since the relay started, in UTF-8, each ended by the unit separator (0x1F) but
-/// the last, as far as `capacity` goes; its whole length. What a test reads.
-int32_t stateui_winui_announced(char *utf8, int32_t capacity);
-
 /// The file dialog showing in the process: 0 one that opens, 1 one that saves, -1 none. What a test reads.
 int32_t stateui_winui_file_dialog(void);
-
-/// What was launched since the relay started - a file by its path, an address as written - in UTF-8, each ended by
-/// the unit separator (0x1F) but the last, as far as `capacity` goes; its whole length. What a test reads.
-int32_t stateui_winui_launched(char *utf8, int32_t capacity);
 
 #ifdef STATEUI_WINUI_RELAY
 #pragma clang attribute pop

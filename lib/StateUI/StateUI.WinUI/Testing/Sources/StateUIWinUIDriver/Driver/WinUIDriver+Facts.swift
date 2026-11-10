@@ -83,11 +83,7 @@ extension WinUIDriver {
     }
 
     func announced() throws -> [String] {
-        let length = stateui_winui_announced(nil, 0)
-        var bytes = [CChar](repeating: 0, count: Int(length) + 1)
-        _ = stateui_winui_announced(&bytes, Int32(bytes.count))
-        let words = String(decoding: bytes.prefix(Int(length)).map { UInt8(bitPattern: $0) }, as: UTF8.self)
-        return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
+        renderer?.actToolkit.announcedForTesting ?? []
     }
 
     /// What the share sheet the host holds offers: its words, then its address on a line of its own.
@@ -105,15 +101,9 @@ extension WinUIDriver {
 
     func launched() throws -> [String] {
         // An address as written; a file - a path, no scheme - by its name.
-        Self.launches().dropFirst(launchesBefore).map { target in
-            target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
+        (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
+            target.contains("://") ? target : String(target.split { $0 == "\\" || $0 == "/" }.last ?? Substring(target))
         }
-    }
-
-    /// Everything the relay launched since it started, in order.
-    static func launches() -> [Substring] {
-        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
-        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false)
     }
 
     func color(of element: MountedElement, at point: Point) throws -> Color? {

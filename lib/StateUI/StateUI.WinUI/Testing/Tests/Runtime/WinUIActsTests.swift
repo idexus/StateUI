@@ -47,6 +47,15 @@ final class WinUIActsTests: XCTestCase {
         }
     }
 
+    /// A host keeps nothing of what it told the screen reader where no test listens.
+    func testNothingToldIsKeptWhereNoTestListens() {
+        onUIThread {
+            let host = WinUIRenderer.running { Text("Page") }
+            host.actToolkit.announce("Saved the draft")
+            XCTAssertNil(host.actToolkit.announcedForTesting, "the words kept")
+        }
+    }
+
     /// A question stands over the window the user is in - the one activated last - not over the application's first.
     func testAQuestionStandsInTheWindowTheUserIsIn() throws {
         try onUIThread {

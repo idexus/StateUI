@@ -31,12 +31,6 @@ namespace media = winrt::Microsoft::UI::Xaml::Media;
 namespace shapes = winrt::Microsoft::UI::Xaml::Shapes;
 
 namespace {
-    /// What the screen reader was told, in order.
-    std::vector<std::string> announcements;
-
-    /// What was handed to Windows to launch, in order.
-    std::vector<std::string> launches;
-
     std::string number(double value) {
         char words[32];
         std::snprintf(words, sizeof words, "%.10g", value);
@@ -784,38 +778,6 @@ extern "C" int32_t stateui_winui_question(StateUIObjectRef handle, char *utf8, i
         report("reading a question");
         return -1;
     }
-}
-
-extern "C" int32_t stateui_winui_announced(char *utf8, int32_t capacity) {
-    try {
-        std::string words;
-        for (auto const &said : announcements) words += (words.empty() ? "" : "\x1f") + said;
-        copy(words, utf8, capacity);
-        return static_cast<int32_t>(words.size());
-    } catch (...) {
-        report("reading what was announced");
-        return 0;
-    }
-}
-
-void stateui::announced(std::string const &words) {
-    announcements.push_back(words);
-}
-
-extern "C" int32_t stateui_winui_launched(char *utf8, int32_t capacity) {
-    try {
-        std::string targets;
-        for (auto const &target : launches) targets += (targets.empty() ? "" : "\x1f") + target;
-        copy(targets, utf8, capacity);
-        return static_cast<int32_t>(targets.size());
-    } catch (...) {
-        report("reading what was launched");
-        return 0;
-    }
-}
-
-void stateui::launched(std::string const &target) {
-    launches.push_back(target);
 }
 
 extern "C" int32_t stateui_winui_file_dialog(void) {

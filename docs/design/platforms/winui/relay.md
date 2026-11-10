@@ -79,8 +79,7 @@ The relay's general reader for tests, `stateui_winui_read(element, name)`,
 answers what WinUI holds of the element's property of that name, as words - a
 color as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
 -1 for a property the element has none of. Beside it, `stateui_winui_question`
-reads the dialog showing over a window and `stateui_winui_announced` what the
-relay told the screen reader, which WinUI keeps nowhere a test can ask; and a
+reads the dialog showing over a window; and a
 reader each answers what one property cannot say - a window's frame
 (`stateui_winui_window_frame`), a text's runs, a list's choice, its mode and
 a row's name, a title bar's words, a slider's steps, a field's facts. A test
@@ -89,6 +88,8 @@ reads the control; it never asks the host what it wrote.
 A file dialog is Windows' own window, on a thread of its own:
 `stateui_winui_file_dialog` reads whether it opens or saves, and
 `stateui_winui_answer_file_dialog` types the paths in its field for a file's
-name and presses its button, as a user does. A test holds launches back
-(`stateui_winui_hold_launches`) - none reaches Windows - and reads what was
-handed over from `stateui_winui_launched`, the relay's own record.
+name and presses its button, as a user does. What the screen reader was told
+and what was launched the relay keeps nowhere: the host's act and file
+toolkits keep them while a test asks (`announcedForTesting`,
+`holdsLaunchesForTesting`), as every host's do - a launch held never reaches
+Windows - and keep nothing for an application.

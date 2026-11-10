@@ -18,6 +18,13 @@ final class WinUIFileToolkit: FileToolkit {
     private let reads = Numbered<(Result<[UInt8], ActFailure>) -> Void>()
     private let launches = Numbered<(Bool) -> Void>()
 
+    /// Whether a launch is only held, never handed to Windows: a test's, which answers it as taken.
+    var holdsLaunchesForTesting = false
+
+    /// What the host handed Windows to launch, in order - an address as written, a file by its path - while a test
+    /// holds the launches.
+    private(set) var launchedForTesting: [String] = []
+
     init(renderer: WinUIRenderer) {
         self.renderer = renderer
     }
@@ -73,13 +80,22 @@ final class WinUIFileToolkit: FileToolkit {
     }
 
     func launch(_ file: ChosenFile, answered: @escaping (Bool) -> Void) {
-        let ticket = launches.hold(answered)
-        stateui_winui_launch(ticket, file.address, true)
+        guard !holdLaunch(file.address, answered) else { return }
+        stateui_winui_launch(launches.hold(answered), file.address, true)
     }
 
     func launch(address: String, answered: @escaping (Bool) -> Void) {
-        let ticket = launches.hold(answered)
-        stateui_winui_launch(ticket, address, false)
+        guard !holdLaunch(address, answered) else { return }
+        stateui_winui_launch(launches.hold(answered), address, false)
+    }
+
+    /// Keeps `target` where a test holds the launches, answered as taken - never in the turn that asked; whether it
+    /// did.
+    private func holdLaunch(_ target: String, _ answered: @escaping (Bool) -> Void) -> Bool {
+        guard holdsLaunchesForTesting else { return false }
+        launchedForTesting.append(target)
+        Task { @MainActor in answered(true) }
+        return true
     }
 
     /// What was launched under `ticket` was taken by an application, or not.
