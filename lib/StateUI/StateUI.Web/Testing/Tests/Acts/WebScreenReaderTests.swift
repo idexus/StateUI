@@ -22,7 +22,8 @@ final class WebScreenReaderTests: XCTestCase {
             let written = (0..<64).map { String(repeating: "X", count: $0 % 30 + 1) + "\($0)" }
             XCTAssertEqual(written.count, 64)
             var said = ""
-            for _ in 0..<30 where said.isEmpty {
+            for _ in 0..<30 {
+                guard said.isEmpty else { break }
                 WebBrowser.pause()
                 said = try WebBrowser.evaluate("document.getElementById('stateui-announcer').textContent", on: 0) ?? ""
             }
