@@ -3,6 +3,33 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.4 - 2026-11-10
+
+### Fixed
+
+- Numbers: a number past what a toolkit counts no longer ends the process - a tab chosen past `Int`'s reach on GTK,
+  iOS and Windows, a window asked a size or a place past what the Mac and Windows count, and on GTK a canvas's words
+  or a text editor wider than the toolkit measures; on Windows such a window no longer falls to its least size.
+- Pages and menus: a popover larger than the screen stands within it on the Mac; a context menu open as its view goes
+  closes with it on Android and the Web.
+- Input: on Windows a press whose view went mid-press no longer keeps the mouse from every other view, and a view
+  whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
+  listening on the page.
+- Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
+  Windows a path's curve after a close begins a figure of its own.
+- Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
+  kind, value, whether VoiceOver meets them - where UIKit's own words stood; on the Web words made at run time and
+  told to the screen reader are said as asked.
+- Hosts: on GTK a popover waiting for its hidden anchor and the frame clock hold what they use; Windows keeps no
+  record of what an application told the screen reader or launched.
+
+### Tooling
+
+- The examples in the libraries' documentation comments are held to the library as it stands
+  (`DocCommentExamplesTests`).
+- A host's driver opens a view's context menu as the user asks for it and reads the menu shown (`UserAct.openMenu`,
+  `HostDriver.shownMenu(over:)`), and the UIKit suite runs as VoiceOver does, UIKit's accessibility answering.
+
 ## 0.8.3 - 2026-11-09
 
 ### Breaking changes

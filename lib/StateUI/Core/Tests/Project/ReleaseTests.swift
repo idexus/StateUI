@@ -49,7 +49,8 @@ final class ReleaseTests: XCTestCase {
     }
 
     /// What the newest release says is gone is gone: no name its section lists before "is gone" or "are gone"
-    /// stands in the public API's record. A name a later change brought back makes the release's word untrue.
+    /// stands in the public API's record - a release taking nothing away says none. A name a later change brought
+    /// back makes the release's word untrue.
     func testWhatTheNewestReleaseSaysIsGoneIsNotInTheAPI() throws {
         let changes = try String(contentsOf: SourceTree.repository.appendingPathComponent("CHANGELOG.md"), encoding: .utf8)
         let record = try APISurfaceTests.recorded()
@@ -60,7 +61,9 @@ final class ReleaseTests: XCTestCase {
 
         let newest = changes.components(separatedBy: "\n## ").dropFirst().first ?? ""
         let gone = ReleaseText.namesSaidGone(in: newest)
-        XCTAssertFalse(gone.isEmpty, "The guard reads no name the newest release says is gone.")
+        // A release taking nothing away says nothing is gone; one saying so names what, and the guard reads it.
+        let saysGone = newest.range(of: #"\s(is|are)\s+gone"#, options: .regularExpression) != nil
+        XCTAssertEqual(gone.isEmpty, !saysGone, "The guard reads no name the newest release says is gone.")
         for name in gone where ReleaseText.isDeclared(name, among: declared) {
             XCTFail("CHANGELOG.md's newest release says `\(name)` is gone, but the public API declares it.")
         }
