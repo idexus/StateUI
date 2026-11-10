@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ZStackContract` on a host: its children stand one over another, each filling the room where it names no area, the
-/// later over the earlier, and a press reaches the one in front.
+/// `ZStackContract` on a host: its children stand one over another, each filling the room where it names no area - or
+/// no longer names one - the later over the earlier, and a press reaches the one in front.
 @_spi(Host) public enum ZStackTests: ConformanceFamily {
     public static let name = "ZStack"
 
@@ -63,6 +63,32 @@
                 s.expect(try s.reaches(front, at: Point(10, 10)), true, "the later child, where it stands")
                 s.expect(try s.reaches(back, at: Point(10, 10)), false, "not the one under it there")
                 s.expect(try s.reaches(back, at: Point(40, 30)), true, "the earlier one beside it")
+            },
+            ConformanceCase("aChildWhoseAreaGoesFillsTheRoom", proves: [Covered(ZStackContract.self)], needs: [
+                Covered(ViewContract.area, on: "Rectangle"), Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                let placed = State(wrappedValue: true)
+                let frames = Received<[Double]>()
+                s.start {
+                    VStack {
+                        ZStack {
+                            let child = Rectangle().fill(.blue)
+                            (placed.wrappedValue ? child.area(.absolute(Rect(10, 20, 30, 15))) : child)
+                                .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("child")
+                        }
+                        .width(60).height(40)
+                        .horizontalAlignment(.start)
+                        Button("Free").onClicked { placed.wrappedValue = false }.id("free")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+
+                s.settle { frames.values.last.map(FrameReport.place) == [10, 20, 30, 15] }
+                s.expect(frames.values.last.map(FrameReport.place), [10, 20, 30, 15], "in its area")
+                try s.perform(.activate, on: s.element("free"))
+                s.settle { frames.values.last.map(FrameReport.place) == [0, 0, 60, 40] }
+                s.expect(frames.values.last.map(FrameReport.place), [0, 0, 60, 40], "the whole room, its area gone")
             },
         ]
     }

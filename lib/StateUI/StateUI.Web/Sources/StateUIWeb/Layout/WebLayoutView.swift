@@ -279,6 +279,8 @@ class WebLayoutView: WebDOMView {
         view.setOpacity(view.opacity)
         guard let area else {
             view.style("grid-area", "1 / 1 / 2 / 2")
+            view.style("left", nil)
+            view.style("top", nil)
             return view.style("position", "relative")
         }
         let (left, top) = (WebCSS.pixels(padding.start)!, WebCSS.pixels(padding.top)!)
