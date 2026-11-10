@@ -105,6 +105,9 @@ import StateUI
     case accessibilityPress
     /// The element stepped up or down as a screen reader steps it.
     case adjust(AccessibilityAdjustment)
+    /// The element's menu opened as the user asks for it: a view's context menu, by the pointer's other button or a
+    /// press held - left open.
+    case openMenu
 
     /// The act's name, as a driver says what it cannot do.
     public var description: String {
@@ -154,6 +157,7 @@ import StateUI
         case .performAccessibilityAction: "performAccessibilityAction"
         case .accessibilityPress: "accessibilityPress"
         case .adjust: "adjust"
+        case .openMenu: "openMenu"
         }
     }
 }

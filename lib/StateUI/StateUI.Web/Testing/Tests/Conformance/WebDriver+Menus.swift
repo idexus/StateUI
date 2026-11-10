@@ -31,6 +31,12 @@ extension WebDriver {
         return try WebBrowser.evaluate(Self.saidOpen, on: 0) ?? ""
     }
 
+    /// The menu open over the page now, as `menu(of:)` says one; nil where none is open.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        let said = try WebBrowser.evaluate(Self.saidOpen, on: 0) ?? ""
+        return said.isEmpty ? nil : said
+    }
+
     /// The menu `button` opens, as `menu(of:)` says one: opened as its user opens it, then taken down.
     func buttonMenu(of button: MountedElement) throws -> String {
         guard ButtonMenu.opening(of: button) != .none else { throw DriverCannot("read the menu \(button.type.name) opens") }
@@ -83,7 +89,7 @@ extension WebDriver {
 
     /// Opens the menu `element` offers: the window's behind the bar's More, a view's with the mouse's other button,
     /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
-    private func open(menuOf element: MountedElement, button: Bool = false) throws {
+    func open(menuOf element: MountedElement, button: Bool = false) throws {
         if element.type == .window {
             return try click(try bar(over: element), part: Self.more)
         }

@@ -62,7 +62,7 @@ TextAlignmentElement 2
 Text 5
 TextColorElement 4
 TintElement 3
-ContextMenu 3
+ContextMenu 4
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2

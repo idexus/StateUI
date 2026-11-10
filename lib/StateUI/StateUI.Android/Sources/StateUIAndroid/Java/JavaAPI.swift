@@ -550,6 +550,7 @@ enum JavaAPI {
     static let showPopupMenu = Java.method(popupMenu, "show", "()V")
 
     static let androidActivity = Java.findClass("android/app/Activity")
+    static let closeContextMenu = Java.method(androidActivity, "closeContextMenu", "()V")
     static let activity = Java.findClass("stateui/android/StateUIActivity")
     static let setHandlesBack = Java.method(activity, "setHandlesBack", "(Z)V")
 

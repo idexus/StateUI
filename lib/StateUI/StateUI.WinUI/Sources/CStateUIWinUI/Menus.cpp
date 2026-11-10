@@ -336,6 +336,42 @@ extern "C" int32_t stateui_winui_menus(StateUIObjectRef handle, char *utf8, int3
     }
 }
 
+namespace {
+    /// The menu a test opened last: held weakly, an open flyout holding itself.
+    winrt::weak_ref<controls::MenuFlyout> opened;
+}
+
+extern "C" bool stateui_winui_menu_open(StateUIObjectRef handle) {
+    try {
+        auto element = as<xaml::FrameworkElement>(handle);
+        auto flyout = offered(element);
+        if (!flyout) return false;
+        flyout.ShowAt(element);
+        opened = winrt::make_weak(flyout);
+        return true;
+    } catch (...) {
+        report("opening a menu");
+        return false;
+    }
+}
+
+extern "C" int32_t stateui_winui_menu_shown(char *utf8, int32_t capacity) {
+    try {
+        auto flyout = opened.get();
+        if (!flyout || !flyout.IsOpen()) return -1;
+        auto bytes = winrt::to_string(described(flyout.Items()));
+        if (utf8 && capacity > 0) {
+            auto size = std::min<size_t>(bytes.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, bytes.data(), size);
+            utf8[size] = 0;
+        }
+        return static_cast<int32_t>(bytes.size());
+    } catch (...) {
+        report("reading the menu shown");
+        return -1;
+    }
+}
+
 extern "C" void stateui_winui_menus_choose(StateUIObjectRef handle, int32_t index) {
     try {
         for (auto const &entries : menus(as<xaml::UIElement>(handle))) {

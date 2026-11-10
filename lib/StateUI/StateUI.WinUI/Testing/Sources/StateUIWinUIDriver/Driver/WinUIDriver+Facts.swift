@@ -23,6 +23,12 @@ extension WinUIDriver {
         return view.menus
     }
 
+    /// The menu the driver opened last, while WinUI holds it open; nil once it closed.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        let said = WinUIStrings.read { stateui_winui_menu_shown($0, $1) }
+        return said.isEmpty ? nil : said
+    }
+
     /// The flyout the WinUI button standing for `button` opens, or the context menu it holds - a bar's button, its
     /// button's on the title bar.
     func buttonMenu(of button: MountedElement) throws -> String {

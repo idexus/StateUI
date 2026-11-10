@@ -32,6 +32,14 @@ extension GTKDriver {
         return Self.said(model, actions: shown.menu.actions)
     }
 
+    /// The context menu the driver opened, as its model holds it, while its popover shows; nil where none does.
+    func shownMenu(over element: MountedElement) throws -> String? {
+        guard let menu = openedMenu, gtk_widget_get_visible(menu.popover) != 0,
+              let model = gtk_popover_menu_get_menu_model(menu.popover.opaque)
+        else { return nil }
+        return Self.said(model, actions: menu.menu.actions)
+    }
+
     /// The menu the button standing for `button` opens - a bar's button, its button on the bar - as its model holds
     /// it.
     func buttonMenu(of button: MountedElement) throws -> String {

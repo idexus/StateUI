@@ -83,6 +83,9 @@ final class AndroidDriver: HostDriver {
     /// The address of the folder the files a case opens and saves stand in, a slash after it.
     private(set) var filesFolder = ""
 
+    /// The context menu the driver opened last, as `menu(of:)` said it as it opened.
+    var openedMenu = ""
+
     var register: HostRegister { AndroidRealization.register }
 
     func start(

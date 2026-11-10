@@ -145,6 +145,9 @@ final class WinUIDriver: HostDriver {
             // The keys sent as the system sends them, to the window in front.
             guard let spelled = WinUIKeys.spelled(shortcut) else { throw DriverCannot(act, on: element) }
             stateui_winui_send_keys(spelled.key, spelled.modifiers)
+        case (.openMenu, let view?):
+            // WinUI's own `ShowAt`, as the element's context request opens its menu.
+            guard stateui_winui_menu_open(view.handle) else { throw DriverCannot(act, on: element) }
         case (.toggle, let toggle as WinUIToggleView): toggle.toggle()
         case (.toggle, _) where element.type == .splitView: try window().titleBar.chose(-2)
         case (.slide(let value), let slider as WinUISliderView): slider.move(to: value)

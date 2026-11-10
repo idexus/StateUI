@@ -282,6 +282,13 @@
         return try driven { try driver.shared(over: root) }
     }
 
+    /// The menu the window shows open now, written as `menu(of:)` writes one; nil where none shows.
+    public func shownMenu() throws -> String? {
+        guard let root = tree?.root else { return nil }
+        note("read a menu shown")
+        return try driven { try driver.shownMenu(over: root) }
+    }
+
     /// What the host handed the system to launch, in order: an address as written, a file by its name.
     public func launched() throws -> [String] {
         note("read what was launched")

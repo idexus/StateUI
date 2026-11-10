@@ -33,6 +33,25 @@ import java.util.List;
 public final class TestMenus {
     private TestMenus() {}
 
+    /** Whether the context menu the driver opened stands open: until Android closes it. */
+    private static boolean contextMenuOpen;
+
+    /** Opens `view`'s context menu as a press held asks Android for it; whether it showed. */
+    public static boolean showContextMenu(View view) {
+        contextMenuOpen = view.showContextMenu();
+        return contextMenuOpen;
+    }
+
+    /** Whether the context menu the driver opened stands open. */
+    public static boolean contextMenuOpen() {
+        return contextMenuOpen;
+    }
+
+    /** Android closed the context menu. */
+    static void contextMenuClosed() {
+        contextMenuOpen = false;
+    }
+
     /** The layer a button's foreground draws the arrow after its words in: StateUIViews' MARK_LAYER. */
     private static final int MARK_LAYER = 2;
 

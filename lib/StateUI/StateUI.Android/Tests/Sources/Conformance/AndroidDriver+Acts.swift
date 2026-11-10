@@ -32,6 +32,13 @@ extension AndroidDriver {
         case (.scroll(let target), let items as AndroidItemsView): items.scrollForTesting(to: target)
         case (.endContent, let web as AndroidWebView): try Self.endContent(of: web)
         case (.activate, _) where [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type): try choose(element)
+        case (.openMenu, let view?):
+            // The view's own `showContextMenu`, as a press held asks for it.
+            let said = try menu(of: element)
+            guard Java.callStaticBool(Self.testMenus, Self.showContextMenu, .object(view.reference)) else {
+                throw DriverCannot(act, on: element)
+            }
+            openedMenu = said
         // A touch clicks no view that is not enabled; `performClick` would.
         case (.activate, let button as AndroidButtonView): if Java.callBool(button.reference, JavaAPI.isEnabled) { button.click() }
         case (.activate, let link as AndroidLinkView): if Java.callBool(link.reference, JavaAPI.isEnabled) { link.click() }

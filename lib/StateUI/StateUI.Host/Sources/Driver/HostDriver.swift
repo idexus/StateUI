@@ -129,6 +129,9 @@
     /// own; nil where none shows.
     func shared(over element: MountedElement) throws -> String?
 
+    /// The menu the window of `element` shows open now, written as `menu(of:)` writes one; nil where none shows.
+    func shownMenu(over element: MountedElement) throws -> String?
+
     /// What the host handed the system to launch, in order, since the host started: an address as written, a file
     /// by its name.
     func launched() throws -> [String]
@@ -260,6 +263,11 @@ extension HostDriver {
     /// None read: the driver has no path for it yet.
     public func shared(over element: MountedElement) throws -> String? {
         throw DriverCannot("read a share sheet")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func shownMenu(over element: MountedElement) throws -> String? {
+        throw DriverCannot("read a menu shown")
     }
 
     /// None read: the driver has no path for it yet.

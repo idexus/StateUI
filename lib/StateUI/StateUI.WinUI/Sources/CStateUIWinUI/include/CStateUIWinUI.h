@@ -886,6 +886,14 @@ int32_t stateui_winui_menus(StateUIObjectRef element, char *utf8, int32_t capaci
 /// Chooses the item at `index` among those menus' items, submenus' included, as assistive technology does.
 void stateui_winui_menus_choose(StateUIObjectRef element, int32_t index);
 
+/// Opens the menu `element` offers - a button's flyout, else its context menu - at the element, as the user asks
+/// for it; whether one opened. What a test does.
+bool stateui_winui_menu_open(StateUIObjectRef element);
+
+/// The menu the last `stateui_winui_menu_open` opened, while it stands open, as `stateui_winui_menus` writes one;
+/// -1 where none stands open. What a test reads.
+int32_t stateui_winui_menu_shown(char *utf8, int32_t capacity);
+
 /// What those menus' items, submenus' included, hold of `what` - "identifier" the one automation finds each by, "icon"
 /// the file its picture shows, "destructive" 1 where its words stand in the theme's critical color, "shortcut" its
 /// accelerator's key and modifiers, "," between - in their order, ";" between, in UTF-8: what a test reads; the

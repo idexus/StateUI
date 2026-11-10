@@ -399,7 +399,22 @@ class AndroidView {
 
     /// The user asks for the view's context menu, to be written into `menu`.
     func menuOpening(_ menu: jobject) {
+        Self.menuOpened = self
         onMenuOpening?(menu)
+    }
+
+    /// The view whose context menu Android opened last: leaving, it closes the menu.
+    private static weak var menuOpened: AndroidView?
+
+    /// Closes the context menu Android shows for this view, where it opened last: Android leaves it open over the
+    /// window when the view goes.
+    /// Design: docs/design/platforms/android/menus.md#a-context-menu
+    private func closeItsMenu() {
+        guard Self.menuOpened === self else { return }
+        Self.menuOpened = nil
+        let context = AndroidRenderer.context
+        guard Java.jni.IsInstanceOf(Java.env, context, JavaAPI.androidActivity) != 0 else { return }
+        Java.call(context, JavaAPI.closeContextMenu)
     }
 
     /// One of the view's menu items was chosen, by its place among them.
@@ -409,6 +424,7 @@ class AndroidView {
 
     /// The element left the tree: the view lets go of everything that would call back into it.
     func detach() {
+        closeItsMenu()
         onTapped = nil
         onMenuOpening = nil
         onMenuChose = nil

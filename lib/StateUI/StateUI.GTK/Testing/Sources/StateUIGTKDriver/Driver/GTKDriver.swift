@@ -142,12 +142,16 @@ final class GTKDriver: HostDriver {
         "pickTime": "the clock set at once through the host's own, its minute's wheel telling it; a user moves each",
         "read minimum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
         "read maximum of DatePicker": "the range the host holds the day in: GtkCalendar holds none",
+        "openMenu": "the view's popover popped up as its secondary click pops it up, no click sent",
     ]
 
     var renderer: GTKRenderer?
 
     /// The pointer's press the driver holds down.
     let pressed = GTKPress()
+
+    /// The context menu the driver opened last, while its view holds it.
+    weak var openedMenu: GTKContextMenu?
 
     /// The host's log, as the driver listens to it.
     let written = GTKLogLines()
@@ -223,6 +227,12 @@ final class GTKDriver: HostDriver {
         if case .answerFiles(let names) = act {
             guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
             return files.chooseForTesting(names.map { Self.files + "/" + $0 })
+        }
+        if act == .openMenu {
+            guard let menu = (element.native as? GTKElement)?.view?.contextMenu else { throw DriverCannot(act, on: element) }
+            gtk_popover_popup(menu.popover.of(GtkPopover.self))
+            openedMenu = menu
+            return
         }
         if act == .activate, [.toolbarButton, .toolbarToggle].contains(element.type) { return try chooseAction(element) }
         if act == .activate, [.menuItem, .menuToggle].contains(element.type) { return try chooseMenuItem(element) }
