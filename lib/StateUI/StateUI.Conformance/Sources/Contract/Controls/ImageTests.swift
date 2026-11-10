@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `ImageContract` on a host: a picture found by its name stands at its own size - a bitmap's pixels, a drawing's
-/// declared size - the picture the tree changes it to replaces it, one the application does not have shows nothing,
-/// and a moving picture plays as the tree says.
+/// declared size - the picture the tree changes it to replaces it, one the application does not have shows nothing
+/// and takes no room, and a moving picture plays as the tree says.
 ///
 /// Every host's suite holds the two pictures the cases name: test_dot.png, 6 by 4, and test_wide.svg, 40 by 20.
 @_spi(Host) public enum ImageTests: ConformanceFamily {
@@ -110,6 +110,27 @@
                 s.settle { !frames.values.isEmpty }
 
                 s.expect(try s.color(of: image, at: Point(0, 0)), nil, "nothing drawn")
+            },
+            ConformanceCase("aPictureTheTreeChangesToOneTheApplicationDoesNotHaveTakesNoRoom", proves: [
+                Covered(ImageContract.source),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let gone = State(wrappedValue: false)
+                let frames = Received<[Double]>()
+                s.start {
+                    VStack {
+                        Image(gone.wrappedValue ? "nowhere.png" : "test_dot.png")
+                            .horizontalAlignment(.start)
+                            .onEvent(ViewContract.frameChanged) { frames.values.append($0) }.id("image")
+                        Button("Gone").onClicked { gone.wrappedValue = true }.id("change")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.settle { frames.values.last.map(FrameReport.size) == [6, 4] }
+
+                try s.perform(.activate, on: s.element("change"))
+                s.settle { frames.values.last.map(FrameReport.size) == [0, 0] }
+                s.expect(frames.values.last.map(FrameReport.size), [0, 0], "no picture's size")
             },
             Aspects.holds(ImageContract.isAnimating, on: "Image", false, then: true,
                           with: [Write(ImageContract.source, "test_dot.png")]),
