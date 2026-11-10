@@ -6,7 +6,7 @@
 
 /// `FilledShapeContract` on a host: a shape enclosing an area is filled as the tree says, and in the fill the tree
 /// changes it to - a color, or a blur or glass cut to its figure, or what stands in for it; each case made for every
-/// shape wearing the tier.
+/// shape wearing the tier - and a gradient's stops stand at their offsets, whatever their order.
 @_spi(Host) public enum FilledShapeTests: ConformanceFamily {
     public static let name = "FilledShape"
 
@@ -21,6 +21,30 @@
                     ]),
                 blurredOrGlass(element),
             ]
+        } + [stopsInOrder]
+    }
+
+    /// A gradient's stops stand at their own offsets, whatever order they are written in: written from the last, red
+    /// up to 0.4 and blue from 0.6, it is red at a fifth of the way and blue at four fifths.
+    @MainActor
+    static var stopsInOrder: ConformanceCase {
+        ConformanceCase("Rectangle.fill.aGradientsStopsStandAtTheirOffsets", proves: [
+            Covered(FilledShapeContract.fill, on: "Rectangle"),
+        ]) { s in
+            let stops = [
+                GradientStop(.blue, 1), GradientStop(.blue, 0.6), GradientStop(.red, 0.4), GradientStop(.red, 0),
+            ]
+            s.start {
+                Specimens.page("Rectangle", [
+                    Write(FilledShapeContract.fill, Material.gradient(.linearGradient(stops, from: Point(0, 0), to: Point(1, 0)))),
+                    Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 20),
+                ])
+            }
+            let shape = try s.specimen("Rectangle")
+            let (early, late) = (Point(20, 10), Point(80, 10))
+            try s.settle { try s.shows(.red, on: shape, at: [early, late]) == [true, false] }
+            s.expect(try s.colors(of: shape, at: [early])[0], shows: .red, "a fifth of the way")
+            s.expect(try s.colors(of: shape, at: [late])[0], shows: .blue, "four fifths of the way")
         }
     }
 

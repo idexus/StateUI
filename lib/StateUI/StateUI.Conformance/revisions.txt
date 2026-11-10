@@ -69,7 +69,7 @@ gtk Layout 2
 TextField 6
 SearchField 6
 Polyline 4
-FilledShape 3
+FilledShape 4
 AutomationElement 8
 Layout 3
 PaddingElement 3
