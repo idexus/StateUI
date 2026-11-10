@@ -16,6 +16,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
   listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
 - Text: on the Web a text's words are selected only where the application says so.
+- Controls: on the Web a disabled picker offered as segments or radio buttons keeps the values it offers later
+  disabled, and a picture changed to one the application does not have takes no room.
 - Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, a view freed of
   its area in a layered stack fills the room again, and a list that becomes the page's scroller as a view beside it
   goes keeps its last items clear of the bar at the foot. The bars over and under a page no longer listen again to a
