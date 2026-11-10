@@ -57,6 +57,8 @@ extension WebDriver {
             // The user reaches nothing under a question; the program's own may wait their turn behind it.
             try WebBrowser.run("e.click()", on: e)
         case (.toggle, _), (.activate, _): try click(view)
+        // A screen reader's press: the click no pointer made.
+        case (.accessibilityPress, _): try WebBrowser.run("e.click()", on: e)
         case (.tap(let count), _): try click(view, count: count)
         case (.hold, _): try hold(view)
         case (.slide(let value), is WebSliderView):

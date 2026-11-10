@@ -278,6 +278,9 @@ final class WinUIDriver: HostDriver {
         case (.answerShare(let shared), _):
             guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
             renderer?.actToolkit.answerShareForTesting(shared: shared)
+        case (.accessibilityPress, let view?):
+            // Narrator's press: the Invoke of the view's automation peer.
+            _ = stateui_winui_press(view.handle)
         case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }

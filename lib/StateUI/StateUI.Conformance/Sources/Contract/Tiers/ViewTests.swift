@@ -6,8 +6,9 @@
 
 /// `ViewContract` on a host: where a view stands in its parent - its margin, its alignment, its area in a layered
 /// stack, its cell in a grid - as the frame it reports says, StateUI's arithmetic alike on every host; and what it
-/// hears of the user's hand - taps counted, a press shown in its pressed look and held, a pan carrying its states and ending as a swipe, a pinch, the pointer
-/// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
+/// hears of the user's hand - taps counted, a press shown in its pressed look, a screen reader's press, a press held,
+/// a pan carrying its states and ending as a swipe, a pinch, the pointer coming, moving, pressing and going, a drag
+/// and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; and how a view of a motion layout moves as a body following its place.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
@@ -20,7 +21,34 @@
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
-        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress]
+        } + [
+            scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline, showsItsPress, pressedByAScreenReader,
+        ]
+    }
+
+    /// A view answering a tap is a button to assistive technology: a screen reader's press on it runs the handler a
+    /// tap runs.
+    @MainActor
+    static var pressedByAScreenReader: ConformanceCase {
+        ConformanceCase("HStack.aScreenReadersPressTapsIt", proves: [
+            Covered(ViewContract.tapped, on: "HStack"),
+        ]) { s in
+            let heard = Received<String>()
+            s.start {
+                VStack {
+                    HStack { Text("Open details") }
+                        .accessibilityLabel("Open details")
+                        .onTapped { heard.values.append("tapped") }
+                        .id("row")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+
+            try s.perform(.accessibilityPress, on: s.element("row"))
+            s.settle { heard.values == ["tapped"] }
+            s.expect(heard.values, ["tapped"], "the screen reader's press runs the handler a tap runs")
+        }
     }
 
     /// A view answering a tap is pressed as a button is: the look its visual state gives a pressed view stands while

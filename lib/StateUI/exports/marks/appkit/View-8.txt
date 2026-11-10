@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.panYChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.area: ✅
 Canvas.frameChanged: ✅

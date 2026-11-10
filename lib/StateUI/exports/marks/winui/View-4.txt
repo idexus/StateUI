@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

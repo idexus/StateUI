@@ -419,6 +419,11 @@ final class UIKitDriver: HostDriver {
             if let action = Self.met(view).accessibilityCustomActions?.first(where: { $0.name == name }) {
                 _ = action.actionHandler?(action)
             }
+        case (.accessibilityPress, let view?):
+            // VoiceOver's double tap on what it meets: its activation, else a tap where it activates.
+            let met = Self.met(view)
+            guard met.isAccessibilityElement, !met.accessibilityActivate() else { break }
+            try touch(element) { listening, view in Self.tap(listening, on: view, count: 1) }
         case (.adjust(let step), let view?):
             // VoiceOver's swipe up or down: the step of what it meets.
             let met = Self.met(view)

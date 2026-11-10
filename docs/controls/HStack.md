@@ -34,7 +34,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 35 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 4 ☑️ · 38 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 2 ☑️ · 14 ✓ · 5 –</td><td>custom <code>Panel</code></td></tr></tbody>
@@ -186,8 +186,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: pan on HStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on HStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>tapCount</code></td><td>property</td><td><code>Int</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: tap on HStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on HStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on HStack: the view's listening handed the recognizer's states, no touch sent</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: only through the host's own: accessibilityPress on HStack: VoiceOver's activation, else a tap the view's listening is handed, no touch sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

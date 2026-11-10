@@ -277,6 +277,8 @@ final class GTKDriver: HostDriver {
             type(words, into: editor, keys: OpaquePointer(gtk_scrolled_window_get_child(editor.widget.opaque)))
         case (.submit, let field as GTKTextFieldView): GTKTestHost.emit(field.widget.opaque, "activate")
         case (.focus, let view?): gtk_widget_grab_focus(view.widget)
+        // Orca's press: the action a panel offers assistive technology.
+        case (.accessibilityPress, let view?): gtk_widget_activate_action_variant(view.widget, GTKPanel.pressAction, nil)
         case (.choose(let place), let tabs as GTKTabView): try tabs.choose(place, on: element)
         case (.toggle, let split as GTKSplitView): split.toggleAsUser()
         case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)

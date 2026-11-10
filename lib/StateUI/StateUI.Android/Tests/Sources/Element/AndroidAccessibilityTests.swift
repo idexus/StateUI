@@ -88,6 +88,13 @@ enum TestAccessibility {
 
     private static let performing = Java.staticMethod(owner, "perform", "(Landroid/view/View;Ljava/lang/String;)Z")
 
+    /// Presses `view` as TalkBack's double tap does, by the click its node offers; whether the view took it.
+    static func press(_ view: AndroidView) -> Bool {
+        Java.frame { Java.callStaticBool(owner, pressing, .object(view.reference)) }
+    }
+
+    private static let pressing = Java.staticMethod(owner, "press", "(Landroid/view/View;)Z")
+
     /// Steps `view` up or down as TalkBack steps a slider, where its node offers the step; whether the view took it.
     static func step(up: Bool, on view: AndroidView) -> Bool {
         Java.callStaticBool(owner, stepping, .object(view.reference), .bool(up))

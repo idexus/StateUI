@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.held: ✓ hold on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutBody: ✅
 Canvas.panYChannel: ✓ pan on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -32,6 +32,7 @@ Grid.panXChannel: ✓ pan on Grid: handed to the host's recognizer or handler, n
 HStack.frameChanged: ✅
 HStack.horizontalAlignment: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
 Image.dragStarting: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session

@@ -13,6 +13,8 @@ extension UIKitDriver {
         switch taken.act {
         case "tap", "hold", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
             return "the view's listening handed the recognizer's states, no touch sent"
+        case "accessibilityPress":
+            return "VoiceOver's activation, else a tap the view's listening is handed, no touch sent"
         case "choose" where taken.element == "Picker":
             return "the host's choice called, not the menu's action"
         case "answer":

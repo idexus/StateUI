@@ -1,4 +1,4 @@
-# revision 24.1
+# revision 25.1
 Button.held: ✓ hold on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutBody: ✅
 Canvas.panYChannel: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
@@ -32,6 +32,7 @@ Grid.panXChannel: ✓ pan on Grid: the view's listening handed the recognizer's 
 HStack.frameChanged: ✅
 HStack.horizontalAlignment: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.tapped: ✓ accessibilityPress on HStack: VoiceOver's activation, else a tap the view's listening is handed, no touch sent
 HStack.verticalAlignment: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragStarting: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session

@@ -161,6 +161,9 @@ extension AndroidDriver {
         case (.performAccessibilityAction(let name), let view?):
             // The action TalkBack offers on the view's node, performed as TalkBack performs it.
             _ = TestAccessibility.perform(name, on: view)
+        case (.accessibilityPress, let view?):
+            // TalkBack's double tap: the click the view's node offers.
+            _ = TestAccessibility.press(view)
         case (.adjust(let step), let view?):
             _ = TestAccessibility.step(up: step == .increment, on: view)
         default: throw DriverCannot(act, on: element)
