@@ -123,6 +123,28 @@
                 try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
                 s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "its scene in front again")
             },
+            ConformanceCase("aWindowThatStopsHidingShowsWithItsSceneBehind", proves: [
+                Covered(WindowContract.hidesWhenInactive),
+            ], needs: [Covered(ClickElementContract.clicked, on: ButtonContract.self)]) { s in
+                let hides = HidingApplication.hides
+                hides.wrappedValue = true
+                try s.start(application: { HidingApplication() })
+                try s.perform(.activate, on: s.element("open"))
+                s.settle { s.elements(ofType: WindowContract.nodeType).count == 2 }
+                guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
+                try s.perform(.activate, on: s.element("another"))
+                s.settle { s.elements(ofType: SceneContract.nodeType).count == 2 }
+                guard let other = s.elements(ofType: WindowContract.nodeType)
+                    .first(where: { $0.enclosing(type: .scene) !== note.enclosing(type: .scene) })
+                else { return s.fail("no second scene") }
+                try s.perform(.bringToFront, on: other)
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == false }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), false, "hidden: another scene in front")
+
+                hides.wrappedValue = false
+                try s.settle { try s.held(VisualElementContract.isVisible, on: note) == true }
+                s.expect(try s.held(VisualElementContract.isVisible, on: note), true, "shown once it no longer hides")
+            },
         ]
     }
 
@@ -238,6 +260,26 @@ struct NotesScene: Scene {
         WindowGroup(NotesApplication.note) { number in Text("Note \(number.wrappedValue)") }
             .floatsOnTop(true)
             .hidesWhenInactive(true)
+    }
+}
+
+/// `NotesApplication` whose notes hide while another scene is in front as long as `hides` says so.
+struct HidingApplication: Application {
+    /// Whether the notes hide, which the case writes.
+    @MainActor static let hides = State(wrappedValue: true)
+
+    var body: some Scene {
+        HidingScene()
+        Window(NotesApplication.other) { Text("Another scene") }
+    }
+}
+
+/// `NotesScene` whose notes hide as `HidingApplication.hides` says.
+struct HidingScene: Scene {
+    var body: some Scene {
+        WindowGroup { NotesPage() }
+        WindowGroup(NotesApplication.note) { number in Text("Note \(number.wrappedValue)") }
+            .hidesWhenInactive(HidingApplication.hides.wrappedValue)
     }
 }
 
