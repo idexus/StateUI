@@ -227,7 +227,9 @@ layout gives it is the room it scrolls in. GTK allows a scrolled window no
 less than its scrollbar's length, so an editor that does not grow is never
 shorter than that; a growing one shows no scrollbar (`GTK_POLICY_EXTERNAL`) -
 it grows instead - and stands one line tall at one line, still scrolling to
-its caret where its room is shorter than its words. An editor given a ground
+its caret where its room is shorter than its words. Offered a width GTK's
+32-bit pixels cannot hold, it is measured as at no width, its lines unwrapped.
+An editor given a ground
 of its own stands in it with no box of the theme's - no fill, no corners, no
 ring (`stateui-editor-bare`).
 
