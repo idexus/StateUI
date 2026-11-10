@@ -16,11 +16,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   whose drag is offered again hears each drop once; on the Web a view let go of while pressed leaves nothing
   listening on the page, and a view that stops hearing a drag gives the page its touch and its selection back.
 - Text: on the Web a text's words are selected only where the application says so.
+- Layout: on the Web a list turned into a row keeps each item scrolled away at the width it took, and a view freed
+  of its area in a layered stack fills the room again.
 - Drawing: a gradient's stops stand at their own offsets whatever order they are written in, on every platform; on
   Windows a path's curve after a close begins a figure of its own.
 - Accessibility: on iOS, under VoiceOver, a color picker and a switch say what the application says of them - name,
   kind, value, whether VoiceOver meets them - where UIKit's own words stood; on the Web words made at run time and
-  told to the screen reader are said as asked.
+  told to the screen reader are said as asked, and a list the user chooses in names its items options.
 - Hosts: on GTK a popover waiting for its hidden anchor and the frame clock hold what they use; Windows keeps no
   record of what an application told the screen reader or launched.
 
