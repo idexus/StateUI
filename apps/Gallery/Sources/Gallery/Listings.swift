@@ -1805,6 +1805,7 @@ enum Listings {
         "ButtonSample": #"""
         // Sources/Samples/BasicInput/ButtonSample.swift
         @State private var counter = 0
+        @State private var wraps = true
 
         var body: some View {
             VStack {
@@ -1827,6 +1828,16 @@ enum Listings {
                 Button("Disabled")
                     .isEnabled(false)
                     .horizontalAlignment(.center)
+
+                Switch("Wrap the long words", isOn: $wraps)
+                    .horizontalAlignment(.center)
+
+                // Wrapped, the words stand on as many lines as the width leaves them; else they are cut short.
+                Button("Words enough to stand on more than one line")
+                    .lineBreak(wraps ? .wordWrap : .tailTruncation)
+                    .width(180)
+                    .horizontalAlignment(.center)
+                    .onClicked { counter += 1 }
             }
         }
         """#,
