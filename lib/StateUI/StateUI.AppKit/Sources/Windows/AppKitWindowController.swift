@@ -253,7 +253,8 @@ final class AppKitWindowController: NSWindowController {
 
     /// Stands the window where the tree asks, each request alone: a size is the content area the title bar and
     /// toolbar do not cover, the window keeping its top edge; a place is counted from the top left of the screen's
-    /// work area.
+    /// work area. A frame AppKit's 32-bit coordinates cannot hold - over which it raises - is not asked for.
+    /// Design: docs/design/platforms/appkit/runtime.md#a-windows-frame
     private func request(_ frame: WindowFrame, of window: NSWindow) {
         if frame.width != nil || frame.height != nil {
             var standing = window.frame
@@ -261,7 +262,7 @@ final class AppKitWindowController: NSWindowController {
             if let width = frame.width { standing.size.width = CGFloat(width) }
             if let height = frame.height { standing.size.height = CGFloat(height) + chromeHeight(of: window) }
             standing.origin.y = top - standing.size.height
-            window.setFrame(standing, display: presented)
+            if Self.holds(standing) { window.setFrame(standing, display: presented) }
         }
         guard frame.x != nil || frame.y != nil else { return }
 
@@ -269,7 +270,15 @@ final class AppKitWindowController: NSWindowController {
         var topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
         if let x = frame.x { topLeft.x = area.minX + CGFloat(x) }
         if let y = frame.y { topLeft.y = area.maxY - CGFloat(y) }
+        let size = window.frame.size
+        guard Self.holds(NSRect(x: topLeft.x, y: topLeft.y - size.height, width: size.width, height: size.height))
+        else { return }
         window.setFrameTopLeftPoint(topLeft)
+    }
+
+    /// Whether every edge of `rect` stands in AppKit's 32-bit whole points (`GeometryArithmetic.pixels`).
+    private static func holds(_ rect: NSRect) -> Bool {
+        [rect.minX, rect.maxX, rect.minY, rect.maxY].allSatisfy { GeometryArithmetic.pixels(Double($0)) != nil }
     }
 
     /// The work area of the screen `window` stands on - the screen less its menu bar and the Dock - which a place

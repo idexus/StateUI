@@ -44,7 +44,10 @@ title bar accessory rather than a toolbar control's glass.
 A window stands where the host layer says its element asks ([a window's
 frame](../../host/tree.md#a-windows-frame)), each request alone. A size is the
 content area the title bar and toolbar leave, the window keeping its top
-edge; a place is counted from the top left of the screen's work area. The
+edge; a place is counted from the top left of the screen's work area. A size
+or a place that would stand an edge outside 32-bit whole points is not asked
+for: AppKit raises over such a frame, which ends the application, and the
+window stands as it was (`GeometryArithmetic.pixels`). The
 bounds are the content area's too, the chrome's height added, as AppKit
 bounds the whole content view, and are applied again on every presentation,
 since the chrome grows with a row of tabs; what the tree leaves unsaid is the
