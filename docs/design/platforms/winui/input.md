@@ -48,7 +48,11 @@ from `PointerPressed`, the view capturing the pointer as a `Button` does, to
 the touch - are the press taken away. The press is the first view's to hear
 it: a view around one leaves it, so a tappable row inside another answers
 alone; a control under the pointer handles its own press, which never reaches
-the view around it. Assistive technology's invoke taps at once.
+the view around it. A view that stops hearing taps - leaving the tree mid-press
+among them - lets go of the press it holds, as no release reaches it after:
+Windows names the mouse's pointer alike for every press, and a press kept
+would leave every view's tap unheard. Assistive technology's invoke taps at
+once.
 
 WinUI tells a tap, and a second tap soon after as a double tap in place of a
 tap; these count a run of taps alone. The relay counts a quick run: a tap

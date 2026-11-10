@@ -9,8 +9,10 @@
 
 #include "Relay.h"
 
+#include <cmath>
 #include <vector>
 
+#include <winrt/Microsoft.UI.Windowing.h>
 #include <winrt/Microsoft.UI.Xaml.Input.h>
 #include <winrt/Windows.System.h>
 
@@ -122,5 +124,28 @@ extern "C" void stateui_winui_send_keys(int32_t key, int32_t modifiers) {
         sendKeys(key, modifiers);
     } catch (...) {
         report("sending keys");
+    }
+}
+
+extern "C" void stateui_winui_send_mouse(
+    StateUIObjectRef window, StateUIObjectRef handle, double x, double y, bool down
+) {
+    try {
+        // The element's point in its window's content, in pixels, on the screen: the window's content covers its
+        // client area, its title bar's room included.
+        auto element = as<xaml::UIElement>(handle);
+        auto root = element.XamlRoot();
+        if (!root) return;
+        auto at = element.TransformToVisual(nullptr).TransformPoint({static_cast<float>(x), static_cast<float>(y)});
+        auto scale = root.RasterizationScale();
+        POINT point{static_cast<LONG>(std::lround(at.X * scale)), static_cast<LONG>(std::lround(at.Y * scale))};
+        ClientToScreen(reinterpret_cast<HWND>(borrow<xaml::Window>(window).AppWindow().Id().Value), &point);
+        SetCursorPos(point.x, point.y);
+        INPUT input{};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = down ? MOUSEEVENTF_LEFTDOWN : MOUSEEVENTF_LEFTUP;
+        SendInput(1, &input, sizeof(INPUT));
+    } catch (...) {
+        report("sending the mouse");
     }
 }

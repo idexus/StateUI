@@ -33,6 +33,23 @@ private struct TapsPage: View {
     }
 }
 
+/// Two rows counting their taps - the first by one, the second by ten - and a button taking the first away.
+private struct TwoRowsPage: View {
+    @State private var taps = 0
+    @State private var first = true
+
+    var body: some View {
+        VStack {
+            Text("taps \(taps)")
+            if first { HStack { Text("first") }.width(200).height(40).onTapped { taps += 1 } }
+            HStack { Text("second") }.width(200).height(40).onTapped { taps += 10 }
+            Button("Hide").onClicked { first = false }
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 /// A box that says each step its pinch said.
 private struct PinchPage: View {
     @State private var said = ""
@@ -124,6 +141,38 @@ final class WinUIGesturesTests: XCTestCase {
 
             XCTAssertEqual(stateui_winui_listeners(), listening - 1)
             XCTAssertEqual(row.hearing, [])
+        }
+    }
+
+    /// A press whose view leaves before it lets go is nobody's once it ends: the mouse's next press taps the view it
+    /// goes down on - Windows names the mouse's pointer alike for every press.
+    func testAPressWhoseViewLeftLeavesTheMouseFree() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running { TwoRowsPage() }
+            let window = try XCTUnwrap(host.window).handle
+            let rows = host.views(WinUIStackView.self)
+            let (first, second) = (rows[1], rows[2])
+            @MainActor func mouse(_ row: WinUIView, down: Bool) {
+                stateui_winui_send_mouse(window, row.handle, 100, 20, down)
+                WinUITestHost.pump(0.1)
+            }
+            // The mouse reaches the window in front.
+            stateui_winui_window_activate(window)
+            WinUITestHost.pump(0.3)
+            mouse(first, down: true)
+            mouse(first, down: false)
+            host.settle { host.texts.first == "taps 1" }
+            XCTAssertEqual(host.texts.first, "taps 1", "a click taps the row")
+
+            mouse(first, down: true)
+            try XCTUnwrap(host.views(WinUIButtonView.self).first).invoke()
+            host.settle { host.views(WinUIStackView.self).count == 2 }
+            mouse(second, down: false)
+            mouse(second, down: true)
+            mouse(second, down: false)
+            host.settle { host.texts.first == "taps 11" }
+
+            XCTAssertEqual(host.texts.first, "taps 11", "the second row tapped")
         }
     }
 

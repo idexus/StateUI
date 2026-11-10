@@ -98,6 +98,13 @@ namespace {
     /// The view each pointer's press a tap is made of stands on: the first to hear it, a view around it leaving it.
     std::unordered_map<uint32_t, int64_t> pressOwners;
 
+    /// The presses `view` holds end as it stops hearing taps - leaving, or listening for less: no release reaches it
+    /// after, and a pointer kept would press nothing again (the mouse's pointer is one for every press).
+    void letGoOfPresses(int64_t view) {
+        std::erase_if(pressOwners, [view](auto const &owner) { return owner.second == view; });
+        if (auto found = listening.find(view); found != listening.end()) found->second.tapPressing = false;
+    }
+
     /// A press on a view that hears taps, followed as a button follows one: the pointer the view's own until it lets
     /// go, each `StateUIPhase` told with where it stands in the view and whether a finger presses; the host lights the
     /// view and taps it by the host layer's rule.
@@ -497,6 +504,7 @@ extern "C" void stateui_winui_hear(StateUIObjectRef handle, int64_t view, uint32
         if (element.try_as<controls::WebView2>()) return;
         auto found = listening.find(view);
         if (!(hearing & StateUIHearingHand)) untrack(view);
+        if (!(hearing & StateUIHearingTaps)) letGoOfPresses(view);
         if (!hearing) {
             if (found == listening.end()) return;
             unhookLater(element, found->second);

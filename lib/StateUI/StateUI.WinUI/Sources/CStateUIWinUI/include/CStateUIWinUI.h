@@ -665,6 +665,10 @@ void stateui_winui_set_tooltip(StateUIObjectRef element, char const *utf8);
 void stateui_winui_set_shortcut(StateUIObjectRef element, int32_t key, int32_t modifiers, bool givesWayToTyping);
 bool stateui_winui_shortcut(StateUIObjectRef element, int32_t *key, int32_t *modifiers);
 void stateui_winui_send_keys(int32_t key, int32_t modifiers);
+
+/// The mouse's main button pressed or let go at (x, y) DIPs of `element`, which stands in `window`, as the system sends
+/// the user's: the cursor moved there first. What a test does.
+void stateui_winui_send_mouse(StateUIObjectRef window, StateUIObjectRef element, double x, double y, bool down);
 int32_t stateui_winui_tooltip(StateUIObjectRef element, char *utf8, int32_t capacity);
 
 StateUIObjectRef stateui_winui_panel_make(int64_t view);
