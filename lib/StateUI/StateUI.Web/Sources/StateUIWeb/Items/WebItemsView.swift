@@ -48,8 +48,11 @@ final class WebItemsView: WebDOMView {
     /// The entries, the layout, how many may be chosen and which are.
     func apply(layout: ItemsLayout, mode: SelectionMode) {
         if layout != shape { lay(layout) }
-        if cells.takeEntries() != nil { writeEntries() }
+        let turned = mode != self.mode
         self.mode = mode
+        let entriesChanged = cells.takeEntries() != nil
+        if entriesChanged { writeEntries() }
+        if entriesChanged || turned { writeRoles() }
         attribute("role", mode == .none ? "list" : "listbox")
         attribute("aria-multiselectable", mode == .multiple ? "true" : nil)
         let chosen = Set(cells.selected)
@@ -85,6 +88,12 @@ final class WebItemsView: WebDOMView {
         for (index, cell) in order.enumerated() {
             WebRelay.insert(cell.node, into: content.node, at: index)
             cell.attribute("data-part", cells.isItem(cell.entry) ? nil : "")
+        }
+    }
+
+    /// Each cell's role: an item, an option where the user chooses, or nothing for a header's or a footer's.
+    private func writeRoles() {
+        for cell in order {
             cell.attribute("role", cells.isItem(cell.entry) ? (mode == .none ? "listitem" : "option") : "presentation")
         }
     }
