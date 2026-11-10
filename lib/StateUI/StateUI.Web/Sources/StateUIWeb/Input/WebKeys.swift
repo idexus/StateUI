@@ -38,7 +38,8 @@ enum WebKeys {
         if shortcut.modifiers.contains(.primary) { parts.append(onApple ? "Meta" : "Control") }
         if shortcut.modifiers.contains(.alt) { parts.append("Alt") }
         if shortcut.modifiers.contains(.shift) { parts.append("Shift") }
-        parts.append(shortcut.key.character.map { String($0).uppercased() } ?? shortcut.key.named.flatMap { names[$0] } ?? "")
+        parts.append(shortcut.key.character.map { characterNames[$0] ?? String($0).uppercased() }
+            ?? shortcut.key.named.flatMap { names[$0] } ?? "")
         return parts.joined(separator: "+")
     }
 
@@ -65,11 +66,16 @@ enum WebKeys {
             case onApple ? "Meta" : "Control": held.insert(.primary)
             case "Alt": held.insert(.alt)
             case "Shift": held.insert(.shift)
-            default: key = names.first { $0.value == part }.map { Key($0.key) } ?? part.first.map { Key($0) }
+            default:
+                key = names.first { $0.value == part }.map { Key($0.key) }
+                    ?? characterNames.first { $0.value == part }.map { Key($0.key) } ?? part.first.map { Key($0) }
             }
         }
         return key.map { KeyboardShortcut($0, modifiers: held) }
     }
+
+    /// The characters `aria-keyshortcuts` names by a word: the plus, which joins the keys.
+    static let characterNames: [Character: String] = ["+": "Plus"]
 
     /// The page's names of the keys writing no character.
     static let names: [NamedKey: String] = [

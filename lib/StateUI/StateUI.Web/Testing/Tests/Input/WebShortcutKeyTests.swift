@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+@_spi(Host) import StateUI
 @testable import StateUIWeb
 import XCTest
 
@@ -26,6 +27,21 @@ final class WebShortcutKeyTests: XCTestCase {
                 WebKeys.character(written: each.written.unicodeScalars.first?.value ?? 0,
                                   physical: each.physical.unicodeScalars.first?.value ?? 0),
                 each.read, each.layout)
+        }
+    }
+
+    /// A shortcut is spelled as `aria-keyshortcuts` names its keys - a letter by its capital, the plus by its name,
+    /// a key writing nothing by the page's name - and read back as the same shortcut.
+    func testAShortcutIsSpelledAsAssistiveTechnologyNamesIt() {
+        let cases: [(shortcut: KeyboardShortcut, spelled: String)] = [
+            (KeyboardShortcut("s", modifiers: [.primary, .shift]), "Control+Shift+S"),
+            (KeyboardShortcut("+", modifiers: .primary), "Control+Plus"),
+            (KeyboardShortcut(.space, modifiers: .alt), "Alt+Space"),
+            (KeyboardShortcut(Key(.return), modifiers: .primary), "Control+Enter"),
+        ]
+        for each in cases {
+            XCTAssertEqual(WebKeys.spelled(each.shortcut, onApple: false), each.spelled)
+            XCTAssertEqual(WebKeys.shortcut(spelled: each.spelled, onApple: false), each.shortcut, each.spelled)
         }
     }
 }
